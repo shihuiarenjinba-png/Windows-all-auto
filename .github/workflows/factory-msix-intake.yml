@@ -1,0 +1,74 @@
+name: Factory MSIX intake and local QA handoff
+on:
+  schedule:
+    - cron: "12,27,42,57 * * * *"
+  workflow_dispatch:
+  push:
+    branches: ["codex/windows-all-auto-integration-20261026"]
+    paths:
+      - ".github/workflows/factory-msix-intake.yml"
+
+concurrency:
+  group: factory-msix-intake
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  intake:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify artifact contract and collision tests
+        run: python -m unittest discover -s tests -v
+      - name: Check cross-repository read access
+        id: gate
+        env:
+          FACTORY_READ_TOKEN: ${{ secrets.FACTORY_READ_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "$FACTORY_READ_TOKEN" ]; then
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "HOLD: configure secret FACTORY_READ_TOKEN (actions:read on Factory repositories)"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Transfer only verified Factory MSIX artifacts
+        if: steps.gate.outputs.ready == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.FACTORY_READ_TOKEN }}
+        run: python -m all_auto.bridge_poll --ledger ops/factory_handoff_ledger.json --out staging
+      - name: Republish once as a short-lived local Windows QA artifact
+        if: steps.gate.outputs.ready == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: verified-msix-local-qa-${{ github.run_id }}
+          path: |
+            staging/packages/
+            staging/queue.json
+          if-no-files-found: ignore
+          retention-days: 2
+      - name: Checkpoint received artifact IDs without storing binaries in Git
+        if: steps.gate.outputs.ready == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -- ops/factory_handoff_ledger.json
+          if git diff --cached --quiet; then
+            echo "Nothing new to checkpoint"
+            exit 0
+          fi
+          git -c user.name="github-actions[bot]" \
+              -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+              commit -m "bridge: checkpoint verified Factory artifact IDs"
+          git push origin HEAD:refs/heads/codex/windows-all-auto-integration-20261026
