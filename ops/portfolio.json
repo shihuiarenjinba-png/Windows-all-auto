@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "products": [
+    {
+      "id": "workflow-hub",
+      "type": "app",
+      "repository": "workflow-automation-hub",
+      "ref": "codex/store-draft-validation-20261019"
+    },
+    {
+      "id": "folder-engine",
+      "type": "app",
+      "repository": "folder-automation-engine",
+      "ref": "codex/folder-standard-consumer-ui-20261026"
+    },
+    {
+      "id": "browser-runner",
+      "type": "app",
+      "repository": "browser-automation-runner",
+      "ref": "codex/store-draft-validation-20261019"
+    },
+    {
+      "id": "scheduled-api",
+      "type": "app",
+      "repository": "Scheduled-API-Runner",
+      "ref": "codex/store-draft-validation-20261019"
+    },
+    {
+      "id": "whisper-ai",
+      "type": "app",
+      "repository": "Whisper-AI",
+      "ref": "codex/whisper-youtube-media-20261024"
+    },
+    {
+      "id": "market-us",
+      "type": "game",
+      "repository": "game-Market-US",
+      "ref": "codex/store-p0-strategy-market-us-20261023"
+    },
+    {
+      "id": "market-jp",
+      "type": "game",
+      "repository": "game-economics-",
+      "ref": "codex/store-p0-strategy-market-jp-20261023"
+    }
+  ]
+}
