@@ -76,14 +76,38 @@ class QueueLedger:
 
         self.db.execute("BEGIN IMMEDIATE")
         try:
+            # Re-evaluate collisions on EVERY enqueue, including existing preflight
+            # jobs. Otherwise re-enqueuing a previously BLOCKED/HOLD candidate with
+            # a new READY preflight could bypass the original Store-ID conflict.
+            # Compare Store IDs case-insensitively; do not change fingerprint format
+            # because historical PENDING_OPERATOR/UNKNOWN keys must remain stable.
+            if store_id:
+                identity_collision = self.db.execute(
+                    "SELECT job_key FROM jobs WHERE store_id=? COLLATE NOCASE "
+                    "AND product_id<>? LIMIT 1",
+                    (store_id, product_id),
+                ).fetchone()
+                if identity_collision:
+                    status = "BLOCKED"
+                    reason = "STORE_ID_PRODUCT_COLLISION"
+                elif status != "BLOCKED":
+                    conflict = self.db.execute(
+                        "SELECT job_key FROM jobs WHERE store_id=? COLLATE NOCASE "
+                        "AND product_id=? AND job_key<>? "
+                        "AND status IN ('READY_FOR_WINDOWS_QA','PENDING_OPERATOR','UNKNOWN') LIMIT 1",
+                        (store_id, product_id, key),
+                    ).fetchone()
+                    if conflict:
+                        status = "HOLD"
+                        reason = "PRIOR_STORE_OUTCOME_UNCONFIRMED"
+
             old = self.db.execute(
                 "SELECT status,reason FROM jobs WHERE job_key=?", (key,)
             ).fetchone()
             if old:
                 old_status, old_reason = str(old[0]), str(old[1])
-                # Before any operator/remote stage, the latest preflight is authoritative.
-                # This prevents a stale READY from surviving a newly discovered HOLD/BLOCK
-                # and also allows a repaired HOLD/BLOCK to become READY without a new job.
+                # Only pre-operator states may refresh. Remote/ambiguous outcomes
+                # are immutable without explicit operator reconciliation.
                 if old_status in PRE_OPERATOR_STATES:
                     if old_status != status or old_reason != reason:
                         now = _now()
@@ -99,31 +123,8 @@ class QueueLedger:
                         )
                     self.db.execute("COMMIT")
                     return {"job_key": key, "status": status, "reason": reason}
-                # Once operator/remote handling starts, re-enqueue is read-only.
                 self.db.execute("COMMIT")
                 return {"job_key": key, "status": old_status, "reason": old_reason}
-
-            if store_id:
-                # A Store Product ID mapped to a different local product is always a
-                # dangerous identity collision, regardless of the other job's state.
-                identity_collision = self.db.execute(
-                    "SELECT job_key FROM jobs WHERE store_id=? AND product_id<>? LIMIT 1",
-                    (store_id, product_id),
-                ).fetchone()
-                if identity_collision:
-                    status = "BLOCKED"
-                    reason = "STORE_ID_PRODUCT_COLLISION"
-                else:
-                    # A different fingerprint for the same product may only coexist when
-                    # all prior candidates are still HOLD/BLOCKED (no remote side effect).
-                    conflict = self.db.execute(
-                        "SELECT job_key FROM jobs WHERE store_id=? AND product_id=? "
-                        "AND status IN ('READY_FOR_WINDOWS_QA','PENDING_OPERATOR','UNKNOWN') LIMIT 1",
-                        (store_id, product_id),
-                    ).fetchone()
-                    if conflict:
-                        status = "HOLD"
-                        reason = "PRIOR_STORE_OUTCOME_UNCONFIRMED"
 
             now = _now()
             self.db.execute(
