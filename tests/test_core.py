@@ -15,12 +15,27 @@ class CoordinatorPreflightTests(unittest.TestCase):
         package = self.root / "Sample.msix"
         package.write_bytes(b"synthetic-fixture-not-a-real-msix")
         self.package_hash = sha256_file(package)
-        checker_report = self.root / "checker.json"
-        checker_report.write_text('{"status":"READY_CANDIDATE_NOT_CERTIFIED"}', encoding="utf-8")
-        build_report = self.root / "build.json"
-        build_report.write_text('{"status":"mock-fixture"}', encoding="utf-8")
         identity = {"store_id": "9ABCDEF123", "name": "SignedOfficial.Identity",
                     "publisher": "CN=TEST", "version": "1.0.0.0", "architecture": "x64"}
+        checker_report = self.root / "checker.json"
+        checker_report.write_text(json.dumps({
+            "schema_version": 1, "product_type": "app",
+            "verdict": "READY_CANDIDATE_NOT_CERTIFIED",
+            "pending_review_count": 0,
+            "findings": [{"code": "PKG_HASH", "state": "PASS"}],
+            "metadata": {"msix_sha256": self.package_hash, "manifest": {
+                k: identity[k] for k in ("name", "publisher", "version", "architecture")
+            }},
+        }), encoding="utf-8")
+        build_report = self.root / "build.json"
+        build_report.write_text(json.dumps({
+            "schema_version": 1, "status": "READY_CANDIDATE_NOT_CERTIFIED",
+            "repository_url": "https://github.com/shihuiarenjinba-png/sample",
+            "source_head": "a" * 40, "store_id": identity["store_id"],
+            "identity": {k: identity[k] for k in ("name", "publisher", "version", "architecture")},
+            "artifacts": [{"kind": "MSIX", "path": str(package), "sha256": self.package_hash}],
+            "holds": [],
+        }), encoding="utf-8")
         self.product = {
             "id": "sample",
             "type": "app",
@@ -226,6 +241,75 @@ class CoordinatorPreflightTests(unittest.TestCase):
         obj = copy.deepcopy(self.product)
         obj["security"]["confirmed_at"] = "   "
         self.assert_finding("SECURITY_HUMAN_CONFIRMATION_REQUIRED", obj)
+
+
+    def test_30_store_id_case_variant_duplicates_are_blocked(self):
+        second = copy.deepcopy(self.product)
+        second["id"] = "other"
+        second["identity"]["store_id"] = "9abcdef123"
+        second["approved_identity"]["store_id"] = "9abcdef123"
+        result = preflight({"schema_version": "1", "products": [self.product, second]}, self.root)
+        self.assertEqual(result["counts"]["BLOCKED"], 2)
+
+    def test_31_unhashable_store_id_fails_closed_not_crash(self):
+        bad = copy.deepcopy(self.product)
+        bad["approved_identity"]["store_id"] = {"bad": "value"}
+        result = preflight({"schema_version": "1", "products": [bad]}, self.root)
+        self.assertEqual(result["counts"]["READY_FOR_WINDOWS_QA"], 0)
+
+    def _swap_report(self, obj, component, updates):
+        report = Path(obj[component]["report_path"])
+        payload = json.loads(report.read_text(encoding="utf-8"))
+        payload.update(updates)
+        target = self.root / (component + "-modified.json")
+        target.write_text(json.dumps(payload), encoding="utf-8")
+        obj[component]["report_path"] = str(target)
+        obj[component]["report_sha256"] = sha256_file(target)
+
+    def test_32_checker_claims_ready_but_report_is_blocked(self):
+        obj = copy.deepcopy(self.product)
+        self._swap_report(obj, "checker", {"verdict": "BLOCKED"})
+        self.assert_finding("CHECKER_REPORT_VERDICT_MISMATCH", obj)
+
+    def test_33_checker_report_wrong_package_is_held(self):
+        obj = copy.deepcopy(self.product)
+        self._swap_report(obj, "checker", {"metadata": {"msix_sha256": "f" * 64}})
+        self.assert_finding("CHECKER_REPORT_PACKAGE_UNVERIFIED", obj)
+
+    def test_34_checker_report_containing_block_cannot_be_ready(self):
+        obj = copy.deepcopy(self.product)
+        self._swap_report(obj, "checker", {
+            "findings": [{"code": "PKG_HASH", "state": "BLOCK"}],
+        })
+        self.assert_finding("CHECKER_REPORT_CONTAINS_BLOCK", obj)
+
+    def test_35_build_report_not_ready_is_held(self):
+        obj = copy.deepcopy(self.product)
+        self._swap_report(obj, "build", {"status": "HOLD"})
+        self.assert_finding("WINDOWS_DATA_REPORT_NOT_READY", obj)
+
+    def test_36_build_report_wrong_repository_is_blocked(self):
+        obj = copy.deepcopy(self.product)
+        self._swap_report(obj, "build", {"repository_url": "https://github.com/shihuiarenjinba-png/another"})
+        self.assert_finding("WINDOWS_DATA_REPORT_REPOSITORY_MISMATCH", obj)
+
+    def test_37_build_report_wrong_package_is_held(self):
+        obj = copy.deepcopy(self.product)
+        self._swap_report(obj, "build", {"artifacts": [{"kind": "MSIX", "sha256": "f" * 64}]})
+        self.assert_finding("WINDOWS_DATA_REPORT_PACKAGE_UNVERIFIED", obj)
+
+    def test_38_garbled_checker_report_is_held_with_matching_hash(self):
+        obj = copy.deepcopy(self.product)
+        path = self.root / "checker-invalid.json"
+        path.write_text("{not valid json", encoding="utf-8")
+        obj["checker"]["report_path"] = str(path)
+        obj["checker"]["report_sha256"] = sha256_file(path)
+        self.assert_finding("CHECKER_REPORT_SCHEMA_UNVERIFIED", obj)
+
+    def test_39_missing_checker_manifest_is_held(self):
+        obj = copy.deepcopy(self.product)
+        self._swap_report(obj, "checker", {"metadata": {"msix_sha256": self.package_hash}})
+        self.assert_finding("CHECKER_REPORT_MANIFEST_MISSING", obj)
 
 
 if __name__ == "__main__":

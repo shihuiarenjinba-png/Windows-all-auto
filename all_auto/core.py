@@ -47,6 +47,98 @@ def _same_hex(value: Any, expected: Any, pattern: re.Pattern[str]) -> bool:
     )
 
 
+def _read_evidence(path: Path) -> dict[str, Any] | None:
+    """Bound evidence reads; a matching hash alone is not proof of a valid report."""
+    try:
+        if path.stat().st_size > 8 * 1024 * 1024:
+            return None
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, ValueError):
+        return None
+    return payload if isinstance(payload, dict) else None
+
+
+def _verify_checker_evidence(
+    evidence: dict[str, Any] | None,
+    expected_status: Any,
+    actual_sha: str | None,
+    identity: Any,
+    item_type: Any,
+    hold: list[str],
+    blocked: list[str],
+) -> None:
+    if evidence is None or evidence.get("schema_version") != 1:
+        hold.append("CHECKER_REPORT_SCHEMA_UNVERIFIED")
+        return
+    verdict = evidence.get("verdict")
+    if verdict != expected_status:
+        blocked.append("CHECKER_REPORT_VERDICT_MISMATCH")
+    if verdict != CHECKER_READY:
+        return
+    if evidence.get("product_type") != item_type:
+        blocked.append("CHECKER_REPORT_PRODUCT_TYPE_MISMATCH")
+    if type(evidence.get("pending_review_count")) is not int or evidence["pending_review_count"] != 0:
+        hold.append("CHECKER_REPORT_PENDING_REVIEW")
+    findings = evidence.get("findings")
+    if not isinstance(findings, list):
+        hold.append("CHECKER_REPORT_FINDINGS_MISSING")
+    elif any(not isinstance(f, dict) or f.get("state") not in {"PASS", "REVIEW", "BLOCK"} for f in findings):
+        hold.append("CHECKER_REPORT_FINDINGS_INVALID")
+    elif any(f.get("state") == "BLOCK" for f in findings):
+        blocked.append("CHECKER_REPORT_CONTAINS_BLOCK")
+    metadata = evidence.get("metadata")
+    if not isinstance(metadata, dict) or not actual_sha or not _same_hex(metadata.get("msix_sha256"), actual_sha, HEX64):
+        hold.append("CHECKER_REPORT_PACKAGE_UNVERIFIED")
+        return
+    manifest = metadata.get("manifest")
+    if not isinstance(manifest, dict) or not isinstance(identity, dict):
+        hold.append("CHECKER_REPORT_MANIFEST_MISSING")
+        return
+    for field in ("name", "publisher", "version", "architecture"):
+        if not isinstance(manifest.get(field), str) or not manifest.get(field):
+            hold.append("CHECKER_REPORT_MANIFEST_" + field.upper() + "_MISSING")
+        elif manifest[field] != identity.get(field):
+            blocked.append("CHECKER_REPORT_MANIFEST_" + field.upper() + "_MISMATCH")
+
+
+def _verify_build_evidence(
+    evidence: dict[str, Any] | None,
+    item: dict[str, Any],
+    actual_sha: str | None,
+    hold: list[str],
+    blocked: list[str],
+) -> None:
+    if evidence is None or evidence.get("schema_version") != 1:
+        hold.append("WINDOWS_DATA_REPORT_SCHEMA_UNVERIFIED")
+        return
+    if evidence.get("status") != CHECKER_READY:
+        hold.append("WINDOWS_DATA_REPORT_NOT_READY")
+        return
+    if not _same_hex(evidence.get("source_head"), item.get("source_sha"), HEX40):
+        blocked.append("WINDOWS_DATA_REPORT_SOURCE_MISMATCH")
+    if evidence.get("repository_url") != item.get("repository"):
+        blocked.append("WINDOWS_DATA_REPORT_REPOSITORY_MISMATCH")
+    approved = item.get("approved_identity")
+    if not isinstance(approved, dict) or evidence.get("store_id") != approved.get("store_id"):
+        blocked.append("WINDOWS_DATA_REPORT_STORE_ID_MISMATCH")
+    identity = evidence.get("identity")
+    if not isinstance(identity, dict) or not isinstance(approved, dict):
+        hold.append("WINDOWS_DATA_REPORT_IDENTITY_MISSING")
+    else:
+        for field in ("name", "publisher", "version", "architecture"):
+            if not isinstance(identity.get(field), str) or not identity[field]:
+                hold.append("WINDOWS_DATA_REPORT_IDENTITY_" + field.upper() + "_MISSING")
+            elif identity[field] != approved.get(field):
+                blocked.append("WINDOWS_DATA_REPORT_IDENTITY_" + field.upper() + "_MISMATCH")
+    artifacts = evidence.get("artifacts")
+    if not isinstance(artifacts, list):
+        hold.append("WINDOWS_DATA_REPORT_ARTIFACTS_MISSING")
+    else:
+        packages = [a for a in artifacts if isinstance(a, dict) and a.get("kind") == "MSIX"]
+        if len(packages) != 1 or not actual_sha or not _same_hex(packages[0].get("sha256"), actual_sha, HEX64):
+            hold.append("WINDOWS_DATA_REPORT_PACKAGE_UNVERIFIED")
+
+
 def _atomic_json(path: Path, data: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     fd, name = tempfile.mkstemp(prefix=path.name + ".", suffix=".tmp", dir=path.parent)
@@ -143,6 +235,11 @@ def check_product(item: Any, base: Path) -> dict[str, Any]:
             try:
                 if sha256_file(rp) != str(checker["report_sha256"]).lower():
                     blocked.append("CHECKER_REPORT_HASH_MISMATCH")
+                else:
+                    _verify_checker_evidence(
+                        _read_evidence(rp), checker_status, actual_sha, identity,
+                        item.get("type"), hold, blocked,
+                    )
             except OSError:
                 hold.append("CHECKER_REPORT_NOT_FOUND")
 
@@ -163,6 +260,8 @@ def check_product(item: Any, base: Path) -> dict[str, Any]:
             try:
                 if sha256_file(rp) != str(build["report_sha256"]).lower():
                     blocked.append("WINDOWS_DATA_REPORT_HASH_MISMATCH")
+                else:
+                    _verify_build_evidence(_read_evidence(rp), item, actual_sha, hold, blocked)
             except OSError:
                 hold.append("WINDOWS_DATA_REPORT_NOT_FOUND")
 
@@ -217,9 +316,21 @@ def preflight(document: Any, base: Path) -> dict[str, Any]:
     ids = [x["id"] for x in results]
     duplicated = {i for i, n in Counter(ids).items() if n > 1}
     # A duplicate product or Store ID is a dangerous collision even when other evidence is valid.
-    store_ids = [x.get("approved_identity", {}).get("store_id") if isinstance(x, dict) and isinstance(x.get("approved_identity"), dict) else None for x in entries]
-    repeated_store_ids = {x for x, n in Counter(y for y in store_ids if y).items() if n > 1}
-    for row, store_id in zip(results, store_ids):
+    store_ids = [
+        x["approved_identity"].get("store_id")
+        if isinstance(x, dict) and isinstance(x.get("approved_identity"), dict)
+        else None for x in entries
+    ]
+    normalized_store_ids = [
+        value.strip().casefold() if isinstance(value, str) and value.strip() else None
+        for value in store_ids
+    ]
+    repeated_store_ids = {
+        value for value, count in Counter(
+            value for value in normalized_store_ids if value
+        ).items() if count > 1
+    }
+    for row, store_id in zip(results, normalized_store_ids):
         if row["id"] in duplicated or store_id in repeated_store_ids:
             row["status"] = "BLOCKED"
             row["findings"] = sorted(set(row["findings"] + ["DUPLICATE_PRODUCT_OR_STORE_ID"]))
