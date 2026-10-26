@@ -57,6 +57,16 @@ class HandoffBridgeTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"hash mismatch"):
             validate_bundle(self.source,SHA)
 
+    def test_3d_factory_requires_game_type(self):
+        self.info["source_repository"]="https://github.com/shihuiarenjinba-png/3d-game-factory"
+        self.info["type"]="game"
+        self.write_info()
+        self.assertEqual(validate_bundle(self.source,SHA)["type"],"game")
+        self.info["type"]="app"
+        self.write_info()
+        with self.assertRaisesRegex(ValueError,"factory / product type"):
+            validate_bundle(self.source,SHA)
+
     def test_wrong_product_type_rejected(self):
         self.info["type"]="game"
         self.write_info()
