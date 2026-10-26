@@ -5,7 +5,9 @@
 - 作業ブランチ: codex/windows-all-auto-integration-20261026。main / release直接変更・マージ禁止。
 - 総合開発仕様: https://github.com/shihuiarenjinba-png/Windows-all-auto/issues/1
 - 初回調査: 新リポジトリは空/default main。今回work branchから開始。
-- 本体: all_auto/core.py（オフライン多製品検査）、all_auto/__main__.py（CLI）、all_auto/gui.py（日英・検証画面）、tests/test_core.py（26件の自動テスト）、.github/workflows/offline-qa.yml（Windows/Linux CI）。
+- 本体: all_auto/core.py（オフライン多製品検査）、all_auto/__main__.py（CLI）、all_auto/gui.py（日英・検証画面）、all_auto/contracts.py（3上流の読取JSON契約）、all_auto/queue.py（SQLite/WAL・衝突検査）、tests/（58件の自動テスト）、.github/workflows/offline-qa.yml（Windows/Linux CI）。
+- 2026-10-26追補: Store ID衝突時の再検査によるHOLD/BLOCKED→READY抜け道を修正。大文字小文字違いのStore IDも衝突として扱う。Windows/Ubuntuで58件PASS: https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/40273761799 。
+- 上流確認時HEAD: Windows-data `664b9afcbed63539b89f594892d831d97b9d4118` / Windows-checker `7780647efd80dea6b2ebc629172cfb2c743a9dcb` / Windows-Automator `24eb7e8c4da9d048f4036ac5a941a79699eac704`。実行時pinと実subprocess接続は未実装。
 - **制限**: ここまでは事前検証コードのみ。実Microsoft Store操作、MSIXの実ビルド、Partner Centerの下書き保存、実機インストールは成功未確認。結果が「READY_FOR_WINDOWS_QA」であってもStore合格ではない。
 
 ## 役割分担 — 既存3Repoの実装を使う
