@@ -55,7 +55,7 @@ class LocalPullTests(unittest.TestCase):
     def test_local_download_verifies_package(self):
         with patch("scripts.local_handoff_pull.gh",side_effect=self.fake_gh):
             result=pull(self.root/"inbox")
-            self.assertEqual(result["downloaded_or_verified"],1)
+            self.assertEqual(result["new_packages"],1)
             self.assertEqual(result["submitted_to_store"],0)
             self.assertEqual(len(list((self.root/"inbox").iterdir())),1)
 
