@@ -163,7 +163,7 @@ class CoordinatorPreflightTests(unittest.TestCase):
     def test_17_price_not_guessed(self):
         obj = copy.deepcopy(self.product)
         obj["price"] = {"amount_minor": 0, "currency": "JPY"}
-        self.assert_finding("PAID_PRICE_UNCONFIRMED", obj)
+        self.assert_finding("FREE_PRICE_NOT_APPROVED", obj)
 
     def test_18_explicit_draft_approval(self):
         obj = copy.deepcopy(self.product)
