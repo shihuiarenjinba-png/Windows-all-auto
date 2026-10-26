@@ -12,7 +12,7 @@ import subprocess
 import sys
 import tempfile
 
-from all_auto.handoff_bridge import stage_bundle
+from all_auto.handoff_bridge import stage_bundle, validate_bundle
 
 REMOTE="shihuiarenjinba-png/Windows-all-auto"
 PREFIX="verified-msix-local-qa-"
@@ -83,6 +83,20 @@ def pull(target:Path)->dict:
                 folder=slug+"-"+checksum[:12]
                 source=package_root/folder
                 if not source.is_dir():raise ValueError("Missing source package directory")
+                if not isinstance(item.get("source_sha"),str):
+                    raise ValueError("Missing queue source SHA")
+                # The queue is transport metadata, not an authority for package size,
+                # identity, or provenance. Verify the actual MSIX before quota checks.
+                verified=validate_bundle(source,item["source_sha"])
+                for field in ("slug","type","source_repository","source_sha",
+                              "package_sha256","package_bytes","identity"):
+                    if item.get(field)!=verified[field]:
+                        raise ValueError("Queue metadata mismatch: "+field)
+                if item.get("store_id") is not None:
+                    raise ValueError("Local QA queue must not assign a Store ID")
+                if item.get("security_confirmed") is True or item.get("price_approved") is True:
+                    raise ValueError("Local QA queue must not assert Store approvals")
+                size=verified["package_bytes"]
                 prior=(target/folder).is_dir()
                 if not prior:
                     if len([p for p in target.iterdir() if p.is_dir()])>=MAX_QUEUED:
