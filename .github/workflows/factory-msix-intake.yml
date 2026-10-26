@@ -48,8 +48,19 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.FACTORY_READ_TOKEN }}
         run: python -m all_auto.bridge_poll --ledger ops/factory_handoff_ledger.json --out staging
-      - name: Republish once as a short-lived local Windows QA artifact
+      - name: Skip empty intake to avoid duplicated storage
+        id: tally
         if: steps.gate.outputs.ready == 'true'
+        shell: bash
+        run: |
+          if [ "$(python -c 'import json; print(json.load(open("staging/queue.json"))["intake_count"])')" -gt 0 ]; then
+            echo "new=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "new=false" >> "$GITHUB_OUTPUT"
+            echo "No new validated MSIX; no artifact uploaded"
+          fi
+      - name: Republish once as a short-lived local Windows QA artifact
+        if: steps.tally.outputs.new == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: verified-msix-local-qa-${{ github.run_id }}
