@@ -77,4 +77,30 @@ class LocalPullTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,"Invalid queue count"):
                 pull(self.root/"inbox")
 
+    def test_queue_cannot_underreport_package_size(self):
+        # A forged small size must not bypass the 2 GiB quota.
+        self.q["items"][0]["package_bytes"]=1
+        with patch("scripts.local_handoff_pull.gh",side_effect=self.fake_gh):
+            with self.assertRaisesRegex(ValueError,"Queue metadata mismatch: package_bytes"):
+                pull(self.root/"inbox")
+        self.assertEqual(list((self.root/"inbox").iterdir()),[])
+
+    def test_queue_cannot_replace_verified_identity(self):
+        self.q["items"][0]["identity"]["publisher"]="CN=UNVERIFIED"
+        with patch("scripts.local_handoff_pull.gh",side_effect=self.fake_gh):
+            with self.assertRaisesRegex(ValueError,"Queue metadata mismatch: identity"):
+                pull(self.root/"inbox")
+        self.assertEqual(list((self.root/"inbox").iterdir()),[])
+
+    def test_queue_cannot_claim_store_id_or_approval(self):
+        self.q["items"][0]["store_id"]="UNVERIFIED-STORE-ID"
+        with patch("scripts.local_handoff_pull.gh",side_effect=self.fake_gh):
+            with self.assertRaisesRegex(ValueError,"must not assign a Store ID"):
+                pull(self.root/"inbox")
+        self.q["items"][0]["store_id"]=None
+        self.q["items"][0]["security_confirmed"]=True
+        with patch("scripts.local_handoff_pull.gh",side_effect=self.fake_gh):
+            with self.assertRaisesRegex(ValueError,"must not assert Store approvals"):
+                pull(self.root/"inbox")
+
 if __name__=="__main__":unittest.main()
