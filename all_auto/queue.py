@@ -1,6 +1,7 @@
 """Durable offline queue ledger; does not execute Partner Center writes.
 
 UNKNOWN cannot be resumed automatically. The owner must reconcile in Partner Center.
+Pre-operator preflight states may be refreshed because no remote side effect has occurred yet.
 """
 from __future__ import annotations
 
@@ -10,6 +11,10 @@ import json
 from pathlib import Path
 import sqlite3
 from typing import Any
+
+
+PRE_OPERATOR_STATES = {"READY_FOR_WINDOWS_QA", "HOLD", "BLOCKED"}
+REMOTE_GUARD_STATES = {"PENDING_OPERATOR", "UNKNOWN"}
 
 
 def _now() -> str:
@@ -65,28 +70,61 @@ class QueueLedger:
         identity = product.get("approved_identity") or {}
         store_id = str(identity.get("store_id") or "")
         status = str(preflight_row["status"])
-        if status not in {"READY_FOR_WINDOWS_QA", "HOLD", "BLOCKED"}:
+        if status not in PRE_OPERATOR_STATES:
             raise ValueError("Illegal preflight status")
+        reason = ",".join(preflight_row.get("findings") or [])
+
         self.db.execute("BEGIN IMMEDIATE")
         try:
-            old = self.db.execute("SELECT status,reason FROM jobs WHERE job_key=?", (key,)).fetchone()
+            old = self.db.execute(
+                "SELECT status,reason FROM jobs WHERE job_key=?", (key,)
+            ).fetchone()
             if old:
+                old_status, old_reason = str(old[0]), str(old[1])
+                # Before any operator/remote stage, the latest preflight is authoritative.
+                # This prevents a stale READY from surviving a newly discovered HOLD/BLOCK
+                # and also allows a repaired HOLD/BLOCK to become READY without a new job.
+                if old_status in PRE_OPERATOR_STATES:
+                    if old_status != status or old_reason != reason:
+                        now = _now()
+                        self.db.execute(
+                            "UPDATE jobs SET status=?,reason=?,updated_utc=? WHERE job_key=?",
+                            (status, reason, now, key),
+                        )
+                        event_reason = "preflight refreshed" + (f": {reason}" if reason else "")
+                        self.db.execute(
+                            "INSERT INTO events(job_key,old_status,new_status,reason,timestamp_utc) "
+                            "VALUES(?,?,?,?,?)",
+                            (key, old_status, status, event_reason, now),
+                        )
+                    self.db.execute("COMMIT")
+                    return {"job_key": key, "status": status, "reason": reason}
+                # Once operator/remote handling starts, re-enqueue is read-only.
                 self.db.execute("COMMIT")
-                return {"job_key": key, "status": old[0], "reason": old[1]}
-            # Prevent concurrent or ambiguous submissions for the same Store product.
-            # A different fingerprint requires operator reconciliation before proceeding.
+                return {"job_key": key, "status": old_status, "reason": old_reason}
+
             if store_id:
-                conflict = self.db.execute(
-                    "SELECT job_key FROM jobs WHERE store_id=? AND status IN ('READY_FOR_WINDOWS_QA','PENDING_OPERATOR','UNKNOWN') LIMIT 1",
-                    (store_id,),
+                # A Store Product ID mapped to a different local product is always a
+                # dangerous identity collision, regardless of the other job's state.
+                identity_collision = self.db.execute(
+                    "SELECT job_key FROM jobs WHERE store_id=? AND product_id<>? LIMIT 1",
+                    (store_id, product_id),
                 ).fetchone()
-                if conflict:
-                    status = "HOLD"
-                    reason = "PRIOR_STORE_OUTCOME_UNCONFIRMED"
+                if identity_collision:
+                    status = "BLOCKED"
+                    reason = "STORE_ID_PRODUCT_COLLISION"
                 else:
-                    reason = ",".join(preflight_row.get("findings") or [])
-            else:
-                reason = ",".join(preflight_row.get("findings") or [])
+                    # A different fingerprint for the same product may only coexist when
+                    # all prior candidates are still HOLD/BLOCKED (no remote side effect).
+                    conflict = self.db.execute(
+                        "SELECT job_key FROM jobs WHERE store_id=? AND product_id=? "
+                        "AND status IN ('READY_FOR_WINDOWS_QA','PENDING_OPERATOR','UNKNOWN') LIMIT 1",
+                        (store_id, product_id),
+                    ).fetchone()
+                    if conflict:
+                        status = "HOLD"
+                        reason = "PRIOR_STORE_OUTCOME_UNCONFIRMED"
+
             now = _now()
             self.db.execute(
                 "INSERT INTO jobs VALUES(?,?,?,?,?,?,?,?)",

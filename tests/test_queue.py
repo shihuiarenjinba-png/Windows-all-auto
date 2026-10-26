@@ -62,18 +62,6 @@ class DurableQueueTests(unittest.TestCase):
             self.assertEqual(newer["status"], "HOLD")
             self.assertEqual(newer["reason"], "PRIOR_STORE_OUTCOME_UNCONFIRMED")
 
-    def test_11_ready_same_store_different_package_is_held(self):
-        newer = copy.deepcopy(self.r)
-        newer["package_sha256"] = "c" * 64
-        with QueueLedger(self.db) as ledger:
-            first = ledger.add_product(self.p, self.r)
-            second = ledger.add_product(self.p, newer)
-            self.assertEqual(first["status"], "READY_FOR_WINDOWS_QA")
-            self.assertEqual(second["status"], "HOLD")
-            self.assertEqual(second["reason"], "PRIOR_STORE_OUTCOME_UNCONFIRMED")
-            with self.assertRaises(ValueError):
-                ledger.require_operator(second["job_key"])
-
     def test_07_sqlite_reopens_with_unknown_state(self):
         with QueueLedger(self.db) as ledger:
             job = ledger.add_product(self.p, self.r)
@@ -103,6 +91,57 @@ class DurableQueueTests(unittest.TestCase):
             ledger.record_ambiguous_result(j["job_key"])
             count = ledger.db.execute("SELECT COUNT(*) FROM events WHERE job_key=?", (j["job_key"],)).fetchone()[0]
             self.assertEqual(count, 3)
+
+    def test_11_ready_same_store_different_package_is_held(self):
+        newer = copy.deepcopy(self.r)
+        newer["package_sha256"] = "c" * 64
+        with QueueLedger(self.db) as ledger:
+            first = ledger.add_product(self.p, self.r)
+            second = ledger.add_product(self.p, newer)
+            self.assertEqual(first["status"], "READY_FOR_WINDOWS_QA")
+            self.assertEqual(second["status"], "HOLD")
+            self.assertEqual(second["reason"], "PRIOR_STORE_OUTCOME_UNCONFIRMED")
+            with self.assertRaises(ValueError):
+                ledger.require_operator(second["job_key"])
+
+    def test_12_same_fingerprint_hold_can_refresh_to_ready_before_operator(self):
+        hold = {"status": "HOLD", "package_sha256": "b" * 64, "findings": ["SECURITY_REQUIRED"]}
+        with QueueLedger(self.db) as ledger:
+            first = ledger.add_product(self.p, hold)
+            refreshed = ledger.add_product(self.p, self.r)
+            self.assertEqual(first["job_key"], refreshed["job_key"])
+            self.assertEqual(refreshed["status"], "READY_FOR_WINDOWS_QA")
+            self.assertEqual(len(ledger.rows()), 1)
+            ledger.require_operator(refreshed["job_key"])
+
+    def test_13_same_fingerprint_ready_can_be_revoked_before_operator(self):
+        hold = {"status": "HOLD", "package_sha256": "b" * 64, "findings": ["SECURITY_REQUIRED"]}
+        with QueueLedger(self.db) as ledger:
+            job = ledger.add_product(self.p, self.r)
+            refreshed = ledger.add_product(self.p, hold)
+            self.assertEqual(refreshed["status"], "HOLD")
+            with self.assertRaises(ValueError):
+                ledger.require_operator(job["job_key"])
+
+    def test_14_operator_stage_cannot_be_overwritten_by_new_preflight(self):
+        hold = {"status": "HOLD", "package_sha256": "b" * 64, "findings": ["SECURITY_REQUIRED"]}
+        with QueueLedger(self.db) as ledger:
+            job = ledger.add_product(self.p, self.r)
+            ledger.require_operator(job["job_key"])
+            same = ledger.add_product(self.p, hold)
+            self.assertEqual(same["status"], "PENDING_OPERATOR")
+
+    def test_15_same_store_different_product_is_blocked(self):
+        other_product = copy.deepcopy(self.p)
+        other_product["id"] = "other"
+        old_hold = {"status": "HOLD", "package_sha256": "b" * 64, "findings": ["SECURITY_REQUIRED"]}
+        newer = copy.deepcopy(self.r)
+        newer["package_sha256"] = "c" * 64
+        with QueueLedger(self.db) as ledger:
+            ledger.add_product(self.p, old_hold)
+            collision = ledger.add_product(other_product, newer)
+            self.assertEqual(collision["status"], "BLOCKED")
+            self.assertEqual(collision["reason"], "STORE_ID_PRODUCT_COLLISION")
 
 
 if __name__ == "__main__":
