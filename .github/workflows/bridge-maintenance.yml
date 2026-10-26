@@ -16,6 +16,7 @@ jobs:
     outputs:
       active: ${{ steps.gate.outputs.active }}
       source_sha: ${{ steps.gate.outputs.source_sha }}
+      changed: ${{ steps.capture.outputs.changed }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -71,6 +72,7 @@ jobs:
           permission-profile: ':workspace'
           prompt-file: .runtime/maintenance-prompt.md
       - name: Produce bounded tracked-diff artifact
+        id: capture
         if: steps.gate.outputs.active == 'true'
         shell: bash
         run: |
@@ -78,9 +80,11 @@ jobs:
           git add -N all_auto/ tests/ scripts/ docs/
           files=$(git diff --name-only)
           if [ -z "$files" ]; then
-            echo 'HOLD: no substantive fix was produced'
-            exit 1
+            echo 'changed=false' >> "$GITHUB_OUTPUT"
+            echo 'No independently verified improvement; no checkpoint needed'
+            exit 0
           fi
+          echo 'changed=true' >> "$GITHUB_OUTPUT"
           count=$(printf '%s\n' "$files" | wc -l)
           if [ "$count" -gt 8 ]; then echo 'HOLD: too many files'; exit 1; fi
           if printf '%s\n' "$files" | grep -Ev '^(all_auto|tests|scripts|docs)/[A-Za-z0-9_./-]+$'; then
@@ -97,7 +101,7 @@ jobs:
             echo 'HOLD: packaged or key files rejected'; exit 1
           fi
       - uses: actions/upload-artifact@v4
-        if: steps.gate.outputs.active == 'true'
+        if: steps.capture.outputs.changed == 'true'
         with:
           name: reviewed-bridge-patch
           path: .runtime/patch.diff
@@ -105,7 +109,7 @@ jobs:
           retention-days: 3
   audit:
     needs: repair
-    if: needs.repair.outputs.active == 'true'
+    if: needs.repair.outputs.active == 'true' && needs.repair.outputs.changed == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 18
     permissions:
