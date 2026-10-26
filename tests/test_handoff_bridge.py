@@ -48,6 +48,27 @@ class HandoffBridgeTests(unittest.TestCase):
         stage_bundle(self.source,dest,SHA)
         self.assertEqual(len(list(dest.iterdir())),1)
 
+    def test_identical_msix_from_another_factory_is_not_reused(self):
+        dest=self.root/"queue"
+        stage_bundle(self.source,dest,SHA)
+        original=(next(dest.iterdir())/"handoff.json").read_text(encoding="utf-8")
+        # Both Factory lanes can independently produce identical MSIX bytes.
+        self.info["source_repository"]="https://github.com/shihuiarenjinba-png/AI-Game-Factory"
+        self.info["type"]="game"
+        self.write_info()
+        with self.assertRaisesRegex(ValueError,"provenance"):
+            stage_bundle(self.source,dest,SHA)
+        self.assertEqual((next(dest.iterdir())/"handoff.json").read_text(encoding="utf-8"),original)
+
+    def test_identical_msix_from_another_commit_is_not_reused(self):
+        dest=self.root/"queue"
+        stage_bundle(self.source,dest)
+        self.info["source_sha"]="b"*40
+        self.write_info()
+        with self.assertRaisesRegex(ValueError,"provenance"):
+            stage_bundle(self.source,dest)
+        self.assertEqual(len(list(dest.iterdir())),1)
+
     def test_changed_source_sha_rejected(self):
         with self.assertRaisesRegex(ValueError,"provenance"):
             validate_bundle(self.source,"b"*40)
