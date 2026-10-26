@@ -1,0 +1,26 @@
+name: Windows-all-auto Offline QA
+on:
+  push:
+    branches: [ 'codex/**' ]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  offline-tests:
+    name: Offline preflight tests
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile
+        run: python -m compileall -q all_auto tests
+      - name: Test (no Partner Center, no credentials)
+        run: python -m unittest discover -s tests -v
