@@ -105,8 +105,15 @@ def stage_bundle(source:Path,target:Path,expected_run_sha:str|None=None)->dict:
     dest=target/(info["slug"]+"-"+info["package_sha256"][:12])
     if dest.exists():
         other=validate_bundle(dest,expected_run_sha)
-        if other["package_sha256"]!=info["package_sha256"]:
-            fail("existing target package changed")
+        # A matching package hash does not establish matching provenance. Two
+        # Factory lanes (or source commits) may produce identical MSIX bytes.
+        # Never reuse the earlier receipt for a different source product.
+        provenance_fields=(
+            "source_repository", "source_sha", "slug", "type",
+            "package_sha256", "package_bytes", "identity",
+        )
+        if any(other[key]!=info[key] for key in provenance_fields):
+            fail("existing target package or provenance changed")
         return info
     if target.is_symlink():fail("unsafe destination")
     target.mkdir(parents=True,exist_ok=True)
