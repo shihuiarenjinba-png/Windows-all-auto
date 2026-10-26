@@ -52,6 +52,7 @@ def inspect_msix(package:Path)->dict:
             "bytes":package.stat().st_size}
 
 def validate_bundle(directory:Path,expected_run_sha:str|None=None)->dict:
+    if directory.is_symlink():fail("bundle directory is a symlink")
     directory=directory.resolve()
     if not directory.is_dir() or any(p.is_symlink() for p in directory.iterdir()):
         fail("bundle directory unavailable or linked files")
