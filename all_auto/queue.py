@@ -73,11 +73,11 @@ class QueueLedger:
             if old:
                 self.db.execute("COMMIT")
                 return {"job_key": key, "status": old[0], "reason": old[1]}
-            # A prior unknown operator attempt may have committed remotely.
-            # Never allow a changed artifact for the same Store ID to proceed automatically.
+            # Prevent concurrent or ambiguous submissions for the same Store product.
+            # A different fingerprint requires operator reconciliation before proceeding.
             if store_id:
                 conflict = self.db.execute(
-                    "SELECT job_key FROM jobs WHERE store_id=? AND status IN ('PENDING_OPERATOR','UNKNOWN') LIMIT 1",
+                    "SELECT job_key FROM jobs WHERE store_id=? AND status IN ('READY_FOR_WINDOWS_QA','PENDING_OPERATOR','UNKNOWN') LIMIT 1",
                     (store_id,),
                 ).fetchone()
                 if conflict:
