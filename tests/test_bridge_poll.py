@@ -32,6 +32,14 @@ class PollTests(unittest.TestCase):
     def test_non_codex_branch_cannot_transfer(self):
         with self.assertRaises(ValueError):verified_run(dict(RUN,head_branch="main"),REPO,ARTIFACT)
 
+
+    def test_manual_dispatch_workflow_is_allowed_when_verified(self):
+        self.assertEqual(verified_run(dict(RUN,event="workflow_dispatch"),REPO,ARTIFACT),SHA)
+
+    def test_manual_dispatch_other_workflow_is_rejected(self):
+        with self.assertRaises(ValueError):
+            verified_run(dict(RUN,event="workflow_dispatch",name="Unknown export"),REPO,ARTIFACT)
+
     def test_real_bundle_moves_once_without_store_permission(self):
         with tempfile.TemporaryDirectory() as temp:
             root=Path(temp)
