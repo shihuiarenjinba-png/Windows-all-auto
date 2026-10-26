@@ -3,7 +3,7 @@
 ## Two-stage build and official ID
 1. Factory writes and tests app/game source. A new product without official Store Identity remains HOLD for Store MSIX packaging.
 2. Authenticate to Microsoft Partner Center from trusted local browser/worker, reserve the product name and read Store ID, Identity Name and Publisher from its Product identity page.
-3. Windows-all-auto accepts a JSON record containing schema_version=1, type=app/game, slug, expected_head_sha, official_evidence_url on partner.microsoft.com, operator_verified=true, verified_by, and identity fields store_id, name, publisher, version.
+3. Windows-all-auto accepts a JSON record containing schema_version=1, type=app/game/3d-game, slug, expected_head_sha, official_evidence_url on partner.microsoft.com, operator_verified=true, verified_by, and identity fields store_id, name, publisher, version.
 4. all_auto.identity_route derives the correct target Factory repository and work branch from type and validates the input. No Ollama and no model guess is needed.
 5. all_auto.identity_commit checks that the exact Factory branch SHA and product manifest match. Its --apply option uses authenticated gh CLI and GitHub GraphQL createCommitOnBranch with expectedHeadOid. Conflicts stop, existing approved identity is never overwritten.
 6. Saving products/<slug>/store/approved-identity.json on the Factory work branch triggers Windows Actions msix-export.yml, provided real executable source and approved PNG assets are present.
@@ -21,3 +21,8 @@ Only after verifying actual Microsoft account evidence: python -m all_auto.ident
 - No published identity can be guessed from an arbitrary MSIX, and Package Family Name or SID are not replacements for a newly issued Store ID.
 - Store price, privacy/security declarations, signing, MSIXUPLOAD, device tests, WACK, certification and publication remain independently gated.
 - Contract and mock tests do not prove a real Partner Center identity retrieval or a complete Factory-to-local MSIX E2E run.
+
+## 3D-specific status
+- Verified Identity can now be **routed and conditionally committed** to shihuiarenjinba-png/3d-game-factory, branch codex/3d-factory-bootstrap-20261026. Set type=3d-game in the internal identity_route/identity_commit contract; the local Provisioner public product_type is GAME_3D and requires an explicit strict adapter.
+- This only returns official Identity JSON. The 3D Godot Windows export, a Store-appropriate MSIX manifest, real GPU/Windows UI testing and Factory-to-Windows-all-auto MSIX Artifact transfer are **not yet implemented or verified**. Those stages stay HOLD, even if the Identity JSON write passes.
+- Never fabricate a new Store ID from PFN/SID/Package Identity or copy another product's Store registration.
