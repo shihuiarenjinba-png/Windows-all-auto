@@ -291,9 +291,19 @@ def check_product(item: Any, base: Path) -> dict[str, Any]:
             hold.append("SECURITY_NINE_FIELDS_INCOMPLETE")
 
     price = item.get("price")
-    if not isinstance(price, dict) or type(price.get("amount_minor")) is not int or price["amount_minor"] <= 0:
-        hold.append("PAID_PRICE_UNCONFIRMED")
+    if not isinstance(price, dict) or type(price.get("amount_minor")) is not int or price["amount_minor"] < 0:
+        hold.append("PRICE_UNCONFIRMED")
+    elif price.get("amount_minor") == 0:
+        # Free products must be explicitly approved too; never default to free
+        # or infer the decision from absent pricing information.
+        if (price.get("free_approved") is not True
+                or not isinstance(price.get("approved_by"), str)
+                or not price["approved_by"].strip()
+                or item.get("owner_approved_for_draft") is not True):
+            hold.append("FREE_PRICE_NOT_APPROVED")
     elif price.get("currency") not in ("JPY", "USD"):
+        hold.append("CURRENCY_UNCONFIRMED")
+    if isinstance(price, dict) and price.get("currency") not in ("JPY", "USD"):
         hold.append("CURRENCY_UNCONFIRMED")
     if item.get("assets_reviewed") is not True:
         hold.append("STORE_LISTING_ASSETS_NOT_REVIEWED")
