@@ -301,8 +301,6 @@ def check_product(item: Any, base: Path) -> dict[str, Any]:
                 or not price["approved_by"].strip()
                 or item.get("owner_approved_for_draft") is not True):
             hold.append("FREE_PRICE_NOT_APPROVED")
-    elif price.get("currency") not in ("JPY", "USD"):
-        hold.append("CURRENCY_UNCONFIRMED")
     if isinstance(price, dict) and price.get("currency") not in ("JPY", "USD"):
         hold.append("CURRENCY_UNCONFIRMED")
     if item.get("assets_reviewed") is not True:
