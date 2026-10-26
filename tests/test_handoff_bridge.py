@@ -48,6 +48,27 @@ class HandoffBridgeTests(unittest.TestCase):
         stage_bundle(self.source,dest,SHA)
         self.assertEqual(len(list(dest.iterdir())),1)
 
+    @unittest.skipIf(__import__("os").name == "nt", "Windows symlink creation requires privilege")
+    def test_symlinked_existing_queue_rejected_even_on_idempotent_replay(self):
+        # Previously the fast path returned before checking target.is_symlink().
+        actual=self.root/"actual-queue"
+        stage_bundle(self.source,actual,SHA)
+        link=self.root/"queue-link"
+        link.symlink_to(actual,target_is_directory=True)
+        with self.assertRaisesRegex(ValueError,"unsafe destination"):
+            stage_bundle(self.source,link,SHA)
+        self.assertEqual(len(list(actual.iterdir())),1)
+
+    @unittest.skipIf(__import__("os").name == "nt", "Windows symlink creation requires privilege")
+    def test_symlinked_empty_queue_rejected_before_copy(self):
+        actual=self.root/"actual-queue"
+        actual.mkdir()
+        link=self.root/"queue-link"
+        link.symlink_to(actual,target_is_directory=True)
+        with self.assertRaisesRegex(ValueError,"unsafe destination"):
+            stage_bundle(self.source,link,SHA)
+        self.assertEqual(list(actual.iterdir()),[])
+
     def test_identical_msix_from_another_factory_is_not_reused(self):
         dest=self.root/"queue"
         stage_bundle(self.source,dest,SHA)
