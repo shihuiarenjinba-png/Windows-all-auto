@@ -1,5 +1,12 @@
 name: Store portfolio 15-minute watch
 on:
+  push:
+    branches: ['codex/windows-all-auto-integration-20261026']
+    paths:
+      - '.github/workflows/quarter-hour-watch.yml'
+      - 'all_auto/scheduler.py'
+      - 'tests/test_scheduler.py'
+      - 'ops/portfolio.json'
   schedule:
     - cron: '7,22,37,52 * * * *'
   workflow_dispatch:
