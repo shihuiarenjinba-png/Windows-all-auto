@@ -19,6 +19,8 @@ class HandoffBridgeTests(unittest.TestCase):
         self.source.mkdir()
         with zipfile.ZipFile(self.source/"package.msix","w") as z:
             z.writestr("AppxManifest.xml",XML)
+            z.writestr("AppxBlockMap.xml",b"<BlockMap/>")
+            z.writestr("[Content_Types].xml",b"<Types/>")
             z.writestr("app.exe",b"test executable payload")
         blob=(self.source/"package.msix").read_bytes()
         self.info={
@@ -148,6 +150,31 @@ class HandoffBridgeTests(unittest.TestCase):
     def test_extra_file_rejected(self):
         (self.source/"secret.txt").write_text("not allowed")
         with self.assertRaisesRegex(ValueError,"only handoff"):
+            validate_bundle(self.source,SHA)
+
+    def test_manifest_only_zip_with_matching_hash_is_rejected(self):
+        # A valid hash proves byte consistency, not that a ZIP is an MSIX.
+        with zipfile.ZipFile(self.source/"package.msix","w") as z:
+            z.writestr("AppxManifest.xml",XML)
+            z.writestr("app.exe",b"payload")
+        blob=(self.source/"package.msix").read_bytes()
+        self.info["package_sha256"]=hashlib.sha256(blob).hexdigest()
+        self.info["package_bytes"]=len(blob)
+        self.write_info()
+        with self.assertRaisesRegex(ValueError,"required MSIX metadata"):
+            validate_bundle(self.source,SHA)
+
+    def test_wrong_blockmap_root_is_rejected(self):
+        with zipfile.ZipFile(self.source/"package.msix","w") as z:
+            z.writestr("AppxManifest.xml",XML)
+            z.writestr("AppxBlockMap.xml",b"<NotABlockMap/>")
+            z.writestr("[Content_Types].xml",b"<Types/>")
+            z.writestr("app.exe",b"payload")
+        blob=(self.source/"package.msix").read_bytes()
+        self.info["package_sha256"]=hashlib.sha256(blob).hexdigest()
+        self.info["package_bytes"]=len(blob)
+        self.write_info()
+        with self.assertRaisesRegex(ValueError,"invalid MSIX metadata root"):
             validate_bundle(self.source,SHA)
 
     def test_bad_zip_rejected(self):
