@@ -101,6 +101,9 @@ def validate_bundle(directory:Path,expected_run_sha:str|None=None)->dict:
 
 def stage_bundle(source:Path,target:Path,expected_run_sha:str|None=None)->dict:
     info=validate_bundle(source,expected_run_sha)
+    # A symlinked queue must never be accepted, including the idempotent
+    # fast path when a matching package already exists behind the link.
+    if target.is_symlink():fail("unsafe destination")
     # Keep packages out of git and move only the one already independently checked.
     dest=target/(info["slug"]+"-"+info["package_sha256"][:12])
     if dest.exists():
@@ -115,7 +118,6 @@ def stage_bundle(source:Path,target:Path,expected_run_sha:str|None=None)->dict:
         if any(other[key]!=info[key] for key in provenance_fields):
             fail("existing target package or provenance changed")
         return info
-    if target.is_symlink():fail("unsafe destination")
     target.mkdir(parents=True,exist_ok=True)
     dest.mkdir()
     try:
