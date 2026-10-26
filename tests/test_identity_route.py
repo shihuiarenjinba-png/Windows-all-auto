@@ -30,6 +30,7 @@ class IdentityRouteTests(unittest.TestCase):
         self.assertEqual(result["path"],"products/useful-tool/store/approved-identity.json")
         self.assertFalse(result["applied"])
         self.assertFalse(result["store_submitted"])
+        self.assertEqual(result["content"]["verified_source_sha"], self.record["expected_head_sha"])
     def test_game_routes_game_factory_not_app(self):
         self.record["type"]="game"
         result=route_identity(self.record)
