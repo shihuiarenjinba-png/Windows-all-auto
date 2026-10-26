@@ -1,0 +1,31 @@
+{
+  "schema_version": "1",
+  "products": [
+    {
+      "id": "sample_app",
+      "type": "app",
+      "submission_kind": "new",
+      "repository": "https://github.com/shihuiarenjinba-png/EXAMPLE-NOT-REAL",
+      "source_ref": "codex/example",
+      "source_sha": "",
+      "package_path": "REPLACE_WITH_REAL_PACKAGE.msix",
+      "package_sha256": "",
+      "identity": {},
+      "approved_identity": {},
+      "checker": {
+        "status": "NEEDS_REVIEW"
+      },
+      "build": {},
+      "security": {
+        "confirmed": false,
+        "fields": {}
+      },
+      "price": {
+        "amount_minor": 0,
+        "currency": "JPY"
+      },
+      "assets_reviewed": false,
+      "owner_approved_for_draft": false
+    }
+  ]
+}
