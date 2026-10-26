@@ -53,7 +53,7 @@ class IdentityRouteTests(unittest.TestCase):
         self.record["type"]="3d-game"
         result=route_identity(self.record)
         self.assertEqual(result["repository"],"shihuiarenjinba-png/3d-game-factory")
-        self.assertEqual(result["branch"],"codex/3d-factory-bootstrap-20261026")
+        self.assertEqual(result["branch"],"codex/3d-provisioner-job-contract-20261027")
         self.assertEqual(result["path"],"products/useful-tool/store/approved-identity.json")
         self.assertFalse(result["applied"])
     def test_wrong_kind_holds(self):
