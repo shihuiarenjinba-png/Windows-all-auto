@@ -46,16 +46,27 @@ def stage_and_commit(record:dict,apply:bool=False,api=gh_json)->dict:
     if not isinstance(ref,dict) or ref.get("object",{}).get("sha")!=sha:
         raise ValueError("Factory HEAD changed; regenerate verified identity return input")
     slug=record["slug"]
-    manifest=api(base+"contents/products/"+slug+"/manifest.json?ref="+quote(branch,safe=""))
-    if not isinstance(manifest,dict) or manifest.get("encoding")!="base64":
-        raise ValueError("Source Factory product manifest not found")
-    raw=base64.b64decode(manifest["content"])
-    if len(raw)>16_000:
-        raise ValueError("Product manifest too large")
-    product=json.loads(raw)
-    if not isinstance(product,dict) or (product.get("slug")!=slug
-          or product.get("kind")!=record["type"]):
-        raise ValueError("Factory product identity/kind mismatch")
+    if record["type"]=="3d-game":
+        # Godot prototypes are source-only and do not have the standard
+        # App/Game Factory manifest.json yet. Verify real project bytes at
+        # the pinned Factory branch instead of accepting an arbitrary slug.
+        project=api(base+"contents/products/"+slug+"/project.godot?ref="+quote(branch,safe=""))
+        if not isinstance(project,dict) or project.get("encoding")!="base64":
+            raise ValueError("Source 3D Factory Godot project missing")
+        raw=base64.b64decode(project["content"],validate=True)
+        if len(raw)>128_000 or b"run/main_scene" not in raw:
+            raise ValueError("Source 3D Factory Godot project invalid")
+    else:
+        manifest=api(base+"contents/products/"+slug+"/manifest.json?ref="+quote(branch,safe=""))
+        if not isinstance(manifest,dict) or manifest.get("encoding")!="base64":
+            raise ValueError("Source Factory product manifest not found")
+        raw=base64.b64decode(manifest["content"],validate=True)
+        if len(raw)>16_000:
+            raise ValueError("Product manifest too large")
+        product=json.loads(raw)
+        if not isinstance(product,dict) or (product.get("slug")!=slug
+              or product.get("kind")!=record["type"]):
+            raise ValueError("Factory product identity/kind mismatch")
     # Never silently replace a previously associated product with another ID.
     existing=api(base+"contents/"+proposal["path"]+"?ref="+quote(branch,safe=""),
                  allow_missing=True)
