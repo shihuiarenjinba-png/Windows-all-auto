@@ -11,7 +11,7 @@ $name='WindowsAllAuto-Factory-QA-Pull'
 if (Get-ScheduledTask -TaskName $name -ErrorAction SilentlyContinue) {
   throw "Task already exists: $name. Review before replacing."
 }
-$arguments = '-3.12 -m scripts.local_handoff_pull --target "' + $Inbox + '"'
+$arguments = '-3 -m scripts.local_handoff_pull --target "' + $Inbox + '"'
 $action=New-ScheduledTaskAction -Execute $python -Argument $arguments -WorkingDirectory $root
 $trigger=New-ScheduledTaskTrigger -Once -At (Get-Date).AddMinutes(1) -RepetitionInterval (New-TimeSpan -Minutes 15) -RepetitionDuration (New-TimeSpan -Days 3650)
 $user="$env:USERDOMAIN\$env:USERNAME"
