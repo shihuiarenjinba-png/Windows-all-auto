@@ -14,7 +14,7 @@ OWNER="shihuiarenjinba-png"
 SLUG=re.compile(r"^[a-z][a-z0-9-]{3,39}$")
 SHA40=re.compile(r"^[a-f0-9]{40}$")
 SHA64=re.compile(r"^[a-f0-9]{64}$")
-REPO=re.compile(r"^https://github\.com/shihuiarenjinba-png/(AI-App-Factory|AI-Game-Factory)$")
+REPO=re.compile(r"^https://github\.com/shihuiarenjinba-png/(AI-App-Factory|AI-Game-Factory|3d-game-factory)$")
 MAX_BYTES=300*1024*1024
 REQUIRED={"handoff.json","package.msix"}
 
