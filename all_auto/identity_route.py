@@ -16,6 +16,7 @@ OWNER="shihuiarenjinba-png"
 TARGETS={
   "app": ("AI-App-Factory","codex/factory-autoloop-20261026"),
   "game": ("AI-Game-Factory","codex/factory-autoloop-20261026"),
+  "3d-game": ("3d-game-factory","codex/3d-factory-bootstrap-20261026"),
 }
 SLUG=re.compile(r"^[a-z][a-z0-9-]{3,39}$")
 SHA40=re.compile(r"^[a-f0-9]{40}$")
@@ -27,7 +28,7 @@ def route_identity(record:dict)->dict:
     if not isinstance(record,dict) or record.get("schema_version")!=1:
         raise ValueError("identity return contract unsupported")
     kind=record.get("type")
-    if kind not in TARGETS:raise ValueError("only app/game Factory supported")
+    if kind not in TARGETS:raise ValueError("only app/game/3d-game Factory supported")
     slug=record.get("slug")
     if not isinstance(slug,str) or not SLUG.fullmatch(slug):
         raise ValueError("unsafe product slug")
