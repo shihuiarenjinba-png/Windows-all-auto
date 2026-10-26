@@ -194,6 +194,16 @@ class CoordinatorPreflightTests(unittest.TestCase):
         c["identity"]["store_id"] = "9THIRD123"
         c["approved_identity"]["store_id"] = "9THIRD123"
         c["checker"]["status"] = "BLOCKED"
+        # Each product has its own valid build evidence for its approved Store ID.
+        # Reusing the sample product's report must now be BLOCKED by preflight.
+        for product in (b, c):
+            original = Path(product["build"]["report_path"])
+            payload = json.loads(original.read_text(encoding="utf-8"))
+            payload["store_id"] = product["approved_identity"]["store_id"]
+            destination = self.root / ("build-" + product["id"] + ".json")
+            destination.write_text(json.dumps(payload), encoding="utf-8")
+            product["build"]["report_path"] = str(destination)
+            product["build"]["report_sha256"] = sha256_file(destination)
         r = preflight({"schema_version": "1", "products": [a, b, c]}, self.root)
         self.assertEqual(r["counts"], {"READY_FOR_WINDOWS_QA": 1, "HOLD": 1, "BLOCKED": 1})
 
@@ -310,6 +320,11 @@ class CoordinatorPreflightTests(unittest.TestCase):
         obj = copy.deepcopy(self.product)
         self._swap_report(obj, "checker", {"metadata": {"msix_sha256": self.package_hash}})
         self.assert_finding("CHECKER_REPORT_MANIFEST_MISSING", obj)
+
+    def test_40_build_ready_but_holds_exist_is_not_ready(self):
+        obj = copy.deepcopy(self.product)
+        self._swap_report(obj, "build", {"holds": [{"code": "IDENTITY_UNVERIFIED"}]})
+        self.assert_finding("WINDOWS_DATA_REPORT_HAS_HOLDS", obj)
 
 
 if __name__ == "__main__":

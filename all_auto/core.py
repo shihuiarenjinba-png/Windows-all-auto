@@ -114,6 +114,9 @@ def _verify_build_evidence(
     if evidence.get("status") != CHECKER_READY:
         hold.append("WINDOWS_DATA_REPORT_NOT_READY")
         return
+    holds = evidence.get("holds")
+    if not isinstance(holds, list) or holds:
+        hold.append("WINDOWS_DATA_REPORT_HAS_HOLDS")
     if not _same_hex(evidence.get("source_head"), item.get("source_sha"), HEX40):
         blocked.append("WINDOWS_DATA_REPORT_SOURCE_MISMATCH")
     if evidence.get("repository_url") != item.get("repository"):
