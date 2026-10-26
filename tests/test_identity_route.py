@@ -49,8 +49,15 @@ class IdentityRouteTests(unittest.TestCase):
     def test_missing_pinned_sha(self):
         self.record["expected_head_sha"]="main"
         with self.assertRaises(ValueError):route_identity(self.record)
-    def test_wrong_kind_holds(self):
+    def test_3d_kind_routes_only_3d_factory(self):
         self.record["type"]="3d-game"
+        result=route_identity(self.record)
+        self.assertEqual(result["repository"],"shihuiarenjinba-png/3d-game-factory")
+        self.assertEqual(result["branch"],"codex/3d-factory-bootstrap-20261026")
+        self.assertEqual(result["path"],"products/useful-tool/store/approved-identity.json")
+        self.assertFalse(result["applied"])
+    def test_wrong_kind_holds(self):
+        self.record["type"]="GAME_3D"
         with self.assertRaises(ValueError):route_identity(self.record)
     def test_fake_publisher_holds_if_missing_subject(self):
         self.record["identity"]["publisher"]="not-a-publisher"
