@@ -1,0 +1,42 @@
+name: Store portfolio 15-minute watch
+on:
+  schedule:
+    - cron: '7,22,37,52 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: store-portfolio-watch
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check coordinator and scheduler tests
+        run: |
+          python -m compileall -q all_auto tests
+          python -m unittest discover -s tests -v
+      - name: Query existing product source and CI evidence
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python -m all_auto.scheduler --inventory ops/portfolio.json --out reports/quarter-hour
+      - name: Export read-only audit and Windows handoff queue
+        uses: actions/upload-artifact@v4
+        with:
+          name: store-watch-${{ github.run_id }}
+          path: reports/quarter-hour/
+          if-no-files-found: error
+          retention-days: 7
