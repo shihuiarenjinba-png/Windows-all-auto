@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+qa/
+reports/
+*.msix
+*.msixupload
+*.appx
+*.appxbundle
+*.msixbundle
+.env
+secrets.json
