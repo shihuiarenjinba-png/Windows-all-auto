@@ -59,10 +59,16 @@ def route_identity(record:dict)->dict:
         raise ValueError("operator identifier missing")
     repo,branch=TARGETS[kind]
     product_dir="products/"+slug+"/store/"
+    # Persist the exact Factory source SHA that was authenticated alongside
+    # the Partner Center identity. Downstream MSIX builders must compare this
+    # value with the product source before packaging; the identity commit itself
+    # advances branch HEAD, so relying only on the post-commit HEAD loses the
+    # provenance link to the reviewed game/app bytes.
     content={
        "reviewed":True,"source":"partner_center",
        "store_id":identity["store_id"],"name":identity["name"],
        "publisher":publisher,"version":identity["version"],
+       "verified_source_sha":sha,
        "verified_by":verifier,"evidence_url":evidence
     }
     for label in ("display_name","publisher_display_name"):
