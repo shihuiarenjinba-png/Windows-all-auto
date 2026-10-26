@@ -23,6 +23,8 @@ class LocalPullTests(unittest.TestCase):
         bundle.mkdir()
         with zipfile.ZipFile(bundle/"package.msix","w") as z:
             z.writestr("AppxManifest.xml",XML)
+            z.writestr("AppxBlockMap.xml",b"<BlockMap/>")
+            z.writestr("[Content_Types].xml",b"<Types/>")
             z.writestr("main.exe",b"not actually installed")
         data=(bundle/"package.msix").read_bytes()
         self.checksum=hashlib.sha256(data).hexdigest()
