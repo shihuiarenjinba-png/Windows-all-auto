@@ -1,7 +1,7 @@
 """Poll Factory Actions artifacts, verify package bytes, stage only new MSIX bundles.
 
 GITHUB_TOKEN cannot read private cross-repository artifacts on its own. Use a
-dedicated FACTORY_READ_TOKEN with actions:read on just the two Factory repos.
+dedicated FACTORY_READ_TOKEN with actions:read on just the three Factory repos.
 Never runs downloaded files and never contacts Microsoft Store.
 """
 from __future__ import annotations
@@ -16,7 +16,7 @@ import sys
 from .handoff_bridge import stage_bundle
 
 OWNER="shihuiarenjinba-png"
-FACTORIES=("AI-App-Factory","AI-Game-Factory")
+FACTORIES=("AI-App-Factory","AI-Game-Factory","3d-game-factory")
 PREFIX="factory-msix-handoff-"
 
 def command(*parts:str)->str:
@@ -52,7 +52,7 @@ def candidates(payload:dict,processed:set[int])->list[dict]:
 def verified_run(data:dict,expected_repo:str,artifact:dict)->str:
     if not isinstance(data,dict) or data.get("conclusion")!="success":
         raise ValueError("source run not successful")
-    if data.get("name")!="Factory MSIX export" or data.get("event")!="push":
+    if data.get("name")!="Factory MSIX export" or data.get("event") not in ("push","workflow_dispatch"):
         raise ValueError("source workflow or event is untrusted")
     if data.get("head_repository",{}).get("full_name")!=expected_repo:
         raise ValueError("source repository mismatch")
