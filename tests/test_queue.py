@@ -62,6 +62,18 @@ class DurableQueueTests(unittest.TestCase):
             self.assertEqual(newer["status"], "HOLD")
             self.assertEqual(newer["reason"], "PRIOR_STORE_OUTCOME_UNCONFIRMED")
 
+    def test_11_ready_same_store_different_package_is_held(self):
+        newer = copy.deepcopy(self.r)
+        newer["package_sha256"] = "c" * 64
+        with QueueLedger(self.db) as ledger:
+            first = ledger.add_product(self.p, self.r)
+            second = ledger.add_product(self.p, newer)
+            self.assertEqual(first["status"], "READY_FOR_WINDOWS_QA")
+            self.assertEqual(second["status"], "HOLD")
+            self.assertEqual(second["reason"], "PRIOR_STORE_OUTCOME_UNCONFIRMED")
+            with self.assertRaises(ValueError):
+                ledger.require_operator(second["job_key"])
+
     def test_07_sqlite_reopens_with_unknown_state(self):
         with QueueLedger(self.db) as ledger:
             job = ledger.add_product(self.p, self.r)
