@@ -69,6 +69,8 @@ class PollTests(unittest.TestCase):
             product.mkdir()
             with zipfile.ZipFile(product/"package.msix","w") as z:
                 z.writestr("AppxManifest.xml",XML)
+                z.writestr("AppxBlockMap.xml",b"<BlockMap/>")
+                z.writestr("[Content_Types].xml",b"<Types/>")
                 z.writestr("bin.exe",b"pretend binary")
             package=(product/"package.msix").read_bytes()
             (product/"handoff.json").write_text(json.dumps({
