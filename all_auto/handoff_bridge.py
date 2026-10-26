@@ -39,10 +39,24 @@ def inspect_msix(package:Path)->dict:
                     info.file_size>MAX_BYTES or
                     (info.compress_size and info.file_size>100*info.compress_size)):
                     fail("unsafe MSIX ZIP entry")
-            matches=[m for m in members if m.filename.lower()=="appxmanifest.xml"]
-            if len(matches)!=1 or matches[0].file_size>2*1024*1024:
-                fail("AppxManifest.xml missing or oversized")
-            root=ET.fromstring(z.read(matches[0]))
+            # A generic ZIP with a forged AppxManifest.xml is not an MSIX.
+            # Require the package metadata parts produced by MakeAppx before
+            # an artifact can enter the local Windows QA queue.
+            required_parts={
+                "appxmanifest.xml":"Package",
+                "appxblockmap.xml":"BlockMap",
+                "[content_types].xml":"Types",
+            }
+            parsed={}
+            for name,expected_root in required_parts.items():
+                matches=[m for m in members if m.filename.casefold()==name]
+                if len(matches)!=1 or not 0<matches[0].file_size<=2*1024*1024:
+                    fail("required MSIX metadata missing or invalid: "+name)
+                document=ET.fromstring(z.read(matches[0]))
+                if document.tag.rsplit("}",1)[-1]!=expected_root:
+                    fail("invalid MSIX metadata root: "+name)
+                parsed[name]=document
+            root=parsed["appxmanifest.xml"]
     except (zipfile.BadZipFile,ET.ParseError,RuntimeError,KeyError,OSError) as exc:
         fail("not a readable MSIX: "+type(exc).__name__)
     identity=next((e for e in root.iter() if e.tag.endswith("}Identity") or e.tag=="Identity"),None)
