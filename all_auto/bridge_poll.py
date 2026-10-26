@@ -54,6 +54,14 @@ def verified_run(data:dict,expected_repo:str,artifact:dict)->str:
         raise ValueError("source run not successful")
     if data.get("name")!="Factory MSIX export" or data.get("event") not in ("push","workflow_dispatch"):
         raise ValueError("source workflow or event is untrusted")
+    # Workflow display names are not unique: a different workflow can use the
+    # same name and upload a lookalike artifact. Bind provenance to the exact
+    # reviewed MSIX export workflow file and the artifact's actual run ID.
+    if data.get("path")!=".github/workflows/msix-export.yml":
+        raise ValueError("source workflow path is untrusted")
+    if (type(data.get("id")) is not int or
+        data["id"]!=artifact.get("workflow_run",{}).get("id")):
+        raise ValueError("artifact workflow run mismatch")
     if data.get("head_repository",{}).get("full_name")!=expected_repo:
         raise ValueError("source repository mismatch")
     ref=data.get("head_branch")
