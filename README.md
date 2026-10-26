@@ -5,8 +5,8 @@ WindowsアプリやゲームをMicrosoft Storeへ登録するときの **GitHub 
 ## 現在の到達点（2026-10-26）
 - GitHubの作業ブランチのみで開発（main/release直接変更なし）。
 - オフライン事前検証コア、日英切替の試験的GUI、CLI、SQLiteの安全なキュー台帳を実装。
-- **自動テスト36件 / Windows・Linuxの両方でPASS**。CI例: https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/40268363009
-- **未完成/未検証**: Windows-dataとWindows-checkerの実行アダプタ、Windows-Automatorの正式ライブ接続、Partner CenterのDOMセレクタ、MSIX実アップロード、保存成功確認、Windows実機GUI QA。これはStore登録の完成を意味しません。
+- **自動テスト54件 / Windows・Linuxの両方でPASS**。CI: https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/40269892691
+- Windows-data / Windows-checker / Windows-Automator の読取専用JSON契約アダプタを追加済み。未知schema/statusはfail-closedで停止し、Windows-Automatorの現行 DONE は DRY_RUN_DONE として扱います。\n- **未完成/未検証**: 3ツールのsubprocess実行アダプタ、Windows-Automatorの正式ライブ接続、Partner CenterのDOMセレクタ、MSIX実アップロード、保存成功確認、Windows実機GUI QA。これはStore登録の完成を意味しません。
 - 全てのオンライン/高影響操作は未実装・停止状態。Submit for certification、公開、名前予約、Store商品ID/Identity推測は禁止。
 
 ## 関連リポジトリ（役割を分離）
