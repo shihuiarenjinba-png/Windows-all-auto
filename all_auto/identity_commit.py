@@ -18,7 +18,7 @@ MUTATION="""mutation($input: CreateCommitOnBranchInput!) {
   createCommitOnBranch(input:$input) { commit { oid url } }
 }"""
 
-def gh_json(*args,body=None):
+def gh_json(*args,body=None,allow_missing=False):
     command=["gh","api",*args]
     if body is not None:
         command.extend(["--input","-"])
@@ -27,6 +27,8 @@ def gh_json(*args,body=None):
         capture_output=True,text=True,encoding="utf-8",
         timeout=30,check=False)
     if completed.returncode!=0:
+        if allow_missing and "HTTP 404" in completed.stderr:
+            return None
         raise RuntimeError("GitHub authentication, scope, branch or conflict error")
     if len(completed.stdout)>256_000:
         raise RuntimeError("Oversized GitHub reply")
@@ -55,12 +57,8 @@ def stage_and_commit(record:dict,apply:bool=False,api=gh_json)->dict:
           or product.get("kind")!=record["type"]):
         raise ValueError("Factory product identity/kind mismatch")
     # Never silently replace a previously associated product with another ID.
-    try:
-        existing=api(base+"contents/"+proposal["path"]+"?ref="+quote(branch,safe=""))
-    except RuntimeError:
-        # An HTTP 404 needs to be distinguished from authorization errors by
-        # the caller. No blind overwrites on ambiguous lookup failures.
-        raise ValueError("Unable to prove approved Identity destination is unused")
+    existing=api(base+"contents/"+proposal["path"]+"?ref="+quote(branch,safe=""),
+                 allow_missing=True)
     if existing is not None and existing.get("type")=="file":
         raise ValueError("Identity already exists; stop rather than overwrite")
     if existing is not None:
