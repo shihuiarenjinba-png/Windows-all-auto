@@ -67,7 +67,12 @@ def validate_bundle(directory:Path,expected_run_sha:str|None=None)->dict:
     kind=data.get("type")
     if not isinstance(repo,str) or not REPO.fullmatch(repo):
         fail("untrusted source repository")
-    expected_kind="app" if repo.endswith("/AI-App-Factory") else "game"
+    # The 3D lane is distinct from the ordinary game lane all the way to QA.
+    expected_kind={
+        "AI-App-Factory":"app",
+        "AI-Game-Factory":"game",
+        "3d-game-factory":"3d-game",
+    }[repo.rsplit("/",1)[-1]]
     if kind!=expected_kind: fail("source factory / product type mismatch")
     slug=data.get("slug")
     if not isinstance(slug,str) or not SLUG.fullmatch(slug):
