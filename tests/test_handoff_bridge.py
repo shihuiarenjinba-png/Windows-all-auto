@@ -99,15 +99,39 @@ class HandoffBridgeTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"hash mismatch"):
             validate_bundle(self.source,SHA)
 
-    def test_3d_factory_requires_game_type(self):
+    def test_3d_factory_requires_distinct_3d_game_type(self):
         self.info["source_repository"]="https://github.com/shihuiarenjinba-png/3d-game-factory"
+        self.info["type"]="3d-game"
+        self.write_info()
+        result=validate_bundle(self.source,SHA)
+        self.assertEqual(result["type"],"3d-game")
+        self.assertEqual(result["local_action"],"WINDOWS_INSTALL_UI_QA_ONLY")
+        self.assertFalse(result["submit_allowed"])
+        for wrong in ("game","app"):
+            with self.subTest(wrong=wrong):
+                self.info["type"]=wrong
+                self.write_info()
+                with self.assertRaisesRegex(ValueError,"factory / product type"):
+                    validate_bundle(self.source,SHA)
+
+    def test_normal_game_factory_cannot_claim_3d_type(self):
+        self.info["source_repository"]="https://github.com/shihuiarenjinba-png/AI-Game-Factory"
         self.info["type"]="game"
         self.write_info()
         self.assertEqual(validate_bundle(self.source,SHA)["type"],"game")
-        self.info["type"]="app"
+        self.info["type"]="3d-game"
         self.write_info()
         with self.assertRaisesRegex(ValueError,"factory / product type"):
             validate_bundle(self.source,SHA)
+
+    def test_3d_bundle_stages_with_separate_type(self):
+        self.info["source_repository"]="https://github.com/shihuiarenjinba-png/3d-game-factory"
+        self.info["type"]="3d-game"
+        self.write_info()
+        result=stage_bundle(self.source,self.root/"queue",SHA)
+        self.assertEqual(result["type"],"3d-game")
+        self.assertFalse(result["submit_allowed"])
+        self.assertEqual(len(list((self.root/"queue").iterdir())),1)
 
     def test_wrong_product_type_rejected(self):
         self.info["type"]="game"
