@@ -43,6 +43,7 @@ class Test3DIdentityReturn(unittest.TestCase):
                 "products/experimental-3d-1/store/approved-identity.json")
             meta=json.loads(base64.b64decode(addition["contents"]))
             self.assertEqual(meta["store_id"],RECORD["identity"]["store_id"])
+            self.assertEqual(meta["verified_source_sha"], RECORD["expected_head_sha"])
             return {"data":{"createCommitOnBranch":{"commit":{
                 "oid":"d"*40,"url":"https://github.com/example/commit"}}}}
         raise AssertionError("unexpected API request "+path)
