@@ -208,6 +208,25 @@ class CoordinatorPreflightTests(unittest.TestCase):
         obj["id"] = "../escape"
         self.assert_finding("INVALID_PRODUCT_ID", obj)
 
+    def test_27_hash_hex_case_is_not_a_false_mismatch(self):
+        obj = copy.deepcopy(self.product)
+        obj["package_sha256"] = self.package_hash.upper()
+        obj["checker"]["package_sha256"] = self.package_hash.upper()
+        obj["build"]["package_sha256"] = self.package_hash.upper()
+        obj["build"]["source_sha"] = ("A" * 40)
+        obj["security"]["package_sha256"] = self.package_hash.upper()
+        self.assertEqual(self.check(obj)["status"], "READY_FOR_WINDOWS_QA")
+
+    def test_28_non_string_security_operator_is_rejected(self):
+        obj = copy.deepcopy(self.product)
+        obj["security"]["confirmed_by"] = ["QA_OPERATOR"]
+        self.assert_finding("SECURITY_HUMAN_CONFIRMATION_REQUIRED", obj)
+
+    def test_29_blank_security_timestamp_is_rejected(self):
+        obj = copy.deepcopy(self.product)
+        obj["security"]["confirmed_at"] = "   "
+        self.assert_finding("SECURITY_HUMAN_CONFIRMATION_REQUIRED", obj)
+
 
 if __name__ == "__main__":
     unittest.main()

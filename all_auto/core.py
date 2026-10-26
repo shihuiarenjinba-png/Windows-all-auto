@@ -37,6 +37,16 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _same_hex(value: Any, expected: Any, pattern: re.Pattern[str]) -> bool:
+    return (
+        isinstance(value, str)
+        and isinstance(expected, str)
+        and bool(pattern.fullmatch(value))
+        and bool(pattern.fullmatch(expected))
+        and value.lower() == expected.lower()
+    )
+
+
 def _atomic_json(path: Path, data: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     fd, name = tempfile.mkstemp(prefix=path.name + ".", suffix=".tmp", dir=path.parent)
@@ -122,7 +132,7 @@ def check_product(item: Any, base: Path) -> dict[str, Any]:
             blocked.append("WINDOWS_CHECKER_BLOCKED")
         elif checker_status != CHECKER_READY:
             hold.append("WINDOWS_CHECKER_NOT_READY")
-        if checker.get("package_sha256") != actual_sha or not actual_sha:
+        if not actual_sha or not _same_hex(checker.get("package_sha256"), actual_sha, HEX64):
             hold.append("CHECKER_PACKAGE_SHA_UNVERIFIED")
         if not checker.get("report_path") or not checker.get("report_sha256"):
             hold.append("CHECKER_REPORT_PROVENANCE_MISSING")
@@ -140,9 +150,9 @@ def check_product(item: Any, base: Path) -> dict[str, Any]:
     if not isinstance(build, dict):
         hold.append("WINDOWS_DATA_EVIDENCE_MISSING")
     else:
-        if build.get("source_sha") != item.get("source_sha"):
+        if not _same_hex(build.get("source_sha"), item.get("source_sha"), HEX40):
             blocked.append("BUILD_SOURCE_SHA_MISMATCH")
-        if build.get("package_sha256") != actual_sha or not actual_sha:
+        if not actual_sha or not _same_hex(build.get("package_sha256"), actual_sha, HEX64):
             hold.append("BUILD_PACKAGE_SHA_UNVERIFIED")
         if not build.get("report_path") or not build.get("report_sha256"):
             hold.append("WINDOWS_DATA_REPORT_PROVENANCE_MISSING")
@@ -157,10 +167,22 @@ def check_product(item: Any, base: Path) -> dict[str, Any]:
                 hold.append("WINDOWS_DATA_REPORT_NOT_FOUND")
 
     sec = item.get("security")
-    if not isinstance(sec, dict) or sec.get("package_sha256") != actual_sha or not actual_sha:
+    if (
+        not isinstance(sec, dict)
+        or not actual_sha
+        or not _same_hex(sec.get("package_sha256"), actual_sha, HEX64)
+    ):
         hold.append("SECURITY_CONFIRMATION_PACKAGE_MISMATCH")
     else:
-        if sec.get("confirmed") is not True or not sec.get("confirmed_at") or not sec.get("confirmed_by"):
+        confirmed_at = sec.get("confirmed_at")
+        confirmed_by = sec.get("confirmed_by")
+        if (
+            sec.get("confirmed") is not True
+            or not isinstance(confirmed_at, str)
+            or not confirmed_at.strip()
+            or not isinstance(confirmed_by, str)
+            or not confirmed_by.strip()
+        ):
             hold.append("SECURITY_HUMAN_CONFIRMATION_REQUIRED")
         fields = sec.get("fields", {})
         if not isinstance(fields, dict) or any(type(fields.get(k)) is not bool for k in SECURITY_KEYS):
