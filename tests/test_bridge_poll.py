@@ -13,7 +13,8 @@ SHA="a"*40
 NAME="factory-msix-handoff-demo"
 REPO="shihuiarenjinba-png/AI-App-Factory"
 ARTIFACT={"id":123,"name":NAME,"expired":False,"workflow_run":{"id":555}}
-RUN={"conclusion":"success","name":"Factory MSIX export","event":"push",
+RUN={"id":555,"conclusion":"success","name":"Factory MSIX export","event":"push",
+     "path":".github/workflows/msix-export.yml",
      "head_repository":{"full_name":REPO},"head_branch":"codex/factory-bootstrap-20261026",
      "head_sha":SHA}
 XML=b'<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"><Identity Name="Demo.App" Publisher="CN=ABC" Version="1.0.0.0"/></Package>'
@@ -31,6 +32,27 @@ class PollTests(unittest.TestCase):
         with self.assertRaises(ValueError):verified_run(dict(RUN,name="Untrusted task"),REPO,ARTIFACT)
     def test_non_codex_branch_cannot_transfer(self):
         with self.assertRaises(ValueError):verified_run(dict(RUN,head_branch="main"),REPO,ARTIFACT)
+
+    def test_same_name_wrong_workflow_path_cannot_transfer(self):
+        # Another workflow can spoof a display name, not its trusted path.
+        with self.assertRaisesRegex(ValueError,"workflow path"):
+            verified_run(dict(RUN,path=".github/workflows/untrusted.yml"),REPO,ARTIFACT)
+
+    def test_missing_workflow_path_cannot_transfer(self):
+        fake=dict(RUN)
+        del fake["path"]
+        with self.assertRaisesRegex(ValueError,"workflow path"):
+            verified_run(fake,REPO,ARTIFACT)
+
+    def test_artifact_run_id_mismatch_cannot_transfer(self):
+        with self.assertRaisesRegex(ValueError,"run mismatch"):
+            verified_run(dict(RUN,id=556),REPO,ARTIFACT)
+
+    def test_missing_run_id_cannot_transfer(self):
+        fake=dict(RUN)
+        del fake["id"]
+        with self.assertRaisesRegex(ValueError,"run mismatch"):
+            verified_run(fake,REPO,ARTIFACT)
 
 
     def test_manual_dispatch_workflow_is_allowed_when_verified(self):
