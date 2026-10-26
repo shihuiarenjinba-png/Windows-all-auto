@@ -144,5 +144,59 @@ class DurableQueueTests(unittest.TestCase):
             self.assertEqual(collision["reason"], "STORE_ID_PRODUCT_COLLISION")
 
 
+    def test_16_blocked_collision_cannot_refresh_to_ready(self):
+        other = copy.deepcopy(self.p)
+        other["id"] = "different"
+        other_row = copy.deepcopy(self.r)
+        other_row["package_sha256"] = "c" * 64
+        with QueueLedger(self.db) as ledger:
+            ledger.add_product(self.p, self.r)
+            collision = ledger.add_product(other, other_row)
+            self.assertEqual(collision["status"], "BLOCKED")
+            retry = ledger.add_product(other, other_row)
+            self.assertEqual(retry["status"], "BLOCKED")
+            self.assertEqual(retry["reason"], "STORE_ID_PRODUCT_COLLISION")
+            with self.assertRaises(ValueError):
+                ledger.require_operator(retry["job_key"])
+
+    def test_17_prior_ready_blocks_refresh_of_held_other_fingerprint(self):
+        newer = copy.deepcopy(self.r)
+        newer["package_sha256"] = "c" * 64
+        with QueueLedger(self.db) as ledger:
+            ledger.add_product(self.p, self.r)
+            first = ledger.add_product(self.p, newer)
+            self.assertEqual(first["status"], "HOLD")
+            retry = ledger.add_product(self.p, newer)
+            self.assertEqual(retry["status"], "HOLD")
+            self.assertEqual(retry["reason"], "PRIOR_STORE_OUTCOME_UNCONFIRMED")
+            with self.assertRaises(ValueError):
+                ledger.require_operator(retry["job_key"])
+
+    def test_18_store_id_collision_ignores_case(self):
+        other = copy.deepcopy(self.p)
+        other["id"] = "different"
+        other["approved_identity"]["store_id"] = "9realtest"
+        other_row = copy.deepcopy(self.r)
+        other_row["package_sha256"] = "c" * 64
+        with QueueLedger(self.db) as ledger:
+            ledger.add_product(self.p, self.r)
+            collision = ledger.add_product(other, other_row)
+            self.assertEqual(collision["status"], "BLOCKED")
+            self.assertEqual(collision["reason"], "STORE_ID_PRODUCT_COLLISION")
+
+    def test_19_unknown_cannot_refresh_after_collision(self):
+        with QueueLedger(self.db) as ledger:
+            old = ledger.add_product(self.p, self.r)
+            ledger.require_operator(old["job_key"])
+            ledger.record_ambiguous_result(old["job_key"])
+            other = copy.deepcopy(self.p)
+            other["id"] = "different"
+            other_row = copy.deepcopy(self.r)
+            other_row["package_sha256"] = "c" * 64
+            ledger.add_product(other, other_row)
+            retry = ledger.add_product(self.p, self.r)
+            self.assertEqual(retry["status"], "UNKNOWN")
+
+
 if __name__ == "__main__":
     unittest.main()
