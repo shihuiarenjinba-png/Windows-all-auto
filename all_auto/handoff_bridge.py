@@ -33,6 +33,11 @@ def inspect_msix(package:Path)->dict:
             members=z.infolist()
             if not 1 <= len(members) <= 2000:
                 fail("unexpected MSIX entries")
+            # Windows package paths are case-insensitive. Duplicate payload
+            # names (not only metadata names) make inspection ambiguous.
+            normalized_names=[m.filename.replace("\\","/").casefold() for m in members]
+            if len(normalized_names)!=len(set(normalized_names)):
+                fail("duplicate MSIX ZIP member names")
             for info in members:
                 name=info.filename.replace("\\","/")
                 if (name.startswith("/") or ".." in name.split("/") or

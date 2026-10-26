@@ -152,6 +152,24 @@ class HandoffBridgeTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"only handoff"):
             validate_bundle(self.source,SHA)
 
+    def test_duplicate_payload_names_are_rejected_even_with_matching_hash(self):
+        # Metadata parts can be unique while executable members are ambiguous.
+        # A checksum only proves the duplicate-member ZIP was transferred intact.
+        for first, second in (("app.exe", "app.exe"), ("app.exe", "APP.EXE")):
+            with self.subTest(first=first, second=second):
+                with zipfile.ZipFile(self.source/"package.msix", "w") as archive:
+                    archive.writestr("AppxManifest.xml", XML)
+                    archive.writestr("AppxBlockMap.xml", b"<BlockMap/>")
+                    archive.writestr("[Content_Types].xml", b"<Types/>")
+                    archive.writestr(first, b"original payload")
+                    archive.writestr(second, b"conflicting payload")
+                blob=(self.source/"package.msix").read_bytes()
+                self.info["package_sha256"]=hashlib.sha256(blob).hexdigest()
+                self.info["package_bytes"]=len(blob)
+                self.write_info()
+                with self.assertRaisesRegex(ValueError, "duplicate MSIX ZIP member"):
+                    validate_bundle(self.source, SHA)
+
     def test_manifest_only_zip_with_matching_hash_is_rejected(self):
         # A valid hash proves byte consistency, not that a ZIP is an MSIX.
         with zipfile.ZipFile(self.source/"package.msix","w") as z:
