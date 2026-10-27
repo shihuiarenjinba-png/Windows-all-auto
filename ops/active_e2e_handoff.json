@@ -341,10 +341,7 @@
       "ci_conclusion": "SUCCESS",
       "local_windows_run": "NOT_OBSERVED",
       "partner_center_evidence": "NOT_OBSERVED",
-      "preidentity_resume_result": "REQUIRES_LOCAL_VERIFICATION",
-      "compare_to_integration": "DIVERGED_AHEAD_5_BEHIND_2",
-      "check_only_scope": "LEDGER_HEAD_LOCAL_METADATA_ONLY; EXE_PREFLIGHT_OCCURS_IN_EXPLICIT_APPLY_BEFORE_CAS",
-      "runbook_commit": "b33c5d75f9cf7f1ba69984c19ef9951937f72bdf"
+      "preidentity_resume_result": "REQUIRES_LOCAL_VERIFICATION"
     },
     "bounded_github_backlog_pr15": {
       "head_sha": "e175c7bed4dc8845e2be16f18009839cb8ae0b18",
@@ -402,12 +399,7 @@
       "duplicate_resume_result_unchanged": true,
       "locally_exercised_provisioner_sha": "5c1db9820bac68c59cc7eb6ca5921e22a5bb3913",
       "current_provisioner_sha": "93eb34f32339f18fd05d3028f8ef0e76172ac077",
-      "raw_private_receipt_on_github": false,
-      "local_targeted_tests": "31_PASS",
-      "local_full_tests": "213_PASS_2_SKIP",
-      "ci_run_id": 40489660907,
-      "ci_conclusion": "SUCCESS",
-      "check_only_state": "WAITING_OFFICIAL_IDENTITY_REPORTED"
+      "raw_private_receipt_on_github": false
     },
     "pr14_previous_ci": {
       "head_sha": "a4f99be6afdf3663e6195e6bc0e9ffa965d036ea",
