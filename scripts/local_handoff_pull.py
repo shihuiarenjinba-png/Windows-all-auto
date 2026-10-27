@@ -29,18 +29,31 @@ def gh(*args:str)->str:
     return r.stdout
 
 def recent_artifacts()->list[tuple[int,str]]:
-    response=json.loads(gh("api","-X","GET",
-        "repos/"+REMOTE+"/actions/artifacts?per_page=100"))
-    arts=response.get("artifacts")
-    if not isinstance(arts,list):
-        raise ValueError("malformed central GitHub artifact response")
-    choices=[a for a in arts if isinstance(a,dict)
-       and isinstance(a.get("id"),int)
+    # A busy 15-minute intake may publish more than 30 artifacts within the
+    # two-day retention window. Never silently discard older QA packages.
+    # Page the full GitHub listing, with an explicit HOLD if it is too large.
+    artifacts=[]
+    for page in range(1,11):
+        response=json.loads(gh("api","-X","GET",
+            "repos/"+REMOTE+"/actions/artifacts?per_page=100&page="+str(page)))
+        arts=response.get("artifacts")
+        if not isinstance(arts,list) or len(arts)>100:
+            raise ValueError("malformed central GitHub artifact response")
+        artifacts.extend(arts)
+        if len(arts)<100:
+            count=response.get("total_count")
+            if type(count) is int and len(artifacts)<count:
+                raise ValueError("Central QA artifact listing incomplete; retry")
+            break
+    else:
+        raise ValueError("Central QA artifact listing exceeds 1000; HOLD rather than skip")
+    choices={a["id"]:a for a in artifacts if isinstance(a,dict)
+       and type(a.get("id")) is int
        and isinstance(a.get("workflow_run"),dict)
-       and isinstance(a["workflow_run"].get("id"),int)
+       and type(a["workflow_run"].get("id")) is int
        and isinstance(a.get("name"),str)
-       and a["name"].startswith(PREFIX) and a.get("expired") is False]
-    choices=sorted(choices,key=lambda a:a["id"])[-30:]
+       and a["name"].startswith(PREFIX) and a.get("expired") is False}
+    choices=sorted(choices.values(),key=lambda a:a["id"])
     verified=[]
     for a in choices:
         run_id=a["workflow_run"]["id"]

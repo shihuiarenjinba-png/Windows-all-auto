@@ -7,7 +7,7 @@ import unittest
 from unittest.mock import patch
 import zipfile
 
-from scripts.local_handoff_pull import pull
+from scripts.local_handoff_pull import pull, recent_artifacts
 
 SOURCE_SHA="b"*40
 XML=b'<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"><Identity Name="Demo.App" Publisher="CN=ABC" Version="1.0.0.0"/></Package>'
@@ -53,6 +53,41 @@ class LocalPullTests(unittest.TestCase):
             (folder/"queue.json").write_text(json.dumps(self.q))
             return ""
         raise RuntimeError("unexpected command")
+
+    def test_local_qa_artifact_pagination_does_not_drop_older_packages(self):
+        # More than 30 artifacts and more than one GitHub API page must
+        # remain visible to the local QA puller.
+        calls=[]
+        def paged_gh(*args):
+            calls.append(args)
+            if args[:3]==("api","-X","GET") and "actions/artifacts?" in args[-1]:
+                page=int(args[-1].rsplit("page=",1)[-1])
+                ids=range(1,101) if page==1 else range(101,102)
+                return json.dumps({"total_count":101,"artifacts":[
+                    {"id":n,"name":"verified-msix-local-qa-"+str(n),
+                     "expired":False,"workflow_run":{"id":n}} for n in ids]})
+            if args[:3]==("api","-X","GET") and "/actions/runs/" in args[-1]:
+                return json.dumps({"name":"Factory MSIX intake and local QA handoff",
+                                   "conclusion":"success"})
+            raise AssertionError("unexpected GitHub call")
+        with patch("scripts.local_handoff_pull.gh",side_effect=paged_gh):
+            found=recent_artifacts()
+        self.assertEqual(len(found),101)
+        self.assertEqual(found[0],(1,"verified-msix-local-qa-1"))
+        self.assertEqual(found[-1],(101,"verified-msix-local-qa-101"))
+        pages=[a[-1] for a in calls if "actions/artifacts?" in a[-1]]
+        self.assertEqual(len(pages),2)
+
+    def test_local_qa_artifact_pagination_holds_on_truncated_listing(self):
+        def truncated_gh(*args):
+            if "actions/artifacts?" in args[-1]:
+                return json.dumps({"total_count":120,"artifacts":[
+                    {"id":n,"name":"verified-msix-local-qa-"+str(n),
+                     "expired":False,"workflow_run":{"id":n}} for n in range(5)]})
+            raise AssertionError("should HOLD before checking individual runs")
+        with patch("scripts.local_handoff_pull.gh",side_effect=truncated_gh):
+            with self.assertRaisesRegex(ValueError,"listing incomplete"):
+                recent_artifacts()
 
     def test_local_download_verifies_package(self):
         with patch("scripts.local_handoff_pull.gh",side_effect=self.fake_gh):
