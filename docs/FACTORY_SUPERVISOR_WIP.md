@@ -84,3 +84,38 @@ No new product or research backlog item; no main/release write, force push, unau
 - **Artifact audit**: current PR-triggered CI runs have no artifacts. Signal Sprint EXE QA artifact #12706862577, Godot template unsigned QA artifact #12666649210 (archive SHA-256 `5e229677d5fea2b8025f8f90e7eed5f17ea14ed61083f18ac1745b8b56e240ee`) and Windows-data utility artifact #12623796906 (archive SHA-256 `d0960b4fa28a04b27e77a703a0247d1adcedccdab1b47fbdebc554ff22cabfd3`) remain available. **No authentic product MSIX, receipt or product QA**.
 
 **Next-hour priority**: 12 GAME authenticated official Identity + exact source HEAD CAS preparation (HOLD until evidence); 24 3D Factory dispatch-guard divergence review + QA ledger, no new product; 36 Windows-all-auto real intake prerequisites and Checker runner diagnosis; 00 APP pre-Identity contract integration only. Preserve owner locks and immutable request/source; no main/release, force push, unauthorized merge, Store submission, or invented Identity. CI PASS != E2E PASS.
+
+## 2026-10-27 16:52 JST supervisor checkpoint
+
+**Decision: product E2E HOLD; active committed WIP 1 (GAME Signal Sprint).** APP and GAME_3D active_product=null; all lanes new_product_allowed=false. Checked live GitHub PR refs, PR-triggered CI, run artifacts, Factory source ref and the 00/12/24/36 owners' ledgers. CI success is not a product delivery or local Windows execution.
+
+| Repo / current review target | Exact observed HEAD | PR / CI |
+| --- | --- | --- |
+| AI-App-Factory | `e8e3ca613a114cd0e919cf2f3a4454fa8149510a` | #13 / 40447411667 SUCCESS |
+| AI-Game-Factory (immutable product source) | `c058cbf7fe38e02d929c67d047d717ff74bd522e` | #10 / 40443345351 SUCCESS |
+| 3d-game-factory (latest guard) | `7bd8ada013c2b3772184fbfaa974f6e3041d9a81` | #12 / 40467528271 SUCCESS; ledger PR #10 `2e5d74100113bdfaa303dd312e617550fe664dc3` |
+| Repository-Provisioner-app | `8e785ad286ecf9c8a8fdf1f337fd42062cd60085` | #10 / 40464822625 SUCCESS |
+| Repository-Provisioner-game (reviewed safety) | `66fc66b0e2a58dba2a9023f7e7fbbd6e5803d857` | #8 / 40466395708 SUCCESS; base integration #7 `7ac69a43f3b06402a942b7f31ec3070f67c67688` |
+| Repository-Provisioner-3D | `70600e77f2dd4278a989604314eebfa662e05c33` | #7 / 40454089167 SUCCESS |
+| Windows-all-auto integration | `0db4d865da64bebf94a0d8b58d9382b78bb4a273` | #14 / 40468871710 SUCCESS |
+| Windows-data | `664b9afcbed63539b89f594892d831d97b9d4118` | #1 / 40259906737 SUCCESS |
+| Windows-checker | `ff315c7a42bb2d70ff4350ab2f146fd80511116a` | #2 / 40453767674 FAILURE; local 67/67 PASS is separate |
+| 3d-build-qa | `ea6540037e359860775fbfd423244ea3f9ffeee6` | #4 / 40461036388 SUCCESS |
+| 3d-game-template | `e5462d0aa1f5d0a50fa484ad1544c11ce8a6085a` | #1 / 40360649193 SUCCESS |
+
+**Signal Sprint gate:** GitHub source ref `refs/heads/codex/game-signal-sprint-undo-20261027` is still exactly `c058cbf7fe38e02d929c67d047d717ff74bd522e`. Request remains `game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e`. The expected `products/signal-sprint/store/approved-identity.json` is 404 on the source branch. Authenticated Partner Center Identity, Factory CAS return commit, real product MSIX, Windows-all-auto intake receipt and local GUI/Checker QA receipt: **all absent**. The only Signal Sprint product artifact is unsigned EXE QA artifact #12706862577, run 40443340158, ZIP digest `sha256:e48a0426595dc227988f12944921511a47d5c8feca8b063a161dd0dd61306412`; not MSIX.
+
+**Local Identity worker:** Windows-all-auto Draft #16 `codex/local-identity-return-worker-20261027-1639@b223df253e9efea41b0da6e571b700e803c00f45`, CI 40468806723 SUCCESS. Its entrypoint is `python -m scripts.local_identity_return`; it is local Windows only, requires a pinned Provisioner-game #8 checkout, manually verified Partner Center evidence outside Git and explicit `--apply --confirm-request-id`. It has **not** been run against authenticated evidence on local Windows. Its current check-only path validates ledger/source/local JSON metadata but **does not rebuild/reinspect the EXE**; that preflight happens after explicit apply is requested, before remote CAS. Therefore READY_FOR_LOCAL_CAS_APPROVAL is *not* proof of package validation or Partner Center authentication; operator review and pre-CAS EXE SHA check remain mandatory. Do not upload identity evidence or secrets.
+
+**GitHub durable backlog:** Windows-all-auto Draft #15 `codex/github-backlog-local-queue-20261027@e175c7bed4dc8845e2be16f18009839cb8ae0b18`, CI 40464274411 SUCCESS, contains 30-day central QA artifact retention and 20 packages / 2 GiB local cap with HOLD_LOCAL_CAPACITY while preserving remote backlog. **It is not integrated into #14.** Compare against current integration: #15 diverged ahead 3 / behind 2, changed workflow, `scripts/local_handoff_pull.py` and tests. Worker #16 also diverged from #14 ahead 5 / behind 2 (worker script/docs/tests). No blind merge; reconcile on a dedicated codex/* integration branch and test both Windows and Ubuntu. Never replace the bounded puller with an unbounded immediate download.
+
+**Other lane observations:** 3D Factory #12 guard is now based on latest #10 and ahead 4 / behind 0, CI SUCCESS; use #12 rather than old divergent #11 for guard review, but 120h gate and no accepted 3D product remain HOLD. 3D pipeline JSON/MD agree on `msix_byte_qa` as the next code-validation stage; synthetic tests are not actual 3D MSIX QA. APP Factory #12 vs #13 remains diverged ahead 13 / behind 7; no active APP product. 3D Godot template unsigned EXE/PCK artifact #12666649210 and Windows-data utility QA artifact #12623796906 exist but are not product MSIX. No research backlog addition.
+
+### Next hour, non-overlapping handoff
+
+1. **12 GAME (product gate)**: resume `Windows-all-auto@codex/local-identity-return-worker-20261027-1639` `b223df253e9efea41b0da6e571b700e803c00f45` with `Repository-Provisioner-game@codex/game-msix-package-safety-20261027-1510` `66fc66b0e2a58dba2a9023f7e7fbbd6e5803d857`. First obtain genuinely authenticated official Partner Center evidence on local Windows, verify source HEAD, run check-only, explicitly approve and verify CAS commit. No Identity = HOLD; do not change source branch. After CAS only, port Factory #11 onto separate build branch while retaining immutable original source_sha.
+2. **36 E2E (integration/queue)**: review #15/#16 against `Windows-all-auto@codex/e2e-belt-connection-20261027` `0db4d865da64bebf94a0d8b58d9382b78bb4a273`, reconcile changed files/tests without blind merge, retain remote backlog and local 20/2 GiB cap. Real intake only after real MSIX. Diagnose Checker #2 CI infrastructure vs code with new evidence.
+3. **24 GAME_3D**: review `3d-game-factory@codex/3d-dispatch-guard-current-ledger-20261027-1628` `7bd8ada013c2b3772184fbfaa974f6e3041d9a81`, preserve owner ledger and 120h HOLD; `3d-build-qa@codex/3d-msix-zip-path-safety-20261027-1235` `ea6540037e359860775fbfd423244ea3f9ffeee6` is next code QA, not product acceptance.
+4. **00 APP**: review `AI-App-Factory@codex/app-msix-prebuilt-exe-20261027-1300` `e8e3ca613a114cd0e919cf2f3a4454fa8149510a` and `Repository-Provisioner-app@codex/e2e-belt-connection-20261027` `8e785ad286ecf9c8a8fdf1f337fd42062cd60085`; reconcile divergent prebuilt EXE/Identity contracts without starting an APP.
+
+No main/release write, force push, unapproved merge, new product, fabricated Identity, signing, Store submission or paid OpenAI API. Product E2E remains HOLD.
