@@ -102,6 +102,21 @@ class LocalPullTests(unittest.TestCase):
             pull(self.root/"inbox")
             self.assertEqual(len(list((self.root/"inbox").iterdir())),1)
 
+    def test_full_local_inbox_preserves_remote_backlog_without_failure(self):
+        inbox=self.root/"inbox"
+        inbox.mkdir()
+        for n in range(20):
+            existing=inbox/("existing-"+str(n))
+            existing.mkdir()
+            (existing/"package.msix").write_bytes(b"x")
+        with patch("scripts.local_handoff_pull.gh",side_effect=self.fake_gh):
+            result=pull(inbox)
+        self.assertEqual(result["status"],"HOLD_LOCAL_CAPACITY")
+        self.assertEqual(result["reason"],"LOCAL_QA_INBOX_FULL")
+        self.assertTrue(result["remote_backlog_preserved"])
+        self.assertEqual(result["new_packages"],0)
+        self.assertEqual(sum(1 for p in inbox.rglob("package.msix")),20)
+
     def test_illegal_store_approval_rejected(self):
         self.q["items"][0]["submit_allowed"]=True
         with patch("scripts.local_handoff_pull.gh",side_effect=self.fake_gh):
