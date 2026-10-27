@@ -124,9 +124,15 @@ def remote_json(repo: str, path: str, sha: str) -> tuple[dict, str]:
 
 def safe_local(path: Path) -> Path:
     path = path.expanduser().absolute()
-    if path.is_symlink() or any((p / ".git").exists() for p in (path, *path.parents)):
+    # Reject symlinked ancestors too: a private-looking path may redirect
+    # into a Git checkout through a parent junction/symlink.
+    original_ancestors = (path, *path.parents)
+    if any(p.is_symlink() for p in original_ancestors):
         raise Hold("HOLD", "PRIVATE_PATH_INSIDE_GIT_OR_SYMLINK")
-    return path
+    resolved = path.resolve(strict=False)
+    if any((p / ".git").exists() for p in (resolved, *resolved.parents)):
+        raise Hold("HOLD", "PRIVATE_PATH_INSIDE_GIT_OR_SYMLINK")
+    return resolved
 
 
 def atomic_json(path: Path, data: dict):
