@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-27T07:43:13Z",
+  "updated_at_utc": "2026-10-27T07:52:25Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -245,7 +245,7 @@
     "openai_paid_api": false
   },
   "last_cross_lane_observation": {
-    "observed_at_utc": "2026-10-27T07:43:13Z",
+    "observed_at_utc": "2026-10-27T07:52:25Z",
     "active_lane": "GAME",
     "active_product": "signal-sprint",
     "factory_source_head_verified": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
@@ -261,13 +261,43 @@
       "local_tests": "67_PASS",
       "next_action": "Do not rerun without new runner/workflow evidence; require real MSIX before Checker product QA"
     },
-    "last_12_minute_update": "Within 07:31:13-07:43:13 UTC: Windows-all-auto local Identity worker PR #16 commits and CI SUCCESS. 3D PR #12 was updated at 07:31:05Z, just before this window. No official Identity, CAS commit, real MSIX or local QA receipt observed.",
+    "last_12_minute_update": "07:43 UTC 36-minute E2E owner: local Identity CAS worker PR #16 b223df2 CI 40468806723 SUCCESS; integration PR #14 0db4d86 CI 40468871710 SUCCESS. At 07:52 UTC supervisor confirmed source HEAD unchanged, approved Identity absent and no product MSIX/receipt. Worker and bounded queue remain separate Draft PRs, not integrated into #14.",
     "next_repo": "shihuiarenjinba-png/Windows-all-auto",
     "next_branch": "codex/local-identity-return-worker-20261027-1639",
     "next_head_sha": "b223df253e9efea41b0da6e571b700e803c00f45",
     "alternate_safety_branch": "codex/game-msix-package-safety-20261027-1510",
     "alternate_safety_head_sha": "66fc66b0e2a58dba2a9023f7e7fbbd6e5803d857",
     "no_new_product": true,
-    "e2e_pass": false
+    "e2e_pass": false,
+    "supervisor_checkpoint_commit": "2879de57bfb7c9d1591c64e5a5267b78738344ee",
+    "transport_integration_code_head_observed": "0db4d865da64bebf94a0d8b58d9382b78bb4a273",
+    "transport_integration_ci_run_id": 40468871710,
+    "local_identity_worker_pr16": {
+      "head_sha": "b223df253e9efea41b0da6e571b700e803c00f45",
+      "ci_run_id": 40468806723,
+      "ci_conclusion": "SUCCESS",
+      "local_windows_run": "NOT_OBSERVED",
+      "compare_to_integration": "DIVERGED_AHEAD_5_BEHIND_2",
+      "check_only_scope": "LEDGER_HEAD_LOCAL_METADATA_ONLY; EXE_PREFLIGHT_OCCURS_IN_EXPLICIT_APPLY_BEFORE_CAS",
+      "partner_center_evidence": "NOT_OBSERVED"
+    },
+    "bounded_github_backlog_pr15": {
+      "head_sha": "e175c7bed4dc8845e2be16f18009839cb8ae0b18",
+      "ci_run_id": 40464274411,
+      "ci_conclusion": "SUCCESS",
+      "integration_status": "DRAFT_NOT_INTEGRATED",
+      "compare_to_integration": "DIVERGED_AHEAD_3_BEHIND_2",
+      "retention_days": 30,
+      "local_max_packages": 20,
+      "local_max_bytes": 2147483648,
+      "remote_backlog_preserved_on_full": true
+    },
+    "three_d_current_guard_pr12": {
+      "head_sha": "7bd8ada013c2b3772184fbfaa974f6e3041d9a81",
+      "ci_run_id": 40467528271,
+      "ci_conclusion": "SUCCESS",
+      "compare_to_3d_factory_pr10": "AHEAD_4_BEHIND_0",
+      "new_product_allowed": false
+    }
   }
 }
