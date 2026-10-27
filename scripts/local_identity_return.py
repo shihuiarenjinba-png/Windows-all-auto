@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -167,6 +168,52 @@ def validate_evidence(path: Path, args) -> bool:
     return True
 
 
+def check_resume_result(args, product: dict) -> Path:
+    """Use the exact inspected EXE instead of rebuilding nondeterministic bytes."""
+    path = args.resume_result
+    if path is None:
+        raise Gate("HOLD", "PREIDENTITY_RESULT_REQUIRED")
+    if path.is_symlink() or not path.is_file():
+        raise Gate("HOLD", "PREIDENTITY_RESULT_MISSING")
+    path = path.resolve(strict=True)
+    if any((parent / ".git").exists() for parent in (path, *path.parents)):
+        raise Gate("HOLD", "PRIVATE_RESULT_INSIDE_GIT_CHECKOUT")
+    prior = parse_json(path.read_text(encoding="utf-8"), 262_144)
+    expected = {"request_id": args.request_id, "product_type": "GAME",
+                "source_factory": "AI-Game-Factory", "source_repository": FACTORY,
+                "source_branch": args.source_branch, "source_sha": args.source_sha,
+                "slug": "signal-sprint", "status": "HOLD",
+                "next_stage": "OBTAIN_AUTHENTICATED_OFFICIAL_IDENTITY"}
+    if any(prior.get(k) != v for k, v in expected.items()):
+        raise Gate("CONFLICT", "PREIDENTITY_RESULT_BINDING_MISMATCH")
+    if ((prior.get("github_return") or {}).get("status") != "NOT_APPLIED"
+            or (prior.get("official_identity") or {}).get("status") != "UNVERIFIED"):
+        raise Gate("CONFLICT", "PREIDENTITY_RESULT_STAGE_MISMATCH")
+    package = prior.get("package")
+    original = (product.get("local_execution_result") or {}).get("package_sha256")
+    size = (product.get("local_execution_result") or {}).get("package_bytes")
+    if (not isinstance(package, dict) or package.get("kind") != "exe"
+            or not isinstance(original, str) or not SHA256.fullmatch(original)
+            or package.get("sha256") != original or package.get("size_bytes") != size
+            or package.get("signature_status") != "NOTSIGNED"):
+        raise Gate("CONFLICT", "PREIDENTITY_EXE_METADATA_MISMATCH")
+    raw_path = package.get("path")
+    if not isinstance(raw_path, str) or not raw_path:
+        raise Gate("HOLD", "PINNED_EXE_PATH_MISSING")
+    exe = Path(raw_path)
+    if exe.is_symlink() or not exe.is_file():
+        raise Gate("HOLD", "PINNED_EXE_MISSING")
+    if exe.stat().st_size != size:
+        raise Gate("CONFLICT", "PINNED_EXE_SIZE_CHANGED")
+    digest = hashlib.sha256()
+    with exe.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    if digest.hexdigest() != original:
+        raise Gate("CONFLICT", "PINNED_EXE_BYTES_CHANGED")
+    return path
+
+
 def run(args) -> dict:
     ledger = read_ledger()
     product, _ = validate_ledger(ledger, args)
@@ -177,6 +224,7 @@ def run(args) -> dict:
         return {"status": "HOLD", "reason": "OFFICIAL_IDENTITY_NOT_AVAILABLE",
                 "request_id": args.request_id, "source_sha": args.source_sha,
                 "e2e_pass": False}
+    resume_path = check_resume_result(args, product)
     if not args.apply:
         return {"status": "READY_FOR_LOCAL_CAS_APPROVAL",
                 "request_id": args.request_id, "source_sha": args.source_sha,
@@ -198,7 +246,8 @@ def run(args) -> dict:
     base_command = [sys.executable, str(repo / "provisioner.py"),
                "--input", str(job_path), "--output", str(result_path),
                "--official-identity", str(evidence),
-               "--state-dir", str(local / "state"), "--work-dir", str(local / "work")]
+               "--state-dir", str(local / "state"), "--work-dir", str(local / "work"),
+               "--resume-result", str(resume_path)]
 
     def invoke(apply: bool) -> dict:
         # No stdout/stderr or raw evidence is ever copied into the receipt.
@@ -267,6 +316,8 @@ def main(argv=None):
     p.add_argument("--provisioner-sha", required=True)
     p.add_argument("--local-dir", type=Path, required=True)
     p.add_argument("--official-identity", type=Path, required=True)
+    p.add_argument("--resume-result", type=Path,
+                   help="Prior inspected GAME Provisioner result, required when Identity evidence exists")
     p.add_argument("--source-branch", required=True)
     p.add_argument("--source-sha", required=True)
     p.add_argument("--request-id", required=True)
