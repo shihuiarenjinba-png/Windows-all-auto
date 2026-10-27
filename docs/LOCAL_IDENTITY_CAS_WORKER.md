@@ -69,8 +69,9 @@ rerun the same command with the two additional arguments:
 --apply --confirm-request-id "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e"
 ~~~
 
-The worker first rebuilds and inspects the actual local EXE without
-mutation, requiring the pinned SHA-256 from the ledger. It rechecks the
+The worker re-inspects the exact previously accepted local EXE through
+Provisioner `--resume-result` without an unnecessary nondeterministic rebuild,
+requiring the pinned SHA-256, byte count and signature state from the ledger. It rechecks the
 Factory source HEAD, then invokes Provisioner --official-identity --apply.
 Provisioner performs expectedHeadOid CAS on approved-identity.json.
 The worker verifies the returned commit against the Factory HEAD.
@@ -94,7 +95,7 @@ e2e_pass=false. Store submission is a separate authorization.
 GitHub-side MSIX QA backlog may be retained for 30 days. The local inbox
 remains capped at 20 packages / 2 GiB; do not force downloads when full.
 
-The central ledger currently pins Provisioner PR #8. The stacked
+The central ledger now indexes the current Provisioner PR #9 for the next reviewed local check-only; the old PR #16 checkpoint remains historical. The stacked
 `codex/game-identity-idempotency-20261027` recovery change must have green CI
 and be explicitly pinned in either the central ledger or an immutable reviewed
 `codex/*` ledger checkpoint before an apply run uses it. For the latter, first
