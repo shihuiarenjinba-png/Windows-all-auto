@@ -12,8 +12,8 @@ Provisioner result to GitHub. This worker does not build MSIX or certify E2E PAS
 - Factory branch: codex/game-signal-sprint-undo-20261027
 - Immutable source_sha: c058cbf7fe38e02d929c67d047d717ff74bd522e
 - request_id: game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e
-- Provisioner-game safety branch: codex/game-msix-package-safety-20261027-1510
-- Reviewed Provisioner HEAD: 291c11bfe6b71d6f915e6a5e0a72d4281d76f2a2 (PR #8, CI run 40479978740 SUCCESS; duplicate-key JSON rejection added at 87047e8dcb2d67eb0936cd37cbd099876418b6a4; reverify ledger and branch HEAD before execution)
+- Provisioner-game restart-safe branch: codex/game-identity-idempotency-20261027 (Draft PR #9, stacked on PR #8)
+- Reviewed Provisioner HEAD: 5c1db9820bac68c59cc7eb6ca5921e22a5bb3913 (CI 40488277940 SUCCESS; verify HEAD before local use). The original inspected EXE SHA-256 is e8517df8cd31a40e5ce72afdd4e6a4d63626fb99f7ff8a4fa3296ff8deef05f4.
 
 ## Windows local procedure
 
@@ -28,10 +28,10 @@ Check that C:\src\Repository-Provisioner-game is on the exact branch and SHA
 above. From the Windows-all-auto checkout, run the **check-only** command:
 
 ~~~powershell
-py -3 -m scripts.local_identity_return --provisioner-root "C:\src\Repository-Provisioner-game" --provisioner-branch "codex/game-msix-package-safety-20261027-1510" --provisioner-sha "291c11bfe6b71d6f915e6a5e0a72d4281d76f2a2" --local-dir "C:\qa\signal-sprint\identity-return" --official-identity "C:\qa\signal-sprint\official-identity-private.json" --source-branch "codex/game-signal-sprint-undo-20261027" --source-sha "c058cbf7fe38e02d929c67d047d717ff74bd522e" --request-id "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e"
+py -3 -m scripts.local_identity_return --provisioner-root "C:\src\Repository-Provisioner-game" --provisioner-branch "codex/game-identity-idempotency-20261027" --provisioner-sha "5c1db9820bac68c59cc7eb6ca5921e22a5bb3913" --resume-result "C:\\qa\\signal-sprint\\result.json" --local-dir "C:\qa\signal-sprint\identity-return" --official-identity "C:\qa\signal-sprint\official-identity-private.json" --source-branch "codex/game-signal-sprint-undo-20261027" --source-sha "c058cbf7fe38e02d929c67d047d717ff74bd522e" --request-id "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e"
 ~~~
 
-Missing local evidence returns HOLD / OFFICIAL_IDENTITY_NOT_AVAILABLE.
+The --resume-result path is an operator-verified example, not proof that the file exists. It must point to the original pre-Identity Provisioner result with the actual local EXE path; changed bytes, missing files or mismatched request/SHA must fail closed. Never commit local result/evidence files.\n\nMissing local evidence returns HOLD / OFFICIAL_IDENTITY_NOT_AVAILABLE.
 Valid evidence returns READY_FOR_LOCAL_CAS_APPROVAL without mutation.
 Reconcile CONFLICT; never force-push the source branch.
 
@@ -42,8 +42,7 @@ rerun the same command with the two additional arguments:
 --apply --confirm-request-id "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e"
 ~~~
 
-The worker first rebuilds and inspects the actual local EXE without
-mutation, requiring the pinned SHA-256 from the ledger. It rechecks the
+The worker hashes the original inspected EXE and requires the pinned SHA-256 from the ledger. Provisioner PR #9 receives --resume-result for both preflight and apply, preventing a nondeterministic PyInstaller rebuild. It rechecks the
 Factory source HEAD, then invokes Provisioner --official-identity --apply.
 Provisioner performs expectedHeadOid CAS on approved-identity.json.
 The worker verifies the returned commit against the Factory HEAD.
