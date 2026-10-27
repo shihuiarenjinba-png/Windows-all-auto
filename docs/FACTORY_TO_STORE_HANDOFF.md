@@ -66,3 +66,17 @@ Windows-all-autoが自動取得・検証し、ローカルPCが引き取り、�
 「初めて実MSIXをFactoryから転送し中央のArtifactへ保存PASS」→
 「ローカル実機MSIX動作/画像取得PASS」→「Partner Center下書き保存PASS」→
 「審査提出PASS」を別々に報告する。下流を推測でPASSへ昇格させない。
+
+## 3D専用Artifactの受信契約（2026-10-27）
+
+- 3D Factoryの作業ブランチは `codex/3d-real-msix-build-path-20261027` に固定。
+- 3D Windows workflow `.github/workflows/msix-export.yml` の表示名は
+  `3D Store MSIX candidate build`。成功した `workflow_dispatch` から
+  `factory-msix-handoff-<slug>` を受け取る。
+- Artifactは `package.msix` と `handoff.json` の2ファイルのみ。
+  `handoff_bridge` がMSIX本体SHA-256、Manifest Identity、3D品種、
+  Factory repository、実行HEAD SHA、バイト数を再検証する。
+- 実製品、Partner Center正式Identity、署名、GPU実機QAは未取得・未実施。
+  3D受信契約のコード/CI PASSを「実MSIX搬送PASS」とは扱わない。
+- 定期workflowが実際にどのブランチをチェックアウトするか、必要な
+  `FACTORY_READ_TOKEN` の権限、およびローカル搬送は別途実証する。
