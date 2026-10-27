@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-27T05:03:20Z",
+  "updated_at_utc": "2026-10-27T05:34:21Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -56,7 +56,7 @@
       "windows_all_auto_record": null,
       "finished_at_utc": "2026-10-27T05:03:20Z"
     },
-    "next_action": "Obtain authenticated Partner Center evidence for this exact product; recheck the pinned Factory HEAD; then perform the reviewed Identity CAS return on the same work branch before any MSIX rebuild. Do not submit or claim MSIX.",
+    "next_action": "Obtain authenticated Partner Center Identity for exact Signal Sprint request and inspected EXE; verify source branch HEAD still equals pinned c058cbf7... immediately before CAS; use Provisioner-game codex/e2e-belt-connection-20261027 to apply approved-identity.json with exact expectedHeadOid and capture returned commit SHA. Only AFTER CAS, integrate AI-Game-Factory Draft PR #11 on a dedicated Factory MSIX build branch; verify CI, run MakeAppx, require immutable handoff with factory_head_sha equal Actions run HEAD, then Windows-all-auto intake, local pull, Checker and real Windows GUI/install QA. Never advance active source branch for pre-CAS code integration.",
     "local_commands": [
       "gh api repos/shihuiarenjinba-png/AI-Game-Factory/actions/artifacts/12706862577 --jq .digest  # must equal sha256:e48a0426595dc227988f12944921511a47d5c8feca8b063a161dd0dd61306412",
       "gh run download 40443340158 -R shihuiarenjinba-png/AI-Game-Factory -n game-signal-sprint-exe-c058cbf7fe38e02d929c67d047d717ff74bd522e -D C:\\qa\\signal-sprint\\factory-exe",
@@ -82,14 +82,31 @@
       "Factory GAME MSIX safety gates must be integrated with active Signal Sprint branch before build",
       "Real MSIX SHA-256 and embedded Identity verified; unsigned EXE is not an MSIX",
       "Windows-all-auto read token configured, Artifact intake and local pull independently verified",
-      "Windows-checker and real Windows GUI QA both completed; Checker preflight alone is not E2E PASS"
+      "Windows-checker and real Windows GUI QA both completed; Checker preflight alone is not E2E PASS",
+      "Factory GAME immutable MSIX handoff Draft PR #11 must be CI-green and integrated only after Identity CAS on a separate build branch; do not substitute build HEAD for source_sha"
     ],
     "partner_center_identity": null,
     "approved_identity_json": null,
     "factory_return_commit_sha": null,
     "real_msix_sha256": null,
     "windows_all_auto_receipt": null,
-    "local_qa_receipt": null
+    "local_qa_receipt": null,
+    "factory_msix_handoff_fix": {
+      "repository": "shihuiarenjinba-png/AI-Game-Factory",
+      "branch": "codex/game-msix-immutable-handoff-20261027-1431",
+      "head_sha": "6a0f69fa371e1a87a5247974a436f8a7e5816cac",
+      "draft_pr": 11,
+      "base_source_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
+      "status": "CODE_COMMITTED_CI_PENDING_NOT_INTEGRATED",
+      "changed_files": [
+        "tools/msix_handoff.py",
+        "tests/test_msix_handoff.py"
+      ],
+      "immutable_contract": "GAME request_id/product_type/source_factory/source_repository/source_branch/source_sha/expected_head_sha/slug",
+      "build_head_field": "factory_head_sha",
+      "integrate_only_after": "AUTHENTICATED_IDENTITY_AND_CAS_RETURN",
+      "real_msix": "NOT_GENERATED"
+    }
   },
   "other_lanes": {
     "APP": {
@@ -123,7 +140,11 @@
     "checker_ci_run_id": 40453767674,
     "checker_ci_status": "FAILURE_NO_STEPS_REPORTED_AFTER_ONE_FAILED_JOB_RETRY; local 67/67 PASS; runner-start/infrastructure suspected, not proven code failure",
     "checker_local_tests": "67 PASS, 0 FAIL",
-    "checker_real_msix_test": "NOT_RUN"
+    "checker_real_msix_test": "NOT_RUN",
+    "game_factory_handoff_fix_branch": "codex/game-msix-immutable-handoff-20261027-1431",
+    "game_factory_handoff_fix_head": "6a0f69fa371e1a87a5247974a436f8a7e5816cac",
+    "game_factory_handoff_fix_pr": 11,
+    "game_factory_handoff_fix_ci": "PENDING"
   },
   "policy": {
     "main_release_changes": false,
