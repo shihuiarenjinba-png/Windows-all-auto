@@ -68,6 +68,20 @@ class SchedulerSafetyTests(unittest.TestCase):
                         pass
             self.assertFalse(path.exists())
 
+    def test_private_path_symlinked_parent_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory)
+            target = base / "checkout"
+            target.mkdir()
+            (target / ".git").mkdir()
+            link = base / "alias"
+            try:
+                link.symlink_to(target, target_is_directory=True)
+            except (OSError, NotImplementedError):
+                self.skipTest("symlinks unavailable on this runner")
+            with self.assertRaisesRegex(s.Hold, "PRIVATE_PATH_INSIDE_GIT_OR_SYMLINK"):
+                s.safe_local(link / "evidence.json")
+
     def test_local_package_hash_enforced(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "package.exe"
