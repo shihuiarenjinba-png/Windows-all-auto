@@ -19,7 +19,7 @@
     "display_name": "Signal Sprint",
     "provisioner_repository": "shihuiarenjinba-png/Repository-Provisioner-game",
     "provisioner_branch": "codex/e2e-belt-connection-20261027",
-    "provisioner_head_observed": "a2975f11fcc9207bb624a34be9006055ceb76ef3",
+    "provisioner_head_observed": "7ac69a43f3b06402a942b7f31ec3070f67c67688",
     "factory_exe_run_id": 40443340158,
     "factory_exe_artifact_id": 12706862577,
     "factory_exe_artifact_name": "game-signal-sprint-exe-c058cbf7fe38e02d929c67d047d717ff74bd522e",
@@ -98,7 +98,7 @@
       "factory_branch": "codex/app-msix-prebuilt-exe-20261027-1300",
       "factory_head": "e8e3ca613a114cd0e919cf2f3a4454fa8149510a",
       "provisioner_branch": "codex/e2e-belt-connection-20261027",
-      "provisioner_head": "5835cae5cb70baed59ddefe8d2555464160f8784",
+      "provisioner_head": "7cf8ea130e7a8783e897de7bd683af086e713d8f",
       "next_action": "Keep existing APP integration and provenance; await real committed active product and pinned request, do not create new product"
     },
     "GAME_3D": {
@@ -107,7 +107,7 @@
       "factory_branch": "codex/3d-qa-zip-ledger-20261027-1235",
       "factory_head": "39d66161514ed301dde7a0ad5f7486eab0f2d368",
       "provisioner_branch": "codex/e2e-belt-connection-20261027",
-      "provisioner_head": "34076c3230909c6bd181b06f7cd58c8149a00849",
+      "provisioner_head": "70600e77f2dd4278a989604314eebfa662e05c33",
       "next_action": "Preserve 120-hour gate; QA template evidence is not an active product"
     }
   },
