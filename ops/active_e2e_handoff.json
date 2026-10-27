@@ -156,15 +156,16 @@
       "head_sha": "b223df253e9efea41b0da6e571b700e803c00f45",
       "draft_pr": 16,
       "ci_run_id": 40468806723,
-      "ci_conclusion": "IN_PROGRESS",
-      "status": "CODE_COMMITTED_CI_PENDING_NOT_RUN_ON_LOCAL_WINDOWS",
+      "ci_conclusion": "SUCCESS",
+      "status": "CODE_COMMITTED_WINDOWS_UBUNTU_CI_PASS_NOT_RUN_ON_LOCAL_WINDOWS",
       "entrypoint": "python -m scripts.local_identity_return",
       "runbook": "docs/LOCAL_IDENTITY_CAS_WORKER.md",
       "mode": "LOCAL_ONLY_EXPLICIT_APPLY",
       "evidence_path": "C:\\qa\\signal-sprint\\official-identity-private.json",
       "receipt_path": "C:\\qa\\signal-sprint\\identity-return\\identity-return-receipt.json",
       "required_provisioner_sha": "66fc66b0e2a58dba2a9023f7e7fbbd6e5803d857",
-      "next_action": "Authenticated Partner Center evidence remains local only. Run worker check-only with exact request/source SHA; after explicit local CAS approval run --apply --confirm-request-id; verify returned commit. No remote action has been executed."
+      "next_action": "Authenticated Partner Center evidence remains local only. Run worker check-only with exact request/source SHA; after explicit local CAS approval run --apply --confirm-request-id; verify returned commit. No remote action has been executed.",
+      "ci_url": "https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/40468806723"
     }
   },
   "other_lanes": {
@@ -260,7 +261,7 @@
       "local_tests": "67_PASS",
       "next_action": "Do not rerun without new runner/workflow evidence; require real MSIX before Checker product QA"
     },
-    "last_12_minute_update": "3d-game-factory PR #12 2026-10-27T07:31:05Z (CI SUCCESS, guard only); no active 3D product. Provisioner-game PR #8 updated 07:20:05Z (outside 12m) CI SUCCESS. No Signal Sprint official Identity or MSIX observed.",
+    "last_12_minute_update": "Within 07:31:13-07:43:13 UTC: Windows-all-auto local Identity worker PR #16 commits and CI SUCCESS. 3D PR #12 was updated at 07:31:05Z, just before this window. No official Identity, CAS commit, real MSIX or local QA receipt observed.",
     "next_repo": "shihuiarenjinba-png/Windows-all-auto",
     "next_branch": "codex/local-identity-return-worker-20261027-1639",
     "next_head_sha": "b223df253e9efea41b0da6e571b700e803c00f45",
