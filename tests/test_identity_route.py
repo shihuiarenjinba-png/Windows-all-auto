@@ -28,6 +28,9 @@ class IdentityRouteTests(unittest.TestCase):
         self.assertEqual(result["repository"],"shihuiarenjinba-png/AI-App-Factory")
         self.assertEqual(result["branch"],"codex/factory-autoloop-20261026")
         self.assertEqual(result["path"],"products/useful-tool/store/approved-identity.json")
+        self.assertEqual(result["content"]["request_id"],"3d-useful-tool-0001")
+        self.assertEqual(result["content"]["product_type"],"GAME_3D")
+        self.assertEqual(result["content"]["local_package_sha256"],"d"*64)
         self.assertFalse(result["applied"])
         self.assertFalse(result["store_submitted"])
         self.assertEqual(result["content"]["verified_source_sha"], self.record["expected_head_sha"])
@@ -51,7 +54,19 @@ class IdentityRouteTests(unittest.TestCase):
         self.record["expected_head_sha"]="main"
         with self.assertRaises(ValueError):route_identity(self.record)
     def test_3d_kind_routes_only_3d_factory(self):
-        self.record["type"]="3d-game"
+        self.record.update({
+            "type":"3d-game","request_id":"3d-useful-tool-0001",
+            "product_type":"GAME_3D","source_factory":"3d-game-factory",
+            "source_repository":"shihuiarenjinba-png/3d-game-factory",
+            "source_branch":"codex/3d-real-msix-build-path-20261027",
+            "source_sha":self.record["expected_head_sha"],
+            "local_package_sha256":"d"*64,"local_package_kind":"exe",
+            "local_signature_status":"NOTSIGNED",
+        })
+        self.record["identity"].update({
+            "package_family_name":"OkinawaDesktopTools.UsefulTool_testpublisher",
+            "package_sid":"S-1-15-2-1-2-3-4-5-6-7",
+        })
         result=route_identity(self.record)
         self.assertEqual(result["repository"],"shihuiarenjinba-png/3d-game-factory")
         self.assertEqual(result["branch"],"codex/3d-real-msix-build-path-20261027")
