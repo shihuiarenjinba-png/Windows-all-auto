@@ -62,6 +62,28 @@ class PollTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             verified_run(dict(RUN,event="workflow_dispatch",name="Unknown export"),REPO,ARTIFACT)
 
+    def test_3d_factory_msix_handoff_workflow_is_allowlisted(self):
+        repo="shihuiarenjinba-png/3d-game-factory"
+        run=dict(RUN,
+                 name="3D Store MSIX candidate build",
+                 head_repository={"full_name":repo},
+                 head_branch="codex/3d-real-msix-build-path-20261027",
+                 event="workflow_dispatch")
+        self.assertEqual(verified_run(run,repo,ARTIFACT),SHA)
+
+    def test_3d_wrong_branch_or_spoofed_workflow_is_rejected(self):
+        repo="shihuiarenjinba-png/3d-game-factory"
+        run=dict(RUN,
+                 name="3D Store MSIX candidate build",
+                 head_repository={"full_name":repo},
+                 head_branch="codex/3d-real-msix-build-path-20261027")
+        with self.assertRaisesRegex(ValueError,"active Factory branch"):
+            verified_run(dict(run,head_branch="codex/old-3d-branch"),repo,ARTIFACT)
+        with self.assertRaisesRegex(ValueError,"workflow or event"):
+            verified_run(dict(run,name="Factory MSIX export"),repo,ARTIFACT)
+        with self.assertRaisesRegex(ValueError,"workflow path"):
+            verified_run(dict(run,path=".github/workflows/untrusted.yml"),repo,ARTIFACT)
+
     def test_real_bundle_moves_once_without_store_permission(self):
         with tempfile.TemporaryDirectory() as temp:
             root=Path(temp)
