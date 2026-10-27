@@ -118,10 +118,11 @@
     "factory_read_token_status": "NOT_VERIFIED_CONFIGURED",
     "local_checker_entrypoint": "python -m scripts.local_checker_queue --inbox C:\\qa\\msix-inbox --checker C:\\src\\Windows-checker --reports C:\\qa\\checker-reports",
     "checker_repository": "shihuiarenjinba-png/Windows-checker",
-    "checker_branch": "codex/store-readiness-checker-20261025",
-    "checker_head": "7780647efd80dea6b2ebc629172cfb2c743a9dcb",
-    "checker_ci_run_id": 40249620006,
-    "checker_ci_status": "FAILURE_NO_STEPS_REPORTED; runner-start/infrastructure suspected, not proven code failure",
+    "checker_branch": "codex/e2e-belt-connection-20261027",
+    "checker_head": "ff315c7a42bb2d70ff4350ab2f146fd80511116a",
+    "checker_ci_run_id": 40453767674,
+    "checker_ci_status": "FAILURE_NO_STEPS_REPORTED_AFTER_ONE_FAILED_JOB_RETRY; local 67/67 PASS; runner-start/infrastructure suspected, not proven code failure",
+    "checker_local_tests": "67 PASS, 0 FAIL",
     "checker_real_msix_test": "NOT_RUN"
   },
   "policy": {

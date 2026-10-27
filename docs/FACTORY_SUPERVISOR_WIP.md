@@ -52,4 +52,5 @@ Hard gates: `new_product_allowed=false` for all lanes; no main/release writes, f
 - Provisioner 3系統: 合計219件、PASS 216、FAIL 0、SKIP 3。GAMEは更新された安全基準`9a27eb3`（MSIX全member CRCと相関保持）を非force merge後に再検証。job/result Schemaの正規化SHA-256は3リポジトリで一致。
 - Signal Sprint Artifact ZIP digestと内部provenance/EXE SHAを確認し、DRY_RUNを副作用0で完了。固定Factory SHAをローカルで再ビルドし、実PE EXE 11,387,518 bytes、SHA-256 `e8517df8cd31a40e5ce72afdd4e6a4d63626fb99f7ff8a4fa3296ff8deef05f4`、Authenticode `NOTSIGNED`を収集した。
 - Provisioner live結果は正しく`HOLD / OBTAIN_AUTHENTICATED_OFFICIAL_IDENTITY`。Partner Center証拠、Factory書戻しcommit、正式MSIX、Windows-all-auto receipt、Checker/UI QAはまだ存在しない。`e2e_pass=false`と`new_product_allowed=false`を維持する。
+- Windows-checkerのWindowsローカル試験は67/67 PASS。Draft PR #2のActions run `40453767674`は初回とfailed-job再実行の両方が数秒で`unit-tests=failure`、step/log情報なしのため、コード失敗とは断定せずCI基盤HOLDとして記録する。
 - 次の唯一の製品工程: 認証済みPartner CenterでSignal Sprintの公式Identityを取得し、同じrequest_id/source branch/source SHAを再照合してCAS返却する。推測値や別製品Identityは使用しない。
