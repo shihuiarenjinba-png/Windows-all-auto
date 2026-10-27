@@ -30,8 +30,8 @@ def gh(*args:str)->str:
     return r.stdout
 
 def recent_artifacts()->list[tuple[int,str]]:
-    # A busy 15-minute intake may publish more than 30 artifacts within the
-    # two-day retention window. Never silently discard older QA packages.
+    # A busy intake may publish many artifacts during the central retention
+    # window. Never silently discard older QA packages.
     # Page the full GitHub listing, with an explicit HOLD if it is too large.
     artifacts=[]
     for page in range(1,11):
@@ -120,10 +120,21 @@ def pull(target:Path)->dict:
                 size=verified["package_bytes"]
                 prior=(target/folder).is_dir()
                 if not prior:
-                    if sum(1 for p in target.rglob("package.msix") if p.is_file())>=MAX_QUEUED:
-                        raise ValueError("Local QA inbox full; complete/archive existing QA first")
+                    queued=sum(1 for p in target.rglob("package.msix") if p.is_file())
+                    if queued>=MAX_QUEUED:
+                        return {"status":"HOLD_LOCAL_CAPACITY",
+                                "reason":"LOCAL_QA_INBOX_FULL",
+                                "inspected_artifacts":len(artifacts),
+                                "new_packages":len(imported),"total_bytes":total,
+                                "products":imported,"remote_backlog_preserved":True,
+                                "submitted_to_store":0}
                     if total+size>MAX_QUEUED_BYTES:
-                        raise ValueError("Local QA inbox would exceed 2GiB; HOLD")
+                        return {"status":"HOLD_LOCAL_CAPACITY",
+                                "reason":"LOCAL_QA_INBOX_BYTES_LIMIT",
+                                "inspected_artifacts":len(artifacts),
+                                "new_packages":len(imported),"total_bytes":total,
+                                "products":imported,"remote_backlog_preserved":True,
+                                "submitted_to_store":0}
                 result=stage_bundle(source,target,item.get("factory_head_sha",item["source_sha"]))
                 if result["package_sha256"]!=checksum:
                     raise ValueError("Mismatch between queue and actual bytes")
@@ -133,8 +144,10 @@ def pull(target:Path)->dict:
                         "product_type":result.get("product_type"),
                         "request_id":result.get("request_id"),
                         "status":"DOWNLOADED_AWAITING_WINDOWS_QA"})
-    return {"inspected_artifacts":len(artifacts),"new_packages":len(imported),
-            "total_bytes":total,"products":imported,"submitted_to_store":0}
+    return {"status":"OK","inspected_artifacts":len(artifacts),
+            "new_packages":len(imported),"total_bytes":total,
+            "products":imported,"remote_backlog_preserved":True,
+            "submitted_to_store":0}
 
 def main(argv=None):
     parser=argparse.ArgumentParser()
