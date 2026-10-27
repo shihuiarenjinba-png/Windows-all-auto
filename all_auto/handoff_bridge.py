@@ -12,9 +12,14 @@ import zipfile
 
 OWNER="shihuiarenjinba-png"
 SLUG=re.compile(r"^[a-z][a-z0-9-]{3,39}$")
+REQUEST_ID=re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{3,127}$")
 SHA40=re.compile(r"^[a-f0-9]{40}$")
 SHA64=re.compile(r"^[a-f0-9]{64}$")
-REPO=re.compile(r"^https://github\.com/shihuiarenjinba-png/(AI-App-Factory|AI-Game-Factory|3d-game-factory)$")
+REPO_TYPES={
+    "https://github.com/shihuiarenjinba-png/AI-App-Factory":"app",
+    "https://github.com/shihuiarenjinba-png/AI-Game-Factory":"game",
+    "shihuiarenjinba-png/3d-game-factory":"3d-game",
+}
 MAX_BYTES=300*1024*1024
 REQUIRED={"handoff.json","package.msix"}
 
@@ -65,14 +70,9 @@ def validate_bundle(directory:Path,expected_run_sha:str|None=None)->dict:
         fail("wrong schema")
     repo=data.get("source_repository")
     kind=data.get("type")
-    if not isinstance(repo,str) or not REPO.fullmatch(repo):
+    if not isinstance(repo,str) or repo not in REPO_TYPES:
         fail("untrusted source repository")
-    # The 3D lane is distinct from the ordinary game lane all the way to QA.
-    expected_kind={
-        "AI-App-Factory":"app",
-        "AI-Game-Factory":"game",
-        "3d-game-factory":"3d-game",
-    }[repo.rsplit("/",1)[-1]]
+    expected_kind=REPO_TYPES[repo]
     if kind!=expected_kind: fail("source factory / product type mismatch")
     slug=data.get("slug")
     if not isinstance(slug,str) or not SLUG.fullmatch(slug):
@@ -80,7 +80,24 @@ def validate_bundle(directory:Path,expected_run_sha:str|None=None)->dict:
     sha=data.get("source_sha")
     if not isinstance(sha,str) or not SHA40.fullmatch(sha):
         fail("invalid source commit")
-    if expected_run_sha is not None and sha!=expected_run_sha:
+    build_head=sha
+    if kind=="3d-game":
+        request_id=data.get("request_id")
+        if not isinstance(request_id,str) or not REQUEST_ID.fullmatch(request_id):
+            fail("3D handoff missing request_id")
+        if data.get("product_type")!="GAME_3D":
+            fail("3D handoff product_type mismatch")
+        if data.get("source_factory")!="3d-game-factory":
+            fail("3D handoff source_factory mismatch")
+        if data.get("source_branch")!="codex/3d-real-msix-build-path-20261027":
+            fail("3D handoff source_branch mismatch")
+        build_head=data.get("factory_build_head")
+        if not isinstance(build_head,str) or not SHA40.fullmatch(build_head):
+            fail("3D handoff factory_build_head missing")
+        local_sha=data.get("local_package_sha256")
+        if not isinstance(local_sha,str) or not SHA64.fullmatch(local_sha):
+            fail("3D handoff local package provenance missing")
+    if expected_run_sha is not None and build_head!=expected_run_sha:
         fail("artifact provenance / Actions head SHA mismatch")
     if data.get("package")!="package.msix" or data.get("status")!="QA_UNSIGNED":
         fail("no approved package handoff state")
@@ -95,14 +112,26 @@ def validate_bundle(directory:Path,expected_run_sha:str|None=None)->dict:
         not isinstance(details.get(k),str) or not details.get(k)
         for k in ("name","publisher","version")):
         fail("MSIX embedded identity mismatch")
-    return {
+    if kind=="3d-game":
+        for key in ("store_id","package_family_name","package_sid"):
+            if not isinstance(approved.get(key),str) or not approved.get(key):
+                fail("3D handoff official identity metadata missing: "+key)
+    result={
        "schema_version":1,"slug":slug,"type":kind,"source_repository":repo,
-       "source_sha":sha,"package_sha256":file_hash,"package_bytes":details["bytes"],
-       "identity":{k:details[k] for k in ("name","publisher","version")},
+       "source_sha":sha,"factory_build_head":build_head,
+       "package_sha256":file_hash,"package_bytes":details["bytes"],
+       "identity":dict(approved),
        "local_action":"WINDOWS_INSTALL_UI_QA_ONLY",
        "security_confirmed":False,"price_approved":False,
-       "store_id":None,"submit_allowed":False
+       "store_id":approved.get("store_id"),"submit_allowed":False
     }
+    if kind=="3d-game":
+        result.update({
+            "request_id":data["request_id"],"product_type":data["product_type"],
+            "source_factory":data["source_factory"],"source_branch":data["source_branch"],
+            "local_package_sha256":data["local_package_sha256"],
+        })
+    return result
 
 def stage_bundle(source:Path,target:Path,expected_run_sha:str|None=None)->dict:
     info=validate_bundle(source,expected_run_sha)
@@ -117,9 +146,14 @@ def stage_bundle(source:Path,target:Path,expected_run_sha:str|None=None)->dict:
         # Factory lanes (or source commits) may produce identical MSIX bytes.
         # Never reuse the earlier receipt for a different source product.
         provenance_fields=(
-            "source_repository", "source_sha", "slug", "type",
+            "source_repository", "source_sha", "factory_build_head", "slug", "type",
             "package_sha256", "package_bytes", "identity",
         )
+        if info["type"]=="3d-game":
+            provenance_fields += (
+                "request_id","product_type","source_factory","source_branch",
+                "local_package_sha256",
+            )
         if any(other[key]!=info[key] for key in provenance_fields):
             fail("existing target package or provenance changed")
         return info
