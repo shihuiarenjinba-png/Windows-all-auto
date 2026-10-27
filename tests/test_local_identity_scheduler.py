@@ -300,5 +300,53 @@ class SchedulerSafetyTests(unittest.TestCase):
             process.assert_not_called()
 
 
+    def test_uncertain_cas_error_requires_manual_reconciliation(self):
+        job = {**store_job(), "kind": "GAME_SIGNAL_SPRINT",
+               "repository": s.OWNER + "/AI-Game-Factory",
+               "branch": "codex/game-signal-sprint-undo-20261027"}
+        with tempfile.TemporaryDirectory() as directory:
+            state_dir = Path(directory)
+            def launched_then_failed(_job, _sha, _args, mark):
+                mark()
+                raise s.Hold("HOLD", "DELEGATED_WORKER_HOLD_CHECK_PRIVATE_RECEIPT")
+            with patch.object(s, "head", return_value=SHA), \
+                 patch.object(s, "game_job", side_effect=launched_then_failed) as worker:
+                result = s.process(job, types.SimpleNamespace(), state_dir)
+                self.assertEqual(result["stage"], "HOLD")
+                self.assertEqual(result["reason"],
+                                 "DELEGATED_CAS_OUTCOME_REQUIRES_RECONCILIATION")
+                with self.assertRaisesRegex(s.Hold, "DELEGATED_CAS_OUTCOME_REQUIRES_RECONCILIATION"):
+                    s.process(job, types.SimpleNamespace(), state_dir)
+                worker.assert_called_once()
+
+    def test_crash_after_cas_intent_does_not_replay(self):
+        job = {**store_job(), "kind": "GAME_SIGNAL_SPRINT",
+               "repository": s.OWNER + "/AI-Game-Factory",
+               "branch": "codex/game-signal-sprint-undo-20261027"}
+        with tempfile.TemporaryDirectory() as directory:
+            state_dir = Path(directory)
+            def crashed_after_launch(_job, _sha, _args, mark):
+                mark()
+                raise SystemExit("simulated crash")
+            with patch.object(s, "head", return_value=SHA), \
+                 patch.object(s, "game_job", side_effect=crashed_after_launch) as worker:
+                with self.assertRaises(SystemExit):
+                    s.process(job, types.SimpleNamespace(), state_dir)
+                with self.assertRaisesRegex(s.Hold, "DELEGATED_CAS_OUTCOME_REQUIRES_RECONCILIATION"):
+                    s.process(job, types.SimpleNamespace(), state_dir)
+                worker.assert_called_once()
+
+    def test_predelegation_hold_does_not_create_sticky_cas_marker(self):
+        job = {**store_job(), "kind": "GAME_SIGNAL_SPRINT",
+               "repository": s.OWNER + "/AI-Game-Factory",
+               "branch": "codex/game-signal-sprint-undo-20261027"}
+        with tempfile.TemporaryDirectory() as directory, \
+             patch.object(s, "head", return_value=SHA), \
+             patch.object(s, "game_job",
+                          side_effect=s.Hold("WAITING_PARTNER_CENTER_AUTH", "OFFICIAL_IDENTITY_MISSING")):
+            result = s.process(job, types.SimpleNamespace(), Path(directory))
+            self.assertEqual(result["stage"], "WAITING_PARTNER_CENTER_AUTH")
+            self.assertEqual(result["reason"], "OFFICIAL_IDENTITY_MISSING")
+
 if __name__ == "__main__":
     unittest.main()
