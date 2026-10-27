@@ -13,6 +13,7 @@ import sys
 import tempfile
 
 from all_auto.handoff_bridge import stage_bundle, validate_bundle
+from all_auto.lane_queue import relative_package_path
 
 REMOTE="shihuiarenjinba-png/Windows-all-auto"
 PREFIX="verified-msix-local-qa-"
@@ -93,18 +94,25 @@ def pull(target:Path)->dict:
                 if (not isinstance(slug,str) or not isinstance(checksum,str) or
                     type(size) is not int or size<0):
                     raise ValueError("Missing package metadata")
-                folder=slug+"-"+checksum[:12]
+                folder=relative_package_path(item)
                 source=package_root/folder
                 if not source.is_dir():raise ValueError("Missing source package directory")
                 if not isinstance(item.get("source_sha"),str):
                     raise ValueError("Missing queue source SHA")
                 # The queue is transport metadata, not an authority for package size,
                 # identity, or provenance. Verify the actual MSIX before quota checks.
-                verified=validate_bundle(source,item["source_sha"])
+                verified=validate_bundle(source,item.get("factory_head_sha",item["source_sha"]))
                 for field in ("slug","type","source_repository","source_sha",
                               "package_sha256","package_bytes","identity"):
                     if item.get(field)!=verified[field]:
                         raise ValueError("Queue metadata mismatch: "+field)
+                for field in ("request_id","product_type","source_factory","source_branch",
+                              "expected_head_sha","factory_head_sha","prebuilt_exe_sha256",
+                              "claimed_store_id","contract_status"):
+                    if field=="contract_status" and field not in item and verified.get(field)=="LEGACY_HOLD":
+                        continue  # old QA-only artifact; never an E2E pass
+                    if item.get(field)!=verified.get(field):
+                        raise ValueError("Queue immutable metadata mismatch: "+field)
                 if item.get("store_id") is not None:
                     raise ValueError("Local QA queue must not assign a Store ID")
                 if item.get("security_confirmed") is True or item.get("price_approved") is True:
@@ -112,16 +120,18 @@ def pull(target:Path)->dict:
                 size=verified["package_bytes"]
                 prior=(target/folder).is_dir()
                 if not prior:
-                    if len([p for p in target.iterdir() if p.is_dir()])>=MAX_QUEUED:
+                    if sum(1 for p in target.rglob("package.msix") if p.is_file())>=MAX_QUEUED:
                         raise ValueError("Local QA inbox full; complete/archive existing QA first")
                     if total+size>MAX_QUEUED_BYTES:
                         raise ValueError("Local QA inbox would exceed 2GiB; HOLD")
-                result=stage_bundle(source,target,item.get("source_sha"))
+                result=stage_bundle(source,target,item.get("factory_head_sha",item["source_sha"]))
                 if result["package_sha256"]!=checksum:
                     raise ValueError("Mismatch between queue and actual bytes")
                 if not prior:
                     total+=size
                     imported.append({"slug":slug,"sha256":checksum,
+                        "product_type":result.get("product_type"),
+                        "request_id":result.get("request_id"),
                         "status":"DOWNLOADED_AWAITING_WINDOWS_QA"})
     return {"inspected_artifacts":len(artifacts),"new_packages":len(imported),
             "total_bytes":total,"products":imported,"submitted_to_store":0}

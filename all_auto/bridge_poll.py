@@ -13,7 +13,7 @@ import shutil
 import subprocess
 import sys
 
-from .handoff_bridge import stage_bundle
+from .handoff_bridge import stage_bundle, validate_bundle
 
 OWNER="shihuiarenjinba-png"
 FACTORIES=("AI-App-Factory","AI-Game-Factory","3d-game-factory")
@@ -111,6 +111,9 @@ def intake(ledger_path:Path,out:Path)->dict:
     if ledger.get("schema_version")!=1 or not isinstance(ledger.get("processed_artifacts"),list):
         raise ValueError("invalid intake ledger")
     processed=set(ledger["processed_artifacts"])
+    request_sources=ledger.get("request_sources",{})
+    if not isinstance(request_sources,dict) or any(not isinstance(k,str) or not isinstance(v,str) for k,v in request_sources.items()):
+        raise ValueError("invalid immutable request ledger")
     if any(type(i) is not int or i<=0 for i in processed):
         raise ValueError("corrupt artifact ledger")
     staged=[]
@@ -130,7 +133,17 @@ def intake(ledger_path:Path,out:Path)->dict:
             downloaded.mkdir(parents=True,exist_ok=False)
             command("run","download",str(run_id),"-R",repository,
                 "--name",name,"--dir",str(downloaded))
+            checked=validate_bundle(downloaded,source_sha)
+            if checked.get("source_branch") and checked["source_branch"]!=run["head_branch"]:
+                raise ValueError("Factory source_branch / Actions branch mismatch")
+            if checked.get("request_id"):
+                key=checked["product_type"]+":"+checked["request_id"]
+                prior=request_sources.get(key)
+                if prior is not None and prior!=checked["source_sha"]:
+                    raise ValueError("HANDOFF_CONFLICT: request_id changed source_sha")
             result=stage_bundle(downloaded,out/"packages",source_sha)
+            if checked.get("request_id"):
+                request_sources[key]=checked["source_sha"]
             result["factory_run_id"]=run_id
             result["factory_artifact_id"]=artifact["id"]
             staged.append(result)
@@ -141,6 +154,7 @@ def intake(ledger_path:Path,out:Path)->dict:
         "store_submissions":0},indent=2)+"\n",encoding="utf-8")
     # Persist only small integer IDs. Packages stay in short-retention Actions artifacts.
     ledger["processed_artifacts"]=sorted(processed)[-1500:]
+    ledger["request_sources"]=request_sources
     ledger_path.write_text(json.dumps(ledger,indent=2)+"\n",encoding="utf-8")
     shutil.rmtree(out/"incoming",ignore_errors=True)
     return {"received":len(staged),"scanned":attempted}
