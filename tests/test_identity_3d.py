@@ -11,7 +11,7 @@ RECORD={
  "request_id":"3d-experimental-0001","product_type":"GAME_3D",
  "source_factory":"3d-game-factory",
  "source_repository":"shihuiarenjinba-png/3d-game-factory",
- "source_branch":"codex/3d-real-msix-build-path-20261027",
+ "source_branch":"codex/3d-accept-qa-snapshot-20261027-1209",
  "source_sha":"c"*40,
  "slug":"experimental-3d-1",
  "expected_head_sha":"c"*40,
@@ -32,7 +32,7 @@ class Test3DIdentityReturn(unittest.TestCase):
         self.calls=[]
     def api(self,path,body=None,allow_missing=False):
         self.calls.append(path)
-        if path.endswith("/git/ref/heads/codex/3d-real-msix-build-path-20261027"):
+        if path.endswith("/git/ref/heads/codex/3d-accept-qa-snapshot-20261027-1209"):
             return {"object":{"sha":"c"*40}}
         if "project.godot?ref=" in path:
             return {"encoding":"base64","content":base64.b64encode(
@@ -45,7 +45,7 @@ class Test3DIdentityReturn(unittest.TestCase):
             self.assertEqual(inp["branch"]["repositoryNameWithOwner"],
                 "shihuiarenjinba-png/3d-game-factory")
             self.assertEqual(inp["branch"]["branchName"],
-                "codex/3d-real-msix-build-path-20261027")
+                "codex/3d-accept-qa-snapshot-20261027-1209")
             self.assertEqual(inp["expectedHeadOid"],"c"*40)
             addition=inp["fileChanges"]["additions"][0]
             self.assertEqual(addition["path"],

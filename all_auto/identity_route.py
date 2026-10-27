@@ -16,7 +16,7 @@ OWNER="shihuiarenjinba-png"
 TARGETS={
   "app": ("AI-App-Factory","codex/factory-autoloop-20261026"),
   "game": ("AI-Game-Factory","codex/factory-autoloop-20261026"),
-  "3d-game": ("3d-game-factory","codex/3d-real-msix-build-path-20261027"),
+  "3d-game": ("3d-game-factory",None),
 }
 SLUG=re.compile(r"^[a-z][a-z0-9-]{3,39}$")
 REQUEST_ID=re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{3,127}$")
@@ -25,6 +25,15 @@ SHA64=re.compile(r"^[a-f0-9]{64}$")
 STORE_ID=re.compile(r"^[A-Za-z0-9]{8,32}$")
 NAME=re.compile(r"^[A-Za-z][A-Za-z0-9._-]{2,49}$")
 VERSION=re.compile(r"^\d{1,5}(?:\.\d{1,5}){3}$")
+BRANCH3D=re.compile(r"^codex/[A-Za-z0-9][A-Za-z0-9._/-]{1,180}$")
+
+def _valid_3d_branch(value):
+    if not isinstance(value,str) or not BRANCH3D.fullmatch(value):
+        return False
+    parts=value.split("/")
+    return (len(parts)>1 and all(p and p not in (".","..")
+        and not p.startswith(".") and not p.endswith((".", ".lock"))
+        for p in parts) and "@{" not in value and "\\" not in value)
 
 def route_identity(record:dict)->dict:
     if not isinstance(record,dict) or record.get("schema_version")!=1:
@@ -42,9 +51,10 @@ def route_identity(record:dict)->dict:
           "product_type":"GAME_3D",
           "source_factory":"3d-game-factory",
           "source_repository":"shihuiarenjinba-png/3d-game-factory",
-          "source_branch":"codex/3d-real-msix-build-path-20261027",
           "source_sha":sha,
         }
+        if not _valid_3d_branch(record.get("source_branch")):
+            raise ValueError("3D source_branch must be a safe codex/* work branch")
         request_id=record.get("request_id")
         if not isinstance(request_id,str) or not REQUEST_ID.fullmatch(request_id):
             raise ValueError("3D identity return requires original request_id")
@@ -89,6 +99,8 @@ def route_identity(record:dict)->dict:
     if not isinstance(verifier,str) or not 3<=len(verifier)<=100 or any(x in verifier for x in ("\n","\r","\x00")):
         raise ValueError("operator identifier missing")
     repo,branch=TARGETS[kind]
+    if kind=="3d-game":
+        branch=record["source_branch"]
     product_dir="products/"+slug+"/store/"
     # Persist the exact Factory source SHA that was authenticated alongside
     # the Partner Center identity. Downstream MSIX builders must compare this
