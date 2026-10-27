@@ -29,3 +29,18 @@ Only after verifying actual Microsoft account evidence: python -m all_auto.ident
 - Godot 4.3 Windows EXE/PCK export is proven for the separate 3D template; Factory Godot→AppxManifest→MakeAppx MSIX scripts and byte QA exist but **no accepted Factory 3D product or approved Store Identity** has been provided for an end-to-end MSIX run.
 - Do not treat successful routing tests as a real Microsoft Identity lookup, a successful MSIX Artifact transfer, Windows GPU QA, signing, WACK, or Store readiness. These remain separate HOLD gates.
 - Never fabricate a Store ID from PFN/SID/Package Identity or copy another product's Store registration.
+
+## 3D active-branch Identity return (2026-10-27)
+
+For `type=3d-game`, the Identity return proposal now uses the exact
+`source_branch` supplied by the authenticated manufacturing record rather
+than a stale hard-coded Factory branch. Only safe `codex/*` work refs are
+accepted; `source_sha` must equal the pinned `expected_head_sha`. The
+actual GitHub branch HEAD is rechecked before a CAS GraphQL commit.
+`product_type=GAME_3D`, `source_factory=3d-game-factory`,
+`source_repository=shihuiarenjinba-png/3d-game-factory`,
+`request_id`, `slug`, and the original source SHA are preserved.
+No official Partner Center fields are inferred. A branch change, missing
+reviewed product or missing authenticated Identity is **HOLD/CONFLICT**, not
+automatic fallback to the ordinary game lane. These are offline contract
+tests only; no real Partner Center Identity was returned.
