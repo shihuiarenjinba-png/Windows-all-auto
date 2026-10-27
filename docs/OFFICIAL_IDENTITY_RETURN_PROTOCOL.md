@@ -22,7 +22,10 @@ Only after verifying actual Microsoft account evidence: python -m all_auto.ident
 - Store price, privacy/security declarations, signing, MSIXUPLOAD, device tests, WACK, certification and publication remain independently gated.
 - Contract and mock tests do not prove a real Partner Center identity retrieval or a complete Factory-to-local MSIX E2E run.
 
-## 3D-specific status
-- Verified Identity can now be **routed and conditionally committed** to shihuiarenjinba-png/3d-game-factory, branch codex/3d-factory-bootstrap-20261026. Set type=3d-game in the internal identity_route/identity_commit contract; the local Provisioner public product_type is GAME_3D and requires an explicit strict adapter.
-- This only returns official Identity JSON. The 3D Godot Windows export, a Store-appropriate MSIX manifest, real GPU/Windows UI testing and Factory-to-Windows-all-auto MSIX Artifact transfer are **not yet implemented or verified**. Those stages stay HOLD, even if the Identity JSON write passes.
-- Never fabricate a new Store ID from PFN/SID/Package Identity or copy another product's Store registration.
+## 3D-specific status (2026-10-27)
+
+- The exact 3D return route is `shihuiarenjinba-png/3d-game-factory` on `codex/3d-real-msix-build-path-20261027`. The local 3D Provisioner uses the same allowlisted branch and `GAME_3D` contract. `all_auto.identity_route` uses internal `type=3d-game`.
+- `approved-identity.json` now includes `verified_source_sha` pinned to the reviewed Factory source commit, alongside the operator's authenticated Partner Center evidence. Identity remains HOLD without real evidence.
+- Godot 4.3 Windows EXE/PCK export is proven for the separate 3D template; Factory Godot→AppxManifest→MakeAppx MSIX scripts and byte QA exist but **no accepted Factory 3D product or approved Store Identity** has been provided for an end-to-end MSIX run.
+- Do not treat successful routing tests as a real Microsoft Identity lookup, a successful MSIX Artifact transfer, Windows GPU QA, signing, WACK, or Store readiness. These remain separate HOLD gates.
+- Never fabricate a Store ID from PFN/SID/Package Identity or copy another product's Store registration.
