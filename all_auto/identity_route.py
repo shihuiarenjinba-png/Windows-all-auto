@@ -14,27 +14,60 @@ from urllib.parse import urlparse
 
 OWNER="shihuiarenjinba-png"
 TARGETS={
-  "app": ("AI-App-Factory","codex/factory-autoloop-20261026"),
-  "game": ("AI-Game-Factory","codex/factory-autoloop-20261026"),
-  "3d-game": ("3d-game-factory","codex/3d-provisioner-job-contract-20261027"),
+  "app": ("APP","AI-App-Factory"),
+  "game": ("GAME","AI-Game-Factory"),
+  "3d-game": ("GAME_3D","3d-game-factory"),
 }
 SLUG=re.compile(r"^[a-z][a-z0-9-]{3,39}$")
+REQUEST_ID=re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{3,127}$")
 SHA40=re.compile(r"^[a-f0-9]{40}$")
+SHA64=re.compile(r"^[a-f0-9]{64}$")
 STORE_ID=re.compile(r"^[A-Za-z0-9]{8,32}$")
 NAME=re.compile(r"^[A-Za-z][A-Za-z0-9._-]{2,49}$")
 VERSION=re.compile(r"^\d{1,5}(?:\.\d{1,5}){3}$")
+PFN=re.compile(r"^[A-Za-z0-9._-]+_[a-z0-9]{13}$")
+SID=re.compile(r"^S-1-15-2(?:-\d+){7}$")
+
+def valid_work_branch(value:object)->bool:
+    if not isinstance(value,str) or not 7<=len(value)<=240 or not value.startswith("codex/"):
+        return False
+    if not re.fullmatch(r"codex/[A-Za-z0-9._/-]+",value):return False
+    if ".." in value or "//" in value or "@{" in value or value.endswith(("/",".")):return False
+    return all(part and not part.startswith(".") and not part.endswith(".lock") for part in value.split("/"))
 
 def route_identity(record:dict)->dict:
     if not isinstance(record,dict) or record.get("schema_version")!=1:
         raise ValueError("identity return contract unsupported")
     kind=record.get("type")
     if kind not in TARGETS:raise ValueError("only app/game/3d-game Factory supported")
+    expected_product_type,factory=TARGETS[kind]
+    request_id=record.get("request_id")
+    if not isinstance(request_id,str) or not REQUEST_ID.fullmatch(request_id):
+        raise ValueError("valid request_id required")
+    if record.get("product_type")!=expected_product_type:
+        raise ValueError("product_type does not match pipeline lane")
+    if record.get("source_factory")!=factory:
+        raise ValueError("source_factory does not match pipeline lane")
+    repository=OWNER+"/"+factory
+    if record.get("source_repository")!=repository:
+        raise ValueError("source_repository does not match pipeline lane")
+    branch=record.get("source_branch")
+    if not valid_work_branch(branch):
+        raise ValueError("safe codex/* source_branch required")
     slug=record.get("slug")
     if not isinstance(slug,str) or not SLUG.fullmatch(slug):
         raise ValueError("unsafe product slug")
-    sha=record.get("expected_head_sha")
-    if not isinstance(sha,str) or not SHA40.fullmatch(sha):
+    sha=record.get("source_sha")
+    if (not isinstance(sha,str) or not SHA40.fullmatch(sha)
+            or record.get("expected_head_sha")!=sha):
         raise ValueError("exact expected GitHub branch HEAD required")
+    package_sha=record.get("package_sha256")
+    if not isinstance(package_sha,str) or not SHA64.fullmatch(package_sha):
+        raise ValueError("verified local package SHA-256 required")
+    signature=record.get("signature_status")
+    if (not isinstance(signature,str) or not 1<=len(signature)<=64
+            or any(ord(c)<32 for c in signature)):
+        raise ValueError("package signature status required")
     identity=record.get("identity")
     if not isinstance(identity,dict):raise ValueError("official Store identity missing")
     for key,pattern in (("store_id",STORE_ID),("name",NAME),("version",VERSION)):
@@ -44,6 +77,10 @@ def route_identity(record:dict)->dict:
     publisher=identity.get("publisher")
     if not isinstance(publisher,str) or not publisher.startswith("CN=") or len(publisher)>512:
         raise ValueError("official Publisher missing")
+    for key,pattern in (("package_family_name",PFN),("package_sid",SID)):
+        value=identity.get(key)
+        if not isinstance(value,str) or not pattern.fullmatch(value) or record.get(key)!=value:
+            raise ValueError("official package identity mismatch: "+key)
     evidence=record.get("official_evidence_url")
     if not isinstance(evidence,str):
         raise ValueError("official Partner Center evidence required")
@@ -57,10 +94,14 @@ def route_identity(record:dict)->dict:
     verifier=record.get("verified_by")
     if not isinstance(verifier,str) or not 3<=len(verifier)<=100 or any(x in verifier for x in ("\n","\r","\x00")):
         raise ValueError("operator identifier missing")
-    repo,branch=TARGETS[kind]
     product_dir="products/"+slug+"/store/"
     content={
-       "reviewed":True,"source":"partner_center",
+       "schema_version":"1.0","reviewed":True,"source":"partner_center",
+       "request_id":request_id,"product_type":expected_product_type,
+       "source_factory":factory,"source_repository":repository,
+       "source_branch":branch,"source_sha":sha,"verified_source_sha":sha,
+       "package_sha256":package_sha,"package_family_name":identity["package_family_name"],
+       "package_sid":identity["package_sid"],"signature_status":signature,
        "store_id":identity["store_id"],"name":identity["name"],
        "publisher":publisher,"version":identity["version"],
        "verified_by":verifier,"evidence_url":evidence
@@ -71,7 +112,7 @@ def route_identity(record:dict)->dict:
             content[label]=value
     return {
        "schema_version":1,"operation":"PROPOSE_WORK_BRANCH_IDENTITY_RETURN",
-       "repository":OWNER+"/"+repo,"branch":branch,
+       "repository":repository,"branch":branch,
        "expected_head_sha":sha,
        "path":product_dir+"approved-identity.json",
        "content":content,"applied":False,"store_submitted":False,
