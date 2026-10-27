@@ -304,7 +304,7 @@ class SchedulerSafetyTests(unittest.TestCase):
              patch.object(s, "remote_json", return_value=(ledger, SHA)), \
              patch.object(s, "inspect_package", return_value=DIGEST), \
              patch.object(s.subprocess, "run") as process:
-            with self.assertRaisesRegex(s.Hold, "USER_IDENTITY_FILE_MISSING"):
+            with self.assertRaisesRegex(s.Hold, "LOCALAPPDATA_REQUIRED_FOR_USER_IDENTITY|USER_IDENTITY_FILE_MISSING"):
                 s.game_job(job, SHA, args)
             process.assert_not_called()
 
@@ -352,7 +352,7 @@ class SchedulerSafetyTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory, \
              patch.object(s, "head", return_value=SHA), \
              patch.object(s, "game_job",
-                          side_effect=s.Hold("WAITING_PARTNER_CENTER_AUTH", "OFFICIAL_IDENTITY_MISSING")):
+                          side_effect=s.Hold("WAITING_USER_IDENTITY", "USER_IDENTITY_FILE_MISSING")):
             result = s.process(job, types.SimpleNamespace(), Path(directory))
             self.assertEqual(result["stage"], "WAITING_USER_IDENTITY")
             self.assertEqual(result["reason"], "OFFICIAL_IDENTITY_MISSING")
