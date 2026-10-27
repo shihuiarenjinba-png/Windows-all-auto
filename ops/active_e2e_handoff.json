@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-27T20:41:50.880Z",
+  "updated_at_utc": "2026-10-27T20:42:03.975Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -319,7 +319,7 @@
     "openai_paid_api": false
   },
   "last_cross_lane_observation": {
-    "observed_at_utc": "2026-10-27T20:41:50.880Z",
+    "observed_at_utc": "2026-10-27T20:42:03.975Z",
     "active_lane": "GAME",
     "active_product": "signal-sprint",
     "factory_source_head_verified": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
@@ -335,7 +335,7 @@
       "local_tests": "67_PASS",
       "next_action": "Do not rerun without new runner/workflow evidence; require real MSIX before Checker product QA"
     },
-    "last_12_minute_update": "PR18 owner fixed uncertain CAS replay on independent stacked branch; source/test commit 1bbbbb43 CI 40580198875 SUCCESS, docs HEAD 4da4f420 CI 40580255652 running. APP PR14 e24ad9b3 CI PASS, Provisioner-app PR10 22abdac5 CI PASS; 3D PR12 ea20fa75 CI PASS. GAME pinned source unchanged, official Identity/CAS/MSIX/QA HOLD.",
+    "last_12_minute_update": "PR18 final HEAD 4da4f420 CI 40580255652 SUCCESS Windows/Ubuntu (27 tests); uncertain CAS launch now durable and fail-closed. APP e24ad9b3, Provisioner-app 22abdac5, 3D ea20fa75 CI SUCCESS. GAME official Identity/CAS/real MSIX/QA HOLD.",
     "next_repo": "shihuiarenjinba-png/Windows-all-auto",
     "next_branch": "codex/local-identity-qa-safety-20261027",
     "next_head_sha": "6ef8aacbcba8a622760a8c109f4c684d6df503fb",
@@ -450,7 +450,7 @@
     }
   },
   "multi_product_identity_scheduler": {
-    "status": "STACKED_PR18_DURABLE_CAS_INFLIGHT_MARKER__27_TESTS_CODE_CI_PASS_FINAL_DOC_CI_RUNNING__LOCAL_WINDOWS_NOT_EXECUTED",
+    "status": "STACKED_PR18_DURABLE_CAS_INFLIGHT_MARKER__27_TESTS_WINDOWS_UBUNTU_CI_PASS__LOCAL_WINDOWS_NOT_EXECUTED",
     "repository": "shihuiarenjinba-png/Windows-all-auto",
     "draft_pr": 18,
     "branch": "codex/multi-product-identity-scheduler-20261028-0036",
@@ -458,7 +458,7 @@
     "base_pr": 17,
     "base_head_sha": "6ef8aacbcba8a622760a8c109f4c684d6df503fb",
     "ci_run_id": 40580255652,
-    "ci_conclusion": "IN_PROGRESS_FINAL_DOC_COMMIT__PREVIOUS_CODE_AND_27_TEST_COMMIT_CI_SUCCESS_40580198875",
+    "ci_conclusion": "SUCCESS",
     "ci_platforms": [
       "windows-latest",
       "ubuntu-latest"
@@ -501,7 +501,7 @@
     "checker": "NOT_RUN_ON_REAL_MSIX",
     "gui_qa": "NOT_RUN",
     "e2e_pass": false,
-    "next_action": "PR18 code/test commit 1bbbbb43 Windows/Ubuntu CI 40580198875 SUCCESS (27 scheduler tests); final docs HEAD 4da4f420 CI 40580255652 in progress at observation. Crash/worker-error after CAS launch now persists sticky HOLD until manual receipt and Factory HEAD reconciliation. Local Windows check-only and compare with unpushed 10/10 implementation remain pending; no official Identity/CAS/real MSIX.",
+    "next_action": "PR18 final HEAD 4da4f420 CI 40580255652 SUCCESS on Windows and Ubuntu (27 scheduler tests). Crash/worker-error after CAS launch persists sticky HOLD pending manual private receipt and Factory HEAD reconciliation. Local Windows check-only and compare with unpushed 10/10 implementation pending; official Identity/CAS/real MSIX absent.",
     "security_fix": "REJECT_SYMLINKED_PRIVATE_PATH_ANCESTORS_AND_GIT_CHECK; OPERATOR_ONLY_STORE_IDENTITY_CANNOT_ADVANCE_TO_CAS_APPROVAL; VERSION_AND_BRAND_APPROVAL_ALONE_CANNOT_AUTHORIZE_MSIX; EXPLICIT_CAS_TARGETS_EXACT_GAME_REQUEST_OR_FAILS_CLOSED; DURABLE_PRE_CAS_INTENT_AND_STICKY_MANUAL_RECONCILIATION_PREVENT_UNCERTAIN_CAS_REPLAY",
     "targeted_apply_routing": "FIXED_TESTED_22_PASS_WINDOWS_UBUNTU_CI"
   }
