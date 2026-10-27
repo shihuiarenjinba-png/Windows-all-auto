@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-27T13:34:45Z",
+  "updated_at_utc": "2026-10-27T14:31:28Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -56,7 +56,7 @@
       "windows_all_auto_record": null,
       "finished_at_utc": "2026-10-27T05:03:20Z"
     },
-    "next_action": "EXTERNAL_IDENTITY HOLD: Signal Sprint unsigned EXE SHA e8517df8... previously inspected; current PR9 verified_at CAS hardening CI PASS, PR17 worker CI PASS. Local Windows must read central ledger, check-only against PR9 HEAD 154c1fd and exact EXE/resume receipt; obtain authenticated official Identity privately and explicit approval, re-check source HEAD c058cbf7 before CAS; then dedicated Factory build branch/real MSIX/intake/Checker/GUI.",
+    "next_action": "EXTERNAL_IDENTITY HOLD: PR17 HEAD 4cd73109 CI 40513490469 SUCCESS and Provisioner-game PR9 HEAD 154c1fd9 CI 40501945026 SUCCESS. Local Windows must check-only pinned EXE/resume receipt and acquire authenticated official Identity privately. Re-check Factory source HEAD c058cbf7 immediately before explicitly approved CAS. Then integrate PR11 on separate Factory build branch; preserve source_sha, record factory_head_sha; build real MSIX and verify Windows-all-auto intake/local pull/Checker/GUI. No CAS or real MSIX observed.",
     "local_commands": [
       "$ledgerSha = gh api repos/shihuiarenjinba-png/Windows-all-auto/git/ref/heads/codex/e2e-belt-connection-20261027 --jq .object.sha",
       "py -3 -m scripts.local_identity_return --ledger-ref \"codex/e2e-belt-connection-20261027\" --ledger-sha \"$ledgerSha\" --provisioner-root \"C:\\src\\Repository-Provisioner-game\" --provisioner-branch \"codex/game-identity-idempotency-20261027\" --provisioner-sha \"154c1fd91dec208a7152733a9b5cec8180ac37d2\" --provisioner-result \"C:\\qa\\signal-sprint\\provisioner-live-result.json\" --source-branch \"codex/game-signal-sprint-undo-20261027\" --source-sha \"c058cbf7fe38e02d929c67d047d717ff74bd522e\" --request-id \"game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e\"",
@@ -157,9 +157,9 @@
     "local_identity_return_worker": {
       "repository": "shihuiarenjinba-png/Windows-all-auto",
       "branch": "codex/local-identity-qa-safety-20261027",
-      "head_sha": "26f859a63cc652e16777af7cd83130da7a697387",
+      "head_sha": "4cd73109eb14556217ca0ac2e073b19be1fe9b09",
       "draft_pr": 17,
-      "ci_run_id": 40505517529,
+      "ci_run_id": 40513490469,
       "ci_conclusion": "SUCCESS",
       "status": "CHECK_ONLY_WAITING_OFFICIAL_IDENTITY_LOCAL_WINDOWS_VERIFIED",
       "entrypoint": "python -m scripts.local_identity_return",
@@ -168,7 +168,7 @@
       "evidence_path": "C:\\qa\\signal-sprint\\official-identity-private.json",
       "receipt_path": "C:\\qa\\signal-sprint\\identity-return\\identity-return-receipt.json",
       "required_provisioner_sha": "154c1fd91dec208a7152733a9b5cec8180ac37d2",
-      "next_action": "Use sole central ledger and PR17 HEAD 26f859a6 (CI 40505517529 SUCCESS); preserve exact EXE and request/source SHA; obtain authenticated Partner Center Identity privately, recheck source HEAD, require explicit approval before CAS. No local CAS or MSIX receipt observed.",
+      "next_action": "PR17 HEAD 4cd73109 CI 40513490469 SUCCESS. Local Windows only: check exact pinned EXE and prior resume result, obtain authenticated Partner Center Identity privately, recheck Factory source HEAD c058cbf7 and central ledger, require explicit approval before CAS; otherwise remain HOLD. No real MSIX or local QA receipt observed.",
       "ci_url": "https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/40499482120",
       "local_check_only": {
         "status": "HOLD",
@@ -195,7 +195,7 @@
     ],
     "resume_repository": "shihuiarenjinba-png/Windows-all-auto",
     "resume_branch": "codex/local-identity-qa-safety-20261027",
-    "resume_head_sha": "26f859a63cc652e16777af7cd83130da7a697387",
+    "resume_head_sha": "4cd73109eb14556217ca0ac2e073b19be1fe9b09",
     "factory_head_sha": null,
     "build_sha": null,
     "provisioner_identity_resume": {
@@ -253,11 +253,11 @@
       "phase": "GENERATION_GATE_HOLD__NO_ACCEPTED_PRODUCT",
       "status": "HOLD",
       "factory_branch": "codex/3d-qa-zip-ledger-20261027-1235",
-      "factory_head": "452089ab93230a0d32ba69c18e6310db48ca9f23",
+      "factory_head": "f8b772bf429de7f3da172f7c4a3a4f5448a3de1b",
       "provisioner_branch": "codex/e2e-belt-connection-20261027",
       "provisioner_head": "70600e77f2dd4278a989604314eebfa662e05c33",
-      "next_action": "Preserve 120-hour gate; QA template evidence is not an active product",
-      "factory_ci_run_id": 40512534708,
+      "next_action": "3D owner only: PR12 f8b772bf updated progress/ledger (CI 40520641316 SUCCESS); QA PR4 12fd7b4f has 65/65 tests and CI 40520471059 SUCCESS for strict BlockMap metadata. No accepted 3D product, real MSIX or authenticated Identity; generation HOLD. Do not merge divergent transport branches.",
+      "factory_ci_run_id": 40520641316,
       "factory_ci_conclusion": "SUCCESS",
       "dispatch_guard_pr": {
         "branch": "codex/3d-dispatch-guard-integration-20261027-1452",
@@ -268,8 +268,8 @@
       "current_guard_pr": {
         "draft_pr": 12,
         "branch": "codex/3d-dispatch-guard-current-ledger-20261027-1628",
-        "head_sha": "4c7374047c13c1bfa2f52686d19901d6ebb7c4f4",
-        "ci_run_id": 40503152698,
+        "head_sha": "f8b772bf429de7f3da172f7c4a3a4f5448a3de1b",
+        "ci_run_id": 40520641316,
         "ci_conclusion": "SUCCESS",
         "status": "DRAFT_ONLY_NO_ACTIVE_PRODUCT"
       }
@@ -314,7 +314,7 @@
     "openai_paid_api": false
   },
   "last_cross_lane_observation": {
-    "observed_at_utc": "2026-10-27T13:34:45Z",
+    "observed_at_utc": "2026-10-27T14:31:28Z",
     "active_lane": "GAME",
     "active_product": "signal-sprint",
     "factory_source_head_verified": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
@@ -330,10 +330,10 @@
       "local_tests": "67_PASS",
       "next_action": "Do not rerun without new runner/workflow evidence; require real MSIX before Checker product QA"
     },
-    "last_12_minute_update": "3D Factory PR12 advanced to 452089ab at 13:29 UTC (docs/progress only, CI 40512534708 SUCCESS); APP candidate PR14 e72dacdc at 13:01 UTC now committed .candidate/product (CI 40508510792 SUCCESS), no promoted product/EXE/UI; no Windows-all-auto central/PR17 ledger write in preceding 12 minutes.",
+    "last_12_minute_update": "3D Factory PR12 f8b772bf updated docs/PIPELINE_PROGRESS.md and factory/pipeline-progress.json at 14:22 UTC to record 3d-build-qa PR4 12fd7b4f (65/65 tests, CI 40520471059 SUCCESS); Factory CI 40520641316 SUCCESS. No 3D active product. APP PR14 remains e72dacdc candidate unpromoted; GAME source remains c058cbf7, official Identity 404. Central and PR17 ledger had matching blob 137a6476 before this update.",
     "next_repo": "shihuiarenjinba-png/Windows-all-auto",
     "next_branch": "codex/local-identity-qa-safety-20261027",
-    "next_head_sha": "26f859a63cc652e16777af7cd83130da7a697387",
+    "next_head_sha": "4cd73109eb14556217ca0ac2e073b19be1fe9b09",
     "alternate_safety_branch": "codex/game-identity-idempotency-20261027",
     "alternate_safety_head_sha": "154c1fd91dec208a7152733a9b5cec8180ac37d2",
     "no_new_product": true,
@@ -361,8 +361,8 @@
       "remote_backlog_preserved_on_full": true
     },
     "three_d_current_guard_pr12": {
-      "head_sha": "452089ab93230a0d32ba69c18e6310db48ca9f23",
-      "ci_run_id": 40512534708,
+      "head_sha": "f8b772bf429de7f3da172f7c4a3a4f5448a3de1b",
+      "ci_run_id": 40520641316,
       "ci_conclusion": "SUCCESS",
       "compare_to_3d_factory_pr10": "AHEAD_4_BEHIND_0",
       "new_product_allowed": false
@@ -395,10 +395,10 @@
         "is_signal_sprint_msix": false
       }
     },
-    "classification": "EXTERNAL_IDENTITY_HOLD_GAME__APP_CANDIDATE_PROMOTION_PENDING__NO_REAL_MSIX__CHECKER_CI_INFRA_UNRESOLVED",
+    "classification": "EXTERNAL_IDENTITY_HOLD_GAME__APP_CANDIDATE_PROMOTION_PENDING__3D_QA_CI_PASS_NO_PRODUCT__CHECKER_CI_INFRA_UNRESOLVED",
     "local_identity_qa_safety_branch": {
       "branch": "codex/local-identity-qa-safety-20261027",
-      "head_sha": "26f859a63cc652e16777af7cd83130da7a697387",
+      "head_sha": "4cd73109eb14556217ca0ac2e073b19be1fe9b09",
       "draft_pr": 17,
       "previous_green_head": "f4800e771b60d46e044941d47a97e0e41469db39",
       "previous_green_ci_run_id": 40489660907,
@@ -409,7 +409,7 @@
       "locally_exercised_provisioner_sha": "5c1db9820bac68c59cc7eb6ca5921e22a5bb3913",
       "current_provisioner_sha": "154c1fd91dec208a7152733a9b5cec8180ac37d2",
       "raw_private_receipt_on_github": false,
-      "ci_run_id": 40505517529,
+      "ci_run_id": 40513490469,
       "ci_conclusion": "SUCCESS",
       "central_ledger_only_writer": true
     },
