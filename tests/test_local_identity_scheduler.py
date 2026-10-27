@@ -355,7 +355,7 @@ class SchedulerSafetyTests(unittest.TestCase):
                           side_effect=s.Hold("WAITING_USER_IDENTITY", "USER_IDENTITY_FILE_MISSING")):
             result = s.process(job, types.SimpleNamespace(), Path(directory))
             self.assertEqual(result["stage"], "WAITING_USER_IDENTITY")
-            self.assertEqual(result["reason"], "OFFICIAL_IDENTITY_MISSING")
+            self.assertEqual(result["reason"], "USER_IDENTITY_FILE_MISSING")
 
 if __name__ == "__main__":
     unittest.main()
