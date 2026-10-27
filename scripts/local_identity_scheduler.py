@@ -373,6 +373,22 @@ def process(job: dict, args, state_dir: Path) -> dict:
     return result
 
 
+
+def choose_job(jobs: list[dict], index: int, apply_request_id: str) -> tuple[int, dict]:
+    """Select exactly the approved GAME job, or use ordinary round-robin."""
+    if apply_request_id:
+        matches = [(i, job) for i, job in enumerate(jobs)
+                   if job["request_id"] == apply_request_id]
+        if len(matches) != 1:
+            raise Hold("CONFLICT", "APPLY_REQUEST_ID_NOT_IN_QUEUE")
+        selected_index, selected = matches[0]
+        if selected["kind"] != "GAME_SIGNAL_SPRINT":
+            raise Hold("HOLD", "CAS_DELEGATION_GAME_ONLY")
+        return selected_index, selected
+    selected_index = index % len(jobs)
+    return selected_index, jobs[selected_index]
+
+
 def run(args) -> dict:
     if os.name != "nt" and args.apply_request_id:
         raise Hold("HOLD", "LOCAL_WINDOWS_REQUIRED_FOR_CAS")
@@ -389,7 +405,10 @@ def run(args) -> dict:
         index = cursor.get("next_index", 0)
         if type(index) is not int or index < 0:
             raise Hold("CONFLICT", "CURSOR_INVALID")
-        selected = jobs[index % len(jobs)]  # exactly one job per invocation
+        # A human-authorized CAS must target its exact immutable request_id,
+        # regardless of the round-robin cursor. Never silently process another
+        # job and consume an approval intended for a different product.
+        index, selected = choose_job(jobs, index, args.apply_request_id)
         result = process(selected, args, state_dir)
         atomic_json(cursor_path, {"next_index": (index + 1) % len(jobs)})
         return result
