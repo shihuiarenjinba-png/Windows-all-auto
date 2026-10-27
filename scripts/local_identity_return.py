@@ -224,13 +224,13 @@ def run(args) -> dict:
         return {"status": "HOLD", "reason": "OFFICIAL_IDENTITY_NOT_AVAILABLE",
                 "request_id": args.request_id, "source_sha": args.source_sha,
                 "e2e_pass": False}
+    if args.apply and args.confirm_request_id != args.request_id:
+        raise Gate("HOLD", "EXPLICIT_REQUEST_APPROVAL_REQUIRED")
     resume_path = check_resume_result(args, product)
     if not args.apply:
         return {"status": "READY_FOR_LOCAL_CAS_APPROVAL",
                 "request_id": args.request_id, "source_sha": args.source_sha,
                 "e2e_pass": False}
-    if args.confirm_request_id != args.request_id:
-        raise Gate("HOLD", "EXPLICIT_REQUEST_APPROVAL_REQUIRED")
     # Recheck immediately before the only allowed remote mutation.
     if source_head() != args.source_sha:
         raise Gate("CONFLICT", "FACTORY_SOURCE_HEAD_CHANGED")
