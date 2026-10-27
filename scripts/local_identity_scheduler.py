@@ -274,7 +274,7 @@ def store_job(job: dict, observed_sha: str) -> dict:
     if not validate_operator_evidence(job, reference):
         raise Hold("WAITING_PARTNER_CENTER_AUTH", "LOCAL_OPERATOR_EVIDENCE_MISSING")
     return {
-        "stage": "WAITING_CAS_APPROVAL", "reason": "PRODUCT_SPECIFIC_CAS_WORKER_NOT_CONNECTED",
+        "stage": "WAITING_PARTNER_CENTER_AUTH", "reason": "LOCAL_OPERATOR_MATCH_NOT_AUTHENTICATED__STORE_CAS_NOT_CONNECTED",
         "identity_discovery": True, "identity_authentication": False,
         "identity_observation": "LOCAL_OPERATOR_OBSERVED_MATCH",
         "identity_return": False, "msix_build_allowed": version_gate(reference),
