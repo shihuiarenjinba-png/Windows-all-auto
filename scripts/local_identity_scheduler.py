@@ -46,6 +46,7 @@ IDENTITY_FIELDS = {
 STAGES = {
     "DISCOVER_JOB", "VERIFY_REPOSITORY", "VERIFY_BRANCH_HEAD",
     "VERIFY_LOCAL_PACKAGE", "WAITING_PARTNER_CENTER_AUTH",
+    "WAITING_USER_IDENTITY", "USER_IDENTITY_RECEIVED", "IDENTITY_VALIDATED",
     "LOOKUP_OFFICIAL_IDENTITY", "VERIFY_IDENTITY", "IDENTITY_READY",
     "WAITING_CAS_APPROVAL", "CAS_RETURN", "CAS_RETURNED",
     "WAITING_FACTORY_MSIX", "MSIX_READY", "WAITING_GITHUB_INTAKE",
@@ -239,6 +240,80 @@ def validate_operator_evidence(job: dict, reference: dict) -> bool:
     return True
 
 
+# Private, user-managed files are inputs only. No browser, Partner Center API,
+# authentication session or secret-bearing Identity data enters scheduler state.
+GAME_USER_IDENTITY_REQUIRED = {
+    "request_id", "product_type", "slug", "source_sha",
+    "official_evidence_url", "authenticated_account", "verified_at",
+    "store_id", "name", "publisher", "version",
+    "package_family_name", "package_sid",
+}
+GAME_USER_IDENTITY_ALLOWED = GAME_USER_IDENTITY_REQUIRED | {
+    "source_repository", "source_branch", "publisher_display_name",
+    "identity_name", "reserved_display_name",
+}
+STORE_USER_IDENTITY_REQUIRED = set(IDENTITY_FIELDS) | {
+    "request_id", "source_sha", "source_repository", "source_branch",
+    "product_type",
+}
+
+
+def user_identity_path(job: dict) -> Path | None:
+    filename = job.get("identity_path")
+    if not filename and job["kind"] == "GAME_SIGNAL_SPRINT":
+        base = os.environ.get("LOCALAPPDATA")
+        if not base:
+            raise Hold("WAITING_USER_IDENTITY", "LOCALAPPDATA_REQUIRED_FOR_USER_IDENTITY")
+        filename = str(Path(base) / "FactoryIdentityWorker" / "secure"
+                       / job["request_id"] / "official-identity.json")
+    if not filename:
+        return None
+    if not isinstance(filename, str):
+        raise Hold("CONFLICT", "USER_IDENTITY_PATH_INVALID")
+    path = safe_local(Path(filename))
+    if job["kind"] == "GAME_SIGNAL_SPRINT" and path.name != "official-identity.json":
+        raise Hold("CONFLICT", "GAME_IDENTITY_FILENAME_MISMATCH")
+    return path
+
+
+def validate_user_identity(job: dict, reference: dict | None = None) -> Path | None:
+    path = user_identity_path(job)
+    if path is None or not path.exists():
+        return None
+    if not path.is_file() or path.stat().st_size > 32_768:
+        raise Hold("HOLD", "USER_IDENTITY_FILE_INVALID_OR_TOO_LARGE")
+    data = decode_json(path.read_text(encoding="utf-8"), 32_768)
+    required = (GAME_USER_IDENTITY_REQUIRED if job["kind"] == "GAME_SIGNAL_SPRINT"
+                else STORE_USER_IDENTITY_REQUIRED)
+    allowed = (GAME_USER_IDENTITY_ALLOWED if job["kind"] == "GAME_SIGNAL_SPRINT"
+               else STORE_USER_IDENTITY_REQUIRED)
+    if not required.issubset(data) or not set(data).issubset(allowed):
+        raise Hold("CONFLICT", "USER_IDENTITY_SCHEMA_MISMATCH")
+    if (data.get("request_id") != job["request_id"]
+            or data.get("source_sha") != job["source_sha"]):
+        raise Hold("CONFLICT", "USER_IDENTITY_BINDING_MISMATCH")
+    for key in required:
+        if not isinstance(data[key], str) or not data[key].strip():
+            raise Hold("CONFLICT", "USER_IDENTITY_FIELD_INVALID")
+    if job["kind"] == "GAME_SIGNAL_SPRINT":
+        if data["product_type"] != "GAME" or data["slug"] != "signal-sprint":
+            raise Hold("CONFLICT", "USER_IDENTITY_PRODUCT_MISMATCH")
+        if (data.get("source_repository", job["repository"]) != job["repository"]
+                or data.get("source_branch", job["branch"]) != job["branch"]):
+            raise Hold("CONFLICT", "USER_IDENTITY_SOURCE_MISMATCH")
+    else:
+        if (reference is None or data["product_type"] != "APP"
+                or data["source_repository"] != job["repository"]
+                or data["source_branch"] != job["branch"]):
+            raise Hold("CONFLICT", "USER_IDENTITY_SOURCE_MISMATCH")
+        for local_key, remote_key in IDENTITY_FIELDS.items():
+            if data[local_key] != reference.get(remote_key):
+                raise Hold("CONFLICT", "USER_IDENTITY_REFERENCE_MISMATCH")
+    # The dedicated worker/Provisioner independently checks authenticity and
+    # CAS. A schema/reference match is NOT authentication or return approval.
+    return path
+
+
 def version_gate(reference: dict) -> bool:
     version = reference.get("approved_store_version")
     return (isinstance(version, str) and VERSION.fullmatch(version) is not None
@@ -288,12 +363,15 @@ def store_job(job: dict, observed_sha: str) -> dict:
     if builder_data.get("type") != "file":
         raise Hold("HOLD", "BUILDER_NOT_FOUND")
     package = inspect_package(job)
-    if not validate_operator_evidence(job, reference):
-        raise Hold("WAITING_PARTNER_CENTER_AUTH", "LOCAL_OPERATOR_EVIDENCE_MISSING")
+    operator_match = validate_operator_evidence(job, reference)
+    identity_file = validate_user_identity(job, reference)
     return {
-        "stage": "WAITING_PARTNER_CENTER_AUTH", "reason": "LOCAL_OPERATOR_MATCH_NOT_AUTHENTICATED__STORE_CAS_NOT_CONNECTED",
+        "stage": "IDENTITY_VALIDATED" if identity_file else "WAITING_USER_IDENTITY",
+        "reason": ("USER_IDENTITY_VALIDATED__STORE_CAS_NOT_CONNECTED"
+                   if identity_file else "USER_IDENTITY_FILE_MISSING"),
         "identity_discovery": True, "identity_authentication": False,
-        "identity_observation": "LOCAL_OPERATOR_OBSERVED_MATCH",
+        "user_identity_validated": bool(identity_file),
+        "identity_observation": "LOCAL_OPERATOR_OBSERVED_MATCH" if operator_match else None,
         "identity_return": False,
         # Version/asset approval is necessary but never sufficient: this job
         # has neither authenticated Identity nor a verified CAS return.
@@ -321,8 +399,11 @@ def game_job(job: dict, observed_sha: str, args, on_cas_start=None) -> dict:
     package = inspect_package(job)
     if package != (product.get("local_execution_result") or {}).get("package_sha256"):
         raise Hold("CONFLICT", "GAME_PACKAGE_NOT_PINNED_TO_LEDGER")
+    identity_file = validate_user_identity(job)
+    if identity_file is None:
+        raise Hold("WAITING_USER_IDENTITY", "USER_IDENTITY_FILE_MISSING")
     if args.apply_request_id != job["request_id"]:
-        raise Hold("WAITING_PARTNER_CENTER_AUTH", "GAME_WORKER_CHECK_ONLY_OR_IDENTITY_HOLD")
+        raise Hold("WAITING_CAS_APPROVAL", "USER_IDENTITY_VALIDATED__EXPLICIT_CAS_APPROVAL_REQUIRED")
     if args.confirm_request_id != job["request_id"] or os.name != "nt":
         raise Hold("WAITING_CAS_APPROVAL", "LOCAL_WINDOWS_EXPLICIT_APPROVAL_REQUIRED")
     if not args.provisioner_root or not args.provisioner_result:
@@ -340,7 +421,9 @@ def game_job(job: dict, observed_sha: str, args, on_cas_start=None) -> dict:
         "--provisioner-result", str(args.provisioner_result),
         "--source-branch", job["branch"], "--source-sha", job["source_sha"],
         "--request-id", job["request_id"], "--ledger-ref", CENTRAL_BRANCH,
-        "--ledger-sha", ledger_sha, "--apply", "--confirm-request-id", job["request_id"],
+        "--ledger-sha", ledger_sha, "--local-dir", str(identity_file.parent),
+        "--official-identity", str(identity_file),
+        "--apply", "--confirm-request-id", job["request_id"],
     ]
     # Durable intent MUST precede the external CAS subprocess: a power loss
     # or unparseable response must not cause an automatic second CAS.
@@ -360,6 +443,7 @@ def game_job(job: dict, observed_sha: str, args, on_cas_start=None) -> dict:
         raise Hold("HOLD", "DELEGATED_CAS_UNCONFIRMED")
     return {"stage": "WAITING_FACTORY_MSIX", "reason": "CAS_RETURNED_MSIX_PENDING",
             "identity_discovery": True, "identity_authentication": False,
+            "user_identity_validated": True,
             "identity_return": True, "factory_return_commit_sha": commit,
             "msix_build": False, "package_sha256": package}
 
@@ -379,6 +463,7 @@ def process(job: dict, args, state_dir: Path) -> dict:
         "source_sha": job["source_sha"], "repository": job["repository"],
         "branch": job["branch"], "kind": job["kind"], "stage": "DISCOVER_JOB",
         "reason": None, "identity_discovery": False, "identity_authentication": False,
+        "user_identity_validated": False,
         "identity_return": False, "msix_build": False, "github_backlog": False,
         "local_pull": False, "checker": False, "gui_qa": False, "e2e_pass": False,
     }
