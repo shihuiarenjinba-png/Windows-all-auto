@@ -1,5 +1,6 @@
 """Offline, credential-free tests for the local-only Identity return worker."""
 import base64
+import hashlib
 import json
 from pathlib import Path
 from types import SimpleNamespace
@@ -23,7 +24,7 @@ def args(tmp, **changes):
                   provisioner_sha=PROVISIONER_SHA, provisioner_branch=PBRANCH,
                   provisioner_root=tmp / "provisioner", local_dir=tmp / "local",
                   official_identity=tmp / "identity-private.json",
-                  apply=False, confirm_request_id="")
+                  resume_result=tmp / "prior-result.json", apply=False, confirm_request_id="")
     values.update(changes)
     return SimpleNamespace(**values)
 
@@ -145,6 +146,7 @@ class LocalIdentityWorkerTests(unittest.TestCase):
                                return_value=(Path(tmp), Path(tmp) / "local",
                                              Path(tmp) / "evidence.json")),
                   patch.object(worker, "validate_evidence", return_value=True),
+                  patch.object(worker, "check_resume_result", return_value=a.resume_result),
                   patch.object(worker.subprocess, "run") as proc):
                 self.assertEqual(worker.run(a)["status"], "READY_FOR_LOCAL_CAS_APPROVAL")
                 proc.assert_not_called()
@@ -164,11 +166,41 @@ class LocalIdentityWorkerTests(unittest.TestCase):
                   patch.object(worker, "check_local_paths",
                                return_value=(root, root / "local", root / "evidence.json")),
                   patch.object(worker, "validate_evidence", return_value=True),
+                  patch.object(worker, "check_resume_result", return_value=a.resume_result),
                   patch.object(worker.subprocess, "run", side_effect=fake_run)):
                 with self.assertRaisesRegex(worker.Gate, "LOCAL_EXE_PROVENANCE_CHANGED"):
                     worker.run(a)
             self.assertEqual(len(calls), 1)
             self.assertNotIn("--apply", calls[0])
+            self.assertIn("--resume-result", calls[0])
+
+
+    def test_resume_result_binds_exact_inspected_exe_and_rejects_changed_bytes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            a = args(root)
+            exe = root / "signal.exe"
+            exe.write_bytes(b"verified-exe-fixture")
+            digest = hashlib.sha256(exe.read_bytes()).hexdigest()
+            product = ledger()["active_product"]
+            product["local_execution_result"] = {
+                "package_sha256": digest, "package_bytes": exe.stat().st_size}
+            prior = provisioner_result(False, digest)
+            prior.update(source_factory="AI-Game-Factory",
+                         next_stage="OBTAIN_AUTHENTICATED_OFFICIAL_IDENTITY",
+                         official_identity={"status": "UNVERIFIED"})
+            prior["package"].update(path=str(exe), size_bytes=exe.stat().st_size)
+            a.resume_result.write_text(json.dumps(prior), encoding="utf-8")
+            self.assertEqual(worker.check_resume_result(a, product), a.resume_result.resolve())
+            exe.write_bytes(b"modified-exe-fixture")
+            with self.assertRaisesRegex(worker.Gate, "PINNED_EXE_BYTES_CHANGED"):
+                worker.check_resume_result(a, product)
+
+    def test_missing_resume_result_blocks_ready_state(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            a = args(Path(tmp), resume_result=None)
+            with self.assertRaisesRegex(worker.Gate, "PREIDENTITY_RESULT_REQUIRED"):
+                worker.check_resume_result(a, ledger()["active_product"])
 
     def test_cas_receipt_contains_no_identity_secrets(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -187,6 +219,7 @@ class LocalIdentityWorkerTests(unittest.TestCase):
                   patch.object(worker, "check_local_paths",
                                return_value=(root, root / "local", root / "evidence.json")),
                   patch.object(worker, "validate_evidence", return_value=True),
+                  patch.object(worker, "check_resume_result", return_value=a.resume_result),
                   patch.object(worker.subprocess, "run", side_effect=fake_run)):
                 receipt = worker.run(a)
             self.assertEqual(calls, [False, True])
