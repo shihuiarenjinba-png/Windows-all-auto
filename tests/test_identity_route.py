@@ -28,9 +28,6 @@ class IdentityRouteTests(unittest.TestCase):
         self.assertEqual(result["repository"],"shihuiarenjinba-png/AI-App-Factory")
         self.assertEqual(result["branch"],"codex/factory-autoloop-20261026")
         self.assertEqual(result["path"],"products/useful-tool/store/approved-identity.json")
-        self.assertEqual(result["content"]["request_id"],"3d-useful-tool-0001")
-        self.assertEqual(result["content"]["product_type"],"GAME_3D")
-        self.assertEqual(result["content"]["local_package_sha256"],"d"*64)
         self.assertFalse(result["applied"])
         self.assertFalse(result["store_submitted"])
         self.assertEqual(result["content"]["verified_source_sha"], self.record["expected_head_sha"])
@@ -71,6 +68,9 @@ class IdentityRouteTests(unittest.TestCase):
         self.assertEqual(result["repository"],"shihuiarenjinba-png/3d-game-factory")
         self.assertEqual(result["branch"],"codex/3d-real-msix-build-path-20261027")
         self.assertEqual(result["path"],"products/useful-tool/store/approved-identity.json")
+        self.assertEqual(result["content"]["request_id"],"3d-useful-tool-0001")
+        self.assertEqual(result["content"]["product_type"],"GAME_3D")
+        self.assertEqual(result["content"]["local_package_sha256"],"d"*64)
         self.assertFalse(result["applied"])
     def test_wrong_kind_holds(self):
         self.record["type"]="GAME_3D"
