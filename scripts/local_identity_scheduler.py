@@ -127,7 +127,10 @@ def safe_local(path: Path) -> Path:
     # Reject symlinked ancestors too: a private-looking path may redirect
     # into a Git checkout through a parent junction/symlink.
     original_ancestors = (path, *path.parents)
-    if any(p.is_symlink() for p in original_ancestors):
+    # Windows junctions are reparse points but not always symlinks.
+    # Reject them before resolving private evidence and state paths.
+    if any(p.is_symlink() or (hasattr(p, "is_junction") and p.is_junction())
+           for p in original_ancestors):
         raise Hold("HOLD", "PRIVATE_PATH_INSIDE_GIT_OR_SYMLINK")
     resolved = path.resolve(strict=False)
     if any((p / ".git").exists() for p in (resolved, *resolved.parents)):
