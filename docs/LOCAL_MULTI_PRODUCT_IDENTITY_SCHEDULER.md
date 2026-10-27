@@ -1,5 +1,11 @@
 # Local multi-product Identity scheduler (independent stacked branch)
 
+Identity acquisition is USER-MANAGED. The operator obtains the official Identity
+independently and places a private JSON at the designated local path. The
+scheduler does not authenticate, scrape or query Partner Center, and never
+records private Identity values in its state or GitHub. Missing input means
+WAITING_USER_IDENTITY, not an automatic discovery task.
+
 This is a local-only orchestration layer on PR #17. It does not replace
 scripts/local_identity_return.py, implement CAS, submit to Store, download
 the MSIX backlog, or authenticate to Partner Center. The unpushed local
@@ -103,3 +109,43 @@ HEAD, then resolve the local state manually only after confirming the outcome.
 
 Identity discovery, authentication, return, MSIX build, GitHub backlog,
 local pull, Checker, GUI QA and E2E PASS are separate verdicts.
+
+## USER_MANAGED_IDENTITY_GATE (required before CAS)
+
+- GAME Signal Sprint: the existing PR #17 worker expects the user's private
+  `official-identity.json` at
+  `%LOCALAPPDATA%\\FactoryIdentityWorker\\secure\\<request_id>\\official-identity.json`.
+  The scheduler reads only that local file (or a specifically configured
+  `identity_path` named `official-identity.json`) and checks its schema,
+  duplicate JSON keys, request_id, product_type, slug and immutable source_sha.
+  It passes the same private file to the existing CAS worker via
+  `--local-dir` and `--official-identity`; the worker/Provisioner perform
+  their own independent validation and only they can perform CAS.
+- Store known-good fixtures: `identity_path` is a separate user-provided
+  local JSON from the optional `evidence_path` operator-observation JSON.
+  The private Identity file must contain `request_id`, `source_sha`,
+  `source_repository`, `source_branch`, `product_type=APP`, and the seven
+  Identity keys (`store_id`, `reserved_display_name`, `identity_name`,
+  `publisher`, `publisher_display_name`, `package_family_name`,
+  `package_sid`). Values are compared to the reference fetched from the
+  exact immutable product repository SHA. Matching means only
+  `IDENTITY_VALIDATED`, never Partner Center authentication or CAS approval.
+  Store CAS routing is not connected yet and remains HOLD.
+- Missing file: `WAITING_USER_IDENTITY` and `USER_IDENTITY_FILE_MISSING`.
+  Invalid schema, duplicate keys, unexpected secret fields, wrong product,
+  source SHA or known-good reference: fail closed. Local paths must be outside
+  Git checkouts, symlinks and Windows junctions.
+- After GAME local validation, the scheduler waits for explicit request-specific
+  CAS approval (`WAITING_CAS_APPROVAL`). Do not provide approval until the
+  operator has independently confirmed authenticity and reviewed the local
+  Provisioner preflight. A matching JSON alone does not prove authentication.
+- The scheduler does not obtain Identity from Partner Center. Never commit
+  private JSON, session data, raw HTML, URLs, screenshots, passwords or tokens.
+  No private Identity values or private file paths are emitted in scheduler
+  receipts. Use local user-only ACLs.
+
+The post-Identity sequence is separate: Provisioner CAS receipt, dedicated
+Factory build branch, real correlated MSIX, Windows-all-auto intake,
+`verified-msix-local-qa-*` GitHub Artifact (30-day retention), bounded local
+pull (20 packages/2 GiB, `HOLD_LOCAL_CAPACITY`), Checker, and real GUI/install
+QA. These are not marked PASS by schema validation or CI alone.
