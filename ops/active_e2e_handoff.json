@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-27T21:38:39.942Z",
+  "updated_at_utc": "2026-10-27T22:42:52.219Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
   "active_product": {
     "lane": "GAME",
     "slug": "signal-sprint",
-    "phase": "LOCAL_CHECK_ONLY_REPORTED__PARTNER_CENTER_IDENTITY_HOLD",
+    "phase": "WAITING_USER_IDENTITY__EXE_VERIFIED__CAS_NOT_APPLIED",
     "status": "HOLD",
     "request_id": "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e",
     "product_type": "GAME",
@@ -19,7 +19,7 @@
     "display_name": "Signal Sprint",
     "provisioner_repository": "shihuiarenjinba-png/Repository-Provisioner-game",
     "provisioner_branch": "codex/game-identity-idempotency-20261027",
-    "provisioner_head_observed": "32c3ed762b703bcd227840de29a774d90b4cf797",
+    "provisioner_head_observed": "d2d8120ace60d0ba1095c110374e2d4f553bc92f",
     "factory_exe_run_id": 40443340158,
     "factory_exe_artifact_id": 12706862577,
     "factory_exe_artifact_name": "game-signal-sprint-exe-c058cbf7fe38e02d929c67d047d717ff74bd522e",
@@ -56,10 +56,10 @@
       "windows_all_auto_record": null,
       "finished_at_utc": "2026-10-27T05:03:20Z"
     },
-    "next_action": "EXTERNAL_IDENTITY HOLD: PR9 32c3ed762b703bcd227840de29a774d90b4cf797 CI 40585237259 SUCCESS; PR18 05c8c89406ea7cb8df1712812174a80d49656f1d junction guard CI SUCCESS. No authenticated Identity, CAS, real MSIX or local GUI QA.",
+    "next_action": "WAITING_USER_IDENTITY: operator obtains official Identity independently and places local private official-identity.json. Scheduler validates binding/schema; explicit CAS approval and latest HEAD/EXE preflight required. No browser/Partner Center acquisition by 36-minute loop.",
     "local_commands": [
       "$ledgerSha = gh api repos/shihuiarenjinba-png/Windows-all-auto/git/ref/heads/codex/e2e-belt-connection-20261027 --jq .object.sha",
-      "py -3 -m scripts.local_identity_return --ledger-ref \"codex/e2e-belt-connection-20261027\" --ledger-sha \"$ledgerSha\" --provisioner-root \"C:\\src\\Repository-Provisioner-game\" --provisioner-branch \"codex/game-identity-idempotency-20261027\" --provisioner-sha \"32c3ed762b703bcd227840de29a774d90b4cf797\" --provisioner-result \"C:\\qa\\signal-sprint\\provisioner-live-result.json\" --source-branch \"codex/game-signal-sprint-undo-20261027\" --source-sha \"c058cbf7fe38e02d929c67d047d717ff74bd522e\" --request-id \"game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e\"",
+      "py -3 -m scripts.local_identity_return --ledger-ref \"codex/e2e-belt-connection-20261027\" --ledger-sha \"$ledgerSha\" --provisioner-root \"C:\\src\\Repository-Provisioner-game\" --provisioner-branch \"codex/game-identity-idempotency-20261027\" --provisioner-sha \"d2d8120ace60d0ba1095c110374e2d4f553bc92f\" --provisioner-result \"C:\\qa\\signal-sprint\\provisioner-live-result.json\" --source-branch \"codex/game-signal-sprint-undo-20261027\" --source-sha \"c058cbf7fe38e02d929c67d047d717ff74bd522e\" --request-id \"game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e\"",
       "gh api repos/shihuiarenjinba-png/AI-Game-Factory/actions/artifacts/12706862577 --jq .digest  # must equal sha256:e48a0426595dc227988f12944921511a47d5c8feca8b063a161dd0dd61306412",
       "gh run download 40443340158 -R shihuiarenjinba-png/AI-Game-Factory -n game-signal-sprint-exe-c058cbf7fe38e02d929c67d047d717ff74bd522e -D C:\\qa\\signal-sprint\\factory-exe",
       "python provisioner.py --input C:\\qa\\signal-sprint\\factory-exe\\provisioner-request.json --output C:\\qa\\signal-sprint\\dry-run-result.json",
@@ -82,7 +82,7 @@
       "Factory source branch HEAD equals pinned source_sha immediately before send; otherwise CONFLICT",
       "No same request_id with changed source_sha; otherwise CONFLICT",
       "GitHub Artifact metadata digest equals pinned ZIP digest; gh run download extracts ZIP so independently verify extracted EXE SHA against provenance.json; do not pretend the extracted directory has a ZIP hash",
-      "Official Store ID, Identity Name, Publisher, Version only from authenticated Partner Center; no placeholders",
+      "User independently obtains official Store Identity and places it at the designated private local path; never guess Identity, Version or assets",
       "Factory Identity return uses exact codex source branch CAS and returns a commit SHA",
       "Factory GAME MSIX safety gates must be integrated with active Signal Sprint branch before build",
       "Real MSIX SHA-256 and embedded Identity verified; unsigned EXE is not an MSIX",
@@ -140,11 +140,11 @@
     "provisioner_package_safety": {
       "repository": "shihuiarenjinba-png/Repository-Provisioner-game",
       "branch": "codex/game-identity-idempotency-20261027",
-      "head_sha": "32c3ed762b703bcd227840de29a774d90b4cf797",
+      "head_sha": "d2d8120ace60d0ba1095c110374e2d4f553bc92f",
       "draft_pr": 9,
       "base_branch": "codex/game-msix-package-safety-20261027-1510",
       "base_sha": "c217652c7887626de94e8b37ca3f1f7a57f9064d",
-      "ci_run_id": 40585237259,
+      "ci_run_id": 40593124056,
       "ci_conclusion": "SUCCESS",
       "status": "LATEST_PR9_CI_PASS__LOCAL_RECHECK_PENDING",
       "changes": [
@@ -152,7 +152,7 @@
         "tests/test_package_identity_pipeline.py",
         "tests/test_existing_identity_commit_sha.py"
       ],
-      "next_action": "PR9 32c3ed762b703bcd227840de29a774d90b4cf797 CI 40585237259 SUCCESS; local pinned EXE and resume result need recheck on this SHA before official Identity and explicit CAS approval."
+      "next_action": "PR9 d2d8120 CI SUCCESS; operator-managed local Identity missing; recheck pinned EXE and prior Provisioner result on latest SHA before any approved CAS."
     },
     "local_identity_return_worker": {
       "repository": "shihuiarenjinba-png/Windows-all-auto",
@@ -167,8 +167,8 @@
       "mode": "LOCAL_ONLY_EXPLICIT_APPLY",
       "evidence_path": "C:\\qa\\signal-sprint\\official-identity-private.json",
       "receipt_path": "C:\\qa\\signal-sprint\\identity-return\\identity-return-receipt.json",
-      "required_provisioner_sha": "32c3ed762b703bcd227840de29a774d90b4cf797",
-      "next_action": "PR17 worker unchanged; PR9 now 32c3ed762b703bcd227840de29a774d90b4cf797 CI SUCCESS. Historical local check-only is not evidence of local execution on this new SHA.",
+      "required_provisioner_sha": "d2d8120ace60d0ba1095c110374e2d4f553bc92f",
+      "next_action": "PR17 remains dedicated CAS worker. PR18 user-managed private Identity gate waits for file; no Partner Center acquisition by automation. Local Windows execution on PR9 d2d8120 not observed.",
       "ci_url": "https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/40499482120",
       "local_check_only": {
         "status": "HOLD",
@@ -189,7 +189,7 @@
     },
     "last_completed_step": "PR17_REPORTED_LOCAL_WINDOWS_CHECK_ONLY_WAITING_OFFICIAL_IDENTITY__EXE_SHA_VERIFIED",
     "blocked_by": [
-      "EXTERNAL_IDENTITY: authenticated Partner Center official Identity not observed",
+      "USER_MANAGED_IDENTITY_GATE: private user-provided official Identity file not observed",
       "HUMAN_APPROVAL: explicit CAS approval not recorded",
       "REAL_MSIX_AND_LOCAL_QA: not generated or received"
     ],
@@ -211,9 +211,9 @@
       "resume_result_verified_on_local_windows": false,
       "package_sha256": "e8517df8cd31a40e5ce72afdd4e6a4d63626fb99f7ff8a4fa3296ff8deef05f4",
       "status": "CODE_CI_PASS_LOCAL_EXECUTION_NOT_OBSERVED",
-      "current_branch_head": "32c3ed762b703bcd227840de29a774d90b4cf797",
+      "current_branch_head": "d2d8120ace60d0ba1095c110374e2d4f553bc92f",
       "historical_local_check_only_sha": "5c1db9820bac68c59cc7eb6ca5921e22a5bb3913",
-      "note": "Historical check-only on older Provisioner SHA; current PR9 32c3ed762b703bcd227840de29a774d90b4cf797 CI SUCCESS but no local execution observed."
+      "note": "Historical local check-only is on older Provisioner SHA; PR9 d2d8120 CI SUCCESS but local execution not observed."
     }
   },
   "other_lanes": {
@@ -224,7 +224,7 @@
       "factory_head": "e8e3ca613a114cd0e919cf2f3a4454fa8149510a",
       "provisioner_branch": "codex/e2e-belt-connection-20261027",
       "provisioner_head": "f8d03890923dd41a3a597df4335a11d8cb18fddf",
-      "next_action": "00 APP owner: PR14 dbec7e3bb18de76ac6d6f8069430e64a8120e107 CI 40582657157 SUCCESS, factory state=build; formal manifest 404 and no source_sha/request_id or Windows EXE. Provisioner-app f8d03890923dd41a3a597df4335a11d8cb18fddf CI 40582849698 SUCCESS. No second canary, no Windows GUI PASS.",
+      "next_action": "00 APP owner only: existing offline-notes-canary remains unpromoted on PR14 dbec7e3b, CI 40582657157 SUCCESS; formal manifest/source_sha/request_id/Windows EXE not observed. Once ready, enqueue the same product into user-managed Identity handoff. No new canary.",
       "provisioner_ci_run_id": 40582849698,
       "provisioner_ci_conclusion": "SUCCESS",
       "canary_proposal": {
@@ -255,8 +255,8 @@
       "factory_branch": "codex/3d-qa-zip-ledger-20261027-1235",
       "factory_head": "f8b772bf429de7f3da172f7c4a3a4f5448a3de1b",
       "provisioner_branch": "codex/e2e-belt-connection-20261027",
-      "provisioner_head": "70600e77f2dd4278a989604314eebfa662e05c33",
-      "next_action": "3D owner: PR12 5c21d8667323e51297f4adbbd93b8ae6215aecc1 CI 40586538003 SUCCESS. Godot 4.3 real MakeAppx template QA fixture Artifact 12772561732 is NOT a product; no accepted 3D product, generation HOLD.",
+      "provisioner_head": "8da96245c8d619cbb81091108ee09bfba81ecdb2",
+      "next_action": "3D owner: PR12 3b3c5cd6 CI 40594377088 SUCCESS; no accepted 3D product, generation remains HOLD.",
       "factory_ci_run_id": 40520641316,
       "factory_ci_conclusion": "SUCCESS",
       "dispatch_guard_pr": {
@@ -268,11 +268,13 @@
       "current_guard_pr": {
         "draft_pr": 12,
         "branch": "codex/3d-dispatch-guard-current-ledger-20261027-1628",
-        "head_sha": "5c21d8667323e51297f4adbbd93b8ae6215aecc1",
-        "ci_run_id": 40586538003,
+        "head_sha": "3b3c5cd6c7e58dcca5a86b94e83ff2401fb8cd0d",
+        "ci_run_id": 40594377088,
         "ci_conclusion": "SUCCESS",
         "status": "DRAFT_ONLY_NO_ACTIVE_PRODUCT"
-      }
+      },
+      "provisioner_ci_run_id": 40594237767,
+      "provisioner_ci_conclusion": "SUCCESS"
     }
   },
   "transport": {
@@ -316,10 +318,12 @@
     "merges": false,
     "store_submission": false,
     "identity_guessing": false,
-    "openai_paid_api": false
+    "openai_paid_api": false,
+    "identity_acquisition_automation": false,
+    "partner_center_access_by_36_minute_loop": false
   },
   "last_cross_lane_observation": {
-    "observed_at_utc": "2026-10-27T21:38:39.942Z",
+    "observed_at_utc": "2026-10-27T22:42:52.219Z",
     "active_lane": "GAME",
     "active_product": "signal-sprint",
     "factory_source_head_verified": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
@@ -335,7 +339,7 @@
       "local_tests": "67_PASS",
       "next_action": "Do not rerun without new runner/workflow evidence; require real MSIX before Checker product QA"
     },
-    "last_12_minute_update": "PR18 05c8c89406ea7cb8df1712812174a80d49656f1d junction guard CI SUCCESS; PR9 32c3ed762b703bcd227840de29a774d90b4cf797 SUCCESS; APP dbec7e3bb18de76ac6d6f8069430e64a8120e107 SUCCESS; Provisioner-app f8d03890923dd41a3a597df4335a11d8cb18fddf SUCCESS; 3D 5c21d8667323e51297f4adbbd93b8ae6215aecc1 SUCCESS. GAME official Identity/CAS/real product MSIX/local GUI QA absent.",
+    "last_12_minute_update": "PR18 f176eec0 user-managed Identity gate CI pending; Provisioner-game PR9 d2d8120 CI SUCCESS; 3D Factory PR12 3b3c5cd6 and Provisioner-3D 8da96245 CI SUCCESS. GAME official Identity file/CAS/real product MSIX absent.",
     "next_repo": "shihuiarenjinba-png/Windows-all-auto",
     "next_branch": "codex/local-identity-qa-safety-20261027",
     "next_head_sha": "6ef8aacbcba8a622760a8c109f4c684d6df503fb",
@@ -366,14 +370,14 @@
       "remote_backlog_preserved_on_full": true
     },
     "three_d_current_guard_pr12": {
-      "head_sha": "5c21d8667323e51297f4adbbd93b8ae6215aecc1",
-      "ci_run_id": 40586538003,
+      "head_sha": "3b3c5cd6c7e58dcca5a86b94e83ff2401fb8cd0d",
+      "ci_run_id": 40594377088,
       "ci_conclusion": "SUCCESS",
       "compare_to_3d_factory_pr10": "AHEAD_4_BEHIND_0",
       "new_product_allowed": false
     },
-    "provisioner_game_safety_head": "32c3ed762b703bcd227840de29a774d90b4cf797",
-    "provisioner_game_safety_ci_run_id": 40585237259,
+    "provisioner_game_safety_head": "d2d8120ace60d0ba1095c110374e2d4f553bc92f",
+    "provisioner_game_safety_ci_run_id": 40593124056,
     "app_canary": {
       "status": "CANDIDATE_HEADLESS_13_PASS_LINUX_XVFB_GUI_REPORTED__NO_PROMOTION_OR_WINDOWS_EXE",
       "active_product": null,
@@ -414,7 +418,7 @@
         "is_accepted_product": false
       }
     },
-    "classification": "SCHEDULER_WINDOWS_JUNCTION_GUARD_CI_SUCCESS__GAME_EXTERNAL_IDENTITY_HOLD__APP_PROMOTION_PENDING__3D_NO_PRODUCT__CHECKER_CI_INFRA_UNRESOLVED",
+    "classification": "USER_MANAGED_IDENTITY_HANDOFF_GATE_PATCH_CI_PENDING__GAME_WAITING_USER_IDENTITY__APP_PROMOTION_PENDING__3D_NO_PRODUCT__CHECKER_CI_INFRA_UNRESOLVED",
     "local_identity_qa_safety_branch": {
       "branch": "codex/local-identity-qa-safety-20261027",
       "head_sha": "6ef8aacbcba8a622760a8c109f4c684d6df503fb",
@@ -426,7 +430,7 @@
       "hold_class": "EXTERNAL_IDENTITY",
       "duplicate_resume_result_unchanged": true,
       "locally_exercised_provisioner_sha": "5c1db9820bac68c59cc7eb6ca5921e22a5bb3913",
-      "current_provisioner_sha": "32c3ed762b703bcd227840de29a774d90b4cf797",
+      "current_provisioner_sha": "d2d8120ace60d0ba1095c110374e2d4f553bc92f",
       "raw_private_receipt_on_github": false,
       "ci_run_id": 40522159185,
       "ci_conclusion": "SUCCESS",
@@ -456,24 +460,25 @@
     }
   },
   "multi_product_identity_scheduler": {
-    "status": "STACKED_PR18_WINDOWS_JUNCTION_PRIVATE_PATH_FAIL_CLOSED_PATCH__CI_SUCCESS__LOCAL_WINDOWS_NOT_EXECUTED",
+    "status": "USER_MANAGED_IDENTITY_HANDOFF_GATE_COMMITTED__CI_PENDING__LOCAL_WINDOWS_NOT_EXECUTED",
     "repository": "shihuiarenjinba-png/Windows-all-auto",
     "draft_pr": 18,
     "branch": "codex/multi-product-identity-scheduler-20261028-0036",
-    "head_sha": "05c8c89406ea7cb8df1712812174a80d49656f1d",
+    "head_sha": "f176eec03a2085aa09c7ed84bb5e92c02d72bc80",
     "base_pr": 17,
     "base_head_sha": "6ef8aacbcba8a622760a8c109f4c684d6df503fb",
-    "ci_run_id": 40588381734,
-    "ci_conclusion": "SUCCESS",
+    "ci_run_id": null,
+    "ci_conclusion": "PENDING",
     "ci_platforms": [
       "windows-latest",
       "ubuntu-latest"
     ],
-    "new_offline_tests": 28,
+    "new_offline_tests": 36,
     "local_unpushed_codex_implementation": "PRESERVED_NOT_READ_OR_OVERWRITTEN_COMPARE_BEFORE_INTEGRATION",
     "files": [
       "scripts/local_identity_scheduler.py",
       "tests/test_local_identity_scheduler.py",
+      "tests/test_user_managed_identity_gate.py",
       "docs/LOCAL_MULTI_PRODUCT_IDENTITY_SCHEDULER.md"
     ],
     "central_ledger_single_writer": true,
@@ -498,17 +503,73 @@
         "msix_builder": "store/build-msix.ps1"
       }
     },
-    "identity_discovery": "KNOWN_GOOD_REFERENCE_READ_ONLY",
-    "identity_authentication": "LOCAL_OPERATOR_OBSERVED_MATCH_REPORTED__NOT_CLOUD_VERIFIED",
-    "identity_return": "NOT_APPLIED",
+    "identity_discovery": "OUT_OF_SCOPE__USER_OBTAINS_OFFICIAL_IDENTITY",
+    "identity_authentication": "USER_RESPONSIBILITY__LOCAL_FILE_VALIDATION_NOT_CLOUD_AUTHENTICATION",
+    "identity_return": "NOT_APPLIED__WAITING_USER_IDENTITY",
     "msix_build": "HOLD_APPROVED_STORE_VERSION_AND_BRAND_ASSETS_MISSING",
     "github_backlog": "CENTRAL_RETENTION_30_DAY_CONTRACT_PASS__REAL_PRODUCT_INTAKE_NOT_OBSERVED",
     "local_pull": "NOT_RUN",
     "checker": "NOT_RUN_ON_REAL_MSIX",
     "gui_qa": "NOT_RUN",
     "e2e_pass": false,
-    "next_action": "PR18 05c8c89406ea7cb8df1712812174a80d49656f1d adds Path.is_junction fail-closed guard and 1 regression test; CI 40588381734 SUCCESS. Local Windows check-only and comparison to unpushed 10/10 implementation still pending; GAME Identity/CAS/real MSIX HOLD.",
-    "security_fix": "REJECT_SYMLINKED_PRIVATE_PATH_ANCESTORS_AND_GIT_CHECK; OPERATOR_ONLY_STORE_IDENTITY_CANNOT_ADVANCE_TO_CAS_APPROVAL; VERSION_AND_BRAND_APPROVAL_ALONE_CANNOT_AUTHORIZE_MSIX; EXPLICIT_CAS_TARGETS_EXACT_GAME_REQUEST_OR_FAILS_CLOSED; DURABLE_PRE_CAS_INTENT_AND_STICKY_MANUAL_RECONCILIATION_PREVENT_UNCERTAIN_CAS_REPLAY; REJECT_WINDOWS_DIRECTORY_JUNCTION_PRIVATE_PATH_ANCESTORS",
-    "targeted_apply_routing": "FIXED_TESTED_22_PASS_WINDOWS_UBUNTU_CI"
+    "next_action": "PR18 f176eec0 adds private local user Identity file gate, duplicate-key/schema/request_id/source_sha and known-good checks; no Partner Center acquisition. Await final CI, then local Windows check-only and compare unpushed implementation before integration. GAME CAS/real MSIX HOLD.",
+    "security_fix": "REJECT_SYMLINKED_PRIVATE_PATH_ANCESTORS_AND_GIT_CHECK; OPERATOR_ONLY_STORE_IDENTITY_CANNOT_ADVANCE_TO_CAS_APPROVAL; VERSION_AND_BRAND_APPROVAL_ALONE_CANNOT_AUTHORIZE_MSIX; EXPLICIT_CAS_TARGETS_EXACT_GAME_REQUEST_OR_FAILS_CLOSED; DURABLE_PRE_CAS_INTENT_AND_STICKY_MANUAL_RECONCILIATION_PREVENT_UNCERTAIN_CAS_REPLAY; REJECT_WINDOWS_DIRECTORY_JUNCTION_PRIVATE_PATH_ANCESTORS; USER_MANAGED_IDENTITY_FILE_REQUIRED_BEFORE_CAS__SCHEMA_REFERENCE_BINDING_VALIDATION__NO_SECRET_IN_RECEIPT",
+    "targeted_apply_routing": "FIXED_TESTED_22_PASS_WINDOWS_UBUNTU_CI",
+    "user_managed_identity_gate": "WAITING_USER_IDENTITY__NO_PARTNER_CENTER_AUTOMATION"
+  },
+  "user_managed_identity_handoff": {
+    "policy": "USER_OBTAINS_OFFICIAL_IDENTITY_INDEPENDENTLY__36_MINUTE_LOOP_ONLY_VALIDATES_ROUTES_AND_RETURNS",
+    "states": [
+      "PRE_IDENTITY_READY",
+      "WAITING_USER_IDENTITY",
+      "USER_IDENTITY_RECEIVED",
+      "IDENTITY_VALIDATED",
+      "WAITING_CAS_APPROVAL",
+      "CAS_RETURNED",
+      "WAITING_FACTORY_MSIX",
+      "MSIX_READY",
+      "GITHUB_BACKLOG",
+      "LOCAL_QA_PENDING",
+      "CHECKER_PENDING",
+      "GUI_QA_PENDING",
+      "DONE",
+      "HOLD",
+      "CONFLICT"
+    ],
+    "game": {
+      "request_id": "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e",
+      "source_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
+      "identity_target": "%LOCALAPPDATA%/FactoryIdentityWorker/secure/<request_id>/official-identity.json",
+      "identity_file_observed": false,
+      "user_identity_validated": false,
+      "cas_returned": false,
+      "real_msix": false
+    },
+    "app": {
+      "slug": "offline-notes-canary",
+      "promotion_complete": false,
+      "exe_artifact_observed": false,
+      "job_enqueued": false
+    },
+    "known_good_store_fixtures": "LOCAL_OPERATOR_OBSERVED_MATCH_NOT_CLOUD_AUTHENTICATION; USER_IDENTITY_LOCAL_JSON_SEPARATE_FROM_REFERENCE",
+    "no_partner_center_browser_or_token_management": true,
+    "no_secret_data_in_github_receipts": true,
+    "identity_version_asset_approvals_separate": true,
+    "backlog": "verified-msix-local-qa-*; 30 days; local 20 packages/2 GiB; HOLD_LOCAL_CAPACITY preserves remote",
+    "e2e_pass": false,
+    "ci_note": "Feature PR18 pending CI; local Windows and GUI QA not observed"
+  },
+  "quality_gates": {
+    "pre_identity_ready": "GAME_EXE_VERIFIED__APP_NOT_READY",
+    "waiting_user_identity": "GAME_TRUE",
+    "user_identity_validated": false,
+    "cas_return_pass": false,
+    "real_msix_pass": false,
+    "github_backlog_contract_pass": true,
+    "github_backlog_real_product_pass": false,
+    "local_pull_pass": false,
+    "checker_pass": false,
+    "gui_qa_pass": false,
+    "e2e_pass": false
   }
 }
