@@ -128,6 +128,20 @@ class SchedulerSafetyTests(unittest.TestCase):
         data["brand_assets_approval"] = "APPROVED"
         self.assertTrue(s.version_gate(data))
 
+    def test_operator_match_never_claims_authenticated_cas_ready(self):
+        job = store_job()
+        with patch.object(s, "remote_json", return_value=(reference(), SHA)), \
+             patch.object(s, "gh", return_value={"type": "file"}), \
+             patch.object(s, "inspect_package", return_value=DIGEST), \
+             patch.object(s, "validate_operator_evidence", return_value=True):
+            result = s.store_job(job, SHA)
+        self.assertEqual(result["stage"], "WAITING_PARTNER_CENTER_AUTH")
+        self.assertEqual(result["reason"],
+                         "LOCAL_OPERATOR_MATCH_NOT_AUTHENTICATED__STORE_CAS_NOT_CONNECTED")
+        self.assertEqual(result["identity_observation"], "LOCAL_OPERATOR_OBSERVED_MATCH")
+        self.assertFalse(result["identity_authentication"])
+        self.assertFalse(result["identity_return"])
+
     def test_store_builder_is_repo_specific(self):
         job = store_job()
         with patch.object(s, "remote_json", return_value=(reference(), SHA)), \
