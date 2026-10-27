@@ -86,6 +86,16 @@ class ImmutableLaneTransportTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Actions head SHA"):
             validate_bundle(self.source, SHA)
 
+    def test_game_identity_return_build_head_preserves_original_source_sha(self):
+        self.base["factory_head_sha"] = HEAD
+        self.write()
+        result = stage_bundle(self.source, self.root / "queue", HEAD)
+        self.assertEqual(result["source_sha"], SHA)
+        self.assertEqual(result["factory_head_sha"], HEAD)
+        self.assertEqual(result["product_type"], "GAME")
+        with self.assertRaisesRegex(ValueError, "Actions head SHA"):
+            validate_bundle(self.source, SHA)
+
     def test_missing_request_id_does_not_silently_downgrade(self):
         del self.base["request_id"]
         self.write()
