@@ -303,7 +303,12 @@
       "local_max_packages": 20,
       "local_max_bytes": 2147483648,
       "capacity_status": "HOLD_LOCAL_CAPACITY",
-      "integration_status": "DRAFT_NOT_MERGED"
+      "integration_status": "DRAFT_NOT_MERGED",
+      "central_workflow_retention_days": 30,
+      "central_workflow_retention_contract": "VERIFIED_MSIX_LOCAL_QA_30_DAYS_CI_PASS",
+      "central_workflow_fix_head": "192e2fdfc18854769a7d6160e9411967059d3ca0",
+      "central_workflow_ci_run_id": 40533493586,
+      "central_workflow_ci_conclusion": "SUCCESS"
     }
   },
   "policy": {
@@ -425,6 +430,15 @@
       "ci_conclusion": "SUCCESS",
       "verified_at_replay_correlation": true,
       "local_execution": "NOT_OBSERVED_ON_LATEST_HEAD"
+    },
+    "backlog_retention_fix": {
+      "head_sha": "192e2fdfc18854769a7d6160e9411967059d3ca0",
+      "run_id": 40533493586,
+      "ci_conclusion": "SUCCESS",
+      "retention_days": 30,
+      "tests_added": 2,
+      "local_capacity_unchanged": true,
+      "real_intake": "NOT_OBSERVED"
     }
   },
   "multi_product_identity_scheduler": {
@@ -474,7 +488,7 @@
     "identity_authentication": "LOCAL_OPERATOR_OBSERVED_MATCH_REPORTED__NOT_CLOUD_VERIFIED",
     "identity_return": "NOT_APPLIED",
     "msix_build": "HOLD_APPROVED_STORE_VERSION_AND_BRAND_ASSETS_MISSING",
-    "github_backlog": "NOT_PRODUCT_VERIFIED",
+    "github_backlog": "CENTRAL_RETENTION_30_DAY_CONTRACT_PASS__REAL_PRODUCT_INTAKE_NOT_OBSERVED",
     "local_pull": "NOT_RUN",
     "checker": "NOT_RUN_ON_REAL_MSIX",
     "gui_qa": "NOT_RUN",
