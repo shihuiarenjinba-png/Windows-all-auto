@@ -155,7 +155,7 @@ def validate_bundle(directory:Path,expected_run_sha:str|None=None)->dict:
     details=inspect_msix(directory/"package.msix")
     if details["sha256"]!=file_hash or details["bytes"]!=data.get("package_bytes"):
         fail("MSIX bytes or hash mismatch")
-    if factory_head is not None and details["executable_sha256"]!=data["prebuilt_exe_sha256"]:
+    if factory_head is not None and kind=="app" and details["executable_sha256"]!=data["prebuilt_exe_sha256"]:
         fail("APP pre-Identity EXE payload SHA mismatch")
     approved=data.get("identity")
     if not isinstance(approved,dict) or any(details.get(k)!=approved.get(k) or
@@ -170,7 +170,7 @@ def validate_bundle(directory:Path,expected_run_sha:str|None=None)->dict:
        "security_confirmed":False,"price_approved":False,
        "store_id":None,"submit_allowed":False
     }
-    if factory_head is not None:
+    if factory_head is not None and kind=="app":
         result.update({
             "factory_head_sha":factory_head,"expected_head_sha":sha,
             "request_id":data["request_id"],"product_type":"APP",
