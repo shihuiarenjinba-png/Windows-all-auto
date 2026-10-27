@@ -78,6 +78,12 @@ py -3 -m scripts.local_identity_scheduler --jobs-file "C:\private-qa\identity-jo
 Never blindly repeat a CAS after an uncertain outcome. Reconcile via
 the existing dedicated worker's private receipt and Factory HEAD.
 
+Before invoking the CAS worker, the scheduler durably records a CAS_RETURN
+in-flight marker. A crash, worker error or invalid worker response leaves a
+sticky HOLD requiring operator reconciliation; subsequent runs never replay
+CAS automatically. Inspect the worker's private receipt and the live Factory
+HEAD, then resolve the local state manually only after confirming the outcome.
+
 ## Explicit HOLD gates
 
 - STORE: local operator-observed identity match is not authentication;
