@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-27T15:38:20Z",
+  "updated_at_utc": "2026-10-27T15:40:09Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -314,7 +314,7 @@
     "openai_paid_api": false
   },
   "last_cross_lane_observation": {
-    "observed_at_utc": "2026-10-27T15:38:20Z",
+    "observed_at_utc": "2026-10-27T15:40:09Z",
     "active_lane": "GAME",
     "active_product": "signal-sprint",
     "factory_source_head_verified": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
@@ -330,7 +330,7 @@
       "local_tests": "67_PASS",
       "next_action": "Do not rerun without new runner/workflow evidence; require real MSIX before Checker product QA"
     },
-    "last_12_minute_update": "3D Factory PR12 HEAD 7f8a1cc updated 15:26 UTC (other owner); APP Factory PR14 HEAD 66cabeb 15:06 UTC candidate remains unpromoted. GAME source unchanged c058cbf; official Identity absent. Independent scheduler PR18 CI 40532967096 Windows/Ubuntu SUCCESS; no local execution.",
+    "last_12_minute_update": "No new observed same-file cross-lane writes. 3D Factory PR12 last updated 15:26 UTC; APP PR14 15:06 UTC. Scheduler PR18 final HEAD c9f278b CI 40533268400 Windows/Ubuntu SUCCESS, 18 new safety tests. GAME Identity still HOLD.",
     "next_repo": "shihuiarenjinba-png/Windows-all-auto",
     "next_branch": "codex/local-identity-qa-safety-20261027",
     "next_head_sha": "4cd73109eb14556217ca0ac2e073b19be1fe9b09",
@@ -432,16 +432,16 @@
     "repository": "shihuiarenjinba-png/Windows-all-auto",
     "draft_pr": 18,
     "branch": "codex/multi-product-identity-scheduler-20261028-0036",
-    "head_sha": "ed6e963a876b61a8a2b06b3668abb1377baf510d",
+    "head_sha": "c9f278ba739301cc63bde9f300ef3c117f287d84",
     "base_pr": 17,
     "base_head_sha": "6ef8aacbcba8a622760a8c109f4c684d6df503fb",
-    "ci_run_id": 40532967096,
+    "ci_run_id": 40533268400,
     "ci_conclusion": "SUCCESS",
     "ci_platforms": [
       "windows-latest",
       "ubuntu-latest"
     ],
-    "new_offline_tests": 17,
+    "new_offline_tests": 18,
     "local_unpushed_codex_implementation": "PRESERVED_NOT_READ_OR_OVERWRITTEN_COMPARE_BEFORE_INTEGRATION",
     "files": [
       "scripts/local_identity_scheduler.py",
@@ -479,6 +479,7 @@
     "checker": "NOT_RUN_ON_REAL_MSIX",
     "gui_qa": "NOT_RUN",
     "e2e_pass": false,
-    "next_action": "Compare with local unpushed 10/10 scheduler when Codex resumes. Run private one-job-per-invocation Windows check-only; require actual EXE SHA, local evidence and live branch HEAD. Signal Sprint remains EXTERNAL_IDENTITY HOLD; only explicit approved GAME CAS delegates to PR17 worker. Store jobs require product-specific CAS and version/brand approvals before real MSIX."
+    "next_action": "Compare with local unpushed 10/10 scheduler when Codex resumes. Run private one-job-per-invocation Windows check-only; require actual EXE SHA, local evidence and live branch HEAD. Signal Sprint remains EXTERNAL_IDENTITY HOLD; only explicit approved GAME CAS delegates to PR17 worker. Store jobs require product-specific CAS and version/brand approvals before real MSIX.",
+    "security_fix": "REJECT_SYMLINKED_PRIVATE_PATH_ANCESTORS_AND_GIT_CHECKOUT_REDIRECTION"
   }
 }
