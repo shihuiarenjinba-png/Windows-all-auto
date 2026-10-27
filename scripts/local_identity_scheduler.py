@@ -256,6 +256,12 @@ def read_previous(state_path: Path, job: dict) -> dict | None:
             or state.get("kind") != job["kind"]
             or state.get("stage") not in STAGES):
         raise Hold("CONFLICT", "PERSISTED_JOB_BINDING_MISMATCH")
+    # A delegated CAS may have committed even if its process crashed or its
+    # response was lost. Never retry it from an unresolved local marker.
+    if (state["stage"] == "CAS_RETURN" or
+            (state["stage"] == "HOLD" and state.get("reason") ==
+             "DELEGATED_CAS_OUTCOME_REQUIRES_RECONCILIATION")):
+        raise Hold("HOLD", "DELEGATED_CAS_OUTCOME_REQUIRES_RECONCILIATION")
     # A resumable CAS-completed state is not proof by itself. Reject a
     # truncated/forged local receipt before the idempotent fast path.
     if state["stage"] in {"WAITING_FACTORY_MSIX", "CAS_RETURNED", "DONE"}:
@@ -296,7 +302,7 @@ def store_job(job: dict, observed_sha: str) -> dict:
     }
 
 
-def game_job(job: dict, observed_sha: str, args) -> dict:
+def game_job(job: dict, observed_sha: str, args, on_cas_start=None) -> dict:
     ledger_sha = head(CENTRAL_REPO, CENTRAL_BRANCH)
     ledger, _ = remote_json(CENTRAL_REPO, CENTRAL_PATH, ledger_sha)
     product = ledger.get("active_product") or {}
@@ -333,6 +339,10 @@ def game_job(job: dict, observed_sha: str, args) -> dict:
         "--request-id", job["request_id"], "--ledger-ref", CENTRAL_BRANCH,
         "--ledger-sha", ledger_sha, "--apply", "--confirm-request-id", job["request_id"],
     ]
+    # Durable intent MUST precede the external CAS subprocess: a power loss
+    # or unparseable response must not cause an automatic second CAS.
+    if on_cas_start is not None:
+        on_cas_start()
     try:
         proc = subprocess.run(command, capture_output=True, text=True,
                               encoding="utf-8", timeout=2700, check=False)
@@ -377,11 +387,24 @@ def process(job: dict, args, state_dir: Path) -> dict:
         if job["kind"] == "STORE_KNOWN_GOOD":
             result.update(store_job(job, observed))
         elif job["kind"] == "GAME_SIGNAL_SPRINT":
-            result.update(game_job(job, observed, args))
+            def mark_cas_start():
+                atomic_json(state_path, {
+                    **result, "stage": "CAS_RETURN",
+                    "reason": "DELEGATED_CAS_OUTCOME_REQUIRES_RECONCILIATION",
+                })
+            result.update(game_job(job, observed, args, mark_cas_start))
         else:
             raise Hold("HOLD", "APP_CANARY_REFERENCE_AND_IDENTITY_NOT_READY")
     except Hold as exc:
-        result["stage"], result["reason"] = exc.stage, exc.reason
+        # If the worker was launched, its result is uncertain even when it
+        # returned an error. Preserve the durable marker until manual review.
+        pending = (decode_json(state_path.read_text(encoding="utf-8"), 64_000)
+                   if state_path.is_file() else {})
+        if pending.get("stage") == "CAS_RETURN":
+            result["stage"] = "HOLD"
+            result["reason"] = "DELEGATED_CAS_OUTCOME_REQUIRES_RECONCILIATION"
+        else:
+            result["stage"], result["reason"] = exc.stage, exc.reason
     atomic_json(state_path, result)
     return result
 
