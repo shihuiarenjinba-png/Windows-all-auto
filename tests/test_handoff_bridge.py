@@ -211,4 +211,57 @@ class HandoffBridgeTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"unsafe MSIX ZIP entry"):
             validate_bundle(self.source,SHA)
 
+
+    def set_identity_return_bundle(self):
+        original="b"*40
+        self.info.update({
+            "source_sha":original,"expected_head_sha":original,
+            "factory_head_sha":SHA,"request_id":"app-request-1234",
+            "product_type":"APP","source_factory":"AI-App-Factory",
+            "source_branch":"codex/factory-autoloop-20261026",
+            "display_name":"Sample App","store_id":"9PTESTING",
+            "prebuilt_exe_sha256":hashlib.sha256(b"test executable payload").hexdigest(),
+        })
+        xml=(b'<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10">'
+             b'<Identity Name="OkinawaDesktopTools.TestApp" Publisher="CN=ABC" Version="1.0.1.0"/>'
+             b'<Applications><Application Executable="app.exe"/></Applications></Package>')
+        with zipfile.ZipFile(self.source/"package.msix","w") as z:
+            z.writestr("AppxManifest.xml",xml)
+            z.writestr("AppxBlockMap.xml",b"<BlockMap/>")
+            z.writestr("[Content_Types].xml",b"<Types/>")
+            z.writestr("app.exe",b"test executable payload")
+        blob=(self.source/"package.msix").read_bytes()
+        self.info["package_sha256"]=hashlib.sha256(blob).hexdigest()
+        self.info["package_bytes"]=len(blob)
+        self.write_info()
+
+    def test_identity_return_preserves_original_source_sha_through_local_qa(self):
+        self.set_identity_return_bundle()
+        result=stage_bundle(self.source,self.root/"queue",SHA)
+        self.assertEqual(result["source_sha"],"b"*40)
+        self.assertEqual(result["factory_head_sha"],SHA)
+        self.assertEqual(result["request_id"],"app-request-1234")
+        self.assertEqual(result["claimed_store_id"],"9PTESTING")
+        self.assertIsNone(result["store_id"])
+        self.assertFalse(result["submit_allowed"])
+
+    def test_identity_return_requires_actual_prebuilt_exe_payload(self):
+        self.set_identity_return_bundle()
+        self.info["prebuilt_exe_sha256"]="c"*64
+        self.write_info()
+        with self.assertRaisesRegex(ValueError,"EXE payload SHA"):
+            validate_bundle(self.source,SHA)
+
+    def test_identity_return_rejects_wrong_expected_head(self):
+        self.set_identity_return_bundle()
+        self.info["expected_head_sha"]="a"*40
+        self.write_info()
+        with self.assertRaisesRegex(ValueError,"immutable contract"):
+            validate_bundle(self.source,SHA)
+
+    def test_identity_return_rejects_wrong_actions_head(self):
+        self.set_identity_return_bundle()
+        with self.assertRaisesRegex(ValueError,"Actions head SHA"):
+            validate_bundle(self.source,"c"*40)
+
 if __name__=="__main__":unittest.main()
