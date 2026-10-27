@@ -30,6 +30,6 @@ Only after verifying actual Microsoft account evidence: python -m all_auto.ident
 ## Current verification status (2026-10-27)
 
 - Windows-all-auto integrated 2D/3D full unit suite: 188 tests, 186 PASS, 0 FAIL, 2 SKIP. The two skips are Windows symlink-permission dependent and are not live E2E evidence.
-- The three Provisioners share byte-semantically identical versioned job/result schemas and their combined offline suite is 218 tests, 215 PASS, 0 FAIL, 3 SKIP.
+- The three Provisioners share byte-semantically identical versioned job/result schemas and their combined offline suite is 219 tests, 216 PASS, 0 FAIL, 3 SKIP.
 - Signal Sprint (`AI-Game-Factory@c058cbf7fe38e02d929c67d047d717ff74bd522e`) was downloaded from the pinned Factory Artifact, its archive/provenance checked, DRY_RUN completed, and a real local unsigned PE EXE rebuilt and inspected. Local result is correctly `HOLD / OBTAIN_AUTHENTICATED_OFFICIAL_IDENTITY`.
 - No Partner Center official identity was acquired, no Factory identity file was written, no Store MSIX was regenerated, no Windows-all-auto MSIX receipt exists, and no Store submission was attempted. Overall E2E remains HOLD.

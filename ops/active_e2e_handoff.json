@@ -19,7 +19,7 @@
     "display_name": "Signal Sprint",
     "provisioner_repository": "shihuiarenjinba-png/Repository-Provisioner-game",
     "provisioner_branch": "codex/e2e-belt-connection-20261027",
-    "provisioner_head_observed": "3535d2551169e34a429d6813bb084232371ca388",
+    "provisioner_head_observed": "a2975f11fcc9207bb624a34be9006055ceb76ef3",
     "factory_exe_run_id": 40443340158,
     "factory_exe_artifact_id": 12706862577,
     "factory_exe_artifact_name": "game-signal-sprint-exe-c058cbf7fe38e02d929c67d047d717ff74bd522e",

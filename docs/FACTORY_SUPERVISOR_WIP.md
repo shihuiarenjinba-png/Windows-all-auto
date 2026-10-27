@@ -49,7 +49,7 @@ Hard gates: `new_product_allowed=false` for all lanes; no main/release writes, f
 
 - 監督ブランチを基準に専用`codex/e2e-belt-connection-20261027`を作成し、PR #12の2D queue/page/provenance保護を維持したまま、PR #11の3D Identity CAS・3D handoff相関・専用workflow許可だけを手動統合した。旧3D差分の丸ごとmergeはしていない。
 - Windows-all-auto統合テスト: 188件、PASS 186、FAIL 0、SKIP 2。
-- Provisioner 3系統: 合計218件、PASS 215、FAIL 0、SKIP 3。job/result Schemaの正規化SHA-256は3リポジトリで一致。
+- Provisioner 3系統: 合計219件、PASS 216、FAIL 0、SKIP 3。GAMEは更新された安全基準`9a27eb3`（MSIX全member CRCと相関保持）を非force merge後に再検証。job/result Schemaの正規化SHA-256は3リポジトリで一致。
 - Signal Sprint Artifact ZIP digestと内部provenance/EXE SHAを確認し、DRY_RUNを副作用0で完了。固定Factory SHAをローカルで再ビルドし、実PE EXE 11,387,518 bytes、SHA-256 `e8517df8cd31a40e5ce72afdd4e6a4d63626fb99f7ff8a4fa3296ff8deef05f4`、Authenticode `NOTSIGNED`を収集した。
 - Provisioner live結果は正しく`HOLD / OBTAIN_AUTHENTICATED_OFFICIAL_IDENTITY`。Partner Center証拠、Factory書戻しcommit、正式MSIX、Windows-all-auto receipt、Checker/UI QAはまだ存在しない。`e2e_pass=false`と`new_product_allowed=false`を維持する。
 - 次の唯一の製品工程: 認証済みPartner CenterでSignal Sprintの公式Identityを取得し、同じrequest_id/source branch/source SHAを再照合してCAS返却する。推測値や別製品Identityは使用しない。
