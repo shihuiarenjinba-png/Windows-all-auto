@@ -13,7 +13,7 @@ Provisioner result to GitHub. This worker does not build MSIX or certify E2E PAS
 - Immutable source_sha: c058cbf7fe38e02d929c67d047d717ff74bd522e
 - request_id: game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e
 - Provisioner-game safety branch: codex/game-msix-package-safety-20261027-1510
-- Reviewed Provisioner HEAD: 74a13e506120f552668bf7d6289b9b6921f7f194 (PR #8, CI run 40472019725 SUCCESS; reverify ledger and branch HEAD before execution)
+- Reviewed Provisioner HEAD: 291c11bfe6b71d6f915e6a5e0a72d4281d76f2a2 (PR #8, CI run 40479978740 SUCCESS; duplicate-key JSON rejection added at 87047e8dcb2d67eb0936cd37cbd099876418b6a4; reverify ledger and branch HEAD before execution)
 
 ## Windows local procedure
 
@@ -28,7 +28,7 @@ Check that C:\src\Repository-Provisioner-game is on the exact branch and SHA
 above. From the Windows-all-auto checkout, run the **check-only** command:
 
 ~~~powershell
-py -3 -m scripts.local_identity_return --provisioner-root "C:\src\Repository-Provisioner-game" --provisioner-branch "codex/game-msix-package-safety-20261027-1510" --provisioner-sha "74a13e506120f552668bf7d6289b9b6921f7f194" --local-dir "C:\qa\signal-sprint\identity-return" --official-identity "C:\qa\signal-sprint\official-identity-private.json" --source-branch "codex/game-signal-sprint-undo-20261027" --source-sha "c058cbf7fe38e02d929c67d047d717ff74bd522e" --request-id "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e"
+py -3 -m scripts.local_identity_return --provisioner-root "C:\src\Repository-Provisioner-game" --provisioner-branch "codex/game-msix-package-safety-20261027-1510" --provisioner-sha "291c11bfe6b71d6f915e6a5e0a72d4281d76f2a2" --local-dir "C:\qa\signal-sprint\identity-return" --official-identity "C:\qa\signal-sprint\official-identity-private.json" --source-branch "codex/game-signal-sprint-undo-20261027" --source-sha "c058cbf7fe38e02d929c67d047d717ff74bd522e" --request-id "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e"
 ~~~
 
 Missing local evidence returns HOLD / OFFICIAL_IDENTITY_NOT_AVAILABLE.
