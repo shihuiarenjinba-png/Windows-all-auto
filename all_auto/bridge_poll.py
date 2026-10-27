@@ -18,6 +18,8 @@ from .handoff_bridge import stage_bundle
 OWNER="shihuiarenjinba-png"
 FACTORIES=("AI-App-Factory","AI-Game-Factory","3d-game-factory")
 PREFIX="factory-msix-handoff-"
+MAX_PER_FACTORY=6  # 3 lanes x 6 <= 20 local pull queue item limit
+MAX_ARTIFACT_PAGES=10
 
 def command(*parts:str)->str:
     result=subprocess.run(["gh",*parts],capture_output=True,text=True,
@@ -34,6 +36,36 @@ def api(route:str)->dict:
         raise ValueError("GitHub API response is not object")
     return result
 
+def all_artifacts(repository:str)->dict:
+    """Read the complete bounded artifact backlog, never only the newest 100.
+
+    GitHub lists newest artifacts first. A fixed first-page query can starve
+    older unprocessed products forever under sustained factory production.
+    Fail closed if the listing changes mid-scan or exceeds the safe bound.
+    """
+    combined=[]
+    expected_total=None
+    for page in range(1,MAX_ARTIFACT_PAGES+1):
+        payload=api("repos/"+repository+"/actions/artifacts?per_page=100&page="+str(page))
+        count=payload.get("total_count")
+        items=payload.get("artifacts")
+        if type(count) is not int or count<0 or not isinstance(items,list) or len(items)>100:
+            raise ValueError("invalid Factory artifact page")
+        if count>MAX_ARTIFACT_PAGES*100:
+            raise ValueError("Factory artifact backlog exceeds safe scan bound; HOLD")
+        if expected_total is None:
+            expected_total=count
+        elif count!=expected_total:
+            raise ValueError("Factory artifact listing changed during scan; retry")
+        combined.extend(items)
+        if len(items)<100:
+            if len(combined)!=expected_total:
+                raise ValueError("Factory artifact listing incomplete; retry")
+            return {"artifacts":combined}
+    if len(combined)!=expected_total:
+        raise ValueError("Factory artifact listing incomplete at scan bound; retry")
+    return {"artifacts":combined}
+
 def candidates(payload:dict,processed:set[int])->list[dict]:
     items=payload.get("artifacts")
     if not isinstance(items,list):raise ValueError("GitHub artifact list invalid")
@@ -47,7 +79,7 @@ def candidates(payload:dict,processed:set[int])->list[dict]:
             and isinstance(a.get("workflow_run"),dict)
             and isinstance(a["workflow_run"].get("id"),int)):
             valid.append(a)
-    return sorted(valid,key=lambda x:x["id"])[:12]
+    return sorted(valid,key=lambda x:x["id"])[:MAX_PER_FACTORY]
 
 def verified_run(data:dict,expected_repo:str,artifact:dict)->str:
     if not isinstance(data,dict) or data.get("conclusion")!="success":
@@ -85,7 +117,7 @@ def intake(ledger_path:Path,out:Path)->dict:
     attempted=0
     for factory in FACTORIES:
         repository=OWNER+"/"+factory
-        payload=api("repos/"+repository+"/actions/artifacts?per_page=100")
+        payload=all_artifacts(repository)
         for artifact in candidates(payload,processed):
             attempted+=1
             run_id=artifact["workflow_run"]["id"]

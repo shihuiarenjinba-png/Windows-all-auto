@@ -7,7 +7,7 @@ import unittest
 from unittest.mock import patch
 import zipfile
 
-from all_auto.bridge_poll import candidates, verified_run, intake
+from all_auto.bridge_poll import all_artifacts, candidates, verified_run, intake, MAX_PER_FACTORY
 
 SHA="a"*40
 NAME="factory-msix-handoff-demo"
@@ -22,6 +22,46 @@ XML=b'<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/wind
 class PollTests(unittest.TestCase):
     def test_valid_candidates(self):
         self.assertEqual(candidates({"artifacts":[ARTIFACT]},set()),[ARTIFACT])
+
+    def test_paged_factory_artifacts_include_oldest_unprocessed(self):
+        calls=[]
+        def fake_api(route):
+            calls.append(route)
+            page=int(route.rsplit("page=",1)[-1])
+            ids=range(101,1,-1) if page==1 else [1]
+            return {"total_count":101,"artifacts":[
+                {"id":i,"name":NAME,"expired":False,
+                 "workflow_run":{"id":555}} for i in ids]}
+        with patch("all_auto.bridge_poll.api",side_effect=fake_api):
+            payload=all_artifacts(REPO)
+        self.assertEqual(len(calls),2)
+        self.assertEqual(len(payload["artifacts"]),101)
+        self.assertEqual([a["id"] for a in candidates(payload,set())],
+                         list(range(1,MAX_PER_FACTORY+1)))
+
+    def test_factory_backlog_cannot_silently_truncate(self):
+        with patch("all_auto.bridge_poll.api",return_value={
+            "total_count":120,"artifacts":[ARTIFACT]}):
+            with self.assertRaisesRegex(ValueError,"listing incomplete"):
+                all_artifacts(REPO)
+
+    def test_factory_backlog_over_limit_is_hold(self):
+        with patch("all_auto.bridge_poll.api",return_value={
+            "total_count":1001,"artifacts":[ARTIFACT]}):
+            with self.assertRaisesRegex(ValueError,"safe scan bound"):
+                all_artifacts(REPO)
+
+    def test_factory_page_count_change_is_hold(self):
+        def fake_api(route):
+            page=int(route.rsplit("page=",1)[-1])
+            return {"total_count":101 if page==1 else 102,
+                    "artifacts":[ARTIFACT]* (100 if page==1 else 1)}
+        with patch("all_auto.bridge_poll.api",side_effect=fake_api):
+            with self.assertRaisesRegex(ValueError,"changed during scan"):
+                all_artifacts(REPO)
+
+    def test_per_factory_budget_fits_local_qa_queue(self):
+        self.assertLessEqual(3*MAX_PER_FACTORY,20)
     def test_existing_artifact_is_skipped(self):
         self.assertEqual(candidates({"artifacts":[ARTIFACT]},{123}),[])
     def test_failed_run_cannot_transfer(self):
@@ -85,8 +125,9 @@ class PollTests(unittest.TestCase):
             ledger.write_text('{"schema_version":1,"processed_artifacts":[]}')
             out=root/"output"
             def fake_api(route):
-                if route.endswith("actions/artifacts?per_page=100"):
-                    return {"artifacts":[ARTIFACT] if "AI-App-Factory" in route else []}
+                if "/actions/artifacts?per_page=100&page=" in route:
+                    items=[ARTIFACT] if "AI-App-Factory" in route else []
+                    return {"total_count":len(items),"artifacts":items}
                 return RUN
             def fake_command(*args):
                 if args[0]=="run":
