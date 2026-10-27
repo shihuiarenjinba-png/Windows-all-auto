@@ -99,13 +99,13 @@ def validate_ledger(ledger: dict, args) -> tuple[dict, dict]:
         raise Gate("CONFLICT", "PINNED_PRODUCT_OR_SHA_MISMATCH")
     if product.get("factory_return_commit_sha") or product.get("approved_identity_json"):
         raise Gate("HOLD", "IDENTITY_ALREADY_RECORDED_RECONCILE")
-    safety = product.get("provisioner_package_safety")
-    if (not isinstance(safety, dict) or safety.get("repository") != PROVISIONER
-            or safety.get("branch") != args.provisioner_branch
-            or safety.get("head_sha") != args.provisioner_sha
+    resume = product.get("provisioner_identity_resume")
+    if (not isinstance(resume, dict) or resume.get("repository") != PROVISIONER
+            or resume.get("branch") != args.provisioner_branch
+            or resume.get("head_sha") != args.provisioner_sha
             or not SHA.fullmatch(args.provisioner_sha)):
         raise Gate("CONFLICT", "PROVISIONER_PIN_MISMATCH")
-    return product, safety
+    return product, resume
 
 
 def source_head() -> str:
