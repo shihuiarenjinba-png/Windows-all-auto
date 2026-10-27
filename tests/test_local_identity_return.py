@@ -12,11 +12,11 @@ from scripts import local_identity_return as worker
 
 SOURCE = "c058cbf7fe38e02d929c67d047d717ff74bd522e"
 REQUEST = "game-signal-sprint-" + SOURCE
-PROVISIONER_SHA = "66fc66b0e2a58dba2a9023f7e7fbbd6e5803d857"
+PROVISIONER_SHA = "5c1db9820bac68c59cc7eb6ca5921e22a5bb3913"
 RETURN_SHA = "b" * 40
 EXE_SHA = "e8517df8cd31a40e5ce72afdd4e6a4d63626fb99f7ff8a4fa3296ff8deef05f4"
 BRANCH = "codex/game-signal-sprint-undo-20261027"
-PBRANCH = "codex/game-msix-package-safety-20261027-1510"
+PBRANCH = "codex/game-identity-idempotency-20261027"
 
 
 def args(tmp, **changes):
@@ -47,7 +47,7 @@ def ledger():
                 "approved_identity_json": None,
                 "local_job_live": job,
                 "local_execution_result": {"package_sha256": EXE_SHA},
-                "provisioner_package_safety": {
+                "provisioner_identity_resume": {
                     "repository": worker.PROVISIONER,
                     "branch": PBRANCH, "head_sha": PROVISIONER_SHA}}}
 
