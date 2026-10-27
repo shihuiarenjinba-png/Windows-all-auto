@@ -138,6 +138,10 @@ def check_local_paths(args):
     for path in (local, evidence):
         if path == repo or path.is_relative_to(repo):
             raise Gate("HOLD", "PRIVATE_FILES_MUST_BE_OUTSIDE_REPOSITORY")
+        # Private evidence, Provisioner results and receipts must not land
+        # inside ANY checkout where a later git add could expose them.
+        if any((parent / ".git").exists() for parent in (path, *path.parents)):
+            raise Gate("HOLD", "PRIVATE_FILES_MUST_BE_OUTSIDE_GIT_CHECKOUT")
     if evidence.is_symlink():
         raise Gate("HOLD", "IDENTITY_SYMLINK_NOT_ALLOWED")
     return repo, local, evidence
