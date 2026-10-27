@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-27T05:34:21Z",
+  "updated_at_utc": "2026-10-27T05:34:47Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -62,7 +62,10 @@
       "gh run download 40443340158 -R shihuiarenjinba-png/AI-Game-Factory -n game-signal-sprint-exe-c058cbf7fe38e02d929c67d047d717ff74bd522e -D C:\\qa\\signal-sprint\\factory-exe",
       "python provisioner.py --input C:\\qa\\signal-sprint\\factory-exe\\provisioner-request.json --output C:\\qa\\signal-sprint\\dry-run-result.json",
       "python provisioner.py --input C:\\qa\\signal-sprint\\live-job.json --output C:\\qa\\signal-sprint\\result.json",
-      "python -m scripts.local_checker_queue --inbox C:\\qa\\msix-inbox --checker C:\\src\\Windows-checker --reports C:\\qa\\checker-reports  # only after verified real MSIX is in inbox"
+      "python -m scripts.local_checker_queue --inbox C:\\qa\\msix-inbox --checker C:\\src\\Windows-checker --reports C:\\qa\\checker-reports  # only after verified real MSIX is in inbox",
+      "gh api repos/shihuiarenjinba-png/AI-Game-Factory/git/ref/heads/codex/game-signal-sprint-undo-20261027 --jq .object.sha  # must equal c058cbf7fe38e02d929c67d047d717ff74bd522e immediately before CAS",
+      "python provisioner.py --input C:\\qa\\signal-sprint\\live-job.json --output C:\\qa\\signal-sprint\\result.json --official-identity C:\\qa\\signal-sprint\\official-identity-private.json --apply  # ONLY after authenticated Partner Center evidence and explicit CAS approval",
+      "After CAS: create dedicated codex/game-signal-sprint-msix-integration-* from returned Factory commit; cherry-pick reviewed AI-Game-Factory PR #11 changes without moving original source SHA; verify factory_head_sha == MSIX Actions run HEAD"
     ],
     "expected_local_outputs": [
       "dry-run-result.json status=DRY_RUN, no side effects (completed)",
@@ -97,7 +100,7 @@
       "head_sha": "6a0f69fa371e1a87a5247974a436f8a7e5816cac",
       "draft_pr": 11,
       "base_source_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
-      "status": "CODE_COMMITTED_CI_PENDING_NOT_INTEGRATED",
+      "status": "CODE_COMMITTED_CI_PASS_NOT_INTEGRATED",
       "changed_files": [
         "tools/msix_handoff.py",
         "tests/test_msix_handoff.py"
@@ -105,8 +108,32 @@
       "immutable_contract": "GAME request_id/product_type/source_factory/source_repository/source_branch/source_sha/expected_head_sha/slug",
       "build_head_field": "factory_head_sha",
       "integrate_only_after": "AUTHENTICATED_IDENTITY_AND_CAS_RETURN",
-      "real_msix": "NOT_GENERATED"
-    }
+      "real_msix": "NOT_GENERATED",
+      "ci_run_id": 40456038174,
+      "ci_conclusion": "SUCCESS",
+      "ci_url": "https://github.com/shihuiarenjinba-png/AI-Game-Factory/actions/runs/40456038174"
+    },
+    "local_job_live": {
+      "schema_version": "1.0",
+      "request_id": "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e",
+      "product_type": "GAME",
+      "source_factory": "AI-Game-Factory",
+      "source_repository": "shihuiarenjinba-png/AI-Game-Factory",
+      "source_branch": "codex/game-signal-sprint-undo-20261027",
+      "source_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
+      "slug": "signal-sprint",
+      "display_name": "Signal Sprint",
+      "target_owner": "shihuiarenjinba-png",
+      "dry_run": false,
+      "requested_actions": [
+        "BUILD_WINDOWS",
+        "INSPECT_PACKAGE",
+        "LOOKUP_OFFICIAL_IDENTITY",
+        "PROPOSE_GITHUB_RETURN"
+      ]
+    },
+    "local_job_live_input_path": "C:\\qa\\signal-sprint\\live-job.json",
+    "local_official_identity_input_path": "C:\\qa\\signal-sprint\\official-identity-private.json"
   },
   "other_lanes": {
     "APP": {
@@ -144,7 +171,7 @@
     "game_factory_handoff_fix_branch": "codex/game-msix-immutable-handoff-20261027-1431",
     "game_factory_handoff_fix_head": "6a0f69fa371e1a87a5247974a436f8a7e5816cac",
     "game_factory_handoff_fix_pr": 11,
-    "game_factory_handoff_fix_ci": "PENDING"
+    "game_factory_handoff_fix_ci": "SUCCESS"
   },
   "policy": {
     "main_release_changes": false,
