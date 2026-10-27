@@ -145,9 +145,8 @@ class SchedulerSafetyTests(unittest.TestCase):
              patch.object(s, "inspect_package", return_value=DIGEST), \
              patch.object(s, "validate_operator_evidence", return_value=True):
             result = s.store_job(job, SHA)
-        self.assertEqual(result["stage"], "WAITING_PARTNER_CENTER_AUTH")
-        self.assertEqual(result["reason"],
-                         "LOCAL_OPERATOR_MATCH_NOT_AUTHENTICATED__STORE_CAS_NOT_CONNECTED")
+        self.assertEqual(result["stage"], "WAITING_USER_IDENTITY")
+        self.assertEqual(result["reason"], "USER_IDENTITY_FILE_MISSING")
         self.assertEqual(result["identity_observation"], "LOCAL_OPERATOR_OBSERVED_MATCH")
         self.assertFalse(result["identity_authentication"])
         self.assertFalse(result["identity_return"])
@@ -166,7 +165,7 @@ class SchedulerSafetyTests(unittest.TestCase):
              patch.object(s, "validate_operator_evidence", return_value=True):
             result = s.store_job(job, SHA)
         self.assertTrue(result["version_approvals_ready"])
-        self.assertEqual(result["stage"], "WAITING_PARTNER_CENTER_AUTH")
+        self.assertEqual(result["stage"], "WAITING_USER_IDENTITY")
         self.assertFalse(result["identity_authentication"])
         self.assertFalse(result["identity_return"])
         self.assertFalse(result["msix_build_allowed"])
@@ -305,7 +304,7 @@ class SchedulerSafetyTests(unittest.TestCase):
              patch.object(s, "remote_json", return_value=(ledger, SHA)), \
              patch.object(s, "inspect_package", return_value=DIGEST), \
              patch.object(s.subprocess, "run") as process:
-            with self.assertRaisesRegex(s.Hold, "GAME_WORKER_CHECK_ONLY"):
+            with self.assertRaisesRegex(s.Hold, "USER_IDENTITY_FILE_MISSING"):
                 s.game_job(job, SHA, args)
             process.assert_not_called()
 
@@ -355,7 +354,7 @@ class SchedulerSafetyTests(unittest.TestCase):
              patch.object(s, "game_job",
                           side_effect=s.Hold("WAITING_PARTNER_CENTER_AUTH", "OFFICIAL_IDENTITY_MISSING")):
             result = s.process(job, types.SimpleNamespace(), Path(directory))
-            self.assertEqual(result["stage"], "WAITING_PARTNER_CENTER_AUTH")
+            self.assertEqual(result["stage"], "WAITING_USER_IDENTITY")
             self.assertEqual(result["reason"], "OFFICIAL_IDENTITY_MISSING")
 
 if __name__ == "__main__":
