@@ -62,13 +62,34 @@ def inspect_msix(package:Path)->dict:
                     fail("invalid MSIX metadata root: "+name)
                 parsed[name]=document
             root=parsed["appxmanifest.xml"]
+            # New APP Identity-return handoffs bind the exact pre-Identity EXE
+            # to the embedded MSIX payload, not just the outer ZIP checksum.
+            applications=[e for e in root.iter()
+                          if e.tag.rsplit("}",1)[-1]=="Application"]
+            executable_sha256=None
+            if len(applications)==1:
+                exe=applications[0].attrib.get("Executable","").replace("\\","/")
+                parts=exe.split("/")
+                if (exe.lower().endswith(".exe") and
+                        all(part and part not in (".","..") and
+                            not part.endswith((" ",".")) and ":" not in part
+                            for part in parts)):
+                    payloads=[m for m in members if
+                              m.filename.replace("\\","/").casefold()==exe.casefold()]
+                    if len(payloads)==1 and not payloads[0].is_dir() and 0<payloads[0].file_size<=MAX_BYTES:
+                        digest_exe=sha256()
+                        with z.open(payloads[0]) as stream:
+                            for chunk in iter(lambda:stream.read(1024*1024),b""):
+                                digest_exe.update(chunk)
+                        executable_sha256=digest_exe.hexdigest()
     except (zipfile.BadZipFile,ET.ParseError,RuntimeError,KeyError,OSError) as exc:
         fail("not a readable MSIX: "+type(exc).__name__)
     identity=next((e for e in root.iter() if e.tag.endswith("}Identity") or e.tag=="Identity"),None)
     if identity is None: fail("MSIX package identity missing")
     return {"name":identity.attrib.get("Name"),"publisher":identity.attrib.get("Publisher"),
             "version":identity.attrib.get("Version"),"sha256":digest.hexdigest(),
-            "bytes":package.stat().st_size}
+            "bytes":package.stat().st_size,
+            "executable_sha256":executable_sha256}
 
 def validate_bundle(directory:Path,expected_run_sha:str|None=None)->dict:
     if directory.is_symlink():fail("bundle directory is a symlink")
@@ -99,7 +120,30 @@ def validate_bundle(directory:Path,expected_run_sha:str|None=None)->dict:
     sha=data.get("source_sha")
     if not isinstance(sha,str) or not SHA40.fullmatch(sha):
         fail("invalid source commit")
-    if expected_run_sha is not None and sha!=expected_run_sha:
+    factory_head=data.get("factory_head_sha")
+    if factory_head is not None:
+        if kind!="app" or not isinstance(factory_head,str) or not SHA40.fullmatch(factory_head):
+            fail("invalid APP Identity-return factory HEAD")
+        required={
+            "expected_head_sha":sha,"product_type":"APP",
+            "source_factory":"AI-App-Factory",
+        }
+        if any(data.get(key)!=value for key,value in required.items()):
+            fail("APP Identity-return immutable contract mismatch")
+        if (not isinstance(data.get("source_branch"),str)
+                or not re.fullmatch(r"codex/[A-Za-z0-9._/-]+",data["source_branch"])
+                or ".." in data["source_branch"] or "//" in data["source_branch"]
+                or not isinstance(data.get("request_id"),str)
+                or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:-]{3,127}",data["request_id"])
+                or not isinstance(data.get("display_name"),str)
+                or not 1<=len(data["display_name"])<=100
+                or any(ord(c)<32 or ord(c)==127 for c in data["display_name"])
+                or not isinstance(data.get("store_id"),str)
+                or not re.fullmatch(r"[A-Za-z0-9]{8,32}",data["store_id"])
+                or not isinstance(data.get("prebuilt_exe_sha256"),str)
+                or not SHA64.fullmatch(data["prebuilt_exe_sha256"])):
+            fail("APP Identity-return provenance fields missing")
+    if expected_run_sha is not None and (factory_head or sha)!=expected_run_sha:
         fail("artifact provenance / Actions head SHA mismatch")
     if data.get("package")!="package.msix" or data.get("status")!="QA_UNSIGNED":
         fail("no approved package handoff state")
@@ -109,12 +153,14 @@ def validate_bundle(directory:Path,expected_run_sha:str|None=None)->dict:
     details=inspect_msix(directory/"package.msix")
     if details["sha256"]!=file_hash or details["bytes"]!=data.get("package_bytes"):
         fail("MSIX bytes or hash mismatch")
+    if factory_head is not None and details["executable_sha256"]!=data["prebuilt_exe_sha256"]:
+        fail("APP pre-Identity EXE payload SHA mismatch")
     approved=data.get("identity")
     if not isinstance(approved,dict) or any(details.get(k)!=approved.get(k) or
         not isinstance(details.get(k),str) or not details.get(k)
         for k in ("name","publisher","version")):
         fail("MSIX embedded identity mismatch")
-    return {
+    result={
        "schema_version":1,"slug":slug,"type":kind,"source_repository":repo,
        "source_sha":sha,"package_sha256":file_hash,"package_bytes":details["bytes"],
        "identity":{k:details[k] for k in ("name","publisher","version")},
@@ -122,6 +168,17 @@ def validate_bundle(directory:Path,expected_run_sha:str|None=None)->dict:
        "security_confirmed":False,"price_approved":False,
        "store_id":None,"submit_allowed":False
     }
+    if factory_head is not None:
+        result.update({
+            "factory_head_sha":factory_head,"expected_head_sha":sha,
+            "request_id":data["request_id"],"product_type":"APP",
+            "source_factory":"AI-App-Factory",
+            "source_branch":data["source_branch"],
+            "display_name":data["display_name"],
+            "prebuilt_exe_sha256":data["prebuilt_exe_sha256"],
+            "claimed_store_id":data["store_id"],
+        })
+    return result
 
 def stage_bundle(source:Path,target:Path,expected_run_sha:str|None=None)->dict:
     info=validate_bundle(source,expected_run_sha)
@@ -138,8 +195,11 @@ def stage_bundle(source:Path,target:Path,expected_run_sha:str|None=None)->dict:
         provenance_fields=(
             "source_repository", "source_sha", "slug", "type",
             "package_sha256", "package_bytes", "identity",
+            "factory_head_sha", "expected_head_sha", "request_id",
+            "product_type", "source_factory", "source_branch", "display_name",
+            "prebuilt_exe_sha256", "claimed_store_id",
         )
-        if any(other[key]!=info[key] for key in provenance_fields):
+        if any(other.get(key)!=info.get(key) for key in provenance_fields):
             fail("existing target package or provenance changed")
         return info
     target.mkdir(parents=True,exist_ok=True)
