@@ -277,7 +277,11 @@ def store_job(job: dict, observed_sha: str) -> dict:
         "stage": "WAITING_PARTNER_CENTER_AUTH", "reason": "LOCAL_OPERATOR_MATCH_NOT_AUTHENTICATED__STORE_CAS_NOT_CONNECTED",
         "identity_discovery": True, "identity_authentication": False,
         "identity_observation": "LOCAL_OPERATOR_OBSERVED_MATCH",
-        "identity_return": False, "msix_build_allowed": version_gate(reference),
+        "identity_return": False,
+        # Version/asset approval is necessary but never sufficient: this job
+        # has neither authenticated Identity nor a verified CAS return.
+        "msix_build_allowed": False,
+        "version_approvals_ready": version_gate(reference),
         "msix_build": False, "builder": builder, "reference_blob_sha": blob,
         "package_sha256": package,
         "approval_hold": None if version_gate(reference) else "STORE_VERSION_OR_BRAND_APPROVAL_MISSING",
