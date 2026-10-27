@@ -131,11 +131,13 @@ def validate_bundle(directory:Path,expected_run_sha:str|None=None)->dict:
         if any(data.get(key)!=value for key,value in required.items()):
             fail("APP Identity-return immutable contract mismatch")
         if (not isinstance(data.get("source_branch"),str)
-                or not data["source_branch"].startswith("codex/")
+                or not re.fullmatch(r"codex/[A-Za-z0-9._/-]+",data["source_branch"])
+                or ".." in data["source_branch"] or "//" in data["source_branch"]
                 or not isinstance(data.get("request_id"),str)
                 or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:-]{3,127}",data["request_id"])
                 or not isinstance(data.get("display_name"),str)
                 or not 1<=len(data["display_name"])<=100
+                or any(ord(c)<32 or ord(c)==127 for c in data["display_name"])
                 or not isinstance(data.get("store_id"),str)
                 or not re.fullmatch(r"[A-Za-z0-9]{8,32}",data["store_id"])
                 or not isinstance(data.get("prebuilt_exe_sha256"),str)
@@ -193,7 +195,9 @@ def stage_bundle(source:Path,target:Path,expected_run_sha:str|None=None)->dict:
         provenance_fields=(
             "source_repository", "source_sha", "slug", "type",
             "package_sha256", "package_bytes", "identity",
-            "factory_head_sha", "request_id", "prebuilt_exe_sha256",
+            "factory_head_sha", "expected_head_sha", "request_id",
+            "product_type", "source_factory", "source_branch", "display_name",
+            "prebuilt_exe_sha256", "claimed_store_id",
         )
         if any(other.get(key)!=info.get(key) for key in provenance_fields):
             fail("existing target package or provenance changed")
