@@ -142,6 +142,26 @@ class SchedulerSafetyTests(unittest.TestCase):
         self.assertFalse(result["identity_authentication"])
         self.assertFalse(result["identity_return"])
 
+    def test_approved_version_does_not_bypass_identity_return(self):
+        # Even with version and brand approval, operator observation is not
+        # authenticated Partner Center Identity or an applied CAS receipt.
+        approved = reference()
+        approved.update(approved_store_version="1.0.0.0",
+                        package_version_approval="APPROVED",
+                        brand_assets_approval="APPROVED")
+        job = store_job()
+        with patch.object(s, "remote_json", return_value=(approved, SHA)), \
+             patch.object(s, "gh", return_value={"type": "file"}), \
+             patch.object(s, "inspect_package", return_value=DIGEST), \
+             patch.object(s, "validate_operator_evidence", return_value=True):
+            result = s.store_job(job, SHA)
+        self.assertTrue(result["version_approvals_ready"])
+        self.assertEqual(result["stage"], "WAITING_PARTNER_CENTER_AUTH")
+        self.assertFalse(result["identity_authentication"])
+        self.assertFalse(result["identity_return"])
+        self.assertFalse(result["msix_build_allowed"])
+        self.assertFalse(result["msix_build"])
+
     def test_store_builder_is_repo_specific(self):
         job = store_job()
         with patch.object(s, "remote_json", return_value=(reference(), SHA)), \
