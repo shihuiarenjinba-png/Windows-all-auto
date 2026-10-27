@@ -8,13 +8,22 @@ from all_auto.identity_commit import stage_and_commit
 
 RECORD={
  "schema_version":1, "type":"3d-game",
+ "request_id":"3d-experimental-0001","product_type":"GAME_3D",
+ "source_factory":"3d-game-factory",
+ "source_repository":"shihuiarenjinba-png/3d-game-factory",
+ "source_branch":"codex/3d-real-msix-build-path-20261027",
+ "source_sha":"c"*40,
  "slug":"experimental-3d-1",
  "expected_head_sha":"c"*40,
+ "local_package_sha256":"e"*64,"local_package_kind":"exe",
+ "local_signature_status":"NOTSIGNED",
  "operator_verified":True,"verified_by":"operator-confirmed",
  "official_evidence_url":"https://partner.microsoft.com/en-us/dashboard/apps-and-games/overview",
  "identity":{
    "store_id":"9PTEST3D0001","name":"OkinawaDesktopTools.Experiment3D",
-   "publisher":"CN=verified-publisher","version":"1.0.0.0"
+   "publisher":"CN=verified-publisher","version":"1.0.0.0",
+   "package_family_name":"OkinawaDesktopTools.Experiment3D_testpub",
+   "package_sid":"S-1-15-2-1-2-3-4-5-6-7"
  }
 }
 class Test3DIdentityReturn(unittest.TestCase):
@@ -44,6 +53,11 @@ class Test3DIdentityReturn(unittest.TestCase):
             meta=json.loads(base64.b64decode(addition["contents"]))
             self.assertEqual(meta["store_id"],RECORD["identity"]["store_id"])
             self.assertEqual(meta["verified_source_sha"], RECORD["expected_head_sha"])
+            self.assertEqual(meta["request_id"], RECORD["request_id"])
+            self.assertEqual(meta["product_type"], "GAME_3D")
+            self.assertEqual(meta["source_branch"], RECORD["source_branch"])
+            self.assertEqual(meta["local_package_sha256"], RECORD["local_package_sha256"])
+            self.assertEqual(meta["package_sid"], RECORD["identity"]["package_sid"])
             return {"data":{"createCommitOnBranch":{"commit":{
                 "oid":"d"*40,"url":"https://github.com/example/commit"}}}}
         raise AssertionError("unexpected API request "+path)
