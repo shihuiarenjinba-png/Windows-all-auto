@@ -220,6 +220,28 @@ class SchedulerSafetyTests(unittest.TestCase):
                              ["store-excel-test-0001", "store-excel-test-0002",
                               "store-excel-test-0001"])
 
+    def test_explicit_cas_approval_selects_exact_game_job(self):
+        game = {"kind": "GAME_SIGNAL_SPRINT", "request_id": "game-signal-sprint-" + SHA,
+                "source_sha": SHA, "repository": s.OWNER + "/AI-Game-Factory",
+                "branch": "codex/game-signal-sprint-undo-20261027"}
+        jobs = [store_job(), game]
+        index, selected = s.choose_job(jobs, 0, game["request_id"])
+        self.assertEqual(index, 1)
+        self.assertEqual(selected, game)
+        # Ordinary runs retain round-robin selection.
+        self.assertEqual(s.choose_job(jobs, 0, "")[1], jobs[0])
+        self.assertEqual(s.choose_job(jobs, 1, "")[1], game)
+
+    def test_unknown_or_non_game_cas_approval_fails_closed(self):
+        game = {"kind": "GAME_SIGNAL_SPRINT", "request_id": "game-signal-sprint-" + SHA,
+                "source_sha": SHA, "repository": s.OWNER + "/AI-Game-Factory",
+                "branch": "codex/game-signal-sprint-undo-20261027"}
+        jobs = [store_job(), game]
+        with self.assertRaisesRegex(s.Hold, "APPLY_REQUEST_ID_NOT_IN_QUEUE"):
+            s.choose_job(jobs, 0, "game-unknown-request")
+        with self.assertRaisesRegex(s.Hold, "CAS_DELEGATION_GAME_ONLY"):
+            s.choose_job(jobs, 0, jobs[0]["request_id"])
+
     def test_game_delegates_only_with_explicit_approval(self):
         job = {"kind": "GAME_SIGNAL_SPRINT", "request_id": "game-signal-sprint-" + SHA,
                "source_sha": SHA, "repository": s.OWNER + "/AI-Game-Factory",
