@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-27T11:40:34.707Z",
+  "updated_at_utc": "2026-10-27T11:41:25.588Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -157,10 +157,10 @@
     "local_identity_return_worker": {
       "repository": "shihuiarenjinba-png/Windows-all-auto",
       "branch": "codex/local-identity-qa-safety-20261027",
-      "head_sha": "c226e12ac46b36454e8a1c1e37eb0560c22c3c1b",
+      "head_sha": "148daa4533b32f7ff0e9f8a1f3b9fef9908f8cd1",
       "draft_pr": 17,
       "ci_run_id": null,
-      "ci_conclusion": "PENDING_NEW_HEAD",
+      "ci_conclusion": "NEW_HEAD_CI_NOT_YET_OBSERVED",
       "status": "CHECK_ONLY_WAITING_OFFICIAL_IDENTITY_LOCAL_WINDOWS_VERIFIED",
       "entrypoint": "python -m scripts.local_identity_return",
       "runbook": "docs/LOCAL_IDENTITY_CAS_WORKER.md",
@@ -195,7 +195,7 @@
     ],
     "resume_repository": "shihuiarenjinba-png/Windows-all-auto",
     "resume_branch": "codex/local-identity-qa-safety-20261027",
-    "resume_head_sha": "c226e12ac46b36454e8a1c1e37eb0560c22c3c1b",
+    "resume_head_sha": "148daa4533b32f7ff0e9f8a1f3b9fef9908f8cd1",
     "factory_head_sha": null,
     "build_sha": null,
     "provisioner_identity_resume": {
@@ -327,7 +327,7 @@
     "last_12_minute_update": "As of 2026-10-27 11:40 UTC no competing 36-minute code/ledger write in preceding 12 min; latest 3D PR12 updated 11:23 UTC (24-minute owner). PR17 and PR9 earlier 10:35-10:36 UTC; PR17 local check-only evidence reconciled from PR17 branch and PR9 runbook.",
     "next_repo": "shihuiarenjinba-png/Windows-all-auto",
     "next_branch": "codex/local-identity-qa-safety-20261027",
-    "next_head_sha": "c226e12ac46b36454e8a1c1e37eb0560c22c3c1b",
+    "next_head_sha": "148daa4533b32f7ff0e9f8a1f3b9fef9908f8cd1",
     "alternate_safety_branch": "codex/game-identity-idempotency-20261027",
     "alternate_safety_head_sha": "93eb34f32339f18fd05d3028f8ef0e76172ac077",
     "no_new_product": true,
@@ -389,17 +389,22 @@
     "classification": "EXTERNAL_IDENTITY_HOLD__LOCAL_CHECK_ONLY_REPORTED__REVIEWED_PR9_PIN_RECONCILED",
     "local_identity_qa_safety_branch": {
       "branch": "codex/local-identity-qa-safety-20261027",
-      "head_sha": "c226e12ac46b36454e8a1c1e37eb0560c22c3c1b",
+      "head_sha": "148daa4533b32f7ff0e9f8a1f3b9fef9908f8cd1",
       "draft_pr": 17,
       "previous_green_head": "f4800e771b60d46e044941d47a97e0e41469db39",
       "previous_green_ci_run_id": 40489660907,
-      "latest_ci": "PENDING",
+      "latest_ci": "NOT_YET_OBSERVED_ON_FINAL_DOCS_HEAD",
       "local_check_only_state": "WAITING_OFFICIAL_IDENTITY_REPORTED",
       "hold_class": "EXTERNAL_IDENTITY",
       "duplicate_resume_result_unchanged": true,
       "locally_exercised_provisioner_sha": "5c1db9820bac68c59cc7eb6ca5921e22a5bb3913",
       "current_provisioner_sha": "93eb34f32339f18fd05d3028f8ef0e76172ac077",
       "raw_private_receipt_on_github": false
+    },
+    "pr14_previous_ci": {
+      "head_sha": "a4f99be6afdf3663e6195e6bc0e9ffa965d036ea",
+      "run_id": 40497938930,
+      "conclusion": "SUCCESS"
     }
   }
 }
