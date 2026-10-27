@@ -111,6 +111,28 @@ class LocalCheckerQueueTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "outside package inbox"):
             check_local_queue(self.inbox, self.checker, self.inbox / "reports")
 
+    def test_exact_package_and_checker_version_is_not_run_twice(self):
+        self.bundle("GAME", "sample-game")
+        first = check_local_queue(self.inbox, self.checker, self.reports)
+        second = check_local_queue(self.inbox, self.checker, self.reports)
+        self.assertEqual(first["executed"], 1)
+        self.assertEqual(first["skipped"], 0)
+        self.assertEqual(second["executed"], 0)
+        self.assertEqual(second["skipped"], 1)
+        self.assertTrue(second["results"][0]["deduplicated"])
+        self.assertEqual(len(list(self.reports.glob("*.checker.json"))), 1)
+
+    def test_checker_code_change_runs_same_package_again(self):
+        self.bundle("GAME", "sample-game")
+        first = check_local_queue(self.inbox, self.checker, self.reports)
+        runner = self.checker / "run.py"
+        runner.write_text(runner.read_text(encoding="utf-8") + "# checker v2\n", encoding="utf-8")
+        second = check_local_queue(self.inbox, self.checker, self.reports)
+        self.assertEqual(first["executed"], 1)
+        self.assertEqual(second["executed"], 1)
+        self.assertEqual(second["skipped"], 0)
+        self.assertEqual(len(list(self.reports.glob("*.checker.json"))), 2)
+
 
 if __name__ == "__main__":
     unittest.main()

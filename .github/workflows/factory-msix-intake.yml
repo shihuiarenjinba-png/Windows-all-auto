@@ -59,7 +59,7 @@ jobs:
             echo "new=false" >> "$GITHUB_OUTPUT"
             echo "No new validated MSIX; no artifact uploaded"
           fi
-      - name: Republish once as a short-lived local Windows QA artifact
+      - name: Republish once as a durable local Windows QA backlog artifact
         if: steps.tally.outputs.new == 'true'
         uses: actions/upload-artifact@v4
         with:
@@ -68,7 +68,7 @@ jobs:
             staging/packages/
             staging/queue.json
           if-no-files-found: ignore
-          retention-days: 2
+          retention-days: 30
       - name: Checkpoint received artifact IDs without storing binaries in Git
         if: steps.gate.outputs.ready == 'true'
         shell: bash
