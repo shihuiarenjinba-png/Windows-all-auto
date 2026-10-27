@@ -109,6 +109,8 @@ def pull(target:Path)->dict:
                 for field in ("request_id","product_type","source_factory","source_branch",
                               "expected_head_sha","factory_head_sha","prebuilt_exe_sha256",
                               "claimed_store_id","contract_status"):
+                    if field=="contract_status" and field not in item and verified.get(field)=="LEGACY_HOLD":
+                        continue  # old QA-only artifact; never an E2E pass
                     if item.get(field)!=verified.get(field):
                         raise ValueError("Queue immutable metadata mismatch: "+field)
                 if item.get("store_id") is not None:
