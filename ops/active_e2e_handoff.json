@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-27T10:27:59.394Z",
+  "updated_at_utc": "2026-10-27T10:34:27.854Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -157,20 +157,32 @@
       "repository": "shihuiarenjinba-png/Windows-all-auto",
       "branch": "codex/local-identity-qa-safety-20261027",
       "head_sha": "9c09c65d9e6dc192f5d40224303c354ddd8740fd",
-      "draft_pr": null,
-      "ci_run_id": null,
-      "ci_conclusion": "PENDING_NEW_HEAD",
-      "status": "CODE_COMMITTED_LOCAL_WINDOWS_TESTS_PASS_CHECK_ONLY_PENDING_IMMUTABLE_LEDGER",
+      "draft_pr": 17,
+      "ci_run_id": 40488915951,
+      "ci_conclusion": "SUCCESS",
+      "status": "CHECK_ONLY_WAITING_OFFICIAL_IDENTITY_LOCAL_WINDOWS_VERIFIED",
       "entrypoint": "python -m scripts.local_identity_return",
       "runbook": "docs/LOCAL_IDENTITY_CAS_WORKER.md",
       "mode": "LOCAL_ONLY_EXPLICIT_APPLY",
       "evidence_path": "C:\\qa\\signal-sprint\\official-identity-private.json",
       "receipt_path": "C:\\qa\\signal-sprint\\identity-return\\identity-return-receipt.json",
       "required_provisioner_sha": "5c1db9820bac68c59cc7eb6ca5921e22a5bb3913",
-      "next_action": "Push this reviewed codex branch, record its immutable HEAD, then run local Windows check-only with the pinned Signal Sprint request and prior EXE result. Missing evidence must end at WAITING_OFFICIAL_IDENTITY; --apply remains prohibited without authenticated evidence and explicit approval.",
-      "ci_url": null
+      "next_action": "Obtain authenticated Partner Center Identity locally, re-fetch the current reviewed ledger branch HEAD and fixed Factory HEAD, then run check-only. --apply remains prohibited until local review and explicit approval; preserve the original source_sha after CAS.",
+      "ci_url": "https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/40488915951",
+      "local_check_only": {
+        "status": "HOLD",
+        "state": "WAITING_OFFICIAL_IDENTITY",
+        "hold_class": "EXTERNAL_IDENTITY",
+        "package_sha256": "e8517df8cd31a40e5ce72afdd4e6a4d63626fb99f7ff8a4fa3296ff8deef05f4",
+        "package_bytes": 11387518,
+        "signature_status": "NOTSIGNED",
+        "duplicate_resume_result_unchanged": true,
+        "official_identity": null,
+        "factory_cas": "NOT_APPLIED",
+        "e2e_pass": false
+      }
     },
-    "last_completed_step": "LOCAL_IDENTITY_AND_PERIODIC_QA_CODE_TESTED__IMMUTABLE_LEDGER_CHECKPOINT_PREPARED",
+    "last_completed_step": "LOCAL_CHECK_ONLY_REACHED_WAITING_OFFICIAL_IDENTITY__DUPLICATE_RESUME_RESULT_UNCHANGED",
     "blocked_by": [
       "EXTERNAL_IDENTITY: authenticated Partner Center Identity not yet observed",
       "HUMAN_APPROVAL: explicit local CAS apply approval not yet recorded"
@@ -273,7 +285,7 @@
     "openai_paid_api": false
   },
   "last_cross_lane_observation": {
-    "observed_at_utc": "2026-10-27T10:27:59.394Z",
+    "observed_at_utc": "2026-10-27T10:34:27.854Z",
     "active_lane": "GAME",
     "active_product": "signal-sprint",
     "factory_source_head_verified": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
@@ -289,7 +301,7 @@
       "local_tests": "67_PASS",
       "next_action": "Do not rerun without new runner/workflow evidence; require real MSIX before Checker product QA"
     },
-    "last_12_minute_update": "2026-10-27T10:22-10:28Z GAME Provisioner PR #9 reached 5c1db9820bac68c59cc7eb6ca5921e22a5bb3913 with Ubuntu/Windows CI 40488277940 SUCCESS. Windows-all-auto local safety code committed at 9c09c65d9e6dc192f5d40224303c354ddd8740fd after local Windows 213/213 regression PASS (2 privilege skips); no other remote Windows-all-auto update observed.",
+    "last_12_minute_update": "2026-10-27T10:27-10:34Z Provisioner PR #9 and Windows-all-auto PR #17 passed Ubuntu/Windows CI. Local Windows check-only re-inspected the fixed Signal Sprint EXE and reached WAITING_OFFICIAL_IDENTITY; duplicate restart left the Provisioner result unchanged. Factory HEAD remained c058cbf7 and approved-identity.json returned 404.",
     "next_repo": "shihuiarenjinba-png/Windows-all-auto",
     "next_branch": "codex/local-identity-qa-safety-20261027",
     "next_head_sha": "9c09c65d9e6dc192f5d40224303c354ddd8740fd",
@@ -333,8 +345,12 @@
       "head_sha": "9c09c65d9e6dc192f5d40224303c354ddd8740fd",
       "local_targeted_tests": "31_PASS",
       "local_full_tests": "213_PASS_2_SKIP",
-      "ci_conclusion": "PENDING_PUSH",
-      "check_only_state": "PENDING_IMMUTABLE_LEDGER_CHECKPOINT"
+      "draft_pr": 17,
+      "ci_run_id": 40488915951,
+      "ci_conclusion": "SUCCESS",
+      "check_only_state": "WAITING_OFFICIAL_IDENTITY",
+      "hold_class": "EXTERNAL_IDENTITY",
+      "duplicate_resume_result_unchanged": true
     },
     "provisioner_game_safety_head": "5c1db9820bac68c59cc7eb6ca5921e22a5bb3913",
     "provisioner_game_safety_ci_run_id": 40488277940,
@@ -361,6 +377,6 @@
         "is_signal_sprint_msix": false
       }
     },
-    "classification": "EXTERNAL_IDENTITY_HOLD_WITH_IMMUTABLE_REVIEW_LEDGER_PREPARED"
+    "classification": "EXTERNAL_IDENTITY_HOLD_WITH_LOCAL_CHECK_ONLY_VERIFIED"
   }
 }

@@ -39,6 +39,13 @@ above. From the Windows-all-auto checkout, run the **check-only** command:
 py -3 -m scripts.local_identity_return --provisioner-root "C:\src\Repository-Provisioner-game" --provisioner-branch "codex/game-msix-package-safety-20261027-1510" --provisioner-sha "291c11bfe6b71d6f915e6a5e0a72d4281d76f2a2" --provisioner-result "C:\qa\signal-sprint\provisioner-live-result.json" --source-branch "codex/game-signal-sprint-undo-20261027" --source-sha "c058cbf7fe38e02d929c67d047d717ff74bd522e" --request-id "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e"
 ~~~
 
+When running inside a packaged desktop host, `%LOCALAPPDATA%` can resolve to a
+long virtualized path. Use explicit short, dedicated paths such as
+`--local-dir "C:\qa\signal-sprint\identity-return"` and
+`--work-dir "C:\qa\signal-sprint\identity-work"`; the evidence must then be
+exactly `<local-dir>\official-identity.json`. Do not place either path in a Git
+checkout.
+
 Even with missing evidence, check-only delegates an EXE build/inspection to the
 pinned Provisioner and requires the bytes, SHA-256 and signature state recorded
 in the ledger. It then checkpoints
@@ -94,3 +101,14 @@ value as `--ledger-sha`; do not reuse it after the branch moves.
 That change permits a read-before-retry `EXISTING_VERIFIED` result after an
 ambiguous successful CAS response; it does not weaken the original expected
 HEAD gate for a missing Identity file.
+
+## 2026-10-27 local check-only evidence
+
+Draft PR #17 was exercised on local Windows against Provisioner-game Draft PR
+#9 and the immutable Signal Sprint source. The exact prior EXE was re-inspected
+at SHA-256 `e8517df8cd31a40e5ce72afdd4e6a4d63626fb99f7ff8a4fa3296ff8deef05f4`
+(11,387,518 bytes, `NOTSIGNED`). With no official Identity file, the worker
+reached `WAITING_OFFICIAL_IDENTITY / EXTERNAL_IDENTITY`; a second invocation
+left the Provisioner result timestamp and hash unchanged. Factory HEAD remained
+`c058cbf7fe38e02d929c67d047d717ff74bd522e` and approved Identity remained
+absent. This is not an Identity verification, real MSIX, or E2E PASS.
