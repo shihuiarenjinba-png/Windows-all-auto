@@ -256,6 +256,14 @@ def read_previous(state_path: Path, job: dict) -> dict | None:
             or state.get("kind") != job["kind"]
             or state.get("stage") not in STAGES):
         raise Hold("CONFLICT", "PERSISTED_JOB_BINDING_MISMATCH")
+    # A resumable CAS-completed state is not proof by itself. Reject a
+    # truncated/forged local receipt before the idempotent fast path.
+    if state["stage"] in {"WAITING_FACTORY_MSIX", "CAS_RETURNED", "DONE"}:
+        commit = state.get("factory_return_commit_sha")
+        if (job["kind"] != "GAME_SIGNAL_SPRINT"
+                or state.get("identity_return") is not True
+                or not isinstance(commit, str) or not SHA.fullmatch(commit)):
+            raise Hold("CONFLICT", "PERSISTED_CAS_RECEIPT_UNVERIFIED")
     return state
 
 
@@ -347,7 +355,12 @@ def process(job: dict, args, state_dir: Path) -> dict:
     state_path = state_dir / (hashlib.sha256(job["request_id"].encode()).hexdigest() + ".json")
     previous = read_previous(state_path, job)
     if previous and previous.get("stage") in {"WAITING_FACTORY_MSIX", "CAS_RETURNED", "DONE"}:
-        return previous  # Do not replay CAS; reconcile via dedicated worker/QA.
+        # CAS moves the original Factory branch to the returned commit. Later
+        # integration must happen on a separate branch; never trust stale state
+        # after an unexpected source-branch move, and never replay CAS.
+        if head(job["repository"], job["branch"]) != previous["factory_return_commit_sha"]:
+            raise Hold("CONFLICT", "FACTORY_HEAD_CHANGED_AFTER_CAS")
+        return previous
     result = {
         "schema_version": 1, "request_id": job["request_id"],
         "source_sha": job["source_sha"], "repository": job["repository"],
