@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "updated_at_utc": "2026-10-27T04:35:00Z",
+  "e2e_status": "HOLD",
+  "e2e_pass": false,
+  "new_product_allowed": false,
+  "active_product": {
+    "lane": "GAME",
+    "slug": "signal-sprint",
+    "phase": "WINDOWS_EXE_ARTIFACT_AVAILABLE__LOCAL_PROVISIONER_PENDING",
+    "status": "HOLD",
+    "request_id": "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e",
+    "product_type": "GAME",
+    "source_factory": "AI-Game-Factory",
+    "source_repository": "shihuiarenjinba-png/AI-Game-Factory",
+    "source_branch": "codex/game-signal-sprint-undo-20261027",
+    "source_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
+    "expected_head_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
+    "display_name": "Signal Sprint",
+    "provisioner_repository": "shihuiarenjinba-png/Repository-Provisioner-game",
+    "provisioner_branch": "codex/game-signal-sprint-exe-identity-stage-20261027",
+    "provisioner_head_observed": "a5676f64bb096e8bb642dc80edbf44b387d81f51",
+    "factory_exe_run_id": 40443340158,
+    "factory_exe_artifact_id": 12706862577,
+    "factory_exe_artifact_name": "game-signal-sprint-exe-c058cbf7fe38e02d929c67d047d717ff74bd522e",
+    "factory_exe_artifact_zip_sha256": "e48a0426595dc227988f12944921511a47d5c8feca8b063a161dd0dd61306412",
+    "factory_exe_artifact_kind": "EXE_QA_UNSIGNED_NOT_MSIX",
+    "local_job_dry_run": {
+      "schema_version": "1.0",
+      "request_id": "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e",
+      "product_type": "GAME",
+      "source_factory": "AI-Game-Factory",
+      "source_repository": "shihuiarenjinba-png/AI-Game-Factory",
+      "source_branch": "codex/game-signal-sprint-undo-20261027",
+      "source_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
+      "slug": "signal-sprint",
+      "display_name": "Signal Sprint",
+      "target_owner": "shihuiarenjinba-png",
+      "dry_run": true,
+      "requested_actions": [
+        "BUILD_WINDOWS",
+        "INSPECT_PACKAGE",
+        "LOOKUP_OFFICIAL_IDENTITY",
+        "PROPOSE_GITHUB_RETURN"
+      ]
+    },
+    "next_action": "On authenticated local Windows, recheck Factory branch HEAD and Provisioner branch HEAD; download the exact EXE Artifact; verify artifact ZIP SHA-256 and EXE/provenance; run local dry-run job then an approved live job with dry_run=false; preserve HOLD until official Partner Center evidence; do not submit or claim MSIX.",
+    "local_commands": [
+      "gh run download 40443340158 -R shihuiarenjinba-png/AI-Game-Factory -n game-signal-sprint-exe-c058cbf7fe38e02d929c67d047d717ff74bd522e -D C:\\qa\\signal-sprint\\factory-exe",
+      "python provisioner.py --input C:\\qa\\signal-sprint\\factory-exe\\provisioner-request.json --output C:\\qa\\signal-sprint\\dry-run-result.json",
+      "python provisioner.py --input C:\\qa\\signal-sprint\\live-job.json --output C:\\qa\\signal-sprint\\result.json"
+    ],
+    "expected_local_outputs": [
+      "dry-run-result.json status=DRY_RUN, no side effects",
+      "result.json with status, package SHA-256, signature_status and HOLD/CONFLICT reason",
+      "authenticated official Partner Center evidence held locally only",
+      "approved-identity.json applied to exact Factory codex branch with real returned commit SHA (after authorization)",
+      "real MakeAppx MSIX with embedded Identity/package SHA",
+      "Windows-all-auto verified-msix-local-qa Artifact and local pull receipt",
+      "Windows-checker JSON preflight plus separate Windows GUI/installation QA evidence"
+    ],
+    "hold_release_conditions": [
+      "Factory source branch HEAD equals pinned source_sha immediately before send; otherwise CONFLICT",
+      "No same request_id with changed source_sha; otherwise CONFLICT",
+      "Downloaded Artifact ZIP SHA-256 equals pinned digest; verify extracted EXE and provenance separately",
+      "Official Store ID, Identity Name, Publisher, Version only from authenticated Partner Center; no placeholders",
+      "Factory Identity return uses exact codex source branch CAS and returns a commit SHA",
+      "Factory GAME MSIX safety gates must be integrated with active Signal Sprint branch before build",
+      "Real MSIX SHA-256 and embedded Identity verified; unsigned EXE is not an MSIX",
+      "Windows-all-auto read token configured, Artifact intake and local pull independently verified",
+      "Windows-checker and real Windows GUI QA both completed; Checker preflight alone is not E2E PASS"
+    ],
+    "partner_center_identity": null,
+    "approved_identity_json": null,
+    "factory_return_commit_sha": null,
+    "real_msix_sha256": null,
+    "windows_all_auto_receipt": null,
+    "local_qa_receipt": null
+  },
+  "other_lanes": {
+    "APP": {
+      "phase": "PREIDENTITY_EXE_CODE_PATH__NO_ACTIVE_PRODUCT",
+      "status": "HOLD",
+      "factory_branch": "codex/app-msix-prebuilt-exe-20261027-1300",
+      "factory_head": "e8e3ca613a114cd0e919cf2f3a4454fa8149510a",
+      "provisioner_branch": "codex/app-exe-request-provenance-20261027-1300",
+      "provisioner_head": "cdf355e10e216f963601e66a398105774888b3e6",
+      "next_action": "Keep existing APP integration and provenance; await real committed active product and pinned request, do not create new product"
+    },
+    "GAME_3D": {
+      "phase": "GENERATION_GATE_HOLD__NO_ACCEPTED_PRODUCT",
+      "status": "HOLD",
+      "factory_branch": "codex/3d-qa-zip-ledger-20261027-1235",
+      "factory_head": "39d66161514ed301dde7a0ad5f7486eab0f2d368",
+      "provisioner_branch": "codex/3d-local-identity-provenance-20261027",
+      "provisioner_head": "a1727307884176bfa97f714c47705281240d83c3",
+      "next_action": "Preserve 120-hour gate; QA template evidence is not an active product"
+    }
+  },
+  "transport": {
+    "repository": "shihuiarenjinba-png/Windows-all-auto",
+    "branch": "codex/2d-app-game-qa-lane-intake-20261027-1240",
+    "previous_head": "fc6ce54eb1ea7ba19dd73c87701c59f0152f10c2",
+    "factory_read_token_status": "NOT_VERIFIED_CONFIGURED",
+    "local_checker_entrypoint": "python -m scripts.local_checker_queue --inbox C:\\qa\\msix-inbox --checker C:\\src\\Windows-checker --reports C:\\qa\\checker-reports",
+    "checker_repository": "shihuiarenjinba-png/Windows-checker",
+    "checker_branch": "codex/store-readiness-checker-20261025",
+    "checker_head": "7780647efd80dea6b2ebc629172cfb2c743a9dcb",
+    "checker_ci_run_id": 40249620006,
+    "checker_ci_status": "FAILURE_NO_STEPS_REPORTED; runner-start/infrastructure suspected, not proven code failure",
+    "checker_real_msix_test": "NOT_RUN"
+  },
+  "policy": {
+    "main_release_changes": false,
+    "merges": false,
+    "store_submission": false,
+    "identity_guessing": false,
+    "openai_paid_api": false
+  }
+}
