@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-27T22:42:52.219Z",
+  "updated_at_utc": "2026-10-27T22:43:40.499Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -339,7 +339,7 @@
       "local_tests": "67_PASS",
       "next_action": "Do not rerun without new runner/workflow evidence; require real MSIX before Checker product QA"
     },
-    "last_12_minute_update": "PR18 f176eec0 user-managed Identity gate CI pending; Provisioner-game PR9 d2d8120 CI SUCCESS; 3D Factory PR12 3b3c5cd6 and Provisioner-3D 8da96245 CI SUCCESS. GAME official Identity file/CAS/real product MSIX absent.",
+    "last_12_minute_update": "PR18 f176eec0 user-managed Identity handoff scheduler 250 tests CI 40596859228 SUCCESS; central ledger efddd6c3 CI 40596902756 SUCCESS; Provisioner-game PR9 d2d8120 CI SUCCESS; 3D Factory PR12 3b3c5cd6 and Provisioner-3D 8da96245 CI SUCCESS. No user-provided Identity/CAS/real MSIX.",
     "next_repo": "shihuiarenjinba-png/Windows-all-auto",
     "next_branch": "codex/local-identity-qa-safety-20261027",
     "next_head_sha": "6ef8aacbcba8a622760a8c109f4c684d6df503fb",
@@ -418,7 +418,7 @@
         "is_accepted_product": false
       }
     },
-    "classification": "USER_MANAGED_IDENTITY_HANDOFF_GATE_PATCH_CI_PENDING__GAME_WAITING_USER_IDENTITY__APP_PROMOTION_PENDING__3D_NO_PRODUCT__CHECKER_CI_INFRA_UNRESOLVED",
+    "classification": "USER_MANAGED_IDENTITY_HANDOFF_GATE_CI_SUCCESS__GAME_WAITING_USER_IDENTITY__APP_PROMOTION_PENDING__3D_NO_PRODUCT__CHECKER_CI_INFRA_UNRESOLVED",
     "local_identity_qa_safety_branch": {
       "branch": "codex/local-identity-qa-safety-20261027",
       "head_sha": "6ef8aacbcba8a622760a8c109f4c684d6df503fb",
@@ -460,15 +460,15 @@
     }
   },
   "multi_product_identity_scheduler": {
-    "status": "USER_MANAGED_IDENTITY_HANDOFF_GATE_COMMITTED__CI_PENDING__LOCAL_WINDOWS_NOT_EXECUTED",
+    "status": "USER_MANAGED_IDENTITY_HANDOFF_GATE_COMMITTED__WINDOWS_UBUNTU_CI_SUCCESS__LOCAL_WINDOWS_NOT_EXECUTED",
     "repository": "shihuiarenjinba-png/Windows-all-auto",
     "draft_pr": 18,
     "branch": "codex/multi-product-identity-scheduler-20261028-0036",
     "head_sha": "f176eec03a2085aa09c7ed84bb5e92c02d72bc80",
     "base_pr": 17,
     "base_head_sha": "6ef8aacbcba8a622760a8c109f4c684d6df503fb",
-    "ci_run_id": null,
-    "ci_conclusion": "PENDING",
+    "ci_run_id": 40596859228,
+    "ci_conclusion": "SUCCESS",
     "ci_platforms": [
       "windows-latest",
       "ubuntu-latest"
@@ -512,7 +512,7 @@
     "checker": "NOT_RUN_ON_REAL_MSIX",
     "gui_qa": "NOT_RUN",
     "e2e_pass": false,
-    "next_action": "PR18 f176eec0 adds private local user Identity file gate, duplicate-key/schema/request_id/source_sha and known-good checks; no Partner Center acquisition. Await final CI, then local Windows check-only and compare unpushed implementation before integration. GAME CAS/real MSIX HOLD.",
+    "next_action": "PR18 f176eec0 user-managed private Identity gate and 8 new regressions: CI #40596859228 Windows/Ubuntu SUCCESS (250 tests). Next: local Windows check-only, compare unpushed local implementation, then real user-provided Identity and explicit CAS. No Partner Center acquisition automation.",
     "security_fix": "REJECT_SYMLINKED_PRIVATE_PATH_ANCESTORS_AND_GIT_CHECK; OPERATOR_ONLY_STORE_IDENTITY_CANNOT_ADVANCE_TO_CAS_APPROVAL; VERSION_AND_BRAND_APPROVAL_ALONE_CANNOT_AUTHORIZE_MSIX; EXPLICIT_CAS_TARGETS_EXACT_GAME_REQUEST_OR_FAILS_CLOSED; DURABLE_PRE_CAS_INTENT_AND_STICKY_MANUAL_RECONCILIATION_PREVENT_UNCERTAIN_CAS_REPLAY; REJECT_WINDOWS_DIRECTORY_JUNCTION_PRIVATE_PATH_ANCESTORS; USER_MANAGED_IDENTITY_FILE_REQUIRED_BEFORE_CAS__SCHEMA_REFERENCE_BINDING_VALIDATION__NO_SECRET_IN_RECEIPT",
     "targeted_apply_routing": "FIXED_TESTED_22_PASS_WINDOWS_UBUNTU_CI",
     "user_managed_identity_gate": "WAITING_USER_IDENTITY__NO_PARTNER_CENTER_AUTOMATION"
@@ -557,7 +557,7 @@
     "identity_version_asset_approvals_separate": true,
     "backlog": "verified-msix-local-qa-*; 30 days; local 20 packages/2 GiB; HOLD_LOCAL_CAPACITY preserves remote",
     "e2e_pass": false,
-    "ci_note": "Feature PR18 pending CI; local Windows and GUI QA not observed"
+    "ci_note": "PR18 CI #40596859228 SUCCESS Windows/Ubuntu; central ledger CI #40596902756 SUCCESS; local Windows GUI/CAS not observed"
   },
   "quality_gates": {
     "pre_identity_ready": "GAME_EXE_VERIFIED__APP_NOT_READY",
