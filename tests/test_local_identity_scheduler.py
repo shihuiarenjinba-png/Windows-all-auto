@@ -195,14 +195,53 @@ class SchedulerSafetyTests(unittest.TestCase):
 
     def test_completed_cas_is_not_replayed(self):
         with tempfile.TemporaryDirectory() as directory:
-            job = store_job()
+            job = {**store_job(), "kind": "GAME_SIGNAL_SPRINT",
+                   "repository": s.OWNER + "/AI-Game-Factory",
+                   "branch": "codex/game-signal-sprint-undo-20261027"}
             path = Path(directory) / (hashlib.sha256(job["request_id"].encode()).hexdigest() + ".json")
-            prior = {**job, "stage": "WAITING_FACTORY_MSIX", "e2e_pass": False}
+            prior = {**job, "stage": "WAITING_FACTORY_MSIX",
+                     "factory_return_commit_sha": OTHER, "identity_return": True,
+                     "e2e_pass": False}
             s.atomic_json(path, prior)
-            with patch.object(s, "head") as head:
+            with patch.object(s, "head", return_value=OTHER) as head, \
+                 patch.object(s, "game_job") as worker:
                 result = s.process(job, types.SimpleNamespace(), Path(directory))
             self.assertEqual(result, prior)
-            head.assert_not_called()
+            head.assert_called_once_with(job["repository"], job["branch"])
+            worker.assert_not_called()
+
+    def test_truncated_cas_receipt_fails_closed(self):
+        with tempfile.TemporaryDirectory() as directory:
+            job = {**store_job(), "kind": "GAME_SIGNAL_SPRINT",
+                   "repository": s.OWNER + "/AI-Game-Factory",
+                   "branch": "codex/game-signal-sprint-undo-20261027"}
+            path = Path(directory) / (hashlib.sha256(job["request_id"].encode()).hexdigest() + ".json")
+            s.atomic_json(path, {**job, "stage": "WAITING_FACTORY_MSIX",
+                                 "identity_return": True})
+            with self.assertRaisesRegex(s.Hold, "PERSISTED_CAS_RECEIPT_UNVERIFIED"):
+                s.read_previous(path, job)
+            # Store jobs must never be able to claim a GAME-only CAS receipt.
+            store = store_job()
+            s.atomic_json(path, {**store, "stage": "WAITING_FACTORY_MSIX",
+                                 "factory_return_commit_sha": OTHER,
+                                 "identity_return": True})
+            with self.assertRaisesRegex(s.Hold, "PERSISTED_CAS_RECEIPT_UNVERIFIED"):
+                s.read_previous(path, store)
+
+    def test_post_cas_source_branch_movement_is_conflict_not_replay(self):
+        with tempfile.TemporaryDirectory() as directory:
+            job = {**store_job(), "kind": "GAME_SIGNAL_SPRINT",
+                   "repository": s.OWNER + "/AI-Game-Factory",
+                   "branch": "codex/game-signal-sprint-undo-20261027"}
+            path = Path(directory) / (hashlib.sha256(job["request_id"].encode()).hexdigest() + ".json")
+            s.atomic_json(path, {**job, "stage": "WAITING_FACTORY_MSIX",
+                                 "factory_return_commit_sha": OTHER,
+                                 "identity_return": True})
+            with patch.object(s, "head", return_value=SHA), \
+                 patch.object(s, "game_job") as worker:
+                with self.assertRaisesRegex(s.Hold, "FACTORY_HEAD_CHANGED_AFTER_CAS"):
+                    s.process(job, types.SimpleNamespace(), Path(directory))
+                worker.assert_not_called()
 
     def test_one_job_per_run_round_robin(self):
         with tempfile.TemporaryDirectory() as directory:
