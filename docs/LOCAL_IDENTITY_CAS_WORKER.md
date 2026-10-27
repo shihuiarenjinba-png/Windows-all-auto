@@ -13,7 +13,7 @@ Provisioner result to GitHub. This worker does not build MSIX or certify E2E PAS
 - Immutable source_sha: c058cbf7fe38e02d929c67d047d717ff74bd522e
 - request_id: game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e
 - Provisioner-game safety branch: codex/game-msix-package-safety-20261027-1510
-- Reviewed Provisioner HEAD: 66fc66b0e2a58dba2a9023f7e7fbbd6e5803d857 (verify latest ledger before running)
+- Reviewed Provisioner HEAD: 74a13e506120f552668bf7d6289b9b6921f7f194 (PR #8, CI run 40472019725 SUCCESS; reverify ledger and branch HEAD before execution)
 
 ## Windows local procedure
 
@@ -28,7 +28,7 @@ Check that C:\src\Repository-Provisioner-game is on the exact branch and SHA
 above. From the Windows-all-auto checkout, run the **check-only** command:
 
 ~~~powershell
-py -3 -m scripts.local_identity_return --provisioner-root "C:\src\Repository-Provisioner-game" --provisioner-branch "codex/game-msix-package-safety-20261027-1510" --provisioner-sha "66fc66b0e2a58dba2a9023f7e7fbbd6e5803d857" --local-dir "C:\qa\signal-sprint\identity-return" --official-identity "C:\qa\signal-sprint\official-identity-private.json" --source-branch "codex/game-signal-sprint-undo-20261027" --source-sha "c058cbf7fe38e02d929c67d047d717ff74bd522e" --request-id "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e"
+py -3 -m scripts.local_identity_return --provisioner-root "C:\src\Repository-Provisioner-game" --provisioner-branch "codex/game-msix-package-safety-20261027-1510" --provisioner-sha "74a13e506120f552668bf7d6289b9b6921f7f194" --local-dir "C:\qa\signal-sprint\identity-return" --official-identity "C:\qa\signal-sprint\official-identity-private.json" --source-branch "codex/game-signal-sprint-undo-20261027" --source-sha "c058cbf7fe38e02d929c67d047d717ff74bd522e" --request-id "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e"
 ~~~
 
 Missing local evidence returns HOLD / OFFICIAL_IDENTITY_NOT_AVAILABLE.
