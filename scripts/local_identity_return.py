@@ -73,7 +73,7 @@ def read_ledger() -> dict:
     if item.get("encoding") != "base64" or not isinstance(item.get("content"), str):
         raise Gate("HOLD", "LEDGER_ENCODING_INVALID")
     try:
-        decoded = base64.b64decode(item["content"], validate=False).decode("utf-8")
+        decoded = base64.b64decode("".join(item["content"].split()), validate=True).decode("utf-8")
     except (ValueError, UnicodeError) as exc:
         raise Gate("HOLD", "LEDGER_DECODE_FAILED") from exc
     return parse_json(decoded)
@@ -191,37 +191,57 @@ def run(args) -> dict:
         "source_repository": FACTORY, "slug": "signal-sprint", "dry_run": False}.items()):
         raise Gate("CONFLICT", "LIVE_JOB_MISMATCH")
     job_path.write_text(json.dumps(job, indent=2) + "\n", encoding="utf-8")
-    command = [sys.executable, str(repo / "provisioner.py"),
+    base_command = [sys.executable, str(repo / "provisioner.py"),
                "--input", str(job_path), "--output", str(result_path),
-               "--official-identity", str(evidence), "--apply",
+               "--official-identity", str(evidence),
                "--state-dir", str(local / "state"), "--work-dir", str(local / "work")]
-    try:
-        proc = subprocess.run(command, cwd=repo, capture_output=True,
-                              text=True, encoding="utf-8", timeout=2400, check=False)
-    except (OSError, subprocess.TimeoutExpired) as exc:
-        raise Gate("RETRYABLE_FAILURE", "LOCAL_PROVISIONER_UNAVAILABLE") from exc
-    # Never print the command, stdout, stderr or raw result (they can contain evidence).
-    if not result_path.is_file():
-        raise Gate("RETRYABLE_FAILURE", "PROVISIONER_RESULT_MISSING")
-    result = parse_json(result_path.read_text(encoding="utf-8"), 200_000)
-    if any(result.get(k) != v for k, v in {
-        "request_id": args.request_id, "product_type": "GAME",
-        "source_sha": args.source_sha, "source_repository": FACTORY,
-        "source_branch": args.source_branch, "slug": "signal-sprint"}.items()):
-        raise Gate("CONFLICT", "PROVISIONER_RESULT_BINDING_MISMATCH")
+
+    def invoke(apply: bool) -> dict:
+        # No stdout/stderr or raw evidence is ever copied into the receipt.
+        try:
+            proc = subprocess.run(base_command + (["--apply"] if apply else []),
+                                  cwd=repo, capture_output=True, text=True,
+                                  encoding="utf-8", timeout=2400, check=False)
+        except (OSError, subprocess.TimeoutExpired) as exc:
+            raise Gate("RETRYABLE_FAILURE", "LOCAL_PROVISIONER_UNAVAILABLE") from exc
+        if not result_path.is_file():
+            raise Gate("RETRYABLE_FAILURE", "PROVISIONER_RESULT_MISSING")
+        result = parse_json(result_path.read_text(encoding="utf-8"), 200_000)
+        if any(result.get(k) != v for k, v in {
+            "request_id": args.request_id, "product_type": "GAME",
+            "source_sha": args.source_sha, "source_repository": FACTORY,
+            "source_branch": args.source_branch, "slug": "signal-sprint"}.items()):
+            raise Gate("CONFLICT", "PROVISIONER_RESULT_BINDING_MISMATCH")
+        if proc.returncode not in (0, 2):
+            raise Gate("HOLD", "PROVISIONER_PROCESS_FAILED")
+        return result
+
+    # Preflight builds and inspects the real EXE BEFORE any CAS mutation.
+    # A changed EXE cannot be approved using the previously inspected bytes.
+    original = (product.get("local_execution_result") or {}).get("package_sha256")
+    if not isinstance(original, str) or not SHA256.fullmatch(original):
+        raise Gate("HOLD", "PINNED_LOCAL_EXE_SHA_MISSING")
+    preflight = invoke(False)
+    prepackage = preflight.get("package") or {}
+    if prepackage.get("kind") != "exe" or prepackage.get("sha256") != original:
+        raise Gate("CONFLICT", "LOCAL_EXE_PROVENANCE_CHANGED")
+    if ((preflight.get("github_return") or {}).get("status") != "NOT_APPLIED"
+            or preflight.get("status") != "HOLD"
+            or preflight.get("next_stage") != "APPLY_VERIFIED_GITHUB_RETURN"):
+        raise Gate("HOLD", "PRECAS_PREFLIGHT_NOT_READY")
+    if source_head() != args.source_sha:
+        raise Gate("CONFLICT", "FACTORY_SOURCE_HEAD_CHANGED")
+
+    result = invoke(True)
     returned = result.get("github_return") or {}
     commit = returned.get("commit_sha")
     if (returned.get("status") != "APPLIED" or not isinstance(commit, str)
-            or not SHA.fullmatch(commit) or proc.returncode not in (0, 2)
-            or result.get("status") != "HOLD"
+            or not SHA.fullmatch(commit) or result.get("status") != "HOLD"
             or result.get("next_stage") != "GITHUB_REBUILD_MSIX"):
         raise Gate("HOLD", "PROVISIONER_CAS_NOT_CONFIRMED")
     package = result.get("package") or {}
-    original = (product.get("local_execution_result") or {}).get("package_sha256")
-    if (package.get("kind") != "exe" or not isinstance(package.get("sha256"), str)
-            or not SHA256.fullmatch(package["sha256"]) or
-            (original and package["sha256"] != original)):
-        raise Gate("CONFLICT", "LOCAL_EXE_PROVENANCE_CHANGED")
+    if (package.get("kind") != "exe" or package.get("sha256") != original):
+        raise Gate("CONFLICT", "LOCAL_EXE_CHANGED_DURING_CAS")
     if source_head() != commit:
         raise Gate("RETRYABLE_FAILURE", "CAS_COMMIT_NOT_VISIBLE_RECONCILE")
     receipt = {"status": "CAS_RETURNED_MSIX_PENDING", "e2e_pass": False,
