@@ -82,6 +82,16 @@ class SchedulerSafetyTests(unittest.TestCase):
             with self.assertRaisesRegex(s.Hold, "PRIVATE_PATH_INSIDE_GIT_OR_SYMLINK"):
                 s.safe_local(link / "evidence.json")
 
+    def test_private_path_windows_junction_rejected(self):
+        # Junctions can redirect private evidence into a Git checkout even
+        # when Path.is_symlink() is false. Simulate this on both CI platforms.
+        if not hasattr(Path, "is_junction"):
+            self.skipTest("Path.is_junction requires Python 3.12")
+        with tempfile.TemporaryDirectory() as directory, \
+             patch.object(Path, "is_junction", return_value=True):
+            with self.assertRaisesRegex(s.Hold, "PRIVATE_PATH_INSIDE_GIT_OR_SYMLINK"):
+                s.safe_local(Path(directory) / "identity-evidence.json")
+
     def test_local_package_hash_enforced(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "package.exe"
