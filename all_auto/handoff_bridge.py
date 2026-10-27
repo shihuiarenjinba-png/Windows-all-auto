@@ -9,6 +9,7 @@ import shutil
 import sys
 import xml.etree.ElementTree as ET
 import zipfile
+from .lane_queue import validate_immutable, relative_package_path, check_request_conflict
 
 OWNER="shihuiarenjinba-png"
 SLUG=re.compile(r"^[a-z][a-z0-9-]{3,39}$")
@@ -122,15 +123,16 @@ def validate_bundle(directory:Path,expected_run_sha:str|None=None)->dict:
         fail("invalid source commit")
     factory_head=data.get("factory_head_sha")
     if factory_head is not None:
-        if kind!="app" or not isinstance(factory_head,str) or not SHA40.fullmatch(factory_head):
+        if kind not in ("app","game") or not isinstance(factory_head,str) or not SHA40.fullmatch(factory_head):
             fail("invalid APP Identity-return factory HEAD")
-        required={
-            "expected_head_sha":sha,"product_type":"APP",
+        if kind=="app":
+            required={
+                "expected_head_sha":sha,"product_type":"APP",
             "source_factory":"AI-App-Factory",
         }
-        if any(data.get(key)!=value for key,value in required.items()):
-            fail("APP Identity-return immutable contract mismatch")
-        if (not isinstance(data.get("source_branch"),str)
+            if any(data.get(key)!=value for key,value in required.items()):
+                fail("APP Identity-return immutable contract mismatch")
+        if kind=="app" and (not isinstance(data.get("source_branch"),str)
                 or not re.fullmatch(r"codex/[A-Za-z0-9._/-]+",data["source_branch"])
                 or ".." in data["source_branch"] or "//" in data["source_branch"]
                 or not isinstance(data.get("request_id"),str)
@@ -178,6 +180,7 @@ def validate_bundle(directory:Path,expected_run_sha:str|None=None)->dict:
             "prebuilt_exe_sha256":data["prebuilt_exe_sha256"],
             "claimed_store_id":data["store_id"],
         })
+    result.update(validate_immutable(data,kind))
     return result
 
 def stage_bundle(source:Path,target:Path,expected_run_sha:str|None=None)->dict:
@@ -186,7 +189,9 @@ def stage_bundle(source:Path,target:Path,expected_run_sha:str|None=None)->dict:
     # fast path when a matching package already exists behind the link.
     if target.is_symlink():fail("unsafe destination")
     # Keep packages out of git and move only the one already independently checked.
-    dest=target/(info["slug"]+"-"+info["package_sha256"][:12])
+    check_request_conflict(target,info)
+    dest=target/relative_package_path(info)
+    if dest.parent.is_symlink():fail("unsafe local QA lane")
     if dest.exists():
         other=validate_bundle(dest,expected_run_sha)
         # A matching package hash does not establish matching provenance. Two
@@ -203,6 +208,7 @@ def stage_bundle(source:Path,target:Path,expected_run_sha:str|None=None)->dict:
             fail("existing target package or provenance changed")
         return info
     target.mkdir(parents=True,exist_ok=True)
+    dest.parent.mkdir(parents=True,exist_ok=True)
     dest.mkdir()
     try:
         shutil.copyfile(source/"handoff.json",dest/"handoff.json")
