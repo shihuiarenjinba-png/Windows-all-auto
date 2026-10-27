@@ -102,6 +102,14 @@ class PollTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             verified_run(dict(RUN,event="workflow_dispatch",name="Unknown export"),REPO,ARTIFACT)
 
+    def test_3d_factory_uses_distinct_allowlisted_workflow(self):
+        repo="shihuiarenjinba-png/3d-game-factory"
+        run=dict(RUN,name="3D Store MSIX candidate build",event="workflow_dispatch",
+                 head_repository={"full_name":repo},head_branch="codex/3d-product-demo")
+        self.assertEqual(verified_run(run,repo,ARTIFACT),SHA)
+        with self.assertRaisesRegex(ValueError,"workflow or event"):
+            verified_run(dict(run,name="Factory MSIX export"),repo,ARTIFACT)
+
     def test_real_bundle_moves_once_without_store_permission(self):
         with tempfile.TemporaryDirectory() as temp:
             root=Path(temp)
