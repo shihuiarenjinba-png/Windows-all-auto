@@ -12,8 +12,9 @@ Provisioner result to GitHub. This worker does not build MSIX or certify E2E PAS
 - Factory branch: codex/game-signal-sprint-undo-20261027
 - Immutable source_sha: c058cbf7fe38e02d929c67d047d717ff74bd522e
 - request_id: game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e
-- Provisioner-game safety branch: codex/game-msix-package-safety-20261027-1510
-- Reviewed Provisioner HEAD in the central ledger: 291c11bfe6b71d6f915e6a5e0a72d4281d76f2a2 (verify latest ledger before running)
+- Provisioner-game restart-safe branch: codex/game-identity-idempotency-20261027 (Draft PR #9)
+- Reviewed current Provisioner HEAD: 93eb34f32339f18fd05d3028f8ef0e76172ac077 (CI 40489763401 SUCCESS; docs-only successor to locally exercised 5c1db9820bac68c59cc7eb6ca5921e22a5bb3913)
+- For this stacked recovery path use the reviewed PR #17 ledger with `--ledger-ref` and the *current* `--ledger-sha` from GitHub. The central PR #14 ledger remains the primary recovery index.
 
 The integration ledger remains the default authority. A reviewed `codex/*`
 ledger branch may be used only with both `--ledger-ref` and its exact current
@@ -36,7 +37,8 @@ Check that C:\src\Repository-Provisioner-game is on the exact branch and SHA
 above. From the Windows-all-auto checkout, run the **check-only** command:
 
 ~~~powershell
-py -3 -m scripts.local_identity_return --provisioner-root "C:\src\Repository-Provisioner-game" --provisioner-branch "codex/game-msix-package-safety-20261027-1510" --provisioner-sha "291c11bfe6b71d6f915e6a5e0a72d4281d76f2a2" --provisioner-result "C:\qa\signal-sprint\provisioner-live-result.json" --source-branch "codex/game-signal-sprint-undo-20261027" --source-sha "c058cbf7fe38e02d929c67d047d717ff74bd522e" --request-id "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e"
+$ledgerSha = gh api repos/shihuiarenjinba-png/Windows-all-auto/git/ref/heads/codex/local-identity-qa-safety-20261027 --jq .object.sha
+py -3 -m scripts.local_identity_return --ledger-ref "codex/local-identity-qa-safety-20261027" --ledger-sha "$ledgerSha" --provisioner-root "C:\src\Repository-Provisioner-game" --provisioner-branch "codex/game-identity-idempotency-20261027" --provisioner-sha "93eb34f32339f18fd05d3028f8ef0e76172ac077" --provisioner-result "C:\qa\signal-sprint\provisioner-live-result.json" --source-branch "codex/game-signal-sprint-undo-20261027" --source-sha "c058cbf7fe38e02d929c67d047d717ff74bd522e" --request-id "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e"
 ~~~
 
 When running inside a packaged desktop host, `%LOCALAPPDATA%` can resolve to a
@@ -112,3 +114,7 @@ reached `WAITING_OFFICIAL_IDENTITY / EXTERNAL_IDENTITY`; a second invocation
 left the Provisioner result timestamp and hash unchanged. Factory HEAD remained
 `c058cbf7fe38e02d929c67d047d717ff74bd522e` and approved Identity remained
 absent. This is not an Identity verification, real MSIX, or E2E PASS.
+
+## Current reviewed SHA checkpoint
+
+The local check-only evidence above was collected using Provisioner `5c1db9820bac68c59cc7eb6ca5921e22a5bb3913`. The branch has since advanced to `93eb34f32339f18fd05d3028f8ef0e76172ac077` by a documentation-only commit, with Actions `40489763401` SUCCESS. This is **not** a new local run or an official Identity verification. The reviewed PR #17 ledger pins the current SHA for the next run; re-read the ledger HEAD immediately before use, and never apply CAS without authenticated Partner Center evidence and explicit approval.
