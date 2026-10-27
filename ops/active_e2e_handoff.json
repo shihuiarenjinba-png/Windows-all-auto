@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-27T14:31:28Z",
+  "updated_at_utc": "2026-10-27T15:38:20Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -157,9 +157,9 @@
     "local_identity_return_worker": {
       "repository": "shihuiarenjinba-png/Windows-all-auto",
       "branch": "codex/local-identity-qa-safety-20261027",
-      "head_sha": "4cd73109eb14556217ca0ac2e073b19be1fe9b09",
+      "head_sha": "6ef8aacbcba8a622760a8c109f4c684d6df503fb",
       "draft_pr": 17,
-      "ci_run_id": 40513490469,
+      "ci_run_id": 40522159185,
       "ci_conclusion": "SUCCESS",
       "status": "CHECK_ONLY_WAITING_OFFICIAL_IDENTITY_LOCAL_WINDOWS_VERIFIED",
       "entrypoint": "python -m scripts.local_identity_return",
@@ -195,7 +195,7 @@
     ],
     "resume_repository": "shihuiarenjinba-png/Windows-all-auto",
     "resume_branch": "codex/local-identity-qa-safety-20261027",
-    "resume_head_sha": "4cd73109eb14556217ca0ac2e073b19be1fe9b09",
+    "resume_head_sha": "6ef8aacbcba8a622760a8c109f4c684d6df503fb",
     "factory_head_sha": null,
     "build_sha": null,
     "provisioner_identity_resume": {
@@ -229,10 +229,10 @@
       "provisioner_ci_conclusion": "SUCCESS",
       "canary_proposal": {
         "slug": "offline-notes-canary",
-        "status": "CANDIDATE_CODE_COMMITTED_NOT_PROMOTED_NO_EXE_GUI_EVIDENCE",
+        "status": "CANDIDATE_COMMITTED_NOT_PROMOTED_NO_EXE_GUI_EVIDENCE",
         "factory_pr": 14,
         "branch": "codex/app-canary-offline-notes-20261027",
-        "head_sha": "e72dacdc4536bff966216c534f42005f6f534680",
+        "head_sha": "66cabebcb0baf48ebf3ced30ea64b40aad924c85",
         "factory_state": "build",
         "factory_state_slug": "offline-notes-canary",
         "exe_artifact": null,
@@ -268,7 +268,7 @@
       "current_guard_pr": {
         "draft_pr": 12,
         "branch": "codex/3d-dispatch-guard-current-ledger-20261027-1628",
-        "head_sha": "f8b772bf429de7f3da172f7c4a3a4f5448a3de1b",
+        "head_sha": "7f8a1cc112b3a94531f38fae19efe85307033d94",
         "ci_run_id": 40520641316,
         "ci_conclusion": "SUCCESS",
         "status": "DRAFT_ONLY_NO_ACTIVE_PRODUCT"
@@ -314,7 +314,7 @@
     "openai_paid_api": false
   },
   "last_cross_lane_observation": {
-    "observed_at_utc": "2026-10-27T14:31:28Z",
+    "observed_at_utc": "2026-10-27T15:38:20Z",
     "active_lane": "GAME",
     "active_product": "signal-sprint",
     "factory_source_head_verified": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
@@ -330,7 +330,7 @@
       "local_tests": "67_PASS",
       "next_action": "Do not rerun without new runner/workflow evidence; require real MSIX before Checker product QA"
     },
-    "last_12_minute_update": "3D Factory PR12 f8b772bf updated docs/PIPELINE_PROGRESS.md and factory/pipeline-progress.json at 14:22 UTC to record 3d-build-qa PR4 12fd7b4f (65/65 tests, CI 40520471059 SUCCESS); Factory CI 40520641316 SUCCESS. No 3D active product. APP PR14 remains e72dacdc candidate unpromoted; GAME source remains c058cbf7, official Identity 404. Central and PR17 ledger had matching blob 137a6476 before this update.",
+    "last_12_minute_update": "3D Factory PR12 HEAD 7f8a1cc updated 15:26 UTC (other owner); APP Factory PR14 HEAD 66cabeb 15:06 UTC candidate remains unpromoted. GAME source unchanged c058cbf; official Identity absent. Independent scheduler PR18 CI 40532967096 Windows/Ubuntu SUCCESS; no local execution.",
     "next_repo": "shihuiarenjinba-png/Windows-all-auto",
     "next_branch": "codex/local-identity-qa-safety-20261027",
     "next_head_sha": "4cd73109eb14556217ca0ac2e073b19be1fe9b09",
@@ -361,7 +361,7 @@
       "remote_backlog_preserved_on_full": true
     },
     "three_d_current_guard_pr12": {
-      "head_sha": "f8b772bf429de7f3da172f7c4a3a4f5448a3de1b",
+      "head_sha": "7f8a1cc112b3a94531f38fae19efe85307033d94",
       "ci_run_id": 40520641316,
       "ci_conclusion": "SUCCESS",
       "compare_to_3d_factory_pr10": "AHEAD_4_BEHIND_0",
@@ -376,7 +376,7 @@
       "exe_artifact": null,
       "ui_pass": false,
       "pr": 14,
-      "head_sha": "e72dacdc4536bff966216c534f42005f6f534680",
+      "head_sha": "66cabebcb0baf48ebf3ced30ea64b40aad924c85",
       "candidate_path": ".candidate/product",
       "factory_ci_run_id": 40508510792,
       "factory_ci_conclusion": "SUCCESS_INFRASTRUCTURE_ONLY"
@@ -398,7 +398,7 @@
     "classification": "EXTERNAL_IDENTITY_HOLD_GAME__APP_CANDIDATE_PROMOTION_PENDING__3D_QA_CI_PASS_NO_PRODUCT__CHECKER_CI_INFRA_UNRESOLVED",
     "local_identity_qa_safety_branch": {
       "branch": "codex/local-identity-qa-safety-20261027",
-      "head_sha": "4cd73109eb14556217ca0ac2e073b19be1fe9b09",
+      "head_sha": "6ef8aacbcba8a622760a8c109f4c684d6df503fb",
       "draft_pr": 17,
       "previous_green_head": "f4800e771b60d46e044941d47a97e0e41469db39",
       "previous_green_ci_run_id": 40489660907,
@@ -409,7 +409,7 @@
       "locally_exercised_provisioner_sha": "5c1db9820bac68c59cc7eb6ca5921e22a5bb3913",
       "current_provisioner_sha": "154c1fd91dec208a7152733a9b5cec8180ac37d2",
       "raw_private_receipt_on_github": false,
-      "ci_run_id": 40513490469,
+      "ci_run_id": 40522159185,
       "ci_conclusion": "SUCCESS",
       "central_ledger_only_writer": true
     },
@@ -426,5 +426,59 @@
       "verified_at_replay_correlation": true,
       "local_execution": "NOT_OBSERVED_ON_LATEST_HEAD"
     }
+  },
+  "multi_product_identity_scheduler": {
+    "status": "STACKED_DRAFT_PR_CI_PASS__LOCAL_WINDOWS_NOT_EXECUTED",
+    "repository": "shihuiarenjinba-png/Windows-all-auto",
+    "draft_pr": 18,
+    "branch": "codex/multi-product-identity-scheduler-20261028-0036",
+    "head_sha": "ed6e963a876b61a8a2b06b3668abb1377baf510d",
+    "base_pr": 17,
+    "base_head_sha": "6ef8aacbcba8a622760a8c109f4c684d6df503fb",
+    "ci_run_id": 40532967096,
+    "ci_conclusion": "SUCCESS",
+    "ci_platforms": [
+      "windows-latest",
+      "ubuntu-latest"
+    ],
+    "new_offline_tests": 17,
+    "local_unpushed_codex_implementation": "PRESERVED_NOT_READ_OR_OVERWRITTEN_COMPARE_BEFORE_INTEGRATION",
+    "files": [
+      "scripts/local_identity_scheduler.py",
+      "tests/test_local_identity_scheduler.py",
+      "docs/LOCAL_MULTI_PRODUCT_IDENTITY_SCHEDULER.md"
+    ],
+    "central_ledger_single_writer": true,
+    "dedicated_game_cas_worker": "scripts/local_identity_return.py__UNCHANGED_DELEGATION_ONLY",
+    "source_observation": {
+      "-AI-Upload-Guard-AI-": {
+        "branch": "codex/store-p1-ai-upload-guard-20261023",
+        "head_sha": "5e9b3b7805193fdefc903c6310245f9586732ae4",
+        "known_good_blob_sha": "2ad2a51c224a45f6b0b928b7fa1dbc5da52947c0",
+        "msix_builder": "store/build-msix.ps1"
+      },
+      "-Excel-CSV-Privacy-Cleaner": {
+        "branch": "codex/store-p1-excel-csv-privacy-20261023",
+        "head_sha": "a3d39c1e3b9806de1c0c679203ed68366779e122",
+        "known_good_blob_sha": "108a0c5d6e4e11abab81038b0ce6baf76e525944",
+        "msix_builder": "store/build-store-msix.ps1"
+      },
+      "-Screenshot-Image-Privacy-Cleaner": {
+        "branch": "codex/store-p1-image-privacy-20261023",
+        "head_sha": "ca38b92944f2ebef0d241350d8d1fc81e8175b8e",
+        "known_good_blob_sha": "7c8d77aa74989bb1be22b8d81aef9f09d3ec5fb2",
+        "msix_builder": "store/build-msix.ps1"
+      }
+    },
+    "identity_discovery": "KNOWN_GOOD_REFERENCE_READ_ONLY",
+    "identity_authentication": "LOCAL_OPERATOR_OBSERVED_MATCH_REPORTED__NOT_CLOUD_VERIFIED",
+    "identity_return": "NOT_APPLIED",
+    "msix_build": "HOLD_APPROVED_STORE_VERSION_AND_BRAND_ASSETS_MISSING",
+    "github_backlog": "NOT_PRODUCT_VERIFIED",
+    "local_pull": "NOT_RUN",
+    "checker": "NOT_RUN_ON_REAL_MSIX",
+    "gui_qa": "NOT_RUN",
+    "e2e_pass": false,
+    "next_action": "Compare with local unpushed 10/10 scheduler when Codex resumes. Run private one-job-per-invocation Windows check-only; require actual EXE SHA, local evidence and live branch HEAD. Signal Sprint remains EXTERNAL_IDENTITY HOLD; only explicit approved GAME CAS delegates to PR17 worker. Store jobs require product-specific CAS and version/brand approvals before real MSIX."
   }
 }
