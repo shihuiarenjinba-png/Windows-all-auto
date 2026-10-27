@@ -55,7 +55,7 @@ class IdentityRouteTests(unittest.TestCase):
             "type":"3d-game","request_id":"3d-useful-tool-0001",
             "product_type":"GAME_3D","source_factory":"3d-game-factory",
             "source_repository":"shihuiarenjinba-png/3d-game-factory",
-            "source_branch":"codex/3d-real-msix-build-path-20261027",
+            "source_branch":"codex/3d-accept-qa-snapshot-20261027-1209",
             "source_sha":self.record["expected_head_sha"],
             "local_package_sha256":"d"*64,"local_package_kind":"exe",
             "local_signature_status":"NOTSIGNED",
@@ -66,12 +66,33 @@ class IdentityRouteTests(unittest.TestCase):
         })
         result=route_identity(self.record)
         self.assertEqual(result["repository"],"shihuiarenjinba-png/3d-game-factory")
-        self.assertEqual(result["branch"],"codex/3d-real-msix-build-path-20261027")
+        self.assertEqual(result["branch"],"codex/3d-accept-qa-snapshot-20261027-1209")
         self.assertEqual(result["path"],"products/useful-tool/store/approved-identity.json")
         self.assertEqual(result["content"]["request_id"],"3d-useful-tool-0001")
         self.assertEqual(result["content"]["product_type"],"GAME_3D")
         self.assertEqual(result["content"]["local_package_sha256"],"d"*64)
         self.assertFalse(result["applied"])
+    def test_3d_dynamic_source_branch_is_retained(self):
+        self.test_3d_kind_routes_only_3d_factory()
+        self.record["source_branch"]="codex/3d-future-qa-branch-20261027"
+        result=route_identity(self.record)
+        self.assertEqual(result["branch"],self.record["source_branch"])
+        self.assertEqual(result["content"]["source_branch"],self.record["source_branch"])
+
+    def test_3d_non_codex_or_unsafe_branch_blocks(self):
+        self.test_3d_kind_routes_only_3d_factory()
+        for branch in ("main","release","codex/../main","codex/.hidden",
+                       "codex/name.lock","codex/unsafe\\\\branch","codex/foo//bar"):
+            self.record["source_branch"]=branch
+            with self.subTest(branch=branch), self.assertRaises(ValueError):
+                route_identity(self.record)
+
+    def test_3d_source_sha_must_match_cas_head(self):
+        self.test_3d_kind_routes_only_3d_factory()
+        self.record["source_sha"]="b"*40
+        with self.assertRaisesRegex(ValueError,"source_sha"):
+            route_identity(self.record)
+
     def test_wrong_kind_holds(self):
         self.record["type"]="GAME_3D"
         with self.assertRaises(ValueError):route_identity(self.record)
