@@ -16,7 +16,7 @@ OWNER="shihuiarenjinba-png"
 TARGETS={
   "app": ("AI-App-Factory","codex/factory-autoloop-20261026"),
   "game": ("AI-Game-Factory","codex/factory-autoloop-20261026"),
-  "3d-game": ("3d-game-factory","codex/3d-provisioner-job-contract-20261027"),
+  "3d-game": ("3d-game-factory","codex/3d-real-msix-build-path-20261027"),
 }
 SLUG=re.compile(r"^[a-z][a-z0-9-]{3,39}$")
 SHA40=re.compile(r"^[a-f0-9]{40}$")
