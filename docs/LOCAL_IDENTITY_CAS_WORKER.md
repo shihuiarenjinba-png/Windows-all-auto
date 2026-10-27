@@ -28,7 +28,7 @@ Check that C:\src\Repository-Provisioner-game is on the exact branch and SHA
 above. From the Windows-all-auto checkout, run the **check-only** command:
 
 ~~~powershell
-py -3 -m scripts.local_identity_return --provisioner-root "C:\src\Repository-Provisioner-game" --provisioner-branch "codex/game-identity-idempotency-20261027" --provisioner-sha "5c1db9820bac68c59cc7eb6ca5921e22a5bb3913" --resume-result "C:\\qa\\signal-sprint\\result.json" --local-dir "C:\qa\signal-sprint\identity-return" --official-identity "C:\qa\signal-sprint\official-identity-private.json" --source-branch "codex/game-signal-sprint-undo-20261027" --source-sha "c058cbf7fe38e02d929c67d047d717ff74bd522e" --request-id "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e"
+py -3 -m scripts.local_identity_return --provisioner-root "C:\src\Repository-Provisioner-game" --provisioner-branch "codex/game-identity-idempotency-20261027" --provisioner-sha "5c1db9820bac68c59cc7eb6ca5921e22a5bb3913" --resume-result "C:\qa\signal-sprint\result.json" --local-dir "C:\qa\signal-sprint\identity-return" --official-identity "C:\qa\signal-sprint\official-identity-private.json" --source-branch "codex/game-signal-sprint-undo-20261027" --source-sha "c058cbf7fe38e02d929c67d047d717ff74bd522e" --request-id "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e"
 ~~~
 
 The --resume-result path is an operator-verified example, not proof that the file exists. It must point to the original pre-Identity Provisioner result with the actual local EXE path; changed bytes, missing files or mismatched request/SHA must fail closed. Never commit local result/evidence files.\n\nMissing local evidence returns HOLD / OFFICIAL_IDENTITY_NOT_AVAILABLE.
