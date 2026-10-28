@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T08:38:05.523Z",
+  "updated_at_utc": "2026-10-28T08:39:08.988Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -960,7 +960,7 @@
   "local_source_code_sync": {
     "schema_version": 1,
     "scope": "FACTORY_PRODUCT_SOURCE_ONLY__NO_PACKAGE_INSTALL_OR_CAS",
-    "status": "CLOUD_WINDOWS_EXACT_SHA_SMOKE_PASS__PHYSICAL_LOCAL_GATE_DEFERRED",
+    "status": "CLOUD_WINDOWS_EXACT_SHA_SMOKE_PASS_ON_HARDENED_HEAD__PHYSICAL_LOCAL_GATE_DEFERRED",
     "worker": {
       "repository": "shihuiarenjinba-png/Windows-all-auto",
       "base_draft_pr": 22,
@@ -972,8 +972,8 @@
     "hardening": {
       "draft_pr": 23,
       "branch": "codex/local-code-sync-reuse-guards-20261028",
-      "head_sha": "c11b320bcaa513dedb1918b39998e0d5d58e7ca3",
-      "ci_run_id": 40658064408,
+      "head_sha": "8fb30ea897e1263681732c709b71b21353a0ff95",
+      "ci_run_id": 40658248494,
       "ci_conclusion": "SUCCESS_WINDOWS_UBUNTU",
       "changes": [
         "EXACT_ORIGIN_REQUIRED_ON_REUSE",
@@ -981,7 +981,10 @@
         "REVALIDATE_REMOTE_BRANCH_HEAD_ON_REUSE"
       ],
       "stacked_on_pr": 22,
-      "integrated_into_pr22": false
+      "integrated_into_pr22": false,
+      "smoke_run_id": 40658241215,
+      "smoke_conclusion": "SUCCESS_EXACT_SHA_3_AND_IDEMPOTENT_REUSE_3",
+      "smoke_scope": "GITHUB_ACTIONS_WINDOWS_RUNNER_NOT_PHYSICAL_USER_PC"
     },
     "cloud_windows_smoke": {
       "run_id": 40657554022,
