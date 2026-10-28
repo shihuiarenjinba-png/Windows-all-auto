@@ -33,6 +33,7 @@ def fixture():
             "slug": "offline-notes-canary", "source_sha": None, "request_id": None}}},
         "user_id_requests": {"items": [{"product_name": "Signal Sprint",
             "request_id": RID, "status": "WAITING_USER_IDENTITY",
+            "repo": GAME, "source_branch": BRANCH, "source_sha": SHA,
             "identity_target": "%LOCALAPPDATA%/FactoryIdentityWorker/secure/<request_id>/official-identity.json"}]},
     }
 
@@ -78,6 +79,45 @@ class PreIdentityQueueTests(unittest.TestCase):
         data["user_id_requests"]["items"].append(data["user_id_requests"]["items"][0].copy())
         with self.assertRaisesRegex(q.QueueHold, "USER_ID_REQUEST_NOT_CORRELATED"):
             q.project(data, head_reader)
+
+    def test_game_identity_request_cannot_target_another_source(self):
+        for key, value in (("repo", s.OWNER + "/AI-App-Factory"),
+                           ("source_branch", "codex/another-source"),
+                           ("source_sha", "d" * 40),
+                           ("identity_target", "C:/untrusted/identity.json")):
+            with self.subTest(key=key):
+                data = fixture()
+                data["user_id_requests"]["items"][0][key] = value
+                with self.assertRaisesRegex(q.QueueHold, "USER_ID_REQUEST_BINDING_MISMATCH"):
+                    q.project(data, head_reader)
+
+    def test_promoted_app_requires_matching_identity_request(self):
+        data = fixture()
+        candidate = data["other_lanes"]["APP"]["canary_proposal"]
+        candidate.update({
+            "status": "PROMOTED", "source_sha": "d" * 40,
+            "request_id": "app-offline-notes-canary-20261028",
+            "exe_sha256": "e" * 64,
+            "branch": "codex/app-canary-offline-notes-20261027",
+        })
+        def app_head(repo, branch):
+            if repo == s.OWNER + "/AI-App-Factory":
+                return candidate["source_sha"]
+            return head_reader(repo, branch)
+        with self.assertRaisesRegex(q.QueueHold, "APP_USER_ID_REQUEST_NOT_CORRELATED"):
+            q.project(data, app_head)
+        data["user_id_requests"]["items"].append({
+            "request_id": candidate["request_id"], "status": "WAITING_USER_IDENTITY",
+            "repo": s.OWNER + "/AI-App-Factory",
+            "source_branch": candidate["branch"], "source_sha": candidate["source_sha"],
+            "identity_target": "%LOCALAPPDATA%/FactoryIdentityWorker/secure/<request_id>/official-identity.json",
+        })
+        result = q.project(data, app_head)
+        self.assertEqual(len(result["jobs"]), 2)
+        self.assertEqual(result["jobs"][1]["kind"], "APP_CANARY")
+        data["user_id_requests"]["items"][1]["source_sha"] = "f" * 40
+        with self.assertRaisesRegex(q.QueueHold, "APP_USER_ID_REQUEST_BINDING_MISMATCH"):
+            q.project(data, app_head)
 
     def test_unsafe_e2e_flag_rejected(self):
         data = fixture()
