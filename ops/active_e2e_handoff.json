@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T03:36:28.739Z",
+  "updated_at_utc": "2026-10-28T03:36:55.031Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -61,9 +61,9 @@
       "gh api repos/shihuiarenjinba-png/Windows-all-auto/git/ref/heads/codex/e2e-belt-connection-20261027 --jq .object.sha  # confirm exact current ledger HEAD",
       "gh api repos/shihuiarenjinba-png/Repository-Provisioner-game/git/ref/heads/codex/game-gdk-identity-contract-20261028 --jq .object.sha  # must equal b25dd37c2049b716056c83ec556603666e0b5ce2",
       "python -m scripts.pre_identity_queue --check-only  # from reviewed PR19; no CAS",
-      "python -m scripts.pre_identity_queue --output %LOCALAPPDATA%/FactoryIdentityWorker/secure/pre-identity-jobs.json  # create-only; no overwrite",
+      "python -m scripts.pre_identity_queue --output \"$env:LOCALAPPDATA\\FactoryIdentityWorker\\secure\\pre-identity-jobs.json\"  # PowerShell, create-only; no overwrite",
       "gh run download 40443340158 -R shihuiarenjinba-png/AI-Game-Factory -n game-signal-sprint-exe-c058cbf7fe38e02d929c67d047d717ff74bd522e -D C:\\qa\\signal-sprint\\factory-exe  # verify extracted EXE SHA-256 e8517df8cd31a40e5ce72afdd4e6a4d63626fb99f7ff8a4fa3296ff8deef05f4",
-      "python -m scripts.local_identity_scheduler --jobs-file %LOCALAPPDATA%/FactoryIdentityWorker/secure/pre-identity-jobs.json --state-dir %LOCALAPPDATA%/FactoryIdentityWorker/secure/scheduler-state  # no --apply-request-id",
+      "python -m scripts.local_identity_scheduler --jobs-file \"$env:LOCALAPPDATA\\FactoryIdentityWorker\\secure\\pre-identity-jobs.json\" --state-dir \"$env:LOCALAPPDATA\\FactoryIdentityWorker\\secure\\scheduler-state\"  # check-only, no --apply-request-id",
       "python -m scripts.local_identity_return --provisioner-root C:\\src\\Repository-Provisioner-game --provisioner-branch codex/game-gdk-identity-contract-20261028 --provisioner-sha b25dd37c2049b716056c83ec556603666e0b5ce2 --source-branch codex/game-signal-sprint-undo-20261027 --source-sha c058cbf7fe38e02d929c67d047d717ff74bd522e --request-id game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e  # check-only, NO --apply"
     ],
     "expected_local_outputs": [
