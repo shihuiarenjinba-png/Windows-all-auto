@@ -3,6 +3,7 @@ import copy
 import json
 from pathlib import Path
 import tempfile
+import os
 import unittest
 from unittest.mock import patch
 
@@ -179,6 +180,19 @@ class GithubOriginGateTests(unittest.TestCase):
         c["identity_details_observed"] = False
         with self.assertRaisesRegex(op.OperatorHold, "EVIDENCE_INCOMPLETE"):
             self.validated(job, c)
+
+    def test_private_identity_output_rejects_checkout_and_other_request(self):
+        private = self.root / "FactoryIdentityWorker" / "secure" / REQUEST
+        private.mkdir(parents=True)
+        with patch.dict(os.environ, {"LOCALAPPDATA": str(self.root)}):
+            gh.ensure_private_output(private / "validated.json", REQUEST)
+            with self.assertRaisesRegex(op.OperatorHold, "PRIVATE_IDENTITY_OUTPUT_PATH_REQUIRED"):
+                gh.ensure_private_output(self.central / "identity.json", REQUEST)
+            with self.assertRaisesRegex(op.OperatorHold, "PRIVATE_IDENTITY_OUTPUT_PATH_REQUIRED"):
+                gh.ensure_private_output(private.parent / "other" / "identity.json", REQUEST)
+            (self.root / ".git").mkdir()
+            with self.assertRaisesRegex(op.OperatorHold, "PRIVATE_OUTPUT_INSIDE_GIT_CHECKOUT"):
+                gh.ensure_private_output(private / "validated.json", REQUEST)
 
     def test_verify_central_rejects_dirty_checkout(self):
         (self.central / ".git").mkdir()
