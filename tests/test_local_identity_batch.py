@@ -16,6 +16,8 @@ def spec():
     return {
         "schema_version": 1, "batch_id": "batch-20261029-001",
         "trigger_origin": batch.TRIGGER_ORIGIN, "automation_id": batch.AUTOMATION_ID,
+        "dispatch_origin": batch.DISPATCH_ORIGIN,
+        "execution_origin": "MANUAL_WINDOWS_TERMINAL",
         "central_repository": batch.CENTRAL_REPOSITORY,
         "central_branch": batch.CENTRAL_BRANCH, "central_head_sha": "a" * 40,
         "scheduled_at": "2026-10-29T00:36:00Z",
@@ -268,13 +270,27 @@ class BatchTests(unittest.TestCase):
 
     def test_four_claimed_successes_still_require_host_schedule_proof(self):
         state = batch.discover(ledger(), spec())
-        self.assertFalse(state["schedule_trigger_proven"])
+        self.assertFalse(state["execution_trigger_proven"])
         for _ in range(4):
             state, job = batch.claim_next(state)
             state = batch.complete_active(state, success_result(state, job),
                                           independent_evidence_verifier=synthetic_test_only_verifier)
         self.assertEqual(state["success_count"], 4)
         self.assertEqual(state["final_status"], "MULTI_PRODUCT_IDENTITY_BATCH_PARTIAL")
+
+    def test_trusted_manual_execution_can_complete_batch(self):
+        state = batch.discover(ledger(), spec())
+        state = batch.attest_local_execution(
+            state, "MANUAL_WINDOWS_TERMINAL",
+            verifier=lambda **kwargs: True,
+        )
+        for _ in range(4):
+            state, job = batch.claim_next(state)
+            state = batch.complete_active(
+                state, success_result(state, job),
+                independent_evidence_verifier=synthetic_test_only_verifier,
+            )
+        self.assertEqual(state["final_status"], "MULTI_PRODUCT_IDENTITY_BATCH_PASS")
 
 
     def test_schedule_trigger_must_be_proven(self):

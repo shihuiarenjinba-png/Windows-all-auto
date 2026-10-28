@@ -21,6 +21,12 @@ from scripts import local_partner_center_operator as operator
 
 AUTOMATION_ID = "6adf4b1e7654819193b997fb4fb83c85"
 TRIGGER_ORIGIN = "SCHEDULED_36_MIN_LOOP"
+DISPATCH_ORIGIN = "CHATGPT_36_MIN_LOOP"
+EXECUTION_ORIGINS = {
+    "MANUAL_WINDOWS_TERMINAL",
+    "WINDOWS_TASK_SCHEDULER",
+    "WINDOWS_TASK_SCHEDULER_MANUAL_START",
+}
 CENTRAL_REPOSITORY = "shihuiarenjinba-png/Windows-all-auto"
 CENTRAL_BRANCH = "codex/e2e-belt-connection-20261027"
 TOTAL = 4
@@ -28,6 +34,7 @@ SHA40 = re.compile(r"[0-9a-f]{40}")
 SHA64 = re.compile(r"[0-9a-f]{64}")
 SPEC_KEYS = {
     "schema_version", "batch_id", "trigger_origin", "automation_id",
+    "dispatch_origin", "execution_origin",
     "central_repository", "central_branch", "central_head_sha",
     "scheduled_at", "products",
 }
@@ -60,6 +67,8 @@ def _validate_spec(spec: dict) -> list[dict]:
     require(set(spec) == SPEC_KEYS, "BATCH_TRIGGER_RECEIPT_SCHEMA_INVALID")
     require(spec.get("schema_version") == 1, "BATCH_SCHEMA_UNSUPPORTED")
     require(spec.get("trigger_origin") == TRIGGER_ORIGIN
+            and spec.get("dispatch_origin") == DISPATCH_ORIGIN
+            and spec.get("execution_origin") in EXECUTION_ORIGINS
             and spec.get("automation_id") == AUTOMATION_ID,
             "BATCH_SCHEDULE_TRIGGER_NOT_PROVEN")
     require(spec.get("central_repository") == CENTRAL_REPOSITORY
@@ -130,12 +139,14 @@ def discover(ledger: dict, spec: dict) -> dict:
         "schema_version": 1,
         "batch_id": spec["batch_id"],
         "trigger_origin": TRIGGER_ORIGIN,
+        "dispatch_origin": spec["dispatch_origin"],
+        "execution_origin": spec["execution_origin"],
         "automation_id": AUTOMATION_ID,
         "central_repository": CENTRAL_REPOSITORY,
         "central_branch": CENTRAL_BRANCH,
         "central_head_sha": spec["central_head_sha"],
         "scheduled_at": spec["scheduled_at"],
-        "schedule_trigger_proven": False,  # metadata alone is not host attestation
+        "execution_trigger_proven": False,  # metadata alone is not host attestation
         "batch_total": TOTAL,
         "discovered_count": TOTAL,
         "processed_count": 0,
@@ -320,11 +331,27 @@ def complete_active(state: dict, result: dict, *, independent_evidence_verifier=
         current["final_status"] = (
             "MULTI_PRODUCT_IDENTITY_BATCH_PASS"
             if (current["success_count"] == TOTAL
-                and current.get("schedule_trigger_proven") is True)
+                and current.get("execution_trigger_proven") is True)
             else "MULTI_PRODUCT_IDENTITY_BATCH_PARTIAL"
         )
     else:
         current["final_status"] = "BATCH_IN_PROGRESS"
+    return current
+
+
+def attest_local_execution(state: dict, execution_origin: str, *, verifier=None) -> dict:
+    """Bind the batch to a trusted host observation, never a JSON claim alone."""
+    require(execution_origin in EXECUTION_ORIGINS
+            and state.get("execution_origin") == execution_origin,
+            "HOLD_EXECUTION_ORIGIN_CONFLICT")
+    require(callable(verifier), "HOLD_EXECUTION_ORIGIN_VERIFIER_UNAVAILABLE")
+    try:
+        verified = verifier(state=deepcopy(state), execution_origin=execution_origin)
+    except Exception as exc:
+        raise BatchHold("HOLD_EXECUTION_ORIGIN_VERIFICATION_FAILED") from exc
+    require(verified is True, "HOLD_EXECUTION_ORIGIN_NOT_VERIFIED")
+    current = deepcopy(state)
+    current["execution_trigger_proven"] = True
     return current
 
 

@@ -84,6 +84,63 @@ must not satisfy that gate. The batch remains PARTIAL until that evidence,
 the existing Provisioner CAS/replay and scheduled-local trigger attestation
 are independently verified.
 
+## No-LLM Windows terminal runner
+
+The trusted Windows integration entry point is:
+
+```powershell
+py -3 -m scripts.run_local_partner_center_batch
+```
+
+It uses only `gh`, `git`, Python, the local Edge Chrome DevTools Protocol, and
+the existing APP Provisioner single-writer.  It does not call Ollama, OpenAI,
+ChatGPT, Codex, or another LLM.  The runner fetches the live central ledger,
+requires exactly the ordered four APP jobs, rechecks each Factory branch,
+verifies the GitHub Artifact ZIP digest and the extracted EXE SHA-256/size,
+creates exact detached source snapshots, then holds before UI work unless the
+authenticated Partner Center products page is observable.
+
+The Edge worker reads no cookies, storage, headers, password, MFA value, raw
+HTML, or authenticated page dump.  It searches the exact product name,
+creates only after an exact zero-result search and explicit per-job creation
+permission, captures seven Identity fields, and re-reads them from the live
+Identity page for both CAS and replay verification.  Package upload, version
+selection, certification, pricing, availability changes, publication, and
+Store submission are absent.
+
+Provenance is split as follows:
+
+- `dispatch_origin=CHATGPT_36_MIN_LOOP`
+- manual test: `execution_origin=MANUAL_WINDOWS_TERMINAL`
+- scheduled run: `execution_origin=WINDOWS_TASK_SCHEDULER`
+- one-shot post-registration test:
+  `execution_origin=WINDOWS_TASK_SCHEDULER_MANUAL_START`
+
+State and sanitized receipts are stored under
+`%LOCALAPPDATA%\WindowsAllAuto\PartnerCenterBatch`.  A process-wide nonblocking
+lock and the durable `active_index`/`next_resume_index` ensure single-flight
+resume.  Authentication redirects return `HOLD_PARTNER_CENTER_AUTH_REQUIRED`
+without changing the active product; finish normal Microsoft authentication
+in Edge and run the same command again.
+
+Only after `LOCAL_WINDOWS_NO_LLM_AUTOMATION_PASS` and
+`MULTI_PRODUCT_IDENTITY_BATCH_PASS` for all four products may the 12-hour task
+be registered:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\register_local_partner_center_batch.ps1
+```
+
+The registration script refuses to overwrite an existing task and requires
+the terminal 4/4 final receipt.  It registers
+`WindowsAllAuto-PartnerCenter-Batch` with `IgnoreNew`, `Limited`, an interactive
+logon, a four-hour timeout and a 12-hour repetition.  The one-shot validation
+script creates a local one-use marker and starts the same registered action:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\test_local_partner_center_scheduled_task.ps1
+```
+
 ## Independent evidence verification before a product can succeed
 
 The batch `complete` CLI treats **every field in the result JSON as

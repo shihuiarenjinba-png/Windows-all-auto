@@ -193,6 +193,8 @@ class OperatorGateTests(unittest.TestCase):
     def test_capture_produces_versionless_github_bound_receipt(self):
         result = op.validate_capture(ready_job(batch_id="batch", batch_index=1,
                                                batch_total=4, trigger_origin="SCHEDULED_36_MIN_LOOP",
+                                               dispatch_origin="CHATGPT_36_MIN_LOOP",
+                                               execution_origin="MANUAL_WINDOWS_TERMINAL",
                                                automation_id="6adf4b1e7654819193b997fb4fb83c85"), captured())
         self.assertFalse(result["authenticated_partner_center_pass"])
         self.assertEqual(result["status"], "IDENTITY_CAPTURED__OPERATOR_ATTESTED__GITHUB_BOUND")

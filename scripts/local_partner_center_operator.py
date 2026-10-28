@@ -37,6 +37,7 @@ CAPTURE_KEYS = set(JOB_BINDING + IDENTITY + EVIDENCE)
 LEGACY_CAPTURE_KEYS = set(BINDING + IDENTITY + EVIDENCE)
 BATCH_FIELDS = {
     "batch_id", "batch_index", "batch_total", "trigger_origin", "automation_id",
+    "dispatch_origin", "execution_origin",
 }
 
 
@@ -191,6 +192,11 @@ def prepare(ledger: dict, receipt: dict, root: Path, slug: str | None = None, *,
     if batch is not None:
         if (set(batch) != BATCH_FIELDS
                 or batch.get("trigger_origin") != "SCHEDULED_36_MIN_LOOP"
+                or batch.get("dispatch_origin") != "CHATGPT_36_MIN_LOOP"
+                or batch.get("execution_origin") not in {
+                    "MANUAL_WINDOWS_TERMINAL", "WINDOWS_TASK_SCHEDULER",
+                    "WINDOWS_TASK_SCHEDULER_MANUAL_START",
+                }
                 or batch.get("automation_id") != "6adf4b1e7654819193b997fb4fb83c85"
                 or batch.get("batch_total") != 4
                 or type(batch.get("batch_index")) is not int
@@ -329,6 +335,7 @@ def validate_capture(job: dict, captured: dict) -> dict:
         "store_submitted": False,
         **{key: job[key] for key in (
             "batch_id", "batch_index", "batch_total", "trigger_origin", "automation_id"
+            , "dispatch_origin", "execution_origin"
         ) if key in job},
     }
 
