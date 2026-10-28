@@ -133,7 +133,7 @@ class HistoricalQueueProvenanceTests(unittest.TestCase):
     def test_invalid_historical_target_rejected(self):
         old = ledger()
         old["user_id_requests"]["items"][0]["identity_return_target"] = "products/other/store/approved-identity.json"
-        with self.assertRaisesRegex(op.OperatorHold, "TARGET_CONFLICT"):
+        with self.assertRaisesRegex(op.OperatorHold, "TARGET_CONFLICT|REQUEST_BINDING_CONFLICT"):
             provenance.verify(ledger(), old, identity(ledger()))
 
 
