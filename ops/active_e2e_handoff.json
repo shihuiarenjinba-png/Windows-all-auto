@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T10:44:00Z",
+  "updated_at_utc": "2026-10-28T10:48:00Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -765,7 +765,7 @@
     "prism_manual_identity_reference_observed": true,
     "three_d_identity_route_compatible": false,
     "prism_source_lineage_audit_code_committed": true,
-    "prism_source_lineage_audit_ci_pass": false,
+    "prism_source_lineage_audit_ci_pass": true,
     "prism_post_identity_commit_candidate_observed": true,
     "prism_cas_receipt_verified": false
   },
@@ -1245,7 +1245,7 @@
       "stacked_on_pr": 26,
       "entrypoint": "python -m scripts.prism_identity_lineage_audit",
       "regression_tests": 11,
-      "contract_ci": "PENDING_VERIFICATION",
+      "contract_ci": "SUCCESS_WINDOWS_UBUNTU",
       "github_compare_verified": {
         "base_sha": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
         "observed_head": "11417b75636ee18816028ffd5221884c4c9a9836",
@@ -1262,7 +1262,11 @@
       "identity_route_pass": false,
       "cas_return_pass": false,
       "real_msix_pass": false,
-      "next_action": "Run read-only lineage audit on independent clean local clones, verify request-scoped CAS approval/receipt and independent UI capture, reconcile 3D scheduler/Provisioner version schema before routing. Never repin immutable source_sha."
+      "next_action": "Run read-only lineage audit on independent clean local clones, verify request-scoped CAS approval/receipt and independent UI capture, reconcile 3D scheduler/Provisioner version schema before routing. Never repin immutable source_sha.",
+      "contract_ci_run_id": 40674036903,
+      "contract_ci_url": "https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/40674036903",
+      "offline_qa_run_id": 40674036937,
+      "offline_qa_conclusion": "SUCCESS_WINDOWS_UBUNTU"
     }
   }
 }
