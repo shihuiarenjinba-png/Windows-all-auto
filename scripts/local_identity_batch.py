@@ -241,6 +241,27 @@ def claim_next(state: dict) -> tuple[dict, dict]:
     return current, deepcopy(pending)
 
 
+
+def claim_or_resume(state: dict) -> tuple[dict, dict]:
+    """Resume the exact in-flight product after a crash without claiming another.
+
+    The operator must always re-search the exact Partner Center product before
+    creating anything; a resumed job is never permission to click Reserve twice.
+    """
+    active_index = state.get("active_index")
+    if active_index is None:
+        return claim_next(state)
+    require(type(active_index) is int and 1 <= active_index <= TOTAL,
+            "BATCH_ACTIVE_JOB_NOT_UNIQUE")
+    processing = [x for x in state.get("products", [])
+                  if x.get("state") == "PROCESSING"]
+    require(len(processing) == 1
+            and processing[0].get("batch_index") == active_index
+            and state.get("next_resume_index") == active_index,
+            "BATCH_ACTIVE_JOB_NOT_UNIQUE")
+    return deepcopy(state), deepcopy(processing[0])
+
+
 def complete_active(state: dict, result: dict) -> dict:
     current = deepcopy(state)
     index = current.get("active_index")
@@ -368,9 +389,12 @@ def main(argv=None) -> int:
                 else:
                     result = proposed
             elif args.mode == "claim":
-                result, job = claim_next(operator.read_json(args.state, 256_000))
-                require(not args.job_output.exists(), "BATCH_JOB_OUTPUT_ALREADY_EXISTS")
-                atomic_write(args.job_output, job)
+                result, job = claim_or_resume(operator.read_json(args.state, 256_000))
+                if args.job_output.exists():
+                    existing_job = operator.read_json(args.job_output, 64_000)
+                    require(existing_job == job, "BATCH_JOB_OUTPUT_CONFLICT")
+                else:
+                    atomic_write(args.job_output, job)
             else:
                 result = complete_active(operator.read_json(args.state, 256_000),
                                          operator.read_json(args.result, 64_000))
