@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T10:48:00Z",
+  "updated_at_utc": "2026-10-28T11:47:00Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -278,7 +278,7 @@
       "factory_head": "11417b75636ee18816028ffd5221884c4c9a9836",
       "provisioner_branch": "codex/e2e-belt-connection-20261027",
       "provisioner_head": "ce332d586d473e08b4c03808dfe84694fa55287e",
-      "next_action": "Run read-only lineage audit on independent clean local clones, verify request-scoped CAS approval/receipt and independent UI capture, reconcile 3D scheduler/Provisioner version schema before routing. Never repin immutable source_sha.",
+      "next_action": "Review PR28 historical queue digest mismatch, preserve immutable source SHA and existing Prism Store product; physical capture and 3D Provisioner version contract still pending.",
       "factory_ci_run_id": 40520641316,
       "factory_ci_conclusion": "SUCCESS",
       "dispatch_guard_pr": {
@@ -767,7 +767,10 @@
     "prism_source_lineage_audit_code_committed": true,
     "prism_source_lineage_audit_ci_pass": true,
     "prism_post_identity_commit_candidate_observed": true,
-    "prism_cas_receipt_verified": false
+    "prism_cas_receipt_verified": false,
+    "prism_historical_queue_provenance_code_committed": true,
+    "prism_historical_queue_provenance_ci_pass": false,
+    "prism_github_queue_origin_verified": false
   },
   "user_id_requests": {
     "schema_version": 1,
@@ -948,7 +951,7 @@
         "identity_status": "LOCAL_OPERATOR_MANUAL_REFERENCE__AUTOMATED_CAPTURE_PENDING",
         "observed_pr_head": "11417b75636ee18816028ffd5221884c4c9a9836",
         "observed_ci_run_id": 40640963381,
-        "next_action": "HOLD_REMOTE_HEAD_CONFLICT until original source SHA vs identity-return commit reconciled; never mutate pinned source SHA or auto-claim CAS.",
+        "next_action": "HOLD historical GitHub queue digest mismatch and remote branch HEAD drift; no CAS or automatic product recreation.",
         "expected_pck_sha256": "2cd8af6496cf288bc3e6aef317e472b480f21d2052cbd4ae0cd171e6285ab1ef",
         "artifact_id": 12795476435,
         "artifact_run_id": 40640951915,
@@ -1140,7 +1143,7 @@
       "CREDENTIAL_COOKIE_TOKEN_SESSION_LOGGING",
       "UNAPPROVED_CAS"
     ],
-    "next_action": "Run read-only lineage audit on independent clean local clones, verify request-scoped CAS approval/receipt and independent UI capture, reconcile 3D scheduler/Provisioner version schema before routing. Never repin immutable source_sha.",
+    "next_action": "PR28 historical GitHub queue replay and CI first; static digest mismatch remains HOLD. Then physical read-only source lineage and independent UI capture; CAS only after explicit per-request approval.",
     "contract": {
       "draft_pr": 24,
       "branch": "codex/local-partner-center-operator-gate-20261028",
@@ -1267,6 +1270,24 @@
       "contract_ci_url": "https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/40674036903",
       "offline_qa_run_id": 40674036937,
       "offline_qa_conclusion": "SUCCESS_WINDOWS_UBUNTU"
+    },
+    "historical_queue_provenance": {
+      "draft_pr": 28,
+      "branch": "codex/prism-historical-queue-provenance-20261028",
+      "head_sha": "fcc31d7fdb59abb6d1c32be951d395859e6c7972",
+      "stacked_on_pr": 27,
+      "entrypoint": "python -m scripts.prism_queue_provenance_audit",
+      "scope": "READ_ONLY_HISTORICAL_CENTRAL_QUEUE_DIGEST_REPLAY__NO_UI_OR_CAS",
+      "historical_central_head_claim": "43dacc1747eb75002a54375ba79c4cecbfc138bf",
+      "committed_queue_digest_claim": "7a4f4e282bc4bc78be18974539d8b33e3681282787ed82aa97463e7af5f604b8",
+      "reconstructed_historical_queue_digest": "b3928712bb1c2f0eb73fe993692cf3ef2364f160943a2842e10970485630954f",
+      "historical_creation_policy": true,
+      "current_creation_policy": false,
+      "status": "STATIC_REPLAY_DIGEST_MISMATCH__CONTRACT_CI_PENDING__PHYSICAL_NOT_OBSERVED",
+      "local_capture_verified": false,
+      "github_to_local_rotation_pass": false,
+      "cas_return_pass": false,
+      "next_action": "Review historical queue digest mismatch and receipt origin before claiming GitHub-to-local rotation; never re-create Prism or repin immutable source SHA. Independent local UI capture and request-scoped CAS approval remain separate."
     }
   }
 }
