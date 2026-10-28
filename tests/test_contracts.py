@@ -65,6 +65,56 @@ class UpstreamContractTests(unittest.TestCase):
                 }
             ],
         }
+        self.automator_live = {
+            "schema_version": 2,
+            "summary": {
+                "mode": "single",
+                "total": 1,
+                "success": 1,
+                "draft_saved": 1,
+                "hold": 0,
+                "failed": 0,
+                "unknown": 0,
+            },
+            "results": [
+                {
+                    "product_name": "Example",
+                    "status": "DRAFT_SAVED",
+                    "findings": [],
+                    "actions": ["packages:upload:C:/qa/Example.msix", "packages:save_draft"],
+                    "execution_mode": "live",
+                    "draft_saved": True,
+                    "save_verified_after_reload": True,
+                    "package_uploaded": True,
+                    "package_validation": "VALID",
+                    "package_section_completion": "COMPLETE",
+                    "draft_id": "12345",
+                    "product_id": "9REALTEST",
+                    "package_sha256": "b" * 64,
+                    "source_sha": "a" * 40,
+                    "identity": {
+                        "name": "Example.Identity",
+                        "publisher": "CN=EXAMPLE",
+                        "version": "1.2.3.4",
+                    },
+                    "sections": {
+                        "pricing_availability": "SAVED",
+                        "properties": "SAVED",
+                        "age_ratings": "SAVED",
+                        "packages": "SAVED",
+                        "store_listings": "SAVED",
+                        "submission_options": "SAVED",
+                    },
+                    "current_draft_url": "https://partner.microsoft.com/en-us/dashboard/products/9REALTEST/submissions/12345",
+                    "evidence": [
+                        {"kind": "partner_center_draft_screenshot", "path": "C:/qa/proof.png"}
+                    ],
+                    "submitted": False,
+                    "certified": False,
+                    "published": False,
+                }
+            ],
+        }
 
     def test_01_windows_data_ready_contract(self):
         result = parse_windows_data(
@@ -124,6 +174,84 @@ class UpstreamContractTests(unittest.TestCase):
         result = parse_windows_automator(obj, product_name="Example")
         self.assertEqual(result["status"], "UNKNOWN")
         self.assertFalse(result["draft_saved"])
+
+    def _parse_live(self, payload=None, **overrides):
+        values = {
+            "product_name": "Example",
+            "expected_product_id": "9REALTEST",
+            "expected_package_sha256": "b" * 64,
+            "expected_source_sha": "a" * 40,
+            "expected_identity_name": "Example.Identity",
+            "expected_identity_publisher": "CN=EXAMPLE",
+            "expected_version": "1.2.3.4",
+        }
+        values.update(overrides)
+        return parse_windows_automator(payload or self.automator_live, **values)
+
+    def test_11_verified_live_contract_accepts_draft_saved(self):
+        result = self._parse_live()
+        self.assertEqual(result["status"], "DRAFT_SAVED")
+        self.assertTrue(result["draft_saved"])
+        self.assertTrue(result["save_verified_after_reload"])
+        self.assertFalse(result["submitted"])
+
+    def test_12_live_contract_requires_all_immutable_expectations(self):
+        with self.assertRaises(ContractError):
+            parse_windows_automator(self.automator_live, product_name="Example")
+
+    def test_13_live_contract_rejects_product_package_or_source_mismatch(self):
+        for key, value in (
+            ("expected_product_id", "9OTHER"),
+            ("expected_package_sha256", "c" * 64),
+            ("expected_source_sha", "d" * 40),
+        ):
+            with self.subTest(key=key), self.assertRaises(ContractError):
+                self._parse_live(**{key: value})
+
+    def test_14_live_contract_rejects_identity_or_version_mismatch(self):
+        for key, value in (
+            ("expected_identity_name", "Other.Identity"),
+            ("expected_identity_publisher", "CN=OTHER"),
+            ("expected_version", "9.9.9.9"),
+        ):
+            with self.subTest(key=key), self.assertRaises(ContractError):
+                self._parse_live(**{key: value})
+
+    def test_15_live_contract_rejects_unproven_write_or_warning(self):
+        for key, value in (
+            ("draft_saved", False),
+            ("save_verified_after_reload", False),
+            ("package_uploaded", False),
+            ("package_validation", "WARNING"),
+            ("package_section_completion", "INCOMPLETE"),
+        ):
+            obj = copy.deepcopy(self.automator_live)
+            obj["results"][0][key] = value
+            with self.subTest(key=key), self.assertRaises(ContractError):
+                self._parse_live(obj)
+
+    def test_16_live_contract_rejects_missing_section_or_evidence(self):
+        obj = copy.deepcopy(self.automator_live)
+        del obj["results"][0]["sections"]["store_listings"]
+        with self.assertRaises(ContractError):
+            self._parse_live(obj)
+        obj = copy.deepcopy(self.automator_live)
+        obj["results"][0]["evidence"] = []
+        with self.assertRaises(ContractError):
+            self._parse_live(obj)
+
+    def test_17_live_contract_never_accepts_submit_certify_or_publish(self):
+        for key in ("submitted", "certified", "published"):
+            obj = copy.deepcopy(self.automator_live)
+            obj["results"][0][key] = True
+            with self.subTest(key=key), self.assertRaises(ContractError):
+                self._parse_live(obj)
+
+    def test_18_live_done_is_not_silently_promoted(self):
+        obj = copy.deepcopy(self.automator)
+        obj["results"][0]["execution_mode"] = "live"
+        with self.assertRaises(ContractError):
+            parse_windows_automator(obj, product_name="Example")
 
 
 if __name__ == "__main__":
