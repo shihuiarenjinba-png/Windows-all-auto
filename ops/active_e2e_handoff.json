@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T20:40:55.761Z",
+  "updated_at_utc": "2026-10-28T20:41:27.396Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -805,7 +805,7 @@
     "batch4_local_operator_pass": false,
     "batch4_schedule_trigger_proven": false,
     "batch4_operator_json_authentication_guard_code_committed": true,
-    "batch4_operator_json_authentication_guard_ci_pass": false,
+    "batch4_operator_json_authentication_guard_ci_pass": true,
     "batch4_authenticated_ui_evidence_independently_verified": false
   },
   "user_id_requests": {
@@ -1880,7 +1880,7 @@
     "store_submission": 0,
     "package_upload": 0,
     "package_version_gate": "HOLD",
-    "status": "CLOUD_DISCOVER_4_OF_4_PASS__PR37_AUTHENTICATION_EVIDENCE_FIX_CI_PENDING__LOCAL_BATCH_NOT_STARTED",
+    "status": "CLOUD_DISCOVER_4_OF_4_PASS__PR37_AUTHENTICATION_EVIDENCE_GUARD_CI_GREEN__LOCAL_BATCH_NOT_STARTED",
     "preflight_evidence": "FOUR_GITHUB_FACTORY_BRANCHES_IDENTICAL_TO_PINNED_SOURCE_SHAS_RECHECKED_20261029_0540_JST__PR37_JSON_VALIDATION_NOT_AUTHENTICATED_UI__NO_PHYSICAL_LOCAL_RECEIPT",
     "code_contracts": {
       "windows_all_auto_pr": 33,
@@ -1920,12 +1920,15 @@
       "windows_all_auto_queue_owned_target_offline_qa_status": "SUCCESS_WINDOWS_UBUNTU",
       "windows_all_auto_authenticated_capture_boundary_pr": 37,
       "windows_all_auto_authenticated_capture_boundary_head": "20dcfe2b7efbbf560a1a372b108205455c98cf1b",
-      "windows_all_auto_authenticated_capture_boundary_ci": "QUEUED_OR_IN_PROGRESS_AT_OBSERVATION",
+      "windows_all_auto_authenticated_capture_boundary_ci": "SUCCESS_WINDOWS_UBUNTU",
       "windows_all_auto_authenticated_capture_boundary_changes": [
         "OPERATOR_JSON_ONLY_NO_AUTHENTICATED_PASS",
         "HOLD_INDEPENDENT_UI_ATTESTATION",
         "REGRESSION_SELF_ASSERTED_UI_REJECTED"
-      ]
+      ],
+      "windows_all_auto_authenticated_capture_boundary_ci_run": 40765388977,
+      "windows_all_auto_authenticated_capture_boundary_offline_qa_run": 40765388952,
+      "windows_all_auto_authenticated_capture_boundary_offline_qa": "SUCCESS_WINDOWS_UBUNTU"
     },
     "products": [
       {
@@ -2044,7 +2047,7 @@
     "cloud_discover_status": "BATCH_DISCOVERED_4_IN_GITHUB_ACTIONS_WINDOWS_AND_UBUNTU__NOT_LOCAL_PC"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-28T20:40:55.761Z",
+    "observed_at_utc": "2026-10-28T20:41:27.396Z",
     "scope": "APP_BATCH4_AUTHENTICATED_UI_TRUST_BOUNDARY_FIX_AND_FOUR_SOURCE_HEAD_RECHECK",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "implementation_branch": "codex/e2e-batch4-auth-capture-evidence-20261029",
@@ -2057,9 +2060,9 @@
       "Add regression and documentation for self-asserted UI evidence"
     ],
     "ci_run_id": 40765388977,
-    "ci_status": "QUEUED_AT_OBSERVATION",
+    "ci_status": "SUCCESS_WINDOWS_UBUNTU",
     "offline_qa_run_id": 40765388952,
-    "offline_qa_status": "IN_PROGRESS_AT_OBSERVATION",
+    "offline_qa_status": "SUCCESS_WINDOWS_UBUNTU",
     "cloud_pre_identity_discovered": 4,
     "github_factory_exact_source_heads_verified": 4,
     "github_factory_source_compare": "FOUR_BRANCHES_IDENTICAL_TO_PINNED_SOURCE_SHA__AHEAD_0_BEHIND_0",
@@ -2079,6 +2082,6 @@
     "next_resume_index": 1,
     "store_submission": 0,
     "no_main_release_merge": true,
-    "note": "This run implemented a trust-boundary correction, not a physical Windows/Partner Center run. Static Identity capture JSON must never be upgraded to authenticated UI PASS."
+    "note": "PR37 contract and offline QA passed on Windows/Ubuntu. Authenticated Partner Center UI capture remains NOT_OBSERVED; this run does not claim local execution, Identity CAS, package or E2E PASS."
   }
 }
