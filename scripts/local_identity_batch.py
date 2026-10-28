@@ -134,6 +134,7 @@ def discover(ledger: dict, spec: dict) -> dict:
         "central_branch": CENTRAL_BRANCH,
         "central_head_sha": spec["central_head_sha"],
         "scheduled_at": spec["scheduled_at"],
+        "schedule_trigger_proven": False,  # metadata alone is not host attestation
         "batch_total": TOTAL,
         "discovered_count": TOTAL,
         "processed_count": 0,
@@ -147,6 +148,79 @@ def discover(ledger: dict, spec: dict) -> dict:
         "store_submission": 0,
         "final_status": "BATCH_DISCOVERED",
     }
+
+
+# A status string alone is never proof of an Identity capture or a GitHub CAS.
+# These fields are local, independently corroborated evidence requirements.
+PRODUCT_LEVEL_HOLDS = {
+    "HOLD_NAME_UNAVAILABLE", "HOLD_PRODUCT_JOB_INVALID",
+    "HOLD_ARTIFACT_MISMATCH", "HOLD_SOURCE_HEAD_DRIFT",
+    "HOLD_LOCAL_SOURCE_SYNC", "HOLD_PRODUCT_CREATE_NOT_CONFIRMED",
+    "HOLD_LOCAL_CAPACITY",
+}
+GLOBAL_STOP_CODES = {
+    "HOLD_PARTNER_CENTER_AUTH_REQUIRED", "HOLD_MFA_REQUIRED",
+    "HOLD_DUPLICATE_PRODUCT", "HOLD_BROWSER_STATE_AMBIGUOUS",
+    "HOLD_CAS_CONTRACT_BROKEN", "CROSS_PRODUCT_IDENTITY_CONTAMINATION",
+    "HOLD_QUEUE_DIGEST_CONFLICT",
+}
+
+
+def _validate_success_evidence(state: dict, job: dict, result: dict) -> None:
+    """Reject a fabricated APPLIED flag without the complete local evidence chain."""
+    exact = {
+        "batch_id": state["batch_id"],
+        "batch_index": job["batch_index"],
+        "request_id": job["request_id"],
+        "slug": job["slug"],
+        "source_sha": job["source_sha"],
+        "source_snapshot_head": job["source_sha"],
+        "identity_return_target": job["identity_return_target"],
+        "registration_type": job["registration_type"],
+        "partner_center_selection": job["partner_center_selection"],
+        "queue_job_digest": job["queue_job_digest"],
+        "central_head_sha": state["central_head_sha"],
+        "identity_capture_status": "IDENTITY_CAPTURED__AUTHENTICATED_UI__GITHUB_BOUND",
+        "github_replay_status": "EXISTING_VERIFIED",
+        "package_version_gate": "HOLD",
+        "store_submission": "NOT_PERFORMED",
+        "cross_product_contamination": 0,
+        "duplicate_creation": 0,
+    }
+    require(all(result.get(k) == v for k, v in exact.items()),
+            "HOLD_BATCH_SUCCESS_EVIDENCE_INCOMPLETE")
+    require(result.get("source_sync_status") in
+            {"DOWNLOADED_EXACT_SNAPSHOT", "REUSED_EXACT_SNAPSHOT"}
+            and result.get("authenticated_partner_center_pass") is True
+            and result.get("identity_details_observed") is True
+            and type(result.get("overview_exact_match_count")) is int
+            and result["overview_exact_match_count"] == 1,
+            "HOLD_BATCH_SUCCESS_EVIDENCE_INCOMPLETE")
+    count = result.get("partner_center_search_count")
+    created = result.get("creation_status")
+    require(type(count) is int and count in (0, 1)
+            and ((count == 0 and created == "CREATED")
+                 or (count == 1 and created == "REUSED_EXISTING")),
+            "HOLD_BATCH_PRODUCT_CREATION_NOT_PROVEN")
+    require(SHA40.fullmatch(str(result.get("identity_return_commit_sha", ""))) is not None,
+            "HOLD_BATCH_GITHUB_RETURN_COMMIT_NOT_PROVEN")
+    require(re.fullmatch(r"[A-Za-z0-9]{8,32}", str(result.get("store_id", ""))) is not None
+            and re.fullmatch(r"[A-Za-z0-9._-]+_[a-z0-9]{13}",
+                             str(result.get("pfn", ""))) is not None
+            and re.fullmatch(r"S-1-15-2(?:-\d+){7}",
+                             str(result.get("package_sid", ""))) is not None
+            and isinstance(result.get("identity_name"), str)
+            and bool(result["identity_name"].strip()),
+            "HOLD_BATCH_IDENTITY_SCHEMA_INVALID")
+
+
+def _validate_product_hold(result: dict) -> None:
+    code = result.get("error_code")
+    require(result.get("github_return_status") == "HOLD"
+            and isinstance(code, str)
+            and code not in GLOBAL_STOP_CODES
+            and code in PRODUCT_LEVEL_HOLDS,
+            "HOLD_BATCH_GLOBAL_STOP_REQUIRED")
 
 
 def claim_next(state: dict) -> tuple[dict, dict]:
@@ -181,7 +255,14 @@ def complete_active(state: dict, result: dict) -> dict:
     require(result.get("store_submission") == "NOT_PERFORMED"
             and result.get("package_version_gate") == "HOLD",
             "BATCH_RESULT_SAFETY_CONFLICT")
-    job["state"] = "SUCCESS" if status in {"APPLIED", "EXISTING_VERIFIED"} else "HOLD"
+    if status in {"APPLIED", "EXISTING_VERIFIED"}:
+        _validate_success_evidence(current, job, result)
+        job["state"] = "SUCCESS"
+    elif status == "HOLD":
+        _validate_product_hold(result)
+        job["state"] = "HOLD"
+    else:
+        raise BatchHold("HOLD_BATCH_GLOBAL_STOP_REQUIRED")
     job["result"] = result
     current["active_index"] = None
     current["processed_count"] += 1
@@ -191,7 +272,9 @@ def complete_active(state: dict, result: dict) -> dict:
     if current["processed_count"] == TOTAL:
         current["final_status"] = (
             "MULTI_PRODUCT_IDENTITY_BATCH_PASS"
-            if current["success_count"] == TOTAL else "MULTI_PRODUCT_IDENTITY_BATCH_PARTIAL"
+            if (current["success_count"] == TOTAL
+                and current.get("schedule_trigger_proven") is True)
+            else "MULTI_PRODUCT_IDENTITY_BATCH_PARTIAL"
         )
     else:
         current["final_status"] = "BATCH_IN_PROGRESS"
