@@ -98,12 +98,20 @@ def project(ledger: dict, head_reader=scheduler.head) -> dict:
     requests = (ledger.get("user_id_requests") or {}).get("items") or []
     require(isinstance(requests, list), "ROTATION_IDENTITY_REQUESTS_INVALID")
     app_items = _items(ledger, "app_jobs")
+    base_apps = [job for job in result["jobs"] if job["kind"] == "APP_CANARY"]
+    require(len(app_items) + len(base_apps) <= 5, "ROTATION_CAP_EXCEEDED")
     three_d_items = _items(ledger, "three_d_jobs")
     jobs = list(result["jobs"])
     deferred = list(result["deferred"])
     metrics = {
-        "total_jobs": len(app_items), "pre_identity_pass": 0,
-        "waiting_user_identity": 0, "identity_received": 0,
+        "total_jobs": len(app_items) + len(base_apps),
+        "pre_identity_pass": len(base_apps),
+        "waiting_user_identity": sum(1 for j in base_apps if any(
+            r.get("request_id") == j["request_id"] and r.get("status") == "WAITING_USER_IDENTITY"
+            for r in requests)),
+        "identity_received": sum(1 for j in base_apps if any(
+            r.get("request_id") == j["request_id"] and r.get("status") == "USER_IDENTITY_RECEIVED"
+            for r in requests)),
         "conflicts": 0, "retries": 0, "artifact_mismatch": 0,
         "schema_conflict": 0, "cross_product_rejection": 0,
         "3d_total_jobs": len(three_d_items), "3d_pre_identity_pass": 0,
