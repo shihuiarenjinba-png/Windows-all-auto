@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T09:46:00Z",
+  "updated_at_utc": "2026-10-28T09:49:00Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -1164,10 +1164,10 @@
     "github_origin_handoff": {
       "draft_pr": 26,
       "branch": "codex/github-origin-existing-prism-operator-20261028",
-      "head_sha": "7a4367095d36e465d65d0594a26935874d40e29d",
+      "head_sha": "6d1b469cbbf4881e762e92cc08f6795b7d97a757",
       "base_draft_pr": 24,
       "entrypoint": "python -m scripts.github_partner_center_handoff",
-      "contract_ci": "PRIOR_HEAD_SUCCESS__LATEST_CI_PENDING",
+      "contract_ci": "LATEST_CI_IN_PROGRESS",
       "physical_execution": "NOT_OBSERVED",
       "queue_job_origin_required": "GITHUB_PRE_IDENTITY_QUEUE",
       "required_evidence": [
@@ -1188,8 +1188,10 @@
       "identity_capture": "NOT_OBSERVED",
       "cas": "NOT_APPLIED",
       "store_submission": "NOT_AUTHORIZED",
-      "ci_run_id": 40666038920,
-      "ci_url": "https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/40666038920"
+      "ci_run_id": 40666310040,
+      "ci_url": "https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/40666310040",
+      "previous_green_ci_run_id": 40666038920,
+      "previous_green_head_sha": "9a6f7e81028e71bc89755e832b7fcd7343cd5044"
     },
     "handoff_compatibility": {
       "scheduler_3d_job_supported": false,
