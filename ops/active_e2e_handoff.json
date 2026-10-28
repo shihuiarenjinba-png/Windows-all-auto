@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T08:39:08.988Z",
+  "updated_at_utc": "2026-10-28T08:46:15Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
   "active_product": {
     "lane": "GAME",
     "slug": "signal-sprint",
-    "phase": "USER_IDENTITY_RECEIVED__GDK_REGISTRATION_ROUTER_WINDOWS_UBUNTU_CI_PASS__DEFERRED_LOCAL_GATE__CAS_NOT_APPLIED",
+    "phase": "USER_IDENTITY_RECEIVED__GDK_REGISTRATION_ROUTER_WINDOWS_UBUNTU_CI_PASS__LOCAL_READY_CHECK_PENDING__CAS_NOT_APPLIED",
     "status": "HOLD",
     "request_id": "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e",
     "product_type": "GAME",
@@ -56,7 +56,7 @@
       "windows_all_auto_record": null,
       "finished_at_utc": "2026-10-27T05:03:20Z"
     },
-    "next_action": "CLOUD: PR20 rotation queue code and CI, APP max-five independent jobs and Prism Route 3D export provenance. LOCAL_UNAVAILABLE_MODE: all local check-only/CAS/GUI/install remain DEFERRED_LOCAL_GATE; CAS requires explicit per-request approval. No Store submission.",
+    "next_action": "LOCAL_MODE restored. Exact-source sync and local identity check-only first; Signal Sprint GDK CAS remains gated on explicit per-request approval. No Store submission.",
     "local_commands": [
       "gh api repos/shihuiarenjinba-png/Windows-all-auto/git/ref/heads/codex/e2e-belt-connection-20261027 --jq .object.sha  # confirm exact current ledger HEAD",
       "gh api repos/shihuiarenjinba-png/Repository-Provisioner-game/git/ref/heads/codex/game-gdk-identity-contract-20261028 --jq .object.sha  # must equal e9ae4669f6739d34cad63764767328a3c796a5f9",
@@ -668,7 +668,7 @@
     }
   },
   "user_managed_identity_handoff": {
-    "policy": "USER_OBTAINS_OFFICIAL_IDENTITY_INDEPENDENTLY__36_MINUTE_LOOP_ONLY_VALIDATES_ROUTES_AND_RETURNS",
+    "policy": "USER_PROVIDED_IDENTITY_OR_APPROVED_LOCAL_PARTNER_CENTER_OPERATOR__EXACT_SOURCE_BINDING_REQUIRED__CAS_EXPLICIT_APPLY_ONLY",
     "states": [
       "PRE_IDENTITY_READY",
       "WAITING_USER_IDENTITY",
@@ -709,12 +709,16 @@
       "identity_binding_status": "NOT_YET_REQUIRED__PROMOTION_SOURCE_SHA_REQUEST_ID_PENDING"
     },
     "known_good_store_fixtures": "LOCAL_OPERATOR_OBSERVED_MATCH_NOT_CLOUD_AUTHENTICATION; USER_IDENTITY_LOCAL_JSON_SEPARATE_FROM_REFERENCE",
-    "no_partner_center_browser_or_token_management": true,
+    "no_partner_center_browser_or_token_management": false,
     "no_secret_data_in_github_receipts": true,
     "identity_version_asset_approvals_separate": true,
     "backlog": "verified-msix-local-qa-*; 30 days; local 20 packages/2 GiB; HOLD_LOCAL_CAPACITY preserves remote",
     "e2e_pass": false,
-    "ci_note": "PR19 four-way registration router HEAD 6210cb7b, Windows/Ubuntu CI #40638938248 SUCCESS. Central ledger updated; local Windows gates deferred, CAS and real GDK MSIXVC not executed."
+    "ci_note": "PR19 four-way registration router HEAD 6210cb7b, Windows/Ubuntu CI #40638938248 SUCCESS. Central ledger updated; local Windows gates deferred, CAS and real GDK MSIXVC not executed.",
+    "no_partner_center_token_cookie_session_management": true,
+    "local_partner_center_operator_allowed": true,
+    "local_operator_scope": "PRODUCT_CREATION_AND_IDENTITY_CAPTURE_ONLY__NO_STORE_SUBMIT_UPLOAD_PRICE_OR_CERTIFICATION",
+    "identity_acquisition_change_at_jst": "2026-10-28T17:44:00+09:00"
   },
   "quality_gates": {
     "pre_identity_ready": "PRE_IDENTITY_QUEUE_CONTRACT_PR19_WINDOWS_UBUNTU_CI_PASS__LOCAL_EXE_SHA_RECHECK_PENDING",
@@ -730,8 +734,8 @@
     "e2e_pass": false,
     "user_identity_received": true,
     "real_gdk_msixvc_pass": false,
-    "deferred_local_gate": true,
-    "local_unavailable_mode": true,
+    "deferred_local_gate": false,
+    "local_unavailable_mode": false,
     "registration_router_code_committed": true,
     "registration_router_ci_pass": true,
     "rotation_queue_code_committed": true,
@@ -744,13 +748,17 @@
     "local_source_code_sync_cloud_windows_pass": true,
     "local_source_code_sync_hardening_ci_pass": true,
     "local_source_code_sync_physical_pass": false,
-    "local_source_code_sync_scheduler_pass": false
+    "local_source_code_sync_scheduler_pass": false,
+    "partner_center_product_created_pass": false,
+    "partner_center_identity_capture_pass": false,
+    "partner_center_identity_route_pass": false,
+    "local_operator_active": true
   },
   "user_id_requests": {
     "schema_version": 1,
     "generated_at_utc": "2026-10-28T07:41:42.890Z",
-    "acquisition_owner": "USER_ONLY",
-    "storage_policy": "REVIEWABLE_NON_SECRET_USER_PROVIDED_REGISTRY_IN_PR19__PRIVATE_MATERIALIZED_FILE_AND_AUTH_EVIDENCE_LOCAL_ONLY",
+    "acquisition_owner": "LOCAL_PARTNER_CENTER_OPERATOR_PERMITTED_FROM_2026_10_28_17_44_JST",
+    "storage_policy": "LOCAL_OPERATOR_RECEIPT_AND_PRIVATE_IDENTITY_ONLY__NO_AUTH_COOKIES_TOKENS_SESSIONS_IN_GITHUB",
     "items": [
       {
         "product_name": "Signal Sprint",
@@ -772,7 +780,7 @@
           "msa_app_id"
         ],
         "status": "USER_IDENTITY_RECEIVED",
-        "next_gate": "CLOUD_ROUTER_AND_POST_IDENTITY_CONTRACT__DEFERRED_LOCAL_GATE",
+        "next_gate": "LOCAL_CODE_SYNC_AND_IDENTITY_CHECK_ONLY__EXPLICIT_CAS_APPROVAL_REQUIRED",
         "packaging_family": "GDK",
         "version_separate": true,
         "registration_type": "GDK_GAME",
@@ -811,11 +819,14 @@
           "PFN",
           "Package SID"
         ],
-        "status": "WAITING_USER_IDENTITY",
+        "status": "LOCAL_PARTNER_CENTER_OPERATOR_ACTIVE",
         "registration_type": "MSIX_OR_PWA_GAME",
         "partner_center_selection": "MSIX or PWA game",
         "version_separate": true,
-        "next_gate": "USER_MANAGED_IDENTITY_GATE__NO_CAS_BEFORE_LOCAL_VALIDATION_AND_EXPLICIT_APPROVAL"
+        "next_gate": "LOCAL_CODE_SYNC_EXACT_SHA_PASS__PARTNER_CENTER_EXACT_SEARCH__CREATE_IF_ZERO_AND_APPROVED__CAPTURE__VALIDATE__ROUTE__EXPLICIT_CAS_APPROVAL",
+        "user_manual_identity_entry_required": false,
+        "allow_local_product_creation": true,
+        "partner_center_product_status": "NOT_CREATED__USER_REPORTED_SEARCH_ZERO__NOT_INDEPENDENTLY_VERIFIED"
       }
     ],
     "excluded_known_good_store_products": [
@@ -824,12 +835,13 @@
       "shihuiarenjinba-png/-Screenshot-Image-Privacy-Cleaner"
     ],
     "exclusion_reason": "EXISTING_KNOWN_GOOD_STORE_IDENTITY_REFERENCE__NO_NEW_REQUEST__NO_CLOUD_AUTHENTICATION_CLAIM",
-    "pending_requests": [
+    "pending_requests": [],
+    "rotation_pending_3d": "PRE_IDENTITY_READY__USER_ID_REQUEST_ISSUED__WAITING_USER_IDENTITY",
+    "operator_active_requests": [
       "3d-prism-route-3d-15fdcb52e46e"
-    ],
-    "rotation_pending_3d": "PRE_IDENTITY_READY__USER_ID_REQUEST_ISSUED__WAITING_USER_IDENTITY"
+    ]
   },
-  "classification": "PRISM_ROUTE_3D_PRE_IDENTITY_READY__WAITING_USER_IDENTITY__SIGNAL_SPRINT_RECEIVED_NOT_CAS__APP_NOT_PROMOTED__LOCAL_DEFERRED__E2E_HOLD",
+  "classification": "LOCAL_MODE_RESTORED__3D_LOCAL_OPERATOR_ACTIVE_NOT_CREATED__SIGNAL_IDENTITY_RECEIVED_NOT_CAS__APP_NOT_PROMOTED__E2E_HOLD",
   "registration_router": {
     "schema_version": 1,
     "status": "WINDOWS_UBUNTU_CI_PASS__LOCAL_GATE_DEFERRED",
@@ -865,8 +877,8 @@
         "repository": "shihuiarenjinba-png/3d-game-factory",
         "registration_type": "MSIX_OR_PWA_GAME",
         "partner_center_selection": "MSIX or PWA game",
-        "identity_status": "WAITING_USER_IDENTITY",
-        "next_action": "USER_SUPPLIES_OFFICIAL_IDENTITY__PRIVATE_VALIDATION__EXPLICIT_CAS_APPROVAL"
+        "identity_status": "LOCAL_PARTNER_CENTER_OPERATOR_ACTIVE",
+        "next_action": "LOCAL_EXACT_SOURCE_SYNC_THEN_PARTNER_CENTER_EXACT_SEARCH_CREATE_IF_ZERO_CAPTURE_AND_VALIDATE"
       }
     ],
     "unresolved_policy": "HOLD_REGISTRATION_TYPE_UNRESOLVED",
@@ -875,21 +887,22 @@
     "ci_conclusion": "SUCCESS"
   },
   "local_availability": {
-    "mode": "LOCAL_UNAVAILABLE_MODE",
-    "status": "DEFERRED_LOCAL_GATE",
-    "deferred": [
+    "mode": "LOCAL_MODE",
+    "status": "USER_CONFIRMED_LOCAL_REOPENED__PHYSICAL_EXECUTION_NOT_YET_OBSERVED",
+    "reopened_at_jst": "2026-10-28T17:44:00+09:00",
+    "previously_deferred_gates_now_eligible": [
+      "LOCAL_CODE_SYNC_PHYSICAL",
       "LOCAL_CHECK_ONLY",
       "EXTRACTED_EXE_SHA_RECHECK",
       "LOCAL_IDENTITY_VALIDATION",
-      "CAS_APPLY_WITH_EXPLICIT_APPROVAL",
       "LOCAL_PULL",
       "CHECKER_ON_WINDOWS",
-      "GUI_INSTALL_QA",
-      "LOCAL_SOURCE_CODE_SYNC_PHYSICAL_RECEIPT"
+      "GUI_INSTALL_QA"
     ],
+    "actual_physical_receipt_verified": false,
     "cloud_progress_allowed": true,
-    "resume_condition": "USER_EXPLICITLY_REOPENS_LOCAL_WINDOWS",
-    "local_source_code_sync_exception_allowed": true
+    "cas_requires_explicit_per_request_approval": true,
+    "store_submission_authorized": false
   },
   "rotation_cohorts": {
     "schema_version": 1,
@@ -916,10 +929,10 @@
         "packaging_family": "MSIX",
         "registration_type": "MSIX_OR_PWA_GAME",
         "partner_center_selection": "MSIX or PWA game",
-        "identity_status": "WAITING_USER_IDENTITY",
+        "identity_status": "LOCAL_PARTNER_CENTER_OPERATOR_ACTIVE",
         "observed_pr_head": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
         "observed_ci_run_id": 40640963381,
-        "next_action": "User supplies official Store Identity for Prism Route 3D; retain private evidence, no Partner Center access by this loop. CAS only after validated input and explicit approval. Local Windows gates deferred.",
+        "next_action": "LOCAL_CODE_SYNC_PASS first; Partner Center exact name search, create only if exactly zero and allowed; capture and validate identity locally; CAS only with explicit approval.",
         "expected_pck_sha256": "2cd8af6496cf288bc3e6aef317e472b480f21d2052cbd4ae0cd171e6285ab1ef",
         "artifact_id": 12795476435,
         "artifact_run_id": 40640951915,
@@ -960,7 +973,7 @@
   "local_source_code_sync": {
     "schema_version": 1,
     "scope": "FACTORY_PRODUCT_SOURCE_ONLY__NO_PACKAGE_INSTALL_OR_CAS",
-    "status": "CLOUD_WINDOWS_EXACT_SHA_SMOKE_PASS_ON_HARDENED_HEAD__PHYSICAL_LOCAL_GATE_DEFERRED",
+    "status": "CLOUD_WINDOWS_EXACT_SHA_SMOKE_PASS__LOCAL_MODE_RESTORED__PHYSICAL_RECEIPT_PENDING",
     "worker": {
       "repository": "shihuiarenjinba-png/Windows-all-auto",
       "base_draft_pr": 22,
@@ -1017,7 +1030,7 @@
         "identity_status": "WAITING_USER_IDENTITY"
       }
     ],
-    "physical_local_status": "DEFERRED_LOCAL_GATE__NO_USER_PC_RECEIPT",
+    "physical_local_status": "LOCAL_MODE__NO_USER_PC_RECEIPT_OBSERVED",
     "local_receipt_verified": false,
     "local_task_scheduler_registered": false,
     "local_task_scheduler_run_verified": false,
@@ -1034,7 +1047,8 @@
     ],
     "no_store_submit": true,
     "no_cas": true,
-    "no_package_install": true
+    "no_package_install": true,
+    "next_action": "Execute PR23 hardened exact SHA sync on user Windows independently; verify receipt and idempotent reuse before installing 15-minute scheduler; do not claim local PASS from GitHub Actions."
   },
   "latest_provisioner_heads_observed": {
     "basis": "LIVE_GITHUB_BRANCH_HEAD_AND_COMMIT_CI__NOT_LOCAL_REVALIDATED",
@@ -1060,5 +1074,55 @@
       "ci_conclusion": "SUCCESS"
     },
     "caution": "Historical pinned CAS/check-only commands and evidence in this ledger remain historical; do not silently substitute these newer SHAs without review and local validation."
+  },
+  "partner_center_local_operator": {
+    "schema_version": 1,
+    "mode": "LOCAL_OPERATOR_ACTIVE__PHYSICAL_UI_NOT_ACCESSED_IN_THIS_RUN",
+    "product": "Prism Route 3D",
+    "slug": "prism-route-3d",
+    "request_id": "3d-prism-route-3d-15fdcb52e46e",
+    "source_repository": "shihuiarenjinba-png/3d-game-factory",
+    "source_branch": "codex/3d-canary-prism-route-20261028",
+    "source_sha": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
+    "registration_type": "MSIX_OR_PWA_GAME",
+    "partner_center_selection": "MSIX or PWA game",
+    "exact_display_name": "Prism Route 3D",
+    "allow_local_product_creation": true,
+    "search_zero_results": "USER_REPORTED__NOT_INDEPENDENTLY_VERIFIED",
+    "product_creation_status": "PARTNER_CENTER_PRODUCT_NOT_CREATED__NOT_VERIFIED",
+    "identity_capture_status": "NOT_CAPTURED",
+    "identity_route_status": "NOT_ROUTED",
+    "cas_status": "NOT_APPLIED",
+    "package_status": "HOLD",
+    "local_code_sync_required": true,
+    "local_code_sync_pass": false,
+    "local_browser_access_from_this_runtime": false,
+    "identity_required_fields": [
+      "store_id",
+      "reserved_display_name",
+      "identity_name",
+      "publisher",
+      "publisher_display_name",
+      "package_family_name",
+      "package_sid"
+    ],
+    "gdk_fields_required": false,
+    "state_machine": [
+      "PARTNER_CENTER_PRODUCT_NOT_CREATED",
+      "PARTNER_CENTER_PRODUCT_CREATED",
+      "IDENTITY_CAPTURED",
+      "IDENTITY_VALIDATED",
+      "IDENTITY_ROUTED",
+      "CAS_READY"
+    ],
+    "forbidden_actions": [
+      "STORE_SUBMISSION",
+      "CERTIFICATION_SUBMIT",
+      "PACKAGE_UPLOAD",
+      "PRICE_SETTING",
+      "CREDENTIAL_COOKIE_TOKEN_SESSION_LOGGING",
+      "UNAPPROVED_CAS"
+    ],
+    "next_action": "On physical Windows run exact-source sync; then use existing authenticated Edge session for exact Partner Center search and allowed creation. Do not infer success without Overview one exact match and identity details bound to local receipt."
   }
 }
