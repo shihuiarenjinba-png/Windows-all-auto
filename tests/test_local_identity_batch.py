@@ -40,6 +40,7 @@ def ledger():
             "factory_artifact_id": aid, "artifact_metadata_verified": True,
             "registration_type": "MSIX_OR_PWA_APP",
             "partner_center_selection": "MSIX or PWA app",
+            "identity_return_target": f"products/{slug}/store/approved-identity.json",
         })
         requests.append({
             "request_id": rid, "slug": slug, "repo": "shihuiarenjinba-png/AI-App-Factory",
