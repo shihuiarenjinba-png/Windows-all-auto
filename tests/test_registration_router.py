@@ -68,6 +68,47 @@ class RegistrationRouterTests(unittest.TestCase):
             "registration_type": "MSIX_OR_PWA_APP",
             "partner_center_selection": "MSIX or PWA app"})
 
+    def test_intermediate_exe_is_recorded_without_changing_msix_app_route(self):
+        result = router.registration_contract(
+            "APP", "new-app", "MSIX", "EXE_PRE_PACKAGE",
+            ["factory:msix", "provisioner:manifest-verified"], "NOT_RECEIVED")
+        self.assertEqual(result["registration_type"], "MSIX_OR_PWA_APP")
+        self.assertEqual(result["build_artifact_kind"], "EXE_PRE_PACKAGE")
+        self.assertEqual(result["registration_event"], "USER_ID_REQUEST")
+        self.assertTrue(result["user_registration_required"])
+        self.assertIn("MSIX_OR_PWA_APP", result["next_action"])
+
+    def test_received_identity_is_not_requested_again(self):
+        result = router.registration_contract(
+            "GAME", "signal-sprint", "GDK", "EXE_QA_UNSIGNED_NOT_MSIX",
+            ["factory:gdk", "provisioner:gdk"], "RECEIVED", "GDK_GAME")
+        self.assertFalse(result["user_registration_required"])
+        self.assertEqual(result["registration_event"],
+                         "PARTNER_CENTER_REGISTRATION_REQUEST")
+        self.assertEqual(result["next_action"],
+                         "NO_PARTNER_CENTER_ACTION_IDENTITY_ALREADY_RECEIVED")
+
+    def test_gdk_requires_xbox_fields_but_msix_app_does_not(self):
+        gdk = router.registration_contract(
+            "GAME", "signal-sprint", "GDK", "EXE",
+            ["factory:gdk"], "NOT_RECEIVED")
+        app = router.registration_contract(
+            "APP", "offline-notes-canary", "MSIX", "EXE",
+            ["factory:msix"], "NOT_RECEIVED")
+        self.assertEqual(gdk["required_identity_fields"][-3:],
+                         ["xbox_title_id", "xbox_scid", "msa_app_id"])
+        self.assertFalse(any("xbox" in item for item in app["required_identity_fields"]))
+
+    def test_gdk_handoff_missing_xbox_requirements_is_rejected(self):
+        route = router.registration_contract(
+            "GAME", "signal-sprint", "GDK", "EXE",
+            ["factory:gdk"], "NOT_RECEIVED")
+        job = {"kind": "GAME_SIGNAL_SPRINT", "slug": "signal-sprint", **route}
+        job["required_identity_fields"] = router.BASE_IDENTITY_FIELDS
+        with self.assertRaisesRegex(router.RegistrationHold,
+                                    "REGISTRATION_HANDOFF_CONFLICT"):
+            router.validate_handoff_job(job)
+
 
 if __name__ == "__main__":
     unittest.main()

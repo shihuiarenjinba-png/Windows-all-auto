@@ -590,6 +590,14 @@ def process(job: dict, args, state_dir: Path) -> dict:
         "identity_return": False, "msix_build": False, "github_backlog": False,
         "local_pull": False, "checker": False, "gui_qa": False, "e2e_pass": False,
     }
+    for key in (
+        "product_name", "product_type", "packaging_family", "build_artifact_kind",
+        "registration_type", "partner_center_selection", "registration_reason",
+        "registration_evidence", "user_registration_required", "store_identity_status",
+        "required_identity_fields", "registration_event", "next_action",
+    ):
+        if key in job:
+            result[key] = job[key]
     try:
         observed = head(job["repository"], job["branch"])
         if observed != job["source_sha"]:

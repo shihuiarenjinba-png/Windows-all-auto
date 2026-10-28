@@ -54,7 +54,11 @@ class PreIdentityQueueTests(unittest.TestCase):
         self.assertIsNone(job["package_path"])
         self.assertFalse(result["ready_for_cas"])
         self.assertEqual(result["deferred"][0]["status"], "NOT_YET_REQUIRED")
-        self.assertNotIn("store_id", str(result))
+        # Required field names are safe and needed for USER_ID_REQUEST, but no
+        # Store Identity values may leak into a queue that has not received one.
+        self.assertIn("store_id", job["required_identity_fields"])
+        self.assertNotIn("OkinawaDesktopTools", str(result))
+        self.assertNotIn("9N21MJM7S57P", str(result))
 
     def test_received_game_identity_still_queues_without_cas(self):
         data = fixture()

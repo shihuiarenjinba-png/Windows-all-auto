@@ -110,6 +110,22 @@ HEAD, then resolve the local state manually only after confirming the outcome.
 Identity discovery, authentication, return, MSIX build, GitHub backlog,
 local pull, Checker, GUI QA and E2E PASS are separate verdicts.
 
+## Partner Center registration handoff
+
+New PRE-IDENTITY jobs retain the Factory/Provisioner-derived final packaging
+contract and the human selection label. `scripts.registration_router` supports
+exactly four results: `MSIX_OR_PWA_APP`, `EXE_OR_MSI_APP`, `GDK_GAME`, and
+`MSIX_OR_PWA_GAME`. The scheduler validates that the machine value, human
+label, packaging family, evidence, required Identity fields, and next action
+still agree before it reads a package or delegates CAS.
+
+Signal Sprint is fixed to `GDK_GAME` even though the pre-package artifact is an
+EXE. A GDK Identity request includes Xbox Title ID, SCID and MSA App ID. MSIX
+apps do not request those fields. Offline Notes Canary is
+`MSIX_OR_PWA_APP`; its user-provided Identity is reference-only until formal
+Factory promote supplies an immutable request_id/source_sha/EXE, so no CAS and
+no repeat Partner Center registration request are allowed.
+
 ## USER_MANAGED_IDENTITY_GATE (required before CAS)
 
 - GAME Signal Sprint: the existing PR #17 worker expects the user's private

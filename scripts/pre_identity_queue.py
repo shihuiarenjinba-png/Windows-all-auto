@@ -77,10 +77,19 @@ def project(ledger: dict, head_reader=scheduler.head) -> dict:
     game_registration, game_selection = registration_router.resolve(
         "GAME", "signal-sprint", product.get("packaging_family"),
         product.get("registration_type"))
+    game_identity_status = ("RECEIVED" if identity_request["status"] == "USER_IDENTITY_RECEIVED"
+                            else "NOT_RECEIVED")
+    game_route = registration_router.registration_contract(
+        "GAME", "signal-sprint", product.get("packaging_family") or "GDK",
+        product["factory_exe_artifact_kind"], [
+            "factory_contract:" + product["source_repository"] + "@" + sha + ":packaging_family=GDK",
+            "provisioner_contract:" + provisioner + "@" + provisioner_sha + ":registration_type=GDK_GAME",
+        ], game_identity_status, game_registration)
     game = {
         "kind": "GAME_SIGNAL_SPRINT",
-        "registration_type": game_registration,
-        "partner_center_selection": game_selection,
+        "product_name": product.get("display_name") or "Signal Sprint",
+        "slug": "signal-sprint",
+        **game_route,
         "request_id": rid,
         "repository": product["source_repository"],
         "branch": product["source_branch"],
@@ -100,9 +109,14 @@ def project(ledger: dict, head_reader=scheduler.head) -> dict:
         app_registration, app_selection = registration_router.resolve(
             "APP", "offline-notes-canary", candidate.get("packaging_family"),
             candidate.get("registration_type"))
+        app_route = registration_router.registration_contract(
+            "APP", "offline-notes-canary", candidate.get("packaging_family") or "MSIX",
+            "EXE_PRE_PACKAGE_NOT_YET_PROMOTED", [
+                "factory_contract:AI-App-Factory:packaging_family=MSIX",
+                "user_identity_registry:offline-notes-canary:reference_available_unbound",
+            ], "IDENTITY_REFERENCE_AVAILABLE", app_registration)
         deferred.append({"product_name": "Offline Notes Canary",
-                         "registration_type": app_registration,
-                         "partner_center_selection": app_selection,
+                         "slug": "offline-notes-canary", **app_route,
                          "status": "NOT_YET_REQUIRED",
                          "reason": "APP_NOT_FORMALLY_PROMOTED_WITH_EXE"})
     else:
@@ -134,9 +148,17 @@ def project(ledger: dict, head_reader=scheduler.head) -> dict:
         app_registration, app_selection = registration_router.resolve(
             "APP", "offline-notes-canary", candidate.get("packaging_family"),
             candidate.get("registration_type"))
+        app_identity_status = ("RECEIVED" if app_request["status"] == "USER_IDENTITY_RECEIVED"
+                               else "NOT_RECEIVED")
+        app_route = registration_router.registration_contract(
+            "APP", "offline-notes-canary", candidate.get("packaging_family") or "MSIX",
+            "EXE_PRE_PACKAGE", [
+                "factory_contract:" + app_repo + "@" + app_sha + ":packaging_family=MSIX",
+                "factory_head_verified:" + app_sha,
+            ], app_identity_status, app_registration)
         jobs.append({"kind": "APP_CANARY", "request_id": app_rid,
-                     "registration_type": app_registration,
-                     "partner_center_selection": app_selection,
+                     "product_name": "Offline Notes Canary",
+                     "slug": "offline-notes-canary", **app_route,
                      "repository": app_repo, "branch": app_branch,
                      "source_sha": app_sha, "package_path": None,
                      "package_sha256": app_exe,
@@ -144,7 +166,16 @@ def project(ledger: dict, head_reader=scheduler.head) -> dict:
     for job in jobs:
         registration_router.validate_handoff_job(job)
     scheduler.validate_jobs({"jobs": jobs})
+    registration_requests = [{
+        key: item.get(key) for key in (
+            "registration_event", "product_name", "slug", "request_id", "repository",
+            "branch", "source_sha", "product_type", "packaging_family",
+            "build_artifact_kind", "registration_type", "partner_center_selection",
+            "registration_reason", "registration_evidence", "store_identity_status",
+            "user_registration_required", "required_identity_fields", "next_action")
+    } for item in jobs + deferred]
     return {"schema_version": 1, "jobs": jobs, "deferred": deferred,
+            "registration_requests": registration_requests,
             "identity_acquisition": "USER_ONLY",
             "cas": "DELEGATED_TO_EXISTING_PROVISIONER",
             "ready_for_cas": False}
@@ -186,6 +217,7 @@ def main(argv=None) -> int:
         result = {"status": "PRE_IDENTITY_QUEUE_DRAFT",
                   "jobs": len(queue["jobs"]),
                   "deferred": queue["deferred"],
+                  "registration_requests": queue["registration_requests"],
                   "local_exe_verification": "PENDING",
                   "identity": "WAITING_USER_IDENTITY",
                   "cas": "NOT_APPLIED"}

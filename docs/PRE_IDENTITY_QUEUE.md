@@ -25,6 +25,30 @@ SHA-256 against `package_sha256`, and set `package_path` to the real
 private local EXE path. The artifact ZIP SHA-256 and extracted EXE SHA-256
 are different checks; never substitute one for the other.
 
+Every new queue job also carries one registration handoff from Factory and
+Provisioner evidence through the local scheduler:
+
+- `product_type`, `packaging_family`, and `build_artifact_kind`
+- one of `MSIX_OR_PWA_APP`, `EXE_OR_MSI_APP`, `GDK_GAME`, or
+  `MSIX_OR_PWA_GAME`, plus the exact Partner Center selection label
+- `registration_reason` and immutable `registration_evidence`
+- `store_identity_status`, `required_identity_fields`, and
+  `user_registration_required`
+- `registration_event` and `next_action`
+
+The final packaging family decides the registration type. An intermediate EXE
+is preserved as `build_artifact_kind` evidence and never reclassifies an MSIX
+app as an EXE/MSI app. Missing or contradictory packaging evidence is
+`HOLD_REGISTRATION_TYPE_UNRESOLVED` or `REGISTRATION_*_CONFLICT`.
+
+`--check-only` prints `registration_requests` for the operator. A product with
+missing Identity emits `USER_ID_REQUEST` with the exact Partner Center choice
+and required fields. A product whose Identity was already received emits no
+repeat request. Signal Sprint therefore says `GDK game` and no new Partner
+Center action; Offline Notes Canary says `MSIX or PWA app` and waits for formal
+Factory promotion/source binding without requesting its already received
+Identity again.
+
 If the APP canary is not formally promoted with a source SHA, request_id,
 real EXE SHA and verified branch HEAD, it is deferred as NOT_YET_REQUIRED.
 No second APP, GAME or 3D product is created. Store known-good products
