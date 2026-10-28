@@ -465,9 +465,15 @@ def _run_checked(args, product: dict, repo: Path, local: Path, evidence: Path) -
         result = invoke(True, True)
     returned = result.get("github_return") or {}
     commit = returned.get("commit_sha")
+    official = result.get("official_identity") or {}
+    packaging_family = official.get("packaging_family")
+    if packaging_family not in (None, "GDK"):
+        raise Gate("CONFLICT", "UNSUPPORTED_PACKAGE_FAMILY")
+    expected_next_stage = ("BUILD_GDK_MSIXVC_FROM_PINNED_EXE"
+                           if packaging_family == "GDK" else "GITHUB_REBUILD_MSIX")
     if (returned.get("status") not in {"APPLIED", "EXISTING_VERIFIED"} or not isinstance(commit, str)
             or not SHA.fullmatch(commit) or result.get("status") != "HOLD"
-            or result.get("next_stage") != "GITHUB_REBUILD_MSIX"):
+            or result.get("next_stage") != expected_next_stage):
         raise Gate("HOLD", "PROVISIONER_CAS_NOT_CONFIRMED")
     package = result.get("package") or {}
     if (package.get("kind") != "exe" or package.get("sha256") != original):
@@ -488,7 +494,11 @@ def _run_checked(args, product: dict, repo: Path, local: Path, evidence: Path) -
                "provisioner_sha": args.provisioner_sha,
                "factory_return_commit_sha": commit, "package_sha256": package["sha256"],
                "signature_status": package.get("signature_status"),
-               "next_action": "Create separate codex/* Factory MSIX integration branch; do not move source_sha"}
+               "packaging_family": packaging_family or "MSIX",
+               "next_stage": expected_next_stage,
+               "next_action": ("Create separate codex/* Factory GDK MSIXVC build branch; do not move source_sha"
+                               if packaging_family == "GDK" else
+                               "Create separate codex/* Factory MSIX integration branch; do not move source_sha")}
     receipt_path = local / "identity-return-receipt.json"
     atomic_json(receipt_path, receipt)
     checkpoint(local, args, "WAITING_FACTORY_MSIX", factory_return_commit_sha=commit,
