@@ -129,7 +129,7 @@ class GithubOriginGateTests(unittest.TestCase):
     def test_existing_capture_matches_manual_oracle_but_not_authenticated(self):
         job = self.prepared()
         result = self.validated(job)
-        self.assertIn("MANUAL_REFERENCE_MATCH", result["status"])
+        self.assertIn("MANUAL_REFERENCE__AUTOMATED_UI_NOT_VERIFIED", result["status"])
         self.assertFalse(result["authenticated_partner_center_pass"])
         self.assertTrue(result["existing_scheduler_routing_pending"])
         self.assertFalse(result["cas_applied"])
