@@ -74,7 +74,8 @@ def _text(value):
 
 def expected_job(ledger: dict, slug: str) -> dict:
     operator = ledger.get("partner_center_local_operator")
-    if not isinstance(operator, dict) or operator.get("allow_local_product_creation") is not True:
+    if (not isinstance(operator, dict)
+            or type(operator.get("allow_local_product_creation")) is not bool):
         raise OperatorHold("LOCAL_OPERATOR_NOT_AUTHORIZED")
     if operator.get("mode", "").split("__")[0] != "LOCAL_OPERATOR_ACTIVE":
         raise OperatorHold("LOCAL_OPERATOR_NOT_ACTIVE")
@@ -134,8 +135,10 @@ def prepare(ledger: dict, receipt: dict, root: Path, slug: str = "prism-route-3d
         "schema_version": 1, **job,
         "status": "LOCAL_CODE_SYNC_PASS__PARTNER_CENTER_OPERATOR_READY",
         "snapshot_path": str(expected),
-        "partner_center_product_status": "UNVERIFIED_SEARCH_REQUIRED",
-        "allow_local_product_creation": True,
+        "partner_center_product_status": ("EXISTING_MANUAL_REFERENCE_REVERIFY"
+                                          if ledger["partner_center_local_operator"]["allow_local_product_creation"] is False
+                                          else "UNVERIFIED_SEARCH_REQUIRED"),
+        "allow_local_product_creation": ledger["partner_center_local_operator"]["allow_local_product_creation"],
         "create_only_after_exact_zero_results": True,
         "required_identity_fields": list(IDENTITY),
         "browser_action_performed": False,
@@ -156,6 +159,9 @@ def validate_capture(job: dict, captured: dict) -> dict:
             or captured["overview_exact_match_count"] != 1
             or captured["identity_details_observed"] is not True):
         raise OperatorHold("PRODUCT_CREATION_EVIDENCE_INCOMPLETE")
+    if (job.get("allow_local_product_creation") is False
+            and captured["creation_status"] != "REUSED_EXISTING"):
+        raise OperatorHold("HOLD_DUPLICATE_PRODUCT_CREATE_FORBIDDEN")
     if not all(_text(captured[key]) for key in IDENTITY):
         raise OperatorHold("IDENTITY_FIELD_INVALID")
     if (not re.fullmatch(r"[A-Za-z0-9]{8,32}", captured["store_id"])
