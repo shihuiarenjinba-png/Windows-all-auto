@@ -1,0 +1,50 @@
+name: Local code sync Windows smoke
+
+on:
+  push:
+    branches:
+      - codex/local-code-sync-smoke-20261028
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  exact-source-snapshots:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile worker
+        shell: pwsh
+        run: py -3 -m py_compile scripts/local_code_sync.py
+      - name: Download exact Factory source snapshots
+        shell: pwsh
+        run: |
+          $root = Join-Path $env:RUNNER_TEMP 'FactoryCodeMirror'
+          $receipt = Join-Path $env:RUNNER_TEMP 'code-sync-receipt.json'
+          py -3 -m scripts.local_code_sync --manifest tests/fixtures/local_code_sync_targets.json --root $root --receipt $receipt
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Get-Content $receipt
+          $data = Get-Content $receipt -Raw | ConvertFrom-Json
+          if ($data.status -ne 'PASS' -or $data.snapshots -ne 3 -or -not $data.exact_sha_verified) { throw 'first sync did not prove exact source retrieval' }
+          foreach ($p in $data.products) {
+            $head = git -C $p.path rev-parse HEAD
+            if ($head.Trim() -ne $p.source_sha) { throw "HEAD mismatch: $($p.slug)" }
+          }
+      - name: Repeat without modifying existing snapshots
+        shell: pwsh
+        run: |
+          $root = Join-Path $env:RUNNER_TEMP 'FactoryCodeMirror'
+          $receipt = Join-Path $env:RUNNER_TEMP 'code-sync-receipt-2.json'
+          py -3 -m scripts.local_code_sync --manifest tests/fixtures/local_code_sync_targets.json --root $root --receipt $receipt
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $data = Get-Content $receipt -Raw | ConvertFrom-Json
+          foreach ($p in $data.products) {
+            if ($p.status -ne 'REUSED_EXACT_SNAPSHOT') { throw "not idempotent: $($p.slug)" }
+          }
