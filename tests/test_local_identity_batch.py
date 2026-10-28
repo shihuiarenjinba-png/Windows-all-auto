@@ -144,6 +144,18 @@ class BatchTests(unittest.TestCase):
         self.assertEqual(job2["batch_index"], 2)
         self.assertEqual(claimed2["active_index"], 2)
 
+    def test_replay_same_completed_result_is_idempotent(self):
+        state, job = batch.claim_next(batch.discover(ledger(), spec()))
+        result = success_result(state, job)
+        completed = batch.complete_active(state, result)
+        replay = batch.complete_active(completed, result)
+        self.assertEqual(replay["processed_count"], 1)
+        self.assertEqual(replay["success_count"], 1)
+        self.assertEqual(replay["next_resume_index"], 2)
+        altered = dict(result, identity_return_commit_sha="b" * 40)
+        with self.assertRaisesRegex(batch.BatchHold, "REPLAY_CONFLICT"):
+            batch.complete_active(completed, altered)
+
     def test_cross_product_identity_stops_batch(self):
         state, job = batch.claim_next(batch.discover(ledger(), spec()))
         result = {key: job[key] for key in
