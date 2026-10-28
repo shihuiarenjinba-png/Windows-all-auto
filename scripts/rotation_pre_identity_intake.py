@@ -154,6 +154,23 @@ def project(ledger: dict) -> dict:
             and isinstance(requests.get("items"), list),
             "ROTATION_OR_REQUESTS_MISSING")
     items = requests["items"]
+    # Preflight duplicate IDs across every lane before per-job correlation.
+    # Otherwise the first cross-product request may mask a duplicate ID.
+    all_jobs = []
+    for field, maximum, _repository in LANES.values():
+        cohort = cohorts.get(field, [])
+        require(isinstance(cohort, list) and len(cohort) <= maximum,
+                "ROTATION_COHORT_CAPACITY_INVALID")
+        require(all(isinstance(item, dict) for item in cohort),
+                "ROTATION_JOB_NOT_OBJECT")
+        all_jobs.extend(cohort)
+    request_ids = [item.get("request_id") for item in all_jobs]
+    slugs = [item.get("slug") for item in all_jobs]
+    require(all(isinstance(x, str) and x for x in request_ids + slugs),
+            "ROTATION_JOB_IDENTITY_MISSING")
+    require(len(set(request_ids)) == len(request_ids)
+            and len(set(slugs)) == len(slugs),
+            "CROSS_PRODUCT_DUPLICATE_REQUEST_OR_SLUG")
     seen_requests, seen_slugs = set(), set()
     jobs = []
     counts = {"app_total_jobs": 0, "app_pre_identity_pass": 0,
