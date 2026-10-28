@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T02:37:16.979Z",
+  "updated_at_utc": "2026-10-28T02:37:26.163Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -220,7 +220,7 @@
     "identity_registry_status": "USER_IDENTITY_RECEIVED__REVIEWED_NON_SECRET_REFERENCE__NOT_LOCAL_VALIDATED",
     "provisioner_game_gdk_pr": {
       "draft_pr": 10,
-      "branch": "codex/signal-sprint-gdk-identity-20261028",
+      "branch": "codex/game-gdk-identity-contract-20261028",
       "head_sha": "ea82f47fefd605e72625839fcb89939c11436ffa",
       "ci_run_id": 40618790547,
       "ci_conclusion": "SUCCESS",
