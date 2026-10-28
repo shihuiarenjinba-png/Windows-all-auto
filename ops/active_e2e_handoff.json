@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T09:49:00Z",
+  "updated_at_utc": "2026-10-28T09:52:00Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -275,10 +275,10 @@
       "phase": "PRISM_ROUTE_3D_PRE_IDENTITY_READY__LOCAL_PARTNER_CENTER_OPERATOR_ACTIVE__NO_PHYSICAL_PROOF",
       "status": "HOLD",
       "factory_branch": "codex/3d-canary-prism-route-20261028",
-      "factory_head": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
+      "factory_head": "11417b75636ee18816028ffd5221884c4c9a9836",
       "provisioner_branch": "codex/e2e-belt-connection-20261027",
       "provisioner_head": "ce332d586d473e08b4c03808dfe84694fa55287e",
-      "next_action": "Existing Prism Route 3D product observed manually; do not recreate. Physical exact SHA and GitHub origin receipt, existing product capture, manual oracle comparison; no CAS without approval.",
+      "next_action": "Reconcile 3D source branch head advanced by approved-identity.json. Keep original PRE_IDENTITY source_sha immutable; do not mark CAS PASS without request approval and receipt.",
       "factory_ci_run_id": 40520641316,
       "factory_ci_conclusion": "SUCCESS",
       "dispatch_guard_pr": {
@@ -328,7 +328,9 @@
           "status": "QA_UNSIGNED_REAL_GODOT_MAKEAPPX_PASS__NOT_OFFICIAL_STORE_MSIX",
           "approved_identity": false,
           "real_store_msix_pass": false
-        }
+        },
+        "identity_return_commit_observed": "11417b75636ee18816028ffd5221884c4c9a9836",
+        "identity_return_status": "COMMIT_FILE_OBSERVED__CAS_RECEIPT_UNVERIFIED"
       }
     }
   },
@@ -832,7 +834,7 @@
         "registration_type": "MSIX_OR_PWA_GAME",
         "partner_center_selection": "MSIX or PWA game",
         "version_separate": true,
-        "next_gate": "PHYSICAL_CODE_SYNC__GITHUB_ORIGIN__EXISTING_PRODUCT_AUTO_CAPTURE__THEN_HOLD_3D_ROUTER_SCHEMA_UNTIL_RECONCILED",
+        "next_gate": "RECONCILE_OBSERVED_IDENTITY_COMMIT_WITH_CAS_APPROVAL_AND_LOCAL_CAPTURE__SOURCE_BRANCH_HEAD_CONFLICT",
         "user_manual_identity_entry_required": false,
         "allow_local_product_creation": false,
         "partner_center_product_status": "EXISTING_PRODUCT_MANUALLY_OBSERVED__AUTOMATED_CAPTURE_PENDING",
@@ -851,7 +853,7 @@
       "3d-prism-route-3d-15fdcb52e46e"
     ]
   },
-  "classification": "LOCAL_MODE__PRISM_EXISTING_PRODUCT_MANUAL_REFERENCE__AUTO_CAPTURE_PENDING__GITHUB_ORIGIN_GATE_PR26__E2E_HOLD",
+  "classification": "LOCAL_MODE__PRISM_IDENTITY_RETURN_FILE_OBSERVED__SOURCE_BRANCH_DRIFT_HOLD__NO_CAS_RECEIPT__E2E_HOLD",
   "registration_router": {
     "schema_version": 1,
     "status": "WINDOWS_UBUNTU_ROUTER_CI_PASS__LOCAL_MODE__PRISM_EXISTING_MANUAL_REFERENCE",
@@ -940,9 +942,9 @@
         "registration_type": "MSIX_OR_PWA_GAME",
         "partner_center_selection": "MSIX or PWA game",
         "identity_status": "LOCAL_OPERATOR_MANUAL_REFERENCE__AUTOMATED_CAPTURE_PENDING",
-        "observed_pr_head": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
+        "observed_pr_head": "11417b75636ee18816028ffd5221884c4c9a9836",
         "observed_ci_run_id": 40640963381,
-        "next_action": "Existing Prism product manually observed; prohibit duplicate create. GitHub-origin exact SHA physical receipt then existing-product Identity capture and oracle match.",
+        "next_action": "HOLD_REMOTE_HEAD_CONFLICT until original source SHA vs identity-return commit reconciled; never mutate pinned source SHA or auto-claim CAS.",
         "expected_pck_sha256": "2cd8af6496cf288bc3e6aef317e472b480f21d2052cbd4ae0cd171e6285ab1ef",
         "artifact_id": 12795476435,
         "artifact_run_id": 40640951915,
@@ -1133,7 +1135,7 @@
       "CREDENTIAL_COOKIE_TOKEN_SESSION_LOGGING",
       "UNAPPROVED_CAS"
     ],
-    "next_action": "Do not create Prism again. Physical Windows exact-source sync and clean central checkout; GitHub-origin queue job; Overview exact one existing product; View product identity; auto capture seven fields and compare manual oracle; route only after independent receipt.",
+    "next_action": "Prism source branch advanced by identity-return file commit. Do not recreate product, do not reset branch. Reconcile approval/receipt and source-vs-build HEAD; local code sync must fail closed on old branch pin.",
     "contract": {
       "draft_pr": 24,
       "branch": "codex/local-partner-center-operator-gate-20261028",
@@ -1168,7 +1170,7 @@
       "base_draft_pr": 24,
       "entrypoint": "python -m scripts.github_partner_center_handoff",
       "contract_ci": "LATEST_CI_IN_PROGRESS",
-      "physical_execution": "NOT_OBSERVED",
+      "physical_execution": "NOT_OBSERVED__SOURCE_BRANCH_HEAD_DRIFT",
       "queue_job_origin_required": "GITHUB_PRE_IDENTITY_QUEUE",
       "required_evidence": [
         "central_repository",
@@ -1211,6 +1213,25 @@
       "identity_route": "HOLD_3D_SCHEDULER_UNSUPPORTED_AND_VERSION_SCHEMA_UNRECONCILED",
       "cas": "NOT_APPLIED",
       "owner_next_action": "Coordinate reviewed GAME_3D single-writer route and separately approved Version evidence; do not invent fields or run CAS"
+    },
+    "source_branch_drift": {
+      "status": "HOLD_SOURCE_BRANCH_HEAD_ADVANCED_AFTER_PIN",
+      "pinned_pre_identity_source_sha": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
+      "observed_branch_head": "11417b75636ee18816028ffd5221884c4c9a9836",
+      "ahead_by": 1,
+      "behind_by": 0,
+      "only_added_file": "products/prism-route-3d/store/approved-identity.json",
+      "commit_url": "https://github.com/shihuiarenjinba-png/3d-game-factory/commit/11417b75636ee18816028ffd5221884c4c9a9836",
+      "commit_message": "store: return verified Partner Center identity for prism-route-3d",
+      "factory_ci_run_id": 40665159044,
+      "factory_ci_conclusion": "SUCCESS",
+      "identity_file_binding": "REQUEST_AND_PINNED_SOURCE_SHA_MATCH_REFERENCE",
+      "independent_local_capture_receipt": "NOT_OBSERVED",
+      "request_scoped_cas_approval": "NOT_OBSERVED",
+      "cas_receipt": "NOT_OBSERVED",
+      "cas_return_pass": false,
+      "local_code_sync_on_original_branch": "HOLD_REMOTE_HEAD_CONFLICT",
+      "reconciliation": "Preserve original immutable source_sha; treat new head as separate observed identity-return commit candidate, never silently replace source SHA or claim CAS PASS. Require authorized CAS receipt and independent capture evidence."
     }
   }
 }
