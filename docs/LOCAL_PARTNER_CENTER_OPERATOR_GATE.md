@@ -1,9 +1,9 @@
 # Local Partner Center operator gate — Prism Route 3D
 
 This branch is stacked on PR #23 (exact-source local code sync guards).
-It introduces a **local-only, fail-closed handoff contract**, not a Partner
-Center browser driver. It does not authenticate, create a product, read
-browser cookies/tokens, upload packages, submit to Store, or apply CAS.
+It provides the local fail-closed receipt boundary used by the physical
+Windows browser operator. It never reads browser cookies/tokens, uploads
+packages, submits to Store, or implements a second CAS writer.
 
 ## Prerequisites
 
@@ -28,7 +28,7 @@ and central allow_local_product_creation=true.
 
 If any check fails, stop at LOCAL_PARTNER_CENTER_OPERATOR_HOLD.
 
-## Browser operator procedure (not yet automated by this branch)
+## Browser operator procedure
 
 Use the existing authenticated Partner Center Edge session. Search the exact
 display name **Prism Route 3D** in Apps and games Overview. Only if the
@@ -51,8 +51,10 @@ source_branch, source_sha, registration_type, partner_center_selection,
 display_name), and exactly three evidence fields:
 creation_status ("CREATED" or "REUSED_EXISTING"),
 overview_exact_match_count (integer 1), and identity_details_observed (true).
-No other keys are permitted. These evidence values are operator attestations,
-not independently authenticated browser proof.
+No other keys are permitted. The `capture` command writes this strict local
+payload without printing Identity values to the terminal. `validate` binds it
+to the GitHub queue digest, exact source snapshot, central HEAD and return
+target, and optionally requires an exact operator reference comparison.
 
 ## Validate local capture
 
@@ -63,11 +65,29 @@ overwrite a different existing output. It rejects duplicate JSON keys,
 unknown/secret fields, mismatched product/source, ambiguous search count,
 missing fields, invalid Identity schema, and wrong reserved display name.
 
-**A validated local capture is not CAS_RETURN_PASS or authenticated
-Partner Center PASS.** The existing Identity scheduler/Provisioner must
-independently validate and route the payload, and the existing explicit
-request-scoped CAS approval must still be obtained. Version and brand assets
-remain separate approval gates. No Store submission is authorized.
+Schema validation by itself is not CAS return. A physical UI capture is marked
+authenticated only when the exact product count is one, all seven UI values
+are observed, the reference comparison is `MATCH`, and the GitHub/source
+binding remains exact. The existing Provisioner must still independently
+route it through the single writer. Version and brand assets remain separate
+approval gates. No Store submission is authorized.
+
+## 2026-10-28 physical Prism Route 3D retry
+
+- GitHub PRE_IDENTITY origin: `shihuiarenjinba-png/Windows-all-auto`, branch
+  `codex/e2e-belt-connection-20261027`, HEAD
+  `43dacc1747eb75002a54375ba79c4cecbfc138bf`.
+- Queue job digest: `7a4f4e282bc4bc78be18974539d8b33e3681282787ed82aa97463e7af5f604b8`.
+- Exact physical source snapshot was reused at
+  `15fdcb52e46e35e6de8e87c55af99719c21e09b9`.
+- Partner Center Overview exact search returned one existing product. No
+  duplicate product was created. Product Identity and reserved name were read
+  from the authenticated UI and matched the user-supplied reference.
+- Local receipt status:
+  `IDENTITY_CAPTURED__UI_MATCHED_REFERENCE__GITHUB_BOUND`.
+- Store submission, package upload, certification and price changes: zero.
+- Package Version is deliberately absent and remains
+  `PACKAGE_VERSION_GATE=HOLD`.
 
 Current status: LOCAL_MODE reopened by user; cloud exact-source smoke PASS;
 physical local source receipt NOT OBSERVED; Partner Center product creation,
