@@ -76,6 +76,17 @@ class HistoricalQueueProvenanceTests(unittest.TestCase):
         with self.assertRaisesRegex(op.OperatorHold, "DIGEST_CONFLICT"):
             provenance.verify(ledger(), old, claim)
 
+    def test_observed_prism_claim_is_not_replayable_from_historical_job(self):
+        # 2026-10-28 Identity commit claimed this digest for the historical
+        # central HEAD; replay the observed pre-existing-product policy.
+        old = ledger(allow=True)
+        claim = identity(old)
+        claim["queue_job_digest"] = (
+            "7a4f4e282bc4bc78be18974539d8b33e3681282787ed82aa97463e7af5f604b8"
+        )
+        with self.assertRaisesRegex(op.OperatorHold, "DIGEST_CONFLICT"):
+            provenance.verify(ledger(), old, claim)
+
     def test_wrong_source_identity_is_hold(self):
         old = ledger()
         claim = identity(old)
