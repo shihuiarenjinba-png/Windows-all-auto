@@ -74,7 +74,7 @@ class LocalCodeSyncTests(unittest.TestCase):
             (target / ".git").mkdir(parents=True)
             origin = "https://github.com/" + job["repository"] + ".git"
             ref = "refs/heads/" + job["branch"]
-            moved = "a" * 40 + "\\t" + ref
+            moved = "a" * 40 + "\t" + ref
             with patch.object(s, "_run", side_effect=[job["source_sha"], "", origin, moved]):
                 with self.assertRaisesRegex(s.SyncHold, "REMOTE_HEAD_CONFLICT"):
                     s._verify_existing(target, job)
@@ -86,7 +86,7 @@ class LocalCodeSyncTests(unittest.TestCase):
             (target / ".git").mkdir(parents=True)
             origin = "https://github.com/" + job["repository"] + ".git"
             ref = "refs/heads/" + job["branch"]
-            exact = job["source_sha"] + "\\t" + ref
+            exact = job["source_sha"] + "\t" + ref
             with patch.object(s, "_run", side_effect=[job["source_sha"], "", origin, exact]) as run:
                 self.assertEqual(s._verify_existing(target, job)["status"], "REUSED_EXACT_SNAPSHOT")
             self.assertEqual(run.call_count, 4)
