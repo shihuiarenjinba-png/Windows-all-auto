@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T15:34:46.987Z",
+  "updated_at_utc": "2026-10-28T15:35:40.949Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -789,7 +789,9 @@
     "focus_local_operator_pass": false,
     "focus_new_product_gate_pass": false,
     "focus_local_code_sync_pass": false,
-    "focus_github_queue_origin_pass": false
+    "focus_github_queue_origin_pass": false,
+    "focus_rotation_intake_contract_ci_pass": true,
+    "focus_rotation_source_sync_contract_ci_pass": true
   },
   "user_id_requests": {
     "schema_version": 1,
@@ -1204,9 +1206,26 @@
       "draft_pr": 32,
       "branch": "codex/focus-app-operator-intake-20261029",
       "head_sha": "b962910095adcdbcee7fb0c1ef12e4fb3575c9e8",
-      "status": "DRAFT_CI_PENDING",
+      "status": "DRAFT_CI_SUCCESS_WINDOWS_UBUNTU__LOCAL_NOT_EXECUTED",
       "physical_local_execution": "NOT_OBSERVED",
-      "github_origin_verified": false
+      "github_origin_verified": false,
+      "ci_runs": [
+        {
+          "id": 40717257728,
+          "name": "Rotation local source-sync plan contract",
+          "conclusion": "SUCCESS"
+        },
+        {
+          "id": 40717257704,
+          "name": "Rotation PRE_IDENTITY intake contract",
+          "conclusion": "SUCCESS"
+        },
+        {
+          "id": 40717257797,
+          "name": "Windows-all-auto Offline QA",
+          "conclusion": "SUCCESS"
+        }
+      ]
     }
   },
   "latest_provisioner_heads_observed": {
@@ -1236,7 +1255,7 @@
   },
   "partner_center_local_operator": {
     "schema_version": 1,
-    "mode": "PRISM_GITHUB_RETURN_VERIFIED__FOCUS_LOCAL_NEW_PRODUCT_OPERATOR_PENDING",
+    "mode": "LOCAL_OPERATOR_ACTIVE__EXISTING_PRODUCT_REUSE_ONLY__PRISM_GATE1_GITHUB_RETURN_VERIFIED",
     "product": "Prism Route 3D",
     "slug": "prism-route-3d",
     "request_id": "3d-prism-route-3d-15fdcb52e46e",
@@ -1515,7 +1534,8 @@
       "remote_source_head_verified": true,
       "local_source_sync_verified": false,
       "operator_capture_pass": false
-    }
+    },
+    "focus_app_operator_support": "PR32_DRAFT_CI_SUCCESS__LOCAL_GITHUB_QUEUE_AND_UI_PENDING"
   },
   "rotation_source_sync_plan": {
     "schema_version": 1,
@@ -1560,6 +1580,7 @@
     "next_action": "PR32 CI then Focus-only manifest; physical local code sync receipt and queue digest, then Partner Center exact search/new reserve/Identity capture. Prism Gate1 returned, Version HOLD.",
     "manifest_isolation_pr": 31,
     "manifest_isolation_status": "DRAFT_CI_PASS__PHYSICAL_LOCAL_HOLD",
-    "focus_app_operator_intake_pr": 32
+    "focus_app_operator_intake_pr": 32,
+    "focus_app_operator_intake_ci": "SUCCESS_WINDOWS_UBUNTU"
   }
 }
