@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T07:43:24.053Z",
+  "updated_at_utc": "2026-10-28T07:44:41.009Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -394,7 +394,7 @@
       "local_tests": "67_PASS",
       "next_action": "Do not rerun without new runner/workflow evidence; require real MSIX before Checker product QA"
     },
-    "last_12_minute_update": "3D Factory real export run 40640951915 + authenticated Provisioner byte correlation run 40650334549 SUCCESS; Provisioner QA_UNSIGNED MakeAppx run 40650334577 SUCCESS (not Store MSIX); PR20 real 3D queue regression CI 40651840374 SUCCESS. Prism Route 3D now WAITING_USER_IDENTITY; local gates deferred.",
+    "last_12_minute_update": "Live GitHub authenticated read-only rotation queue #40651980253 SUCCESS on Windows and Ubuntu: exactly 2 jobs (Signal Sprint + Prism Route 3D), 1 deferred APP, 3D PRE_IDENTITY_PASS=1 WAITING_USER_IDENTITY=1, CAS NOT_APPLIED. Offline QA #40651987339 SUCCESS. No local GUI/install/Checker.",
     "next_repo": "shihuiarenjinba-png/Windows-all-auto",
     "next_branch": "codex/e2e-belt-connection-20261027",
     "next_head_sha": "628b9c9e6913512b2e5b4175a50f1636ef3c81e9",
@@ -632,7 +632,7 @@
     "rotation_queue": {
       "draft_pr": 20,
       "branch": "codex/e2e-rotation-queue-20261028-1536",
-      "head_sha": "def28d6093614f8edd982ff665402a21a567252d",
+      "head_sha": "ecff5d8532981edd2e597cfa7bd08954f026a898",
       "base_pr": 19,
       "ci_status": "SUCCESS_WINDOWS_UBUNTU",
       "files": [
@@ -649,10 +649,22 @@
       "identity_acquisition": "USER_ONLY",
       "previous_green_head": "97cfe12042fbf60b8ea0d66d2b7ed95edee3cf4f",
       "previous_green_ci_run_id": 40645674673,
-      "latest_ci_run_id": 40651840374,
+      "latest_ci_run_id": 40651987339,
       "artifact_contract": "EXE_SHA256_PLUS_ARTIFACT_ID_RUN_ID_ZIP_SHA256_AND_EXACT_SOURCE_BUILD_HEAD",
-      "ci_url": "https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/40651840374",
-      "real_three_d_canary_regression": "PASS__PINNED_FACTORY_ARTIFACT_ID_12795476435__NO_CAS"
+      "ci_url": "https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/40651987339",
+      "real_three_d_canary_regression": "PASS__PINNED_FACTORY_ARTIFACT_ID_12795476435__NO_CAS",
+      "live_cloud_check": {
+        "run_id": 40651980253,
+        "conclusion": "SUCCESS_WINDOWS_AND_UBUNTU",
+        "result": "PRE_IDENTITY_ROTATION_DRAFT",
+        "jobs": 2,
+        "deferred": 1,
+        "game": "SIGNAL_SPRINT_USER_IDENTITY_RECEIVED",
+        "three_d": "PRISM_ROUTE_3D_WAITING_USER_IDENTITY",
+        "cas": "NOT_APPLIED",
+        "identity_acquisition": "USER_ONLY",
+        "local_windows_qa": "DEFERRED_LOCAL_GATE"
+      }
     }
   },
   "user_managed_identity_handoff": {
@@ -727,7 +739,8 @@
     "rotation_real_product_pass": false,
     "three_d_pre_identity_ready": true,
     "three_d_waiting_user_identity": true,
-    "three_d_qa_unsigned_makeappx_pass": true
+    "three_d_qa_unsigned_makeappx_pass": true,
+    "rotation_live_cloud_check_pass": true
   },
   "user_id_requests": {
     "schema_version": 1,
