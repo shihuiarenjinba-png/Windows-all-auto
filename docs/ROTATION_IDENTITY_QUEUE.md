@@ -34,6 +34,7 @@ another product's Identity.
 A READY rotation entry requires `product_type`, `slug`, `request_id`,
 `source_repository`, `source_branch`, `source_sha`,
 `factory_build_branch`, `factory_build_head`, `expected_exe_sha256`,
+`artifact_id`, `artifact_run_id`, `artifact_zip_sha256`,
 `artifact_provenance=REAL_WINDOWS_EXPORT_VERIFIED`, final
 `packaging_family`, `registration_type`, and
 `partner_center_selection`. Both source and build branch HEADs must match
