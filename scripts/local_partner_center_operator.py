@@ -96,7 +96,8 @@ def expected_job(ledger: dict, slug: str) -> dict:
         raise OperatorHold("LOCAL_OPERATOR_NOT_ACTIVE")
     cohorts = ledger.get("rotation_cohorts", {})
     candidates = []
-    for field, inferred_type in (("app_jobs", "APP"), ("three_d_jobs", "GAME_3D")):
+    for field, inferred_type in (("app_jobs", "APP"), ("three_d_jobs", "GAME_3D"),
+                                 ("game_jobs", "GAME")):
         lane = cohorts.get(field, [])
         if not isinstance(lane, list):
             raise OperatorHold("ROTATION_COHORT_INVALID")
@@ -109,6 +110,8 @@ def expected_job(ledger: dict, slug: str) -> dict:
     target = f"products/{slug}/store/approved-identity.json"
     job = {k: source.get(k) for k in BINDING}
     job["product_type"] = source.get("product_type", source["_inferred_product_type"])
+    if job["product_type"] != source["_inferred_product_type"]:
+        raise OperatorHold("CROSS_LANE_PRODUCT_TYPE_CONFLICT")
     requests = (ledger.get("user_id_requests") or {}).get("items", [])
     request_matches = [x for x in requests if isinstance(x, dict)
                        and x.get("request_id") == source.get("request_id")]
@@ -129,6 +132,10 @@ def expected_job(ledger: dict, slug: str) -> dict:
         if (job["source_repository"] != "shihuiarenjinba-png/3d-game-factory"
                 or job["registration_type"] not in {"MSIX_OR_PWA_GAME", "GDK_GAME"}):
             raise OperatorHold("GAME_3D_JOB_ROUTING_CONFLICT")
+    elif job["product_type"] == "GAME":
+        if (job["source_repository"] != "shihuiarenjinba-png/AI-Game-Factory"
+                or job["registration_type"] not in {"GDK_GAME", "MSIX_OR_PWA_GAME"}):
+            raise OperatorHold("GAME_JOB_ROUTING_CONFLICT")
     else:
         raise OperatorHold("UNSUPPORTED_PRODUCT_TYPE")
     if job["identity_return_target"] != target:
@@ -165,7 +172,7 @@ def prepare(ledger: dict, receipt: dict, root: Path, slug: str | None = None, *,
             central_repository: str | None = None, central_branch: str | None = None,
             central_head_sha: str | None = None, batch: dict | None = None) -> dict:
     if slug is None:
-        ready = [x for field in ("app_jobs", "three_d_jobs")
+        ready = [x for field in ("app_jobs", "three_d_jobs", "game_jobs")
                  for x in ledger.get("rotation_cohorts", {}).get(field, [])
                  if isinstance(x, dict) and x.get("status") == "PRE_IDENTITY_READY"]
         if len(ready) != 1 or not _text(ready[0].get("slug")):
