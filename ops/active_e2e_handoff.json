@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T06:43:29.478Z",
+  "updated_at_utc": "2026-10-28T06:45:04.740Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -381,7 +381,7 @@
     "last_12_minute_update": "3D Factory PR13 Prism Route 3D one-canary HEAD 15fdcb52 CI #40640963381 SUCCESS; 3D Provisioner HEAD 1e7c6083 CI #40643856745 SUCCESS; GAME Provisioner PR10 HEAD 392dbc4d CI #40642197806 SUCCESS; APP Provisioner HEAD 99a06968 CI #40642147303 SUCCESS. PR20 rotation queue CI pending. No real 3D PRE_IDENTITY_READY.",
     "next_repo": "shihuiarenjinba-png/Windows-all-auto",
     "next_branch": "codex/e2e-rotation-queue-20261028-1536",
-    "next_head_sha": "cfe900e7f31f8c82aec289262d7a6a5f3e79f1c2",
+    "next_head_sha": "db0d6325a3737d23f7066778713d1d7a339f1ca7",
     "alternate_safety_branch": "codex/game-identity-idempotency-20261027",
     "alternate_safety_head_sha": "6ed37a7c3a9d5f9d989626b4ee5e9a70c0630ff7",
     "no_new_product": true,
@@ -516,7 +516,8 @@
       "ci_run_id": 40640963381,
       "ci_conclusion": "SUCCESS",
       "status": "CANDIDATE_EXPORT_EVIDENCE_PENDING"
-    }
+    },
+    "rotation_queue_ci": "PR20 previous HEAD 97cfe120 CI #40645674673 SUCCESS; current HEAD db0d6325 CI #40645730254 QUEUED; do not mark latest PASS yet."
   },
   "multi_product_identity_scheduler": {
     "status": "PRE_IDENTITY_REQUEST_BINDING_HARDENED__WINDOWS_UBUNTU_CI_SUCCESS__LOCAL_WINDOWS_NOT_EXECUTED",
@@ -615,18 +616,25 @@
     "rotation_queue": {
       "draft_pr": 20,
       "branch": "codex/e2e-rotation-queue-20261028-1536",
-      "head_sha": "cfe900e7f31f8c82aec289262d7a6a5f3e79f1c2",
+      "head_sha": "db0d6325a3737d23f7066778713d1d7a339f1ca7",
       "base_pr": 19,
-      "ci_status": "IN_PROGRESS_NOT_YET_PASS",
+      "ci_status": "LATEST_QUEUED__PREVIOUS_GREEN",
       "files": [
         "scripts/rotation_identity_queue.py",
-        "tests/test_rotation_identity_queue.py"
+        "scripts/local_identity_scheduler.py",
+        "scripts/registration_router.py",
+        "tests/test_rotation_identity_queue.py",
+        "docs/ROTATION_IDENTITY_QUEUE.md"
       ],
       "app_max_jobs": 5,
       "three_d_max_jobs": 1,
       "execution": "ONE_AT_A_TIME_LOCAL_ONLY__CLOUD_DRAFT_MULTI_JOB",
       "cas": "DELEGATED_NOT_APPLIED",
-      "identity_acquisition": "USER_ONLY"
+      "identity_acquisition": "USER_ONLY",
+      "previous_green_head": "97cfe12042fbf60b8ea0d66d2b7ed95edee3cf4f",
+      "previous_green_ci_run_id": 40645674673,
+      "latest_ci_run_id": 40645730254,
+      "artifact_contract": "EXE_SHA256_PLUS_ARTIFACT_ID_RUN_ID_ZIP_SHA256_AND_EXACT_SOURCE_BUILD_HEAD"
     }
   },
   "user_managed_identity_handoff": {
