@@ -87,6 +87,27 @@ class RotationSourceSyncPlanTests(unittest.TestCase):
         self.assertFalse(plan["physical_local_sync_pass"])
         self.assertFalse(plan["github_queue_origin_verified"])
 
+    def test_focus_local_operator_manifest_excludes_drifted_prism(self):
+        data = make_ledger(app_count=1, three_d=True, drift=True)
+        request = data["user_id_requests"]["items"][0]
+        request["status"] = "LOCAL_PARTNER_CENTER_OPERATOR_ACTIVE"
+        request["allow_local_product_creation"] = True
+        job = data["rotation_cohorts"]["app_jobs"][0]
+        job["slug"] = request["slug"] = "focus-session-desk"
+        job["request_id"] = request["request_id"] = "app-focus-session-desk-8b00bc4e9082"
+        job["source_branch"] = request["source_branch"] = "codex/app-cohort-focus-controller-20261028"
+        job["source_sha"] = request["source_sha"] = "8b00bc4e90828c4282463826873aa8dfd2eb93f4"
+        job["factory_build_head"] = job["source_sha"]
+        job["expected_exe_sha256"] = "04b2d7e4eae215855217285f07f8835ffe3cf60dc5aab24ede141d28f563416d"
+        request["identity_return_target"] = "products/focus-session-desk/store/approved-identity.json"
+        plan = build_plan(data)
+        self.assertEqual([x["slug"] for x in plan["sync_manifest"]["jobs"]],
+                         ["focus-session-desk"])
+        self.assertEqual(plan["metrics"]["source_head_drift_holds"], 1)
+        self.assertEqual(plan["metrics"]["app_total_jobs"], 1)
+        self.assertFalse(plan["remote_head_verified"])
+        self.assertFalse(plan["physical_local_sync_pass"])
+
     def test_matching_three_d_source_can_be_rechecked_by_worker(self):
         plan = build_plan(make_ledger(app_count=0, drift=False))
         self.assertEqual(len(plan["sync_manifest"]["jobs"]), 1)

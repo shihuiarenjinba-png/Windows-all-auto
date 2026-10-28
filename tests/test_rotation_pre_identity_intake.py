@@ -129,6 +129,32 @@ class RotationIntakeTests(unittest.TestCase):
         with self.assertRaisesRegex(intake.IntakeHold, "OPERATOR_CREATION_POLICY"):
             intake.project(data)
 
+    def test_focus_app_operator_is_independent_of_drifted_prism(self):
+        data = ledger(apps=1)
+        app_request = data["user_id_requests"]["items"][0]
+        app_request["status"] = "LOCAL_PARTNER_CENTER_OPERATOR_ACTIVE"
+        app_request["allow_local_product_creation"] = True
+        output = intake.project(data)
+        app = next(x for x in output["jobs"] if x["lane"] == "APP")
+        prism = next(x for x in output["jobs"] if x["lane"] == "GAME_3D")
+        self.assertEqual(app["source_head_status"], "REMOTE_HEAD_RECHECK_REQUIRED")
+        self.assertEqual(app["identity_status"], "LOCAL_PARTNER_CENTER_OPERATOR_ACTIVE")
+        self.assertEqual(prism["source_head_status"], "HOLD_SOURCE_BRANCH_HEAD_DRIFT")
+        self.assertEqual(output["metrics"]["app_waiting_user_identity"], 1)
+        self.assertFalse(app["identity_validated"])
+        self.assertFalse(app["cas_return_pass"])
+
+    def test_app_operator_requires_explicit_creation_policy(self):
+        data = ledger(apps=1, include_3d=False)
+        req = data["user_id_requests"]["items"][0]
+        req["status"] = "LOCAL_PARTNER_CENTER_OPERATOR_ACTIVE"
+        req.pop("allow_local_product_creation")
+        with self.assertRaisesRegex(intake.IntakeHold, "OPERATOR_CREATION_POLICY_MISSING"):
+            intake.project(data)
+        req["allow_local_product_creation"] = "true"
+        with self.assertRaisesRegex(intake.IntakeHold, "OPERATOR_CREATION_POLICY_MISSING"):
+            intake.project(data)
+
     def test_identity_received_is_not_validated(self):
         data = ledger(apps=1, include_3d=False)
         data["user_id_requests"]["items"][0]["status"] = "USER_IDENTITY_RECEIVED"

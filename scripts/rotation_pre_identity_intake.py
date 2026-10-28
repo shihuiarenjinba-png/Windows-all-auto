@@ -119,8 +119,13 @@ def _validate(job: dict, request: dict, lane: str, repository: str) -> dict:
                        "LOCAL_PARTNER_CENTER_OPERATOR_ACTIVE"),
             "IDENTITY_REQUEST_STATUS_UNRESOLVED")
     if status == "LOCAL_PARTNER_CENTER_OPERATOR_ACTIVE":
-        require(lane == "GAME_3D" and request.get("allow_local_product_creation") is False,
-                "OPERATOR_CREATION_POLICY_UNSAFE")
+        # An APP can enter the operator lane only with an explicit creation
+        # policy. Existing 3D Prism remains reuse-only; never infer approval.
+        require(type(request.get("allow_local_product_creation")) is bool,
+                "OPERATOR_CREATION_POLICY_MISSING")
+        if lane == "GAME_3D":
+            require(request["allow_local_product_creation"] is False,
+                    "OPERATOR_CREATION_POLICY_UNSAFE")
     observed = job.get("observed_pr_head")
     drift = observed is not None and observed != sha
     if observed is not None:
@@ -200,7 +205,8 @@ def project(ledger: dict) -> dict:
             if lane == "APP":
                 counts["app_total_jobs"] += 1
                 counts["app_pre_identity_pass"] += 1
-                counts["app_waiting_user_identity"] += projected["identity_status"] == "WAITING_USER_IDENTITY"
+                counts["app_waiting_user_identity"] += projected["identity_status"] in (
+                    "WAITING_USER_IDENTITY", "LOCAL_PARTNER_CENTER_OPERATOR_ACTIVE")
                 counts["app_identity_received"] += projected["identity_status"] == "USER_IDENTITY_RECEIVED"
             else:
                 counts["3d_total_jobs"] += 1
