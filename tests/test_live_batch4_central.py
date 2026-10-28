@@ -23,6 +23,8 @@ class LiveCentralPreflight(unittest.TestCase):
         spec = {
             "schema_version": 1, "batch_id": "ci-cloud-preflight-only",
             "trigger_origin": batch.TRIGGER_ORIGIN, "automation_id": batch.AUTOMATION_ID,
+            "dispatch_origin": batch.DISPATCH_ORIGIN,
+            "execution_origin": "MANUAL_WINDOWS_TERMINAL",
             "central_repository": batch.CENTRAL_REPOSITORY,
             "central_branch": batch.CENTRAL_BRANCH,
             "central_head_sha": EXPECTED_CENTRAL_HEAD,
@@ -38,7 +40,7 @@ class LiveCentralPreflight(unittest.TestCase):
         self.assertEqual(state["discovered_count"], 4)
         self.assertEqual([x["slug"] for x in state["products"]], [x[1] for x in EXPECTED])
         self.assertEqual(len({x["queue_job_digest"] for x in state["products"]}), 4)
-        self.assertFalse(state["schedule_trigger_proven"])
+        self.assertFalse(state["execution_trigger_proven"])
         self.assertEqual(state["processed_count"], 0)
         self.assertEqual(state["store_submission"], 0)
 
