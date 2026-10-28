@@ -72,7 +72,11 @@ def validate_handoff_job(job: dict) -> None:
     kind = job.get("kind")
     if kind == "GAME_SIGNAL_SPRINT" and registration != "GDK_GAME":
         raise RegistrationHold("REGISTRATION_TYPE_CONFLICT")
-    if kind == "APP_CANARY" and registration != "MSIX_OR_PWA_APP":
+    if kind == "APP_CANARY" and registration not in {"MSIX_OR_PWA_APP", "EXE_OR_MSI_APP"}:
+        raise RegistrationHold("REGISTRATION_TYPE_CONFLICT")
+    if kind == "APP_CANARY" and job.get("slug") == "offline-notes-canary" and registration != "MSIX_OR_PWA_APP":
+        raise RegistrationHold("REGISTRATION_TYPE_CONFLICT")
+    if kind == "GAME_3D_CANARY" and registration not in {"MSIX_OR_PWA_GAME", "GDK_GAME"}:
         raise RegistrationHold("REGISTRATION_TYPE_CONFLICT")
     if kind == "STORE_KNOWN_GOOD" and registration not in {
             "MSIX_OR_PWA_APP", "EXE_OR_MSI_APP"}:

@@ -192,13 +192,17 @@ def validate_jobs(config: dict) -> list[dict]:
         if rid in seen:
             raise Hold("CONFLICT", "DUPLICATE_REQUEST_ID")
         seen.add(rid)
-        if job.get("kind") not in {"STORE_KNOWN_GOOD", "GAME_SIGNAL_SPRINT", "APP_CANARY"}:
+        if job.get("kind") not in {"STORE_KNOWN_GOOD", "GAME_SIGNAL_SPRINT", "APP_CANARY", "GAME_3D_CANARY"}:
             raise Hold("CONFLICT", "UNKNOWN_JOB_KIND")
         if job["kind"] == "STORE_KNOWN_GOOD":
             if repo.split("/", 1)[1] not in STORE_REFS or branch != STORE_REFS[repo.split("/", 1)[1]]:
                 raise Hold("CONFLICT", "STORE_REFERENCE_BRANCH_MISMATCH")
         if job["kind"] == "GAME_SIGNAL_SPRINT" and repo != OWNER + "/AI-Game-Factory":
             raise Hold("CONFLICT", "GAME_FACTORY_MISMATCH")
+        if job["kind"] == "APP_CANARY" and repo != OWNER + "/AI-App-Factory":
+            raise Hold("CONFLICT", "APP_FACTORY_MISMATCH")
+        if job["kind"] == "GAME_3D_CANARY" and repo != OWNER + "/3d-game-factory":
+            raise Hold("CONFLICT", "THREE_D_FACTORY_MISMATCH")
         try:
             registration_router.validate_handoff_job(job)
         except registration_router.RegistrationHold as exc:
@@ -605,7 +609,7 @@ def process(job: dict, args, state_dir: Path) -> dict:
                 })
             result.update(game_job(job, observed, args, mark_cas_start))
         else:
-            raise Hold("HOLD", "APP_CANARY_REFERENCE_AND_IDENTITY_NOT_READY")
+            raise Hold("HOLD", "ROTATION_IDENTITY_ROUTING_NOT_YET_APPROVED")
     except Hold as exc:
         # If the worker was launched, its result is uncertain even when it
         # returned an error. Preserve the durable marker until manual review.

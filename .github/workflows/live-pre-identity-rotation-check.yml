@@ -1,0 +1,37 @@
+name: Live PRE-IDENTITY rotation read-only check
+
+on:
+  push:
+    branches:
+      - codex/e2e-rotation-queue-20261028-1536
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cloud-check-only:
+    name: Live central ledger queue / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify read-only GitHub CLI and current central ledger
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh --version
+          python -m scripts.rotation_identity_queue --check-only > "$RUNNER_TEMP/rotation-result.json"
+          python -c 'import json,sys; d=json.load(open(sys.argv[1],encoding="utf-8")); assert d["status"]=="PRE_IDENTITY_ROTATION_DRAFT",d; assert d["jobs"]==2,d; assert d["rotation_metrics"]["3d_pre_identity_pass"]==1,d; assert d["rotation_metrics"]["3d_waiting_identity"]==1,d; assert d["cas"]=="NOT_APPLIED",d; print("PASS: exact GAME + Prism Route 3D queue; Identity waiting, no CAS")' "$RUNNER_TEMP/rotation-result.json"
+          cat "$RUNNER_TEMP/rotation-result.json"
