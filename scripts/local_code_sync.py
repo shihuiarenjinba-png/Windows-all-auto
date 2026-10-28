@@ -69,9 +69,11 @@ def _normalize_job(raw: dict) -> dict:
         raise SyncHold("invalid immutable source SHA")
     if not isinstance(slug, str) or not SLUG_RE.fullmatch(slug):
         raise SyncHold("invalid slug")
-    if request_id is not None and (not isinstance(request_id, str)
-            or len(request_id) > 180 or any(ch in request_id for ch in "\r\n\0")):
-        raise SyncHold("invalid request_id")
+    # Every queued source snapshot must retain a nonempty, unambiguous job ID.
+    # An optional ID lets a manually edited manifest bypass product correlation.
+    if (not isinstance(request_id, str)
+            or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,179}", request_id)):
+        raise SyncHold("invalid or missing request_id")
     return {
         "repository": repository,
         "branch": branch,
@@ -81,22 +83,42 @@ def _normalize_job(raw: dict) -> dict:
     }
 
 
+def _unique_json_pairs(pairs: list[tuple[str, object]]) -> dict:
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise SyncHold("duplicate manifest JSON key")
+        result[key] = value
+    return result
+
+
 def load_jobs(path: Path) -> list[dict]:
-    if not path.is_file() or path.stat().st_size > 512_000:
-        raise SyncHold("manifest missing or too large")
+    if _unsafe_path(path) or not path.is_file() or path.stat().st_size > 512_000:
+        raise SyncHold("manifest missing, linked, or too large")
     try:
-        data = json.loads(path.read_text(encoding="utf-8"))
+        data = json.loads(path.read_text(encoding="utf-8"),
+                          object_pairs_hook=_unique_json_pairs)
     except (OSError, UnicodeError, json.JSONDecodeError) as exc:
         raise SyncHold("invalid manifest JSON") from exc
-    raw = data.get("jobs") if isinstance(data, dict) else None
-    if raw is None and isinstance(data, dict):
+    if not isinstance(data, dict) or data.get("schema_version") != 1:
+        raise SyncHold("unsupported manifest schema")
+    raw = data.get("jobs")
+    if raw is None:
         raw = data.get("items")
     if not isinstance(raw, list) or not 1 <= len(raw) <= MAX_ITEMS:
         raise SyncHold("manifest must contain 1..20 jobs/items")
     jobs = [_normalize_job(item) for item in raw]
-    keys = [(j["repository"], j["branch"], j["source_sha"], j["slug"]) for j in jobs]
-    if len(keys) != len(set(keys)):
-        raise SyncHold("duplicate source snapshot target")
+    # Reject cross-product aliasing before any network access or snapshot writes.
+    # A single request_id/slug/remote branch must never name two different jobs.
+    for name, keys in (
+        ("request_id", [j["request_id"] for j in jobs]),
+        ("slug", [j["slug"] for j in jobs]),
+        ("source branch", [(j["repository"], j["branch"]) for j in jobs]),
+        ("source snapshot target",
+         [(j["repository"], j["branch"], j["source_sha"], j["slug"]) for j in jobs]),
+    ):
+        if len(keys) != len(set(keys)):
+            raise SyncHold("duplicate " + name + " in source sync manifest")
     return jobs
 
 
