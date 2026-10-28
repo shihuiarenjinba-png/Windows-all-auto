@@ -26,8 +26,7 @@ def binding():
 
 
 def ledger():
-    source = {key: value for key, value in binding().items()
-              if key != "identity_return_target"}
+    source = dict(binding())
     return {
         "partner_center_local_operator": {"mode": "LOCAL_OPERATOR_ACTIVE__BATCH"},
         "rotation_cohorts": {"app_jobs": [{**source, "status": "PRE_IDENTITY_READY"}],
@@ -150,6 +149,45 @@ class OperatorGateTests(unittest.TestCase):
         value["rotation_cohorts"]["game_jobs"] = [game]
         value["user_id_requests"]["items"][0]["repo"] = game["source_repository"]
         with self.assertRaisesRegex(op.OperatorHold, "GAME_JOB_ROUTING_CONFLICT"):
+            op.expected_job(value, SLUG)
+
+    def test_missing_queue_return_target_fails_closed(self):
+        value = ledger()
+        value["rotation_cohorts"]["app_jobs"][0].pop("identity_return_target")
+        with self.assertRaisesRegex(op.OperatorHold, "IDENTITY_TARGET_CONFLICT"):
+            op.expected_job(value, SLUG)
+
+    def test_queue_return_target_must_match_user_request(self):
+        value = ledger()
+        value["rotation_cohorts"]["app_jobs"][0]["identity_return_target"] = (
+            "products/other/store/approved-identity.json")
+        with self.assertRaisesRegex(op.OperatorHold, "IDENTITY_TARGET_CONFLICT"):
+            op.expected_job(value, SLUG)
+
+    def test_global_create_permission_cannot_authorize_product(self):
+        value = ledger()
+        value["partner_center_local_operator"]["allow_local_product_creation"] = True
+        value["user_id_requests"]["items"][0].pop("allow_local_product_creation")
+        with self.assertRaisesRegex(op.OperatorHold, "LOCAL_OPERATOR_NOT_AUTHORIZED"):
+            op.expected_job(value, SLUG)
+
+    def test_cross_lane_duplicate_request_id_rejected(self):
+        value = ledger()
+        duplicate = dict(value["rotation_cohorts"]["app_jobs"][0])
+        duplicate.update(slug="other-product", identity_return_target=(
+            "products/other-product/store/approved-identity.json"),
+            product_type="GAME_3D")
+        value["rotation_cohorts"]["three_d_jobs"].append(duplicate)
+        with self.assertRaisesRegex(op.OperatorHold, "CROSS_LANE_REQUEST_ID_CONFLICT"):
+            op.expected_job(value, SLUG)
+
+    def test_cross_lane_duplicate_identity_target_rejected(self):
+        value = ledger()
+        duplicate = dict(value["rotation_cohorts"]["app_jobs"][0])
+        duplicate.update(slug="other-product", request_id="other-request-123",
+                         product_type="GAME_3D")
+        value["rotation_cohorts"]["three_d_jobs"].append(duplicate)
+        with self.assertRaisesRegex(op.OperatorHold, "CROSS_LANE_IDENTITY_TARGET_CONFLICT"):
             op.expected_job(value, SLUG)
 
     def test_capture_produces_versionless_github_bound_receipt(self):
