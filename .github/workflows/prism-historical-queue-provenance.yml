@@ -1,0 +1,31 @@
+name: Prism historical queue provenance contract
+
+on:
+  push:
+    branches:
+      - codex/prism-historical-queue-provenance-20261028
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  provenance-contract:
+    name: Read-only provenance / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile historical provenance audit
+        run: python -m py_compile scripts/prism_queue_provenance_audit.py
+      - name: Run fail-closed provenance regression tests
+        run: python -m unittest discover -s tests -p test_prism_queue_provenance_audit.py -v
