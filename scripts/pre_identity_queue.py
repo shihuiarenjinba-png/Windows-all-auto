@@ -66,6 +66,13 @@ def project(ledger: dict, head_reader=scheduler.head) -> dict:
     require(len(matching) == 1
             and matching[0].get("status") == "WAITING_USER_IDENTITY",
             "USER_ID_REQUEST_NOT_CORRELATED")
+    identity_request = matching[0]
+    require(identity_request.get("repo") == product["source_repository"]
+            and identity_request.get("source_branch") == product["source_branch"]
+            and identity_request.get("source_sha") == sha
+            and identity_request.get("identity_target")
+                == "%LOCALAPPDATA%/FactoryIdentityWorker/secure/<request_id>/official-identity.json",
+            "USER_ID_REQUEST_BINDING_MISMATCH")
     game = {
         "kind": "GAME_SIGNAL_SPRINT",
         "request_id": rid,
@@ -102,11 +109,22 @@ def project(ledger: dict, head_reader=scheduler.head) -> dict:
                 and scheduler.BRANCH.fullmatch(app_branch) is not None
                 and head_reader(app_repo, app_branch) == app_sha,
                 "APP_SOURCE_HEAD_CONFLICT")
+        app_requests = [item for item in items if item.get("request_id") == app_rid]
+        require(len(app_requests) == 1
+                and app_requests[0].get("status") == "WAITING_USER_IDENTITY",
+                "APP_USER_ID_REQUEST_NOT_CORRELATED")
+        app_request = app_requests[0]
+        require(app_request.get("repo") == app_repo
+                and app_request.get("source_branch") == app_branch
+                and app_request.get("source_sha") == app_sha
+                and app_request.get("identity_target")
+                    == "%LOCALAPPDATA%/FactoryIdentityWorker/secure/<request_id>/official-identity.json",
+                "APP_USER_ID_REQUEST_BINDING_MISMATCH")
         jobs.append({"kind": "APP_CANARY", "request_id": app_rid,
                      "repository": app_repo, "branch": app_branch,
                      "source_sha": app_sha, "package_path": None,
                      "package_sha256": app_exe,
-                     "identity_target": candidate.get("identity_target")})
+                     "identity_target": app_request["identity_target"]})
     scheduler.validate_jobs({"jobs": jobs})
     return {"schema_version": 1, "jobs": jobs, "deferred": deferred,
             "identity_acquisition": "USER_ONLY",
