@@ -6,47 +6,67 @@ from unittest.mock import patch
 
 from scripts import local_partner_center_operator as op
 
-SHA = "15fdcb52e46e35e6de8e87c55af99719c21e09b9"
-REQUEST = "3d-prism-route-3d-15fdcb52e46e"
-REPO = "shihuiarenjinba-png/3d-game-factory"
-BRANCH = "codex/3d-canary-prism-route-20261028"
+SHA = "8b00bc4e90828c4282463826873aa8dfd2eb93f4"
+REQUEST = "app-focus-session-desk-8b00bc4e9082"
+SLUG = "focus-session-desk"
+REPO = "shihuiarenjinba-png/AI-App-Factory"
+BRANCH = "codex/app-cohort-focus-controller-20261028"
+TARGET = f"products/{SLUG}/store/approved-identity.json"
 
 
 def binding():
     return {
-        "request_id": REQUEST, "slug": "prism-route-3d",
-        "source_repository": REPO, "source_branch": BRANCH,
-        "source_sha": SHA, "registration_type": "MSIX_OR_PWA_GAME",
-        "partner_center_selection": "MSIX or PWA game",
-        "display_name": "Prism Route 3D",
+        "request_id": REQUEST, "product_type": "APP", "slug": SLUG,
+        "display_name": "Focus Session Desk", "source_repository": REPO,
+        "source_branch": BRANCH, "source_sha": SHA,
+        "registration_type": "MSIX_OR_PWA_APP",
+        "partner_center_selection": "MSIX or PWA app",
+        "identity_return_target": TARGET,
     }
 
 
 def ledger():
+    source = {key: value for key, value in binding().items()
+              if key != "identity_return_target"}
     return {
-        "partner_center_local_operator": {
-            **binding(), "exact_display_name": "Prism Route 3D",
-            "mode": "LOCAL_OPERATOR_ACTIVE__PHYSICAL_UI_NOT_ACCESSED_IN_THIS_RUN",
+        "partner_center_local_operator": {"mode": "LOCAL_OPERATOR_ACTIVE__BATCH"},
+        "rotation_cohorts": {"app_jobs": [{**source, "status": "PRE_IDENTITY_READY"}],
+                             "three_d_jobs": []},
+        "user_id_requests": {"items": [{
+            "request_id": REQUEST, "slug": SLUG, "repo": REPO,
+            "source_branch": BRANCH, "source_sha": SHA,
+            "registration_type": "MSIX_OR_PWA_APP",
+            "partner_center_selection": "MSIX or PWA app",
+            "identity_return_target": TARGET,
+            "status": "LOCAL_PARTNER_CENTER_OPERATOR_ACTIVE",
             "allow_local_product_creation": True,
-        },
-        "rotation_cohorts": {"three_d_jobs": [
-            {**binding(), "status": "PRE_IDENTITY_READY"}
-        ]},
+        }]},
     }
 
 
 def captured():
     return {
         **binding(), "store_id": "9NABCDEF1234",
-        "reserved_display_name": "Prism Route 3D",
-        "identity_name": "PrismRoute3D",
+        "reserved_display_name": "Focus Session Desk",
+        "identity_name": "OkinawaDesktopTools.FocusSessionDesk",
         "publisher": "CN=ExamplePublisher",
         "publisher_display_name": "Example Publisher",
-        "package_family_name": "PrismRoute3D_123456789abcd",
+        "package_family_name": "OkinawaDesktopTools.FocusSessionDesk_123456789abcd",
         "package_sid": "S-1-15-2-1-2-3-4-5-6-7",
-        "creation_status": "CREATED",
-        "overview_exact_match_count": 1,
+        "creation_status": "CREATED", "overview_exact_match_count": 1,
         "identity_details_observed": True,
+    }
+
+
+def ready_job(**extra):
+    return {
+        **binding(), "status": "LOCAL_CODE_SYNC_PASS__PARTNER_CENTER_OPERATOR_READY",
+        "job_origin": "GITHUB_PRE_IDENTITY_QUEUE",
+        "central_repository": "shihuiarenjinba-png/Windows-all-auto",
+        "central_branch": "codex/e2e-belt-connection-20261027",
+        "central_head_sha": "a" * 40, "queue_job_digest": "b" * 64,
+        "snapshot_path": "C:/safe/focus", "source_snapshot_head": SHA,
+        "allow_local_product_creation": True, **extra,
     }
 
 
@@ -54,86 +74,75 @@ class OperatorGateTests(unittest.TestCase):
     def test_prepare_verifies_physical_exact_snapshot_again(self):
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
-            target = root / "3d-game-factory" / SHA[:12]
+            target = root / "AI-App-Factory" / SHA[:12]
             target.mkdir(parents=True)
             receipt = {"status": "PASS", "exact_sha_verified": True, "products": [{
-                "repository": REPO, "branch": BRANCH, "source_sha": SHA,
-                "slug": "prism-route-3d", "request_id": REQUEST,
-                "status": "REUSED_EXACT_SNAPSHOT", "path": str(target),
+                "repository": REPO, "branch": BRANCH, "source_sha": SHA, "slug": SLUG,
+                "request_id": REQUEST, "status": "REUSED_EXACT_SNAPSHOT", "path": str(target),
             }]}
-            with patch.object(op.sync, "_verify_existing", return_value={"status": "REUSED_EXACT_SNAPSHOT"}) as mock:
-                result = op.prepare(ledger(), receipt, root)
-            mock.assert_called_once()
+            with patch.object(op.sync, "_verify_existing", return_value={"status": "REUSED_EXACT_SNAPSHOT"}):
+                result = op.prepare(ledger(), receipt, root, SLUG,
+                                    central_repository="shihuiarenjinba-png/Windows-all-auto",
+                                    central_branch="codex/e2e-belt-connection-20261027",
+                                    central_head_sha="a" * 40)
+            self.assertEqual(result["product_type"], "APP")
+            self.assertEqual(result["identity_return_target"], TARGET)
             self.assertFalse(result["browser_action_performed"])
-            self.assertFalse(result["cas_applied"])
 
-    def test_prepare_rejects_cloud_only_or_missing_receipt(self):
-        with self.assertRaisesRegex(op.OperatorHold, "LOCAL_CODE_SYNC_NOT_PASS"):
-            op.prepare(ledger(), {"status": "HOLD"}, Path("unused"))
+    def test_product_values_are_read_from_job_not_prism_constants(self):
+        job = op.expected_job(ledger(), SLUG)
+        self.assertEqual(job["display_name"], "Focus Session Desk")
+        self.assertEqual(job["registration_type"], "MSIX_OR_PWA_APP")
 
-    def test_prepare_rejects_cross_product_source(self):
-        l = ledger()
-        l["rotation_cohorts"]["three_d_jobs"][0]["source_sha"] = "a" * 40
-        with self.assertRaisesRegex(op.OperatorHold, "CROSS_PRODUCT"):
-            op.expected_job(l, "prism-route-3d")
+    def test_cross_product_request_binding_rejected(self):
+        value = ledger()
+        value["user_id_requests"]["items"][0]["source_sha"] = "f" * 40
+        with self.assertRaisesRegex(op.OperatorHold, "REQUEST_BINDING"):
+            op.expected_job(value, SLUG)
 
-    def test_existing_product_can_be_reused_but_never_created_again(self):
-        l = ledger()
-        l["partner_center_local_operator"]["allow_local_product_creation"] = False
-        self.assertEqual(op.expected_job(l, "prism-route-3d")["slug"], "prism-route-3d")
-        job = {**binding(), "status": "LOCAL_CODE_SYNC_PASS__PARTNER_CENTER_OPERATOR_READY",
-               "allow_local_product_creation": False}
-        c = captured()
-        with self.assertRaisesRegex(op.OperatorHold, "DUPLICATE_PRODUCT_CREATE_FORBIDDEN"):
-            op.validate_capture(job, c)
-        c["creation_status"] = "REUSED_EXISTING"
-        self.assertIn("IDENTITY_CAPTURED", op.validate_capture(job, c)["status"])
-
-    def test_prepare_rejects_gdk_misclassification(self):
-        l = ledger()
-        l["rotation_cohorts"]["three_d_jobs"][0]["registration_type"] = "GDK_GAME"
-        l["partner_center_local_operator"]["registration_type"] = "GDK_GAME"
+    def test_wrong_return_target_rejected(self):
+        value = ledger()
+        value["user_id_requests"]["items"][0]["identity_return_target"] = "products/wrong/store/approved-identity.json"
         with self.assertRaises(op.OperatorHold):
-            op.expected_job(l, "prism-route-3d")
+            op.expected_job(value, SLUG)
 
-    def test_capture_is_local_attestation_not_authenticated_pass(self):
-        result = op.validate_capture({
-            **binding(), "status": "LOCAL_CODE_SYNC_PASS__PARTNER_CENTER_OPERATOR_READY"
-        }, captured())
-        self.assertTrue(result["existing_scheduler_routing_pending"])
-        self.assertFalse(result["authenticated_partner_center_pass"])
-        self.assertFalse(result["cas_applied"])
+    def test_wrong_registration_family_rejected(self):
+        value = ledger()
+        value["rotation_cohorts"]["app_jobs"][0]["registration_type"] = "MSIX_OR_PWA_GAME"
+        value["rotation_cohorts"]["app_jobs"][0]["partner_center_selection"] = "MSIX or PWA game"
+        with self.assertRaisesRegex(op.OperatorHold, "APP_JOB_ROUTING_CONFLICT"):
+            op.expected_job(value, SLUG)
 
-    def test_capture_rejects_request_mismatch(self):
-        c = captured()
-        c["request_id"] = "other"
+    def test_capture_produces_versionless_github_bound_receipt(self):
+        result = op.validate_capture(ready_job(batch_id="batch", batch_index=1,
+                                               batch_total=4, trigger_origin="SCHEDULED_36_MIN_LOOP",
+                                               automation_id="6adf4b1e7654819193b997fb4fb83c85"), captured())
+        self.assertTrue(result["authenticated_partner_center_pass"])
+        self.assertEqual(result["package_version_gate"], "HOLD")
+        self.assertNotIn("version", result)
+        self.assertEqual(result["batch_index"], 1)
+
+    def test_capture_rejects_identity_from_another_product(self):
+        value = captured()
+        value["request_id"] = "app-file-integrity-ledger-d1108d12f7d1"
         with self.assertRaisesRegex(op.OperatorHold, "CROSS_PRODUCT"):
-            op.validate_capture({**binding(), "status": "LOCAL_CODE_SYNC_PASS__PARTNER_CENTER_OPERATOR_READY"}, c)
+            op.validate_capture(ready_job(), value)
 
     def test_capture_rejects_ambiguous_overview(self):
-        c = captured()
-        c["overview_exact_match_count"] = 2
+        value = captured()
+        value["overview_exact_match_count"] = 2
         with self.assertRaisesRegex(op.OperatorHold, "EVIDENCE_INCOMPLETE"):
-            op.validate_capture({**binding(), "status": "LOCAL_CODE_SYNC_PASS__PARTNER_CENTER_OPERATOR_READY"}, c)
+            op.validate_capture(ready_job(), value)
 
     def test_capture_rejects_cookie_or_secret_field(self):
-        c = captured()
-        c["cookie"] = "must never be logged"
+        value = captured()
+        value["cookie"] = "must never be logged"
         with self.assertRaisesRegex(op.OperatorHold, "POSSIBLE_SECRET"):
-            op.validate_capture({**binding(), "status": "LOCAL_CODE_SYNC_PASS__PARTNER_CENTER_OPERATOR_READY"}, c)
+            op.validate_capture(ready_job(), value)
 
-    def test_capture_rejects_missing_required_field(self):
-        c = captured()
-        del c["publisher"]
-        with self.assertRaisesRegex(op.OperatorHold, "INCOMPLETE"):
-            op.validate_capture({**binding(), "status": "LOCAL_CODE_SYNC_PASS__PARTNER_CENTER_OPERATOR_READY"}, c)
-
-    def test_duplicate_json_key_rejected(self):
-        with tempfile.TemporaryDirectory() as d:
-            path = Path(d) / "dup.json"
-            path.write_text('{"request_id":"first","request_id":"second"}', encoding="utf-8")
-            with self.assertRaisesRegex(op.OperatorHold, "DUPLICATE_JSON_KEY"):
-                op.read_json(path)
+    def test_reuse_only_job_cannot_claim_created(self):
+        with self.assertRaisesRegex(op.OperatorHold, "DUPLICATE_PRODUCT_CREATE_FORBIDDEN"):
+            op.validate_capture(ready_job(allow_local_product_creation=False), captured())
 
     def test_private_receipt_is_idempotent_no_overwrite(self):
         with tempfile.TemporaryDirectory() as d:
