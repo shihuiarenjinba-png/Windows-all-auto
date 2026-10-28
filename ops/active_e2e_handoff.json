@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T16:45:00Z",
+  "updated_at_utc": "2026-10-28T16:43:20.581Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -1001,7 +1001,7 @@
       "app-offline-image-inventory-desk-16b6a772952c"
     ]
   },
-  "classification": "APP_BATCH_4_GITHUB_ARTIFACT_BYTES_AND_CLOUD_DISCOVER_CI_PASS__PR34_HARDENED__LOCAL_SCHEDULED_UI_AND_CAS_HOLD__E2E_HOLD",
+  "classification": "APP_BATCH_4_CLOUD_PREIDENTITY_AND_PINNED_CENTRAL_DISCOVER_PASS__PR34_CI_GREEN__LOCAL_BATCH_NOT_STARTED__E2E_HOLD",
   "registration_router": {
     "schema_version": 1,
     "status": "WINDOWS_UBUNTU_ROUTER_CI_PASS__LOCAL_MODE__PRISM_EXISTING_MANUAL_REFERENCE",
@@ -1751,10 +1751,10 @@
       "app_identity_return_pr": 11,
       "app_identity_return_ci_run_id": 40723564890,
       "hardening_pr": 34,
-      "hardening_head": "de3b0194479b74052065d2061ea2c79c17d91f2e",
-      "hardening_ci_run": 40728494123,
-      "hardening_offline_qa_run": 40728493558,
-      "hardening_status": "DRAFT_CI_SUCCESS_WINDOWS_UBUNTU__LIVE_CENTRAL_DISCOVER_4__NO_LOCAL_UI"
+      "hardening_head": "4f74757809af72b2513d6999d5f0912b6efbd71f",
+      "hardening_ci_run": 40728641133,
+      "hardening_offline_qa_run": 40728641235,
+      "hardening_status": "DRAFT_CI_SUCCESS_WINDOWS_UBUNTU__PINNED_LIVE_CENTRAL_DISCOVER_4__NO_LOCAL_UI"
     }
   },
   "rotation_intake_contract": {
@@ -1873,7 +1873,7 @@
     "store_submission": 0,
     "package_upload": 0,
     "package_version_gate": "HOLD",
-    "status": "CLOUD_DISCOVER_4_OF_4_CI_PASS__LOCAL_SCHEDULE_TRIGGER_NOT_PROVEN__LOCAL_UI_NOT_STARTED",
+    "status": "CLOUD_DISCOVER_4_OF_4_CI_PASS__LOCAL_SCHEDULE_AND_UI_UNPROVEN__PARTIAL_NOT_STARTED",
     "preflight_evidence": "GITHUB_BRANCH_HEAD_MATCH_4__ARTIFACT_ZIP_DIGEST_MATCH_4__EXTRACTED_EXE_SHA256_BYTES_MATCH_4",
     "code_contracts": {
       "windows_all_auto_pr": 33,
@@ -1883,9 +1883,9 @@
       "app_provisioner_head": "edf2896a4405ee51e0771a75111fa11c36aef572",
       "app_provisioner_ci_run": 40723564890,
       "windows_all_auto_hardening_pr": 34,
-      "windows_all_auto_hardening_head": "de3b0194479b74052065d2061ea2c79c17d91f2e",
-      "windows_all_auto_hardening_ci_run": 40728494123,
-      "windows_all_auto_hardening_offline_qa_run": 40728493558,
+      "windows_all_auto_hardening_head": "4f74757809af72b2513d6999d5f0912b6efbd71f",
+      "windows_all_auto_hardening_ci_run": 40728641133,
+      "windows_all_auto_hardening_offline_qa_run": 40728641235,
       "windows_all_auto_hardening_ci_conclusion": "SUCCESS_WINDOWS_UBUNTU"
     },
     "products": [
@@ -1999,7 +1999,7 @@
       }
     ],
     "next_action": "Use PR34 reviewed single-flight contract; create trusted saved-schedule-to-local invocation evidence, verify physical exact-source snapshots and UI capture, then APP PR11 CAS and replay. Do not convert CI-only discover into local PASS.",
-    "cloud_discover_contract_run_id": 40728494123,
+    "cloud_discover_contract_run_id": 40728641133,
     "cloud_discover_contract_ci": "SUCCESS_WINDOWS_UBUNTU",
     "cloud_discover_from_pinned_central_commit": "0fe4dc510b37b0574f96d13bc95ade6ef1635032",
     "cloud_discover_status": "BATCH_DISCOVERED_4_IN_GITHUB_ACTIONS_WINDOWS_AND_UBUNTU__NOT_LOCAL_PC"
