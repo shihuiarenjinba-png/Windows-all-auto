@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T05:36:17.724Z",
+  "updated_at_utc": "2026-10-28T05:36:40.130Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
   "active_product": {
     "lane": "GAME",
     "slug": "signal-sprint",
-    "phase": "USER_IDENTITY_RECEIVED__REGISTRATION_GDK_GAME_ROUTER_CI_PENDING__DEFERRED_LOCAL_GATE__CAS_NOT_APPLIED",
+    "phase": "USER_IDENTITY_RECEIVED__GDK_REGISTRATION_ROUTER_WINDOWS_UBUNTU_CI_PASS__DEFERRED_LOCAL_GATE__CAS_NOT_APPLIED",
     "status": "HOLD",
     "request_id": "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e",
     "product_type": "GAME",
@@ -588,7 +588,8 @@
       "cas": "NOT_APPLIED"
     },
     "registration_router_head_sha": "6210cb7bfdbd3d207d6ead70a40b9c3f2a5b1653",
-    "registration_router_status": "CODE_COMMITTED_CI_PENDING"
+    "registration_router_status": "WINDOWS_UBUNTU_CI_PASS",
+    "registration_router_ci_run_id": 40638938248
   },
   "user_managed_identity_handoff": {
     "policy": "USER_OBTAINS_OFFICIAL_IDENTITY_INDEPENDENTLY__36_MINUTE_LOOP_ONLY_VALIDATES_ROUTES_AND_RETURNS",
@@ -637,7 +638,7 @@
     "identity_version_asset_approvals_separate": true,
     "backlog": "verified-msix-local-qa-*; 30 days; local 20 packages/2 GiB; HOLD_LOCAL_CAPACITY preserves remote",
     "e2e_pass": false,
-    "ci_note": "PR19 77b604ca9f7b #40633450732 SUCCESS Windows/Ubuntu, 269 tests (2 skipped on Windows). Provisioner-game PR10 e4c74846 #40630701195 SUCCESS. Local Windows check-only/CAS/GDK MSIXVC not observed."
+    "ci_note": "PR19 four-way registration router HEAD 6210cb7b, Windows/Ubuntu CI #40638938248 SUCCESS. Central ledger updated; local Windows gates deferred, CAS and real GDK MSIXVC not executed."
   },
   "quality_gates": {
     "pre_identity_ready": "PRE_IDENTITY_QUEUE_CONTRACT_PR19_WINDOWS_UBUNTU_CI_PASS__LOCAL_EXE_SHA_RECHECK_PENDING",
@@ -656,7 +657,7 @@
     "deferred_local_gate": true,
     "local_unavailable_mode": true,
     "registration_router_code_committed": true,
-    "registration_router_ci_pass": false
+    "registration_router_ci_pass": true
   },
   "user_id_requests": {
     "schema_version": 1,
@@ -716,7 +717,7 @@
   "classification": "USER_IDENTITY_RECEIVED_GDK__PR19_SECURE_MATERIALIZATION_FIX_CI_PASS__LOCAL_CHECK_ONLY_PENDING__APP_IDENTITY_UNBOUND__REAL_E2E_HOLD",
   "registration_router": {
     "schema_version": 1,
-    "status": "CODE_COMMITTED_CI_PENDING",
+    "status": "WINDOWS_UBUNTU_CI_PASS__LOCAL_GATE_DEFERRED",
     "implementation_pr": 19,
     "implementation_branch": "codex/user-provided-identity-gdk-20261028",
     "implementation_head_sha": "6210cb7bfdbd3d207d6ead70a40b9c3f2a5b1653",
@@ -754,7 +755,9 @@
       }
     ],
     "unresolved_policy": "HOLD_REGISTRATION_TYPE_UNRESOLVED",
-    "store_fixtures": "EXISTING_KNOWN_GOOD_REFERENCE_NOT_NEW_USER_ID_REQUEST"
+    "store_fixtures": "EXISTING_KNOWN_GOOD_REFERENCE_NOT_NEW_USER_ID_REQUEST",
+    "ci_run_id": 40638938248,
+    "ci_conclusion": "SUCCESS"
   },
   "local_availability": {
     "mode": "LOCAL_UNAVAILABLE_MODE",
