@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T21:38:28.904Z",
+  "updated_at_utc": "2026-10-28T22:41:17.691Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -810,7 +810,11 @@
     "app_provisioner_independent_ui_guard_code_committed": true,
     "app_provisioner_independent_ui_guard_ci_pass": true,
     "app_provisioner_trusted_ui_worker_integrated": false,
-    "app_identity_cas_safe_to_apply": false
+    "app_identity_cas_safe_to_apply": false,
+    "batch4_independent_success_evidence_guard_code_committed": true,
+    "batch4_independent_success_evidence_guard_ci_pass": true,
+    "batch4_independent_evidence_worker_integrated": false,
+    "batch4_positive_success_from_untrusted_json_allowed": false
   },
   "user_id_requests": {
     "schema_version": 1,
@@ -1012,7 +1016,7 @@
       "app-offline-image-inventory-desk-16b6a772952c"
     ]
   },
-  "classification": "APP_BATCH4_CLOUD_PREIDENTITY_REVERIFIED__PR36_WINDOWS_UBUNTU_CI_GREEN__LOCAL_BATCH_NOT_RUN__E2E_HOLD",
+  "classification": "APP_BATCH4_CLOUD_PREIDENTITY_4_OF_4__PR39_AND_APP_PR12_CI_GREEN__LOCAL_BATCH_NOT_RUN__E2E_HOLD",
   "registration_router": {
     "schema_version": 1,
     "status": "WINDOWS_UBUNTU_ROUTER_CI_PASS__LOCAL_MODE__PRISM_EXISTING_MANUAL_REFERENCE",
@@ -1884,7 +1888,7 @@
     "store_submission": 0,
     "package_upload": 0,
     "package_version_gate": "HOLD",
-    "status": "CLOUD_DISCOVER_4_OF_4_PASS__PR37_AND_APP_PR12_CI_GREEN__LOCAL_BATCH_NOT_STARTED",
+    "status": "CLOUD_DISCOVER_4_OF_4_PASS__PR39_AND_APP_PR12_CI_GREEN__LOCAL_BATCH_NOT_STARTED",
     "preflight_evidence": "FOUR_FACTORY_BRANCHES_IDENTICAL_TO_PINNED_SOURCE_SHA_RECHECKED_THIS_RUN__WINDOWS_PR37_AND_APP_PR12_CI_GREEN__NO_USER_PC_LOCAL_RECEIPT",
     "code_contracts": {
       "windows_all_auto_pr": 33,
@@ -1956,6 +1960,26 @@
           "test (windows-latest) SUCCESS",
           "test (ubuntu-latest) SUCCESS"
         ]
+      },
+      "windows_all_auto_independent_evidence_guard": {
+        "draft_pr": 39,
+        "branch": "codex/e2e-batch4-trusted-evidence-gate-20261029",
+        "head_sha": "020655ea886c082cc8759c042a784a8dbf43b85e",
+        "base_pr": 37,
+        "contract_ci_run_id": 40781765589,
+        "contract_ci_status": "SUCCESS_WINDOWS_UBUNTU",
+        "offline_qa_run_id": 40781765592,
+        "offline_qa_status": "SUCCESS",
+        "changes": [
+          "REJECT_SELF_ASSERTED_FULL_AUTHENTICATED_UI_AND_GITHUB_CAS_JSON_AS_SUCCESS",
+          "REQUIRE_INDEPENDENT_TRUSTED_LOCAL_EVIDENCE_VERIFIER_CALLBACK",
+          "CLI_NO_VERIFIER_FAILS_CLOSED",
+          "TEST_ONLY_INJECTED_VERIFIER_EXERCISES_STATE_MACHINE"
+        ],
+        "physical_local_execution": "NOT_OBSERVED",
+        "trusted_local_worker": "NOT_IMPLEMENTED",
+        "real_cas": "NOT_PERFORMED",
+        "store_submission": 0
       }
     },
     "products": [
@@ -2068,35 +2092,36 @@
         "error_code": "LOCAL_BATCH_NOT_STARTED"
       }
     ],
-    "next_action": "PR37 and APP PR12 CI green. Next implement and independently attest trusted Windows Partner Center UI capture and scheduled-to-local trigger; physical exact-source sync on user PC before any Focus creation/CAS. Run four products sequentially only after trust gates. Version HOLD, Store submission 0.",
+    "next_action": "PR39 and APP PR12 CI green. Build and independently attest a trusted Windows UI/CAS evidence verifier and host schedule-to-local trigger; physical exact-source sync before any product creation or CAS. Four jobs stay queued, one at a time. Package Version HOLD, Store submission 0.",
     "cloud_discover_contract_run_id": 40728641133,
     "cloud_discover_contract_ci": "SUCCESS_WINDOWS_UBUNTU",
     "cloud_discover_from_pinned_central_commit": "0fe4dc510b37b0574f96d13bc95ade6ef1635032",
     "cloud_discover_status": "BATCH_DISCOVERED_4_IN_GITHUB_ACTIONS_WINDOWS_AND_UBUNTU__NOT_LOCAL_PC"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-28T21:38:28.904Z",
-    "scope": "CROSS_REPO_APP_IDENTITY_TRUST_BOUNDARY_FIX_AND_FOUR_FACTORY_HEAD_RECHECK",
-    "implementation_repository": "shihuiarenjinba-png/Repository-Provisioner-app",
-    "implementation_branch": "codex/app-identity-ui-attestation-gate-20261029",
-    "implementation_pr": 12,
-    "implementation_head_sha": "5d8f28520f8d6e89874c1cc8ce9cffede18a5e1b",
-    "stacked_on_pr": 11,
+    "observed_at_utc": "2026-10-28T22:41:17.691Z",
+    "scope": "APP_BATCH4_SUCCESS_EVIDENCE_TRUST_BOUNDARY_IMPLEMENTATION",
+    "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
+    "implementation_branch": "codex/e2e-batch4-trusted-evidence-gate-20261029",
+    "implementation_pr": 39,
+    "implementation_head_sha": "020655ea886c082cc8759c042a784a8dbf43b85e",
+    "stacked_on_pr": 37,
     "changes": [
-      "APP Identity-only return now requires independently trusted local UI verifier; CLI cannot elevate operator-supplied JSON to authenticated PASS",
-      "APP queue-owned identity return target enforced",
-      "Negative regression tests for self-attested authentication, missing verifier and cross-product target",
-      "No changes to version gate or Store submission"
+      "Batch complete rejects even fully populated self-asserted authenticated UI, CAS and replay JSON without independent trusted local verifier",
+      "CLI intentionally has no verifier and cannot increment success_count from operator JSON",
+      "False/exceptional verifier and forged receipt regressions added",
+      "Version gate and Store submission unchanged"
     ],
-    "ci_run_id": 40773514497,
+    "ci_run_id": 40781765589,
     "ci_status": "SUCCESS_WINDOWS_UBUNTU",
-    "windows_all_auto_operator_pr": 37,
-    "windows_all_auto_operator_ci": "SUCCESS_WINDOWS_UBUNTU",
+    "offline_qa_run_id": 40781765592,
+    "offline_qa_status": "SUCCESS",
+    "app_provisioner_pr": 12,
+    "app_provisioner_ci": "SUCCESS_WINDOWS_UBUNTU",
     "cloud_pre_identity_discovered": 4,
-    "github_factory_exact_source_heads_verified": 4,
-    "github_factory_source_compare": "FOUR_BRANCHES_IDENTICAL_TO_PINNED_SOURCE_SHA__AHEAD_0_BEHIND_0",
     "local_code_sync": "NOT_OBSERVED_ON_USER_PC",
     "scheduled_trigger_to_local": "BATCH_SCHEDULE_TRIGGER_NOT_PROVEN",
+    "partner_center_product": "NOT_OBSERVED_FOR_BATCH4",
     "partner_center_capture": "NOT_OBSERVED",
     "identity_route": "NOT_RUN_FOR_BATCH4",
     "cas": "NOT_RUN_FOR_BATCH4",
@@ -2111,6 +2136,6 @@
     "next_resume_index": 1,
     "store_submission": 0,
     "no_main_release_merge": true,
-    "note": "APP PR12 and Windows PR37 both Windows/Ubuntu CI green; this proves offline code contract only. Trusted UI worker, user-PC execution, batch CAS and Store package remain unobserved."
+    "note": "PR39 CI green proves offline fail-closed code contract only; no trusted physical Windows UI worker, schedule-to-local attestation, batch CAS or Store package evidence."
   }
 }
