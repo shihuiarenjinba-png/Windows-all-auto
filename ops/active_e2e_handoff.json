@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-27T22:43:40.499Z",
+  "updated_at_utc": "2026-10-28T00:34:56.670Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -19,7 +19,7 @@
     "display_name": "Signal Sprint",
     "provisioner_repository": "shihuiarenjinba-png/Repository-Provisioner-game",
     "provisioner_branch": "codex/game-identity-idempotency-20261027",
-    "provisioner_head_observed": "d2d8120ace60d0ba1095c110374e2d4f553bc92f",
+    "provisioner_head_observed": "15b2e0818d479fa5017e0e8abafac011f74dad2c",
     "factory_exe_run_id": 40443340158,
     "factory_exe_artifact_id": 12706862577,
     "factory_exe_artifact_name": "game-signal-sprint-exe-c058cbf7fe38e02d929c67d047d717ff74bd522e",
@@ -144,15 +144,16 @@
       "draft_pr": 9,
       "base_branch": "codex/game-msix-package-safety-20261027-1510",
       "base_sha": "c217652c7887626de94e8b37ca3f1f7a57f9064d",
-      "ci_run_id": 40593124056,
+      "ci_run_id": 40607796803,
       "ci_conclusion": "SUCCESS",
-      "status": "LATEST_PR9_CI_PASS__LOCAL_RECHECK_PENDING",
+      "status": "LATEST_PR9_CI_PASS__LOCAL_RECHECK_REQUIRED_BEFORE_CAS",
       "changes": [
         "package_identity_provisioner.py",
         "tests/test_package_identity_pipeline.py",
         "tests/test_existing_identity_commit_sha.py"
       ],
-      "next_action": "PR9 d2d8120 CI SUCCESS; operator-managed local Identity missing; recheck pinned EXE and prior Provisioner result on latest SHA before any approved CAS."
+      "next_action": "PR9 latest 15b2e081 CI SUCCESS; pre-CAS local check-only on this exact SHA required; do not reuse old Provisioner check-only proof.",
+      "current_branch_head": "15b2e0818d479fa5017e0e8abafac011f74dad2c"
     },
     "local_identity_return_worker": {
       "repository": "shihuiarenjinba-png/Windows-all-auto",
@@ -211,7 +212,7 @@
       "resume_result_verified_on_local_windows": false,
       "package_sha256": "e8517df8cd31a40e5ce72afdd4e6a4d63626fb99f7ff8a4fa3296ff8deef05f4",
       "status": "CODE_CI_PASS_LOCAL_EXECUTION_NOT_OBSERVED",
-      "current_branch_head": "d2d8120ace60d0ba1095c110374e2d4f553bc92f",
+      "current_branch_head": "15b2e0818d479fa5017e0e8abafac011f74dad2c",
       "historical_local_check_only_sha": "5c1db9820bac68c59cc7eb6ca5921e22a5bb3913",
       "note": "Historical local check-only is on older Provisioner SHA; PR9 d2d8120 CI SUCCESS but local execution not observed."
     }
@@ -223,16 +224,16 @@
       "factory_branch": "codex/app-msix-prebuilt-exe-20261027-1300",
       "factory_head": "e8e3ca613a114cd0e919cf2f3a4454fa8149510a",
       "provisioner_branch": "codex/e2e-belt-connection-20261027",
-      "provisioner_head": "f8d03890923dd41a3a597df4335a11d8cb18fddf",
-      "next_action": "00 APP owner only: existing offline-notes-canary remains unpromoted on PR14 dbec7e3b, CI 40582657157 SUCCESS; formal manifest/source_sha/request_id/Windows EXE not observed. Once ready, enqueue the same product into user-managed Identity handoff. No new canary.",
-      "provisioner_ci_run_id": 40582849698,
+      "provisioner_head": "215092293f1cc2aada2e5966aa463a6be1508f99",
+      "next_action": "00 APP owner: candidate PR14 1520b0f0 CI SUCCESS, invalid Unicode save guarded; formal manifest 404, Windows EXE absent, request_id not assigned. No new canary; Identity request NOT_YET_REQUIRED.",
+      "provisioner_ci_run_id": 40606680009,
       "provisioner_ci_conclusion": "SUCCESS",
       "canary_proposal": {
         "slug": "offline-notes-canary",
         "status": "CANDIDATE_13_HEADLESS_PASS_LINUX_XVFB_GUI_REPORTED_NOT_PROMOTED_NO_WINDOWS_EXE",
         "factory_pr": 14,
         "branch": "codex/app-canary-offline-notes-20261027",
-        "head_sha": "dbec7e3bb18de76ac6d6f8069430e64a8120e107",
+        "head_sha": "1520b0f011aec61c73bb2109fcc8d51433e4d37e",
         "factory_state": "build",
         "factory_state_slug": "offline-notes-canary",
         "exe_artifact": null,
@@ -244,7 +245,7 @@
         "candidate_path": ".candidate/product",
         "candidate_manifest_sha": "fe9cb308d6e8ba26e2a98add1baf38e9cc89d490",
         "candidate_smoke_tests": "14_PASS_REPORTED_IN_PROVISIONER_APP_PROGRESS",
-        "factory_ci_run_id": 40582657157,
+        "factory_ci_run_id": 40606516026,
         "factory_ci_conclusion": "SUCCESS_INFRASTRUCTURE_ONLY",
         "promotion_blocker": "FACTORY_CONTROLLER_CLEANUP_AND_NATIVE_PROMOTION_REQUIRED"
       }
@@ -255,8 +256,8 @@
       "factory_branch": "codex/3d-qa-zip-ledger-20261027-1235",
       "factory_head": "f8b772bf429de7f3da172f7c4a3a4f5448a3de1b",
       "provisioner_branch": "codex/e2e-belt-connection-20261027",
-      "provisioner_head": "8da96245c8d619cbb81091108ee09bfba81ecdb2",
-      "next_action": "3D owner: PR12 3b3c5cd6 CI 40594377088 SUCCESS; no accepted 3D product, generation remains HOLD.",
+      "provisioner_head": "651e630de3a60cf59bf5d865cdf1cb004ae8a8f4",
+      "next_action": "3D PR12 bed4e171 and Provisioner-3D PR7 651e630d CI SUCCESS; no active 3D product, generation HOLD.",
       "factory_ci_run_id": 40520641316,
       "factory_ci_conclusion": "SUCCESS",
       "dispatch_guard_pr": {
@@ -268,12 +269,12 @@
       "current_guard_pr": {
         "draft_pr": 12,
         "branch": "codex/3d-dispatch-guard-current-ledger-20261027-1628",
-        "head_sha": "3b3c5cd6c7e58dcca5a86b94e83ff2401fb8cd0d",
-        "ci_run_id": 40594377088,
+        "head_sha": "bed4e171bb073c4eb07065918b332c99ac585f1c",
+        "ci_run_id": 40608228767,
         "ci_conclusion": "SUCCESS",
         "status": "DRAFT_ONLY_NO_ACTIVE_PRODUCT"
       },
-      "provisioner_ci_run_id": 40594237767,
+      "provisioner_ci_run_id": 40608121189,
       "provisioner_ci_conclusion": "SUCCESS"
     }
   },
@@ -323,7 +324,7 @@
     "partner_center_access_by_36_minute_loop": false
   },
   "last_cross_lane_observation": {
-    "observed_at_utc": "2026-10-27T22:42:52.219Z",
+    "observed_at_utc": "2026-10-28T00:34:56.670Z",
     "active_lane": "GAME",
     "active_product": "signal-sprint",
     "factory_source_head_verified": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
@@ -339,7 +340,7 @@
       "local_tests": "67_PASS",
       "next_action": "Do not rerun without new runner/workflow evidence; require real MSIX before Checker product QA"
     },
-    "last_12_minute_update": "PR18 f176eec0 user-managed Identity handoff scheduler 250 tests CI 40596859228 SUCCESS; central ledger efddd6c3 CI 40596902756 SUCCESS; Provisioner-game PR9 d2d8120 CI SUCCESS; 3D Factory PR12 3b3c5cd6 and Provisioner-3D 8da96245 CI SUCCESS. No user-provided Identity/CAS/real MSIX.",
+    "last_12_minute_update": "APP Factory 1520b0f0 CI 40606516026 SUCCESS; Provisioner-app 21509229 CI 40606680009 SUCCESS; GAME Provisioner 15b2e081 CI 40607796803 SUCCESS; 3D Factory bed4e171 CI 40608228767 SUCCESS and Provisioner-3D 651e630d CI 40608121189 SUCCESS. No real MSIX or private Identity observed.",
     "next_repo": "shihuiarenjinba-png/Windows-all-auto",
     "next_branch": "codex/local-identity-qa-safety-20261027",
     "next_head_sha": "6ef8aacbcba8a622760a8c109f4c684d6df503fb",
@@ -370,14 +371,14 @@
       "remote_backlog_preserved_on_full": true
     },
     "three_d_current_guard_pr12": {
-      "head_sha": "3b3c5cd6c7e58dcca5a86b94e83ff2401fb8cd0d",
-      "ci_run_id": 40594377088,
+      "head_sha": "bed4e171bb073c4eb07065918b332c99ac585f1c",
+      "ci_run_id": 40608228767,
       "ci_conclusion": "SUCCESS",
       "compare_to_3d_factory_pr10": "AHEAD_4_BEHIND_0",
       "new_product_allowed": false
     },
-    "provisioner_game_safety_head": "d2d8120ace60d0ba1095c110374e2d4f553bc92f",
-    "provisioner_game_safety_ci_run_id": 40593124056,
+    "provisioner_game_safety_head": "15b2e0818d479fa5017e0e8abafac011f74dad2c",
+    "provisioner_game_safety_ci_run_id": 40607796803,
     "app_canary": {
       "status": "CANDIDATE_HEADLESS_13_PASS_LINUX_XVFB_GUI_REPORTED__NO_PROMOTION_OR_WINDOWS_EXE",
       "active_product": null,
@@ -385,12 +386,12 @@
       "exe_artifact": null,
       "ui_pass": false,
       "pr": 14,
-      "head_sha": "dbec7e3bb18de76ac6d6f8069430e64a8120e107",
+      "head_sha": "1520b0f011aec61c73bb2109fcc8d51433e4d37e",
       "candidate_path": ".candidate/product",
-      "factory_ci_run_id": 40556513390,
+      "factory_ci_run_id": 40606516026,
       "factory_ci_conclusion": "SUCCESS_INFRASTRUCTURE_ONLY",
       "ci_run_id": 40582657157,
-      "provisioner_head": "f8d03890923dd41a3a597df4335a11d8cb18fddf",
+      "provisioner_head": "215092293f1cc2aada2e5966aa463a6be1508f99",
       "windows_exe": "NOT_OBSERVED",
       "promoted": false
     },
@@ -399,13 +400,15 @@
         "artifact_id": 12706862577,
         "name": "game-signal-sprint-exe-c058cbf7fe38e02d929c67d047d717ff74bd522e",
         "zip_sha256": "e48a0426595dc227988f12944921511a47d5c8feca8b063a161dd0dd61306412",
-        "kind": "EXE_QA_UNSIGNED_NOT_MSIX"
+        "kind": "EXE_QA_UNSIGNED_NOT_MSIX",
+        "expired": false
       },
       "windows_data_qa": {
         "artifact_id": 12623796906,
         "name": "MSIXAutoBuildIdentity-Windows-QA",
         "digest": "sha256:d0960b4fa28a04b27e77a703a0247d1adcedccdab1b47fbdebc554ff22cabfd3",
-        "is_signal_sprint_msix": false
+        "is_signal_sprint_msix": false,
+        "expired": false
       },
       "signal_sprint_unsigned_exe_id": 12706862577,
       "signal_sprint_unsigned_exe_digest": "sha256:e48a0426595dc227988f12944921511a47d5c8feca8b063a161dd0dd61306412",
@@ -561,7 +564,7 @@
   },
   "quality_gates": {
     "pre_identity_ready": "GAME_EXE_VERIFIED__APP_NOT_READY",
-    "waiting_user_identity": "GAME_TRUE",
+    "waiting_user_identity": "GAME_TRUE__APP_NOT_YET_REQUIRED",
     "user_identity_validated": false,
     "cas_return_pass": false,
     "real_msix_pass": false,
@@ -571,5 +574,56 @@
     "checker_pass": false,
     "gui_qa_pass": false,
     "e2e_pass": false
+  },
+  "user_id_requests": {
+    "schema_version": 1,
+    "generated_at_utc": "2026-10-28T00:34:56.670Z",
+    "acquisition_owner": "USER_ONLY",
+    "storage_policy": "LOCAL_PRIVATE_ONLY__NO_IDENTITY_VALUES_OR_AUTHENTICATED_EVIDENCE_IN_GITHUB",
+    "items": [
+      {
+        "product_name": "Signal Sprint",
+        "repo": "shihuiarenjinba-png/AI-Game-Factory",
+        "request_id": "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e",
+        "source_branch": "codex/game-signal-sprint-undo-20261027",
+        "source_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
+        "identity_target": "%LOCALAPPDATA%/FactoryIdentityWorker/secure/<request_id>/official-identity.json",
+        "requested_fields": [
+          "request_id",
+          "product_type",
+          "slug",
+          "source_sha",
+          "official_evidence_url",
+          "authenticated_account",
+          "verified_at",
+          "store_id",
+          "name",
+          "publisher",
+          "version",
+          "package_family_name",
+          "package_sid"
+        ],
+        "status": "WAITING_USER_IDENTITY",
+        "evidence_status": "NOT_OBSERVED_LOCAL_PRIVATE_FILE",
+        "next_gate": "USER_IDENTITY_VALIDATED_THEN_EXPLICIT_CAS_APPROVAL"
+      },
+      {
+        "product_name": "Offline Notes Canary",
+        "repo": "shihuiarenjinba-png/AI-App-Factory",
+        "request_id": null,
+        "source_branch": "codex/app-canary-offline-notes-20261027",
+        "source_sha": null,
+        "identity_target": null,
+        "requested_fields": [],
+        "status": "NOT_YET_REQUIRED",
+        "reason": "FACTORY_PROMOTION_AND_WINDOWS_EXE_AND_IMMUTABLE_REQUEST_ID_PENDING"
+      }
+    ],
+    "excluded_known_good_store_products": [
+      "shihuiarenjinba-png/-AI-Upload-Guard-AI-",
+      "shihuiarenjinba-png/-Excel-CSV-Privacy-Cleaner",
+      "shihuiarenjinba-png/-Screenshot-Image-Privacy-Cleaner"
+    ],
+    "exclusion_reason": "EXISTING_KNOWN_GOOD_IDENTITY_REFERENCE__NOT_NEW_USER_IDENTITY_REQUEST__NO_CLOUD_AUTHENTICATION_CLAIM"
   }
 }
