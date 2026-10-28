@@ -113,6 +113,45 @@ class OperatorGateTests(unittest.TestCase):
         with self.assertRaisesRegex(op.OperatorHold, "APP_JOB_ROUTING_CONFLICT"):
             op.expected_job(value, SLUG)
 
+    def test_app_lane_rejects_game_product_type_even_with_app_repository(self):
+        value = ledger()
+        value["rotation_cohorts"]["app_jobs"][0]["product_type"] = "GAME"
+        with self.assertRaisesRegex(op.OperatorHold, "CROSS_LANE_PRODUCT_TYPE_CONFLICT"):
+            op.expected_job(value, SLUG)
+
+    def test_3d_lane_rejects_app_product_type_even_with_app_repository(self):
+        value = ledger()
+        moved = value["rotation_cohorts"]["app_jobs"].pop()
+        value["rotation_cohorts"]["three_d_jobs"].append(moved)
+        with self.assertRaisesRegex(op.OperatorHold, "CROSS_LANE_PRODUCT_TYPE_CONFLICT"):
+            op.expected_job(value, SLUG)
+
+    def test_game_lane_routes_gdk_only_to_game_factory(self):
+        value = ledger()
+        game = value["rotation_cohorts"]["app_jobs"].pop()
+        game.update(product_type="GAME", source_repository="shihuiarenjinba-png/AI-Game-Factory",
+                    registration_type="GDK_GAME", partner_center_selection="GDK game")
+        value["rotation_cohorts"]["game_jobs"] = [game]
+        request = value["user_id_requests"]["items"][0]
+        request.update(repo=game["source_repository"], registration_type="GDK_GAME",
+                       partner_center_selection="GDK game")
+        result = op.expected_job(value, SLUG)
+        self.assertEqual(result["product_type"], "GAME")
+        self.assertEqual(result["registration_type"], "GDK_GAME")
+        game["source_repository"] = REPO
+        request["repo"] = REPO
+        with self.assertRaisesRegex(op.OperatorHold, "GAME_JOB_ROUTING_CONFLICT"):
+            op.expected_job(value, SLUG)
+
+    def test_game_lane_rejects_app_registration(self):
+        value = ledger()
+        game = value["rotation_cohorts"]["app_jobs"].pop()
+        game.update(product_type="GAME", source_repository="shihuiarenjinba-png/AI-Game-Factory")
+        value["rotation_cohorts"]["game_jobs"] = [game]
+        value["user_id_requests"]["items"][0]["repo"] = game["source_repository"]
+        with self.assertRaisesRegex(op.OperatorHold, "GAME_JOB_ROUTING_CONFLICT"):
+            op.expected_job(value, SLUG)
+
     def test_capture_produces_versionless_github_bound_receipt(self):
         result = op.validate_capture(ready_job(batch_id="batch", batch_index=1,
                                                batch_total=4, trigger_origin="SCHEDULED_36_MIN_LOOP",
