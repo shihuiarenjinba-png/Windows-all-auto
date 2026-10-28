@@ -173,6 +173,24 @@ class RotationQueueTests(unittest.TestCase):
         with self.assertRaisesRegex(pre_identity_queue.QueueHold, "CAP_EXCEEDED"):
             q.project(data, head)
 
+    def test_promoted_primary_app_counts_toward_five_cap(self):
+        data = rotated(5, False)
+        candidate = data["other_lanes"]["APP"]["canary_proposal"]
+        candidate.update({
+            "status": "PROMOTED", "source_sha": APP_SHA,
+            "request_id": "app-offline-promoted-20261028",
+            "exe_sha256": DIGEST, "branch": "codex/offline-promoted",
+        })
+        data["user_id_requests"]["items"].append({
+            "product_name": "Offline Notes Canary",
+            "request_id": candidate["request_id"],
+            "status": "USER_IDENTITY_RECEIVED",
+            "repo": q.APP_REPO, "source_branch": candidate["branch"],
+            "source_sha": APP_SHA, "identity_target": q.TARGET,
+        })
+        with self.assertRaisesRegex(pre_identity_queue.QueueHold, "CAP_EXCEEDED"):
+            q.project(data, head)
+
     def test_3d_identity_cannot_be_reused_by_app(self):
         data = rotated(1, True)
         data["user_id_requests"]["items"][-1]["repo"] = q.APP_REPO
