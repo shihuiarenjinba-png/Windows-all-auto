@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T14:35:09.810Z",
+  "updated_at_utc": "2026-10-28T15:34:46.987Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -232,13 +232,13 @@
   },
   "other_lanes": {
     "APP": {
-      "phase": "CANARY_CANDIDATE_COMMITTED__PROMOTION_PENDING__NO_ACTIVE_PRODUCT",
+      "phase": "FOCUS_SESSION_DESK_PRE_IDENTITY_READY__LOCAL_OPERATOR_PENDING__OFFLINE_NOTES_UNBOUND",
       "status": "HOLD",
       "factory_branch": "codex/app-msix-prebuilt-exe-20261027-1300",
       "factory_head": "e8e3ca613a114cd0e919cf2f3a4454fa8149510a",
       "provisioner_branch": "codex/e2e-belt-connection-20261027",
       "provisioner_head": "99a06968ff0637fc644b876df18e799bb730554d",
-      "next_action": "APP formal promote/source_sha/request_id/Windows EXE pending; identity reference remains unbound. Local Windows available, but no APP source binding or CAS.",
+      "next_action": "Focus exact source and artifact metadata verified; GitHub-origin local queue/physical code sync and new product UI flow pending. Offline Notes remains separate.",
       "provisioner_ci_run_id": 40642147303,
       "provisioner_ci_conclusion": "SUCCESS",
       "canary_proposal": {
@@ -269,16 +269,16 @@
       "registration_type": "MSIX_OR_PWA_APP",
       "partner_center_selection": "MSIX or PWA app",
       "rotation_max_jobs": 5,
-      "rotation_ready_jobs": 0
+      "rotation_ready_jobs": 1
     },
     "GAME_3D": {
-      "phase": "PRISM_ROUTE_3D_PRE_IDENTITY_READY__LOCAL_PARTNER_CENTER_OPERATOR_ACTIVE__NO_PHYSICAL_PROOF",
+      "phase": "PRISM_GATE1_GITHUB_IDENTITY_RETURN_VERIFIED__PACKAGE_VERSION_HOLD",
       "status": "HOLD",
       "factory_branch": "codex/3d-canary-prism-route-20261028",
       "factory_head": "11417b75636ee18816028ffd5221884c4c9a9836",
       "provisioner_branch": "codex/e2e-belt-connection-20261027",
       "provisioner_head": "ce332d586d473e08b4c03808dfe84694fa55287e",
-      "next_action": "Review PR28 historical queue digest mismatch, preserve immutable source SHA and existing Prism Store product; physical capture and 3D Provisioner version contract still pending.",
+      "next_action": "Prism approved-identity.json return commit verified; preserve pinned source. Package Version and assets remain HOLD; no new Partner Center product creation.",
       "factory_ci_run_id": 40520641316,
       "factory_ci_conclusion": "SUCCESS",
       "dispatch_guard_pr": {
@@ -308,7 +308,7 @@
         "head_sha": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
         "ci_run_id": 40640963381,
         "ci_conclusion": "SUCCESS",
-        "identity_status": "LOCAL_OPERATOR_MANUAL_REFERENCE__AUTO_CAPTURE_PENDING",
+        "identity_status": "APPROVED_IDENTITY_RETURNED_GITHUB_VERIFIED__PACKAGE_VERSION_HOLD",
         "source_sha": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
         "request_id": "3d-prism-route-3d-15fdcb52e46e",
         "real_msix": "NOT_OBSERVED",
@@ -330,7 +330,12 @@
           "real_store_msix_pass": false
         },
         "identity_return_commit_observed": "11417b75636ee18816028ffd5221884c4c9a9836",
-        "identity_return_status": "POST_IDENTITY_COMMIT_CANDIDATE__CAS_RECEIPT_UNVERIFIED"
+        "identity_return_status": "POST_IDENTITY_COMMIT_CANDIDATE__CAS_RECEIPT_UNVERIFIED",
+        "approved_identity_return_commit": "11417b75636ee18816028ffd5221884c4c9a9836",
+        "approved_identity_return_file": "products/prism-route-3d/store/approved-identity.json",
+        "local_automation_gate_1": "USER_REPORTED_PASS__GITHUB_RETURN_COMMIT_INDEPENDENTLY_VERIFIED",
+        "local_capture_receipt_independently_verified": false,
+        "package_version_gate": "HOLD"
       }
     }
   },
@@ -727,7 +732,7 @@
   },
   "quality_gates": {
     "pre_identity_ready": "PRE_IDENTITY_QUEUE_CONTRACT_PR19_WINDOWS_UBUNTU_CI_PASS__LOCAL_EXE_SHA_RECHECK_PENDING",
-    "waiting_user_identity": "GAME_FALSE__USER_PROVIDED_REFERENCE_RECEIVED__APP_NOT_YET_REQUIRED",
+    "waiting_user_identity": "FOCUS_OPERATOR_PENDING__SIGNAL_IDENTITY_REFERENCE_RECEIVED__PRISM_GITHUB_RETURN_VERIFIED",
     "user_identity_validated": false,
     "cas_return_pass": false,
     "real_msix_pass": false,
@@ -747,7 +752,7 @@
     "rotation_queue_ci_pass": true,
     "rotation_real_product_pass": false,
     "three_d_pre_identity_ready": true,
-    "three_d_waiting_user_identity": true,
+    "three_d_waiting_user_identity": false,
     "three_d_qa_unsigned_makeappx_pass": true,
     "rotation_live_cloud_check_pass": true,
     "local_source_code_sync_cloud_windows_pass": true,
@@ -774,11 +779,21 @@
     "rotation_source_sync_plan_code_committed": true,
     "rotation_source_sync_plan_ci_pass": true,
     "rotation_source_sync_live_central_projection_pass": true,
-    "rotation_source_sync_physical_pass": false
+    "rotation_source_sync_physical_pass": false,
+    "prism_approved_identity_return_commit_verified": true,
+    "prism_local_operator_gate1_user_reported": true,
+    "prism_local_capture_receipt_independently_verified": false,
+    "focus_pre_identity_source_head_verified": true,
+    "focus_windows_exe_artifact_metadata_verified": true,
+    "focus_exe_bytes_independently_verified": false,
+    "focus_local_operator_pass": false,
+    "focus_new_product_gate_pass": false,
+    "focus_local_code_sync_pass": false,
+    "focus_github_queue_origin_pass": false
   },
   "user_id_requests": {
     "schema_version": 1,
-    "generated_at_utc": "2026-10-28T07:41:42.890Z",
+    "generated_at_utc": "2026-10-28T15:34:46.986Z",
     "acquisition_owner": "LOCAL_PARTNER_CENTER_OPERATOR_PERMITTED_FROM_2026_10_28_17_44_JST",
     "storage_policy": "LOCAL_OPERATOR_RECEIPT_AND_PRIVATE_IDENTITY_ONLY__NO_AUTH_COOKIES_TOKENS_SESSIONS_IN_GITHUB",
     "items": [
@@ -832,6 +847,36 @@
         "source_sha": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
         "identity_target": "%LOCALAPPDATA%/FactoryIdentityWorker/secure/<request_id>/official-identity.json",
         "identity_return_target": "products/prism-route-3d/store/approved-identity.json",
+        "requested_fields": [],
+        "status": "USER_IDENTITY_RECEIVED",
+        "registration_type": "MSIX_OR_PWA_GAME",
+        "partner_center_selection": "MSIX or PWA game",
+        "version_separate": true,
+        "next_gate": "PACKAGE_VERSION_GATE__GITHUB_APPROVED_IDENTITY_COMMIT_VERIFIED__LOCAL_CAS_RECEIPT_NOT_INDEPENDENTLY_OBSERVED",
+        "user_manual_identity_entry_required": false,
+        "allow_local_product_creation": false,
+        "partner_center_product_status": "EXISTING_PRODUCT__GITHUB_IDENTITY_RETURN_FILE_PRESENT",
+        "manual_reference_status": "LOCAL_OPERATOR_MANUAL_REFERENCE_MATCHED_GITHUB_RETURN",
+        "received_fields": [
+          "store_id",
+          "reserved_display_name",
+          "identity_name",
+          "publisher",
+          "publisher_display_name",
+          "package_family_name",
+          "package_sid"
+        ]
+      },
+      {
+        "product_name": "Focus Session Desk",
+        "repo": "shihuiarenjinba-png/AI-App-Factory",
+        "product_type": "APP",
+        "slug": "focus-session-desk",
+        "request_id": "app-focus-session-desk-8b00bc4e9082",
+        "source_branch": "codex/app-cohort-focus-controller-20261028",
+        "source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+        "identity_target": "%LOCALAPPDATA%/FactoryIdentityWorker/secure/<request_id>/official-identity.json",
+        "identity_return_target": "products/focus-session-desk/store/approved-identity.json",
         "requested_fields": [
           "Store ID",
           "reserved display name",
@@ -842,14 +887,12 @@
           "Package SID"
         ],
         "status": "LOCAL_PARTNER_CENTER_OPERATOR_ACTIVE",
-        "registration_type": "MSIX_OR_PWA_GAME",
-        "partner_center_selection": "MSIX or PWA game",
-        "version_separate": true,
-        "next_gate": "POST_IDENTITY_COMMIT_CANDIDATE__REQUIRE_LOCAL_CAPTURE_AND_REQUEST_SCOPED_CAS_RECEIPT",
+        "registration_type": "MSIX_OR_PWA_APP",
+        "partner_center_selection": "MSIX or PWA app",
+        "allow_local_product_creation": true,
+        "partner_center_product_status": "NOT_VERIFIED_CREATED",
         "user_manual_identity_entry_required": false,
-        "allow_local_product_creation": false,
-        "partner_center_product_status": "EXISTING_PRODUCT_MANUALLY_OBSERVED__AUTOMATED_CAPTURE_PENDING",
-        "manual_reference_status": "LOCAL_OPERATOR_MANUAL_REFERENCE"
+        "next_gate": "GITHUB_QUEUE_DIGEST_AND_LOCAL_EXACT_SOURCE_RECEIPT__OVERVIEW_EXACT_SEARCH__IF_ZERO_RESERVE_ONCE__IDENTITY_CAPTURE__SINGLE_WRITER_RETURN"
       }
     ],
     "excluded_known_good_store_products": [
@@ -861,10 +904,10 @@
     "pending_requests": [],
     "rotation_pending_3d": "PRE_IDENTITY_READY__MANUAL_REFERENCE_OBSERVED__AUTO_CAPTURE_PENDING",
     "operator_active_requests": [
-      "3d-prism-route-3d-15fdcb52e46e"
+      "app-focus-session-desk-8b00bc4e9082"
     ]
   },
-  "classification": "LOCAL_MODE__PRISM_IDENTITY_RETURN_FILE_OBSERVED__SOURCE_BRANCH_DRIFT_HOLD__NO_CAS_RECEIPT__E2E_HOLD",
+  "classification": "LOCAL_MODE__FOCUS_PRE_IDENTITY_READY_AND_OPERATOR_PENDING__PRISM_GITHUB_APPROVED_IDENTITY_RETURN_VERIFIED_PACKAGE_VERSION_HOLD__NO_LOCAL_PC_E2E",
   "registration_router": {
     "schema_version": 1,
     "status": "WINDOWS_UBUNTU_ROUTER_CI_PASS__LOCAL_MODE__PRISM_EXISTING_MANUAL_REFERENCE",
@@ -900,8 +943,16 @@
         "repository": "shihuiarenjinba-png/3d-game-factory",
         "registration_type": "MSIX_OR_PWA_GAME",
         "partner_center_selection": "MSIX or PWA game",
-        "identity_status": "LOCAL_OPERATOR_MANUAL_REFERENCE__AUTO_CAPTURE_PENDING",
-        "next_action": "EXISTING_PRODUCT_REUSE_ONLY__PHYSICAL_SYNC__GITHUB_ORIGIN__AUTO_IDENTITY_CAPTURE"
+        "identity_status": "GITHUB_APPROVED_IDENTITY_RETURN_COMMIT_VERIFIED",
+        "next_action": "PACKAGE_VERSION_GATE_HOLD__NO_DUPLICATE_PRODUCT_CREATION"
+      },
+      {
+        "product": "Focus Session Desk",
+        "repository": "shihuiarenjinba-png/AI-App-Factory",
+        "registration_type": "MSIX_OR_PWA_APP",
+        "partner_center_selection": "MSIX or PWA app",
+        "identity_status": "LOCAL_PARTNER_CENTER_OPERATOR_ACTIVE__CAPTURE_PENDING",
+        "next_action": "SOURCE_SYNC__GITHUB_QUEUE_PROVENANCE__NEW_PRODUCT_RESERVE_ONCE__IDENTITY_RETURN"
       }
     ],
     "unresolved_policy": "HOLD_REGISTRATION_TYPE_UNRESOLVED",
@@ -930,9 +981,40 @@
   "rotation_cohorts": {
     "schema_version": 1,
     "app_max_jobs": 5,
-    "app_jobs": [],
-    "app_candidate_count": 1,
-    "app_candidate_note": "Offline Notes Canary remains unpromoted; APP rotation may accept up to five independently pinned products. Do not reuse Offline Notes Identity for other APP jobs.",
+    "app_jobs": [
+      {
+        "product_type": "APP",
+        "display_name": "Focus Session Desk",
+        "slug": "focus-session-desk",
+        "status": "PRE_IDENTITY_READY",
+        "request_id": "app-focus-session-desk-8b00bc4e9082",
+        "source_repository": "shihuiarenjinba-png/AI-App-Factory",
+        "source_branch": "codex/app-cohort-focus-controller-20261028",
+        "source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+        "factory_build_head": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+        "observed_pr_head": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+        "expected_exe_sha256": "04b2d7e4eae215855217285f07f8835ffe3cf60dc5aab24ede141d28f563416d",
+        "expected_exe_bytes": 11475865,
+        "packaging_family": "MSIX",
+        "packaging_strategy": "APP_MSIX",
+        "registration_type": "MSIX_OR_PWA_APP",
+        "partner_center_selection": "MSIX or PWA app",
+        "identity_status": "LOCAL_PARTNER_CENTER_OPERATOR_ACTIVE__NO_CAPTURE_YET",
+        "factory_workflow_run_id": 40668807091,
+        "factory_workflow_conclusion": "SUCCESS",
+        "factory_artifact_id": 12807496604,
+        "factory_artifact_name": "focus-session-desk-preidentity-8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+        "factory_artifact_expiry_utc": "2026-11-02T10:02:58Z",
+        "artifact_metadata_verified": true,
+        "exe_sha256_basis": "USER_PROVIDED_RUN_EVIDENCE__BYTES_NOT_INDEPENDENTLY_DOWNLOADED",
+        "next_action": "EXACT_SOURCE_LOCAL_SYNC_AND_GITHUB_QUEUE_PROVENANCE__THEN_EXISTING_PRODUCT_SEARCH_OR_EXPLICIT_NEW_RESERVATION__IDENTITY_CAPTURE_AND_RETURN",
+        "identity_cas_allowed": false,
+        "real_msix": "NOT_BUILT",
+        "local_execution": "NOT_OBSERVED"
+      }
+    ],
+    "app_candidate_count": 2,
+    "app_candidate_note": "Focus Session Desk formally promoted with pinned source and Windows EXE artifact; Offline Notes remains separately unbound. Up to 5 independent APP jobs; never reuse Identity across APPs.",
     "three_d_max_jobs": 1,
     "three_d_jobs": [
       {
@@ -952,10 +1034,10 @@
         "packaging_family": "MSIX",
         "registration_type": "MSIX_OR_PWA_GAME",
         "partner_center_selection": "MSIX or PWA game",
-        "identity_status": "LOCAL_OPERATOR_MANUAL_REFERENCE__AUTOMATED_CAPTURE_PENDING",
+        "identity_status": "APPROVED_IDENTITY_RETURNED_GITHUB_VERIFIED__PACKAGE_VERSION_HOLD",
         "observed_pr_head": "11417b75636ee18816028ffd5221884c4c9a9836",
         "observed_ci_run_id": 40640963381,
-        "next_action": "HOLD historical GitHub queue digest mismatch and remote branch HEAD drift; no CAS or automatic product recreation.",
+        "next_action": "PACKAGE_VERSION_GATE_HOLD__DO_NOT_RECREATE_PRODUCT_OR_REPIN_SOURCE__LOCAL_CAS_RECEIPT_SEPARATE",
         "expected_pck_sha256": "2cd8af6496cf288bc3e6aef317e472b480f21d2052cbd4ae0cd171e6285ab1ef",
         "artifact_id": 12795476435,
         "artifact_run_id": 40640951915,
@@ -970,16 +1052,18 @@
           "receipt_artifact_id": 12799123394,
           "result": "PRE_IDENTITY_BYTES_CORRELATED__USER_ID_REQUEST__IDENTITY_NOT_SUPPLIED",
           "scope": "AUTHENTICATED_FACTORY_ARTIFACT_BYTES_NOT_STORE_E2E"
-        }
+        },
+        "approved_identity_return_commit": "11417b75636ee18816028ffd5221884c4c9a9836",
+        "approved_identity_return_file": "products/prism-route-3d/store/approved-identity.json"
       }
     ],
     "provenance_policy": "READY requires exact source/build HEAD, verified Windows EXE SHA256, unique request_id/slug and separate USER_ID_REQUEST; no intermediate EXE registration inference",
     "cross_product_policy": "FAIL_CLOSED_ON_REQUEST_ID_SOURCE_BRANCH_SHA_SLUG_IDENTITY_TARGET_OR_REGISTRATION_MISMATCH"
   },
   "rotation_metrics": {
-    "total_jobs": 0,
-    "pre_identity_pass": 0,
-    "waiting_user_identity": 0,
+    "total_jobs": 1,
+    "pre_identity_pass": 1,
+    "waiting_user_identity": 1,
     "identity_received": 0,
     "conflicts": 0,
     "retries": 0,
@@ -988,10 +1072,10 @@
     "cross_product_rejection": 0,
     "3d_total_jobs": 1,
     "3d_pre_identity_pass": 1,
-    "3d_waiting_identity": 1,
+    "3d_waiting_identity": 0,
     "3d_conflicts": 0,
     "3d_artifact_mismatch": 0,
-    "metrics_basis": "LIVE_FACTORY_GODOT_EXPORT_ARTIFACT_AND_AUTHENTICATED_PROVISIONER_BYTES_CORRELATED__NO_STORE_IDENTITY_OR_LOCAL_QA",
+    "metrics_basis": "FOCUS_PROMOTED_SOURCE_HEAD_AND_GITHUB_WINDOWS_EXE_ARTIFACT_METADATA_CONFIRMED__PRISM_GITHUB_APPROVED_IDENTITY_RETURN_COMMIT_CONFIRMED__NO_LOCAL_PC_OR_CAS_RECEIPT_VERIFICATION",
     "3d_source_branch_head_drift_observed": 1
   },
   "local_source_code_sync": {
@@ -1051,10 +1135,19 @@
         "repo": "shihuiarenjinba-png/3d-game-factory",
         "source_sha": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
         "registration_type": "MSIX_OR_PWA_GAME",
-        "identity_status": "LOCAL_OPERATOR_MANUAL_REFERENCE__AUTOMATED_CAPTURE_PENDING"
+        "identity_status": "GITHUB_APPROVED_IDENTITY_RETURN_VERIFIED__POST_IDENTITY_BRANCH_HEAD_DRIFT"
+      },
+      {
+        "product_name": "Focus Session Desk",
+        "repo": "shihuiarenjinba-png/AI-App-Factory",
+        "source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+        "registration_type": "MSIX_OR_PWA_APP",
+        "identity_status": "LOCAL_PARTNER_CENTER_OPERATOR_ACTIVE",
+        "remote_branch_head_verified": true,
+        "physical_local_snapshot_verified": false
       }
     ],
-    "physical_local_status": "HOLD_REMOTE_HEAD_CONFLICT_PRISM_PIN",
+    "physical_local_status": "FOCUS_ELIGIBLE_REMOTE_SOURCE_HEAD_MATCH__USER_PC_RECEIPT_NOT_OBSERVED__PRISM_DRIFT_HOLD",
     "local_receipt_verified": false,
     "local_task_scheduler_registered": false,
     "local_task_scheduler_run_verified": false,
@@ -1072,12 +1165,12 @@
     "no_store_submit": true,
     "no_cas": true,
     "no_package_install": true,
-    "next_action": "Prism branch advanced by approved-identity.json commit; do not change pinned source_sha or disable remote HEAD guard. Reconcile post-Identity build head before physical 3-product sync; Offline/Signal pins still identical.",
+    "next_action": "Generate Focus-only manifest from central rotation; physical user-PC exact SHA sync and repeat reuse proof; Prism historical source branch remains drift HOLD. No Store/CAS/package.",
     "dynamic_rotation_plan": {
       "draft_pr": 30,
       "head_sha": "97670cedb7481f8448e920e393b8a2e930ba9c5f",
       "contract_ci_run_id": 40699238079,
-      "live_central_projection": "PASS_READ_ONLY__APP_0_3D_1_DRIFT_1__NO_ELIGIBLE_SOURCE_SYNC",
+      "live_central_projection": "FOCUS_APP_1_ELIGIBLE__PRISM_3D_1_DRIFT_HOLD__PHYSICAL_NOT_OBSERVED",
       "physical_local_receipt": "NOT_OBSERVED"
     },
     "manifest_isolation": {
@@ -1106,6 +1199,14 @@
       "contract_ci_conclusion": "SUCCESS_WINDOWS_UBUNTU",
       "offline_qa_run_id": 40707290809,
       "offline_qa_conclusion": "SUCCESS_WINDOWS_UBUNTU"
+    },
+    "focus_app_operator_intake": {
+      "draft_pr": 32,
+      "branch": "codex/focus-app-operator-intake-20261029",
+      "head_sha": "b962910095adcdbcee7fb0c1ef12e4fb3575c9e8",
+      "status": "DRAFT_CI_PENDING",
+      "physical_local_execution": "NOT_OBSERVED",
+      "github_origin_verified": false
     }
   },
   "latest_provisioner_heads_observed": {
@@ -1135,7 +1236,7 @@
   },
   "partner_center_local_operator": {
     "schema_version": 1,
-    "mode": "LOCAL_OPERATOR_ACTIVE__EXISTING_PRODUCT_REUSE_ONLY__AUTOMATED_CAPTURE_PENDING",
+    "mode": "PRISM_GITHUB_RETURN_VERIFIED__FOCUS_LOCAL_NEW_PRODUCT_OPERATOR_PENDING",
     "product": "Prism Route 3D",
     "slug": "prism-route-3d",
     "request_id": "3d-prism-route-3d-15fdcb52e46e",
@@ -1149,8 +1250,8 @@
     "search_zero_results": "HISTORICAL_BEFORE_USER_MANUAL_PRODUCT_CREATION__DO_NOT_USE_FOR_NEW_CREATION",
     "product_creation_status": "EXISTING_PRODUCT_MANUALLY_OBSERVED__NOT_AUTOMATED_CREATION_PASS",
     "identity_capture_status": "LOCAL_OPERATOR_MANUAL_REFERENCE__AUTOMATED_CAPTURE_NOT_OBSERVED",
-    "identity_route_status": "NOT_ROUTED",
-    "cas_status": "NOT_APPLIED",
+    "identity_route_status": "PRISM_FACTORY_APPROVED_IDENTITY_RETURN_COMMIT_PRESENT__CAS_RECEIPT_SEPARATE",
+    "cas_status": "PRISM_RETURN_COMMIT_PRESENT__REQUEST_SCOPED_CAS_RECEIPT_NOT_INDEPENDENTLY_VERIFIED",
     "package_status": "HOLD",
     "local_code_sync_required": true,
     "local_code_sync_pass": false,
@@ -1277,7 +1378,7 @@
       "cas_receipt": "NOT_OBSERVED",
       "cas_return_pass": false,
       "local_code_sync_on_original_branch": "HOLD_REMOTE_HEAD_CONFLICT",
-      "reconciliation": "GitHub compare and approved-identity.json independently inspected: one-file descendant and seven-field manual-reference match only. PR27 read-only audit added; no authenticated UI capture or request-scoped CAS approval/receipt. Preserve pinned source SHA and remote-HEAD HOLD."
+      "reconciliation": "GitHub one-file approved-identity return commit independently verified; original source SHA immutable, remote-head sync remains HOLD. Prism Gate1 user-reported PASS is not a separately obtained local receipt."
     },
     "source_lineage_audit": {
       "draft_pr": 27,
@@ -1331,6 +1432,42 @@
       "offline_qa_conclusion": "SUCCESS_WINDOWS_UBUNTU",
       "offline_qa_url": "https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/40682304339",
       "physical_local_execution": "NOT_OBSERVED"
+    },
+    "focus_session_desk": {
+      "product": "Focus Session Desk",
+      "slug": "focus-session-desk",
+      "request_id": "app-focus-session-desk-8b00bc4e9082",
+      "source_repository": "shihuiarenjinba-png/AI-App-Factory",
+      "source_branch": "codex/app-cohort-focus-controller-20261028",
+      "source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+      "registration_type": "MSIX_OR_PWA_APP",
+      "partner_center_selection": "MSIX or PWA app",
+      "allow_local_product_creation": true,
+      "status": "LOCAL_PARTNER_CENTER_OPERATOR_ACTIVE__NO_PHYSICAL_RECEIPT",
+      "local_code_sync": "NOT_OBSERVED",
+      "github_queue_digest": "NOT_VERIFIED",
+      "partner_center_product": "NOT_VERIFIED",
+      "identity_capture": "NOT_OBSERVED",
+      "identity_route": "NOT_APPLIED",
+      "cas": "NOT_APPLIED",
+      "package": "NOT_BUILT",
+      "required_actions": [
+        "EXACT_SOURCE_SYNC",
+        "GITHUB_QUEUE_ORIGIN_ATTESTATION",
+        "EXACT_NAME_SEARCH",
+        "IF_ZERO_RESERVE_ONCE",
+        "OVERVIEW_EXACT_ONE",
+        "SEVEN_FIELD_CAPTURE",
+        "REQUEST_SHA_BINDING",
+        "EXISTING_SINGLE_WRITER_RETURN"
+      ],
+      "forbidden_actions": [
+        "STORE_SUBMIT",
+        "PACKAGE_UPLOAD",
+        "PUBLISH",
+        "PRICE_SETTING",
+        "UNAPPROVED_CAS"
+      ]
     }
   },
   "rotation_intake_contract": {
@@ -1351,7 +1488,7 @@
       "three_d_max_jobs": 1
     },
     "current_central_ledger_cohort": {
-      "app_jobs": 0,
+      "app_jobs": 1,
       "three_d_jobs": 1
     },
     "current_prism": {
@@ -1369,7 +1506,16 @@
     "historical_github_queue_replay": "HOLD_STATIC_DIGEST_MISMATCH__PR28_UNCHANGED",
     "scheduler_3d_single_writer_connected": false,
     "identity_version_and_asset_approvals": "NOT_INFERRED",
-    "next_action": "Wire reviewed 3D projected queue into existing single-writer scheduler only after remote source HEAD drift and historical queue digest mismatch are reconciled with independent evidence. Physical Windows exact source sync and authenticated UI capture remain separate HOLD gates. Do not repin immutable source SHA, create duplicate product, infer Version, CAS, upload or submit Store."
+    "next_action": "Wire reviewed 3D projected queue into existing single-writer scheduler only after remote source HEAD drift and historical queue digest mismatch are reconciled with independent evidence. Physical Windows exact source sync and authenticated UI capture remain separate HOLD gates. Do not repin immutable source SHA, create duplicate product, infer Version, CAS, upload or submit Store.",
+    "current_focus": {
+      "request_id": "app-focus-session-desk-8b00bc4e9082",
+      "source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+      "registration_type": "MSIX_OR_PWA_APP",
+      "identity_status": "LOCAL_PARTNER_CENTER_OPERATOR_ACTIVE",
+      "remote_source_head_verified": true,
+      "local_source_sync_verified": false,
+      "operator_capture_pass": false
+    }
   },
   "rotation_source_sync_plan": {
     "schema_version": 1,
@@ -1381,17 +1527,20 @@
     "entrypoint": "python -m scripts.rotation_source_sync_plan --ledger <CENTRAL_LEDGER_JSON> --check-only",
     "local_manifest_entrypoint": "python -m scripts.rotation_source_sync_plan --ledger <CENTRAL_LEDGER_JSON> --manifest <LOCAL_MANIFEST_PATH>",
     "downstream_worker": "python -m scripts.local_code_sync --manifest <LOCAL_MANIFEST_PATH> --root <LOCAL_CODE_MIRROR_ROOT> --receipt <LOCAL_RECEIPT_PATH>",
-    "status": "CONTRACT_CI_PASS_AND_LIVE_CENTRAL_LEDGER_PROJECTION_PASS__PHYSICAL_LOCAL_HOLD",
+    "status": "FOCUS_APP_ELIGIBLE__PRISM_POST_IDENTITY_DRIFT_HOLD__LOCAL_PHYSICAL_NOT_EXECUTED",
     "contract_ci_run_id": 40699238079,
     "contract_ci_conclusion": "SUCCESS_WINDOWS_UBUNTU_AND_LIVE_CENTRAL_LEDGER",
     "offline_qa_run_id": 40699238049,
     "offline_qa_conclusion": "SUCCESS",
     "test_cases": 8,
     "live_central_ledger_projection": {
-      "app_jobs": 0,
+      "app_jobs": 1,
       "three_d_jobs": 1,
-      "eligible_source_sync_jobs": 0,
-      "source_head_drift_holds": 1
+      "eligible_source_sync_jobs": 1,
+      "source_head_drift_holds": 1,
+      "eligible_product": "Focus Session Desk",
+      "remote_source_head_verified_by_github": true,
+      "physical_local_sync_pass": false
     },
     "remote_head_verified": false,
     "physical_local_sync_pass": false,
@@ -1408,8 +1557,9 @@
       "LIVE_REMOTE_HEAD_RECHECK_DELEGATED_TO_LOCAL_CODE_SYNC",
       "NO_HISTORICAL_QUEUE_DIGEST_SUBSTITUTION"
     ],
-    "next_action": "Prism original branch HEAD is a one-commit Identity-file descendant, so old pinned source SHA remains immutable and live remote-head check HOLD. Resolve historical queue digest mismatch with independent proof; do not silently repin. When eligible APP jobs arrive, generate per-cohort local manifest and require actual user-PC source sync receipt and HEAD verification before any Partner Center operator action.",
+    "next_action": "PR32 CI then Focus-only manifest; physical local code sync receipt and queue digest, then Partner Center exact search/new reserve/Identity capture. Prism Gate1 returned, Version HOLD.",
     "manifest_isolation_pr": 31,
-    "manifest_isolation_status": "DRAFT_CI_PASS__PHYSICAL_LOCAL_HOLD"
+    "manifest_isolation_status": "DRAFT_CI_PASS__PHYSICAL_LOCAL_HOLD",
+    "focus_app_operator_intake_pr": 32
   }
 }
