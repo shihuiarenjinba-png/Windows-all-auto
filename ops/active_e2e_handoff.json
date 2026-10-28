@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T08:52:00Z",
+  "updated_at_utc": "2026-10-28T09:40:00Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -278,7 +278,7 @@
       "factory_head": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
       "provisioner_branch": "codex/e2e-belt-connection-20261027",
       "provisioner_head": "ce332d586d473e08b4c03808dfe84694fa55287e",
-      "next_action": "LOCAL_MODE: exact-source sync physical receipt, then authenticated Edge exact Prism Route 3D search, create if zero and authorized, capture local Identity; no CAS without explicit approval.",
+      "next_action": "Existing Prism Route 3D product observed manually; do not recreate. Physical exact SHA and GitHub origin receipt, existing product capture, manual oracle comparison; no CAS without approval.",
       "factory_ci_run_id": 40520641316,
       "factory_ci_conclusion": "SUCCESS",
       "dispatch_guard_pr": {
@@ -308,7 +308,7 @@
         "head_sha": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
         "ci_run_id": 40640963381,
         "ci_conclusion": "SUCCESS",
-        "identity_status": "LOCAL_PARTNER_CENTER_OPERATOR_ACTIVE",
+        "identity_status": "LOCAL_OPERATOR_MANUAL_REFERENCE__AUTO_CAPTURE_PENDING",
         "source_sha": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
         "request_id": "3d-prism-route-3d-15fdcb52e46e",
         "real_msix": "NOT_OBSERVED",
@@ -756,7 +756,11 @@
     "partner_center_identity_capture_pass": false,
     "partner_center_identity_route_pass": false,
     "local_operator_active": true,
-    "local_operator_contract_ci_pass": true
+    "local_operator_contract_ci_pass": true,
+    "github_origin_rotation_contract_code_committed": true,
+    "github_origin_rotation_contract_ci_pass": false,
+    "github_to_local_rotation_pass": false,
+    "prism_manual_identity_reference_observed": true
   },
   "user_id_requests": {
     "schema_version": 1,
@@ -827,10 +831,11 @@
         "registration_type": "MSIX_OR_PWA_GAME",
         "partner_center_selection": "MSIX or PWA game",
         "version_separate": true,
-        "next_gate": "LOCAL_CODE_SYNC_EXACT_SHA_PASS__PARTNER_CENTER_EXACT_SEARCH__CREATE_IF_ZERO_AND_APPROVED__CAPTURE__VALIDATE__ROUTE__EXPLICIT_CAS_APPROVAL",
+        "next_gate": "PHYSICAL_CODE_SYNC__GITHUB_QUEUE_ORIGIN__EXISTING_PRODUCT_EXACT_ONE__AUTO_CAPTURE_ORACLE_MATCH__IDENTITY_ROUTE__EXPLICIT_CAS",
         "user_manual_identity_entry_required": false,
-        "allow_local_product_creation": true,
-        "partner_center_product_status": "NOT_CREATED__USER_REPORTED_SEARCH_ZERO__NOT_INDEPENDENTLY_VERIFIED"
+        "allow_local_product_creation": false,
+        "partner_center_product_status": "EXISTING_PRODUCT_MANUALLY_OBSERVED__AUTOMATED_CAPTURE_PENDING",
+        "manual_reference_status": "LOCAL_OPERATOR_MANUAL_REFERENCE"
       }
     ],
     "excluded_known_good_store_products": [
@@ -840,15 +845,15 @@
     ],
     "exclusion_reason": "EXISTING_KNOWN_GOOD_STORE_IDENTITY_REFERENCE__NO_NEW_REQUEST__NO_CLOUD_AUTHENTICATION_CLAIM",
     "pending_requests": [],
-    "rotation_pending_3d": "PRE_IDENTITY_READY__USER_ID_REQUEST_ISSUED__WAITING_USER_IDENTITY",
+    "rotation_pending_3d": "PRE_IDENTITY_READY__MANUAL_REFERENCE_OBSERVED__AUTO_CAPTURE_PENDING",
     "operator_active_requests": [
       "3d-prism-route-3d-15fdcb52e46e"
     ]
   },
-  "classification": "LOCAL_MODE_RESTORED__LOCAL_OPERATOR_CONTRACT_CI_PASS__PRISM_PRODUCT_NOT_CREATED__LOCAL_SYNC_UNVERIFIED__E2E_HOLD",
+  "classification": "LOCAL_MODE__PRISM_EXISTING_PRODUCT_MANUAL_REFERENCE__AUTO_CAPTURE_PENDING__GITHUB_ORIGIN_GATE_PR26__E2E_HOLD",
   "registration_router": {
     "schema_version": 1,
-    "status": "WINDOWS_UBUNTU_CI_PASS__LOCAL_GATE_DEFERRED",
+    "status": "WINDOWS_UBUNTU_ROUTER_CI_PASS__LOCAL_MODE__PRISM_EXISTING_MANUAL_REFERENCE",
     "implementation_pr": 19,
     "implementation_branch": "codex/user-provided-identity-gdk-20261028",
     "implementation_head_sha": "6210cb7bfdbd3d207d6ead70a40b9c3f2a5b1653",
@@ -881,8 +886,8 @@
         "repository": "shihuiarenjinba-png/3d-game-factory",
         "registration_type": "MSIX_OR_PWA_GAME",
         "partner_center_selection": "MSIX or PWA game",
-        "identity_status": "LOCAL_PARTNER_CENTER_OPERATOR_ACTIVE",
-        "next_action": "LOCAL_EXACT_SOURCE_SYNC_THEN_PARTNER_CENTER_EXACT_SEARCH_CREATE_IF_ZERO_CAPTURE_AND_VALIDATE"
+        "identity_status": "LOCAL_OPERATOR_MANUAL_REFERENCE__AUTO_CAPTURE_PENDING",
+        "next_action": "EXISTING_PRODUCT_REUSE_ONLY__PHYSICAL_SYNC__GITHUB_ORIGIN__AUTO_IDENTITY_CAPTURE"
       }
     ],
     "unresolved_policy": "HOLD_REGISTRATION_TYPE_UNRESOLVED",
@@ -933,10 +938,10 @@
         "packaging_family": "MSIX",
         "registration_type": "MSIX_OR_PWA_GAME",
         "partner_center_selection": "MSIX or PWA game",
-        "identity_status": "LOCAL_PARTNER_CENTER_OPERATOR_ACTIVE",
+        "identity_status": "LOCAL_OPERATOR_MANUAL_REFERENCE__AUTOMATED_CAPTURE_PENDING",
         "observed_pr_head": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
         "observed_ci_run_id": 40640963381,
-        "next_action": "LOCAL_CODE_SYNC_PASS first; Partner Center exact name search, create only if exactly zero and allowed; capture and validate identity locally; CAS only with explicit approval.",
+        "next_action": "Existing Prism product manually observed; prohibit duplicate create. GitHub-origin exact SHA physical receipt then existing-product Identity capture and oracle match.",
         "expected_pck_sha256": "2cd8af6496cf288bc3e6aef317e472b480f21d2052cbd4ae0cd171e6285ab1ef",
         "artifact_id": 12795476435,
         "artifact_run_id": 40640951915,
@@ -1081,7 +1086,7 @@
   },
   "partner_center_local_operator": {
     "schema_version": 1,
-    "mode": "LOCAL_OPERATOR_ACTIVE__CONTRACT_CI_PASS__PHYSICAL_UI_NOT_ACCESSED",
+    "mode": "LOCAL_OPERATOR_ACTIVE__EXISTING_PRODUCT_REUSE_ONLY__AUTOMATED_CAPTURE_PENDING",
     "product": "Prism Route 3D",
     "slug": "prism-route-3d",
     "request_id": "3d-prism-route-3d-15fdcb52e46e",
@@ -1091,10 +1096,10 @@
     "registration_type": "MSIX_OR_PWA_GAME",
     "partner_center_selection": "MSIX or PWA game",
     "exact_display_name": "Prism Route 3D",
-    "allow_local_product_creation": true,
-    "search_zero_results": "USER_REPORTED__NOT_INDEPENDENTLY_VERIFIED",
-    "product_creation_status": "PARTNER_CENTER_PRODUCT_NOT_CREATED__USER_REPORTED_ZERO_RESULTS__NOT_VERIFIED",
-    "identity_capture_status": "NOT_CAPTURED",
+    "allow_local_product_creation": false,
+    "search_zero_results": "HISTORICAL_BEFORE_USER_MANUAL_PRODUCT_CREATION__DO_NOT_USE_FOR_NEW_CREATION",
+    "product_creation_status": "EXISTING_PRODUCT_MANUALLY_OBSERVED__NOT_AUTOMATED_CREATION_PASS",
+    "identity_capture_status": "LOCAL_OPERATOR_MANUAL_REFERENCE__AUTOMATED_CAPTURE_NOT_OBSERVED",
     "identity_route_status": "NOT_ROUTED",
     "cas_status": "NOT_APPLIED",
     "package_status": "HOLD",
@@ -1127,7 +1132,7 @@
       "CREDENTIAL_COOKIE_TOKEN_SESSION_LOGGING",
       "UNAPPROVED_CAS"
     ],
-    "next_action": "PR24 contract-only CI PASS. On physical Windows run PR23 source sync, verify exact snapshot, then existing authenticated Edge exact product search/create/capture; browser driver not implemented or accessed in this run.",
+    "next_action": "Do not create Prism again. Physical Windows exact-source sync and clean central checkout; GitHub-origin queue job; Overview exact one existing product; View product identity; auto capture seven fields and compare manual oracle; route only after independent receipt.",
     "contract": {
       "draft_pr": 24,
       "branch": "codex/local-partner-center-operator-gate-20261028",
@@ -1143,7 +1148,45 @@
       "physical_local_execution": "NOT_OBSERVED",
       "user_pc_local_code_sync_receipt": "NOT_OBSERVED",
       "browser_ui_control": "NOT_AVAILABLE_IN_THIS_RUNTIME",
-      "next_implementation": "CONNECT_APPROVED_LOCAL_BROWSER_OPERATOR_TO_PREPARED_JOB_AND_CAPTURE_RECEIPT_WITHOUT_SECRETS"
+      "next_implementation": "PR26 GitHub-origin receipt and manual oracle code committed; physical UI driver and local execution not observed"
+    },
+    "manual_reference": {
+      "basis": "LOCAL_OPERATOR_MANUAL_REFERENCE",
+      "observed_product_name": "Prism Route 3D",
+      "store_id": "9N95J2T57B41",
+      "oracle_path": "tests/fixtures/prism_route_3d_manual_reference.json",
+      "identity_field_count": 7,
+      "identity_values_verified_by_automation": false,
+      "existing_product_reported": true,
+      "authenticated_partner_center_pass": false
+    },
+    "github_origin_handoff": {
+      "draft_pr": 26,
+      "branch": "codex/github-origin-existing-prism-operator-20261028",
+      "head_sha": "9a6f7e81028e71bc89755e832b7fcd7343cd5044",
+      "base_draft_pr": 24,
+      "entrypoint": "python -m scripts.github_partner_center_handoff",
+      "contract_ci": "PENDING",
+      "physical_execution": "NOT_OBSERVED",
+      "queue_job_origin_required": "GITHUB_PRE_IDENTITY_QUEUE",
+      "required_evidence": [
+        "central_repository",
+        "central_branch",
+        "central_head_sha",
+        "queue_job_digest",
+        "request_id",
+        "source_repository",
+        "source_branch",
+        "source_sha",
+        "source_snapshot_path",
+        "source_snapshot_head",
+        "identity_return_target"
+      ],
+      "manual_reference_status": "LOCAL_OPERATOR_MANUAL_REFERENCE_ONLY",
+      "duplicate_product_creation": "FORBIDDEN",
+      "identity_capture": "NOT_OBSERVED",
+      "cas": "NOT_APPLIED",
+      "store_submission": "NOT_AUTHORIZED"
     }
   }
 }
