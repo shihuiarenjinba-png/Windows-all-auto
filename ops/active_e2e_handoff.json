@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T19:40:00Z",
+  "updated_at_utc": "2026-10-28T19:44:00Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -801,7 +801,7 @@
     "app_batch_cloud_discover_contract_pass": true,
     "app_batch_completion_guard_ci_pass": true,
     "batch4_queue_target_authorization_guard_code_committed": true,
-    "batch4_queue_target_authorization_guard_ci_pass": false,
+    "batch4_queue_target_authorization_guard_ci_pass": true,
     "batch4_local_operator_pass": false,
     "batch4_schedule_trigger_proven": false
   },
@@ -1005,7 +1005,7 @@
       "app-offline-image-inventory-desk-16b6a772952c"
     ]
   },
-  "classification": "APP_BATCH_4_CLOUD_PREIDENTITY_REVERIFIED__PR36_QUEUE_AUTH_GUARDS_CI_PENDING__LOCAL_NOT_RUN__E2E_HOLD",
+  "classification": "APP_BATCH4_CLOUD_PREIDENTITY_REVERIFIED__PR36_WINDOWS_UBUNTU_CI_GREEN__LOCAL_BATCH_NOT_RUN__E2E_HOLD",
   "registration_router": {
     "schema_version": 1,
     "status": "WINDOWS_UBUNTU_ROUTER_CI_PASS__LOCAL_MODE__PRISM_EXISTING_MANUAL_REFERENCE",
@@ -1877,7 +1877,7 @@
     "store_submission": 0,
     "package_upload": 0,
     "package_version_gate": "HOLD",
-    "status": "CLOUD_DISCOVER_4_OF_4_PASS__PR36_HARDENING_CI_PENDING__LOCAL_BATCH_NOT_STARTED",
+    "status": "CLOUD_DISCOVER_4_OF_4_PASS__PR36_WINDOWS_UBUNTU_CI_GREEN__LOCAL_BATCH_NOT_STARTED",
     "preflight_evidence": "FOUR_GITHUB_FACTORY_BRANCH_HEADS_IDENTICAL_RECHECKED_20261029_0437_JST__ARTIFACT_ZIP_AND_EXE_SHA_BYTES_PREVIOUSLY_VERIFIED__NO_PHYSICAL_LOCAL_RECEIPT",
     "code_contracts": {
       "windows_all_auto_pr": 33,
@@ -1904,15 +1904,17 @@
       "windows_all_auto_cross_lane_offline_qa_status": "SUCCESS_WINDOWS_UBUNTU",
       "windows_all_auto_queue_owned_target_pr": 36,
       "windows_all_auto_queue_owned_target_branch": "codex/e2e-batch4-explicit-job-authorization-20261029",
-      "windows_all_auto_queue_owned_target_head": "c183144ffb2251c6034a32ae1344d8fea6e5f65e",
-      "windows_all_auto_queue_owned_target_ci_run": 40756325441,
-      "windows_all_auto_queue_owned_target_ci_status": "IN_PROGRESS_NOT_PASS",
+      "windows_all_auto_queue_owned_target_head": "bbc6f1e79f67e1f7bad7b08555bc620b820986ac",
+      "windows_all_auto_queue_owned_target_ci_run": 40756702621,
+      "windows_all_auto_queue_owned_target_ci_status": "SUCCESS_WINDOWS_UBUNTU",
       "windows_all_auto_queue_owned_target_changes": [
         "EXPLICIT_PRE_IDENTITY_QUEUE_RETURN_TARGET",
         "PER_PRODUCT_CREATE_POLICY_NO_GLOBAL_FALLBACK",
         "CROSS_LANE_REQUEST_ID_AND_TARGET_UNIQUENESS",
         "FIVE_NEGATIVE_REGRESSION_TESTS"
-      ]
+      ],
+      "windows_all_auto_queue_owned_target_offline_qa_run": 40756702582,
+      "windows_all_auto_queue_owned_target_offline_qa_status": "SUCCESS_WINDOWS_UBUNTU"
     },
     "products": [
       {
@@ -2031,12 +2033,12 @@
     "cloud_discover_status": "BATCH_DISCOVERED_4_IN_GITHUB_ACTIONS_WINDOWS_AND_UBUNTU__NOT_LOCAL_PC"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-28T19:40:00Z",
+    "observed_at_utc": "2026-10-28T19:44:00Z",
     "scope": "APP_BATCH4_EXPLICIT_QUEUE_TARGET_AND_PRODUCT_CREATE_POLICY__CROSS_LANE_UNIQUENESS",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "implementation_branch": "codex/e2e-batch4-explicit-job-authorization-20261029",
     "implementation_pr": 36,
-    "implementation_head_sha": "c183144ffb2251c6034a32ae1344d8fea6e5f65e",
+    "implementation_head_sha": "bbc6f1e79f67e1f7bad7b08555bc620b820986ac",
     "stacked_on_pr": 35,
     "changes": [
       "Require queue job own identity_return_target; reject request-derived substitution",
@@ -2044,8 +2046,8 @@
       "Require per-product allow_local_product_creation; reject global policy fallback",
       "Add five fail-closed regressions"
     ],
-    "ci_run_id": 40756325441,
-    "ci_status": "IN_PROGRESS_NOT_PASS",
+    "ci_run_id": 40756702621,
+    "ci_status": "SUCCESS_WINDOWS_UBUNTU",
     "prior_green_pr": 35,
     "prior_green_ci_run_id": 40747451974,
     "cloud_pre_identity_discovered": 4,
@@ -2066,6 +2068,10 @@
     "unprocessed_count": 4,
     "next_resume_index": 1,
     "store_submission": 0,
-    "no_main_release_merge": true
+    "no_main_release_merge": true,
+    "offline_qa_run_id": 40756702582,
+    "offline_qa_status": "SUCCESS_WINDOWS_UBUNTU",
+    "regression_tests": "FULL_OFFLINE_QA_406_TESTS_1_SKIPPED__BOTH_OS_PASS",
+    "note": "Synthetic historical Prism regression fixtures updated for explicit target and per-product creation policy; no actual historical queue receipt rewritten."
   }
 }
