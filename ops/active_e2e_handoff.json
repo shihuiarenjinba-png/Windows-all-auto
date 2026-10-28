@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T11:45:14Z",
+  "updated_at_utc": "2026-10-28T12:44:19Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -1294,5 +1294,43 @@
       "offline_qa_url": "https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/40682304339",
       "physical_local_execution": "NOT_OBSERVED"
     }
+  },
+  "rotation_intake_contract": {
+    "schema_version": 1,
+    "repository": "shihuiarenjinba-png/Windows-all-auto",
+    "draft_pr": 29,
+    "branch": "codex/rotation-preidentity-3d-intake-20261028",
+    "head_sha": "ac88d6d266166c7926db38eb2c6d6de3d6fdecdd",
+    "stacked_on_pr": 28,
+    "entrypoint": "python -m scripts.rotation_pre_identity_intake --ledger <CENTRAL_LEDGER_JSON> --check-only",
+    "status": "OFFLINE_CONTRACT_CI_PASS__LIVE_HEAD_AND_LOCAL_EXECUTION_UNVERIFIED",
+    "contract_ci_run_id": 40690168480,
+    "contract_ci_conclusion": "SUCCESS_WINDOWS_UBUNTU",
+    "offline_qa_run_id": 40690168691,
+    "offline_qa_conclusion": "SUCCESS_WINDOWS_UBUNTU",
+    "cohort_capacity": {
+      "app_max_jobs": 5,
+      "three_d_max_jobs": 1
+    },
+    "current_central_ledger_cohort": {
+      "app_jobs": 0,
+      "three_d_jobs": 1
+    },
+    "current_prism": {
+      "request_id": "3d-prism-route-3d-15fdcb52e46e",
+      "source_sha": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
+      "observed_source_branch_head": "11417b75636ee18816028ffd5221884c4c9a9836",
+      "source_head_status": "HOLD_SOURCE_BRANCH_HEAD_DRIFT",
+      "identity_status": "LOCAL_PARTNER_CENTER_OPERATOR_ACTIVE",
+      "local_code_sync_pass": false,
+      "identity_capture_pass": false,
+      "cas_return_pass": false,
+      "real_msix_pass": false
+    },
+    "intake_digest_scope": "ROTATION_PROJECTION_ONLY__NOT_HISTORICAL_GITHUB_QUEUE_DIGEST",
+    "historical_github_queue_replay": "HOLD_STATIC_DIGEST_MISMATCH__PR28_UNCHANGED",
+    "scheduler_3d_single_writer_connected": false,
+    "identity_version_and_asset_approvals": "NOT_INFERRED",
+    "next_action": "Wire reviewed 3D projected queue into existing single-writer scheduler only after remote source HEAD drift and historical queue digest mismatch are reconciled with independent evidence. Physical Windows exact source sync and authenticated UI capture remain separate HOLD gates. Do not repin immutable source SHA, create duplicate product, infer Version, CAS, upload or submit Store."
   }
 }
