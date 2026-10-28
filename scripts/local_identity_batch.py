@@ -8,6 +8,7 @@ to process exactly one product at a time and resume after interruption.
 from __future__ import annotations
 
 import argparse
+from contextlib import contextmanager
 from copy import deepcopy
 from datetime import datetime
 import json
@@ -243,6 +244,12 @@ def claim_next(state: dict) -> tuple[dict, dict]:
 def complete_active(state: dict, result: dict) -> dict:
     current = deepcopy(state)
     index = current.get("active_index")
+    if index is None:
+        previous = [x for x in current.get("products", [])
+                    if x.get("state") in {"SUCCESS", "HOLD"}
+                    and x.get("result") == result]
+        require(len(previous) == 1, "BATCH_NO_ACTIVE_JOB_OR_REPLAY_CONFLICT")
+        return current
     active = [x for x in current.get("products", [])
               if x.get("batch_index") == index and x.get("state") == "PROCESSING"]
     require(len(active) == 1, "BATCH_ACTIVE_JOB_NOT_UNIQUE")
@@ -281,10 +288,54 @@ def complete_active(state: dict, result: dict) -> dict:
     return current
 
 
+@contextmanager
+def state_lock(path: Path):
+    """Nonblocking OS lock shared by discover, claim and complete.
+
+    Windows msvcrt and POSIX flock release the lock on process termination.
+    The lock file itself is intentionally retained; it is not an execution
+    receipt and cannot be used as evidence of a completed product.
+    """
+    lock_path = path.with_suffix(path.suffix + ".lock")
+    if not operator._safe_path(lock_path):
+        raise BatchHold("UNSAFE_BATCH_LOCK_PATH")
+    lock_path.parent.mkdir(parents=True, exist_ok=True)
+    fd = os.open(lock_path, os.O_RDWR | os.O_CREAT, 0o600)
+    locked = False
+    try:
+        if os.fstat(fd).st_size == 0:
+            os.write(fd, b"\x00")
+        os.lseek(fd, 0, os.SEEK_SET)
+        try:
+            if os.name == "nt":
+                import msvcrt
+                msvcrt.locking(fd, msvcrt.LK_NBLCK, 1)
+            else:
+                import fcntl
+                fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            locked = True
+        except OSError as exc:
+            raise BatchHold("BATCH_SINGLE_FLIGHT_LOCKED") from exc
+        yield
+    finally:
+        if locked:
+            os.lseek(fd, 0, os.SEEK_SET)
+            if os.name == "nt":
+                import msvcrt
+                msvcrt.locking(fd, msvcrt.LK_UNLCK, 1)
+            else:
+                import fcntl
+                fcntl.flock(fd, fcntl.LOCK_UN)
+        os.close(fd)
+
+
 def atomic_write(path: Path, value: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temp = path.with_suffix(path.suffix + f".{os.getpid()}.tmp")
-    temp.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    with temp.open("w", encoding="utf-8") as stream:
+        stream.write(json.dumps(value, ensure_ascii=False, indent=2) + "\n")
+        stream.flush()
+        os.fsync(stream.fileno())
     os.replace(temp, path)
 
 
@@ -303,16 +354,27 @@ def main(argv=None) -> int:
     f.add_argument("--result", type=Path, required=True)
     args = parser.parse_args(argv)
     try:
-        if args.mode == "discover":
-            result = discover(operator.read_json(args.ledger),
-                              operator.read_json(args.scheduled_trigger, 64_000))
-        elif args.mode == "claim":
-            result, job = claim_next(operator.read_json(args.state, 256_000))
-            atomic_write(args.job_output, job)
-        else:
-            result = complete_active(operator.read_json(args.state, 256_000),
-                                     operator.read_json(args.result, 64_000))
-        atomic_write(args.state, result)
+        with state_lock(args.state):
+            if args.mode == "discover":
+                proposed = discover(operator.read_json(args.ledger),
+                                    operator.read_json(args.scheduled_trigger, 64_000))
+                if args.state.exists():
+                    existing = operator.read_json(args.state, 256_000)
+                    require(existing.get("batch_id") == proposed["batch_id"]
+                            and existing.get("central_head_sha") == proposed["central_head_sha"]
+                            and existing.get("discovered_count") == TOTAL,
+                            "BATCH_EXISTING_STATE_CONFLICT")
+                    result = existing  # restart-safe: never reset processed jobs
+                else:
+                    result = proposed
+            elif args.mode == "claim":
+                result, job = claim_next(operator.read_json(args.state, 256_000))
+                require(not args.job_output.exists(), "BATCH_JOB_OUTPUT_ALREADY_EXISTS")
+                atomic_write(args.job_output, job)
+            else:
+                result = complete_active(operator.read_json(args.state, 256_000),
+                                         operator.read_json(args.result, 64_000))
+            atomic_write(args.state, result)
         print(json.dumps({k: v for k, v in result.items() if k != "products"},
                          ensure_ascii=False))
         return 0
