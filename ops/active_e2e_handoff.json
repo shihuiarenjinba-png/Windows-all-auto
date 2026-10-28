@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T07:42:16.570Z",
+  "updated_at_utc": "2026-10-28T07:43:24.053Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -278,7 +278,7 @@
       "factory_head": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
       "provisioner_branch": "codex/e2e-belt-connection-20261027",
       "provisioner_head": "ce332d586d473e08b4c03808dfe84694fa55287e",
-      "next_action": "Real Factory export run 40640951915 Artifact 12795476435 and authenticated Provisioner PRE_IDENTITY run 40650334549 succeeded. User must provide official 3D Identity; no CAS, MSIX or local QA yet.",
+      "next_action": "PRE_IDENTITY_READY with authenticated Factory EXE/PCK correlation. Official Identity for Prism Route 3D is now requested from user; no CAS. Provisioner Windows MakeAppx QA_UNSIGNED artifact 12799213128 is NOT an approved Store MSIX. Local QA deferred.",
       "factory_ci_run_id": 40520641316,
       "factory_ci_conclusion": "SUCCESS",
       "dispatch_guard_pr": {
@@ -319,7 +319,16 @@
         "exe_sha256": "66b26ad96df7458ea917b632a73ac7c88bb058db24dbd11a457fd50435ab7b13",
         "pck_sha256": "2cd8af6496cf288bc3e6aef317e472b480f21d2052cbd4ae0cd171e6285ab1ef",
         "pre_identity_verification_run_id": 40650334549,
-        "pre_identity_status": "PRE_IDENTITY_READY"
+        "pre_identity_status": "PRE_IDENTITY_READY",
+        "qa_unsigned_makeappx": {
+          "run_id": 40650334577,
+          "artifact_id": 12799213128,
+          "artifact_name": "prism-route-3d-real-makeappx-unsigned-not-store",
+          "artifact_zip_sha256": "b4d7b55ba768bda0082156a10476e002306cecd78b8e740fe3e102173f545813",
+          "status": "QA_UNSIGNED_REAL_GODOT_MAKEAPPX_PASS__NOT_OFFICIAL_STORE_MSIX",
+          "approved_identity": false,
+          "real_store_msix_pass": false
+        }
       }
     }
   },
@@ -385,7 +394,7 @@
       "local_tests": "67_PASS",
       "next_action": "Do not rerun without new runner/workflow evidence; require real MSIX before Checker product QA"
     },
-    "last_12_minute_update": "Provisioner-3D PR7 HEAD ce332d58: live authenticated Factory artifact bytes correlated in CI #40650334549 and #40650339607 SUCCESS. Prism Route 3D PRE_IDENTITY_READY; Identity WAITING_USER_IDENTITY; no CAS/MSIX/local QA. Provisioner-game PR10 latest HEAD e9ae4669 CI #40648776274 SUCCESS; pinned live queue SHA refreshed.",
+    "last_12_minute_update": "3D Factory real export run 40640951915 + authenticated Provisioner byte correlation run 40650334549 SUCCESS; Provisioner QA_UNSIGNED MakeAppx run 40650334577 SUCCESS (not Store MSIX); PR20 real 3D queue regression CI 40651840374 SUCCESS. Prism Route 3D now WAITING_USER_IDENTITY; local gates deferred.",
     "next_repo": "shihuiarenjinba-png/Windows-all-auto",
     "next_branch": "codex/e2e-belt-connection-20261027",
     "next_head_sha": "628b9c9e6913512b2e5b4175a50f1636ef3c81e9",
@@ -623,7 +632,7 @@
     "rotation_queue": {
       "draft_pr": 20,
       "branch": "codex/e2e-rotation-queue-20261028-1536",
-      "head_sha": "db0d6325a3737d23f7066778713d1d7a339f1ca7",
+      "head_sha": "def28d6093614f8edd982ff665402a21a567252d",
       "base_pr": 19,
       "ci_status": "SUCCESS_WINDOWS_UBUNTU",
       "files": [
@@ -640,9 +649,10 @@
       "identity_acquisition": "USER_ONLY",
       "previous_green_head": "97cfe12042fbf60b8ea0d66d2b7ed95edee3cf4f",
       "previous_green_ci_run_id": 40645674673,
-      "latest_ci_run_id": 40645730254,
+      "latest_ci_run_id": 40651840374,
       "artifact_contract": "EXE_SHA256_PLUS_ARTIFACT_ID_RUN_ID_ZIP_SHA256_AND_EXACT_SOURCE_BUILD_HEAD",
-      "ci_url": "https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/40645730254"
+      "ci_url": "https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/40651840374",
+      "real_three_d_canary_regression": "PASS__PINNED_FACTORY_ARTIFACT_ID_12795476435__NO_CAS"
     }
   },
   "user_managed_identity_handoff": {
@@ -716,7 +726,8 @@
     "rotation_queue_ci_pass": true,
     "rotation_real_product_pass": false,
     "three_d_pre_identity_ready": true,
-    "three_d_waiting_user_identity": true
+    "three_d_waiting_user_identity": true,
+    "three_d_qa_unsigned_makeappx_pass": true
   },
   "user_id_requests": {
     "schema_version": 1,
