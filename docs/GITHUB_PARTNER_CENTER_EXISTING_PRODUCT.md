@@ -58,3 +58,9 @@ At the inspected 2026-10-28 code heads, `scripts/local_identity_scheduler.py` ac
 `Repository-Provisioner-3D/package_identity_provisioner.py` currently requires an operator evidence schema containing `authenticated_account`, `official_evidence_url`, `verified_at` and `version`, in addition to Identity fields. Those are **not** supplied by the seven-field Product Identity capture. Version must remain a separate explicit approval gate; never synthesize it or silently mix it into Identity capture. The 3D Provisioner owner must reconcile this contract before the single-writer return can proceed.
 
 Until that downstream adapter is reviewed and the separate version/package approval exists, the result of this PR is only a locally verifiable **GitHub-origin + schema/manual-reference correlation gate**, not end-to-end Identity routing.
+
+## 2026-10-28 source-branch drift detected
+
+A later read of Factory PR #13 found its source branch HEAD at `11417b75636ee18816028ffd5221884c4c9a9836`, **one commit after** the pinned PRE_IDENTITY source SHA `15fdcb52e46e35e6de8e87c55af99719c21e09b9`. The new commit adds `products/prism-route-3d/store/approved-identity.json`, which includes the manually observed Store values and claims an Identity return. The GitHub Factory CI for the new HEAD succeeded, but that is **not** independent local UI capture or explicit CAS approval evidence.
+
+Consequently the hardened exact-source sync must return **HOLD_REMOTE_HEAD_CONFLICT** against the original source branch pin. Do not silently update `source_sha`, weaken remote-HEAD checks, reset the Factory branch, or overwrite the Identity file. A separate, reviewed reconciliation must distinguish immutable source SHA from the observed post-Identity commit, confirm the request-scoped CAS approval/receipt, and verify any local capture evidence. Until then, no Identity-route or E2E PASS.
