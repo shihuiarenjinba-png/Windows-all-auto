@@ -58,6 +58,8 @@ def rotated(app_count=5, three_d=True):
             "source_repository": q.APP_REPO, "source_branch": "codex/app-" + str(n),
             "source_sha": APP_SHA, "factory_build_branch": "codex/app-build-" + str(n),
             "factory_build_head": BUILD_SHA, "expected_exe_sha256": DIGEST,
+            "artifact_id": 12345, "artifact_run_id": 67890,
+            "artifact_zip_sha256": "2" * 64,
             "artifact_provenance": "REAL_WINDOWS_EXPORT_VERIFIED",
             "status": "PRE_IDENTITY_READY", "packaging_family": "MSIX",
             "registration_type": "MSIX_OR_PWA_APP",
@@ -79,6 +81,8 @@ def rotated(app_count=5, three_d=True):
             "source_branch": "codex/3d-prism-source", "source_sha": THREE_D_SHA,
             "factory_build_branch": "codex/3d-prism-build",
             "factory_build_head": BUILD_SHA, "expected_exe_sha256": DIGEST,
+            "artifact_id": 12345, "artifact_run_id": 67890,
+            "artifact_zip_sha256": "2" * 64,
             "artifact_provenance": "REAL_WINDOWS_EXPORT_VERIFIED",
             "packaging_strategy": "GODOT_WINDOWS_EXE_PCK_MAKEAPPX_MSIX",
             "packaging_family": "MSIX", "registration_type": "MSIX_OR_PWA_GAME",
@@ -142,6 +146,18 @@ class RotationQueueTests(unittest.TestCase):
         data = rotated(1, False)
         data["rotation_cohorts"]["app_jobs"][0]["expected_exe_sha256"] = "not-a-digest"
         with self.assertRaisesRegex(pre_identity_queue.QueueHold, "PROVENANCE"):
+            q.project(data, head)
+
+    def test_artifact_zip_digest_required(self):
+        data = rotated(1, False)
+        data["rotation_cohorts"]["app_jobs"][0]["artifact_zip_sha256"] = None
+        with self.assertRaisesRegex(pre_identity_queue.QueueHold, "PROVENANCE"):
+            q.project(data, head)
+
+    def test_product_display_name_cannot_cross_identity_request(self):
+        data = rotated(1, False)
+        data["user_id_requests"]["items"][1]["product_name"] = "Another product"
+        with self.assertRaisesRegex(pre_identity_queue.QueueHold, "CROSS_PRODUCT"):
             q.project(data, head)
 
     def test_head_change_fails_closed(self):
