@@ -27,3 +27,20 @@ jobs:
         run: python -m unittest discover -s tests -p test_rotation_source_sync_plan.py -v
       - name: Compile source and tests
         run: python -m py_compile scripts/rotation_source_sync_plan.py tests/test_rotation_source_sync_plan.py
+  live-central-ledger:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Read live 36-minute central ledger without modifying it
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/shihuiarenjinba-png/Windows-all-auto/contents/ops/active_e2e_handoff.json?ref=codex/e2e-belt-connection-20261027" --jq .content > central-ledger.b64
+          python -c "import base64,pathlib; pathlib.Path('central-ledger.json').write_bytes(base64.b64decode(pathlib.Path('central-ledger.b64').read_text()))"
+          python -m scripts.rotation_source_sync_plan --ledger central-ledger.json --check-only > rotation-plan.json
+          python -c "import json; p=json.load(open('rotation-plan.json')); assert p['metrics']['source_head_drift_holds'] >= 1; assert not p['physical_local_sync_pass']; assert not p['cas_return_pass']; print(p['status'],p['metrics'])"
