@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T04:38:44.623Z",
+  "updated_at_utc": "2026-10-28T04:39:00.641Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
   "active_product": {
     "lane": "GAME",
     "slug": "signal-sprint",
-    "phase": "USER_IDENTITY_RECEIVED__PR19_FIRST_RUN_SECURE_PATH_FIX_WINDOWS_TEST_CORRECTED_CI_RUNNING__LOCAL_CHECK_ONLY_PENDING__CAS_NOT_APPLIED",
+    "phase": "USER_IDENTITY_RECEIVED__PR19_FIRST_RUN_PRIVATE_IDENTITY_FIX_WINDOWS_UBUNTU_CI_PASS__LOCAL_CHECK_ONLY_PENDING__CAS_NOT_APPLIED",
     "status": "HOLD",
     "request_id": "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e",
     "product_type": "GAME",
@@ -56,7 +56,7 @@
       "windows_all_auto_record": null,
       "finished_at_utc": "2026-10-27T05:03:20Z"
     },
-    "next_action": "PR19 77b604ca9f7b fixes first-run private Identity directory creation, create-only materialization and immutable registry source correlation; Windows 8.3 temp-path test assertion corrected. CI #40633450732 in progress; no PASS claim. Provisioner-game PR10 e4c74846 CI #40630701195 SUCCESS. Local Windows check-only, EXE SHA verification, explicit CAS approval remain required.",
+    "next_action": "PR19 77b604ca9f7b first-run private GDK Identity directory/create-only file/immutable registry correlation fixed. Windows+Ubuntu CI #40633450732 SUCCESS (269 tests, 2 skipped on Windows). Provisioner-game PR10 e4c74846 CI #40630701195 SUCCESS. Next local Windows check-only + extracted EXE SHA recheck; request-specific CAS approval still required. GDK MSIXVC/version/assets remain HOLD.",
     "local_commands": [
       "gh api repos/shihuiarenjinba-png/Windows-all-auto/git/ref/heads/codex/e2e-belt-connection-20261027 --jq .object.sha  # confirm exact current ledger HEAD",
       "gh api repos/shihuiarenjinba-png/Repository-Provisioner-game/git/ref/heads/codex/game-gdk-identity-contract-20261028 --jq .object.sha  # must equal e4c74846bfbbd216e2cfebc5935e7cc2f97bd87c",
@@ -336,7 +336,7 @@
     "partner_center_access_by_36_minute_loop": false
   },
   "last_cross_lane_observation": {
-    "observed_at_utc": "2026-10-28T04:38:00.166Z",
+    "observed_at_utc": "2026-10-28T04:39:00.641Z",
     "active_lane": "GAME",
     "active_product": "signal-sprint",
     "factory_source_head_verified": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
@@ -352,7 +352,7 @@
       "local_tests": "67_PASS",
       "next_action": "Do not rerun without new runner/workflow evidence; require real MSIX before Checker product QA"
     },
-    "last_12_minute_update": "PR19 first-run secure directory regression initially failed on Windows due to 8.3 temp path assertion, not implementation; test normalized in 77b604ca9f7b, latest CI #40633450732 running. Provisioner-app #10 and 3D #7 latest CI SUCCESS.",
+    "last_12_minute_update": "PR19 77b604ca9f7b CI #40633450732 SUCCESS on Windows and Ubuntu after correcting Windows 8.3 temp-path assertion. GDK Identity first-run secure directory creation and immutable registry correlation regression tests pass.",
     "next_repo": "shihuiarenjinba-png/Windows-all-auto",
     "next_branch": "codex/user-provided-identity-gdk-20261028",
     "next_head_sha": "77b604ca9f7b927c6718f07ff78fa758a5f4d63a",
@@ -433,7 +433,7 @@
         "is_accepted_product": false
       }
     },
-    "classification": "USER_IDENTITY_RECEIVED_GDK__PR19_WINDOWS_TEST_FIX_CI_PENDING__LOCAL_CHECK_ONLY_PENDING__APP_IDENTITY_UNBOUND__REAL_E2E_HOLD",
+    "classification": "USER_IDENTITY_RECEIVED_GDK__PR19_SECURE_MATERIALIZATION_FIX_CI_PASS__LOCAL_CHECK_ONLY_PENDING__APP_IDENTITY_UNBOUND__REAL_E2E_HOLD",
     "local_identity_qa_safety_branch": {
       "branch": "codex/local-identity-qa-safety-20261027",
       "head_sha": "6ef8aacbcba8a622760a8c109f4c684d6df503fb",
@@ -476,7 +476,7 @@
     "user_provided_identity_pr19": {
       "head_sha": "77b604ca9f7b927c6718f07ff78fa758a5f4d63a",
       "ci_run_id": 40633450732,
-      "ci_conclusion": "IN_PROGRESS_NOT_PASS",
+      "ci_conclusion": "SUCCESS",
       "local_check_only": "NOT_OBSERVED",
       "gdk_msixvc": "NOT_GENERATED"
     },
@@ -625,10 +625,10 @@
     "identity_version_asset_approvals_separate": true,
     "backlog": "verified-msix-local-qa-*; 30 days; local 20 packages/2 GiB; HOLD_LOCAL_CAPACITY preserves remote",
     "e2e_pass": false,
-    "ci_note": "PR19 #40633378554 failed one Windows test due to 8.3 temporary path comparison; fixed in 77b604ca9f7b, #40633450732 IN_PROGRESS. Provisioner-game PR10 #40630701195 SUCCESS. Local Windows check-only/CAS/GDK MSIXVC not observed."
+    "ci_note": "PR19 77b604ca9f7b #40633450732 SUCCESS Windows/Ubuntu, 269 tests (2 skipped on Windows). Provisioner-game PR10 e4c74846 #40630701195 SUCCESS. Local Windows check-only/CAS/GDK MSIXVC not observed."
   },
   "quality_gates": {
-    "pre_identity_ready": "PRE_IDENTITY_QUEUE_CONTRACT_PRIOR_CI_PASS__PR19_LATEST_WINDOWS_TEST_FIX_CI_IN_PROGRESS__LOCAL_EXE_SHA_RECHECK_PENDING",
+    "pre_identity_ready": "PRE_IDENTITY_QUEUE_CONTRACT_PR19_WINDOWS_UBUNTU_CI_PASS__LOCAL_EXE_SHA_RECHECK_PENDING",
     "waiting_user_identity": "GAME_FALSE__USER_PROVIDED_REFERENCE_RECEIVED__APP_NOT_YET_REQUIRED",
     "user_identity_validated": false,
     "cas_return_pass": false,
@@ -693,5 +693,5 @@
     "exclusion_reason": "EXISTING_KNOWN_GOOD_STORE_IDENTITY_REFERENCE__NO_NEW_REQUEST__NO_CLOUD_AUTHENTICATION_CLAIM",
     "pending_requests": []
   },
-  "classification": "USER_IDENTITY_RECEIVED_GDK__PR19_WINDOWS_TEST_FIX_CI_PENDING__LOCAL_CHECK_ONLY_PENDING__APP_IDENTITY_UNBOUND__REAL_E2E_HOLD"
+  "classification": "USER_IDENTITY_RECEIVED_GDK__PR19_SECURE_MATERIALIZATION_FIX_CI_PASS__LOCAL_CHECK_ONLY_PENDING__APP_IDENTITY_UNBOUND__REAL_E2E_HOLD"
 }
