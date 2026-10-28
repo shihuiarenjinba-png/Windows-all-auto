@@ -77,11 +77,17 @@ class OperatorGateTests(unittest.TestCase):
         with self.assertRaisesRegex(op.OperatorHold, "CROSS_PRODUCT"):
             op.expected_job(l, "prism-route-3d")
 
-    def test_prepare_rejects_unapproved_creation(self):
+    def test_existing_product_can_be_reused_but_never_created_again(self):
         l = ledger()
         l["partner_center_local_operator"]["allow_local_product_creation"] = False
-        with self.assertRaisesRegex(op.OperatorHold, "NOT_AUTHORIZED"):
-            op.expected_job(l, "prism-route-3d")
+        self.assertEqual(op.expected_job(l, "prism-route-3d")["slug"], "prism-route-3d")
+        job = {**binding(), "status": "LOCAL_CODE_SYNC_PASS__PARTNER_CENTER_OPERATOR_READY",
+               "allow_local_product_creation": False}
+        c = captured()
+        with self.assertRaisesRegex(op.OperatorHold, "DUPLICATE_PRODUCT_CREATE_FORBIDDEN"):
+            op.validate_capture(job, c)
+        c["creation_status"] = "REUSED_EXISTING"
+        self.assertIn("IDENTITY_CAPTURED", op.validate_capture(job, c)["status"])
 
     def test_prepare_rejects_gdk_misclassification(self):
         l = ledger()
