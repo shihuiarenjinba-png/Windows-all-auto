@@ -8,6 +8,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import sys
@@ -186,6 +187,21 @@ def validate_github(job: dict, captured: dict, reference: dict,
     }
 
 
+
+def ensure_private_output(path: Path, request_id: str) -> None:
+    """Never write Identity-bearing receipts into a Git checkout or shared path."""
+    base = os.environ.get("LOCALAPPDATA")
+    if not base:
+        hold("LOCALAPPDATA_REQUIRED_FOR_PRIVATE_RECEIPT")
+    root = Path(base) / "FactoryIdentityWorker" / "secure" / request_id
+    if (not path.is_absolute() or not op._safe_path(path)
+            or path.parent.resolve(strict=False) != root.resolve(strict=False)):
+        hold("PRIVATE_IDENTITY_OUTPUT_PATH_REQUIRED")
+    for parent in (path.parent, *path.parents):
+        if (parent / ".git").exists():
+            hold("PRIVATE_OUTPUT_INSIDE_GIT_CHECKOUT")
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser()
     sub = parser.add_subparsers(dest="mode", required=True)
@@ -212,6 +228,7 @@ def main(argv=None) -> int:
                 op.read_json(args.manual_reference, 64_000),
                 args.central_checkout, args.snapshot_root,
             )
+        ensure_private_output(args.output, result["request_id"])
         op.write_private_once(args.output, result)
         # Do not log Identity, publisher, local snapshot paths, or credentials.
         print(json.dumps({
