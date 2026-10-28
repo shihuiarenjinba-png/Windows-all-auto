@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T14:34:49.282Z",
+  "updated_at_utc": "2026-10-28T14:35:09.810Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -1085,7 +1085,7 @@
       "branch": "codex/local-sync-manifest-isolation-20261028",
       "head_sha": "872ef66f4ce8b829751b766ddf9586eefc9c3d82",
       "base_draft_pr": 30,
-      "status": "DRAFT_CODE_COMMITTED__WINDOWS_UBUNTU_CI_PENDING",
+      "status": "DRAFT_CODE_COMMITTED__WINDOWS_UBUNTU_CONTRACT_CI_PASS",
       "scope": "LOCAL_SOURCE_SYNC_MANIFEST_PARSER_ONLY",
       "protections": [
         "REQUIRE_NONEMPTY_REQUEST_ID",
@@ -1101,7 +1101,11 @@
       "github_queue_origin_verified": false,
       "cas_return_pass": false,
       "e2e_pass": false,
-      "next_action": "Check PR31 Windows/Ubuntu contract CI; keep Prism pinned source SHA and historical queue digest HOLD; do not claim local source-sync PASS from cloud tests."
+      "next_action": "Review PR31; physical user-PC exact-source receipt remains HOLD; reconcile Prism historical queue digest and remote source HEAD without repinning source SHA.",
+      "contract_ci_run_id": 40707291005,
+      "contract_ci_conclusion": "SUCCESS_WINDOWS_UBUNTU",
+      "offline_qa_run_id": 40707290809,
+      "offline_qa_conclusion": "SUCCESS_WINDOWS_UBUNTU"
     }
   },
   "latest_provisioner_heads_observed": {
@@ -1406,6 +1410,6 @@
     ],
     "next_action": "Prism original branch HEAD is a one-commit Identity-file descendant, so old pinned source SHA remains immutable and live remote-head check HOLD. Resolve historical queue digest mismatch with independent proof; do not silently repin. When eligible APP jobs arrive, generate per-cohort local manifest and require actual user-PC source sync receipt and HEAD verification before any Partner Center operator action.",
     "manifest_isolation_pr": 31,
-    "manifest_isolation_status": "DRAFT_CI_PENDING__NO_LOCAL_PASS"
+    "manifest_isolation_status": "DRAFT_CI_PASS__PHYSICAL_LOCAL_HOLD"
   }
 }
