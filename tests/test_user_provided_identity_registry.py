@@ -51,12 +51,12 @@ class UserProvidedIdentityRegistryTests(unittest.TestCase):
                 "branch": "codex/game-signal-sprint-undo-20261027",
                 "slug": "signal-sprint", "identity_path": str(path),
             }
-            self.assertEqual(s.validate_user_identity(job), path)
+            self.assertEqual(s.validate_user_identity(job), path.resolve())
             self.assertEqual(json.loads(path.read_text(encoding="utf-8"))["store_id"],
                              "9N21MJM7S57P")
             # Existing private evidence must be validated, not overwritten.
             original = path.read_bytes()
-            self.assertEqual(s.validate_user_identity(job), path)
+            self.assertEqual(s.validate_user_identity(job), path.resolve())
             self.assertEqual(path.read_bytes(), original)
 
     def test_existing_identity_rejects_changed_registry_source_binding(self):
