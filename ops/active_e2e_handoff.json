@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T01:40:44.817Z",
+  "updated_at_utc": "2026-10-28T01:40:58.670Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -340,7 +340,7 @@
       "local_tests": "67_PASS",
       "next_action": "Do not rerun without new runner/workflow evidence; require real MSIX before Checker product QA"
     },
-    "last_12_minute_update": "PR18 PRE-IDENTITY request/source/target correlation patch 02b7a758 and 2 regression tests; CI #40616403346 IN_PROGRESS. APP 3841337e, GAME Provisioner c50a71ba, 3D 968868dc verified.",
+    "last_12_minute_update": "PR18 02b7a758 request/source/target correlation fix + 2 tests; CI #40616403346 SUCCESS Windows/Ubuntu. Central ledger single-writer synchronized; real Identity/CAS/MSIX/local QA absent.",
     "next_repo": "shihuiarenjinba-png/Windows-all-auto",
     "next_branch": "codex/local-identity-qa-safety-20261027",
     "next_head_sha": "6ef8aacbcba8a622760a8c109f4c684d6df503fb",
@@ -463,7 +463,7 @@
     }
   },
   "multi_product_identity_scheduler": {
-    "status": "PRE_IDENTITY_REQUEST_BINDING_HARDENED__CI_IN_PROGRESS__LOCAL_WINDOWS_NOT_EXECUTED",
+    "status": "PRE_IDENTITY_REQUEST_BINDING_HARDENED__WINDOWS_UBUNTU_CI_SUCCESS__LOCAL_WINDOWS_NOT_EXECUTED",
     "repository": "shihuiarenjinba-png/Windows-all-auto",
     "draft_pr": 18,
     "branch": "codex/multi-product-identity-scheduler-20261028-0036",
@@ -471,7 +471,7 @@
     "base_pr": 17,
     "base_head_sha": "6ef8aacbcba8a622760a8c109f4c684d6df503fb",
     "ci_run_id": 40616403346,
-    "ci_conclusion": "IN_PROGRESS",
+    "ci_conclusion": "SUCCESS",
     "ci_platforms": [
       "windows-latest",
       "ubuntu-latest"
@@ -518,16 +518,16 @@
     "checker": "NOT_RUN_ON_REAL_MSIX",
     "gui_qa": "NOT_RUN",
     "e2e_pass": false,
-    "next_action": "Await PR18 CI #40616403346, then local Windows check-only and independently rehash extracted Signal Sprint EXE. Identity is user-managed; APP deferred.",
+    "next_action": "PR18 #40616403346 SUCCESS. Local Windows --check-only and extracted EXE SHA-256 verification remain; user-provided Identity still missing.",
     "security_fix": "REJECT_SYMLINKED_PRIVATE_PATH_ANCESTORS_AND_GIT_CHECK; OPERATOR_ONLY_STORE_IDENTITY_CANNOT_ADVANCE_TO_CAS_APPROVAL; VERSION_AND_BRAND_APPROVAL_ALONE_CANNOT_AUTHORIZE_MSIX; EXPLICIT_CAS_TARGETS_EXACT_GAME_REQUEST_OR_FAILS_CLOSED; DURABLE_PRE_CAS_INTENT_AND_STICKY_MANUAL_RECONCILIATION_PREVENT_UNCERTAIN_CAS_REPLAY; REJECT_WINDOWS_DIRECTORY_JUNCTION_PRIVATE_PATH_ANCESTORS; USER_MANAGED_IDENTITY_FILE_REQUIRED_BEFORE_CAS__SCHEMA_REFERENCE_BINDING_VALIDATION__NO_SECRET_IN_RECEIPT",
     "targeted_apply_routing": "FIXED_TESTED_22_PASS_WINDOWS_UBUNTU_CI",
     "user_managed_identity_gate": "WAITING_USER_IDENTITY__NO_PARTNER_CENTER_AUTOMATION",
     "pre_identity_queue": {
-      "status": "SOURCE_REQUEST_TARGET_CORRELATION_PATCHED__CI_IN_PROGRESS__LOCAL_WINDOWS_PENDING",
+      "status": "OFFLINE_CONTRACT_PASS__REQUEST_SOURCE_TARGET_CORRELATED__LOCAL_WINDOWS_PENDING",
       "entrypoint": "python -m scripts.pre_identity_queue --check-only",
       "draft_output": "python -m scripts.pre_identity_queue --output %LOCALAPPDATA%/FactoryIdentityWorker/secure/pre-identity-jobs.json",
       "ci_run_id": 40616403346,
-      "ci_conclusion": "IN_PROGRESS",
+      "ci_conclusion": "SUCCESS_WINDOWS_UBUNTU",
       "new_tests": 10,
       "immutable_game_source_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
       "expected_exe_sha256": "e8517df8cd31a40e5ce72afdd4e6a4d63626fb99f7ff8a4fa3296ff8deef05f4",
@@ -582,7 +582,7 @@
     "ci_note": "PR18 CI #40596859228 SUCCESS Windows/Ubuntu; central ledger CI #40596902756 SUCCESS; local Windows GUI/CAS not observed"
   },
   "quality_gates": {
-    "pre_identity_ready": "GAME_REMOTE_BINDINGS_AND_EXE_PROVENANCE__REQUEST_CORRELATION_PATCH_CI_PENDING__LOCAL_EXE_SHA_RECHECK_PENDING",
+    "pre_identity_ready": "GAME_REMOTE_QUEUE_CONTRACT_PASS__REQUEST_CORRELATION_CI_PASS__LOCAL_EXE_SHA_RECHECK_PENDING",
     "waiting_user_identity": "GAME_TRUE__APP_NOT_YET_REQUIRED",
     "user_identity_validated": false,
     "cas_return_pass": false,
