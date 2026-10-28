@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T12:44:19Z",
+  "updated_at_utc": "2026-10-28T12:44:43Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -1047,7 +1047,7 @@
         "repo": "shihuiarenjinba-png/3d-game-factory",
         "source_sha": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
         "registration_type": "MSIX_OR_PWA_GAME",
-        "identity_status": "WAITING_USER_IDENTITY"
+        "identity_status": "LOCAL_OPERATOR_MANUAL_REFERENCE__AUTOMATED_CAPTURE_PENDING"
       }
     ],
     "physical_local_status": "HOLD_REMOTE_HEAD_CONFLICT_PRISM_PIN",
