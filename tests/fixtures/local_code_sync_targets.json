@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "jobs": [
+    {
+      "request_id": "app-offline-notes-canary-b83702c89489",
+      "slug": "offline-notes-canary",
+      "repository": "shihuiarenjinba-png/AI-App-Factory",
+      "branch": "codex/app-canary-offline-notes-20261027",
+      "source_sha": "b83702c8948991cc3bd31745db5df64afaf6010f"
+    },
+    {
+      "request_id": "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e",
+      "slug": "signal-sprint",
+      "repository": "shihuiarenjinba-png/AI-Game-Factory",
+      "branch": "codex/game-signal-sprint-undo-20261027",
+      "source_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e"
+    },
+    {
+      "request_id": "3d-prism-route-3d-15fdcb52e46e",
+      "slug": "prism-route-3d",
+      "repository": "shihuiarenjinba-png/3d-game-factory",
+      "branch": "codex/3d-canary-prism-route-20261028",
+      "source_sha": "15fdcb52e46e35e6de8e87c55af99719c21e09b9"
+    }
+  ]
+}
