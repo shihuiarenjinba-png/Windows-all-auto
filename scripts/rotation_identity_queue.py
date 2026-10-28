@@ -43,6 +43,9 @@ def _rotation_job(item: dict, requests: list[dict], head_reader) -> dict:
     branch, slug = item.get("source_branch"), item.get("slug")
     build_branch, build_sha = item.get("factory_build_branch"), item.get("factory_build_head")
     digest = item.get("expected_exe_sha256")
+    artifact_id = item.get("artifact_id")
+    artifact_run_id = item.get("artifact_run_id")
+    zip_digest = item.get("artifact_zip_sha256")
     require(item.get("source_repository") == repo
             and isinstance(rid, str) and scheduler.REQUEST.fullmatch(rid) is not None
             and isinstance(sha, str) and scheduler.SHA.fullmatch(sha) is not None
@@ -50,7 +53,10 @@ def _rotation_job(item: dict, requests: list[dict], head_reader) -> dict:
             and isinstance(slug, str) and SLUG.fullmatch(slug) is not None
             and isinstance(build_branch, str) and scheduler.BRANCH.fullmatch(build_branch) is not None
             and isinstance(build_sha, str) and scheduler.SHA.fullmatch(build_sha) is not None
-            and isinstance(digest, str) and scheduler.HASH.fullmatch(digest) is not None,
+            and isinstance(digest, str) and scheduler.HASH.fullmatch(digest) is not None
+            and type(artifact_id) is int and artifact_id > 0
+            and type(artifact_run_id) is int and artifact_run_id > 0
+            and isinstance(zip_digest, str) and scheduler.HASH.fullmatch(zip_digest) is not None,
             "ROTATION_PROVENANCE_INCOMPLETE")
     require(item.get("artifact_provenance") == "REAL_WINDOWS_EXPORT_VERIFIED",
             "ROTATION_ARTIFACT_NOT_VERIFIED")
@@ -70,6 +76,8 @@ def _rotation_job(item: dict, requests: list[dict], head_reader) -> dict:
     require(len(matched) == 1, "ROTATION_IDENTITY_REQUEST_MISSING_OR_DUPLICATE")
     request = matched[0]
     require(request.get("status") in IDENTITY_STATES
+            and isinstance(item.get("display_name"), str)
+            and request.get("product_name") == item["display_name"]
             and request.get("repo") == repo
             and request.get("source_branch") == branch
             and request.get("source_sha") == sha
@@ -82,6 +90,8 @@ def _rotation_job(item: dict, requests: list[dict], head_reader) -> dict:
         "source_sha": sha, "slug": slug, "product_type": lane,
         "factory_build_branch": build_branch, "factory_build_head": build_sha,
         "package_path": None, "package_sha256": digest,
+        "artifact_id": artifact_id, "artifact_run_id": artifact_run_id,
+        "artifact_zip_sha256": zip_digest,
         "identity_target": TARGET, "registration_type": registration,
         "partner_center_selection": selection,
         "identity_status": request["status"],
