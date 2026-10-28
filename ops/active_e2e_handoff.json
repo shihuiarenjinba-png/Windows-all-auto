@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T07:44:41.009Z",
+  "updated_at_utc": "2026-10-28T08:38:05.523Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -740,7 +740,11 @@
     "three_d_pre_identity_ready": true,
     "three_d_waiting_user_identity": true,
     "three_d_qa_unsigned_makeappx_pass": true,
-    "rotation_live_cloud_check_pass": true
+    "rotation_live_cloud_check_pass": true,
+    "local_source_code_sync_cloud_windows_pass": true,
+    "local_source_code_sync_hardening_ci_pass": true,
+    "local_source_code_sync_physical_pass": false,
+    "local_source_code_sync_scheduler_pass": false
   },
   "user_id_requests": {
     "schema_version": 1,
@@ -880,10 +884,12 @@
       "CAS_APPLY_WITH_EXPLICIT_APPROVAL",
       "LOCAL_PULL",
       "CHECKER_ON_WINDOWS",
-      "GUI_INSTALL_QA"
+      "GUI_INSTALL_QA",
+      "LOCAL_SOURCE_CODE_SYNC_PHYSICAL_RECEIPT"
     ],
     "cloud_progress_allowed": true,
-    "resume_condition": "USER_EXPLICITLY_REOPENS_LOCAL_WINDOWS"
+    "resume_condition": "USER_EXPLICITLY_REOPENS_LOCAL_WINDOWS",
+    "local_source_code_sync_exception_allowed": true
   },
   "rotation_cohorts": {
     "schema_version": 1,
@@ -950,5 +956,106 @@
     "3d_conflicts": 0,
     "3d_artifact_mismatch": 0,
     "metrics_basis": "LIVE_FACTORY_GODOT_EXPORT_ARTIFACT_AND_AUTHENTICATED_PROVISIONER_BYTES_CORRELATED__NO_STORE_IDENTITY_OR_LOCAL_QA"
+  },
+  "local_source_code_sync": {
+    "schema_version": 1,
+    "scope": "FACTORY_PRODUCT_SOURCE_ONLY__NO_PACKAGE_INSTALL_OR_CAS",
+    "status": "CLOUD_WINDOWS_EXACT_SHA_SMOKE_PASS__PHYSICAL_LOCAL_GATE_DEFERRED",
+    "worker": {
+      "repository": "shihuiarenjinba-png/Windows-all-auto",
+      "base_draft_pr": 22,
+      "base_branch": "codex/local-code-sync-smoke-20261028",
+      "base_head_sha": "8fdccc20bdc79b4d59736f09d02343c1d3c6e965",
+      "entrypoint": "python -m scripts.local_code_sync",
+      "installer": "scripts/register_local_code_sync.ps1"
+    },
+    "hardening": {
+      "draft_pr": 23,
+      "branch": "codex/local-code-sync-reuse-guards-20261028",
+      "head_sha": "c11b320bcaa513dedb1918b39998e0d5d58e7ca3",
+      "ci_run_id": 40658064408,
+      "ci_conclusion": "SUCCESS_WINDOWS_UBUNTU",
+      "changes": [
+        "EXACT_ORIGIN_REQUIRED_ON_REUSE",
+        "REJECT_LINKED_GIT_METADATA",
+        "REVALIDATE_REMOTE_BRANCH_HEAD_ON_REUSE"
+      ],
+      "stacked_on_pr": 22,
+      "integrated_into_pr22": false
+    },
+    "cloud_windows_smoke": {
+      "run_id": 40657554022,
+      "conclusion": "SUCCESS",
+      "exact_sha_verified": true,
+      "snapshots": 3,
+      "idempotent_reuse": true,
+      "environment": "GITHUB_ACTIONS_WINDOWS_RUNNER_NOT_USER_PC"
+    },
+    "products": [
+      {
+        "product_name": "Offline Notes Canary",
+        "repo": "shihuiarenjinba-png/AI-App-Factory",
+        "source_sha": "b83702c8948991cc3bd31745db5df64afaf6010f",
+        "registration_type": "MSIX_OR_PWA_APP",
+        "identity_status": "USER_IDENTITY_RECEIVED_UNBOUND"
+      },
+      {
+        "product_name": "Signal Sprint",
+        "repo": "shihuiarenjinba-png/AI-Game-Factory",
+        "source_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
+        "registration_type": "GDK_GAME",
+        "identity_status": "USER_IDENTITY_RECEIVED"
+      },
+      {
+        "product_name": "Prism Route 3D",
+        "repo": "shihuiarenjinba-png/3d-game-factory",
+        "source_sha": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
+        "registration_type": "MSIX_OR_PWA_GAME",
+        "identity_status": "WAITING_USER_IDENTITY"
+      }
+    ],
+    "physical_local_status": "DEFERRED_LOCAL_GATE__NO_USER_PC_RECEIPT",
+    "local_receipt_verified": false,
+    "local_task_scheduler_registered": false,
+    "local_task_scheduler_run_verified": false,
+    "local_checklist": [
+      "gh auth status/git/py -3",
+      "independent clone/worktree PR22 plus reviewed PR23 guards",
+      "run exact fixture manifest once",
+      "verify receipt PASS snapshots=3 exact_sha_verified=true",
+      "verify each git rev-parse HEAD equals source_sha",
+      "repeat and verify REUSED_EXACT_SNAPSHOT x3",
+      "only then opt-in 15 minute task registration",
+      "run task once and verify LastTaskResult=0 and receipt",
+      "keep immutable snapshots separate from Codex editable worktrees"
+    ],
+    "no_store_submit": true,
+    "no_cas": true,
+    "no_package_install": true
+  },
+  "latest_provisioner_heads_observed": {
+    "basis": "LIVE_GITHUB_BRANCH_HEAD_AND_COMMIT_CI__NOT_LOCAL_REVALIDATED",
+    "game": {
+      "repo": "shihuiarenjinba-png/Repository-Provisioner-game",
+      "branch": "codex/game-gdk-identity-contract-20261028",
+      "sha": "7657feddcc023d739eaa469139f7e408848ae69b",
+      "ci_run_id": 40654712261,
+      "ci_conclusion": "SUCCESS"
+    },
+    "app": {
+      "repo": "shihuiarenjinba-png/Repository-Provisioner-app",
+      "branch": "codex/e2e-belt-connection-20261027",
+      "sha": "73d87a5f865e02ca270f9907e8eb97db5382ee52",
+      "ci_run_id": 40647483517,
+      "ci_conclusion": "SUCCESS"
+    },
+    "three_d": {
+      "repo": "shihuiarenjinba-png/Repository-Provisioner-3D",
+      "branch": "codex/e2e-belt-connection-20261027",
+      "sha": "71ef5570b8dec21bfdc0b436d95f62de4b9f1b81",
+      "ci_run_id": 40656677109,
+      "ci_conclusion": "SUCCESS"
+    },
+    "caution": "Historical pinned CAS/check-only commands and evidence in this ledger remain historical; do not silently substitute these newer SHAs without review and local validation."
   }
 }
