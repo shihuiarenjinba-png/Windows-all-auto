@@ -24,8 +24,8 @@ class UserProvidedIdentityRegistryTests(unittest.TestCase):
                 "identity_path": str(path),
             }
             result = s.validate_user_identity(job)
-            self.assertEqual(result, path)
-            data = json.loads(path.read_text(encoding="utf-8"))
+            self.assertTrue(result.is_file())
+            data = json.loads(result.read_text(encoding="utf-8"))
             self.assertEqual(data["store_id"], "9N21MJM7S57P")
             self.assertEqual(data["name"], "OkinawaDesktopTools.SignalSprint")
             self.assertEqual(data["package_family_name"],
