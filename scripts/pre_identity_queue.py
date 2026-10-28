@@ -12,6 +12,7 @@ import os
 from pathlib import Path
 
 from scripts import local_identity_scheduler as scheduler
+from scripts import registration_router
 
 
 class QueueHold(Exception):
@@ -64,7 +65,7 @@ def project(ledger: dict, head_reader=scheduler.head) -> dict:
     items = requests.get("items") or []
     matching = [item for item in items if item.get("request_id") == rid]
     require(len(matching) == 1
-            and matching[0].get("status") == "WAITING_USER_IDENTITY",
+            and matching[0].get("status") in {"WAITING_USER_IDENTITY", "USER_IDENTITY_RECEIVED"},
             "USER_ID_REQUEST_NOT_CORRELATED")
     identity_request = matching[0]
     require(identity_request.get("repo") == product["source_repository"]
@@ -73,8 +74,13 @@ def project(ledger: dict, head_reader=scheduler.head) -> dict:
             and identity_request.get("identity_target")
                 == "%LOCALAPPDATA%/FactoryIdentityWorker/secure/<request_id>/official-identity.json",
             "USER_ID_REQUEST_BINDING_MISMATCH")
+    game_registration, game_selection = registration_router.resolve(
+        "GAME", "signal-sprint", product.get("packaging_family"),
+        product.get("registration_type"))
     game = {
         "kind": "GAME_SIGNAL_SPRINT",
+        "registration_type": game_registration,
+        "partner_center_selection": game_selection,
         "request_id": rid,
         "repository": product["source_repository"],
         "branch": product["source_branch"],
@@ -91,7 +97,12 @@ def project(ledger: dict, head_reader=scheduler.head) -> dict:
     candidate = app.get("canary_proposal") or {}
     deferred = []
     if candidate.get("source_sha") is None or candidate.get("request_id") is None:
+        app_registration, app_selection = registration_router.resolve(
+            "APP", "offline-notes-canary", candidate.get("packaging_family"),
+            candidate.get("registration_type"))
         deferred.append({"product_name": "Offline Notes Canary",
+                         "registration_type": app_registration,
+                         "partner_center_selection": app_selection,
                          "status": "NOT_YET_REQUIRED",
                          "reason": "APP_NOT_FORMALLY_PROMOTED_WITH_EXE"})
     else:
@@ -111,7 +122,7 @@ def project(ledger: dict, head_reader=scheduler.head) -> dict:
                 "APP_SOURCE_HEAD_CONFLICT")
         app_requests = [item for item in items if item.get("request_id") == app_rid]
         require(len(app_requests) == 1
-                and app_requests[0].get("status") == "WAITING_USER_IDENTITY",
+                and app_requests[0].get("status") in {"WAITING_USER_IDENTITY", "USER_IDENTITY_RECEIVED"},
                 "APP_USER_ID_REQUEST_NOT_CORRELATED")
         app_request = app_requests[0]
         require(app_request.get("repo") == app_repo
@@ -120,11 +131,18 @@ def project(ledger: dict, head_reader=scheduler.head) -> dict:
                 and app_request.get("identity_target")
                     == "%LOCALAPPDATA%/FactoryIdentityWorker/secure/<request_id>/official-identity.json",
                 "APP_USER_ID_REQUEST_BINDING_MISMATCH")
+        app_registration, app_selection = registration_router.resolve(
+            "APP", "offline-notes-canary", candidate.get("packaging_family"),
+            candidate.get("registration_type"))
         jobs.append({"kind": "APP_CANARY", "request_id": app_rid,
+                     "registration_type": app_registration,
+                     "partner_center_selection": app_selection,
                      "repository": app_repo, "branch": app_branch,
                      "source_sha": app_sha, "package_path": None,
                      "package_sha256": app_exe,
                      "identity_target": app_request["identity_target"]})
+    for job in jobs:
+        registration_router.validate_handoff_job(job)
     scheduler.validate_jobs({"jobs": jobs})
     return {"schema_version": 1, "jobs": jobs, "deferred": deferred,
             "identity_acquisition": "USER_ONLY",
@@ -171,7 +189,7 @@ def main(argv=None) -> int:
                   "local_exe_verification": "PENDING",
                   "identity": "WAITING_USER_IDENTITY",
                   "cas": "NOT_APPLIED"}
-    except (QueueHold, scheduler.Hold) as exc:
+    except (QueueHold, scheduler.Hold, registration_router.RegistrationHold) as exc:
         result = {"status": "HOLD", "reason": str(exc), "cas": "NOT_APPLIED"}
     except (OSError, ValueError, TypeError):
         result = {"status": "HOLD", "reason": "LOCAL_OR_REMOTE_INPUT_ERROR",

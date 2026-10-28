@@ -55,7 +55,7 @@ def ledger():
                     "branch": PBRANCH, "head_sha": PROVISIONER_SHA}}}
 
 
-def provisioner_result(applied, package_sha=EXE_SHA):
+def provisioner_result(applied, package_sha=EXE_SHA, gdk=False):
     return_status = ("APPLIED" if applied is True else
                      "NOT_APPLIED" if applied is False else applied)
     return {"request_id": REQUEST, "product_type": "GAME",
@@ -65,8 +65,9 @@ def provisioner_result(applied, package_sha=EXE_SHA):
             "sha256": package_sha, "size_bytes": EXE_BYTES, "signature_status": "NOTSIGNED"},
             "github_return": {"status": return_status,
                               "commit_sha": RETURN_SHA if return_status != "NOT_APPLIED" else None},
-            "next_stage": "GITHUB_REBUILD_MSIX" if return_status != "NOT_APPLIED" else
-                          "APPLY_VERIFIED_GITHUB_RETURN"}
+            "official_identity": {"packaging_family": "GDK"} if gdk else {},
+            "next_stage": ("BUILD_GDK_MSIXVC_FROM_PINNED_EXE" if gdk else "GITHUB_REBUILD_MSIX")
+                          if return_status != "NOT_APPLIED" else "APPLY_VERIFIED_GITHUB_RETURN"}
 
 
 class LocalIdentityWorkerTests(unittest.TestCase):
@@ -285,6 +286,49 @@ class LocalIdentityWorkerTests(unittest.TestCase):
                 resumed = worker.run(a)
             self.assertEqual(resumed, receipt)
             repeated.assert_not_called()
+
+    def test_gdk_cas_receipt_routes_to_msixvc_not_generic_msix(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            a = args(root, apply=True, confirm_request_id=REQUEST)
+            def fake_run(command, **kwargs):
+                applied = "--apply" in command
+                (root / "local" / "provisioner-result.json").write_text(
+                    json.dumps(provisioner_result(applied, gdk=True)))
+                return SimpleNamespace(returncode=2)
+            with (patch.object(worker, "read_ledger", return_value=ledger()),
+                  patch.object(worker, "source_head",
+                               side_effect=[SOURCE, SOURCE, RETURN_SHA]),
+                  patch.object(worker, "check_local_paths",
+                               return_value=(root, root / "local", root / "evidence.json")),
+                  patch.object(worker, "validate_evidence", return_value=True),
+                  patch.object(worker.subprocess, "run", side_effect=fake_run)):
+                receipt = worker.run(a)
+            self.assertEqual(receipt["status"], "CAS_RETURNED_MSIX_PENDING")
+            self.assertEqual(receipt["packaging_family"], "GDK")
+            self.assertEqual(receipt["next_stage"], "BUILD_GDK_MSIXVC_FROM_PINNED_EXE")
+            self.assertIn("GDK MSIXVC", receipt["next_action"])
+            self.assertFalse(receipt["e2e_pass"])
+
+    def test_gdk_cas_cannot_claim_generic_msix_next_stage(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            a = args(root, apply=True, confirm_request_id=REQUEST)
+            def fake_run(command, **kwargs):
+                applied = "--apply" in command
+                result = provisioner_result(applied, gdk=True)
+                if applied:
+                    result["next_stage"] = "GITHUB_REBUILD_MSIX"
+                (root / "local" / "provisioner-result.json").write_text(json.dumps(result))
+                return SimpleNamespace(returncode=2)
+            with (patch.object(worker, "read_ledger", return_value=ledger()),
+                  patch.object(worker, "source_head", return_value=SOURCE),
+                  patch.object(worker, "check_local_paths",
+                               return_value=(root, root / "local", root / "evidence.json")),
+                  patch.object(worker, "validate_evidence", return_value=True),
+                  patch.object(worker.subprocess, "run", side_effect=fake_run)):
+                with self.assertRaisesRegex(worker.Gate, "PROVISIONER_CAS_NOT_CONFIRMED"):
+                    worker.run(a)
 
     def test_ambiguous_apply_reads_head_before_existing_reconcile(self):
         with tempfile.TemporaryDirectory() as tmp:

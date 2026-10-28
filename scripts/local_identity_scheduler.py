@@ -19,11 +19,14 @@ import sys
 import tempfile
 from urllib.parse import quote
 
+from scripts import registration_router
+
 OWNER = "shihuiarenjinba-png"
 CENTRAL_REPO = OWNER + "/Windows-all-auto"
 CENTRAL_BRANCH = "codex/e2e-belt-connection-20261027"
 CENTRAL_PATH = "ops/active_e2e_handoff.json"
 REFERENCE_PATH = "store/unsigned_msix_submission_inputs.json"
+IDENTITY_REGISTRY_PATH = Path(__file__).resolve().parents[1] / "ops" / "user_provided_store_identities.json"
 STORE_REFS = {
     "-AI-Upload-Guard-AI-": "codex/store-p1-ai-upload-guard-20261023",
     "-Excel-CSV-Privacy-Cleaner": "codex/store-p1-excel-csv-privacy-20261023",
@@ -196,6 +199,10 @@ def validate_jobs(config: dict) -> list[dict]:
                 raise Hold("CONFLICT", "STORE_REFERENCE_BRANCH_MISMATCH")
         if job["kind"] == "GAME_SIGNAL_SPRINT" and repo != OWNER + "/AI-Game-Factory":
             raise Hold("CONFLICT", "GAME_FACTORY_MISMATCH")
+        try:
+            registration_router.validate_handoff_job(job)
+        except registration_router.RegistrationHold as exc:
+            raise Hold("CONFLICT", str(exc)) from exc
     return jobs
 
 
@@ -252,10 +259,92 @@ GAME_USER_IDENTITY_ALLOWED = GAME_USER_IDENTITY_REQUIRED | {
     "source_repository", "source_branch", "publisher_display_name",
     "identity_name", "reserved_display_name",
 }
+GDK_USER_IDENTITY_REQUIRED = {
+    "request_id", "product_type", "slug", "source_sha",
+    "identity_source", "provided_at", "store_id", "name", "publisher",
+    "publisher_display_name", "package_family_name", "package_sid",
+    "packaging_family", "xbox_title_id", "xbox_scid", "msa_app_id",
+}
 STORE_USER_IDENTITY_REQUIRED = set(IDENTITY_FIELDS) | {
     "request_id", "source_sha", "source_repository", "source_branch",
     "product_type",
 }
+
+
+def user_provided_registry() -> dict:
+    if not IDENTITY_REGISTRY_PATH.is_file() or IDENTITY_REGISTRY_PATH.stat().st_size > 64_000:
+        raise Hold("HOLD", "USER_PROVIDED_IDENTITY_REGISTRY_MISSING")
+    data = decode_json(IDENTITY_REGISTRY_PATH.read_text(encoding="utf-8"), 64_000)
+    if (data.get("schema_version") != 1
+            or data.get("source") != "USER_PROVIDED_PARTNER_CENTER"
+            or not isinstance(data.get("products"), dict)):
+        raise Hold("CONFLICT", "USER_PROVIDED_IDENTITY_REGISTRY_INVALID")
+    return data
+
+
+def materialize_game_registry_identity(job: dict, path: Path) -> bool:
+    registry = user_provided_registry()
+    record = registry["products"].get(job.get("slug") or "signal-sprint")
+    if not isinstance(record, dict):
+        return False
+    exact = {
+        "product_type": "GAME",
+        "packaging_family": "GDK",
+        "request_id": job["request_id"],
+        "source_repository": job["repository"],
+        "source_branch": job["branch"],
+        "source_sha": job["source_sha"],
+    }
+    if any(record.get(key) != value for key, value in exact.items()):
+        # The reviewed registry belongs only to its exact immutable product.
+        # A different test/future request simply has no auto-materializable
+        # Identity; explicit evidence will still be binding-checked later.
+        return False
+    required = {
+        "store_id", "identity_name", "publisher", "publisher_display_name",
+        "package_family_name", "package_sid", "xbox_title_id", "xbox_scid", "msa_app_id",
+    }
+    if any(not isinstance(record.get(key), str) or not record[key].strip() for key in required):
+        raise Hold("CONFLICT", "USER_PROVIDED_IDENTITY_REGISTRY_FIELDS_MISSING")
+    payload = {
+        "request_id": job["request_id"],
+        "product_type": "GAME",
+        "slug": "signal-sprint",
+        "source_sha": job["source_sha"],
+        "identity_source": "USER_PROVIDED_PARTNER_CENTER",
+        "provided_at": registry.get("provided_at"),
+        "store_id": record["store_id"],
+        "name": record["identity_name"],
+        "publisher": record["publisher"],
+        "publisher_display_name": record["publisher_display_name"],
+        "package_family_name": record["package_family_name"],
+        "package_sid": record["package_sid"],
+        "packaging_family": "GDK",
+        "xbox_title_id": record["xbox_title_id"],
+        "xbox_scid": record["xbox_scid"],
+        "msa_app_id": record["msa_app_id"],
+    }
+    if not isinstance(payload["provided_at"], str) or not payload["provided_at"]:
+        raise Hold("CONFLICT", "USER_PROVIDED_IDENTITY_TIMESTAMP_MISSING")
+    # The first operator run normally starts with no request-specific secure
+    # directory. Create it without assuming that a prior worker already did.
+    # Re-check after mkdir: an ancestor must not redirect into a checkout via
+    # a symlink or Windows junction. Never overwrite an operator's own file.
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if safe_local(path) != path:
+        raise Hold("HOLD", "USER_IDENTITY_PATH_CHANGED_OR_EXISTS")
+    try:
+        fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    except FileExistsError as exc:
+        raise Hold("HOLD", "USER_IDENTITY_PATH_CHANGED_OR_EXISTS") from exc
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as stream:
+            json.dump(payload, stream, ensure_ascii=False, sort_keys=True, indent=2)
+            stream.write("\n")
+    except BaseException:
+        path.unlink(missing_ok=True)
+        raise
+    return True
 
 
 def user_identity_path(job: dict) -> Path | None:
@@ -278,30 +367,63 @@ def user_identity_path(job: dict) -> Path | None:
 
 def validate_user_identity(job: dict, reference: dict | None = None) -> Path | None:
     path = user_identity_path(job)
-    if path is None or not path.exists():
+    if path is None:
+        return None
+    if not path.exists() and job["kind"] == "GAME_SIGNAL_SPRINT":
+        materialize_game_registry_identity(job, path)
+    if not path.exists():
         return None
     if not path.is_file() or path.stat().st_size > 32_768:
         raise Hold("HOLD", "USER_IDENTITY_FILE_INVALID_OR_TOO_LARGE")
     data = decode_json(path.read_text(encoding="utf-8"), 32_768)
-    required = (GAME_USER_IDENTITY_REQUIRED if job["kind"] == "GAME_SIGNAL_SPRINT"
-                else STORE_USER_IDENTITY_REQUIRED)
-    allowed = (GAME_USER_IDENTITY_ALLOWED if job["kind"] == "GAME_SIGNAL_SPRINT"
-               else STORE_USER_IDENTITY_REQUIRED)
-    if not required.issubset(data) or not set(data).issubset(allowed):
-        raise Hold("CONFLICT", "USER_IDENTITY_SCHEMA_MISMATCH")
-    if (data.get("request_id") != job["request_id"]
-            or data.get("source_sha") != job["source_sha"]):
-        raise Hold("CONFLICT", "USER_IDENTITY_BINDING_MISMATCH")
-    for key in required:
-        if not isinstance(data[key], str) or not data[key].strip():
-            raise Hold("CONFLICT", "USER_IDENTITY_FIELD_INVALID")
+
     if job["kind"] == "GAME_SIGNAL_SPRINT":
-        if data["product_type"] != "GAME" or data["slug"] != "signal-sprint":
-            raise Hold("CONFLICT", "USER_IDENTITY_PRODUCT_MISMATCH")
-        if (data.get("source_repository", job["repository"]) != job["repository"]
-                or data.get("source_branch", job["branch"]) != job["branch"]):
-            raise Hold("CONFLICT", "USER_IDENTITY_SOURCE_MISMATCH")
+        legacy = GAME_USER_IDENTITY_REQUIRED.issubset(data) and set(data).issubset(GAME_USER_IDENTITY_ALLOWED)
+        gdk = set(data) == GDK_USER_IDENTITY_REQUIRED
+        if not legacy and not gdk:
+            raise Hold("CONFLICT", "USER_IDENTITY_SCHEMA_MISMATCH")
+        if (data.get("request_id") != job["request_id"]
+                or data.get("source_sha") != job["source_sha"]
+                or data.get("product_type") != "GAME"
+                or data.get("slug") != "signal-sprint"):
+            raise Hold("CONFLICT", "USER_IDENTITY_BINDING_MISMATCH")
+        if gdk:
+            if (data.get("identity_source") != "USER_PROVIDED_PARTNER_CENTER"
+                    or data.get("packaging_family") != "GDK"):
+                raise Hold("CONFLICT", "USER_IDENTITY_GDK_SOURCE_MISMATCH")
+            registry = user_provided_registry()
+            record = registry["products"].get("signal-sprint")
+            mapping = {
+                "store_id": "store_id", "name": "identity_name",
+                "publisher": "publisher", "publisher_display_name": "publisher_display_name",
+                "package_family_name": "package_family_name", "package_sid": "package_sid",
+                "xbox_title_id": "xbox_title_id", "xbox_scid": "xbox_scid",
+                "msa_app_id": "msa_app_id",
+            }
+            exact_registry_binding = {
+                "request_id": job["request_id"], "source_sha": job["source_sha"],
+                "source_repository": job["repository"], "source_branch": job["branch"],
+                "product_type": "GAME", "packaging_family": "GDK",
+            }
+            if (not isinstance(record, dict)
+                    or any(record.get(key) != value for key, value in exact_registry_binding.items())
+                    or data.get("provided_at") != registry.get("provided_at")
+                    or any(data[left] != record.get(right) for left, right in mapping.items())):
+                raise Hold("CONFLICT", "USER_IDENTITY_REFERENCE_MISMATCH")
+        else:
+            for key in GAME_USER_IDENTITY_REQUIRED:
+                if not isinstance(data[key], str) or not data[key].strip():
+                    raise Hold("CONFLICT", "USER_IDENTITY_FIELD_INVALID")
+            if (data.get("source_repository", job["repository"]) != job["repository"]
+                    or data.get("source_branch", job["branch"]) != job["branch"]):
+                raise Hold("CONFLICT", "USER_IDENTITY_SOURCE_MISMATCH")
     else:
+        required = STORE_USER_IDENTITY_REQUIRED
+        if not required.issubset(data) or set(data) != required:
+            raise Hold("CONFLICT", "USER_IDENTITY_SCHEMA_MISMATCH")
+        if (data.get("request_id") != job["request_id"]
+                or data.get("source_sha") != job["source_sha"]):
+            raise Hold("CONFLICT", "USER_IDENTITY_BINDING_MISMATCH")
         if (reference is None or data["product_type"] != "APP"
                 or data["source_repository"] != job["repository"]
                 or data["source_branch"] != job["branch"]):
@@ -309,8 +431,9 @@ def validate_user_identity(job: dict, reference: dict | None = None) -> Path | N
         for local_key, remote_key in IDENTITY_FIELDS.items():
             if data[local_key] != reference.get(remote_key):
                 raise Hold("CONFLICT", "USER_IDENTITY_REFERENCE_MISMATCH")
-    # The dedicated worker/Provisioner independently checks authenticity and
-    # CAS. A schema/reference match is NOT authentication or return approval.
+    # The dedicated worker/Provisioner independently performs the CAS.
+    # A registry/schema match records operator-provided Store identity; it is
+    # not browser authentication and does not authorize Store submission.
     return path
 
 
