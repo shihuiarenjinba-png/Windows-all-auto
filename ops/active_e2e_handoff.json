@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T17:40:23.375Z",
+  "updated_at_utc": "2026-10-28T18:41:19Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -1890,7 +1890,12 @@
       "windows_all_auto_crash_recovery_commit": "615a670e5c7b15f8812b7776757b42a61a3ac9e9",
       "windows_all_auto_crash_recovery_ci": "SUCCESS_WINDOWS_UBUNTU",
       "windows_all_auto_crash_recovery_ci_run": 40737850188,
-      "windows_all_auto_crash_recovery_offline_qa_run": 40737849615
+      "windows_all_auto_crash_recovery_offline_qa_run": 40737849615,
+      "windows_all_auto_cross_lane_pr": 35,
+      "windows_all_auto_cross_lane_head": "4274a92a25a1c3ed6d21a9edf1b00c55c393db70",
+      "windows_all_auto_cross_lane_ci_run": 40747451974,
+      "windows_all_auto_cross_lane_ci_status": "IN_PROGRESS_AT_LAST_CHECK",
+      "windows_all_auto_cross_lane_change": "APP_GAME_3D_GAME_COLLECTION_ROUTING__EXACT_PRODUCT_TYPE_LANE_BINDING__FOUR_REGRESSION_TESTS"
     },
     "products": [
       {
@@ -2002,54 +2007,33 @@
         "error_code": "LOCAL_BATCH_NOT_STARTED"
       }
     ],
-    "next_action": "Verify PR34 new exact HEAD CI for crash-safe same-product claim replay; obtain independently verified scheduled-to-local trigger receipt and physical Windows exact-source snapshots; then one-at-a-time authenticated UI capture and APP PR11 single-writer return. No local batch success, package, or Store submission may be inferred from GitHub Actions.",
+    "next_action": "PR35 cross-lane router Windows/Ubuntu CI confirmation; no live Partner Center actions until CI green. Independently verify physical Windows exact-source snapshot and scheduled-to-local attestation. Then Focus first, one at a time; APP single-writer return only after actual authenticated UI capture. Version HOLD, Store submission zero.",
     "cloud_discover_contract_run_id": 40728641133,
     "cloud_discover_contract_ci": "SUCCESS_WINDOWS_UBUNTU",
     "cloud_discover_from_pinned_central_commit": "0fe4dc510b37b0574f96d13bc95ade6ef1635032",
     "cloud_discover_status": "BATCH_DISCOVERED_4_IN_GITHUB_ACTIONS_WINDOWS_AND_UBUNTU__NOT_LOCAL_PC"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-28T17:39:58.608Z",
-    "scope": "MULTI_PRODUCT_PARTNER_CENTER_BATCH_4",
-    "central_repository": "shihuiarenjinba-png/Windows-all-auto",
-    "central_branch": "codex/e2e-belt-connection-20261027",
-    "previous_central_ledger_blob_sha": "7df62aa15af68c439d285c28ee26a3e0a0884a29",
-    "github_factory_exact_source_heads_verified": 4,
-    "github_factory_source_heads": [
-      {
-        "slug": "focus-session-desk",
-        "source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
-        "status": "MATCH"
-      },
-      {
-        "slug": "file-integrity-ledger",
-        "source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
-        "status": "MATCH"
-      },
-      {
-        "slug": "offline-text-diff-desk",
-        "source_sha": "a7d37280089893a9ea4b9ac3336020a920e73e0c",
-        "status": "MATCH"
-      },
-      {
-        "slug": "offline-image-inventory-desk",
-        "source_sha": "16b6a772952ca0988f2ae2f8b5f4db2e59ec5877",
-        "status": "MATCH"
-      }
+    "observed_at_utc": "2026-10-28T18:41:19Z",
+    "scope": "CROSS_LANE_ROUTING_FAIL_CLOSED__BATCH4_HOLD",
+    "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
+    "implementation_branch": "codex/e2e-cross-lane-routing-20261029",
+    "implementation_pr": 35,
+    "implementation_head_sha": "4274a92a25a1c3ed6d21a9edf1b00c55c393db70",
+    "stacked_on_pr": 34,
+    "changes": [
+      "Reject product_type mismatch with app_jobs/three_d_jobs/game_jobs lane",
+      "Support GAME queue only for AI-Game-Factory with game registration",
+      "Add four cross-lane and GAME routing regressions"
     ],
-    "windows_all_auto_pr34_previous_head": "4f74757809af72b2513d6999d5f0912b6efbd71f",
-    "windows_all_auto_pr34_previous_ci_run": 40728641133,
-    "windows_all_auto_pr34_previous_ci": "SUCCESS_WINDOWS_UBUNTU",
-    "windows_all_auto_pr34_new_head": "615a670e5c7b15f8812b7776757b42a61a3ac9e9",
-    "windows_all_auto_pr34_new_ci": "SUCCESS_WINDOWS_UBUNTU",
-    "implementation": "CRASH_SAFE_SINGLE_FLIGHT_CLAIM_OR_RESUME__EXACT_EXISTING_JOB_OUTPUT_REUSE__CONFLICT_REJECTED__TWO_REGRESSION_TESTS",
-    "app_provisioner_pr11_head": "edf2896a4405ee51e0771a75111fa11c36aef572",
-    "app_provisioner_pr11_ci_run": 40723564890,
-    "app_provisioner_pr11_ci": "SUCCESS_WINDOWS_UBUNTU",
+    "ci_run_id": 40747451974,
+    "ci_status": "IN_PROGRESS_AT_LAST_CHECK",
+    "cloud_pre_identity_discovered": 4,
     "local_code_sync": "NOT_OBSERVED_ON_USER_PC",
-    "partner_center_identity_capture": "NOT_OBSERVED_ON_USER_PC",
-    "scheduled_trigger_to_local": "NOT_PROVEN",
-    "github_return": "NOT_RUN_FOR_BATCH4",
+    "scheduled_trigger_to_local": "BATCH_SCHEDULE_TRIGGER_NOT_PROVEN",
+    "partner_center_capture": "NOT_OBSERVED",
+    "identity_route": "NOT_RUN_FOR_BATCH4",
+    "cas": "NOT_RUN_FOR_BATCH4",
     "real_msix": "NOT_BUILT_FOR_BATCH4",
     "github_backlog_real_product": "NOT_RUN_FOR_BATCH4",
     "local_pull": "NOT_RUN_FOR_BATCH4",
@@ -2060,8 +2044,6 @@
     "unprocessed_count": 4,
     "next_resume_index": 1,
     "store_submission": 0,
-    "windows_all_auto_pr34_new_ci_run": 40737850188,
-    "windows_all_auto_pr34_new_offline_qa": "SUCCESS_WINDOWS_UBUNTU",
-    "windows_all_auto_pr34_new_offline_qa_run": 40737849615
+    "no_main_release_merge": true
   }
 }
