@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T09:55:00Z",
+  "updated_at_utc": "2026-10-28T09:58:00Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -760,7 +760,7 @@
     "local_operator_active": true,
     "local_operator_contract_ci_pass": true,
     "github_origin_rotation_contract_code_committed": true,
-    "github_origin_rotation_contract_ci_pass": false,
+    "github_origin_rotation_contract_ci_pass": true,
     "github_to_local_rotation_pass": false,
     "prism_manual_identity_reference_observed": true,
     "three_d_identity_route_compatible": false
@@ -1152,7 +1152,7 @@
       "physical_local_execution": "NOT_OBSERVED",
       "user_pc_local_code_sync_receipt": "NOT_OBSERVED",
       "browser_ui_control": "NOT_AVAILABLE_IN_THIS_RUNTIME",
-      "next_implementation": "PR26 GitHub-origin and manual-reference contract CI PASS Windows/Ubuntu; physical Edge capture and user-PC execution not observed"
+      "next_implementation": "PR26 latest GitHub-origin private receipt contract CI PASS Windows/Ubuntu. Physical Windows source sync blocked by Prism branch HEAD drift; reconcile observed identity commit and request approval, then real UI capture."
     },
     "manual_reference": {
       "basis": "LOCAL_OPERATOR_MANUAL_REFERENCE",
@@ -1167,10 +1167,10 @@
     "github_origin_handoff": {
       "draft_pr": 26,
       "branch": "codex/github-origin-existing-prism-operator-20261028",
-      "head_sha": "15e0caf04fb8a83f241dd8e43ddad2b601b75321",
+      "head_sha": "dddccfca3eb554f5f041a18a11bfacb27d5ca37b",
       "base_draft_pr": 24,
       "entrypoint": "python -m scripts.github_partner_center_handoff",
-      "contract_ci": "PRIOR_CODE_HEAD_SUCCESS__LATEST_DOC_HEAD_PENDING",
+      "contract_ci": "SUCCESS_WINDOWS_UBUNTU",
       "physical_execution": "NOT_OBSERVED__SOURCE_BRANCH_HEAD_DRIFT",
       "queue_job_origin_required": "GITHUB_PRE_IDENTITY_QUEUE",
       "required_evidence": [
@@ -1191,8 +1191,8 @@
       "identity_capture": "NOT_OBSERVED",
       "cas": "NOT_APPLIED",
       "store_submission": "NOT_AUTHORIZED",
-      "ci_run_id": 40666476653,
-      "ci_url": "https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/40666476653",
+      "ci_run_id": 40666588885,
+      "ci_url": "https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/40666588885",
       "previous_green_ci_run_id": 40666310040,
       "previous_green_head_sha": "6d1b469cbbf4881e762e92cc08f6795b7d97a757"
     },
