@@ -19,6 +19,8 @@ import sys
 import tempfile
 from urllib.parse import quote
 
+from scripts import registration_router
+
 OWNER = "shihuiarenjinba-png"
 CENTRAL_REPO = OWNER + "/Windows-all-auto"
 CENTRAL_BRANCH = "codex/e2e-belt-connection-20261027"
@@ -197,6 +199,10 @@ def validate_jobs(config: dict) -> list[dict]:
                 raise Hold("CONFLICT", "STORE_REFERENCE_BRANCH_MISMATCH")
         if job["kind"] == "GAME_SIGNAL_SPRINT" and repo != OWNER + "/AI-Game-Factory":
             raise Hold("CONFLICT", "GAME_FACTORY_MISMATCH")
+        try:
+            registration_router.validate_handoff_job(job)
+        except registration_router.RegistrationHold as exc:
+            raise Hold("CONFLICT", str(exc)) from exc
     return jobs
 
 
