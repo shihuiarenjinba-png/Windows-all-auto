@@ -176,7 +176,7 @@ def validate_github(job: dict, captured: dict, reference: dict,
             hold("MANUAL_REFERENCE_IDENTITY_CONFLICT")
     return {
         **result,
-        "status": "IDENTITY_CAPTURED__MANUAL_REFERENCE_MATCH__LOCAL_ATTESTATION_ONLY",
+        "status": "LOCAL_CAPTURE_SCHEMA_MATCHED_MANUAL_REFERENCE__AUTOMATED_UI_NOT_VERIFIED",
         **expected,
         "source_snapshot_path": str(expected_snapshot),
         "existing_scheduler_routing_pending": True,
