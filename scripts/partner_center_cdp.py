@@ -16,8 +16,17 @@ import time
 from typing import Any
 from urllib.parse import urlparse
 
-import requests
-import websocket
+try:  # Windows runtime dependencies; offline Linux contract CI may omit them.
+    import requests
+except ModuleNotFoundError:  # pragma: no cover - exercised by Linux import CI
+    requests = None
+try:
+    import websocket
+except ModuleNotFoundError:  # pragma: no cover - exercised by Linux import CI
+    websocket = None
+
+REQUEST_ERRORS = ((requests.RequestException, ValueError)
+                  if requests is not None else (OSError, ValueError))
 
 
 CDP_HOST = "127.0.0.1"
@@ -43,6 +52,8 @@ def _edge_path() -> Path:
 
 
 def _get_json(path: str, timeout: float = 3.0) -> Any:
+    if requests is None:
+        raise PartnerCenterHold("HOLD_LOCAL_PREREQUISITE: requests is missing")
     response = requests.get(CDP_BASE + path, timeout=timeout)
     response.raise_for_status()
     return response.json()
@@ -57,7 +68,7 @@ def ensure_edge(*, launch: bool = True, timeout: float = 12.0) -> dict:
     """
     try:
         version = _get_json("/json/version")
-    except (requests.RequestException, ValueError):
+    except REQUEST_ERRORS:
         if not launch:
             raise PartnerCenterHold("HOLD_BROWSER_AUTOMATION_UNAVAILABLE")
         subprocess.Popen(
@@ -77,7 +88,7 @@ def ensure_edge(*, launch: bool = True, timeout: float = 12.0) -> dict:
             try:
                 version = _get_json("/json/version")
                 break
-            except (requests.RequestException, ValueError):
+            except REQUEST_ERRORS:
                 time.sleep(0.25)
         else:
             raise PartnerCenterHold("HOLD_BROWSER_AUTOMATION_UNAVAILABLE")
@@ -96,6 +107,8 @@ class CdpPage:
 
     @classmethod
     def attach(cls) -> "CdpPage":
+        if websocket is None:
+            raise PartnerCenterHold("HOLD_LOCAL_PREREQUISITE: websocket-client is missing")
         targets = _get_json("/json")
         if not isinstance(targets, list):
             raise PartnerCenterHold("HOLD_BROWSER_STATE_AMBIGUOUS")
@@ -511,7 +524,7 @@ def main(argv: list[str] | None = None) -> int:
         result = diagnostic() if args.mode == "diagnose" else {}
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0
-    except (PartnerCenterHold, requests.RequestException, ValueError) as exc:
+    except (PartnerCenterHold, *REQUEST_ERRORS) as exc:
         print(json.dumps({"status": "HOLD", "reason": str(exc)}, ensure_ascii=False))
         return 2
 
