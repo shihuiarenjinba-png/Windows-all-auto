@@ -290,7 +290,10 @@ def materialize_game_registry_identity(job: dict, path: Path) -> bool:
         "source_sha": job["source_sha"],
     }
     if any(record.get(key) != value for key, value in exact.items()):
-        raise Hold("CONFLICT", "USER_PROVIDED_IDENTITY_REGISTRY_BINDING_MISMATCH")
+        # The reviewed registry belongs only to its exact immutable product.
+        # A different test/future request simply has no auto-materializable
+        # Identity; explicit evidence will still be binding-checked later.
+        return False
     required = {
         "store_id", "identity_name", "publisher", "publisher_display_name",
         "package_family_name", "package_sid", "xbox_title_id", "xbox_scid", "msa_app_id",
