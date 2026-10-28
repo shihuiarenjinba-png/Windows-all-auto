@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T16:43:20.581Z",
+  "updated_at_utc": "2026-10-28T17:39:58.608Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -1873,7 +1873,7 @@
     "store_submission": 0,
     "package_upload": 0,
     "package_version_gate": "HOLD",
-    "status": "CLOUD_DISCOVER_4_OF_4_CI_PASS__LOCAL_SCHEDULE_AND_UI_UNPROVEN__PARTIAL_NOT_STARTED",
+    "status": "CLOUD_DISCOVER_4_OF_4_PASS__LOCAL_BATCH_NOT_STARTED__SCHEDULE_TRIGGER_NOT_PROVEN",
     "preflight_evidence": "GITHUB_BRANCH_HEAD_MATCH_4__ARTIFACT_ZIP_DIGEST_MATCH_4__EXTRACTED_EXE_SHA256_BYTES_MATCH_4",
     "code_contracts": {
       "windows_all_auto_pr": 33,
@@ -1886,7 +1886,9 @@
       "windows_all_auto_hardening_head": "4f74757809af72b2513d6999d5f0912b6efbd71f",
       "windows_all_auto_hardening_ci_run": 40728641133,
       "windows_all_auto_hardening_offline_qa_run": 40728641235,
-      "windows_all_auto_hardening_ci_conclusion": "SUCCESS_WINDOWS_UBUNTU"
+      "windows_all_auto_hardening_ci_conclusion": "SUCCESS_WINDOWS_UBUNTU",
+      "windows_all_auto_crash_recovery_commit": "615a670e5c7b15f8812b7776757b42a61a3ac9e9",
+      "windows_all_auto_crash_recovery_ci": "PENDING_INDEPENDENT_CI"
     },
     "products": [
       {
@@ -1998,10 +2000,63 @@
         "error_code": "LOCAL_BATCH_NOT_STARTED"
       }
     ],
-    "next_action": "Use PR34 reviewed single-flight contract; create trusted saved-schedule-to-local invocation evidence, verify physical exact-source snapshots and UI capture, then APP PR11 CAS and replay. Do not convert CI-only discover into local PASS.",
+    "next_action": "Verify PR34 new exact HEAD CI for crash-safe same-product claim replay; obtain independently verified scheduled-to-local trigger receipt and physical Windows exact-source snapshots; then one-at-a-time authenticated UI capture and APP PR11 single-writer return. No local batch success, package, or Store submission may be inferred from GitHub Actions.",
     "cloud_discover_contract_run_id": 40728641133,
     "cloud_discover_contract_ci": "SUCCESS_WINDOWS_UBUNTU",
     "cloud_discover_from_pinned_central_commit": "0fe4dc510b37b0574f96d13bc95ade6ef1635032",
     "cloud_discover_status": "BATCH_DISCOVERED_4_IN_GITHUB_ACTIONS_WINDOWS_AND_UBUNTU__NOT_LOCAL_PC"
+  },
+  "last_36_execution": {
+    "observed_at_utc": "2026-10-28T17:39:58.608Z",
+    "scope": "MULTI_PRODUCT_PARTNER_CENTER_BATCH_4",
+    "central_repository": "shihuiarenjinba-png/Windows-all-auto",
+    "central_branch": "codex/e2e-belt-connection-20261027",
+    "previous_central_ledger_blob_sha": "7df62aa15af68c439d285c28ee26a3e0a0884a29",
+    "github_factory_exact_source_heads_verified": 4,
+    "github_factory_source_heads": [
+      {
+        "slug": "focus-session-desk",
+        "source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+        "status": "MATCH"
+      },
+      {
+        "slug": "file-integrity-ledger",
+        "source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
+        "status": "MATCH"
+      },
+      {
+        "slug": "offline-text-diff-desk",
+        "source_sha": "a7d37280089893a9ea4b9ac3336020a920e73e0c",
+        "status": "MATCH"
+      },
+      {
+        "slug": "offline-image-inventory-desk",
+        "source_sha": "16b6a772952ca0988f2ae2f8b5f4db2e59ec5877",
+        "status": "MATCH"
+      }
+    ],
+    "windows_all_auto_pr34_previous_head": "4f74757809af72b2513d6999d5f0912b6efbd71f",
+    "windows_all_auto_pr34_previous_ci_run": 40728641133,
+    "windows_all_auto_pr34_previous_ci": "SUCCESS_WINDOWS_UBUNTU",
+    "windows_all_auto_pr34_new_head": "615a670e5c7b15f8812b7776757b42a61a3ac9e9",
+    "windows_all_auto_pr34_new_ci": "NOT_YET_VERIFIED",
+    "implementation": "CRASH_SAFE_SINGLE_FLIGHT_CLAIM_OR_RESUME__EXACT_EXISTING_JOB_OUTPUT_REUSE__CONFLICT_REJECTED__TWO_REGRESSION_TESTS",
+    "app_provisioner_pr11_head": "edf2896a4405ee51e0771a75111fa11c36aef572",
+    "app_provisioner_pr11_ci_run": 40723564890,
+    "app_provisioner_pr11_ci": "SUCCESS_WINDOWS_UBUNTU",
+    "local_code_sync": "NOT_OBSERVED_ON_USER_PC",
+    "partner_center_identity_capture": "NOT_OBSERVED_ON_USER_PC",
+    "scheduled_trigger_to_local": "NOT_PROVEN",
+    "github_return": "NOT_RUN_FOR_BATCH4",
+    "real_msix": "NOT_BUILT_FOR_BATCH4",
+    "github_backlog_real_product": "NOT_RUN_FOR_BATCH4",
+    "local_pull": "NOT_RUN_FOR_BATCH4",
+    "checker": "NOT_RUN_FOR_BATCH4",
+    "gui_install_qa": "NOT_RUN_FOR_BATCH4",
+    "success_count": 0,
+    "hold_count": 0,
+    "unprocessed_count": 4,
+    "next_resume_index": 1,
+    "store_submission": 0
   }
 }
