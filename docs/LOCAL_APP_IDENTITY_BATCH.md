@@ -30,6 +30,23 @@ single-writer contract must stop the whole batch.
 Package Version remains a separate gate. Every Identity-only result records
 `package_version_gate=HOLD` and `store_submission=NOT_PERFORMED`.
 
+## Artifact expiration preflight
+
+A verified Factory EXE SHA and source HEAD are not enough to fetch an expired
+GitHub Actions artifact. At batch discovery, each APP job must carry a valid
+UTC `factory_artifact_expiry_utc` strictly later than the discovery clock.
+Missing, malformed or expired values stop discovery with
+`HOLD_ARTIFACT_EXPIRY_INVALID` or `HOLD_ARTIFACT_EXPIRED`; the worker must not
+start product creation or CAS on an expired input. The selected expiration is
+also persisted as `artifact_expires_at` on each queued job.
+
+This check validates the central ledger's timestamp, **not** a live GitHub
+artifact download or a local physical snapshot. Recheck the artifact ID,
+remote digest, `expired=false`, and exact EXE bytes immediately before
+local consumption. Historical pinned CI uses a fixed 2026-10-29 observation
+clock so that the regression remains reproducible after the four artifacts
+expire on 2026-11-02; production `discover` uses current UTC.
+
 ## Completion evidence and fail-closed classification
 
 The four Factory PRE_IDENTITY artifacts have separately verifiable ZIP digests,
