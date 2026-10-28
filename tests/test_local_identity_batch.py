@@ -57,6 +57,36 @@ def ledger():
     }
 
 
+def success_result(state, job):
+    return {
+        "batch_id": state["batch_id"], "batch_index": job["batch_index"],
+        "request_id": job["request_id"], "slug": job["slug"],
+        "source_sha": job["source_sha"], "source_snapshot_head": job["source_sha"],
+        "identity_return_target": job["identity_return_target"],
+        "registration_type": job["registration_type"],
+        "partner_center_selection": job["partner_center_selection"],
+        "queue_job_digest": job["queue_job_digest"],
+        "central_head_sha": state["central_head_sha"],
+        "source_sync_status": "DOWNLOADED_EXACT_SNAPSHOT",
+        "partner_center_search_count": 0, "creation_status": "CREATED",
+        "overview_exact_match_count": 1,
+        "identity_capture_status": "IDENTITY_CAPTURED__AUTHENTICATED_UI__GITHUB_BOUND",
+        "authenticated_partner_center_pass": True,
+        "identity_details_observed": True,
+        "store_id": "9N12345678ABC",
+        "identity_name": "OkinawaDesktopTools.TestProduct",
+        "pfn": "OkinawaDesktopTools.TestProduct_j8yefg9jgfh58",
+        "package_sid": "S-1-15-2-1-2-3-4-5-6-7",
+        "github_return_status": "APPLIED",
+        "github_replay_status": "EXISTING_VERIFIED",
+        "identity_return_commit_sha": "a" * 40,
+        "package_version_gate": "HOLD",
+        "store_submission": "NOT_PERFORMED",
+        "cross_product_contamination": 0,
+        "duplicate_creation": 0,
+    }
+
+
 class BatchTests(unittest.TestCase):
     def test_discovers_exact_ordered_four(self):
         state = batch.discover(ledger(), spec())
@@ -109,14 +139,47 @@ class BatchTests(unittest.TestCase):
         self.assertEqual(job["batch_index"], 1)
         with self.assertRaisesRegex(batch.BatchHold, "SINGLE_FLIGHT"):
             batch.claim_next(claimed)
-        result = {key: job[key] for key in
-                  ("request_id", "slug", "source_sha", "identity_return_target")}
-        result.update(github_return_status="APPLIED", package_version_gate="HOLD",
-                      store_submission="NOT_PERFORMED")
-        resumed = batch.complete_active(claimed, result)
+        resumed = batch.complete_active(claimed, success_result(claimed, job))
         claimed2, job2 = batch.claim_next(resumed)
         self.assertEqual(job2["batch_index"], 2)
         self.assertEqual(claimed2["active_index"], 2)
+
+    def test_interrupted_claim_resumes_same_job_without_second_claim(self):
+        state = batch.discover(ledger(), spec())
+        in_flight, first = batch.claim_or_resume(state)
+        recovered, same = batch.claim_or_resume(in_flight)
+        self.assertEqual(recovered, in_flight)
+        self.assertEqual(same, first)
+        self.assertEqual(recovered["active_index"], 1)
+        self.assertEqual(recovered["processed_count"], 0)
+        self.assertEqual(sum(x["state"] == "PROCESSING"
+                             for x in recovered["products"]), 1)
+        completed = batch.complete_active(recovered, success_result(recovered, same))
+        next_state, second = batch.claim_or_resume(completed)
+        self.assertEqual(second["batch_index"], 2)
+        self.assertEqual(next_state["active_index"], 2)
+
+    def test_corrupt_inflight_state_rejected_before_resume(self):
+        state, first = batch.claim_next(batch.discover(ledger(), spec()))
+        state["products"][1]["state"] = "PROCESSING"
+        with self.assertRaisesRegex(batch.BatchHold, "ACTIVE_JOB_NOT_UNIQUE"):
+            batch.claim_or_resume(state)
+        state["products"][1]["state"] = "PENDING"
+        state["next_resume_index"] = 2
+        with self.assertRaisesRegex(batch.BatchHold, "ACTIVE_JOB_NOT_UNIQUE"):
+            batch.claim_or_resume(state)
+
+    def test_replay_same_completed_result_is_idempotent(self):
+        state, job = batch.claim_next(batch.discover(ledger(), spec()))
+        result = success_result(state, job)
+        completed = batch.complete_active(state, result)
+        replay = batch.complete_active(completed, result)
+        self.assertEqual(replay["processed_count"], 1)
+        self.assertEqual(replay["success_count"], 1)
+        self.assertEqual(replay["next_resume_index"], 2)
+        altered = dict(result, identity_return_commit_sha="b" * 40)
+        with self.assertRaisesRegex(batch.BatchHold, "REPLAY_CONFLICT"):
+            batch.complete_active(completed, altered)
 
     def test_cross_product_identity_stops_batch(self):
         state, job = batch.claim_next(batch.discover(ledger(), spec()))
@@ -127,6 +190,59 @@ class BatchTests(unittest.TestCase):
                       store_submission="NOT_PERFORMED")
         with self.assertRaisesRegex(batch.BatchHold, "CONTAMINATION"):
             batch.complete_active(state, result)
+
+
+    def test_status_only_applied_never_counts_as_success(self):
+        state, job = batch.claim_next(batch.discover(ledger(), spec()))
+        fake = {key: job[key] for key in
+                ("request_id", "slug", "source_sha", "identity_return_target")}
+        fake.update(github_return_status="APPLIED", package_version_gate="HOLD",
+                    store_submission="NOT_PERFORMED")
+        with self.assertRaisesRegex(batch.BatchHold, "SUCCESS_EVIDENCE_INCOMPLETE"):
+            batch.complete_active(state, fake)
+
+    def test_missing_replay_or_wrong_identity_rejected(self):
+        state, job = batch.claim_next(batch.discover(ledger(), spec()))
+        result = success_result(state, job)
+        result["github_replay_status"] = "NOT_RUN"
+        with self.assertRaisesRegex(batch.BatchHold, "SUCCESS_EVIDENCE_INCOMPLETE"):
+            batch.complete_active(state, result)
+        result["github_replay_status"] = "EXISTING_VERIFIED"
+        result["package_sid"] = "invalid"
+        with self.assertRaisesRegex(batch.BatchHold, "IDENTITY_SCHEMA_INVALID"):
+            batch.complete_active(state, result)
+
+    def test_authentication_failure_stops_entire_batch(self):
+        state, job = batch.claim_next(batch.discover(ledger(), spec()))
+        result = {key: job[key] for key in
+                  ("request_id", "slug", "source_sha", "identity_return_target")}
+        result.update(github_return_status="HOLD", package_version_gate="HOLD",
+                      store_submission="NOT_PERFORMED",
+                      error_code="HOLD_MFA_REQUIRED")
+        with self.assertRaisesRegex(batch.BatchHold, "GLOBAL_STOP_REQUIRED"):
+            batch.complete_active(state, result)
+
+    def test_product_hold_can_advance_one_index(self):
+        state, job = batch.claim_next(batch.discover(ledger(), spec()))
+        result = {key: job[key] for key in
+                  ("request_id", "slug", "source_sha", "identity_return_target")}
+        result.update(github_return_status="HOLD", package_version_gate="HOLD",
+                      store_submission="NOT_PERFORMED",
+                      error_code="HOLD_NAME_UNAVAILABLE")
+        resumed = batch.complete_active(state, result)
+        self.assertEqual(resumed["hold_count"], 1)
+        next_state, next_job = batch.claim_next(resumed)
+        self.assertEqual(next_job["batch_index"], 2)
+
+    def test_four_claimed_successes_still_require_host_schedule_proof(self):
+        state = batch.discover(ledger(), spec())
+        self.assertFalse(state["schedule_trigger_proven"])
+        for _ in range(4):
+            state, job = batch.claim_next(state)
+            state = batch.complete_active(state, success_result(state, job))
+        self.assertEqual(state["success_count"], 4)
+        self.assertEqual(state["final_status"], "MULTI_PRODUCT_IDENTITY_BATCH_PARTIAL")
+
 
     def test_schedule_trigger_must_be_proven(self):
         value = spec()

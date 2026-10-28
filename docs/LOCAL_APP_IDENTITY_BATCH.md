@@ -29,3 +29,40 @@ single-writer contract must stop the whole batch.
 
 Package Version remains a separate gate. Every Identity-only result records
 `package_version_gate=HOLD` and `store_submission=NOT_PERFORMED`.
+
+## Completion evidence and fail-closed classification
+
+The four Factory PRE_IDENTITY artifacts have separately verifiable ZIP digests,
+EXE SHA-256, EXE byte counts and source HEADs. These prove a **cloud preflight**,
+not local Windows source sync, an authenticated Partner Center session, or a
+scheduled local run. The local operator must independently verify each snapshot
+and actual Identity capture before an APP single-writer CAS.
+
+An `APPLIED` or `EXISTING_VERIFIED` string is insufficient for batch success.
+Each successful `complete` result must bind the batch ID/index, central HEAD,
+queue digest, request/slug/source SHA, source snapshot HEAD, registration type,
+return target, exact Overview count, authenticated UI capture, all Identity
+fields, returned GitHub commit SHA and same-product `EXISTING_VERIFIED` replay.
+Missing evidence raises HOLD without incrementing the success count. Global
+auth/MFA ambiguity, duplicate creation, queue drift, cross-product contamination
+and CAS-contract failure must stop the entire batch. Only allowlisted
+product-level HOLD codes can advance to the next index.
+
+`discover`, `claim` and `complete` share a nonblocking OS lock on the state
+file. State writes are atomic and fsynced. Repeated `discover` cannot reset
+completed jobs; exact `complete` replay cannot increment counters twice.
+Use a distinct `--job-output` path for each batch index and never edit managed
+source snapshots.
+
+**Schedule attestation is not yet implemented.** The static fields
+`trigger_origin=SCHEDULED_36_MIN_LOOP` and the automation ID are not
+independent proof that a local Windows worker was invoked by the saved
+schedule. The batch state therefore sets `schedule_trigger_proven=false`
+and cannot report `MULTI_PRODUCT_IDENTITY_BATCH_PASS` until a trusted
+scheduler-to-local attestation path is implemented and verified. A user or
+script editing JSON must never upgrade this flag by assertion alone.
+
+The contract module does not operate a browser, click Reserve product name,
+capture authenticated Partner Center Identity or execute the APP CAS itself.
+Those are separate local-worker integration gates. GitHub CI success for this
+module does not imply those operations occurred.

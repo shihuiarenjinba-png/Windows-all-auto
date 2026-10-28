@@ -6,6 +6,7 @@ on:
       - "scripts/local_identity_batch.py"
       - "tests/test_local_partner_center_operator.py"
       - "tests/test_local_identity_batch.py"
+      - "tests/test_live_batch4_central.py"
       - ".github/workflows/local-app-identity-batch.yml"
       - "docs/LOCAL_APP_IDENTITY_BATCH.md"
   workflow_dispatch:
@@ -27,5 +28,12 @@ jobs:
           python-version: "3.11"
       - name: Four-product single-flight contract
         run: python -m unittest tests.test_local_partner_center_operator tests.test_local_identity_batch -v
+      - name: Pinned central queue preflight (cloud only, not schedule proof)
+        shell: bash
+        run: |
+          git fetch --no-tags --depth=1 origin 0fe4dc510b37b0574f96d13bc95ade6ef1635032
+          test "$(git rev-parse FETCH_HEAD)" = "0fe4dc510b37b0574f96d13bc95ade6ef1635032"
+          git show FETCH_HEAD:ops/active_e2e_handoff.json > central-live.json
+          CENTRAL_LEDGER_PATH=central-live.json python -m unittest tests.test_live_batch4_central -v
       - name: Syntax validation
         run: python -m py_compile scripts/local_partner_center_operator.py scripts/local_identity_batch.py tests/test_local_partner_center_operator.py tests/test_local_identity_batch.py
