@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T13:45:19.488Z",
+  "updated_at_utc": "2026-10-28T14:34:49.282Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -1079,6 +1079,29 @@
       "contract_ci_run_id": 40699238079,
       "live_central_projection": "PASS_READ_ONLY__APP_0_3D_1_DRIFT_1__NO_ELIGIBLE_SOURCE_SYNC",
       "physical_local_receipt": "NOT_OBSERVED"
+    },
+    "manifest_isolation": {
+      "draft_pr": 31,
+      "branch": "codex/local-sync-manifest-isolation-20261028",
+      "head_sha": "872ef66f4ce8b829751b766ddf9586eefc9c3d82",
+      "base_draft_pr": 30,
+      "status": "DRAFT_CODE_COMMITTED__WINDOWS_UBUNTU_CI_PENDING",
+      "scope": "LOCAL_SOURCE_SYNC_MANIFEST_PARSER_ONLY",
+      "protections": [
+        "REQUIRE_NONEMPTY_REQUEST_ID",
+        "REJECT_DUPLICATE_JSON_KEYS",
+        "REJECT_UNSUPPORTED_SCHEMA",
+        "REJECT_LINKED_MANIFEST",
+        "REJECT_DUPLICATE_REQUEST_ID",
+        "REJECT_DUPLICATE_SLUG",
+        "REJECT_DUPLICATE_REPOSITORY_BRANCH"
+      ],
+      "regression_tests_added": 8,
+      "physical_user_pc_execution": "NOT_OBSERVED",
+      "github_queue_origin_verified": false,
+      "cas_return_pass": false,
+      "e2e_pass": false,
+      "next_action": "Check PR31 Windows/Ubuntu contract CI; keep Prism pinned source SHA and historical queue digest HOLD; do not claim local source-sync PASS from cloud tests."
     }
   },
   "latest_provisioner_heads_observed": {
@@ -1381,6 +1404,8 @@
       "LIVE_REMOTE_HEAD_RECHECK_DELEGATED_TO_LOCAL_CODE_SYNC",
       "NO_HISTORICAL_QUEUE_DIGEST_SUBSTITUTION"
     ],
-    "next_action": "Prism original branch HEAD is a one-commit Identity-file descendant, so old pinned source SHA remains immutable and live remote-head check HOLD. Resolve historical queue digest mismatch with independent proof; do not silently repin. When eligible APP jobs arrive, generate per-cohort local manifest and require actual user-PC source sync receipt and HEAD verification before any Partner Center operator action."
+    "next_action": "Prism original branch HEAD is a one-commit Identity-file descendant, so old pinned source SHA remains immutable and live remote-head check HOLD. Resolve historical queue digest mismatch with independent proof; do not silently repin. When eligible APP jobs arrive, generate per-cohort local manifest and require actual user-PC source sync receipt and HEAD verification before any Partner Center operator action.",
+    "manifest_isolation_pr": 31,
+    "manifest_isolation_status": "DRAFT_CI_PENDING__NO_LOCAL_PASS"
   }
 }
