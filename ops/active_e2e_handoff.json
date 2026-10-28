@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T12:44:43Z",
+  "updated_at_utc": "2026-10-28T13:45:19.488Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -770,7 +770,11 @@
     "prism_cas_receipt_verified": false,
     "prism_historical_queue_provenance_code_committed": true,
     "prism_historical_queue_provenance_ci_pass": true,
-    "prism_github_queue_origin_verified": false
+    "prism_github_queue_origin_verified": false,
+    "rotation_source_sync_plan_code_committed": true,
+    "rotation_source_sync_plan_ci_pass": true,
+    "rotation_source_sync_live_central_projection_pass": true,
+    "rotation_source_sync_physical_pass": false
   },
   "user_id_requests": {
     "schema_version": 1,
@@ -1068,7 +1072,14 @@
     "no_store_submit": true,
     "no_cas": true,
     "no_package_install": true,
-    "next_action": "Prism branch advanced by approved-identity.json commit; do not change pinned source_sha or disable remote HEAD guard. Reconcile post-Identity build head before physical 3-product sync; Offline/Signal pins still identical."
+    "next_action": "Prism branch advanced by approved-identity.json commit; do not change pinned source_sha or disable remote HEAD guard. Reconcile post-Identity build head before physical 3-product sync; Offline/Signal pins still identical.",
+    "dynamic_rotation_plan": {
+      "draft_pr": 30,
+      "head_sha": "97670cedb7481f8448e920e393b8a2e930ba9c5f",
+      "contract_ci_run_id": 40699238079,
+      "live_central_projection": "PASS_READ_ONLY__APP_0_3D_1_DRIFT_1__NO_ELIGIBLE_SOURCE_SYNC",
+      "physical_local_receipt": "NOT_OBSERVED"
+    }
   },
   "latest_provisioner_heads_observed": {
     "basis": "LIVE_GITHUB_BRANCH_HEAD_AND_COMMIT_CI__NOT_LOCAL_REVALIDATED",
@@ -1332,5 +1343,44 @@
     "scheduler_3d_single_writer_connected": false,
     "identity_version_and_asset_approvals": "NOT_INFERRED",
     "next_action": "Wire reviewed 3D projected queue into existing single-writer scheduler only after remote source HEAD drift and historical queue digest mismatch are reconciled with independent evidence. Physical Windows exact source sync and authenticated UI capture remain separate HOLD gates. Do not repin immutable source SHA, create duplicate product, infer Version, CAS, upload or submit Store."
+  },
+  "rotation_source_sync_plan": {
+    "schema_version": 1,
+    "repository": "shihuiarenjinba-png/Windows-all-auto",
+    "draft_pr": 30,
+    "branch": "codex/rotation-source-sync-plan-20261028",
+    "head_sha": "97670cedb7481f8448e920e393b8a2e930ba9c5f",
+    "stacked_on_pr": 29,
+    "entrypoint": "python -m scripts.rotation_source_sync_plan --ledger <CENTRAL_LEDGER_JSON> --check-only",
+    "local_manifest_entrypoint": "python -m scripts.rotation_source_sync_plan --ledger <CENTRAL_LEDGER_JSON> --manifest <LOCAL_MANIFEST_PATH>",
+    "downstream_worker": "python -m scripts.local_code_sync --manifest <LOCAL_MANIFEST_PATH> --root <LOCAL_CODE_MIRROR_ROOT> --receipt <LOCAL_RECEIPT_PATH>",
+    "status": "CONTRACT_CI_PASS_AND_LIVE_CENTRAL_LEDGER_PROJECTION_PASS__PHYSICAL_LOCAL_HOLD",
+    "contract_ci_run_id": 40699238079,
+    "contract_ci_conclusion": "SUCCESS_WINDOWS_UBUNTU_AND_LIVE_CENTRAL_LEDGER",
+    "offline_qa_run_id": 40699238049,
+    "offline_qa_conclusion": "SUCCESS",
+    "test_cases": 8,
+    "live_central_ledger_projection": {
+      "app_jobs": 0,
+      "three_d_jobs": 1,
+      "eligible_source_sync_jobs": 0,
+      "source_head_drift_holds": 1
+    },
+    "remote_head_verified": false,
+    "physical_local_sync_pass": false,
+    "github_queue_origin_verified": false,
+    "historical_queue_digest_verified": false,
+    "operator_identity_capture_pass": false,
+    "cas_return_pass": false,
+    "real_msix_pass": false,
+    "e2e_pass": false,
+    "protections": [
+      "CROSS_PRODUCT_REQUEST_SOURCE_AND_IDENTITY_TARGET_VALIDATION",
+      "EXCLUDE_DRIFTED_SOURCE_WITHOUT_BLOCKING_OTHER_APP_JOBS",
+      "MANIFEST_IDEMPOTENT_NO_OVERWRITE",
+      "LIVE_REMOTE_HEAD_RECHECK_DELEGATED_TO_LOCAL_CODE_SYNC",
+      "NO_HISTORICAL_QUEUE_DIGEST_SUBSTITUTION"
+    ],
+    "next_action": "Prism original branch HEAD is a one-commit Identity-file descendant, so old pinned source SHA remains immutable and live remote-head check HOLD. Resolve historical queue digest mismatch with independent proof; do not silently repin. When eligible APP jobs arrive, generate per-cohort local manifest and require actual user-PC source sync receipt and HEAD verification before any Partner Center operator action."
   }
 }
