@@ -1,4 +1,5 @@
 from copy import deepcopy
+from datetime import datetime, timezone
 import unittest
 
 from scripts import local_identity_batch as batch
@@ -38,6 +39,7 @@ def ledger():
             "source_branch": "codex/" + slug, "source_sha": sha,
             "factory_build_head": sha, "expected_exe_sha256": exe,
             "factory_artifact_id": aid, "artifact_metadata_verified": True,
+            "factory_artifact_expiry_utc": "2099-01-01T00:00:00Z",
             "registration_type": "MSIX_OR_PWA_APP",
             "partner_center_selection": "MSIX or PWA app",
             "identity_return_target": f"products/{slug}/store/approved-identity.json",
@@ -100,6 +102,24 @@ class BatchTests(unittest.TestCase):
         self.assertEqual(state["discovered_count"], 4)
         self.assertEqual([x["slug"] for x in state["products"]],
                          [x[1] for x in PRODUCTS])
+
+    def test_expired_artifact_holds_before_any_local_work(self):
+        value = ledger()
+        value["rotation_cohorts"]["app_jobs"][1]["factory_artifact_expiry_utc"] = (
+            "2026-10-29T00:00:00Z")
+        with self.assertRaisesRegex(batch.BatchHold, "HOLD_ARTIFACT_EXPIRED"):
+            batch.discover(value, spec(), now_utc=datetime(
+                2026, 10, 29, 0, 36, tzinfo=timezone.utc))
+
+    def test_missing_or_malformed_expiry_fails_closed(self):
+        value = ledger()
+        value["rotation_cohorts"]["app_jobs"][0].pop("factory_artifact_expiry_utc")
+        with self.assertRaisesRegex(batch.BatchHold, "EXPIRY_INVALID"):
+            batch.discover(value, spec())
+        value["rotation_cohorts"]["app_jobs"][0]["factory_artifact_expiry_utc"] = (
+            "2026-10-29 00:00:00")
+        with self.assertRaisesRegex(batch.BatchHold, "EXPIRY_INVALID"):
+            batch.discover(value, spec())
 
     def test_incomplete_discovery_holds(self):
         value = ledger()
