@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T00:36:45.656Z",
+  "updated_at_utc": "2026-10-28T00:36:57.564Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -59,7 +59,7 @@
     "next_action": "WAITING_USER_IDENTITY: operator obtains official Identity independently and places local private official-identity.json. Scheduler validates binding/schema; explicit CAS approval and latest HEAD/EXE preflight required. No browser/Partner Center acquisition by 36-minute loop.",
     "local_commands": [
       "$ledgerSha = gh api repos/shihuiarenjinba-png/Windows-all-auto/git/ref/heads/codex/e2e-belt-connection-20261027 --jq .object.sha",
-      "py -3 -m scripts.local_identity_return --ledger-ref \"codex/e2e-belt-connection-20261027\" --ledger-sha \"$ledgerSha\" --provisioner-root \"C:\\src\\Repository-Provisioner-game\" --provisioner-branch \"codex/game-identity-idempotency-20261027\" --provisioner-sha \"d2d8120ace60d0ba1095c110374e2d4f553bc92f\" --provisioner-result \"C:\\qa\\signal-sprint\\provisioner-live-result.json\" --source-branch \"codex/game-signal-sprint-undo-20261027\" --source-sha \"c058cbf7fe38e02d929c67d047d717ff74bd522e\" --request-id \"game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e\"",
+      "py -3 -m scripts.local_identity_return --ledger-ref \"codex/e2e-belt-connection-20261027\" --ledger-sha \"$ledgerSha\" --provisioner-root \"C:\\src\\Repository-Provisioner-game\" --provisioner-branch \"codex/game-identity-idempotency-20261027\" --provisioner-sha \"15b2e0818d479fa5017e0e8abafac011f74dad2c\" --provisioner-result \"C:\\qa\\signal-sprint\\provisioner-live-result.json\" --source-branch \"codex/game-signal-sprint-undo-20261027\" --source-sha \"c058cbf7fe38e02d929c67d047d717ff74bd522e\" --request-id \"game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e\"",
       "gh api repos/shihuiarenjinba-png/AI-Game-Factory/actions/artifacts/12706862577 --jq .digest  # must equal sha256:e48a0426595dc227988f12944921511a47d5c8feca8b063a161dd0dd61306412",
       "gh run download 40443340158 -R shihuiarenjinba-png/AI-Game-Factory -n game-signal-sprint-exe-c058cbf7fe38e02d929c67d047d717ff74bd522e -D C:\\qa\\signal-sprint\\factory-exe",
       "python provisioner.py --input C:\\qa\\signal-sprint\\factory-exe\\provisioner-request.json --output C:\\qa\\signal-sprint\\dry-run-result.json",
@@ -140,19 +140,19 @@
     "provisioner_package_safety": {
       "repository": "shihuiarenjinba-png/Repository-Provisioner-game",
       "branch": "codex/game-identity-idempotency-20261027",
-      "head_sha": "d2d8120ace60d0ba1095c110374e2d4f553bc92f",
+      "head_sha": "15b2e0818d479fa5017e0e8abafac011f74dad2c",
       "draft_pr": 9,
       "base_branch": "codex/game-msix-package-safety-20261027-1510",
       "base_sha": "c217652c7887626de94e8b37ca3f1f7a57f9064d",
       "ci_run_id": 40607796803,
       "ci_conclusion": "SUCCESS",
-      "status": "LATEST_PR9_CI_PASS__LOCAL_RECHECK_REQUIRED_BEFORE_CAS",
+      "status": "LATEST_PR9_CI_PASS__LOCAL_WINDOWS_CHECK_ONLY_NOT_REPEATED_ON_THIS_SHA",
       "changes": [
         "package_identity_provisioner.py",
         "tests/test_package_identity_pipeline.py",
         "tests/test_existing_identity_commit_sha.py"
       ],
-      "next_action": "PR9 latest 15b2e081 CI SUCCESS; pre-CAS local check-only on this exact SHA required; do not reuse old Provisioner check-only proof.",
+      "next_action": "Use PR9 15b2e0818d479fa5017e0e8abafac011f74dad2c with Windows local check-only and verified existing EXE before any user-approved CAS; older local check-only remains historical only.",
       "current_branch_head": "15b2e0818d479fa5017e0e8abafac011f74dad2c"
     },
     "local_identity_return_worker": {
@@ -168,7 +168,7 @@
       "mode": "LOCAL_ONLY_EXPLICIT_APPLY",
       "evidence_path": "C:\\qa\\signal-sprint\\official-identity-private.json",
       "receipt_path": "C:\\qa\\signal-sprint\\identity-return\\identity-return-receipt.json",
-      "required_provisioner_sha": "d2d8120ace60d0ba1095c110374e2d4f553bc92f",
+      "required_provisioner_sha": "15b2e0818d479fa5017e0e8abafac011f74dad2c",
       "next_action": "PR17 remains dedicated CAS worker. PR18 user-managed private Identity gate waits for file; no Partner Center acquisition by automation. Local Windows execution on PR9 d2d8120 not observed.",
       "ci_url": "https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/40499482120",
       "local_check_only": {
@@ -202,7 +202,7 @@
     "provisioner_identity_resume": {
       "repository": "shihuiarenjinba-png/Repository-Provisioner-game",
       "branch": "codex/game-identity-idempotency-20261027",
-      "head_sha": "5c1db9820bac68c59cc7eb6ca5921e22a5bb3913",
+      "head_sha": "15b2e0818d479fa5017e0e8abafac011f74dad2c",
       "draft_pr": 9,
       "base_safety_pr": 8,
       "base_safety_head": "c217652c7887626de94e8b37ca3f1f7a57f9064d",
@@ -211,7 +211,7 @@
       "resume_result_path_example": "C:\\qa\\signal-sprint\\result.json",
       "resume_result_verified_on_local_windows": false,
       "package_sha256": "e8517df8cd31a40e5ce72afdd4e6a4d63626fb99f7ff8a4fa3296ff8deef05f4",
-      "status": "CODE_CI_PASS_LOCAL_EXECUTION_NOT_OBSERVED",
+      "status": "CI_PASS__LATEST_LOCAL_RECHECK_PENDING",
       "current_branch_head": "15b2e0818d479fa5017e0e8abafac011f74dad2c",
       "historical_local_check_only_sha": "5c1db9820bac68c59cc7eb6ca5921e22a5bb3913",
       "note": "Historical local check-only is on older Provisioner SHA; PR9 d2d8120 CI SUCCESS but local execution not observed."
