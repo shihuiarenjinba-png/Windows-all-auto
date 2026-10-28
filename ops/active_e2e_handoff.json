@@ -1894,8 +1894,10 @@
       "windows_all_auto_cross_lane_pr": 35,
       "windows_all_auto_cross_lane_head": "4274a92a25a1c3ed6d21a9edf1b00c55c393db70",
       "windows_all_auto_cross_lane_ci_run": 40747451974,
-      "windows_all_auto_cross_lane_ci_status": "IN_PROGRESS_AT_LAST_CHECK",
-      "windows_all_auto_cross_lane_change": "APP_GAME_3D_GAME_COLLECTION_ROUTING__EXACT_PRODUCT_TYPE_LANE_BINDING__FOUR_REGRESSION_TESTS"
+      "windows_all_auto_cross_lane_ci_status": "SUCCESS_WINDOWS_UBUNTU",
+      "windows_all_auto_cross_lane_change": "APP_GAME_3D_GAME_COLLECTION_ROUTING__EXACT_PRODUCT_TYPE_LANE_BINDING__FOUR_REGRESSION_TESTS",
+      "windows_all_auto_cross_lane_offline_qa_run": 40747452140,
+      "windows_all_auto_cross_lane_offline_qa_status": "SUCCESS_WINDOWS_UBUNTU"
     },
     "products": [
       {
@@ -2027,7 +2029,7 @@
       "Add four cross-lane and GAME routing regressions"
     ],
     "ci_run_id": 40747451974,
-    "ci_status": "IN_PROGRESS_AT_LAST_CHECK",
+    "ci_status": "SUCCESS_WINDOWS_UBUNTU",
     "cloud_pre_identity_discovered": 4,
     "local_code_sync": "NOT_OBSERVED_ON_USER_PC",
     "scheduled_trigger_to_local": "BATCH_SCHEDULE_TRIGGER_NOT_PROVEN",
@@ -2044,6 +2046,8 @@
     "unprocessed_count": 4,
     "next_resume_index": 1,
     "store_submission": 0,
-    "no_main_release_merge": true
+    "no_main_release_merge": true,
+    "offline_qa_run_id": 40747452140,
+    "offline_qa_status": "SUCCESS_WINDOWS_UBUNTU"
   }
 }
