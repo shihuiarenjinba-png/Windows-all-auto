@@ -144,6 +144,31 @@ class BatchTests(unittest.TestCase):
         self.assertEqual(job2["batch_index"], 2)
         self.assertEqual(claimed2["active_index"], 2)
 
+    def test_interrupted_claim_resumes_same_job_without_second_claim(self):
+        state = batch.discover(ledger(), spec())
+        in_flight, first = batch.claim_or_resume(state)
+        recovered, same = batch.claim_or_resume(in_flight)
+        self.assertEqual(recovered, in_flight)
+        self.assertEqual(same, first)
+        self.assertEqual(recovered["active_index"], 1)
+        self.assertEqual(recovered["processed_count"], 0)
+        self.assertEqual(sum(x["state"] == "PROCESSING"
+                             for x in recovered["products"]), 1)
+        completed = batch.complete_active(recovered, success_result(recovered, same))
+        next_state, second = batch.claim_or_resume(completed)
+        self.assertEqual(second["batch_index"], 2)
+        self.assertEqual(next_state["active_index"], 2)
+
+    def test_corrupt_inflight_state_rejected_before_resume(self):
+        state, first = batch.claim_next(batch.discover(ledger(), spec()))
+        state["products"][1]["state"] = "PROCESSING"
+        with self.assertRaisesRegex(batch.BatchHold, "ACTIVE_JOB_NOT_UNIQUE"):
+            batch.claim_or_resume(state)
+        state["products"][1]["state"] = "PENDING"
+        state["next_resume_index"] = 2
+        with self.assertRaisesRegex(batch.BatchHold, "ACTIVE_JOB_NOT_UNIQUE"):
+            batch.claim_or_resume(state)
+
     def test_replay_same_completed_result_is_idempotent(self):
         state, job = batch.claim_next(batch.discover(ledger(), spec()))
         result = success_result(state, job)
