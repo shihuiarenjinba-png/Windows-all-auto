@@ -100,11 +100,24 @@ def load_jobs(path: Path) -> list[dict]:
     return jobs
 
 
+def _verify_remote_head(job: dict) -> None:
+    """Fail closed if the current source branch no longer points to pinned SHA."""
+    url = "https://github.com/" + job["repository"] + ".git"
+    ref = "refs/heads/" + job["branch"]
+    output = _run("git", "ls-remote", "--heads", url, ref, timeout=180)
+    lines = output.splitlines()
+    if len(lines) != 1:
+        raise SyncHold("REMOTE_HEAD_CONFLICT: source branch missing or ambiguous")
+    parts = lines[0].split()
+    if len(parts) != 2 or parts[1] != ref or parts[0] != job["source_sha"]:
+        raise SyncHold("REMOTE_HEAD_CONFLICT: source branch differs from pinned SHA")
+
+
 def _verify_existing(target: Path, job: dict) -> dict:
     if _unsafe_path(target):
         raise SyncHold("existing snapshot path is linked/junction")
-    if not (target / ".git").is_dir():
-        raise SyncHold("existing snapshot is not a managed git checkout")
+    if _unsafe_path(target / ".git") or not (target / ".git").is_dir():
+        raise SyncHold("existing snapshot is not a safe managed git checkout")
     head = _run("git", "-C", str(target), "rev-parse", "HEAD")
     if head != job["source_sha"]:
         raise SyncHold("existing snapshot HEAD mismatch")
@@ -112,8 +125,10 @@ def _verify_existing(target: Path, job: dict) -> dict:
     if status:
         raise SyncHold("existing immutable snapshot is dirty; refusing overwrite")
     origin = _run("git", "-C", str(target), "remote", "get-url", "origin")
-    if job["repository"] not in origin:
+    expected_origin = "https://github.com/" + job["repository"] + ".git"
+    if origin != expected_origin:
         raise SyncHold("existing snapshot origin mismatch")
+    _verify_remote_head(job)
     return {"status": "REUSED_EXACT_SNAPSHOT", "path": str(target)}
 
 
