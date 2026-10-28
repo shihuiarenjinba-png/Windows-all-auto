@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T21:38:11.291Z",
+  "updated_at_utc": "2026-10-28T21:38:28.904Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -808,7 +808,7 @@
     "batch4_operator_json_authentication_guard_ci_pass": true,
     "batch4_authenticated_ui_evidence_independently_verified": false,
     "app_provisioner_independent_ui_guard_code_committed": true,
-    "app_provisioner_independent_ui_guard_ci_pass": false,
+    "app_provisioner_independent_ui_guard_ci_pass": true,
     "app_provisioner_trusted_ui_worker_integrated": false,
     "app_identity_cas_safe_to_apply": false
   },
@@ -1884,8 +1884,8 @@
     "store_submission": 0,
     "package_upload": 0,
     "package_version_gate": "HOLD",
-    "status": "CLOUD_DISCOVER_4_OF_4_PASS__PR37_CI_GREEN__APP_PR12_CI_IN_PROGRESS__LOCAL_BATCH_NOT_STARTED",
-    "preflight_evidence": "FOUR_FACTORY_BRANCHES_IDENTICAL_TO_PINNED_SOURCE_SHA_RECHECKED_THIS_RUN__PR37_CI_GREEN__APP_PR12_CI_IN_PROGRESS__NO_USER_PC_LOCAL_RECEIPT",
+    "status": "CLOUD_DISCOVER_4_OF_4_PASS__PR37_AND_APP_PR12_CI_GREEN__LOCAL_BATCH_NOT_STARTED",
+    "preflight_evidence": "FOUR_FACTORY_BRANCHES_IDENTICAL_TO_PINNED_SOURCE_SHA_RECHECKED_THIS_RUN__WINDOWS_PR37_AND_APP_PR12_CI_GREEN__NO_USER_PC_LOCAL_RECEIPT",
     "code_contracts": {
       "windows_all_auto_pr": 33,
       "windows_all_auto_head": "019eca325eae5f36f160af287482da4e666b5b49",
@@ -1939,7 +1939,7 @@
         "head_sha": "5d8f28520f8d6e89874c1cc8ce9cffede18a5e1b",
         "base_pr": 11,
         "ci_run_id": 40773514497,
-        "ci_status": "IN_PROGRESS_AT_OBSERVATION",
+        "ci_status": "SUCCESS_WINDOWS_UBUNTU",
         "trust_boundary": "OPERATOR_JSON_IS_NOT_AUTHENTICATED_UI_EVIDENCE__CLI_FAILS_CLOSED_WITHOUT_INDEPENDENT_TRUSTED_LOCAL_UI_VERIFIER",
         "tests": [
           "NO_VERIFIER_HOLD",
@@ -1951,7 +1951,11 @@
         "actual_authenticated_ui_worker": "NOT_IMPLEMENTED_OR_VERIFIED",
         "physical_local_execution": "NOT_OBSERVED",
         "real_cas": "NOT_PERFORMED",
-        "no_store_submission": true
+        "no_store_submission": true,
+        "ci_jobs": [
+          "test (windows-latest) SUCCESS",
+          "test (ubuntu-latest) SUCCESS"
+        ]
       }
     },
     "products": [
@@ -2064,14 +2068,14 @@
         "error_code": "LOCAL_BATCH_NOT_STARTED"
       }
     ],
-    "next_action": "Await APP PR12 Windows/Ubuntu CI; independently implement trusted authenticated Partner Center UI verifier and scheduled-to-local proof. Do not run Focus creation or CAS from operator JSON alone. Then physical exact-source sync and one-at-a-time four-product local batch. Store submission remains 0.",
+    "next_action": "PR37 and APP PR12 CI green. Next implement and independently attest trusted Windows Partner Center UI capture and scheduled-to-local trigger; physical exact-source sync on user PC before any Focus creation/CAS. Run four products sequentially only after trust gates. Version HOLD, Store submission 0.",
     "cloud_discover_contract_run_id": 40728641133,
     "cloud_discover_contract_ci": "SUCCESS_WINDOWS_UBUNTU",
     "cloud_discover_from_pinned_central_commit": "0fe4dc510b37b0574f96d13bc95ade6ef1635032",
     "cloud_discover_status": "BATCH_DISCOVERED_4_IN_GITHUB_ACTIONS_WINDOWS_AND_UBUNTU__NOT_LOCAL_PC"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-28T21:38:11.291Z",
+    "observed_at_utc": "2026-10-28T21:38:28.904Z",
     "scope": "CROSS_REPO_APP_IDENTITY_TRUST_BOUNDARY_FIX_AND_FOUR_FACTORY_HEAD_RECHECK",
     "implementation_repository": "shihuiarenjinba-png/Repository-Provisioner-app",
     "implementation_branch": "codex/app-identity-ui-attestation-gate-20261029",
@@ -2085,7 +2089,7 @@
       "No changes to version gate or Store submission"
     ],
     "ci_run_id": 40773514497,
-    "ci_status": "IN_PROGRESS_AT_OBSERVATION",
+    "ci_status": "SUCCESS_WINDOWS_UBUNTU",
     "windows_all_auto_operator_pr": 37,
     "windows_all_auto_operator_ci": "SUCCESS_WINDOWS_UBUNTU",
     "cloud_pre_identity_discovered": 4,
@@ -2107,6 +2111,6 @@
     "next_resume_index": 1,
     "store_submission": 0,
     "no_main_release_merge": true,
-    "note": "APP PR12 CI in progress; trusted local UI worker and user-PC execution not observed. Do not claim four-product batch PASS or independent UI capture."
+    "note": "APP PR12 and Windows PR37 both Windows/Ubuntu CI green; this proves offline code contract only. Trusted UI worker, user-PC execution, batch CAS and Store package remain unobserved."
   }
 }
