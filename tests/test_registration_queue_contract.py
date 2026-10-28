@@ -52,6 +52,33 @@ class QueueRegistrationTests(unittest.TestCase):
         self.assertEqual(result["deferred"][0]["partner_center_selection"],
                          "MSIX or PWA app")
         self.assertFalse(result["ready_for_cas"])
+        game = result["registration_requests"][0]
+        self.assertEqual(game["product_type"], "GAME")
+        self.assertEqual(game["packaging_family"], "GDK")
+        self.assertEqual(game["store_identity_status"], "RECEIVED")
+        self.assertFalse(game["user_registration_required"])
+        self.assertEqual(game["next_action"],
+                         "NO_PARTNER_CENTER_ACTION_IDENTITY_ALREADY_RECEIVED")
+        app = result["registration_requests"][1]
+        self.assertEqual(app["registration_type"], "MSIX_OR_PWA_APP")
+        self.assertEqual(app["store_identity_status"], "IDENTITY_REFERENCE_AVAILABLE")
+        self.assertEqual(app["next_action"], "WAIT_FACTORY_PROMOTION_AND_SOURCE_BINDING")
+
+    def test_waiting_identity_emits_full_user_id_request(self):
+        data = ledger()
+        data["user_id_requests"]["items"][0]["status"] = "WAITING_USER_IDENTITY"
+        result = q.project(data, head)
+        request = result["registration_requests"][0]
+        self.assertEqual(request["registration_event"], "USER_ID_REQUEST")
+        self.assertEqual(request["partner_center_selection"], "GDK game")
+        self.assertTrue(request["user_registration_required"])
+        self.assertIn("xbox_title_id", request["required_identity_fields"])
+
+    def test_scheduler_rejects_tampered_registration_evidence(self):
+        data = q.project(ledger(), head)
+        data["jobs"][0]["registration_evidence"] = ["unverified-name-only"]
+        with self.assertRaisesRegex(s.Hold, "REGISTRATION_HANDOFF_CONFLICT"):
+            s.validate_jobs(data)
 
     def test_mislabeled_game_is_hold(self):
         data = ledger()
