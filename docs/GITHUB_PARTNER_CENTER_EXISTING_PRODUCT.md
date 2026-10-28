@@ -50,3 +50,11 @@ Reject a dirty/linked central checkout, remote HEAD drift, missing source snapsh
 **Current real-world state:** The user manually observed the existing product's Identity values. Physical code sync receipt, automated browser capture, Identity route, CAS and package have not been independently verified here. CI contract tests cannot upgrade those gates to PASS.
 
 For a future **new** APP product such as Focus Session Desk, creation is only permitted after its own immutable PRE_IDENTITY_READY request exists. That separate path must explicitly click **Reserve product name** after availability succeeds, wait for confirmation, re-search Overview on timeout before any retry, and refuse automatic alternative names. This Prism existing-product path must never be reused as a creation shortcut.
+
+## Downstream compatibility gap discovered
+
+At the inspected 2026-10-28 code heads, `scripts/local_identity_scheduler.py` accepts only `STORE_KNOWN_GOOD`, `GAME_SIGNAL_SPRINT`, and `APP_CANARY` job kinds, and delegates CAS only for Signal Sprint. It **does not yet route GAME_3D**. Do not report IDENTITY_ROUTED or CAS_READY from this new local receipt.
+
+`Repository-Provisioner-3D/package_identity_provisioner.py` currently requires an operator evidence schema containing `authenticated_account`, `official_evidence_url`, `verified_at` and `version`, in addition to Identity fields. Those are **not** supplied by the seven-field Product Identity capture. Version must remain a separate explicit approval gate; never synthesize it or silently mix it into Identity capture. The 3D Provisioner owner must reconcile this contract before the single-writer return can proceed.
+
+Until that downstream adapter is reviewed and the separate version/package approval exists, the result of this PR is only a locally verifiable **GitHub-origin + schema/manual-reference correlation gate**, not end-to-end Identity routing.
