@@ -38,7 +38,6 @@ def ledger():
             "observed_pr_head": HEAD,
             "status": "PRE_IDENTITY_READY",
             "identity_return_target": gh.IDENTITY_TARGET,
-            "allow_local_product_creation": False,
         }]},
         "user_id_requests": {"items": [{
             "request_id": REQUEST, "slug": "prism-route-3d",
@@ -47,6 +46,7 @@ def ledger():
             "source_sha": PIN, "registration_type": "MSIX_OR_PWA_GAME",
             "partner_center_selection": "MSIX or PWA game",
             "identity_return_target": gh.IDENTITY_TARGET,
+            "allow_local_product_creation": False,
         }]},
     }
 
