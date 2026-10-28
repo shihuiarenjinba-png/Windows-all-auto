@@ -38,9 +38,11 @@ def ledger():
             **binding(), "status": "PRE_IDENTITY_READY",
             "expected_exe_sha256": "1" * 64,
             "factory_build_head": SHA,
+            "identity_return_target": gh.IDENTITY_TARGET,
         }]},
         "user_id_requests": {"items": [{
             **binding(), "identity_return_target": gh.IDENTITY_TARGET,
+            "allow_local_product_creation": False,
         }]},
     }
 
