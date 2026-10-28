@@ -194,10 +194,22 @@ class OperatorGateTests(unittest.TestCase):
         result = op.validate_capture(ready_job(batch_id="batch", batch_index=1,
                                                batch_total=4, trigger_origin="SCHEDULED_36_MIN_LOOP",
                                                automation_id="6adf4b1e7654819193b997fb4fb83c85"), captured())
-        self.assertTrue(result["authenticated_partner_center_pass"])
+        self.assertFalse(result["authenticated_partner_center_pass"])
+        self.assertEqual(result["status"], "IDENTITY_CAPTURED__OPERATOR_ATTESTED__GITHUB_BOUND")
+        self.assertEqual(result["authenticated_ui_evidence_status"], "HOLD_INDEPENDENT_UI_ATTESTATION")
         self.assertEqual(result["package_version_gate"], "HOLD")
         self.assertNotIn("version", result)
         self.assertEqual(result["batch_index"], 1)
+
+    def test_self_asserted_ui_observation_cannot_prove_authentication(self):
+        # Even exact-looking Identity values and an Overview count of one
+        # cannot independently attest a browser session in this parser.
+        value = captured()
+        value["identity_details_observed"] = True
+        result = op.validate_capture(ready_job(), value)
+        self.assertFalse(result["authenticated_partner_center_pass"])
+        self.assertFalse(result["cas_applied"])
+        self.assertFalse(result["store_submitted"])
 
     def test_capture_rejects_identity_from_another_product(self):
         value = captured()
