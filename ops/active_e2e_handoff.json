@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T06:45:04.740Z",
+  "updated_at_utc": "2026-10-28T06:45:27.138Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -378,7 +378,7 @@
       "local_tests": "67_PASS",
       "next_action": "Do not rerun without new runner/workflow evidence; require real MSIX before Checker product QA"
     },
-    "last_12_minute_update": "3D Factory PR13 Prism Route 3D one-canary HEAD 15fdcb52 CI #40640963381 SUCCESS; 3D Provisioner HEAD 1e7c6083 CI #40643856745 SUCCESS; GAME Provisioner PR10 HEAD 392dbc4d CI #40642197806 SUCCESS; APP Provisioner HEAD 99a06968 CI #40642147303 SUCCESS. PR20 rotation queue CI pending. No real 3D PRE_IDENTITY_READY.",
+    "last_12_minute_update": "PR20 APP-five and 3D-one rotation queue latest CI #40645730254 SUCCESS on Windows/Ubuntu. 3D Prism Route remains EXPORT_PENDING; APP Offline Notes unpromoted. No new user Identity request or CAS.",
     "next_repo": "shihuiarenjinba-png/Windows-all-auto",
     "next_branch": "codex/e2e-rotation-queue-20261028-1536",
     "next_head_sha": "db0d6325a3737d23f7066778713d1d7a339f1ca7",
@@ -517,7 +517,7 @@
       "ci_conclusion": "SUCCESS",
       "status": "CANDIDATE_EXPORT_EVIDENCE_PENDING"
     },
-    "rotation_queue_ci": "PR20 previous HEAD 97cfe120 CI #40645674673 SUCCESS; current HEAD db0d6325 CI #40645730254 QUEUED; do not mark latest PASS yet."
+    "rotation_queue_ci": "PR20 latest HEAD db0d6325 CI #40645730254 Windows and Ubuntu SUCCESS. Contract tests are not local E2E PASS."
   },
   "multi_product_identity_scheduler": {
     "status": "PRE_IDENTITY_REQUEST_BINDING_HARDENED__WINDOWS_UBUNTU_CI_SUCCESS__LOCAL_WINDOWS_NOT_EXECUTED",
@@ -618,7 +618,7 @@
       "branch": "codex/e2e-rotation-queue-20261028-1536",
       "head_sha": "db0d6325a3737d23f7066778713d1d7a339f1ca7",
       "base_pr": 19,
-      "ci_status": "LATEST_QUEUED__PREVIOUS_GREEN",
+      "ci_status": "SUCCESS_WINDOWS_UBUNTU",
       "files": [
         "scripts/rotation_identity_queue.py",
         "scripts/local_identity_scheduler.py",
@@ -634,7 +634,8 @@
       "previous_green_head": "97cfe12042fbf60b8ea0d66d2b7ed95edee3cf4f",
       "previous_green_ci_run_id": 40645674673,
       "latest_ci_run_id": 40645730254,
-      "artifact_contract": "EXE_SHA256_PLUS_ARTIFACT_ID_RUN_ID_ZIP_SHA256_AND_EXACT_SOURCE_BUILD_HEAD"
+      "artifact_contract": "EXE_SHA256_PLUS_ARTIFACT_ID_RUN_ID_ZIP_SHA256_AND_EXACT_SOURCE_BUILD_HEAD",
+      "ci_url": "https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/40645730254"
     }
   },
   "user_managed_identity_handoff": {
@@ -705,7 +706,7 @@
     "registration_router_code_committed": true,
     "registration_router_ci_pass": true,
     "rotation_queue_code_committed": true,
-    "rotation_queue_ci_pass": false,
+    "rotation_queue_ci_pass": true,
     "rotation_real_product_pass": false
   },
   "user_id_requests": {
