@@ -30,9 +30,11 @@ def ledger(allow=False):
         "rotation_cohorts": {"three_d_jobs": [{
             **job, "status": "PRE_IDENTITY_READY",
             "expected_exe_sha256": EXE, "factory_build_head": PIN,
+            "identity_return_target": gh.IDENTITY_TARGET,
         }]},
         "user_id_requests": {"items": [{
             **job, "identity_return_target": gh.IDENTITY_TARGET,
+            "allow_local_product_creation": allow,
         }]},
     }
 
