@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T03:35:58.355Z",
+  "updated_at_utc": "2026-10-28T03:36:28.739Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
   "active_product": {
     "lane": "GAME",
     "slug": "signal-sprint",
-    "phase": "USER_IDENTITY_RECEIVED__PR19_PREIDENTITY_GDK_FIX_CI_PENDING__LOCAL_CHECK_ONLY_PENDING__CAS_NOT_APPLIED",
+    "phase": "USER_IDENTITY_RECEIVED__PR19_RECEIVED_QUEUE_AND_GDK_MSIXVC_FIX_CI_PASS__LOCAL_CHECK_ONLY_PENDING__CAS_NOT_APPLIED",
     "status": "HOLD",
     "request_id": "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e",
     "product_type": "GAME",
@@ -56,7 +56,7 @@
       "windows_all_auto_record": null,
       "finished_at_utc": "2026-10-27T05:03:20Z"
     },
-    "next_action": "PR19 fixes two cloud-contract blockers: PRE-IDENTITY queue now accepts USER_IDENTITY_RECEIVED without CAS, and PR17 worker validates GDK MSIXVC post-CAS next_stage. PR19 latest CI pending. Provisioner-game PR10 latest b25dd37c2049 CI SUCCESS. Local Windows check-only + extracted EXE SHA-256 recheck; explicit request-specific CAS approval remains required. Do not access Partner Center or generate Version/assets.",
+    "next_action": "PR19 fixes two cloud-contract blockers: PRE-IDENTITY queue now accepts USER_IDENTITY_RECEIVED without CAS, and PR17 worker validates GDK MSIXVC post-CAS next_stage. PR19 CI #40627554261 SUCCESS (Windows/Ubuntu). Provisioner-game PR10 latest b25dd37c2049 CI SUCCESS. Local Windows check-only + extracted EXE SHA-256 recheck; explicit request-specific CAS approval remains required. Do not access Partner Center or generate Version/assets.",
     "local_commands": [
       "gh api repos/shihuiarenjinba-png/Windows-all-auto/git/ref/heads/codex/e2e-belt-connection-20261027 --jq .object.sha  # confirm exact current ledger HEAD",
       "gh api repos/shihuiarenjinba-png/Repository-Provisioner-game/git/ref/heads/codex/game-gdk-identity-contract-20261028 --jq .object.sha  # must equal b25dd37c2049b716056c83ec556603666e0b5ce2",
@@ -352,7 +352,7 @@
       "local_tests": "67_PASS",
       "next_action": "Do not rerun without new runner/workflow evidence; require real MSIX before Checker product QA"
     },
-    "last_12_minute_update": "3D Factory PR12 5ca9f7df and Provisioner-3D PR7 2e1224e7 CI SUCCESS; no new 3D product. PR19 handoff fixes under CI. GAME GDK Provisioner PR10 b25dd37c CI SUCCESS.",
+    "last_12_minute_update": "PR19 latest e4debaf2 CI #40627554261 SUCCESS Windows/Ubuntu; 3D PR12 5ca9f7df and Provisioner-3D PR7 2e1224e7 CI SUCCESS; no new product.",
     "next_repo": "shihuiarenjinba-png/Windows-all-auto",
     "next_branch": "codex/user-provided-identity-gdk-20261028",
     "next_head_sha": "e4debaf2f061e91b9a92ed6599523b4ae5a65359",
@@ -542,15 +542,15 @@
     "checker": "NOT_RUN_ON_REAL_MSIX",
     "gui_qa": "NOT_RUN",
     "e2e_pass": false,
-    "next_action": "PR19 fixes PRE-IDENTITY received-state mismatch and GDK worker MSIXVC stage mismatch; CI pending. No CAS until Windows local check-only and explicit approval.",
+    "next_action": "PR19 received-state queue fix and GDK MSIXVC CAS handoff fix CI #40627554261 SUCCESS Windows/Ubuntu. Local Windows check-only, EXE SHA recheck, explicit approval still required.",
     "security_fix": "REJECT_SYMLINKED_PRIVATE_PATH_ANCESTORS_AND_GIT_CHECK; OPERATOR_ONLY_STORE_IDENTITY_CANNOT_ADVANCE_TO_CAS_APPROVAL; VERSION_AND_BRAND_APPROVAL_ALONE_CANNOT_AUTHORIZE_MSIX; EXPLICIT_CAS_TARGETS_EXACT_GAME_REQUEST_OR_FAILS_CLOSED; DURABLE_PRE_CAS_INTENT_AND_STICKY_MANUAL_RECONCILIATION_PREVENT_UNCERTAIN_CAS_REPLAY; REJECT_WINDOWS_DIRECTORY_JUNCTION_PRIVATE_PATH_ANCESTORS; USER_MANAGED_IDENTITY_FILE_REQUIRED_BEFORE_CAS__SCHEMA_REFERENCE_BINDING_VALIDATION__NO_SECRET_IN_RECEIPT",
     "targeted_apply_routing": "FIXED_TESTED_22_PASS_WINDOWS_UBUNTU_CI",
     "user_managed_identity_gate": "USER_IDENTITY_RECEIVED_REGISTRY__LOCAL_VALIDATION_PENDING",
     "pre_identity_queue": {
-      "status": "USER_IDENTITY_RECEIVED_CORRELATION_FIX_COMMITTED__CI_PENDING__LOCAL_WINDOWS_PENDING",
+      "status": "USER_IDENTITY_RECEIVED_CORRELATION_FIX_WINDOWS_UBUNTU_CI_PASS__LOCAL_WINDOWS_PENDING",
       "entrypoint": "python -m scripts.pre_identity_queue --check-only",
       "draft_output": "python -m scripts.pre_identity_queue --output %LOCALAPPDATA%/FactoryIdentityWorker/secure/pre-identity-jobs.json",
-      "ci_run_id": 40616403346,
+      "ci_run_id": 40627554261,
       "ci_conclusion": "SUCCESS_WINDOWS_UBUNTU",
       "new_tests": 10,
       "immutable_game_source_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
@@ -570,7 +570,7 @@
       "base_sha": "02b7a75832894e750a32bdb7d4448389921d30e5",
       "compare_status": "AHEAD_7_BEHIND_0",
       "ci_run_id": 40627554261,
-      "ci_conclusion": "IN_PROGRESS_AT_OBSERVATION",
+      "ci_conclusion": "SUCCESS",
       "registry_path": "ops/user_provided_store_identities.json",
       "signal_sprint": "USER_IDENTITY_RECEIVED_GDK",
       "offline_notes_canary": "USER_IDENTITY_RECEIVED_REFERENCE_ONLY_NO_SOURCE_BINDING",
@@ -628,7 +628,7 @@
     "ci_note": "PR19 #40618853658 and Provisioner-game PR10 #40618790547 SUCCESS; PR18 base CI success. Local Windows check-only/CAS/GDK MSIXVC not observed."
   },
   "quality_gates": {
-    "pre_identity_ready": "PR19_RECEIVED_STATE_FIX_COMMITTED_CI_PENDING__LOCAL_EXE_SHA_RECHECK_PENDING",
+    "pre_identity_ready": "GAME_REMOTE_QUEUE_CONTRACT_PASS_PR19_CI_40627554261__LOCAL_EXE_SHA_RECHECK_PENDING",
     "waiting_user_identity": "GAME_FALSE__USER_PROVIDED_REFERENCE_RECEIVED__APP_NOT_YET_REQUIRED",
     "user_identity_validated": false,
     "cas_return_pass": false,
@@ -693,5 +693,5 @@
     "exclusion_reason": "EXISTING_KNOWN_GOOD_STORE_IDENTITY_REFERENCE__NO_NEW_REQUEST__NO_CLOUD_AUTHENTICATION_CLAIM",
     "pending_requests": []
   },
-  "classification": "USER_IDENTITY_RECEIVED_GDK__PR19_GDK_STAGE_FIX_CI_PENDING__LOCAL_CHECK_ONLY_PENDING__APP_IDENTITY_UNBOUND__REAL_E2E_HOLD"
+  "classification": "USER_IDENTITY_RECEIVED_GDK__PR19_GDK_STAGE_FIX_CI_PASS__LOCAL_CHECK_ONLY_PENDING__APP_IDENTITY_UNBOUND__REAL_E2E_HOLD"
 }
