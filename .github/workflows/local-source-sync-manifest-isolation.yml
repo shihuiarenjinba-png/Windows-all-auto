@@ -1,0 +1,29 @@
+name: Local source sync manifest isolation
+on:
+  pull_request:
+    paths:
+      - "scripts/local_code_sync.py"
+      - "tests/test_local_code_sync.py"
+      - "tests/test_local_code_sync_manifest_isolation.py"
+      - ".github/workflows/local-source-sync-manifest-isolation.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  manifest-contract:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run manifest and existing worker regression tests
+        run: python -m unittest discover -s tests -p "test_local_code_sync*.py" -v
+      - name: Compile source and tests
+        run: python -m py_compile scripts/local_code_sync.py tests/test_local_code_sync.py tests/test_local_code_sync_manifest_isolation.py
