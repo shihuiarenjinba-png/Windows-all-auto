@@ -334,7 +334,7 @@ def materialize_game_registry_identity(job: dict, path: Path) -> bool:
     try:
         with os.fdopen(fd, "w", encoding="utf-8") as stream:
             json.dump(payload, stream, ensure_ascii=False, sort_keys=True, indent=2)
-            stream.write("\\n")
+            stream.write("\n")
     except BaseException:
         path.unlink(missing_ok=True)
         raise
