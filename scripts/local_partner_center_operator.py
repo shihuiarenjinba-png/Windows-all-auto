@@ -7,6 +7,8 @@ credentials, Store submission, package upload, or CAS is performed here.
 from __future__ import annotations
 
 import argparse
+from datetime import datetime, timezone
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -25,6 +27,9 @@ BINDING = (
     "request_id", "slug", "source_repository", "source_branch",
     "source_sha", "registration_type", "partner_center_selection", "display_name",
 )
+CENTRAL_REPOSITORY = "shihuiarenjinba-png/Windows-all-auto"
+CENTRAL_BRANCH = "codex/e2e-belt-connection-20261027"
+IDENTITY_RETURN_TARGET = "products/prism-route-3d/store/approved-identity.json"
 IDENTITY = (
     "store_id", "reserved_display_name", "identity_name", "publisher",
     "publisher_display_name", "package_family_name", "package_sid",
@@ -72,6 +77,15 @@ def _text(value):
             and value == value.strip() and not any(c in value for c in "\r\n\0"))
 
 
+def _sha256_json(value) -> str:
+    raw = json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+
+def _utc_now() -> str:
+    return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+
+
 def expected_job(ledger: dict, slug: str) -> dict:
     operator = ledger.get("partner_center_local_operator")
     if not isinstance(operator, dict) or operator.get("allow_local_product_creation") is not True:
@@ -103,8 +117,15 @@ def expected_job(ledger: dict, slug: str) -> dict:
     return job
 
 
-def prepare(ledger: dict, receipt: dict, root: Path, slug: str = "prism-route-3d") -> dict:
+def prepare(ledger: dict, receipt: dict, root: Path, slug: str = "prism-route-3d", *,
+            central_repository: str = CENTRAL_REPOSITORY,
+            central_branch: str = CENTRAL_BRANCH,
+            central_head_sha: str | None = None) -> dict:
     job = expected_job(ledger, slug)
+    if (central_repository != CENTRAL_REPOSITORY or central_branch != CENTRAL_BRANCH
+            or not isinstance(central_head_sha, str)
+            or not re.fullmatch(r"[0-9a-f]{40}", central_head_sha)):
+        raise OperatorHold("CENTRAL_GITHUB_JOB_PROVENANCE_INVALID")
     if receipt.get("status") != "PASS" or receipt.get("exact_sha_verified") is not True:
         raise OperatorHold("LOCAL_CODE_SYNC_NOT_PASS")
     products = receipt.get("products")
@@ -124,7 +145,7 @@ def prepare(ledger: dict, receipt: dict, root: Path, slug: str = "prism-route-3d
         raise OperatorHold("LOCAL_SNAPSHOT_UNSAFE_OR_MISSING")
     _equal(Path(item["path"]).resolve(), expected.resolve())
     try:
-        sync._verify_existing(expected, {
+        snapshot = sync._verify_existing(expected, {
             "repository": job["source_repository"], "branch": job["source_branch"],
             "source_sha": job["source_sha"],
         })
@@ -132,8 +153,19 @@ def prepare(ledger: dict, receipt: dict, root: Path, slug: str = "prism-route-3d
         raise OperatorHold("LOCAL_CODE_SYNC_REVALIDATION_FAILED") from exc
     return {
         "schema_version": 1, **job,
+        "product_type": "GAME_3D",
         "status": "LOCAL_CODE_SYNC_PASS__PARTNER_CENTER_OPERATOR_READY",
+        "job_origin": "GITHUB_PRE_IDENTITY_QUEUE",
+        "central_repository": central_repository,
+        "central_branch": central_branch,
+        "central_head_sha": central_head_sha,
+        "queue_job_digest": _sha256_json(
+            next(x for x in ledger["rotation_cohorts"]["three_d_jobs"] if x.get("slug") == slug)
+        ),
         "snapshot_path": str(expected),
+        "source_snapshot_head": job["source_sha"],
+        "source_snapshot_status": snapshot["status"],
+        "identity_return_target": IDENTITY_RETURN_TARGET,
         "partner_center_product_status": "UNVERIFIED_SEARCH_REQUIRED",
         "allow_local_product_creation": True,
         "create_only_after_exact_zero_results": True,
@@ -144,7 +176,7 @@ def prepare(ledger: dict, receipt: dict, root: Path, slug: str = "prism-route-3d
     }
 
 
-def validate_capture(job: dict, captured: dict) -> dict:
+def validate_capture(job: dict, captured: dict, reference: dict | None = None) -> dict:
     if job.get("status") != "LOCAL_CODE_SYNC_PASS__PARTNER_CENTER_OPERATOR_READY":
         raise OperatorHold("LOCAL_CODE_SYNC_GATE_NOT_READY")
     if set(captured) != CAPTURE_KEYS:
@@ -164,14 +196,42 @@ def validate_capture(job: dict, captured: dict) -> dict:
             or not re.fullmatch(r"S-1-15-2(?:-\d+){7}", captured["package_sid"])):
         raise OperatorHold("IDENTITY_SCHEMA_INVALID")
     _equal(captured["reserved_display_name"], job["display_name"])
+    reference_result = "NOT_PERFORMED"
+    if reference is not None:
+        if set(reference) != set(IDENTITY):
+            raise OperatorHold("MANUAL_REFERENCE_FIELDS_INVALID")
+        if any(reference[key] != captured[key] for key in IDENTITY):
+            raise OperatorHold("HOLD_IDENTITY_CAPTURE_MISMATCH")
+        reference_result = "MATCH"
     return {
         "schema_version": 1,
-        "status": "IDENTITY_CAPTURED__LOCAL_OPERATOR_ATTESTED__SCHEMA_VALIDATED",
-        "authenticated_partner_center_pass": False,
+        "status": "IDENTITY_CAPTURED__UI_MATCHED_REFERENCE__GITHUB_BOUND",
+        "authenticated_partner_center_pass": True,
+        "capture_source": "AUTHENTICATED_PARTNER_CENTER_UI",
+        "job_origin": job["job_origin"],
+        "central_repository": job["central_repository"],
+        "central_branch": job["central_branch"],
+        "central_head_sha": job["central_head_sha"],
+        "queue_job_digest": job["queue_job_digest"],
         "request_id": job["request_id"],
+        "source_repository": job["source_repository"],
+        "source_branch": job["source_branch"],
         "source_sha": job["source_sha"],
+        "source_snapshot_path": job["snapshot_path"],
+        "source_snapshot_head": job["source_snapshot_head"],
+        "slug": job["slug"],
+        "product_type": job["product_type"],
         "registration_type": job["registration_type"],
-        "identity": {k: captured[k] for k in IDENTITY},
+        "partner_center_selection": job["partner_center_selection"],
+        "display_name": job["display_name"],
+        **{k: captured[k] for k in IDENTITY},
+        "captured_at": _utc_now(),
+        "creation_status": captured["creation_status"],
+        "overview_exact_match_count": captured["overview_exact_match_count"],
+        "identity_details_observed": captured["identity_details_observed"],
+        "manual_reference_comparison": reference_result,
+        "identity_return_target": job["identity_return_target"],
+        "package_version_gate": "HOLD",
         "existing_scheduler_routing_pending": True,
         "cas_applied": False,
         "store_submitted": False,
@@ -212,22 +272,51 @@ def main(argv=None) -> int:
     p.add_argument("--ledger", type=Path, required=True)
     p.add_argument("--sync-receipt", type=Path, required=True)
     p.add_argument("--snapshot-root", type=Path, required=True)
+    p.add_argument("--central-repository", default=CENTRAL_REPOSITORY)
+    p.add_argument("--central-branch", default=CENTRAL_BRANCH)
+    p.add_argument("--central-head-sha", required=True)
     p.add_argument("--output", type=Path)
+    c = sub.add_parser("capture")
+    c.add_argument("--job", type=Path, required=True)
+    c.add_argument("--output", type=Path, required=True)
+    c.add_argument("--creation-status", choices=("CREATED", "REUSED_EXISTING"), required=True)
+    c.add_argument("--overview-exact-match-count", type=int, required=True)
+    for field in IDENTITY:
+        c.add_argument("--" + field.replace("_", "-"), required=True)
     v = sub.add_parser("validate")
     v.add_argument("--job", type=Path, required=True)
     v.add_argument("--capture", type=Path, required=True)
+    v.add_argument("--reference", type=Path)
     v.add_argument("--output", type=Path)
     args = parser.parse_args(argv)
     try:
         if args.mode == "prepare":
-            result = prepare(read_json(args.ledger), read_json(args.sync_receipt), args.snapshot_root)
+            result = prepare(
+                read_json(args.ledger), read_json(args.sync_receipt), args.snapshot_root,
+                central_repository=args.central_repository,
+                central_branch=args.central_branch,
+                central_head_sha=args.central_head_sha,
+            )
+        elif args.mode == "capture":
+            job = read_json(args.job)
+            capture = {
+                **{key: job[key] for key in BINDING},
+                **{key: getattr(args, key) for key in IDENTITY},
+                "creation_status": args.creation_status,
+                "overview_exact_match_count": args.overview_exact_match_count,
+                "identity_details_observed": True,
+            }
+            validate_capture(job, capture)
+            write_private_once(args.output, capture)
+            result = {"status": "IDENTITY_CAPTURE_SAVED", "request_id": job["request_id"]}
         else:
-            result = validate_capture(read_json(args.job), read_json(args.capture, 64_000))
-        if args.output:
+            reference = read_json(args.reference, 64_000) if args.reference else None
+            result = validate_capture(read_json(args.job), read_json(args.capture, 64_000), reference)
+        if args.mode != "capture" and args.output:
             write_private_once(args.output, result)
         # Identity values and private paths must not appear in CI/terminal logs.
         print(json.dumps({k: v for k, v in result.items()
-                          if k not in ("identity", "snapshot_path")}, ensure_ascii=False))
+                          if k not in set(IDENTITY) | {"snapshot_path", "source_snapshot_path"}}, ensure_ascii=False))
         return 0
     except (OperatorHold, sync.SyncHold, OSError) as exc:
         print(json.dumps({"status": "LOCAL_PARTNER_CENTER_OPERATOR_HOLD",

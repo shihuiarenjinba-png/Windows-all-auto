@@ -10,6 +10,7 @@ SHA = "15fdcb52e46e35e6de8e87c55af99719c21e09b9"
 REQUEST = "3d-prism-route-3d-15fdcb52e46e"
 REPO = "shihuiarenjinba-png/3d-game-factory"
 BRANCH = "codex/3d-canary-prism-route-20261028"
+CENTRAL_HEAD = "4" * 40
 
 
 def binding():
@@ -62,14 +63,18 @@ class OperatorGateTests(unittest.TestCase):
                 "status": "REUSED_EXACT_SNAPSHOT", "path": str(target),
             }]}
             with patch.object(op.sync, "_verify_existing", return_value={"status": "REUSED_EXACT_SNAPSHOT"}) as mock:
-                result = op.prepare(ledger(), receipt, root)
+                result = op.prepare(ledger(), receipt, root, central_head_sha=CENTRAL_HEAD)
             mock.assert_called_once()
+            self.assertEqual(result["job_origin"], "GITHUB_PRE_IDENTITY_QUEUE")
+            self.assertEqual(result["central_head_sha"], CENTRAL_HEAD)
+            self.assertEqual(result["source_snapshot_head"], SHA)
+            self.assertEqual(result["identity_return_target"], "products/prism-route-3d/store/approved-identity.json")
             self.assertFalse(result["browser_action_performed"])
             self.assertFalse(result["cas_applied"])
 
     def test_prepare_rejects_cloud_only_or_missing_receipt(self):
         with self.assertRaisesRegex(op.OperatorHold, "LOCAL_CODE_SYNC_NOT_PASS"):
-            op.prepare(ledger(), {"status": "HOLD"}, Path("unused"))
+            op.prepare(ledger(), {"status": "HOLD"}, Path("unused"), central_head_sha=CENTRAL_HEAD)
 
     def test_prepare_rejects_cross_product_source(self):
         l = ledger()
@@ -90,13 +95,39 @@ class OperatorGateTests(unittest.TestCase):
         with self.assertRaises(op.OperatorHold):
             op.expected_job(l, "prism-route-3d")
 
-    def test_capture_is_local_attestation_not_authenticated_pass(self):
-        result = op.validate_capture({
-            **binding(), "status": "LOCAL_CODE_SYNC_PASS__PARTNER_CENTER_OPERATOR_READY"
-        }, captured())
+    def test_authenticated_ui_capture_is_github_bound_and_version_held(self):
+        job = {
+            **binding(), "product_type": "GAME_3D",
+            "status": "LOCAL_CODE_SYNC_PASS__PARTNER_CENTER_OPERATOR_READY",
+            "job_origin": "GITHUB_PRE_IDENTITY_QUEUE",
+            "central_repository": op.CENTRAL_REPOSITORY,
+            "central_branch": op.CENTRAL_BRANCH,
+            "central_head_sha": CENTRAL_HEAD,
+            "queue_job_digest": "a" * 64,
+            "snapshot_path": "C:/safe/snapshot",
+            "source_snapshot_head": SHA,
+            "identity_return_target": op.IDENTITY_RETURN_TARGET,
+        }
+        result = op.validate_capture(job, captured(), {k: captured()[k] for k in op.IDENTITY})
         self.assertTrue(result["existing_scheduler_routing_pending"])
-        self.assertFalse(result["authenticated_partner_center_pass"])
+        self.assertTrue(result["authenticated_partner_center_pass"])
+        self.assertEqual(result["manual_reference_comparison"], "MATCH")
+        self.assertEqual(result["package_version_gate"], "HOLD")
         self.assertFalse(result["cas_applied"])
+
+    def test_capture_reference_mismatch_holds(self):
+        job = {
+            **binding(), "product_type": "GAME_3D",
+            "status": "LOCAL_CODE_SYNC_PASS__PARTNER_CENTER_OPERATOR_READY",
+            "job_origin": "GITHUB_PRE_IDENTITY_QUEUE", "central_repository": op.CENTRAL_REPOSITORY,
+            "central_branch": op.CENTRAL_BRANCH, "central_head_sha": CENTRAL_HEAD,
+            "queue_job_digest": "a" * 64, "snapshot_path": "C:/safe/snapshot",
+            "source_snapshot_head": SHA, "identity_return_target": op.IDENTITY_RETURN_TARGET,
+        }
+        reference = {k: captured()[k] for k in op.IDENTITY}
+        reference["store_id"] = "9DIFFERENT"
+        with self.assertRaisesRegex(op.OperatorHold, "HOLD_IDENTITY_CAPTURE_MISMATCH"):
+            op.validate_capture(job, captured(), reference)
 
     def test_capture_rejects_request_mismatch(self):
         c = captured()
