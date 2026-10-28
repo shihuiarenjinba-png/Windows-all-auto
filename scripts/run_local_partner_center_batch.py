@@ -389,6 +389,24 @@ def resolve_execution_origin(requested: str, state_dir: Path) -> str:
     return requested
 
 
+def validate_existing_state(state: dict, spec: dict, central_head: str,
+                            execution_origin: str) -> bool:
+    """Validate resumability and report whether this batch already completed.
+
+    A completed manual batch is intentionally reusable by the scheduled runner as
+    a no-work receipt.  An in-progress batch remains bound to its original
+    execution origin so that a scheduler cannot take over a terminal run.
+    """
+    if (state.get("batch_id") != spec["batch_id"]
+            or state.get("central_head_sha") != central_head):
+        raise RunnerHold("BATCH_EXISTING_STATE_CONFLICT")
+    if state.get("final_status") == "MULTI_PRODUCT_IDENTITY_BATCH_PASS":
+        return True
+    if state.get("execution_origin") != execution_origin:
+        raise RunnerHold("BATCH_EXISTING_STATE_CONFLICT")
+    return False
+
+
 def run_batch(args) -> dict:
     state_dir = args.state_dir.resolve()
     state_dir.mkdir(parents=True, exist_ok=True)
@@ -407,10 +425,9 @@ def run_batch(args) -> dict:
     with batch.state_lock(state_path):
         if state_path.exists():
             state = operator.read_json(state_path, 512_000)
-            if (state.get("batch_id") != spec["batch_id"]
-                    or state.get("central_head_sha") != central_head
-                    or state.get("execution_origin") != execution_origin):
-                raise RunnerHold("BATCH_EXISTING_STATE_CONFLICT")
+            already_complete = validate_existing_state(
+                state, spec, central_head, execution_origin
+            )
         else:
             state = batch.discover(ledger, spec)
             state = batch.attest_local_execution(
@@ -422,7 +439,8 @@ def run_batch(args) -> dict:
                 ),
             )
             batch.atomic_write(state_path, state)
-        if state.get("final_status") == "MULTI_PRODUCT_IDENTITY_BATCH_PASS":
+            already_complete = False
+        if already_complete:
             return {
                 "status": "NO_WORK", "discovered": 4, "processed": 4,
                 "success": 4, "receipt": str(final_path),

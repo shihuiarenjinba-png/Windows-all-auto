@@ -136,6 +136,32 @@ class RunnerTests(unittest.TestCase):
                 "WINDOWS_TASK_SCHEDULER",
             )
 
+    def test_completed_manual_batch_is_no_work_for_scheduler(self):
+        state = {
+            "batch_id": "batch-1",
+            "central_head_sha": "a" * 40,
+            "execution_origin": "MANUAL_WINDOWS_TERMINAL",
+            "final_status": "MULTI_PRODUCT_IDENTITY_BATCH_PASS",
+        }
+        self.assertTrue(runner.validate_existing_state(
+            state, {"batch_id": "batch-1"}, "a" * 40,
+            "WINDOWS_TASK_SCHEDULER_MANUAL_START",
+        ))
+
+    def test_in_progress_manual_batch_cannot_be_taken_over_by_scheduler(self):
+        state = {
+            "batch_id": "batch-1",
+            "central_head_sha": "a" * 40,
+            "execution_origin": "MANUAL_WINDOWS_TERMINAL",
+            "final_status": "BATCH_DISCOVERED",
+        }
+        with self.assertRaisesRegex(
+                runner.RunnerHold, "BATCH_EXISTING_STATE_CONFLICT"):
+            runner.validate_existing_state(
+                state, {"batch_id": "batch-1"}, "a" * 40,
+                "WINDOWS_TASK_SCHEDULER_MANUAL_START",
+            )
+
 
 if __name__ == "__main__":
     unittest.main()
