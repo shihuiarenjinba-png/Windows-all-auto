@@ -1,0 +1,13 @@
+{
+  "source": "LOCAL_OPERATOR_MANUAL_REFERENCE",
+  "product": "Prism Route 3D",
+  "identity": {
+    "store_id": "9N95J2T57B41",
+    "reserved_display_name": "Prism Route 3D",
+    "identity_name": "OkinawaDesktopTools.PrismRoute3D",
+    "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+    "publisher_display_name": "Okinawa Desktop Tools",
+    "package_family_name": "OkinawaDesktopTools.PrismRoute3D_j8yefg9jgfh58",
+    "package_sid": "S-1-15-2-3208955418-98022013-46623760-1876997759-863416391-822502142-2643662492"
+  }
+}
