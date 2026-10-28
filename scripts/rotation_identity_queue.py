@@ -145,3 +145,46 @@ def project(ledger: dict, head_reader=scheduler.head) -> dict:
     result["rotation_metrics"] = metrics
     result["ready_for_cas"] = False
     return result
+
+
+def main(argv=None) -> int:
+    """Build a create-only private rotation draft; check-only has no writes."""
+    import argparse
+    import json
+    from pathlib import Path
+
+    parser = argparse.ArgumentParser(description="Multi-APP and 3D PRE-IDENTITY rotation")
+    parser.add_argument("--check-only", action="store_true")
+    parser.add_argument("--output", type=Path)
+    args = parser.parse_args(argv)
+    if not args.check_only and args.output is None:
+        parser.error("--output required unless --check-only")
+    try:
+        central_sha = scheduler.head(scheduler.CENTRAL_REPO, scheduler.CENTRAL_BRANCH)
+        ledger, _ = scheduler.remote_json(scheduler.CENTRAL_REPO,
+                                          scheduler.CENTRAL_PATH, central_sha)
+        draft = project(ledger)
+        require(scheduler.head(scheduler.CENTRAL_REPO, scheduler.CENTRAL_BRANCH)
+                == central_sha, "CENTRAL_LEDGER_HEAD_CHANGED")
+        if not args.check_only:
+            pre_identity_queue.write_new_private_file(args.output, draft)
+        response = {"status": "PRE_IDENTITY_ROTATION_DRAFT",
+                    "jobs": len(draft["jobs"]),
+                    "deferred": len(draft["deferred"]),
+                    "rotation_metrics": draft["rotation_metrics"],
+                    "identity_acquisition": "USER_ONLY", "cas": "NOT_APPLIED"}
+        code = 0
+    except (pre_identity_queue.QueueHold, scheduler.Hold,
+            registration_router.RegistrationHold) as exc:
+        response = {"status": "HOLD", "reason": str(exc), "cas": "NOT_APPLIED"}
+        code = 2
+    except (OSError, ValueError, TypeError):
+        response = {"status": "HOLD", "reason": "INPUT_OR_REMOTE_ERROR",
+                    "cas": "NOT_APPLIED"}
+        code = 2
+    print(json.dumps(response, ensure_ascii=False))
+    return code
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
