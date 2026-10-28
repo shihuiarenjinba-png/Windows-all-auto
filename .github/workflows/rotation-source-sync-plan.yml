@@ -1,0 +1,29 @@
+name: Rotation local source-sync plan contract
+on:
+  pull_request:
+    paths:
+      - "scripts/rotation_source_sync_plan.py"
+      - "scripts/rotation_pre_identity_intake.py"
+      - "tests/test_rotation_source_sync_plan.py"
+      - ".github/workflows/rotation-source-sync-plan.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  contract:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Fail-closed source sync plan tests
+        run: python -m unittest discover -s tests -p test_rotation_source_sync_plan.py -v
+      - name: Compile source and tests
+        run: python -m py_compile scripts/rotation_source_sync_plan.py tests/test_rotation_source_sync_plan.py
