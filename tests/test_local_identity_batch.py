@@ -88,6 +88,12 @@ def success_result(state, job):
     }
 
 
+def synthetic_test_only_verifier(*, state, job, result):
+    # Test double only. No production CLI or worker supplies this callback.
+    return (job["request_id"] == result["request_id"]
+            and state["batch_id"] == result["batch_id"])
+
+
 class BatchTests(unittest.TestCase):
     def test_discovers_exact_ordered_four(self):
         state = batch.discover(ledger(), spec())
@@ -140,7 +146,8 @@ class BatchTests(unittest.TestCase):
         self.assertEqual(job["batch_index"], 1)
         with self.assertRaisesRegex(batch.BatchHold, "SINGLE_FLIGHT"):
             batch.claim_next(claimed)
-        resumed = batch.complete_active(claimed, success_result(claimed, job))
+        resumed = batch.complete_active(claimed, success_result(claimed, job),
+                                      independent_evidence_verifier=synthetic_test_only_verifier)
         claimed2, job2 = batch.claim_next(resumed)
         self.assertEqual(job2["batch_index"], 2)
         self.assertEqual(claimed2["active_index"], 2)
@@ -155,7 +162,8 @@ class BatchTests(unittest.TestCase):
         self.assertEqual(recovered["processed_count"], 0)
         self.assertEqual(sum(x["state"] == "PROCESSING"
                              for x in recovered["products"]), 1)
-        completed = batch.complete_active(recovered, success_result(recovered, same))
+        completed = batch.complete_active(recovered, success_result(recovered, same),
+                                          independent_evidence_verifier=synthetic_test_only_verifier)
         next_state, second = batch.claim_or_resume(completed)
         self.assertEqual(second["batch_index"], 2)
         self.assertEqual(next_state["active_index"], 2)
@@ -173,7 +181,8 @@ class BatchTests(unittest.TestCase):
     def test_replay_same_completed_result_is_idempotent(self):
         state, job = batch.claim_next(batch.discover(ledger(), spec()))
         result = success_result(state, job)
-        completed = batch.complete_active(state, result)
+        completed = batch.complete_active(state, result,
+                                          independent_evidence_verifier=synthetic_test_only_verifier)
         replay = batch.complete_active(completed, result)
         self.assertEqual(replay["processed_count"], 1)
         self.assertEqual(replay["success_count"], 1)
@@ -181,6 +190,28 @@ class BatchTests(unittest.TestCase):
         altered = dict(result, identity_return_commit_sha="b" * 40)
         with self.assertRaisesRegex(batch.BatchHold, "REPLAY_CONFLICT"):
             batch.complete_active(completed, altered)
+
+    def test_forged_complete_ui_and_cas_json_never_counts_without_verifier(self):
+        state, job = batch.claim_next(batch.discover(ledger(), spec()))
+        fake = success_result(state, job)
+        fake["independent_evidence_verifier"] = True  # untrusted JSON field
+        with self.assertRaisesRegex(batch.BatchHold, "VERIFIER_UNAVAILABLE"):
+            batch.complete_active(state, fake)
+        self.assertEqual(state["success_count"], 0)
+        self.assertEqual(state["processed_count"], 0)
+
+    def test_false_or_broken_independent_verifier_fails_closed(self):
+        state, job = batch.claim_next(batch.discover(ledger(), spec()))
+        result = success_result(state, job)
+        with self.assertRaisesRegex(batch.BatchHold, "NOT_VERIFIED"):
+            batch.complete_active(state, result,
+                                  independent_evidence_verifier=lambda **kwargs: False)
+        def broken(**kwargs):
+            raise RuntimeError("untrusted evidence")
+        with self.assertRaisesRegex(batch.BatchHold, "VERIFICATION_FAILED"):
+            batch.complete_active(state, result,
+                                  independent_evidence_verifier=broken)
+        self.assertEqual(state["success_count"], 0)
 
     def test_cross_product_identity_stops_batch(self):
         state, job = batch.claim_next(batch.discover(ledger(), spec()))
@@ -240,7 +271,8 @@ class BatchTests(unittest.TestCase):
         self.assertFalse(state["schedule_trigger_proven"])
         for _ in range(4):
             state, job = batch.claim_next(state)
-            state = batch.complete_active(state, success_result(state, job))
+            state = batch.complete_active(state, success_result(state, job),
+                                          independent_evidence_verifier=synthetic_test_only_verifier)
         self.assertEqual(state["success_count"], 4)
         self.assertEqual(state["final_status"], "MULTI_PRODUCT_IDENTITY_BATCH_PARTIAL")
 
