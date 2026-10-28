@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T06:45:27.138Z",
+  "updated_at_utc": "2026-10-28T07:41:42.890Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -272,13 +272,13 @@
       "rotation_ready_jobs": 0
     },
     "GAME_3D": {
-      "phase": "PRISM_ROUTE_3D_SINGLE_CANARY_CANDIDATE__REAL_EXPORT_PROVENANCE_PENDING",
+      "phase": "PRISM_ROUTE_3D_REAL_FACTORY_EXPORT_AND_PROVISIONER_BYTES_CORRELATED__WAITING_USER_IDENTITY",
       "status": "HOLD",
       "factory_branch": "codex/3d-canary-prism-route-20261028",
       "factory_head": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
       "provisioner_branch": "codex/e2e-belt-connection-20261027",
-      "provisioner_head": "1e7c60834198e126eee70e61b34e500fb6e8aafd",
-      "next_action": "Prism Route 3D PR13 Windows export QA CI SUCCESS; await independent EXE/PCK provenance, pinned source/build SHA and request_id before PRE_IDENTITY_READY or USER_ID_REQUEST. No second 3D product.",
+      "provisioner_head": "ce332d586d473e08b4c03808dfe84694fa55287e",
+      "next_action": "Real Factory export run 40640951915 Artifact 12795476435 and authenticated Provisioner PRE_IDENTITY run 40650334549 succeeded. User must provide official 3D Identity; no CAS, MSIX or local QA yet.",
       "factory_ci_run_id": 40520641316,
       "factory_ci_conclusion": "SUCCESS",
       "dispatch_guard_pr": {
@@ -295,7 +295,7 @@
         "ci_conclusion": "SUCCESS",
         "status": "DRAFT_ONLY_NO_ACTIVE_PRODUCT"
       },
-      "provisioner_ci_run_id": 40643856745,
+      "provisioner_ci_run_id": 40650339607,
       "provisioner_ci_conclusion": "SUCCESS",
       "registration_type": "MSIX_OR_PWA_GAME",
       "partner_center_selection": "MSIX or PWA game",
@@ -308,11 +308,18 @@
         "head_sha": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
         "ci_run_id": 40640963381,
         "ci_conclusion": "SUCCESS",
-        "identity_status": "NOT_YET_REQUIRED",
-        "source_sha": null,
-        "request_id": null,
+        "identity_status": "WAITING_USER_IDENTITY",
+        "source_sha": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
+        "request_id": "3d-prism-route-3d-15fdcb52e46e",
         "real_msix": "NOT_OBSERVED",
-        "local_qa": "DEFERRED_LOCAL_GATE"
+        "local_qa": "DEFERRED_LOCAL_GATE",
+        "factory_export_run_id": 40640951915,
+        "factory_export_artifact_id": 12795476435,
+        "factory_export_zip_sha256": "76b5fae99491b70514e3152483e0192ac70b2909d8f6eeb9802a640ad12409b0",
+        "exe_sha256": "66b26ad96df7458ea917b632a73ac7c88bb058db24dbd11a457fd50435ab7b13",
+        "pck_sha256": "2cd8af6496cf288bc3e6aef317e472b480f21d2052cbd4ae0cd171e6285ab1ef",
+        "pre_identity_verification_run_id": 40650334549,
+        "pre_identity_status": "PRE_IDENTITY_READY"
       }
     }
   },
@@ -378,10 +385,10 @@
       "local_tests": "67_PASS",
       "next_action": "Do not rerun without new runner/workflow evidence; require real MSIX before Checker product QA"
     },
-    "last_12_minute_update": "PR20 APP-five and 3D-one rotation queue latest CI #40645730254 SUCCESS on Windows/Ubuntu. 3D Prism Route remains EXPORT_PENDING; APP Offline Notes unpromoted. No new user Identity request or CAS.",
+    "last_12_minute_update": "Provisioner-3D PR7 HEAD ce332d58: live authenticated Factory artifact bytes correlated in CI #40650334549 and #40650339607 SUCCESS. Prism Route 3D PRE_IDENTITY_READY; Identity WAITING_USER_IDENTITY; no CAS/MSIX/local QA.",
     "next_repo": "shihuiarenjinba-png/Windows-all-auto",
-    "next_branch": "codex/e2e-rotation-queue-20261028-1536",
-    "next_head_sha": "db0d6325a3737d23f7066778713d1d7a339f1ca7",
+    "next_branch": "codex/e2e-belt-connection-20261027",
+    "next_head_sha": "628b9c9e6913512b2e5b4175a50f1636ef3c81e9",
     "alternate_safety_branch": "codex/game-identity-idempotency-20261027",
     "alternate_safety_head_sha": "6ed37a7c3a9d5f9d989626b4ee5e9a70c0630ff7",
     "no_new_product": true,
@@ -707,11 +714,13 @@
     "registration_router_ci_pass": true,
     "rotation_queue_code_committed": true,
     "rotation_queue_ci_pass": true,
-    "rotation_real_product_pass": false
+    "rotation_real_product_pass": false,
+    "three_d_pre_identity_ready": true,
+    "three_d_waiting_user_identity": true
   },
   "user_id_requests": {
     "schema_version": 1,
-    "generated_at_utc": "2026-10-28T03:35:58.355Z",
+    "generated_at_utc": "2026-10-28T07:41:42.890Z",
     "acquisition_owner": "USER_ONLY",
     "storage_policy": "REVIEWABLE_NON_SECRET_USER_PROVIDED_REGISTRY_IN_PR19__PRIVATE_MATERIALIZED_FILE_AND_AUTH_EVIDENCE_LOCAL_ONLY",
     "items": [
@@ -754,6 +763,31 @@
         "reason": "FACTORY_PROMOTION_AND_WINDOWS_EXE_AND_IMMUTABLE_REQUEST_ID_PENDING",
         "registration_type": "MSIX_OR_PWA_APP",
         "partner_center_selection": "MSIX or PWA app"
+      },
+      {
+        "product_name": "Prism Route 3D",
+        "repo": "shihuiarenjinba-png/3d-game-factory",
+        "product_type": "GAME_3D",
+        "slug": "prism-route-3d",
+        "request_id": "3d-prism-route-3d-15fdcb52e46e",
+        "source_branch": "codex/3d-canary-prism-route-20261028",
+        "source_sha": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
+        "identity_target": "%LOCALAPPDATA%/FactoryIdentityWorker/secure/<request_id>/official-identity.json",
+        "identity_return_target": "products/prism-route-3d/store/approved-identity.json",
+        "requested_fields": [
+          "Store ID",
+          "reserved display name",
+          "Package Identity Name",
+          "Publisher",
+          "Publisher Display Name",
+          "PFN",
+          "Package SID"
+        ],
+        "status": "WAITING_USER_IDENTITY",
+        "registration_type": "MSIX_OR_PWA_GAME",
+        "partner_center_selection": "MSIX or PWA game",
+        "version_separate": true,
+        "next_gate": "USER_MANAGED_IDENTITY_GATE__NO_CAS_BEFORE_LOCAL_VALIDATION_AND_EXPLICIT_APPROVAL"
       }
     ],
     "excluded_known_good_store_products": [
@@ -762,10 +796,12 @@
       "shihuiarenjinba-png/-Screenshot-Image-Privacy-Cleaner"
     ],
     "exclusion_reason": "EXISTING_KNOWN_GOOD_STORE_IDENTITY_REFERENCE__NO_NEW_REQUEST__NO_CLOUD_AUTHENTICATION_CLAIM",
-    "pending_requests": [],
-    "rotation_pending_3d": "Prism Route 3D NOT_YET_REQUIRED until verified EXE/PCK and immutable request_id; no request issued"
+    "pending_requests": [
+      "3d-prism-route-3d-15fdcb52e46e"
+    ],
+    "rotation_pending_3d": "PRE_IDENTITY_READY__USER_ID_REQUEST_ISSUED__WAITING_USER_IDENTITY"
   },
-  "classification": "USER_IDENTITY_RECEIVED_GDK__PR19_SECURE_MATERIALIZATION_FIX_CI_PASS__LOCAL_CHECK_ONLY_PENDING__APP_IDENTITY_UNBOUND__REAL_E2E_HOLD",
+  "classification": "PRISM_ROUTE_3D_PRE_IDENTITY_READY__WAITING_USER_IDENTITY__SIGNAL_SPRINT_RECEIVED_NOT_CAS__APP_NOT_PROMOTED__LOCAL_DEFERRED__E2E_HOLD",
   "registration_router": {
     "schema_version": 1,
     "status": "WINDOWS_UBUNTU_CI_PASS__LOCAL_GATE_DEFERRED",
@@ -801,8 +837,8 @@
         "repository": "shihuiarenjinba-png/3d-game-factory",
         "registration_type": "MSIX_OR_PWA_GAME",
         "partner_center_selection": "MSIX or PWA game",
-        "identity_status": "NOT_YET_REQUIRED",
-        "next_action": "WAIT_REAL_EXPORT_SHA_AND_IMMUTABLE_REQUEST_ID"
+        "identity_status": "WAITING_USER_IDENTITY",
+        "next_action": "USER_SUPPLIES_OFFICIAL_IDENTITY__PRIVATE_VALIDATION__EXPLICIT_CAS_APPROVAL"
       }
     ],
     "unresolved_policy": "HOLD_REGISTRATION_TYPE_UNRESOLVED",
@@ -839,21 +875,36 @@
         "slug": "prism-route-3d",
         "source_repository": "shihuiarenjinba-png/3d-game-factory",
         "source_branch": "codex/3d-canary-prism-route-20261028",
-        "source_sha": null,
-        "request_id": null,
-        "expected_exe_sha256": null,
-        "factory_build_branch": null,
-        "factory_build_head": null,
-        "status": "EXPORT_PENDING",
-        "artifact_provenance": "PENDING_INDEPENDENT_REAL_EXPORT_VERIFICATION",
+        "source_sha": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
+        "request_id": "3d-prism-route-3d-15fdcb52e46e",
+        "expected_exe_sha256": "66b26ad96df7458ea917b632a73ac7c88bb058db24dbd11a457fd50435ab7b13",
+        "factory_build_branch": "codex/3d-canary-prism-route-20261028",
+        "factory_build_head": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
+        "status": "PRE_IDENTITY_READY",
+        "artifact_provenance": "REAL_WINDOWS_EXPORT_VERIFIED",
         "packaging_strategy": "GODOT_WINDOWS_EXE_PCK_MAKEAPPX_MSIX",
         "packaging_family": "MSIX",
         "registration_type": "MSIX_OR_PWA_GAME",
         "partner_center_selection": "MSIX or PWA game",
-        "identity_status": "NOT_YET_REQUIRED",
+        "identity_status": "WAITING_USER_IDENTITY",
         "observed_pr_head": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
         "observed_ci_run_id": 40640963381,
-        "next_action": "Verify real Godot Windows EXE/PCK artifact, immutable source/build SHA, Provisioner byte match, then issue request_id and USER_ID_REQUEST. No Identity guess or CAS."
+        "next_action": "User supplies official Store Identity for Prism Route 3D; retain private evidence, no Partner Center access by this loop. CAS only after validated input and explicit approval. Local Windows gates deferred.",
+        "expected_pck_sha256": "2cd8af6496cf288bc3e6aef317e472b480f21d2052cbd4ae0cd171e6285ab1ef",
+        "artifact_id": 12795476435,
+        "artifact_run_id": 40640951915,
+        "artifact_zip_sha256": "76b5fae99491b70514e3152483e0192ac70b2909d8f6eeb9802a640ad12409b0",
+        "independent_verification": {
+          "repository": "shihuiarenjinba-png/Repository-Provisioner-3D",
+          "branch": "codex/e2e-belt-connection-20261027",
+          "head_sha": "ce332d586d473e08b4c03808dfe84694fa55287e",
+          "run_id": 40650334549,
+          "ci_run_id": 40650339607,
+          "conclusion": "SUCCESS",
+          "receipt_artifact_id": 12799123394,
+          "result": "PRE_IDENTITY_BYTES_CORRELATED__USER_ID_REQUEST__IDENTITY_NOT_SUPPLIED",
+          "scope": "AUTHENTICATED_FACTORY_ARTIFACT_BYTES_NOT_STORE_E2E"
+        }
       }
     ],
     "provenance_policy": "READY requires exact source/build HEAD, verified Windows EXE SHA256, unique request_id/slug and separate USER_ID_REQUEST; no intermediate EXE registration inference",
@@ -870,10 +921,10 @@
     "schema_conflict": 0,
     "cross_product_rejection": 0,
     "3d_total_jobs": 1,
-    "3d_pre_identity_pass": 0,
-    "3d_waiting_identity": 0,
+    "3d_pre_identity_pass": 1,
+    "3d_waiting_identity": 1,
     "3d_conflicts": 0,
     "3d_artifact_mismatch": 0,
-    "metrics_basis": "CENTRAL_LEDGER_OBSERVED_ONLY__NOT_FIVE_APP_QA_PASS__3D_CANDIDATE_PENDING_EXPORT"
+    "metrics_basis": "LIVE_FACTORY_GODOT_EXPORT_ARTIFACT_AND_AUTHENTICATED_PROVISIONER_BYTES_CORRELATED__NO_STORE_IDENTITY_OR_LOCAL_QA"
   }
 }
