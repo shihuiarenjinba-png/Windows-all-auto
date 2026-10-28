@@ -320,6 +320,13 @@ def materialize_game_registry_identity(job: dict, path: Path) -> bool:
     }
     if not isinstance(payload["provided_at"], str) or not payload["provided_at"]:
         raise Hold("CONFLICT", "USER_PROVIDED_IDENTITY_TIMESTAMP_MISSING")
+    # The first operator run normally starts with no request-specific secure
+    # directory. Create it without assuming that a prior worker already did.
+    # Re-check after mkdir: an ancestor must not redirect into a checkout via
+    # a symlink or Windows junction. Never overwrite an operator's own file.
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if safe_local(path) != path or path.exists():
+        raise Hold("HOLD", "USER_IDENTITY_PATH_CHANGED_OR_EXISTS")
     atomic_json(path, payload)
     return True
 
