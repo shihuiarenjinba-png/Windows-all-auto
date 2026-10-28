@@ -10,7 +10,7 @@ from __future__ import annotations
 import argparse
 from contextlib import contextmanager
 from copy import deepcopy
-from datetime import datetime
+from datetime import datetime, timezone
 import json
 import os
 from pathlib import Path
@@ -88,8 +88,18 @@ def _validate_spec(spec: dict) -> list[dict]:
     return products
 
 
-def discover(ledger: dict, spec: dict) -> dict:
+def discover(ledger: dict, spec: dict, *, now_utc: datetime | None = None) -> dict:
+    """Preflight current artifact availability before starting local operations.
+
+    An immutable source SHA does not guarantee its short-lived Actions artifact
+    is still downloadable. Historical CI fixtures may inject their observation
+    clock; production CLI always uses the current UTC time.
+    """
     expected = _validate_spec(spec)
+    clock = now_utc if now_utc is not None else datetime.now(timezone.utc)
+    require(isinstance(clock, datetime) and clock.tzinfo is not None,
+            "BATCH_CLOCK_INVALID")
+    clock = clock.astimezone(timezone.utc)
     cohorts = (ledger.get("rotation_cohorts") or {}).get("app_jobs")
     require(isinstance(cohorts, list), "HOLD_BATCH_DISCOVERY_INCOMPLETE")
     ready = [x for x in cohorts if isinstance(x, dict)
@@ -118,11 +128,16 @@ def discover(ledger: dict, spec: dict) -> dict:
                 and source.get("factory_build_head") == wanted["source_sha"]
                 and source.get("artifact_metadata_verified") is True,
                 "HOLD_ARTIFACT_MISMATCH")
+        expiry = source.get("factory_artifact_expiry_utc")
+        require(_iso(expiry), "HOLD_ARTIFACT_EXPIRY_INVALID")
+        require(datetime.fromisoformat(expiry[:-1] + "+00:00") > clock,
+                "HOLD_ARTIFACT_EXPIRED")
         jobs.append({
             **job,
             "batch_index": wanted["batch_index"],
             "artifact_id": wanted["artifact_id"],
             "expected_exe_sha256": wanted["expected_exe_sha256"],
+            "artifact_expires_at": expiry,
             "state": "PENDING",
             "result": None,
         })
