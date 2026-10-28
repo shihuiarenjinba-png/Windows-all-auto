@@ -325,9 +325,19 @@ def materialize_game_registry_identity(job: dict, path: Path) -> bool:
     # Re-check after mkdir: an ancestor must not redirect into a checkout via
     # a symlink or Windows junction. Never overwrite an operator's own file.
     path.parent.mkdir(parents=True, exist_ok=True)
-    if safe_local(path) != path or path.exists():
+    if safe_local(path) != path:
         raise Hold("HOLD", "USER_IDENTITY_PATH_CHANGED_OR_EXISTS")
-    atomic_json(path, payload)
+    try:
+        fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    except FileExistsError as exc:
+        raise Hold("HOLD", "USER_IDENTITY_PATH_CHANGED_OR_EXISTS") from exc
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as stream:
+            json.dump(payload, stream, ensure_ascii=False, sort_keys=True, indent=2)
+            stream.write("\\n")
+    except BaseException:
+        path.unlink(missing_ok=True)
+        raise
     return True
 
 
@@ -384,7 +394,15 @@ def validate_user_identity(job: dict, reference: dict | None = None) -> Path | N
                 "xbox_title_id": "xbox_title_id", "xbox_scid": "xbox_scid",
                 "msa_app_id": "msa_app_id",
             }
-            if not isinstance(record, dict) or any(data[left] != record.get(right) for left, right in mapping.items()):
+            exact_registry_binding = {
+                "request_id": job["request_id"], "source_sha": job["source_sha"],
+                "source_repository": job["repository"], "source_branch": job["branch"],
+                "product_type": "GAME", "packaging_family": "GDK",
+            }
+            if (not isinstance(record, dict)
+                    or any(record.get(key) != value for key, value in exact_registry_binding.items())
+                    or data.get("provided_at") != registry.get("provided_at")
+                    or any(data[left] != record.get(right) for left, right in mapping.items())):
                 raise Hold("CONFLICT", "USER_IDENTITY_REFERENCE_MISMATCH")
         else:
             for key in GAME_USER_IDENTITY_REQUIRED:
