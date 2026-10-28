@@ -1,0 +1,28 @@
+name: Rotation PRE_IDENTITY intake contract
+on:
+  pull_request:
+    paths:
+      - "scripts/rotation_pre_identity_intake.py"
+      - "tests/test_rotation_pre_identity_intake.py"
+      - ".github/workflows/rotation-preidentity-intake.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  contract:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Fail-closed rotation contract tests
+        run: python -m unittest tests.test_rotation_pre_identity_intake -v
+      - name: Syntax validation
+        run: python -m py_compile scripts/rotation_pre_identity_intake.py tests/test_rotation_pre_identity_intake.py
