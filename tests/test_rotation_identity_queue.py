@@ -4,7 +4,41 @@ import unittest
 
 from scripts import rotation_identity_queue as q
 from scripts import pre_identity_queue
-from tests.test_pre_identity_queue import fixture, SHA, PROVISIONER_SHA, GAME, PROVISIONER, BRANCH, PBRANCH
+from scripts import local_identity_scheduler as s
+
+SHA = "a" * 40
+PROVISIONER_SHA = "b" * 40
+GAME = s.OWNER + "/AI-Game-Factory"
+PROVISIONER = s.OWNER + "/Repository-Provisioner-game"
+BRANCH = "codex/game-signal-sprint-undo-20261027"
+PBRANCH = "codex/game-identity-idempotency-20261027"
+
+
+def fixture():
+    rid = "game-signal-sprint-" + SHA
+    return {
+        "e2e_pass": False, "new_product_allowed": False,
+        "active_product": {
+            "request_id": rid, "product_type": "GAME", "slug": "signal-sprint",
+            "source_sha": SHA, "expected_head_sha": SHA,
+            "source_repository": GAME, "source_branch": BRANCH,
+            "provisioner_repository": PROVISIONER,
+            "provisioner_branch": PBRANCH, "provisioner_head_observed": PROVISIONER_SHA,
+            "factory_exe_artifact_kind": "EXE_QA_UNSIGNED_NOT_MSIX",
+            "local_execution_result": {"package_kind": "exe",
+                                       "package_status": "INSPECTED",
+                                       "package_sha256": "c" * 64},
+        },
+        "other_lanes": {"APP": {"canary_proposal": {
+            "slug": "offline-notes-canary", "source_sha": None, "request_id": None}}},
+        "user_id_requests": {"items": [{
+            "product_name": "Signal Sprint", "request_id": rid,
+            "status": "USER_IDENTITY_RECEIVED", "repo": GAME,
+            "source_branch": BRANCH, "source_sha": SHA,
+            "identity_target": q.TARGET,
+        }]},
+    }
+
 
 APP_SHA = "d" * 40
 BUILD_SHA = "e" * 40
