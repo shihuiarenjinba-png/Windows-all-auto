@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T17:39:58.608Z",
+  "updated_at_utc": "2026-10-28T17:40:23.375Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -1873,7 +1873,7 @@
     "store_submission": 0,
     "package_upload": 0,
     "package_version_gate": "HOLD",
-    "status": "CLOUD_DISCOVER_4_OF_4_PASS__LOCAL_BATCH_NOT_STARTED__SCHEDULE_TRIGGER_NOT_PROVEN",
+    "status": "CLOUD_DISCOVER_4_OF_4_PASS__CRASH_RESUME_CI_GREEN__LOCAL_BATCH_NOT_STARTED",
     "preflight_evidence": "GITHUB_BRANCH_HEAD_MATCH_4__ARTIFACT_ZIP_DIGEST_MATCH_4__EXTRACTED_EXE_SHA256_BYTES_MATCH_4",
     "code_contracts": {
       "windows_all_auto_pr": 33,
@@ -1888,7 +1888,9 @@
       "windows_all_auto_hardening_offline_qa_run": 40728641235,
       "windows_all_auto_hardening_ci_conclusion": "SUCCESS_WINDOWS_UBUNTU",
       "windows_all_auto_crash_recovery_commit": "615a670e5c7b15f8812b7776757b42a61a3ac9e9",
-      "windows_all_auto_crash_recovery_ci": "PENDING_INDEPENDENT_CI"
+      "windows_all_auto_crash_recovery_ci": "SUCCESS_WINDOWS_UBUNTU",
+      "windows_all_auto_crash_recovery_ci_run": 40737850188,
+      "windows_all_auto_crash_recovery_offline_qa_run": 40737849615
     },
     "products": [
       {
@@ -2039,7 +2041,7 @@
     "windows_all_auto_pr34_previous_ci_run": 40728641133,
     "windows_all_auto_pr34_previous_ci": "SUCCESS_WINDOWS_UBUNTU",
     "windows_all_auto_pr34_new_head": "615a670e5c7b15f8812b7776757b42a61a3ac9e9",
-    "windows_all_auto_pr34_new_ci": "NOT_YET_VERIFIED",
+    "windows_all_auto_pr34_new_ci": "SUCCESS_WINDOWS_UBUNTU",
     "implementation": "CRASH_SAFE_SINGLE_FLIGHT_CLAIM_OR_RESUME__EXACT_EXISTING_JOB_OUTPUT_REUSE__CONFLICT_REJECTED__TWO_REGRESSION_TESTS",
     "app_provisioner_pr11_head": "edf2896a4405ee51e0771a75111fa11c36aef572",
     "app_provisioner_pr11_ci_run": 40723564890,
@@ -2057,6 +2059,9 @@
     "hold_count": 0,
     "unprocessed_count": 4,
     "next_resume_index": 1,
-    "store_submission": 0
+    "store_submission": 0,
+    "windows_all_auto_pr34_new_ci_run": 40737850188,
+    "windows_all_auto_pr34_new_offline_qa": "SUCCESS_WINDOWS_UBUNTU",
+    "windows_all_auto_pr34_new_offline_qa_run": 40737849615
   }
 }
