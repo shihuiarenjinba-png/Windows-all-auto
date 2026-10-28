@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "source": "USER_PROVIDED_PARTNER_CENTER",
+  "provided_at": "2026-10-28T10:49:00+09:00",
+  "products": {
+    "signal-sprint": {
+      "product_type": "GAME",
+      "display_name": "Signal Sprint",
+      "packaging_family": "GDK",
+      "request_id": "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e",
+      "source_repository": "shihuiarenjinba-png/AI-Game-Factory",
+      "source_branch": "codex/game-signal-sprint-undo-20261027",
+      "source_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
+      "store_id": "9N21MJM7S57P",
+      "identity_name": "OkinawaDesktopTools.SignalSprint",
+      "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+      "publisher_display_name": "Okinawa Desktop Tools",
+      "package_family_name": "OkinawaDesktopTools.SignalSprint_j8yefg9jgfh58",
+      "package_sid": "S-1-15-2-1437967488-3265478925-1925977903-994526844-2895000717-1943620661-378024715",
+      "xbox_title_id": "68721417",
+      "xbox_scid": "00000000-0000-0000-0000-000068721417",
+      "msa_app_id": "39852fc3-fa46-4bda-88aa-b35385488ced"
+    },
+    "offline-notes-canary": {
+      "product_type": "APP",
+      "display_name": "Offline Notes Canary",
+      "packaging_family": "MSIX",
+      "source_repository": "shihuiarenjinba-png/AI-App-Factory",
+      "store_id": "9MZ8ZZTRTS17",
+      "identity_name": "OkinawaDesktopTools.OfflineNotesCanary",
+      "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+      "publisher_display_name": "Okinawa Desktop Tools",
+      "package_family_name": "OkinawaDesktopTools.OfflineNotesCanary_j8yefg9jgfh58",
+      "package_sid": "S-1-15-2-2642756671-247194623-3930721938-1552475434-2475515228-2865765061-1607947205"
+    }
+  }
+}
