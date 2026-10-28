@@ -292,9 +292,15 @@ def validate_capture(job: dict, captured: dict) -> dict:
         }
     return {
         "schema_version": 1,
-        "status": "IDENTITY_CAPTURED__AUTHENTICATED_UI__GITHUB_BOUND",
-        "authenticated_partner_center_pass": True,
-        "capture_source": "AUTHENTICATED_PARTNER_CENTER_UI",
+        # This module validates a supplied JSON payload; it never controls
+        # or independently observes an authenticated browser. An input field
+        # such as identity_details_observed=True is an operator assertion,
+        # not proof of a Partner Center session. Keep the authentication gate
+        # closed until a separate trusted local UI receipt is verified.
+        "status": "IDENTITY_CAPTURED__OPERATOR_ATTESTED__GITHUB_BOUND",
+        "authenticated_partner_center_pass": False,
+        "capture_source": "LOCAL_OPERATOR_SUPPLIED_JSON_UNVERIFIED_UI",
+        "authenticated_ui_evidence_status": "HOLD_INDEPENDENT_UI_ATTESTATION",
         "job_origin": job["job_origin"],
         "central_repository": job["central_repository"],
         "central_branch": job["central_branch"],

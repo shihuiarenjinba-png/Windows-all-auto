@@ -66,3 +66,20 @@ The contract module does not operate a browser, click Reserve product name,
 capture authenticated Partner Center Identity or execute the APP CAS itself.
 Those are separate local-worker integration gates. GitHub CI success for this
 module does not imply those operations occurred.
+
+## Authentication evidence boundary
+
+The JSON validator in `local_partner_center_operator.py validate` only
+checks supplied fields, exact job binding and schema. A caller can populate
+`identity_details_observed=true` without ever opening a browser. Therefore
+the validator emits `IDENTITY_CAPTURED__OPERATOR_ATTESTED__GITHUB_BOUND`
+with `authenticated_partner_center_pass=false` and
+`authenticated_ui_evidence_status=HOLD_INDEPENDENT_UI_ATTESTATION`.
+
+A separate trusted local Windows UI worker must independently establish the
+authenticated session, exact Overview product, seven Identity fields and
+provenance before a batch completion may claim authenticated capture. Merely
+editing a JSON flag, copying a manual reference or replaying this validator
+must not satisfy that gate. The batch remains PARTIAL until that evidence,
+the existing Provisioner CAS/replay and scheduled-local trigger attestation
+are independently verified.
