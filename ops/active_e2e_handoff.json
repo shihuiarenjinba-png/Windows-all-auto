@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T09:52:00Z",
+  "updated_at_utc": "2026-10-28T09:55:00Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -980,12 +980,13 @@
     "3d_waiting_identity": 1,
     "3d_conflicts": 0,
     "3d_artifact_mismatch": 0,
-    "metrics_basis": "LIVE_FACTORY_GODOT_EXPORT_ARTIFACT_AND_AUTHENTICATED_PROVISIONER_BYTES_CORRELATED__NO_STORE_IDENTITY_OR_LOCAL_QA"
+    "metrics_basis": "LIVE_FACTORY_GODOT_EXPORT_ARTIFACT_AND_AUTHENTICATED_PROVISIONER_BYTES_CORRELATED__NO_STORE_IDENTITY_OR_LOCAL_QA",
+    "3d_source_branch_head_drift_observed": 1
   },
   "local_source_code_sync": {
     "schema_version": 1,
     "scope": "FACTORY_PRODUCT_SOURCE_ONLY__NO_PACKAGE_INSTALL_OR_CAS",
-    "status": "CLOUD_WINDOWS_EXACT_SHA_SMOKE_PASS__LOCAL_MODE_RESTORED__PHYSICAL_RECEIPT_PENDING",
+    "status": "CLOUD_PRIOR_SHA_SMOKE_PASS__PRISM_BRANCH_ADVANCED__PHYSICAL_SOURCE_SYNC_HOLD",
     "worker": {
       "repository": "shihuiarenjinba-png/Windows-all-auto",
       "base_draft_pr": 22,
@@ -1042,7 +1043,7 @@
         "identity_status": "WAITING_USER_IDENTITY"
       }
     ],
-    "physical_local_status": "LOCAL_MODE__NO_USER_PC_RECEIPT_OBSERVED",
+    "physical_local_status": "HOLD_REMOTE_HEAD_CONFLICT_PRISM_PIN",
     "local_receipt_verified": false,
     "local_task_scheduler_registered": false,
     "local_task_scheduler_run_verified": false,
@@ -1060,7 +1061,7 @@
     "no_store_submit": true,
     "no_cas": true,
     "no_package_install": true,
-    "next_action": "Execute PR23 hardened exact SHA sync on user Windows independently; verify receipt and idempotent reuse before installing 15-minute scheduler; do not claim local PASS from GitHub Actions."
+    "next_action": "Prism branch advanced by approved-identity.json commit; do not change pinned source_sha or disable remote HEAD guard. Reconcile post-Identity build head before physical 3-product sync; Offline/Signal pins still identical."
   },
   "latest_provisioner_heads_observed": {
     "basis": "LIVE_GITHUB_BRANCH_HEAD_AND_COMMIT_CI__NOT_LOCAL_REVALIDATED",
@@ -1166,10 +1167,10 @@
     "github_origin_handoff": {
       "draft_pr": 26,
       "branch": "codex/github-origin-existing-prism-operator-20261028",
-      "head_sha": "6d1b469cbbf4881e762e92cc08f6795b7d97a757",
+      "head_sha": "15e0caf04fb8a83f241dd8e43ddad2b601b75321",
       "base_draft_pr": 24,
       "entrypoint": "python -m scripts.github_partner_center_handoff",
-      "contract_ci": "LATEST_CI_IN_PROGRESS",
+      "contract_ci": "PRIOR_CODE_HEAD_SUCCESS__LATEST_DOC_HEAD_PENDING",
       "physical_execution": "NOT_OBSERVED__SOURCE_BRANCH_HEAD_DRIFT",
       "queue_job_origin_required": "GITHUB_PRE_IDENTITY_QUEUE",
       "required_evidence": [
@@ -1190,10 +1191,10 @@
       "identity_capture": "NOT_OBSERVED",
       "cas": "NOT_APPLIED",
       "store_submission": "NOT_AUTHORIZED",
-      "ci_run_id": 40666310040,
-      "ci_url": "https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/40666310040",
-      "previous_green_ci_run_id": 40666038920,
-      "previous_green_head_sha": "9a6f7e81028e71bc89755e832b7fcd7343cd5044"
+      "ci_run_id": 40666476653,
+      "ci_url": "https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/40666476653",
+      "previous_green_ci_run_id": 40666310040,
+      "previous_green_head_sha": "6d1b469cbbf4881e762e92cc08f6795b7d97a757"
     },
     "handoff_compatibility": {
       "scheduler_3d_job_supported": false,
