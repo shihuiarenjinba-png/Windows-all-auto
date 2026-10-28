@@ -83,3 +83,27 @@ editing a JSON flag, copying a manual reference or replaying this validator
 must not satisfy that gate. The batch remains PARTIAL until that evidence,
 the existing Provisioner CAS/replay and scheduled-local trigger attestation
 are independently verified.
+
+## Independent evidence verification before a product can succeed
+
+The batch `complete` CLI treats **every field in the result JSON as
+untrusted**, including `authenticated_partner_center_pass=true`,
+`IDENTITY_CAPTURED__AUTHENTICATED_UI__GITHUB_BOUND`, a plausible CAS commit
+SHA and `EXISTING_VERIFIED`. A JSON-only result cannot increment
+`success_count` or mark a product `SUCCESS`.
+
+The Python contract has an optional `independent_evidence_verifier` callback
+for integration with a future trusted local Windows worker. It must verify the
+live authenticated Partner Center UI capture, exact product/queue/source
+binding, physical exact-SHA snapshot, actual GitHub return commit and replay
+using **independent observations**. It must return the literal boolean
+`True`; absent, false, exceptional or non-boolean results fail closed. The
+shipped CLI intentionally supplies no callback and therefore returns
+`HOLD_INDEPENDENT_EVIDENCE_VERIFIER_UNAVAILABLE` on attempted positive
+completion. Test doubles in the regression suite are not production evidence.
+
+The scheduler-origin flag remains unproven independently. Neither the
+callback nor a local JSON field may promote
+`schedule_trigger_proven` to `true` without a separately verified host
+trigger attestation. This change does not execute Partner Center UI actions,
+CAS, package creation or Store submission.
