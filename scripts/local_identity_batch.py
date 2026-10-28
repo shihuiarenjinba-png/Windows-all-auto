@@ -167,8 +167,15 @@ GLOBAL_STOP_CODES = {
 }
 
 
-def _validate_success_evidence(state: dict, job: dict, result: dict) -> None:
-    """Reject a fabricated APPLIED flag without the complete local evidence chain."""
+def _validate_success_evidence(state: dict, job: dict, result: dict, *,
+                               independent_evidence_verifier=None) -> None:
+    """Reject a fabricated APPLIED flag without independently checked evidence.
+
+    The supplied result is untrusted JSON, including any authentication, CAS,
+    replay or schedule claims. A trusted local worker must separately verify
+    the live UI capture, exact source snapshot, GitHub CAS commit and replay.
+    The shipped CLI intentionally has no such verifier and fails closed.
+    """
     exact = {
         "batch_id": state["batch_id"],
         "batch_index": job["batch_index"],
@@ -213,6 +220,16 @@ def _validate_success_evidence(state: dict, job: dict, result: dict) -> None:
             and isinstance(result.get("identity_name"), str)
             and bool(result["identity_name"].strip()),
             "HOLD_BATCH_IDENTITY_SCHEMA_INVALID")
+    # An arbitrary JSON file can assert all of the above, including a plausible
+    # commit SHA. It must never be allowed to increment success_count on its own.
+    require(callable(independent_evidence_verifier),
+            "HOLD_INDEPENDENT_EVIDENCE_VERIFIER_UNAVAILABLE")
+    try:
+        verified = independent_evidence_verifier(
+            state=deepcopy(state), job=deepcopy(job), result=deepcopy(result))
+    except Exception as exc:
+        raise BatchHold("HOLD_INDEPENDENT_EVIDENCE_VERIFICATION_FAILED") from exc
+    require(verified is True, "HOLD_INDEPENDENT_EVIDENCE_NOT_VERIFIED")
 
 
 def _validate_product_hold(result: dict) -> None:
@@ -262,7 +279,7 @@ def claim_or_resume(state: dict) -> tuple[dict, dict]:
     return deepcopy(state), deepcopy(processing[0])
 
 
-def complete_active(state: dict, result: dict) -> dict:
+def complete_active(state: dict, result: dict, *, independent_evidence_verifier=None) -> dict:
     current = deepcopy(state)
     index = current.get("active_index")
     if index is None:
@@ -284,7 +301,9 @@ def complete_active(state: dict, result: dict) -> dict:
             and result.get("package_version_gate") == "HOLD",
             "BATCH_RESULT_SAFETY_CONFLICT")
     if status in {"APPLIED", "EXISTING_VERIFIED"}:
-        _validate_success_evidence(current, job, result)
+        _validate_success_evidence(
+            current, job, result,
+            independent_evidence_verifier=independent_evidence_verifier)
         job["state"] = "SUCCESS"
     elif status == "HOLD":
         _validate_product_hold(result)
