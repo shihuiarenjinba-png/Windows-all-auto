@@ -64,7 +64,7 @@ def project(ledger: dict, head_reader=scheduler.head) -> dict:
     items = requests.get("items") or []
     matching = [item for item in items if item.get("request_id") == rid]
     require(len(matching) == 1
-            and matching[0].get("status") == "WAITING_USER_IDENTITY",
+            and matching[0].get("status") in {"WAITING_USER_IDENTITY", "USER_IDENTITY_RECEIVED"},
             "USER_ID_REQUEST_NOT_CORRELATED")
     identity_request = matching[0]
     require(identity_request.get("repo") == product["source_repository"]
@@ -111,7 +111,7 @@ def project(ledger: dict, head_reader=scheduler.head) -> dict:
                 "APP_SOURCE_HEAD_CONFLICT")
         app_requests = [item for item in items if item.get("request_id") == app_rid]
         require(len(app_requests) == 1
-                and app_requests[0].get("status") == "WAITING_USER_IDENTITY",
+                and app_requests[0].get("status") in {"WAITING_USER_IDENTITY", "USER_IDENTITY_RECEIVED"},
                 "APP_USER_ID_REQUEST_NOT_CORRELATED")
         app_request = app_requests[0]
         require(app_request.get("repo") == app_repo
