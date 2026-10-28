@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T07:41:42.890Z",
+  "updated_at_utc": "2026-10-28T07:42:16.570Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -19,7 +19,7 @@
     "display_name": "Signal Sprint",
     "provisioner_repository": "shihuiarenjinba-png/Repository-Provisioner-game",
     "provisioner_branch": "codex/game-gdk-identity-contract-20261028",
-    "provisioner_head_observed": "392dbc4dcbb7a29041f009a66468b4f733f8fb25",
+    "provisioner_head_observed": "e9ae4669f6739d34cad63764767328a3c796a5f9",
     "factory_exe_run_id": 40443340158,
     "factory_exe_artifact_id": 12706862577,
     "factory_exe_artifact_name": "game-signal-sprint-exe-c058cbf7fe38e02d929c67d047d717ff74bd522e",
@@ -59,12 +59,12 @@
     "next_action": "CLOUD: PR20 rotation queue code and CI, APP max-five independent jobs and Prism Route 3D export provenance. LOCAL_UNAVAILABLE_MODE: all local check-only/CAS/GUI/install remain DEFERRED_LOCAL_GATE; CAS requires explicit per-request approval. No Store submission.",
     "local_commands": [
       "gh api repos/shihuiarenjinba-png/Windows-all-auto/git/ref/heads/codex/e2e-belt-connection-20261027 --jq .object.sha  # confirm exact current ledger HEAD",
-      "gh api repos/shihuiarenjinba-png/Repository-Provisioner-game/git/ref/heads/codex/game-gdk-identity-contract-20261028 --jq .object.sha  # must equal 392dbc4dcbb7a29041f009a66468b4f733f8fb25",
+      "gh api repos/shihuiarenjinba-png/Repository-Provisioner-game/git/ref/heads/codex/game-gdk-identity-contract-20261028 --jq .object.sha  # must equal e9ae4669f6739d34cad63764767328a3c796a5f9",
       "python -m scripts.pre_identity_queue --check-only  # from reviewed PR19; no CAS",
       "python -m scripts.pre_identity_queue --output \"$env:LOCALAPPDATA\\FactoryIdentityWorker\\secure\\pre-identity-jobs.json\"  # PowerShell, create-only; no overwrite",
       "gh run download 40443340158 -R shihuiarenjinba-png/AI-Game-Factory -n game-signal-sprint-exe-c058cbf7fe38e02d929c67d047d717ff74bd522e -D C:\\qa\\signal-sprint\\factory-exe  # verify extracted EXE SHA-256 e8517df8cd31a40e5ce72afdd4e6a4d63626fb99f7ff8a4fa3296ff8deef05f4",
       "python -m scripts.local_identity_scheduler --jobs-file \"$env:LOCALAPPDATA\\FactoryIdentityWorker\\secure\\pre-identity-jobs.json\" --state-dir \"$env:LOCALAPPDATA\\FactoryIdentityWorker\\secure\\scheduler-state\"  # check-only, no --apply-request-id",
-      "python -m scripts.local_identity_return --provisioner-root C:\\src\\Repository-Provisioner-game --provisioner-branch codex/game-gdk-identity-contract-20261028 --provisioner-sha 392dbc4dcbb7a29041f009a66468b4f733f8fb25 --source-branch codex/game-signal-sprint-undo-20261027 --source-sha c058cbf7fe38e02d929c67d047d717ff74bd522e --request-id game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e  # check-only, NO --apply"
+      "python -m scripts.local_identity_return --provisioner-root C:\\src\\Repository-Provisioner-game --provisioner-branch codex/game-gdk-identity-contract-20261028 --provisioner-sha e9ae4669f6739d34cad63764767328a3c796a5f9 --source-branch codex/game-signal-sprint-undo-20261027 --source-sha c058cbf7fe38e02d929c67d047d717ff74bd522e --request-id game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e  # check-only, NO --apply"
     ],
     "expected_local_outputs": [
       "dry-run-result.json status=DRY_RUN, no side effects (completed)",
@@ -137,11 +137,11 @@
     "provisioner_package_safety": {
       "repository": "shihuiarenjinba-png/Repository-Provisioner-game",
       "branch": "codex/game-gdk-identity-contract-20261028",
-      "head_sha": "392dbc4dcbb7a29041f009a66468b4f733f8fb25",
+      "head_sha": "e9ae4669f6739d34cad63764767328a3c796a5f9",
       "draft_pr": 10,
       "base_branch": "codex/game-msix-package-safety-20261027-1510",
       "base_sha": "c217652c7887626de94e8b37ca3f1f7a57f9064d",
-      "ci_run_id": 40642197806,
+      "ci_run_id": 40648776274,
       "ci_conclusion": "SUCCESS",
       "status": "GDK_PR10_CI_PASS__LOCAL_WINDOWS_CHECK_ONLY_PENDING",
       "changes": [
@@ -150,7 +150,7 @@
         "tests/test_existing_identity_commit_sha.py"
       ],
       "next_action": "Use GDK Provisioner PR10 pinned head; do not reuse older PR9 checkout for GDK user-provided identity.",
-      "current_branch_head": "392dbc4dcbb7a29041f009a66468b4f733f8fb25"
+      "current_branch_head": "e9ae4669f6739d34cad63764767328a3c796a5f9"
     },
     "local_identity_return_worker": {
       "repository": "shihuiarenjinba-png/Windows-all-auto",
@@ -165,7 +165,7 @@
       "mode": "LOCAL_ONLY_EXPLICIT_APPLY",
       "evidence_path": "C:\\qa\\signal-sprint\\official-identity-private.json",
       "receipt_path": "C:\\qa\\signal-sprint\\identity-return\\identity-return-receipt.json",
-      "required_provisioner_sha": "392dbc4dcbb7a29041f009a66468b4f733f8fb25",
+      "required_provisioner_sha": "e9ae4669f6739d34cad63764767328a3c796a5f9",
       "next_action": "PR19 worker GDK MSIXVC next-stage fix pending CI; use PR10 exact checkout on local Windows without --apply until request-specific approval.",
       "ci_url": "https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/40499482120",
       "local_check_only": {
@@ -199,17 +199,17 @@
     "provisioner_identity_resume": {
       "repository": "shihuiarenjinba-png/Repository-Provisioner-game",
       "branch": "codex/game-gdk-identity-contract-20261028",
-      "head_sha": "392dbc4dcbb7a29041f009a66468b4f733f8fb25",
+      "head_sha": "e9ae4669f6739d34cad63764767328a3c796a5f9",
       "draft_pr": 10,
       "base_safety_pr": 8,
       "base_safety_head": "c217652c7887626de94e8b37ca3f1f7a57f9064d",
-      "ci_run_id": 40642197806,
+      "ci_run_id": 40648776274,
       "ci_conclusion": "SUCCESS",
       "resume_result_path_example": "C:\\qa\\signal-sprint\\result.json",
       "resume_result_verified_on_local_windows": false,
       "package_sha256": "e8517df8cd31a40e5ce72afdd4e6a4d63626fb99f7ff8a4fa3296ff8deef05f4",
       "status": "GDK_PR10_CI_PASS_LOCAL_CHECK_ONLY_PENDING",
-      "current_branch_head": "392dbc4dcbb7a29041f009a66468b4f733f8fb25",
+      "current_branch_head": "e9ae4669f6739d34cad63764767328a3c796a5f9",
       "historical_local_check_only_sha": "5c1db9820bac68c59cc7eb6ca5921e22a5bb3913",
       "note": "Historical local check-only is on older Provisioner SHA; PR9 d2d8120 CI SUCCESS but local execution not observed."
     },
@@ -218,8 +218,8 @@
     "provisioner_game_gdk_pr": {
       "draft_pr": 10,
       "branch": "codex/game-gdk-identity-contract-20261028",
-      "head_sha": "392dbc4dcbb7a29041f009a66468b4f733f8fb25",
-      "ci_run_id": 40642197806,
+      "head_sha": "e9ae4669f6739d34cad63764767328a3c796a5f9",
+      "ci_run_id": 40648776274,
       "ci_conclusion": "SUCCESS",
       "local_windows_check_only": "NOT_OBSERVED",
       "cas": "NOT_APPLIED"
@@ -385,7 +385,7 @@
       "local_tests": "67_PASS",
       "next_action": "Do not rerun without new runner/workflow evidence; require real MSIX before Checker product QA"
     },
-    "last_12_minute_update": "Provisioner-3D PR7 HEAD ce332d58: live authenticated Factory artifact bytes correlated in CI #40650334549 and #40650339607 SUCCESS. Prism Route 3D PRE_IDENTITY_READY; Identity WAITING_USER_IDENTITY; no CAS/MSIX/local QA.",
+    "last_12_minute_update": "Provisioner-3D PR7 HEAD ce332d58: live authenticated Factory artifact bytes correlated in CI #40650334549 and #40650339607 SUCCESS. Prism Route 3D PRE_IDENTITY_READY; Identity WAITING_USER_IDENTITY; no CAS/MSIX/local QA. Provisioner-game PR10 latest HEAD e9ae4669 CI #40648776274 SUCCESS; pinned live queue SHA refreshed.",
     "next_repo": "shihuiarenjinba-png/Windows-all-auto",
     "next_branch": "codex/e2e-belt-connection-20261027",
     "next_head_sha": "628b9c9e6913512b2e5b4175a50f1636ef3c81e9",
@@ -595,7 +595,7 @@
       "new_tests": 10,
       "immutable_game_source_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
       "expected_exe_sha256": "e8517df8cd31a40e5ce72afdd4e6a4d63626fb99f7ff8a4fa3296ff8deef05f4",
-      "provisioner_head_observed": "b25dd37c2049b716056c83ec556603666e0b5ce2",
+      "provisioner_head_observed": "e9ae4669f6739d34cad63764767328a3c796a5f9",
       "local_package_path": "OPERATOR_MUST_SUPPLY_AFTER_SHA256_CHECK",
       "user_identity": "USER_IDENTITY_RECEIVED__LOCAL_CHECK_ONLY_PENDING",
       "app": "NOT_YET_REQUIRED",
