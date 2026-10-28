@@ -213,6 +213,54 @@ class RotationQueueTests(unittest.TestCase):
         with self.assertRaisesRegex(pre_identity_queue.QueueHold, "CROSS_PRODUCT"):
             q.project(data, head)
 
+    def test_real_prism_route_factory_provenance_correlates(self):
+        """The independently verified 2026-10-28 Factory/Provisioner receipt
+        must queue only the exact Prism Route 3D source, never perform CAS."""
+        data = rotated(0, True)
+        item = data["rotation_cohorts"]["three_d_jobs"][0]
+        real_sha = "15fdcb52e46e35e6de8e87c55af99719c21e09b9"
+        real_branch = "codex/3d-canary-prism-route-20261028"
+        real_request = "3d-prism-route-3d-15fdcb52e46e"
+        item.update({
+            "request_id": real_request, "source_sha": real_sha,
+            "source_branch": real_branch, "factory_build_branch": real_branch,
+            "factory_build_head": real_sha,
+            "expected_exe_sha256": "66b26ad96df7458ea917b632a73ac7c88bb058db24dbd11a457fd50435ab7b13",
+            "artifact_id": 12795476435, "artifact_run_id": 40640951915,
+            "artifact_zip_sha256": "76b5fae99491b70514e3152483e0192ac70b2909d8f6eeb9802a640ad12409b0",
+            "artifact_provenance": "REAL_WINDOWS_EXPORT_VERIFIED",
+        })
+        request = data["user_id_requests"]["items"][-1]
+        request.update({"request_id": real_request, "source_sha": real_sha,
+                        "source_branch": real_branch})
+        def observed_head(repo, branch):
+            if repo == q.THREE_D_REPO:
+                self.assertEqual(branch, real_branch)
+                return real_sha
+            return head(repo, branch)
+        result = q.project(data, observed_head)
+        job = result["jobs"][-1]
+        self.assertEqual(job["request_id"], real_request)
+        self.assertEqual(job["artifact_id"], 12795476435)
+        self.assertEqual(job["package_sha256"], item["expected_exe_sha256"])
+        self.assertEqual(job["registration_type"], "MSIX_OR_PWA_GAME")
+        self.assertEqual(job["identity_status"], "WAITING_USER_IDENTITY")
+        self.assertEqual(result["rotation_metrics"]["3d_pre_identity_pass"], 1)
+        self.assertFalse(result["ready_for_cas"])
+
+        # A later Factory HEAD, wrong Identity request or unverified Artifact
+        # must never be silently accepted as a different product.
+        with self.assertRaisesRegex(pre_identity_queue.QueueHold, "SOURCE_HEAD_CONFLICT"):
+            q.project(data, lambda repo, branch: "0" * 40
+                      if repo == q.THREE_D_REPO else head(repo, branch))
+        request["source_sha"] = "0" * 40
+        with self.assertRaisesRegex(pre_identity_queue.QueueHold, "CROSS_PRODUCT"):
+            q.project(data, observed_head)
+        request["source_sha"] = real_sha
+        item["artifact_provenance"] = "PENDING_INDEPENDENT_REAL_EXPORT_VERIFICATION"
+        with self.assertRaisesRegex(pre_identity_queue.QueueHold, "ARTIFACT_NOT_VERIFIED"):
+            q.project(data, observed_head)
+
     def test_empty_rotation_preserves_base_queue(self):
         result = q.project(fixture(), head)
         self.assertEqual(len(result["jobs"]), 1)
