@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T00:34:56.670Z",
+  "updated_at_utc": "2026-10-28T00:36:45.656Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -324,7 +324,7 @@
     "partner_center_access_by_36_minute_loop": false
   },
   "last_cross_lane_observation": {
-    "observed_at_utc": "2026-10-28T00:34:56.670Z",
+    "observed_at_utc": "2026-10-28T00:36:45.656Z",
     "active_lane": "GAME",
     "active_product": "signal-sprint",
     "factory_source_head_verified": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
@@ -340,7 +340,7 @@
       "local_tests": "67_PASS",
       "next_action": "Do not rerun without new runner/workflow evidence; require real MSIX before Checker product QA"
     },
-    "last_12_minute_update": "APP Factory 1520b0f0 CI 40606516026 SUCCESS; Provisioner-app 21509229 CI 40606680009 SUCCESS; GAME Provisioner 15b2e081 CI 40607796803 SUCCESS; 3D Factory bed4e171 CI 40608228767 SUCCESS and Provisioner-3D 651e630d CI 40608121189 SUCCESS. No real MSIX or private Identity observed.",
+    "last_12_minute_update": "PR18 534f3a23 pre-Identity queue new-file implementation + 8 tests Windows/Ubuntu CI 40609783254 SUCCESS; central USER_ID_REQUEST aggregate committed 809b9872 CI 40609682348 SUCCESS. APP formal promotion/EXE still absent; GAME user Identity/CAS/real MSIX absent.",
     "next_repo": "shihuiarenjinba-png/Windows-all-auto",
     "next_branch": "codex/local-identity-qa-safety-20261027",
     "next_head_sha": "6ef8aacbcba8a622760a8c109f4c684d6df503fb",
@@ -421,7 +421,7 @@
         "is_accepted_product": false
       }
     },
-    "classification": "USER_MANAGED_IDENTITY_HANDOFF_GATE_CI_SUCCESS__GAME_WAITING_USER_IDENTITY__APP_PROMOTION_PENDING__3D_NO_PRODUCT__CHECKER_CI_INFRA_UNRESOLVED",
+    "classification": "PRE_IDENTITY_QUEUE_BRIDGE_CI_PASS__GAME_WAITING_USER_IDENTITY__APP_NOT_YET_REQUIRED__REAL_E2E_HOLD",
     "local_identity_qa_safety_branch": {
       "branch": "codex/local-identity-qa-safety-20261027",
       "head_sha": "6ef8aacbcba8a622760a8c109f4c684d6df503fb",
@@ -463,14 +463,14 @@
     }
   },
   "multi_product_identity_scheduler": {
-    "status": "USER_MANAGED_IDENTITY_HANDOFF_GATE_COMMITTED__WINDOWS_UBUNTU_CI_SUCCESS__LOCAL_WINDOWS_NOT_EXECUTED",
+    "status": "USER_MANAGED_IDENTITY_HANDOFF_AND_PRE_IDENTITY_QUEUE_BRIDGE__WINDOWS_UBUNTU_CI_SUCCESS__LOCAL_WINDOWS_NOT_EXECUTED",
     "repository": "shihuiarenjinba-png/Windows-all-auto",
     "draft_pr": 18,
     "branch": "codex/multi-product-identity-scheduler-20261028-0036",
-    "head_sha": "f176eec03a2085aa09c7ed84bb5e92c02d72bc80",
+    "head_sha": "534f3a2347295c98048fd1a93cd453c20e5caef2",
     "base_pr": 17,
     "base_head_sha": "6ef8aacbcba8a622760a8c109f4c684d6df503fb",
-    "ci_run_id": 40596859228,
+    "ci_run_id": 40609783254,
     "ci_conclusion": "SUCCESS",
     "ci_platforms": [
       "windows-latest",
@@ -482,7 +482,10 @@
       "scripts/local_identity_scheduler.py",
       "tests/test_local_identity_scheduler.py",
       "tests/test_user_managed_identity_gate.py",
-      "docs/LOCAL_MULTI_PRODUCT_IDENTITY_SCHEDULER.md"
+      "docs/LOCAL_MULTI_PRODUCT_IDENTITY_SCHEDULER.md",
+      "scripts/pre_identity_queue.py",
+      "tests/test_pre_identity_queue.py",
+      "docs/PRE_IDENTITY_QUEUE.md"
     ],
     "central_ledger_single_writer": true,
     "dedicated_game_cas_worker": "scripts/local_identity_return.py__UNCHANGED_DELEGATION_ONLY",
@@ -515,10 +518,26 @@
     "checker": "NOT_RUN_ON_REAL_MSIX",
     "gui_qa": "NOT_RUN",
     "e2e_pass": false,
-    "next_action": "PR18 f176eec0 user-managed private Identity gate and 8 new regressions: CI #40596859228 Windows/Ubuntu SUCCESS (250 tests). Next: local Windows check-only, compare unpushed local implementation, then real user-provided Identity and explicit CAS. No Partner Center acquisition automation.",
+    "next_action": "PR18 534f3a23 PRE-IDENTITY queue bridge CI 40609783254 Windows/Ubuntu SUCCESS; local Windows --check-only then local EXE SHA preflight and user-managed Identity gate. Never overwrite unpushed local jobs.",
     "security_fix": "REJECT_SYMLINKED_PRIVATE_PATH_ANCESTORS_AND_GIT_CHECK; OPERATOR_ONLY_STORE_IDENTITY_CANNOT_ADVANCE_TO_CAS_APPROVAL; VERSION_AND_BRAND_APPROVAL_ALONE_CANNOT_AUTHORIZE_MSIX; EXPLICIT_CAS_TARGETS_EXACT_GAME_REQUEST_OR_FAILS_CLOSED; DURABLE_PRE_CAS_INTENT_AND_STICKY_MANUAL_RECONCILIATION_PREVENT_UNCERTAIN_CAS_REPLAY; REJECT_WINDOWS_DIRECTORY_JUNCTION_PRIVATE_PATH_ANCESTORS; USER_MANAGED_IDENTITY_FILE_REQUIRED_BEFORE_CAS__SCHEMA_REFERENCE_BINDING_VALIDATION__NO_SECRET_IN_RECEIPT",
     "targeted_apply_routing": "FIXED_TESTED_22_PASS_WINDOWS_UBUNTU_CI",
-    "user_managed_identity_gate": "WAITING_USER_IDENTITY__NO_PARTNER_CENTER_AUTOMATION"
+    "user_managed_identity_gate": "WAITING_USER_IDENTITY__NO_PARTNER_CENTER_AUTOMATION",
+    "pre_identity_queue": {
+      "status": "OFFLINE_CONTRACT_PASS__LOCAL_PACKAGE_PATH_AND_WINDOWS_EXECUTION_PENDING",
+      "entrypoint": "python -m scripts.pre_identity_queue --check-only",
+      "draft_output": "python -m scripts.pre_identity_queue --output %LOCALAPPDATA%/FactoryIdentityWorker/secure/pre-identity-jobs.json",
+      "ci_run_id": 40609783254,
+      "ci_conclusion": "SUCCESS_WINDOWS_UBUNTU",
+      "new_tests": 8,
+      "immutable_game_source_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
+      "expected_exe_sha256": "e8517df8cd31a40e5ce72afdd4e6a4d63626fb99f7ff8a4fa3296ff8deef05f4",
+      "provisioner_head_observed": "15b2e0818d479fa5017e0e8abafac011f74dad2c",
+      "local_package_path": "OPERATOR_MUST_SUPPLY_AFTER_SHA256_CHECK",
+      "user_identity": "WAITING_USER_IDENTITY",
+      "app": "NOT_YET_REQUIRED",
+      "cas": "NOT_APPLIED",
+      "no_secret_or_browser_automation": true
+    }
   },
   "user_managed_identity_handoff": {
     "policy": "USER_OBTAINS_OFFICIAL_IDENTITY_INDEPENDENTLY__36_MINUTE_LOOP_ONLY_VALIDATES_ROUTES_AND_RETURNS",
@@ -563,7 +582,7 @@
     "ci_note": "PR18 CI #40596859228 SUCCESS Windows/Ubuntu; central ledger CI #40596902756 SUCCESS; local Windows GUI/CAS not observed"
   },
   "quality_gates": {
-    "pre_identity_ready": "GAME_EXE_VERIFIED__APP_NOT_READY",
+    "pre_identity_ready": "GAME_REMOTE_BINDINGS_AND_EXE_PROVENANCE_QUEUE_CONTRACT_PASS__LOCAL_EXE_SHA_RECHECK_PENDING",
     "waiting_user_identity": "GAME_TRUE__APP_NOT_YET_REQUIRED",
     "user_identity_validated": false,
     "cas_return_pass": false,
