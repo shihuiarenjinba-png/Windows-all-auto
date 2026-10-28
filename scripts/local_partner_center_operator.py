@@ -108,6 +108,12 @@ def expected_job(ledger: dict, slug: str) -> dict:
         raise OperatorHold("PRE_IDENTITY_JOB_NOT_UNIQUE")
     source = matches[0]
     target = f"products/{slug}/store/approved-identity.json"
+    # A valid slug is insufficient: all lanes must reserve distinct request IDs
+    # and return paths. Otherwise a second product could claim this receipt.
+    if sum(x.get("request_id") == source.get("request_id") for x in candidates) != 1:
+        raise OperatorHold("CROSS_LANE_REQUEST_ID_CONFLICT")
+    if sum(x.get("identity_return_target") == target for x in candidates) != 1:
+        raise OperatorHold("CROSS_LANE_IDENTITY_TARGET_CONFLICT")
     job = {k: source.get(k) for k in BINDING}
     job["product_type"] = source.get("product_type", source["_inferred_product_type"])
     if job["product_type"] != source["_inferred_product_type"]:
@@ -118,7 +124,9 @@ def expected_job(ledger: dict, slug: str) -> dict:
     if len(request_matches) != 1:
         raise OperatorHold("IDENTITY_REQUEST_NOT_UNIQUE")
     request = request_matches[0]
-    job["identity_return_target"] = request.get("identity_return_target")
+    # The queue job owns the return target. A matching user request is an
+    # independent cross-check, never the authority to fill a missing target.
+    job["identity_return_target"] = source.get("identity_return_target")
     if not all(_text(x) for x in job.values()):
         raise OperatorHold("INCOMPLETE_JOB_BINDING")
     if job["registration_type"] not in REGISTRATIONS:
@@ -154,8 +162,9 @@ def expected_job(ledger: dict, slug: str) -> dict:
     if (request.get("status") is not None
             and request.get("status") != "LOCAL_PARTNER_CENTER_OPERATOR_ACTIVE"):
         raise OperatorHold("LOCAL_OPERATOR_NOT_AUTHORIZED")
-    allow = request.get("allow_local_product_creation",
-                        operator.get("allow_local_product_creation"))
+    # Creation permission is per-product, never inherited from a global
+    # operator flag. Missing or malformed consent fails closed.
+    allow = request.get("allow_local_product_creation")
     if type(allow) is not bool:
         raise OperatorHold("LOCAL_OPERATOR_NOT_AUTHORIZED")
     job["allow_local_product_creation"] = allow
