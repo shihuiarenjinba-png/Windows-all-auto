@@ -260,6 +260,22 @@ def validate_evidence(path: Path, args) -> bool:
                 "slug": "signal-sprint", "source_sha": args.source_sha}
     if any(data.get(k) != v for k, v in expected.items()):
         raise Gate("CONFLICT", "LOCAL_IDENTITY_BINDING_MISMATCH")
+
+    gdk_required = {
+        "request_id", "product_type", "slug", "source_sha",
+        "identity_source", "provided_at", "store_id", "name", "publisher",
+        "publisher_display_name", "package_family_name", "package_sid",
+        "packaging_family", "xbox_title_id", "xbox_scid", "msa_app_id",
+    }
+    if set(data) == gdk_required:
+        if (data.get("identity_source") != "USER_PROVIDED_PARTNER_CENTER"
+                or data.get("packaging_family") != "GDK"):
+            raise Gate("CONFLICT", "USER_PROVIDED_GDK_IDENTITY_SOURCE_MISMATCH")
+        for key in gdk_required - {"request_id", "product_type", "slug", "source_sha"}:
+            if not isinstance(data.get(key), str) or not data[key].strip():
+                raise Gate("HOLD", "OFFICIAL_IDENTITY_FIELDS_MISSING")
+        return True
+
     url = urlparse(str(data.get("official_evidence_url", "")))
     if (url.scheme != "https" or url.hostname not in
             {"partner.microsoft.com", "partnercenter.microsoft.com"}
