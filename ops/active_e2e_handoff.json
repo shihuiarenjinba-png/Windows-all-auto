@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T08:46:15Z",
+  "updated_at_utc": "2026-10-28T08:52:00Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -238,7 +238,7 @@
       "factory_head": "e8e3ca613a114cd0e919cf2f3a4454fa8149510a",
       "provisioner_branch": "codex/e2e-belt-connection-20261027",
       "provisioner_head": "99a06968ff0637fc644b876df18e799bb730554d",
-      "next_action": "Factory formal promote/source_sha/request_id/Windows EXE still pending; Identity reference received but unbound. PRE-IDENTITY registration is MSIX_OR_PWA_APP, never inferred from intermediate EXE. Local Windows gates deferred.",
+      "next_action": "APP formal promote/source_sha/request_id/Windows EXE pending; identity reference remains unbound. Local Windows available, but no APP source binding or CAS.",
       "provisioner_ci_run_id": 40642147303,
       "provisioner_ci_conclusion": "SUCCESS",
       "canary_proposal": {
@@ -272,13 +272,13 @@
       "rotation_ready_jobs": 0
     },
     "GAME_3D": {
-      "phase": "PRISM_ROUTE_3D_REAL_FACTORY_EXPORT_AND_PROVISIONER_BYTES_CORRELATED__WAITING_USER_IDENTITY",
+      "phase": "PRISM_ROUTE_3D_PRE_IDENTITY_READY__LOCAL_PARTNER_CENTER_OPERATOR_ACTIVE__NO_PHYSICAL_PROOF",
       "status": "HOLD",
       "factory_branch": "codex/3d-canary-prism-route-20261028",
       "factory_head": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
       "provisioner_branch": "codex/e2e-belt-connection-20261027",
       "provisioner_head": "ce332d586d473e08b4c03808dfe84694fa55287e",
-      "next_action": "PRE_IDENTITY_READY with authenticated Factory EXE/PCK correlation. Official Identity for Prism Route 3D is now requested from user; no CAS. Provisioner Windows MakeAppx QA_UNSIGNED artifact 12799213128 is NOT an approved Store MSIX. Local QA deferred.",
+      "next_action": "LOCAL_MODE: exact-source sync physical receipt, then authenticated Edge exact Prism Route 3D search, create if zero and authorized, capture local Identity; no CAS without explicit approval.",
       "factory_ci_run_id": 40520641316,
       "factory_ci_conclusion": "SUCCESS",
       "dispatch_guard_pr": {
@@ -308,11 +308,11 @@
         "head_sha": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
         "ci_run_id": 40640963381,
         "ci_conclusion": "SUCCESS",
-        "identity_status": "WAITING_USER_IDENTITY",
+        "identity_status": "LOCAL_PARTNER_CENTER_OPERATOR_ACTIVE",
         "source_sha": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
         "request_id": "3d-prism-route-3d-15fdcb52e46e",
         "real_msix": "NOT_OBSERVED",
-        "local_qa": "DEFERRED_LOCAL_GATE",
+        "local_qa": "NOT_RUN__LOCAL_MODE_RESTORED",
         "factory_export_run_id": 40640951915,
         "factory_export_artifact_id": 12795476435,
         "factory_export_zip_sha256": "76b5fae99491b70514e3152483e0192ac70b2909d8f6eeb9802a640ad12409b0",
@@ -374,8 +374,11 @@
     "store_submission": false,
     "identity_guessing": false,
     "openai_paid_api": false,
-    "identity_acquisition_automation": false,
-    "partner_center_access_by_36_minute_loop": false
+    "identity_acquisition_automation": true,
+    "partner_center_access_by_36_minute_loop": true,
+    "identity_acquisition_automation_scope": "LOCAL_OPERATOR_SCOPED_PRODUCT_CREATE_AND_IDENTITY_CAPTURE_ONLY__NO_STORE_SUBMISSION",
+    "partner_center_ui_control_available_in_current_runtime": false,
+    "partner_center_secrets_storage": false
   },
   "last_cross_lane_observation": {
     "observed_at_utc": "2026-10-28T04:39:00.641Z",
@@ -582,8 +585,8 @@
         "msix_builder": "store/build-msix.ps1"
       }
     },
-    "identity_discovery": "OUT_OF_SCOPE__USER_OBTAINS_OFFICIAL_IDENTITY",
-    "identity_authentication": "USER_RESPONSIBILITY__LOCAL_FILE_VALIDATION_NOT_CLOUD_AUTHENTICATION",
+    "identity_discovery": "SEPARATE_LOCAL_OPERATOR_ALLOWED_FOR_PRE_IDENTITY_READY__SCHEDULER_REMAINS_HANDOFF_ONLY",
+    "identity_authentication": "EXISTING_LOCAL_EDGE_SESSION_REQUIRED__NO_COOKIE_TOKEN_MFA_LOGGING__NOT_YET_OBSERVED",
     "identity_return": "NOT_APPLIED__WAITING_LOCAL_CHECK_ONLY_AND_EXPLICIT_CAS",
     "msix_build": "HOLD_APPROVED_STORE_VERSION_AND_BRAND_ASSETS_MISSING",
     "github_backlog": "CENTRAL_RETENTION_30_DAY_CONTRACT_PASS__REAL_PRODUCT_INTAKE_NOT_OBSERVED",
@@ -591,7 +594,7 @@
     "checker": "NOT_RUN_ON_REAL_MSIX",
     "gui_qa": "NOT_RUN",
     "e2e_pass": false,
-    "next_action": "PR19 received-state queue fix and GDK MSIXVC CAS handoff fix CI #40627554261 SUCCESS Windows/Ubuntu. Local Windows check-only, EXE SHA recheck, explicit approval still required.",
+    "next_action": "LOCAL_MODE restored; PR24 local operator contract CI pass. Physical exact-source receipt then Partner Center product creation/capture, independent existing scheduler validation, explicit CAS approval.",
     "security_fix": "REJECT_SYMLINKED_PRIVATE_PATH_ANCESTORS_AND_GIT_CHECK; OPERATOR_ONLY_STORE_IDENTITY_CANNOT_ADVANCE_TO_CAS_APPROVAL; VERSION_AND_BRAND_APPROVAL_ALONE_CANNOT_AUTHORIZE_MSIX; EXPLICIT_CAS_TARGETS_EXACT_GAME_REQUEST_OR_FAILS_CLOSED; DURABLE_PRE_CAS_INTENT_AND_STICKY_MANUAL_RECONCILIATION_PREVENT_UNCERTAIN_CAS_REPLAY; REJECT_WINDOWS_DIRECTORY_JUNCTION_PRIVATE_PATH_ANCESTORS; USER_MANAGED_IDENTITY_FILE_REQUIRED_BEFORE_CAS__SCHEMA_REFERENCE_BINDING_VALIDATION__NO_SECRET_IN_RECEIPT",
     "targeted_apply_routing": "FIXED_TESTED_22_PASS_WINDOWS_UBUNTU_CI",
     "user_managed_identity_gate": "USER_IDENTITY_RECEIVED_REGISTRY__LOCAL_VALIDATION_PENDING",
@@ -646,7 +649,7 @@
       "three_d_max_jobs": 1,
       "execution": "ONE_AT_A_TIME_LOCAL_ONLY__CLOUD_DRAFT_MULTI_JOB",
       "cas": "DELEGATED_NOT_APPLIED",
-      "identity_acquisition": "USER_ONLY",
+      "identity_acquisition": "SEPARATE_LOCAL_OPERATOR_ALLOWED__ROTATION_SCHEDULER_STILL_HANDOFF_ONLY",
       "previous_green_head": "97cfe12042fbf60b8ea0d66d2b7ed95edee3cf4f",
       "previous_green_ci_run_id": 40645674673,
       "latest_ci_run_id": 40651987339,
@@ -752,7 +755,8 @@
     "partner_center_product_created_pass": false,
     "partner_center_identity_capture_pass": false,
     "partner_center_identity_route_pass": false,
-    "local_operator_active": true
+    "local_operator_active": true,
+    "local_operator_contract_ci_pass": true
   },
   "user_id_requests": {
     "schema_version": 1,
@@ -841,7 +845,7 @@
       "3d-prism-route-3d-15fdcb52e46e"
     ]
   },
-  "classification": "LOCAL_MODE_RESTORED__3D_LOCAL_OPERATOR_ACTIVE_NOT_CREATED__SIGNAL_IDENTITY_RECEIVED_NOT_CAS__APP_NOT_PROMOTED__E2E_HOLD",
+  "classification": "LOCAL_MODE_RESTORED__LOCAL_OPERATOR_CONTRACT_CI_PASS__PRISM_PRODUCT_NOT_CREATED__LOCAL_SYNC_UNVERIFIED__E2E_HOLD",
   "registration_router": {
     "schema_version": 1,
     "status": "WINDOWS_UBUNTU_CI_PASS__LOCAL_GATE_DEFERRED",
@@ -1077,7 +1081,7 @@
   },
   "partner_center_local_operator": {
     "schema_version": 1,
-    "mode": "LOCAL_OPERATOR_ACTIVE__PHYSICAL_UI_NOT_ACCESSED_IN_THIS_RUN",
+    "mode": "LOCAL_OPERATOR_ACTIVE__CONTRACT_CI_PASS__PHYSICAL_UI_NOT_ACCESSED",
     "product": "Prism Route 3D",
     "slug": "prism-route-3d",
     "request_id": "3d-prism-route-3d-15fdcb52e46e",
@@ -1089,7 +1093,7 @@
     "exact_display_name": "Prism Route 3D",
     "allow_local_product_creation": true,
     "search_zero_results": "USER_REPORTED__NOT_INDEPENDENTLY_VERIFIED",
-    "product_creation_status": "PARTNER_CENTER_PRODUCT_NOT_CREATED__NOT_VERIFIED",
+    "product_creation_status": "PARTNER_CENTER_PRODUCT_NOT_CREATED__USER_REPORTED_ZERO_RESULTS__NOT_VERIFIED",
     "identity_capture_status": "NOT_CAPTURED",
     "identity_route_status": "NOT_ROUTED",
     "cas_status": "NOT_APPLIED",
@@ -1123,6 +1127,23 @@
       "CREDENTIAL_COOKIE_TOKEN_SESSION_LOGGING",
       "UNAPPROVED_CAS"
     ],
-    "next_action": "On physical Windows run exact-source sync; then use existing authenticated Edge session for exact Partner Center search and allowed creation. Do not infer success without Overview one exact match and identity details bound to local receipt."
+    "next_action": "PR24 contract-only CI PASS. On physical Windows run PR23 source sync, verify exact snapshot, then existing authenticated Edge exact product search/create/capture; browser driver not implemented or accessed in this run.",
+    "contract": {
+      "draft_pr": 24,
+      "branch": "codex/local-partner-center-operator-gate-20261028",
+      "head_sha": "2c65d822f9e609e7cb2e75aed2f47100f2a1c154",
+      "stacked_on_pr": 23,
+      "entrypoint": "python -m scripts.local_partner_center_operator",
+      "contract_ci_run_id": 40659686866,
+      "contract_ci_conclusion": "SUCCESS_WINDOWS_UBUNTU",
+      "offline_qa_success_run_id": 40659686461,
+      "offline_qa_second_run_id": 40659704029,
+      "offline_qa_second_run_status": "IN_PROGRESS_AT_LAST_CHECK",
+      "scope": "PREPARE_AND_VALIDATE_LOCAL_RECEIPTS_ONLY__NO_BROWSER_DRIVER_OR_PRODUCT_CREATE_YET",
+      "physical_local_execution": "NOT_OBSERVED",
+      "user_pc_local_code_sync_receipt": "NOT_OBSERVED",
+      "browser_ui_control": "NOT_AVAILABLE_IN_THIS_RUNTIME",
+      "next_implementation": "CONNECT_APPROVED_LOCAL_BROWSER_OPERATOR_TO_PREPARED_JOB_AND_CAPTURE_RECEIPT_WITHOUT_SECRETS"
+    }
   }
 }
