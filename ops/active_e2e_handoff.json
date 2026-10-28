@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T22:41:17.691Z",
+  "updated_at_utc": "2026-10-28T23:35:53.183Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -814,7 +814,12 @@
     "batch4_independent_success_evidence_guard_code_committed": true,
     "batch4_independent_success_evidence_guard_ci_pass": true,
     "batch4_independent_evidence_worker_integrated": false,
-    "batch4_positive_success_from_untrusted_json_allowed": false
+    "batch4_positive_success_from_untrusted_json_allowed": false,
+    "batch4_artifact_expiry_guard_code_committed": true,
+    "batch4_artifact_expiry_guard_ci_pass": true,
+    "batch4_artifact_metadata_live_recheck_pass": true,
+    "batch4_local_artifact_download_verified": false,
+    "batch4_physical_local_pass": false
   },
   "user_id_requests": {
     "schema_version": 1,
@@ -1888,8 +1893,8 @@
     "store_submission": 0,
     "package_upload": 0,
     "package_version_gate": "HOLD",
-    "status": "CLOUD_DISCOVER_4_OF_4_PASS__PR39_AND_APP_PR12_CI_GREEN__LOCAL_BATCH_NOT_STARTED",
-    "preflight_evidence": "FOUR_FACTORY_BRANCHES_IDENTICAL_TO_PINNED_SOURCE_SHA_RECHECKED_THIS_RUN__WINDOWS_PR37_AND_APP_PR12_CI_GREEN__NO_USER_PC_LOCAL_RECEIPT",
+    "status": "CLOUD_DISCOVER_4_OF_4_PASS__PR40_CI_GREEN__LOCAL_BATCH_NOT_STARTED",
+    "preflight_evidence": "FOUR_FACTORY_BRANCH_HEADS_EXACT_MATCH__FOUR_GITHUB_ACTIONS_ARTIFACTS_UNEXPIRED_DIGEST_MATCH__PR40_WINDOWS_UBUNTU_CI_GREEN__NO_USER_PC_LOCAL_RECEIPT",
     "code_contracts": {
       "windows_all_auto_pr": 33,
       "windows_all_auto_head": "019eca325eae5f36f160af287482da4e666b5b49",
@@ -1980,6 +1985,25 @@
         "trusted_local_worker": "NOT_IMPLEMENTED",
         "real_cas": "NOT_PERFORMED",
         "store_submission": 0
+      },
+      "windows_all_auto_artifact_expiry_guard": {
+        "draft_pr": 40,
+        "branch": "codex/e2e-batch4-artifact-expiry-gate-20261029",
+        "head_sha": "343ada63bc37e104393ad4cfd7d8512cdcfa34f8",
+        "stacked_on_pr": 39,
+        "contract_ci_run_id": 40788377809,
+        "contract_ci_status": "SUCCESS_WINDOWS_UBUNTU",
+        "offline_qa_run_id": 40788377832,
+        "offline_qa_status": "SUCCESS_WINDOWS_UBUNTU",
+        "changes": [
+          "DISCOVER_REJECTS_MISSING_MALFORMED_EXPIRED_FACTORY_ARTIFACT_EXPIRY",
+          "PERSISTS_ARTIFACT_EXPIRES_AT_IN_JOB",
+          "HISTORICAL_CI_CLOCK_FIXED_PRODUCTION_CLOCK_LIVE"
+        ],
+        "physical_local_execution": "NOT_OBSERVED",
+        "identity_capture": "NOT_PERFORMED",
+        "cas": "NOT_PERFORMED",
+        "store_submission": 0
       }
     },
     "products": [
@@ -2008,7 +2032,9 @@
         "identity_return_commit_sha": null,
         "package_version_gate": "HOLD",
         "store_submission": "NOT_PERFORMED",
-        "error_code": "LOCAL_BATCH_NOT_STARTED"
+        "error_code": "LOCAL_BATCH_NOT_STARTED",
+        "artifact_live_metadata_status": "GITHUB_ACTIONS_ARTIFACT_PRESENT_UNEXPIRED_DIGEST_MATCH",
+        "artifact_live_metadata_checked_at_utc": "2026-10-28T23:35:53.183Z"
       },
       {
         "batch_index": 2,
@@ -2035,7 +2061,9 @@
         "identity_return_commit_sha": null,
         "package_version_gate": "HOLD",
         "store_submission": "NOT_PERFORMED",
-        "error_code": "LOCAL_BATCH_NOT_STARTED"
+        "error_code": "LOCAL_BATCH_NOT_STARTED",
+        "artifact_live_metadata_status": "GITHUB_ACTIONS_ARTIFACT_PRESENT_UNEXPIRED_DIGEST_MATCH",
+        "artifact_live_metadata_checked_at_utc": "2026-10-28T23:35:53.183Z"
       },
       {
         "batch_index": 3,
@@ -2062,7 +2090,9 @@
         "identity_return_commit_sha": null,
         "package_version_gate": "HOLD",
         "store_submission": "NOT_PERFORMED",
-        "error_code": "LOCAL_BATCH_NOT_STARTED"
+        "error_code": "LOCAL_BATCH_NOT_STARTED",
+        "artifact_live_metadata_status": "GITHUB_ACTIONS_ARTIFACT_PRESENT_UNEXPIRED_DIGEST_MATCH",
+        "artifact_live_metadata_checked_at_utc": "2026-10-28T23:35:53.183Z"
       },
       {
         "batch_index": 4,
@@ -2089,36 +2119,78 @@
         "identity_return_commit_sha": null,
         "package_version_gate": "HOLD",
         "store_submission": "NOT_PERFORMED",
-        "error_code": "LOCAL_BATCH_NOT_STARTED"
+        "error_code": "LOCAL_BATCH_NOT_STARTED",
+        "artifact_live_metadata_status": "GITHUB_ACTIONS_ARTIFACT_PRESENT_UNEXPIRED_DIGEST_MATCH",
+        "artifact_live_metadata_checked_at_utc": "2026-10-28T23:35:53.183Z"
       }
     ],
     "next_action": "PR39 and APP PR12 CI green. Build and independently attest a trusted Windows UI/CAS evidence verifier and host schedule-to-local trigger; physical exact-source sync before any product creation or CAS. Four jobs stay queued, one at a time. Package Version HOLD, Store submission 0.",
     "cloud_discover_contract_run_id": 40728641133,
     "cloud_discover_contract_ci": "SUCCESS_WINDOWS_UBUNTU",
     "cloud_discover_from_pinned_central_commit": "0fe4dc510b37b0574f96d13bc95ade6ef1635032",
-    "cloud_discover_status": "BATCH_DISCOVERED_4_IN_GITHUB_ACTIONS_WINDOWS_AND_UBUNTU__NOT_LOCAL_PC"
+    "cloud_discover_status": "BATCH_DISCOVERED_4_IN_GITHUB_ACTIONS_WINDOWS_AND_UBUNTU__NOT_LOCAL_PC",
+    "artifact_live_recheck": {
+      "observed_at_utc": "2026-10-28T23:35:53.183Z",
+      "source_branch_head_match_count": 4,
+      "artifact_metadata_match_count": 4,
+      "artifact_unexpired_count": 4,
+      "physical_download_and_exe_recheck": "NOT_PERFORMED_THIS_RUN",
+      "artifacts": [
+        {
+          "product": "Focus Session Desk",
+          "request_id": "app-focus-session-desk-8b00bc4e9082",
+          "source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+          "artifact_id": 12807496604,
+          "artifact_sha256": "06189361745a9cc175f1fe5bde27d758b71518ac1d2e955436939e3e7ed2a04d",
+          "expires_at": "2026-11-02T10:02:58Z"
+        },
+        {
+          "product": "File Integrity Ledger",
+          "request_id": "app-file-integrity-ledger-d1108d12f7d1",
+          "source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
+          "artifact_id": 12826068537,
+          "artifact_sha256": "c4c1f299318cf182d3d04773284990e55e270c25de28f4b8eb3baf7895548b88",
+          "expires_at": "2026-11-02T15:04:16Z"
+        },
+        {
+          "product": "Offline Text Diff Desk",
+          "request_id": "app-offline-text-diff-desk-a7d372800898",
+          "source_sha": "a7d37280089893a9ea4b9ac3336020a920e73e0c",
+          "artifact_id": 12815845218,
+          "artifact_sha256": "cfbbb12690915b2ac0d8be0bfa690ea347e6912f7737bf64473140f125ed937b",
+          "expires_at": "2026-11-02T12:15:44Z"
+        },
+        {
+          "product": "Offline Image Inventory Desk",
+          "request_id": "app-offline-image-inventory-desk-16b6a772952c",
+          "source_sha": "16b6a772952ca0988f2ae2f8b5f4db2e59ec5877",
+          "artifact_id": 12817339804,
+          "artifact_sha256": "3b5776497126a6e5db8ea23ff7c7c4103d0bdccdbfe16cc24116beb44dd371ca",
+          "expires_at": "2026-11-02T13:05:55Z"
+        }
+      ]
+    }
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-28T22:41:17.691Z",
-    "scope": "APP_BATCH4_SUCCESS_EVIDENCE_TRUST_BOUNDARY_IMPLEMENTATION",
+    "observed_at_utc": "2026-10-28T23:35:53.183Z",
+    "scope": "APP_BATCH4_FACTORY_ARTIFACT_EXPIRY_PRECHECK_AND_FAIL_CLOSED_IMPLEMENTATION",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
-    "implementation_branch": "codex/e2e-batch4-trusted-evidence-gate-20261029",
-    "implementation_pr": 39,
-    "implementation_head_sha": "020655ea886c082cc8759c042a784a8dbf43b85e",
-    "stacked_on_pr": 37,
+    "implementation_branch": "codex/e2e-batch4-artifact-expiry-gate-20261029",
+    "implementation_pr": 40,
+    "implementation_head_sha": "343ada63bc37e104393ad4cfd7d8512cdcfa34f8",
+    "stacked_on_pr": 39,
     "changes": [
-      "Batch complete rejects even fully populated self-asserted authenticated UI, CAS and replay JSON without independent trusted local verifier",
-      "CLI intentionally has no verifier and cannot increment success_count from operator JSON",
-      "False/exceptional verifier and forged receipt regressions added",
-      "Version gate and Store submission unchanged"
+      "Four live Factory branch HEADs matched pinned source SHA",
+      "Four GitHub Actions artifacts present and unexpired with exact ZIP digests",
+      "Batch discovery now rejects missing, malformed or expired artifact expiry metadata before local operator",
+      "Two regression tests added; historical pinned CI clock separated from production UTC"
     ],
-    "ci_run_id": 40781765589,
+    "ci_run_id": 40788377809,
     "ci_status": "SUCCESS_WINDOWS_UBUNTU",
-    "offline_qa_run_id": 40781765592,
-    "offline_qa_status": "SUCCESS",
-    "app_provisioner_pr": 12,
-    "app_provisioner_ci": "SUCCESS_WINDOWS_UBUNTU",
+    "offline_qa_run_id": 40788377832,
+    "offline_qa_status": "SUCCESS_WINDOWS_UBUNTU",
     "cloud_pre_identity_discovered": 4,
+    "live_artifact_metadata_unexpired": 4,
     "local_code_sync": "NOT_OBSERVED_ON_USER_PC",
     "scheduled_trigger_to_local": "BATCH_SCHEDULE_TRIGGER_NOT_PROVEN",
     "partner_center_product": "NOT_OBSERVED_FOR_BATCH4",
@@ -2136,6 +2208,6 @@
     "next_resume_index": 1,
     "store_submission": 0,
     "no_main_release_merge": true,
-    "note": "PR39 CI green proves offline fail-closed code contract only; no trusted physical Windows UI worker, schedule-to-local attestation, batch CAS or Store package evidence."
+    "next_action": "Trusted independent Windows UI/CAS verifier and host schedule attestation remain missing; physical exact-source sync and artifact download before any product creation. Run serially. Artifact expirations begin 2026-11-02 UTC."
   }
 }
