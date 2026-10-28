@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T09:40:00Z",
+  "updated_at_utc": "2026-10-28T09:42:00Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -758,7 +758,7 @@
     "local_operator_active": true,
     "local_operator_contract_ci_pass": true,
     "github_origin_rotation_contract_code_committed": true,
-    "github_origin_rotation_contract_ci_pass": false,
+    "github_origin_rotation_contract_ci_pass": true,
     "github_to_local_rotation_pass": false,
     "prism_manual_identity_reference_observed": true
   },
@@ -1148,7 +1148,7 @@
       "physical_local_execution": "NOT_OBSERVED",
       "user_pc_local_code_sync_receipt": "NOT_OBSERVED",
       "browser_ui_control": "NOT_AVAILABLE_IN_THIS_RUNTIME",
-      "next_implementation": "PR26 GitHub-origin receipt and manual oracle code committed; physical UI driver and local execution not observed"
+      "next_implementation": "PR26 GitHub-origin and manual-reference contract CI PASS Windows/Ubuntu; physical Edge capture and user-PC execution not observed"
     },
     "manual_reference": {
       "basis": "LOCAL_OPERATOR_MANUAL_REFERENCE",
@@ -1166,7 +1166,7 @@
       "head_sha": "9a6f7e81028e71bc89755e832b7fcd7343cd5044",
       "base_draft_pr": 24,
       "entrypoint": "python -m scripts.github_partner_center_handoff",
-      "contract_ci": "PENDING",
+      "contract_ci": "SUCCESS_WINDOWS_UBUNTU",
       "physical_execution": "NOT_OBSERVED",
       "queue_job_origin_required": "GITHUB_PRE_IDENTITY_QUEUE",
       "required_evidence": [
@@ -1186,7 +1186,9 @@
       "duplicate_product_creation": "FORBIDDEN",
       "identity_capture": "NOT_OBSERVED",
       "cas": "NOT_APPLIED",
-      "store_submission": "NOT_AUTHORIZED"
+      "store_submission": "NOT_AUTHORIZED",
+      "ci_run_id": 40666038920,
+      "ci_url": "https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/40666038920"
     }
   }
 }
