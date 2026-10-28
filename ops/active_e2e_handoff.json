@@ -1874,7 +1874,7 @@
     "package_upload": 0,
     "package_version_gate": "HOLD",
     "status": "CLOUD_DISCOVER_4_OF_4_PASS__CRASH_RESUME_CI_GREEN__LOCAL_BATCH_NOT_STARTED",
-    "preflight_evidence": "GITHUB_BRANCH_HEAD_MATCH_4__ARTIFACT_ZIP_DIGEST_MATCH_4__EXTRACTED_EXE_SHA256_BYTES_MATCH_4",
+    "preflight_evidence": "GITHUB_BRANCH_HEAD_MATCH_4_RECHECKED_20261029__ARTIFACT_ZIP_DIGEST_MATCH_4_PREVIOUSLY_VERIFIED__EXTRACTED_EXE_SHA256_BYTES_MATCH_4_PREVIOUSLY_VERIFIED",
     "code_contracts": {
       "windows_all_auto_pr": 33,
       "windows_all_auto_head": "019eca325eae5f36f160af287482da4e666b5b49",
@@ -2048,6 +2048,38 @@
     "store_submission": 0,
     "no_main_release_merge": true,
     "offline_qa_run_id": 40747452140,
-    "offline_qa_status": "SUCCESS_WINDOWS_UBUNTU"
+    "offline_qa_status": "SUCCESS_WINDOWS_UBUNTU",
+    "github_factory_exact_source_heads_verified": 4,
+    "github_factory_source_compare": "FOUR_BRANCHES_IDENTICAL_TO_PINNED_SOURCE_SHA__AHEAD_0_BEHIND_0",
+    "github_factory_source_heads": [
+      {
+        "slug": "focus-session-desk",
+        "source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+        "compare_status": "identical",
+        "ahead_by": 0,
+        "behind_by": 0
+      },
+      {
+        "slug": "file-integrity-ledger",
+        "source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
+        "compare_status": "identical",
+        "ahead_by": 0,
+        "behind_by": 0
+      },
+      {
+        "slug": "offline-text-diff-desk",
+        "source_sha": "a7d37280089893a9ea4b9ac3336020a920e73e0c",
+        "compare_status": "identical",
+        "ahead_by": 0,
+        "behind_by": 0
+      },
+      {
+        "slug": "offline-image-inventory-desk",
+        "source_sha": "16b6a772952ca0988f2ae2f8b5f4db2e59ec5877",
+        "compare_status": "identical",
+        "ahead_by": 0,
+        "behind_by": 0
+      }
+    ]
   }
 }
