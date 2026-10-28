@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T09:42:00Z",
+  "updated_at_utc": "2026-10-28T09:46:00Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -758,9 +758,10 @@
     "local_operator_active": true,
     "local_operator_contract_ci_pass": true,
     "github_origin_rotation_contract_code_committed": true,
-    "github_origin_rotation_contract_ci_pass": true,
+    "github_origin_rotation_contract_ci_pass": false,
     "github_to_local_rotation_pass": false,
-    "prism_manual_identity_reference_observed": true
+    "prism_manual_identity_reference_observed": true,
+    "three_d_identity_route_compatible": false
   },
   "user_id_requests": {
     "schema_version": 1,
@@ -831,7 +832,7 @@
         "registration_type": "MSIX_OR_PWA_GAME",
         "partner_center_selection": "MSIX or PWA game",
         "version_separate": true,
-        "next_gate": "PHYSICAL_CODE_SYNC__GITHUB_QUEUE_ORIGIN__EXISTING_PRODUCT_EXACT_ONE__AUTO_CAPTURE_ORACLE_MATCH__IDENTITY_ROUTE__EXPLICIT_CAS",
+        "next_gate": "PHYSICAL_CODE_SYNC__GITHUB_ORIGIN__EXISTING_PRODUCT_AUTO_CAPTURE__THEN_HOLD_3D_ROUTER_SCHEMA_UNTIL_RECONCILED",
         "user_manual_identity_entry_required": false,
         "allow_local_product_creation": false,
         "partner_center_product_status": "EXISTING_PRODUCT_MANUALLY_OBSERVED__AUTOMATED_CAPTURE_PENDING",
@@ -1163,10 +1164,10 @@
     "github_origin_handoff": {
       "draft_pr": 26,
       "branch": "codex/github-origin-existing-prism-operator-20261028",
-      "head_sha": "9a6f7e81028e71bc89755e832b7fcd7343cd5044",
+      "head_sha": "7a4367095d36e465d65d0594a26935874d40e29d",
       "base_draft_pr": 24,
       "entrypoint": "python -m scripts.github_partner_center_handoff",
-      "contract_ci": "SUCCESS_WINDOWS_UBUNTU",
+      "contract_ci": "PRIOR_HEAD_SUCCESS__LATEST_CI_PENDING",
       "physical_execution": "NOT_OBSERVED",
       "queue_job_origin_required": "GITHUB_PRE_IDENTITY_QUEUE",
       "required_evidence": [
@@ -1189,6 +1190,25 @@
       "store_submission": "NOT_AUTHORIZED",
       "ci_run_id": 40666038920,
       "ci_url": "https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/40666038920"
+    },
+    "handoff_compatibility": {
+      "scheduler_3d_job_supported": false,
+      "scheduler_observed_kinds": [
+        "STORE_KNOWN_GOOD",
+        "GAME_SIGNAL_SPRINT",
+        "APP_CANARY"
+      ],
+      "provisioner_3d_requires": [
+        "authenticated_account",
+        "official_evidence_url",
+        "verified_at",
+        "version"
+      ],
+      "identity_capture_fields_seven_only": true,
+      "version_approval_separate": true,
+      "identity_route": "HOLD_3D_SCHEDULER_UNSUPPORTED_AND_VERSION_SCHEMA_UNRECONCILED",
+      "cas": "NOT_APPLIED",
+      "owner_next_action": "Coordinate reviewed GAME_3D single-writer route and separately approved Version evidence; do not invent fields or run CAS"
     }
   }
 }
