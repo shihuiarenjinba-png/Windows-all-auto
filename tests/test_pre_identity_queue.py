@@ -56,6 +56,49 @@ class PreIdentityQueueTests(unittest.TestCase):
         self.assertEqual(result["deferred"][0]["status"], "NOT_YET_REQUIRED")
         self.assertNotIn("store_id", str(result))
 
+    def test_received_game_identity_still_queues_without_cas(self):
+        data = fixture()
+        data["user_id_requests"]["items"][0]["status"] = "USER_IDENTITY_RECEIVED"
+        result = q.project(data, head_reader)
+        self.assertEqual(len(result["jobs"]), 1)
+        self.assertEqual(result["jobs"][0]["request_id"], RID)
+        self.assertFalse(result["ready_for_cas"])
+        self.assertEqual(result["cas"], "DELEGATED_TO_EXISTING_PROVISIONER")
+
+    def test_received_game_identity_with_changed_binding_is_rejected(self):
+        data = fixture()
+        request = data["user_id_requests"]["items"][0]
+        request["status"] = "USER_IDENTITY_RECEIVED"
+        request["source_sha"] = "d" * 40
+        with self.assertRaisesRegex(q.QueueHold, "USER_ID_REQUEST_BINDING_MISMATCH"):
+            q.project(data, head_reader)
+
+    def test_received_promoted_app_identity_queues_without_cas(self):
+        data = fixture()
+        candidate = data["other_lanes"]["APP"]["canary_proposal"]
+        candidate.update({
+            "status": "PROMOTED", "source_sha": "d" * 40,
+            "request_id": "app-offline-notes-canary-20261028",
+            "exe_sha256": "e" * 64,
+            "branch": "codex/app-canary-offline-notes-20261027",
+        })
+        data["user_id_requests"]["items"].append({
+            "request_id": candidate["request_id"],
+            "status": "USER_IDENTITY_RECEIVED",
+            "repo": s.OWNER + "/AI-App-Factory",
+            "source_branch": candidate["branch"],
+            "source_sha": candidate["source_sha"],
+            "identity_target": "%LOCALAPPDATA%/FactoryIdentityWorker/secure/<request_id>/official-identity.json",
+        })
+        def app_head(repo, branch):
+            if repo == s.OWNER + "/AI-App-Factory":
+                return candidate["source_sha"]
+            return head_reader(repo, branch)
+        result = q.project(data, app_head)
+        self.assertEqual(len(result["jobs"]), 2)
+        self.assertEqual(result["jobs"][1]["kind"], "APP_CANARY")
+        self.assertFalse(result["ready_for_cas"])
+
     def test_changed_factory_head_is_conflict(self):
         def moved(repo, branch):
             return "d" * 40 if repo == GAME else PROVISIONER_SHA
