@@ -147,6 +147,16 @@ class MixedAuditTests(unittest.TestCase):
         with self.assertRaisesRegex(audit.AuditHold, "CROSS_PRODUCT_BINDING"):
             check(ledger, approved, artifacts)
 
+    def test_cross_lane_request_collision_holds(self):
+        ledger, approved, artifacts = fixture()
+        ledger["rotation_cohorts"]["three_d_jobs"] = [{
+            "product_type": "GAME_3D", "slug": "prism-route-3d",
+            "request_id": ledger["rotation_cohorts"]["app_jobs"][0]["request_id"],
+            "identity_return_target": "products/prism-route-3d/store/approved-identity.json",
+        }]
+        with self.assertRaisesRegex(audit.AuditHold, "CROSS_LANE_BINDING"):
+            check(ledger, approved, artifacts)
+
     def test_audit_entrypoint_never_calls_browser_or_local_cas(self):
         ledger, approved, artifacts = fixture()
         def fake_gh(endpoint, allow_missing=False):
