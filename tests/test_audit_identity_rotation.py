@@ -51,6 +51,7 @@ def fixture():
             }
         artifacts[job["factory_artifact_id"]] = {
             "expired": False, "name": job["factory_artifact_name"],
+            "expires_at": job["factory_artifact_expiry_utc"],
             "digest": "sha256:" + job["factory_artifact_zip_sha256"],
         }
         jobs.append(job)
@@ -138,6 +139,30 @@ class MixedAuditTests(unittest.TestCase):
             "2026-10-28T00:00:00Z"
         )
         with self.assertRaisesRegex(audit.AuditHold, "ARTIFACT_EXPIRED"):
+            check(ledger, approved, artifacts)
+
+    def test_remote_artifact_expiry_missing_holds_before_plan(self):
+        ledger, approved, artifacts = fixture()
+        artifacts[1002].pop("expires_at")
+        with self.assertRaisesRegex(audit.AuditHold, "ARTIFACT_EXPIRY_UNVERIFIED"):
+            check(ledger, approved, artifacts)
+
+    def test_remote_artifact_expiry_conflicts_with_queue(self):
+        ledger, approved, artifacts = fixture()
+        artifacts[1002]["expires_at"] = "2099-01-02T00:00:00Z"
+        with self.assertRaisesRegex(audit.AuditHold, "ARTIFACT_EXPIRY_CONFLICT"):
+            check(ledger, approved, artifacts)
+
+    def test_remote_artifact_expired_flag_holds(self):
+        ledger, approved, artifacts = fixture()
+        artifacts[1002]["expired"] = True
+        with self.assertRaisesRegex(audit.AuditHold, "ARTIFACT_MISMATCH"):
+            check(ledger, approved, artifacts)
+
+    def test_remote_artifact_malformed_timezone_holds(self):
+        ledger, approved, artifacts = fixture()
+        artifacts[1002]["expires_at"] = "2099-01-01T00:00:00"
+        with self.assertRaisesRegex(audit.AuditHold, "ARTIFACT_EXPIRY_UNVERIFIED"):
             check(ledger, approved, artifacts)
 
     def test_cross_product_duplicate_request_holds(self):
