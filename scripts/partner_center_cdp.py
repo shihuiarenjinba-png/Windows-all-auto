@@ -362,10 +362,10 @@ JSON.stringify((() => {
         self.safe_snapshot()  # authentication/host gate
         self._wait_not_busy()
         self.fill_textbox(["search", "search products", "search by product name"], display_name)
-        try:
-            self.click_exact(["Search"])
-        except PartnerCenterHold:
-            self.press_enter()
+        # A missing or ambiguous Search control is a HOLD.  The previous
+        # broad exception fallback sent Enter even after an ambiguous click
+        # failure, which could submit the wrong form on a changed UI.
+        self.click_exact(["Search"])
         self._wait_not_busy()
         return self.exact_product_count(display_name)
 
