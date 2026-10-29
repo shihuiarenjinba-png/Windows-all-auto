@@ -10,6 +10,53 @@ from scripts.partner_center_cdp import (
 
 
 class PartnerCenterReadinessTests(unittest.TestCase):
+    def test_open_identity_reuses_already_visible_identity(self):
+        page = CdpPage("target", None)
+        identity = {"store_id": "9P6452C61N7B"}
+        page._open_exact_product = MagicMock()
+        page._wait_not_busy = MagicMock()
+        page._identity_values = MagicMock(return_value=identity)
+        page.safe_snapshot = MagicMock(return_value={})
+        page.click_exact = MagicMock()
+
+        self.assertEqual(page.open_identity("Focus Session Desk"), identity)
+
+        page.click_exact.assert_not_called()
+        page._identity_values.assert_called_once_with("Focus Session Desk")
+
+    def test_open_identity_expands_only_when_values_are_not_visible(self):
+        page = CdpPage("target", None)
+        identity = {"store_id": "9P6452C61N7B"}
+        page._open_exact_product = MagicMock()
+        page._wait_not_busy = MagicMock()
+        page._identity_values = MagicMock(side_effect=[
+            PartnerCenterHold("HOLD_IDENTITY_DETAILS_AMBIGUOUS"), identity,
+        ])
+        page.safe_snapshot = MagicMock(return_value={})
+        page.click_exact = MagicMock(return_value="Toggle Product identity")
+
+        self.assertEqual(page.open_identity("Focus Session Desk"), identity)
+
+        page.click_exact.assert_called_once_with(["Toggle Product identity"])
+        self.assertEqual(page._identity_values.call_count, 2)
+
+    def test_open_identity_does_not_mask_post_toggle_load_hold(self):
+        page = CdpPage("target", None)
+        page._open_exact_product = MagicMock()
+        page._wait_not_busy = MagicMock(side_effect=[
+            None, PartnerCenterHold("HOLD_BROWSER_LOAD_TIMEOUT"),
+        ])
+        page._identity_values = MagicMock(
+            side_effect=PartnerCenterHold("HOLD_IDENTITY_DETAILS_AMBIGUOUS")
+        )
+        page.click_exact = MagicMock(return_value="Toggle Product identity")
+
+        with self.assertRaisesRegex(PartnerCenterHold,
+                                    "HOLD_BROWSER_LOAD_TIMEOUT"):
+            page.open_identity("Focus Session Desk")
+
+        page.click_exact.assert_called_once_with(["Toggle Product identity"])
+
     def test_product_creation_waits_for_exact_product_overview(self):
         page = CdpPage("target", None)
         state = json.dumps({

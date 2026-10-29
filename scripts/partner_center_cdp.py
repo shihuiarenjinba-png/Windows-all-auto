@@ -548,15 +548,22 @@ JSON.stringify((() => {
         self._open_exact_product(display_name)
         self._wait_not_busy()
         try:
-            self.click_exact(["Toggle Product identity"])
+            identity = self._identity_values(display_name)
+        except PartnerCenterHold as exc:
+            if str(exc) != "HOLD_IDENTITY_DETAILS_AMBIGUOUS":
+                raise
+            try:
+                self.click_exact(["Toggle Product identity"])
+            except PartnerCenterHold as click_exc:
+                if str(click_exc) != "HOLD_BROWSER_STATE_AMBIGUOUS":
+                    raise
+                self.click_exact([
+                    "View product identity", "Product identity", "Product Identity",
+                ])
             self._wait_not_busy()
-        except PartnerCenterHold:
-            self.click_exact([
-                "View product identity", "Product identity", "Product Identity",
-            ])
-            self._wait_not_busy()
+            identity = self._identity_values(display_name)
         self.safe_snapshot()
-        return self._identity_values(display_name)
+        return identity
 
 
 @dataclass(frozen=True)
