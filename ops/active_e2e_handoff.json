@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-29T19:38:58.320Z",
+  "updated_at_utc": "2026-10-29T20:43:38.559Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -2404,8 +2404,8 @@
     }
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-29T19:38:58.320Z",
-    "scope": "MIXED_RESUME_CENTRAL_HEAD_REBASE_PR58_WINDOWS_UBUNTU_CI_PASS__PHYSICAL_WINDOWS_NOT_RUN",
+    "observed_at_utc": "2026-10-29T20:43:38.559Z",
+    "scope": "MIXED_RESUME_LOCKED_HOST_CENTRAL_HEAD_REBASE_PR59_WINDOWS_UBUNTU_CI_PASS__PHYSICAL_WINDOWS_NOT_RUN",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
     "canonical_previous_blob_sha": "98d40cce07567e00657e895aeca2c44d2e47bf26",
@@ -2419,7 +2419,7 @@
     "ledger_identity_capture": "NOT_VERIFIED__APPROVED_FILE_404",
     "text_diff_identity_capture": "NOT_VERIFIED__APPROVED_FILE_404",
     "image_inventory_identity_capture": "NOT_VERIFIED__APPROVED_FILE_404",
-    "mixed_status_runner": "HOLD_AUTHENTICATED_MIXED_EXECUTOR_NOT_WIRED__PR57_PREPARE_ONLY",
+    "mixed_status_runner": "HOLD_AUTHENTICATED_MIXED_EXECUTOR_NOT_WIRED__PR59_PREPARE_ONLY",
     "local_code_sync": "NOT_RUN_THIS_CLOUD_EXECUTION",
     "partner_center_cdp": "NOT_RUN_THIS_CLOUD_EXECUTION",
     "cas": "NO_NEW_CAS_THIS_EXECUTION",
@@ -2432,7 +2432,7 @@
     "success_count_cloud_verified": 1,
     "remaining_app_identity_returns": 3,
     "next_resume_index": 2,
-    "next_action": "Wire PR58 verified monotonic rebase into the reviewed mixed Windows executor under existing OS lock and atomic writer, with independent authenticated UI+GitHub re-verification. Then run Ledger/Text/Image on real Windows, reconcile each return through central single writer, and hold at Package Version gate. No Task Scheduler registration or Store final submission before physical evidence.",
+    "next_action": "Wire independently verified authenticated UI+GitHub CAS replay into the mixed Windows executor; PR59 only prepares/rebases unchanged state and must not claim Identity capture. Then process Ledger/Text/Image serially on physical Windows, reconcile each exact approved-identity return through the central single writer, hold at Package Version, and separately verify MSIX/backlog/local pull/Checker/GUI. No Task Scheduler registration or Store submission without real host evidence.",
     "post_identity_reconcile_pr": 49,
     "post_identity_reconcile_ci_run": 40851883814,
     "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU",
@@ -2571,7 +2571,25 @@
     "mixed_resume_rebase_head": "0b58f7a2ee180035e5b388d5efc0d720f1e2d2cc",
     "mixed_resume_rebase_ci_run": 40941875394,
     "mixed_resume_rebase_ci": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
-    "mixed_resume_rebase_host": "PURE_CONTRACT_ONLY__AUTHENTICATED_MIXED_EXECUTOR_NOT_WIRED"
+    "mixed_resume_rebase_host": "PR59_HOST_PREPARE_ONLY__SAFE_PENDING_ACTIVE_AND_POST_SKIP_REBASE__LOCAL_SUCCESS_REQUIRES_INDEPENDENT_UI_GITHUB_VERIFIER",
+    "mixed_resume_host_rebase": {
+      "draft_pr": 59,
+      "branch": "codex/e2e-mixed-resume-host-rebase-20261030-0536",
+      "head_sha": "4fb2d287541999f426fe9a6fae0d3cc0027de4a6",
+      "base_pr": 58,
+      "offline_qa_run_id": 40951469301,
+      "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+      "scope": "OS_LOCKED_ATOMIC_CENTRAL_HEAD_REBASE_FOR_UNCHANGED_PENDING_ACTIVE_AND_GITHUB_POST_SKIP_ONLY",
+      "tests": "FOUR_NEW_HOST_REGRESSIONS__UNVERIFIED_RETURN_AND_PRE_TO_POST_PROMOTION_FAIL_CLOSED",
+      "execution": "CODE_AND_CI_ONLY__NOT_RUN_ON_USER_WINDOWS",
+      "local_partner_center": "NOT_ACCESSED",
+      "identity_capture": "NOT_PERFORMED",
+      "cas": "NOT_PERFORMED",
+      "real_msix": "NOT_BUILT",
+      "task_scheduler_registration": "HOLD",
+      "store_submission": "NOT_PERFORMED",
+      "next_gate": "INDEPENDENT_AUTHENTICATED_UI_PLUS_GITHUB_CAS_VERIFIER_AND_MIXED_EXECUTOR_ON_PHYSICAL_WINDOWS"
+    }
   },
   "post_identity_pipeline": {
     "schema_version": 1,
