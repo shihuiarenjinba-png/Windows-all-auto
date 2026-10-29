@@ -381,11 +381,10 @@ JSON.stringify((() => {
         self.click_exact([selection])
         self._wait_not_busy()
         self.fill_textbox(["product name", "name", "reserve a name"], display_name)
-        try:
-            self.click_exact(["Check availability"])
-            self._wait_not_busy()
-        except PartnerCenterHold:
-            pass
+        # The explicit availability action is mandatory. An absent or ambiguous
+        # control is a HOLD, not permission to reserve a product name.
+        self.click_exact(["Check availability"])
+        self._wait_not_busy()
         body_state = self.evaluate(r"""
 (() => {
  const text=String(document.body?.innerText||'').replace(/\s+/g,' ').toLowerCase();
@@ -485,6 +484,8 @@ class PartnerCenterDriver:
         name = str(job["display_name"])
         registration = job.get("registration_type")
         lane = job.get("product_type")
+        if not isinstance(registration, str) or not isinstance(lane, str):
+            raise PartnerCenterHold("HOLD_REGISTRATION_TYPE_UNRESOLVED")
         selection = REGISTRATION_LABELS.get(registration)
         if (selection is None or registration not in REGISTRATION_LANES.get(lane, set())
                 or job.get("partner_center_selection") != selection):
