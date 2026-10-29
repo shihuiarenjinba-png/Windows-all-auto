@@ -18,6 +18,7 @@ import zipfile
 
 from scripts import local_code_sync
 from scripts import audit_identity_rotation as rotation_audit
+from scripts import mixed_rotation_dispatch as rotation_plan
 from scripts import local_identity_batch as batch
 from scripts import local_partner_center_operator as operator
 from scripts.partner_center_cdp import (
@@ -443,14 +444,15 @@ def validate_existing_state(state: dict, spec: dict, central_head: str,
     return False
 
 
-def audit_queue_only(args) -> dict:
+def audit_queue_only(args, *, central_snapshot=None) -> dict:
     """Read-only GitHub audit; NEVER a local Identity, CAS, or scheduler PASS.
 
     Unlike the legacy four-PRE-Identity runner this can inspect a returned
     Focus Identity and three still-PRE products without treating the former
     as a new Partner Center product. No browser or local Windows required.
     """
-    ledger, central_head, _ = fetch_central()
+    ledger, central_head, _ = (central_snapshot if central_snapshot is not None
+                               else fetch_central())
 
     def fetch_approved(repository: str, target: str, source_branch: str):
         item = gh_json(
@@ -479,6 +481,15 @@ def audit_queue_only(args) -> dict:
     )
     recheck_central(central_head)
     return {**result, "central_head_sha": central_head}
+
+
+def plan_queue_only(args) -> dict:
+    """Read-only mixed-state plan; never runs the legacy four-PRE local worker."""
+    snapshot = fetch_central()
+    audit = audit_queue_only(args, central_snapshot=snapshot)
+    result = rotation_plan.build_dispatch_plan(snapshot[0], audit)
+    recheck_central(snapshot[1])
+    return {**result, "central_head_sha": snapshot[1]}
 
 
 def preflight_only(args) -> dict:
@@ -787,18 +798,21 @@ def main(argv: list[str] | None = None) -> int:
                         default="MANUAL_WINDOWS_TERMINAL")
     parser.add_argument("--preflight-only", action="store_true")
     parser.add_argument("--audit-queue", action="store_true")
+    parser.add_argument("--plan-queue", action="store_true")
     args = parser.parse_args(argv)
     try:
-        if args.audit_queue and args.preflight_only:
+        if sum((args.audit_queue, args.plan_queue, args.preflight_only)) > 1:
             raise RunnerHold("HOLD_CONFLICTING_READ_ONLY_MODES")
         result = (audit_queue_only(args) if args.audit_queue else
+                  plan_queue_only(args) if args.plan_queue else
                   preflight_only(args) if args.preflight_only else run_batch(args))
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0 if result.get("status") in {
             "LOCAL_WINDOWS_NO_LLM_AUTOMATION_PASS", "BATCH_PREFLIGHT_READY",
-            "MIXED_ROTATION_AUDITED"
+            "MIXED_ROTATION_AUDITED", "MIXED_ROTATION_DISPATCH_PLAN_READY"
         } else 2
-    except (RunnerHold, rotation_audit.AuditHold, batch.BatchHold, operator.OperatorHold,
+    except (RunnerHold, rotation_audit.AuditHold, rotation_plan.PlanHold,
+            batch.BatchHold, operator.OperatorHold,
             local_code_sync.SyncHold, PartnerCenterHold) as exc:
         code = exc.code if isinstance(exc, RunnerHold) else str(exc)
         result = {
@@ -808,7 +822,7 @@ def main(argv: list[str] | None = None) -> int:
             "store_submission": "NOT_PERFORMED",
             "ollama": "NOT_USED", "openai_api": "NOT_USED",
         }
-        if not args.audit_queue:
+        if not (args.audit_queue or args.plan_queue):
             try:
                 args.state_dir.mkdir(parents=True, exist_ok=True)
                 (args.state_dir / "last-hold-receipt.json").write_text(
