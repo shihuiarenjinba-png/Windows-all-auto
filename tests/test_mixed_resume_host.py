@@ -14,6 +14,7 @@ import json
 
 from scripts import run_local_partner_center_batch as host
 from scripts import mixed_batch_resume as resume
+from scripts import mixed_resume_rebase as rebase
 
 
 HEAD = "a" * 40
@@ -91,8 +92,10 @@ class MixedResumeHostTests(TestCase):
             execution_origin="MANUAL_WINDOWS_TERMINAL",
         )
 
-    def run_host(self, *, post=1, mutate=None, drift=False):
+    def run_host(self, *, post=1, mutate=None, drift=False,
+                 central_head=HEAD):
         ledger, plan, preflight = fixtures(post)
+        preflight["central_head_sha"] = central_head
         if mutate is not None:
             mutate(ledger, plan, preflight)
         heads = {j["source_branch"]: j["source_sha"]
@@ -103,7 +106,7 @@ class MixedResumeHostTests(TestCase):
             stack.enter_context(patch.object(
                 host, "preflight_mixed_local", return_value=preflight))
             stack.enter_context(patch.object(
-                host, "fetch_central", return_value=(ledger, HEAD, "b" * 40)))
+                host, "fetch_central", return_value=(ledger, central_head, "b" * 40)))
             stack.enter_context(patch.object(
                 host, "audit_queue_only", return_value={"status": "MOCK_AUDIT"}))
             stack.enter_context(patch.object(
@@ -177,6 +180,76 @@ class MixedResumeHostTests(TestCase):
                 resume.MixedResumeHold,
                 "HOLD_MIXED_RESUME_REPLAY_REQUIRES_INDEPENDENT_EVIDENCE"):
             self.run_host()
+
+
+    def test_new_central_head_rebases_only_unchanged_pending_jobs(self):
+        first = self.run_host()
+        self.assertFalse(first["central_rebase_applied"])
+        second = self.run_host(central_head="b" * 40)
+        self.assertTrue(second["central_rebase_applied"])
+        state = json.loads(Path(second["state_path"]).read_text())
+        self.assertEqual(state["central_head_sha"], "b" * 40)
+        self.assertEqual([x["status"] for x in state["products"]],
+                         ["SKIPPED_GITHUB_POST_VERIFIED"] + ["PENDING"] * 3)
+        self.assertFalse(second["local_windows_no_llm_pass"])
+        self.assertFalse(second["task_scheduler_registration_allowed"])
+        self.assertFalse(self.run_host(central_head="b" * 40)[
+            "central_rebase_applied"])
+
+    def test_rebase_rejects_unverified_pre_to_post_promotion(self):
+        first = self.run_host()
+        path = Path(first["state_path"])
+        before = path.read_bytes()
+        with self.assertRaisesRegex(rebase.RebaseHold,
+                                    "HOLD_REBASE_PENDING_CHANGED"):
+            self.run_host(post=2, central_head="b" * 40)
+        self.assertEqual(path.read_bytes(), before)
+
+    def test_rebase_refuses_locally_claimed_return_without_verifier(self):
+        first = self.run_host()
+        path = Path(first["state_path"])
+        state = json.loads(path.read_text())
+        entry = state["products"][1]
+        entry["status"] = "IDENTITY_RETURN_VERIFIED"
+        entry["result"] = {
+            **{key: entry[key] for key in (
+                "request_id", "source_sha", "identity_return_target",
+                "registration_type", "partner_center_selection",
+                "plan_job_digest")},
+            "github_return_status": "APPLIED",
+            "github_replay_status": "EXISTING_VERIFIED",
+            "identity_capture_status":
+                "IDENTITY_CAPTURED__AUTHENTICATED_UI__GITHUB_BOUND",
+            "identity_return_commit_sha": "c" * 40,
+            "store_id": "9PGZ445SR5GM",
+            "pfn": "OkinawaDesktopTools.FileIntegrityLedger_j8yefg9jgfh58",
+            "package_sid": "S-1-15-2-1-2-3-4-5-6-7",
+            "package_version_gate": "HOLD",
+            "store_submission": "NOT_PERFORMED",
+            "duplicate_creation": 0,
+            "cross_product_contamination": 0,
+        }
+        path.write_text(json.dumps(state), encoding="utf-8")
+        before = path.read_bytes()
+        with self.assertRaisesRegex(
+                rebase.RebaseHold, "HOLD_REBASE_INDEPENDENT_RETURN_EVIDENCE"):
+            self.run_host(post=2, central_head="b" * 40)
+        self.assertEqual(path.read_bytes(), before)
+
+    def test_rebase_preserves_single_active_pending_job(self):
+        first = self.run_host()
+        path = Path(first["state_path"])
+        state = json.loads(path.read_text())
+        state, claimed = resume.claim_next(state)
+        self.assertEqual(claimed["batch_index"], 2)
+        path.write_text(json.dumps(state), encoding="utf-8")
+        second = self.run_host(central_head="b" * 40)
+        rebased = json.loads(path.read_text())
+        self.assertTrue(second["central_rebase_applied"])
+        self.assertEqual(rebased["active_request_id"], claimed["request_id"])
+        self.assertEqual(rebased["products"][1]["status"], "ACTIVE")
+        self.assertEqual(resume.claim_next(rebased)[1]["request_id"],
+                         claimed["request_id"])
 
     def test_all_post_is_no_work_but_never_scheduler_pass(self):
         result = self.run_host(post=4)
