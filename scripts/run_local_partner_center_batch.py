@@ -21,6 +21,7 @@ from scripts import audit_identity_rotation as rotation_audit
 from scripts import mixed_rotation_dispatch as rotation_plan
 from scripts import mixed_artifact_expiry as artifact_expiry
 from scripts import mixed_batch_resume as mixed_resume
+from scripts import mixed_resume_rebase as mixed_rebase
 from scripts import local_identity_batch as batch
 from scripts import local_partner_center_operator as operator
 from scripts.partner_center_cdp import (
@@ -670,6 +671,7 @@ def prepare_mixed_resume_state(args) -> dict:
             raise RunnerHold("HOLD_MIXED_RESUME_PREFLIGHT_BINDING")
     state_dir = args.state_dir.resolve()
     state_path = state_dir / "mixed-resume-state.json"
+    rebase_applied = False
     with batch.state_lock(state_dir / "batch-state.json"):
         recheck_central(central_head)
         for item in pending:
@@ -678,10 +680,22 @@ def prepare_mixed_resume_state(args) -> dict:
                 raise RunnerHold("HOLD_CANONICAL_PRODUCT_REVISION_MISMATCH")
         if state_path.exists():
             state = operator.read_json(state_path, 512_000)
-            # No verifier is supplied: any forged or previously completed
-            # local success fails closed until the real mixed executor can
-            # independently re-observe UI and GitHub evidence.
-            mixed_resume.validate_replay(state, expected)
+            if state.get("central_head_sha") != central_head:
+                # The central single writer may advance HEAD for unrelated
+                # evidence. Rebase only unchanged PRE/verified POST entries.
+                # There is NO independent UI+GitHub return verifier in this
+                # preparation mode: a locally claimed successful return or
+                # name HOLD must fail closed, never be silently promoted.
+                state = mixed_rebase.rebase_after_reconciliation(
+                    state, plan, new_central_head_sha=central_head,
+                    execution_origin=args.execution_origin,
+                    independent_return_verifier=None,
+                )
+                recheck_central(central_head)
+                batch.atomic_write(state_path, state)
+                rebase_applied = True
+            else:
+                mixed_resume.validate_replay(state, expected)
         else:
             batch.atomic_write(state_path, expected)
             state = expected
@@ -691,6 +705,7 @@ def prepare_mixed_resume_state(args) -> dict:
         "status": "MIXED_RESUME_STATE_PREPARED",
         "central_head_sha": central_head,
         "state_path": str(state_path),
+        "central_rebase_applied": rebase_applied,
         "pre_identity_preflight_count": len(verified),
         "post_identity_skip_count": plan["post_identity_skip_count"],
         "local_windows_no_llm_pass": False,
@@ -1031,7 +1046,8 @@ def main(argv: list[str] | None = None) -> int:
             "MIXED_RESUME_STATE_PREPARED"
         } else 2
     except (RunnerHold, rotation_audit.AuditHold, rotation_plan.PlanHold,
-            mixed_resume.MixedResumeHold, batch.BatchHold, operator.OperatorHold,
+            mixed_resume.MixedResumeHold, mixed_rebase.RebaseHold,
+            batch.BatchHold, operator.OperatorHold,
             local_code_sync.SyncHold, PartnerCenterHold) as exc:
         code = exc.code if isinstance(exc, RunnerHold) else str(exc)
         result = {
