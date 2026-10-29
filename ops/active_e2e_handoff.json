@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-29T00:45:43.131Z",
+  "updated_at_utc": "2026-10-29T01:48:59.279Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -822,7 +822,9 @@
     "batch4_physical_local_pass": false,
     "batch4_schedule_origin_guard_code_committed": true,
     "batch4_schedule_origin_guard_ci_pass": true,
-    "batch4_product_level_name_unavailable_ci_pass": true
+    "batch4_product_level_name_unavailable_ci_pass": true,
+    "batch4_pre_download_expiry_guard_code_committed": true,
+    "batch4_pre_download_expiry_guard_ci_pass": true
   },
   "user_id_requests": {
     "schema_version": 1,
@@ -1896,7 +1898,7 @@
     "store_submission": 0,
     "package_upload": 0,
     "package_version_gate": "HOLD",
-    "status": "CLOUD_PREIDENTITY_4_OF_4__PR42_SERIAL_HOLD_AND_SCHEDULE_GUARDS_CI_GREEN__LOCAL_BATCH_NOT_STARTED",
+    "status": "CLOUD_PREIDENTITY_4_OF_4__PR43_EXPIRY_BEFORE_LOCAL_SIDE_EFFECTS_CI_GREEN__LOCAL_BATCH_NOT_STARTED",
     "preflight_evidence": "FOUR_FACTORY_BRANCH_HEADS_EXACT_MATCH__FOUR_GITHUB_ACTIONS_ARTIFACTS_UNEXPIRED_DIGEST_MATCH__PR40_WINDOWS_UBUNTU_CI_GREEN__NO_USER_PC_LOCAL_RECEIPT",
     "code_contracts": {
       "windows_all_auto_pr": 33,
@@ -2054,6 +2056,24 @@
         "host_schedule_attestation": "NOT_PROVEN",
         "cas": "NOT_PERFORMED",
         "store_submission": 0
+      },
+      "windows_all_auto_pre_download_expiry_guard": {
+        "draft_pr": 43,
+        "branch": "codex/e2e-batch4-preflight-order-20261029",
+        "head_sha": "ca3a0a1e66c03cfbf84b15f5938e9b108468abc7",
+        "base_pr": 42,
+        "contract_ci_run_id": 40802596692,
+        "offline_qa_run_id": 40802596688,
+        "ci_status": "SUCCESS_WINDOWS_UBUNTU",
+        "local_physical_execution": "NOT_OBSERVED",
+        "identity_capture": "NOT_PERFORMED",
+        "cas": "NOT_PERFORMED",
+        "store_submission": 0
+      },
+      "local_scheduler_registration_gate": {
+        "status": "HOLD_CIRCULAR_PASS_PRECONDITION",
+        "observed_issue": "register_local_partner_center_batch.ps1 requires MULTI_PRODUCT_IDENTITY_BATCH_PASS before registering the Task Scheduler job, while PR42 has no independent scheduled host attestor; do not weaken PASS gate without separate verified bootstrap design",
+        "no_registration_performed": true
       }
     },
     "products": [
@@ -2222,24 +2242,23 @@
     }
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-29T00:45:43.131Z",
-    "scope": "PR42_SCHEDULED_HOST_ATTESTATION_TRUST_BOUNDARY_AND_PARTIAL_RECEIPT",
+    "observed_at_utc": "2026-10-29T01:48:59.279Z",
+    "scope": "PR43_EXPIRED_FACTORY_ARTIFACT_PREFLIGHT_BEFORE_LOCAL_SIDE_EFFECTS",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
-    "implementation_branch": "codex/e2e-batch4-scheduled-proof-gate-20261029",
-    "implementation_pr": 42,
-    "implementation_head_sha": "577b23c4e7edd20fe762cc82755ce8d2e0f4a3d8",
-    "implementation_base_pr": 41,
+    "implementation_branch": "codex/e2e-batch4-preflight-order-20261029",
+    "implementation_pr": 43,
+    "implementation_head_sha": "ca3a0a1e66c03cfbf84b15f5938e9b108468abc7",
+    "implementation_base_pr": 42,
     "changes": [
-      "Removed false schedule PASS from Windows presence and caller-controlled execution_origin",
-      "Manual and manually started Windows task remain PARTIAL even if all four Identity/CAS returns are verified",
-      "Final local private receipt retains four sanitized product results and success/hold/next_resume_index on PARTIAL",
-      "Legacy manually claimed PASS state is rejected on restart",
-      "Added fail-closed negative tests and documentation",
-      "Confirmed name unavailable before Reserve is one product-level HOLD, next index advances without CAS",
-      "Final receipt now contains exact batch_id/trigger/started/completed and four product outcomes"
+      "Moved central Factory artifact expiry/schema discovery before local source sync and Artifact ZIP download",
+      "Reused the validated preflight state on first-run initialization instead of discovering after local side effects",
+      "Added negative regression proving expired Artifact HOLD before sync_sources and verify_artifact",
+      "Corrected initial test syntax failure and confirmed Windows/Ubuntu CI green",
+      "Confirmed four APP Identity return files still absent on their exact Factory source branches",
+      "No physical Windows Partner Center capture, CAS, scheduled host proof or real MSIX claimed"
     ],
-    "contract_ci_run_id": 40796082153,
-    "offline_qa_run_id": 40796082445,
+    "contract_ci_run_id": 40802596692,
+    "offline_qa_run_id": 40802596688,
     "ci_status": "SUCCESS_WINDOWS_UBUNTU",
     "cloud_pre_identity_discovered": 4,
     "local_code_sync": "NOT_OBSERVED_ON_USER_PC",
@@ -2259,6 +2278,6 @@
     "next_resume_index": 1,
     "store_submission": 0,
     "no_main_release_merge": true,
-    "next_action": "Physical Windows 4-product batch still 0/4. Run exact source/Artifact checks and sequential authenticated Identity capture/CAS; independent scheduled-host trigger proof is separate. Four Factory artifacts expire 2026-11-02 UTC."
+    "next_action": "Physical local batch remains 0/4. Exact source/EXE and independent authenticated UI capture/CAS required; scheduled-host attestation remains unimplemented. Review circular PASS prerequisite in local task registration without downgrading proof. Factory artifacts expire 2026-11-02 UTC."
   }
 }
