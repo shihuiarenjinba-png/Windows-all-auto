@@ -1,7 +1,7 @@
 """Regression tests for central-HEAD drift after an exact Identity CAS return."""
 from copy import deepcopy
 
-import pytest
+import unittest
 
 from scripts import mixed_batch_resume as resume
 from scripts import mixed_resume_rebase as rebase
@@ -94,108 +94,105 @@ def migrate(old, new, verifier=lambda old, result, fresh: True):
     )
 
 
-def test_verified_cas_becomes_immutable_post_skip_after_central_update():
-    previous = finish_first(old_state())
-    updated = migrate(previous, plan({"focus-session-desk"}))
-    assert updated["central_head_sha"] == NEW_HEAD
-    assert updated["products"][0]["status"] == "SKIPPED_GITHUB_POST_VERIFIED"
-    assert updated["products"][0]["result"] is None
-    assert [x["status"] for x in updated["products"][1:]] == ["PENDING"] * 3
-    assert updated["active_request_id"] is None
-    assert resume.summary(updated)["next_resume_index"] == 2
-    resume.validate_replay(
-        updated,
-        resume.initialize(plan({"focus-session-desk"}),
-                          central_head_sha=NEW_HEAD, execution_origin=ORIGIN),
-    )
-
-
-def test_post_cannot_be_claimed_without_previous_verified_return():
-    with pytest.raises(rebase.RebaseHold, match="HOLD_REBASE_PENDING_CHANGED"):
-        migrate(old_state(), plan({"focus-session-desk"}))
-
-
-def test_return_must_be_independently_reverified_not_receipt_only():
-    with pytest.raises(rebase.RebaseHold,
-                       match="HOLD_REBASE_INDEPENDENT_RETURN_EVIDENCE"):
-        migrate(finish_first(old_state()), plan({"focus-session-desk"}),
-                verifier=lambda old, result, fresh: False)
-
-
-def test_missing_verifier_never_promotes_a_local_result():
-    with pytest.raises(rebase.RebaseHold,
-                       match="HOLD_REBASE_INDEPENDENT_RETURN_EVIDENCE"):
-        migrate(finish_first(old_state()), plan({"focus-session-desk"}),
-                verifier=None)
-
-
-def test_tampered_result_binding_is_rejected_before_callback():
-    old = finish_first(old_state())
-    old["products"][0]["result"]["source_sha"] = "d" * 40
-    with pytest.raises(rebase.RebaseHold, match="HOLD_REBASE_RETURN_BINDING"):
-        migrate(old, plan({"focus-session-desk"}))
-
-
-def test_unreconciled_local_success_does_not_reenter_pre_queue():
-    with pytest.raises(rebase.RebaseHold,
-                       match="HOLD_REBASE_RETURN_NOT_RECONCILED"):
-        migrate(finish_first(old_state()), plan())
-
-
-def test_post_to_pre_downgrade_is_rejected():
-    old = old_state({"focus-session-desk"})
-    with pytest.raises(rebase.RebaseHold, match="HOLD_REBASE_POST_REGRESSION"):
-        migrate(old, plan())
-
-
-def test_pending_metadata_drift_fails_closed():
-    old = old_state()
-    fresh = plan()
-    fresh["products"][2]["source_branch"] = "codex/changed-source-branch"
-    with pytest.raises(rebase.RebaseHold, match="HOLD_REBASE_PENDING_CHANGED"):
-        migrate(old, fresh)
-
-
-def test_active_job_survives_unrelated_central_reconciliation():
-    old = old_state({"focus-session-desk"})
-    old, active = resume.claim_next(old)
-    assert active["batch_index"] == 2
-    new = migrate(old, plan({"focus-session-desk"}))
-    assert new["active_request_id"] == active["request_id"]
-    assert new["products"][1]["status"] == "ACTIVE"
-    assert resume.claim_next(new)[1]["request_id"] == active["request_id"]
-
-
-def test_multiple_active_requests_rejected():
-    old = old_state()
-    old["products"][0]["status"] = "ACTIVE"
-    old["products"][1]["status"] = "ACTIVE"
-    old["active_request_id"] = old["products"][0]["request_id"]
-    with pytest.raises(rebase.RebaseHold,
-                       match="HOLD_REBASE_CONCURRENT_ACTIVE"):
-        migrate(old, plan())
-
-
-def test_name_hold_needs_independent_evidence():
-    old = old_state()
-    old["products"][0]["status"] = "HOLD_NAME_UNAVAILABLE"
-    old["products"][0]["result"] = {
-        "error_code": "HOLD_NAME_UNAVAILABLE",
-        "store_submission": "NOT_PERFORMED",
-    }
-    with pytest.raises(rebase.RebaseHold,
-                       match="HOLD_REBASE_NAME_HOLD_UNVERIFIED"):
-        migrate(old, plan())
-    new = rebase.rebase_after_reconciliation(
-        old, plan(), new_central_head_sha=NEW_HEAD,
-        execution_origin=ORIGIN, independent_return_verifier=None,
-        independent_name_hold_verifier=lambda old: True,
-    )
-    assert new["products"][0]["status"] == "HOLD_NAME_UNAVAILABLE"
-
-
-def test_same_plan_idempotent_pending_rebase_does_not_grant_pass():
-    new = migrate(old_state(), plan())
-    assert new["products"][0]["status"] == "PENDING"
-    assert resume.summary(new)["local_windows_no_llm_pass"] is False
-    assert resume.summary(new)["task_scheduler_registration_allowed"] is False
+class RebaseTests(unittest.TestCase):
+    def test_verified_cas_becomes_immutable_post_skip_after_central_update(self):
+        previous = finish_first(old_state())
+        updated = migrate(previous, plan({"focus-session-desk"}))
+        assert updated["central_head_sha"] == NEW_HEAD
+        assert updated["products"][0]["status"] == "SKIPPED_GITHUB_POST_VERIFIED"
+        assert updated["products"][0]["result"] is None
+        assert [x["status"] for x in updated["products"][1:]] == ["PENDING"] * 3
+        assert updated["active_request_id"] is None
+        assert resume.summary(updated)["next_resume_index"] == 2
+        resume.validate_replay(
+            updated,
+            resume.initialize(plan({"focus-session-desk"}),
+                              central_head_sha=NEW_HEAD, execution_origin=ORIGIN),
+        )
+    
+    
+    def test_post_cannot_be_claimed_without_previous_verified_return(self):
+        with self.assertRaisesRegex(rebase.RebaseHold, "HOLD_REBASE_PENDING_CHANGED"):
+            migrate(old_state(), plan({"focus-session-desk"}))
+    
+    
+    def test_return_must_be_independently_reverified_not_receipt_only(self):
+        with self.assertRaisesRegex(rebase.RebaseHold, "HOLD_REBASE_INDEPENDENT_RETURN_EVIDENCE"):
+            migrate(finish_first(old_state()), plan({"focus-session-desk"}),
+                    verifier=lambda old, result, fresh: False)
+    
+    
+    def test_missing_verifier_never_promotes_a_local_result(self):
+        with self.assertRaisesRegex(rebase.RebaseHold, "HOLD_REBASE_INDEPENDENT_RETURN_EVIDENCE"):
+            migrate(finish_first(old_state()), plan({"focus-session-desk"}),
+                    verifier=None)
+    
+    
+    def test_tampered_result_binding_is_rejected_before_callback(self):
+        old = finish_first(old_state())
+        old["products"][0]["result"]["source_sha"] = "d" * 40
+        with self.assertRaisesRegex(rebase.RebaseHold, "HOLD_REBASE_RETURN_BINDING"):
+            migrate(old, plan({"focus-session-desk"}))
+    
+    
+    def test_unreconciled_local_success_does_not_reenter_pre_queue(self):
+        with self.assertRaisesRegex(rebase.RebaseHold, "HOLD_REBASE_RETURN_NOT_RECONCILED"):
+            migrate(finish_first(old_state()), plan())
+    
+    
+    def test_post_to_pre_downgrade_is_rejected(self):
+        old = old_state({"focus-session-desk"})
+        with self.assertRaisesRegex(rebase.RebaseHold, "HOLD_REBASE_POST_REGRESSION"):
+            migrate(old, plan())
+    
+    
+    def test_pending_metadata_drift_fails_closed(self):
+        old = old_state()
+        fresh = plan()
+        fresh["products"][2]["source_branch"] = "codex/changed-source-branch"
+        with self.assertRaisesRegex(rebase.RebaseHold, "HOLD_REBASE_PENDING_CHANGED"):
+            migrate(old, fresh)
+    
+    
+    def test_active_job_survives_unrelated_central_reconciliation(self):
+        old = old_state({"focus-session-desk"})
+        old, active = resume.claim_next(old)
+        assert active["batch_index"] == 2
+        new = migrate(old, plan({"focus-session-desk"}))
+        assert new["active_request_id"] == active["request_id"]
+        assert new["products"][1]["status"] == "ACTIVE"
+        assert resume.claim_next(new)[1]["request_id"] == active["request_id"]
+    
+    
+    def test_multiple_active_requests_rejected(self):
+        old = old_state()
+        old["products"][0]["status"] = "ACTIVE"
+        old["products"][1]["status"] = "ACTIVE"
+        old["active_request_id"] = old["products"][0]["request_id"]
+        with self.assertRaisesRegex(rebase.RebaseHold, "HOLD_REBASE_CONCURRENT_ACTIVE"):
+            migrate(old, plan())
+    
+    
+    def test_name_hold_needs_independent_evidence(self):
+        old = old_state()
+        old["products"][0]["status"] = "HOLD_NAME_UNAVAILABLE"
+        old["products"][0]["result"] = {
+            "error_code": "HOLD_NAME_UNAVAILABLE",
+            "store_submission": "NOT_PERFORMED",
+        }
+        with self.assertRaisesRegex(rebase.RebaseHold, "HOLD_REBASE_NAME_HOLD_UNVERIFIED"):
+            migrate(old, plan())
+        new = rebase.rebase_after_reconciliation(
+            old, plan(), new_central_head_sha=NEW_HEAD,
+            execution_origin=ORIGIN, independent_return_verifier=None,
+            independent_name_hold_verifier=lambda old: True,
+        )
+        assert new["products"][0]["status"] == "HOLD_NAME_UNAVAILABLE"
+    
+    
+    def test_same_plan_idempotent_pending_rebase_does_not_grant_pass(self):
+        new = migrate(old_state(), plan())
+        assert new["products"][0]["status"] == "PENDING"
+        assert resume.summary(new)["local_windows_no_llm_pass"] is False
+        assert resume.summary(new)["task_scheduler_registration_allowed"] is False
+    
