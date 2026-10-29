@@ -135,7 +135,8 @@ def _verify_remote_head(job: dict) -> None:
         raise SyncHold("REMOTE_HEAD_CONFLICT: source branch differs from pinned SHA")
 
 
-def _verify_existing(target: Path, job: dict) -> dict:
+def _verify_existing(target: Path, job: dict, *,
+                     verify_remote_head: bool = True) -> dict:
     if _unsafe_path(target):
         raise SyncHold("existing snapshot path is linked/junction")
     if _unsafe_path(target / ".git") or not (target / ".git").is_dir():
@@ -150,16 +151,23 @@ def _verify_existing(target: Path, job: dict) -> dict:
     expected_origin = "https://github.com/" + job["repository"] + ".git"
     if origin != expected_origin:
         raise SyncHold("existing snapshot origin mismatch")
-    _verify_remote_head(job)
+    if verify_remote_head:
+        _verify_remote_head(job)
     return {"status": "REUSED_EXACT_SNAPSHOT", "path": str(target)}
 
 
-def sync_one(root: Path, job: dict) -> dict:
+def sync_one(root: Path, job: dict, *,
+             verify_remote_head: bool = True) -> dict:
     repo_name = job["repository"].split("/", 1)[1]
     target = root / repo_name / job["source_sha"][:12]
     if target.exists():
-        result = _verify_existing(target, job)
+        result = _verify_existing(
+            target, job, verify_remote_head=verify_remote_head
+        )
         return {**job, **result}
+
+    if not verify_remote_head:
+        raise SyncHold("verified CAS resume requires existing exact snapshot")
 
     parent = target.parent
     if _unsafe_path(root) or (parent.exists() and _unsafe_path(parent)):

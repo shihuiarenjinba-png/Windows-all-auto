@@ -2,7 +2,7 @@
 from pathlib import Path
 import tempfile
 import unittest
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from scripts import local_partner_center_operator as op
 
@@ -88,10 +88,35 @@ class OperatorGateTests(unittest.TestCase):
             self.assertEqual(result["identity_return_target"], TARGET)
             self.assertFalse(result["browser_action_performed"])
 
+    def test_prepare_cas_resume_keeps_snapshot_check_without_remote_head(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            target = root / "AI-App-Factory" / SHA[:12]
+            target.mkdir(parents=True)
+            receipt = {"status": "PASS", "exact_sha_verified": True, "products": [{
+                "repository": REPO, "branch": BRANCH, "source_sha": SHA, "slug": SLUG,
+                "request_id": REQUEST, "status": "REUSED_EXACT_SNAPSHOT", "path": str(target),
+            }]}
+            verifier = MagicMock(return_value={"status": "REUSED_EXACT_SNAPSHOT"})
+            with patch.object(op.sync, "_verify_existing", verifier):
+                op.prepare(
+                    ledger(), receipt, root, SLUG,
+                    central_repository="shihuiarenjinba-png/Windows-all-auto",
+                    central_branch="codex/e2e-belt-connection-20261027",
+                    central_head_sha="a" * 40,
+                    verify_remote_head=False,
+                )
+            self.assertFalse(verifier.call_args.kwargs["verify_remote_head"])
+
     def test_product_values_are_read_from_job_not_prism_constants(self):
-        job = op.expected_job(ledger(), SLUG)
+        value = ledger()
+        job = op.expected_job(value, SLUG)
         self.assertEqual(job["display_name"], "Focus Session Desk")
         self.assertEqual(job["registration_type"], "MSIX_OR_PWA_APP")
+        self.assertEqual(
+            job["queue_job_digest"],
+            op.canonical_digest(value["rotation_cohorts"]["app_jobs"][0]),
+        )
 
     def test_cross_product_request_binding_rejected(self):
         value = ledger()
@@ -193,6 +218,8 @@ class OperatorGateTests(unittest.TestCase):
     def test_capture_produces_versionless_github_bound_receipt(self):
         result = op.validate_capture(ready_job(batch_id="batch", batch_index=1,
                                                batch_total=4, trigger_origin="SCHEDULED_36_MIN_LOOP",
+                                               dispatch_origin="CHATGPT_36_MIN_LOOP",
+                                               execution_origin="MANUAL_WINDOWS_TERMINAL",
                                                automation_id="6adf4b1e7654819193b997fb4fb83c85"), captured())
         self.assertFalse(result["authenticated_partner_center_pass"])
         self.assertEqual(result["status"], "IDENTITY_CAPTURED__OPERATOR_ATTESTED__GITHUB_BOUND")

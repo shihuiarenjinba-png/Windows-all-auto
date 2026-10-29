@@ -91,6 +91,27 @@ class LocalCodeSyncTests(unittest.TestCase):
                 self.assertEqual(s._verify_existing(target, job)["status"], "REUSED_EXACT_SNAPSHOT")
             self.assertEqual(run.call_count, 4)
 
+    def test_verified_cas_resume_reuses_only_existing_exact_snapshot(self):
+        with tempfile.TemporaryDirectory() as d:
+            job = s.load_jobs(self._manifest(d))[0]
+            target = Path(d) / "AI-App-Factory" / job["source_sha"][:12]
+            (target / ".git").mkdir(parents=True)
+            origin = "https://github.com/" + job["repository"] + ".git"
+            with patch.object(
+                    s, "_run", side_effect=[job["source_sha"], "", origin]) as run:
+                result = s._verify_existing(
+                    target, job, verify_remote_head=False
+                )
+            self.assertEqual(result["status"], "REUSED_EXACT_SNAPSHOT")
+            self.assertEqual(run.call_count, 3)
+
+    def test_verified_cas_resume_never_clones_missing_snapshot(self):
+        with tempfile.TemporaryDirectory() as d:
+            job = s.load_jobs(self._manifest(d))[0]
+            with self.assertRaisesRegex(s.SyncHold, "requires existing"):
+                s.sync_one(Path(d) / "sources", job,
+                           verify_remote_head=False)
+
     def test_reused_snapshot_rejects_git_directory_symlink(self):
         with tempfile.TemporaryDirectory() as d:
             job = s.load_jobs(self._manifest(d))[0]

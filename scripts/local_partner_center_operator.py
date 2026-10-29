@@ -37,6 +37,7 @@ CAPTURE_KEYS = set(JOB_BINDING + IDENTITY + EVIDENCE)
 LEGACY_CAPTURE_KEYS = set(BINDING + IDENTITY + EVIDENCE)
 BATCH_FIELDS = {
     "batch_id", "batch_index", "batch_total", "trigger_origin", "automation_id",
+    "dispatch_origin", "execution_origin",
 }
 
 
@@ -168,7 +169,11 @@ def expected_job(ledger: dict, slug: str) -> dict:
     if type(allow) is not bool:
         raise OperatorHold("LOCAL_OPERATOR_NOT_AUTHORIZED")
     job["allow_local_product_creation"] = allow
-    job["queue_job_digest"] = canonical_digest(source)
+    queue_source = {
+        key: value for key, value in source.items()
+        if key != "_inferred_product_type"
+    }
+    job["queue_job_digest"] = canonical_digest(queue_source)
     sync._normalize_job({
         "repository": job["source_repository"], "branch": job["source_branch"],
         "source_sha": job["source_sha"], "slug": job["slug"],
@@ -179,7 +184,8 @@ def expected_job(ledger: dict, slug: str) -> dict:
 
 def prepare(ledger: dict, receipt: dict, root: Path, slug: str | None = None, *,
             central_repository: str | None = None, central_branch: str | None = None,
-            central_head_sha: str | None = None, batch: dict | None = None) -> dict:
+            central_head_sha: str | None = None, batch: dict | None = None,
+            verify_remote_head: bool = True) -> dict:
     if slug is None:
         ready = [x for field in ("app_jobs", "three_d_jobs", "game_jobs")
                  for x in ledger.get("rotation_cohorts", {}).get(field, [])
@@ -191,6 +197,11 @@ def prepare(ledger: dict, receipt: dict, root: Path, slug: str | None = None, *,
     if batch is not None:
         if (set(batch) != BATCH_FIELDS
                 or batch.get("trigger_origin") != "SCHEDULED_36_MIN_LOOP"
+                or batch.get("dispatch_origin") != "CHATGPT_36_MIN_LOOP"
+                or batch.get("execution_origin") not in {
+                    "MANUAL_WINDOWS_TERMINAL", "WINDOWS_TASK_SCHEDULER",
+                    "WINDOWS_TASK_SCHEDULER_MANUAL_START",
+                }
                 or batch.get("automation_id") != "6adf4b1e7654819193b997fb4fb83c85"
                 or batch.get("batch_total") != 4
                 or type(batch.get("batch_index")) is not int
@@ -225,7 +236,7 @@ def prepare(ledger: dict, receipt: dict, root: Path, slug: str | None = None, *,
         sync._verify_existing(expected, {
             "repository": job["source_repository"], "branch": job["source_branch"],
             "source_sha": job["source_sha"],
-        })
+        }, verify_remote_head=verify_remote_head)
     except (sync.SyncHold, OSError) as exc:
         raise OperatorHold("LOCAL_CODE_SYNC_REVALIDATION_FAILED") from exc
     return {
@@ -329,6 +340,7 @@ def validate_capture(job: dict, captured: dict) -> dict:
         "store_submitted": False,
         **{key: job[key] for key in (
             "batch_id", "batch_index", "batch_total", "trigger_origin", "automation_id"
+            , "dispatch_origin", "execution_origin"
         ) if key in job},
     }
 

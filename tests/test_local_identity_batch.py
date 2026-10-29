@@ -1,4 +1,5 @@
 from copy import deepcopy
+from datetime import datetime, timezone
 import unittest
 
 from scripts import local_identity_batch as batch
@@ -16,6 +17,8 @@ def spec():
     return {
         "schema_version": 1, "batch_id": "batch-20261029-001",
         "trigger_origin": batch.TRIGGER_ORIGIN, "automation_id": batch.AUTOMATION_ID,
+        "dispatch_origin": batch.DISPATCH_ORIGIN,
+        "execution_origin": "MANUAL_WINDOWS_TERMINAL",
         "central_repository": batch.CENTRAL_REPOSITORY,
         "central_branch": batch.CENTRAL_BRANCH, "central_head_sha": "a" * 40,
         "scheduled_at": "2026-10-29T00:36:00Z",
@@ -38,6 +41,7 @@ def ledger():
             "source_branch": "codex/" + slug, "source_sha": sha,
             "factory_build_head": sha, "expected_exe_sha256": exe,
             "factory_artifact_id": aid, "artifact_metadata_verified": True,
+            "factory_artifact_expiry_utc": "2099-01-01T00:00:00Z",
             "registration_type": "MSIX_OR_PWA_APP",
             "partner_center_selection": "MSIX or PWA app",
             "identity_return_target": f"products/{slug}/store/approved-identity.json",
@@ -100,6 +104,24 @@ class BatchTests(unittest.TestCase):
         self.assertEqual(state["discovered_count"], 4)
         self.assertEqual([x["slug"] for x in state["products"]],
                          [x[1] for x in PRODUCTS])
+
+    def test_expired_artifact_holds_before_local_operations(self):
+        value = ledger()
+        value["rotation_cohorts"]["app_jobs"][1]["factory_artifact_expiry_utc"] = (
+            "2026-10-29T00:00:00Z")
+        with self.assertRaisesRegex(batch.BatchHold, "HOLD_ARTIFACT_EXPIRED"):
+            batch.discover(value, spec(), now_utc=datetime(
+                2026, 10, 29, 0, 36, tzinfo=timezone.utc))
+
+    def test_missing_or_invalid_expiry_fails_closed(self):
+        value = ledger()
+        value["rotation_cohorts"]["app_jobs"][0].pop("factory_artifact_expiry_utc")
+        with self.assertRaisesRegex(batch.BatchHold, "EXPIRY_INVALID"):
+            batch.discover(value, spec())
+        value["rotation_cohorts"]["app_jobs"][0]["factory_artifact_expiry_utc"] = (
+            "2026-10-29 00:00:00")
+        with self.assertRaisesRegex(batch.BatchHold, "EXPIRY_INVALID"):
+            batch.discover(value, spec())
 
     def test_incomplete_discovery_holds(self):
         value = ledger()
@@ -268,13 +290,27 @@ class BatchTests(unittest.TestCase):
 
     def test_four_claimed_successes_still_require_host_schedule_proof(self):
         state = batch.discover(ledger(), spec())
-        self.assertFalse(state["schedule_trigger_proven"])
+        self.assertFalse(state["execution_trigger_proven"])
         for _ in range(4):
             state, job = batch.claim_next(state)
             state = batch.complete_active(state, success_result(state, job),
                                           independent_evidence_verifier=synthetic_test_only_verifier)
         self.assertEqual(state["success_count"], 4)
         self.assertEqual(state["final_status"], "MULTI_PRODUCT_IDENTITY_BATCH_PARTIAL")
+
+    def test_trusted_manual_execution_can_complete_batch(self):
+        state = batch.discover(ledger(), spec())
+        state = batch.attest_local_execution(
+            state, "MANUAL_WINDOWS_TERMINAL",
+            verifier=lambda **kwargs: True,
+        )
+        for _ in range(4):
+            state, job = batch.claim_next(state)
+            state = batch.complete_active(
+                state, success_result(state, job),
+                independent_evidence_verifier=synthetic_test_only_verifier,
+            )
+        self.assertEqual(state["final_status"], "MULTI_PRODUCT_IDENTITY_BATCH_PASS")
 
 
     def test_schedule_trigger_must_be_proven(self):
