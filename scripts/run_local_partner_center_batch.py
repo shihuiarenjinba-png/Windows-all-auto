@@ -615,7 +615,71 @@ def preflight_mixed_local(args) -> dict:
 
 
 
-def prepare_mixed_resume_state(args) -> dict:
+
+def verify_mixed_local_return(old_entry: dict, result: dict, fresh_entry: dict,
+                              ledger: dict, state_dir: Path, central_head: str,
+                              driver: PartnerCenterDriver) -> bool:
+    """Independently recheck a completed mixed return against UI and GitHub.
+
+    Local JSON alone cannot authenticate a Store Identity or CAS. The caller
+    must hold the shared OS lock and supply a live authenticated Edge driver.
+    This is a *read-only* verifier: it never creates a product or applies CAS.
+    """
+    try:
+        jobs = (ledger.get("rotation_cohorts") or {}).get("app_jobs", [])
+        matching = [j for j in jobs if j.get("slug") == old_entry.get("slug")]
+        if len(matching) != 1:
+            return False
+        job = matching[0]
+        if (old_entry.get("request_id") != job.get("request_id")
+                or old_entry.get("source_sha") != job.get("source_sha")
+                or old_entry.get("identity_return_target") !=
+                    job.get("identity_return_target")
+                or result.get("request_id") != old_entry.get("request_id")
+                or result.get("source_sha") != old_entry.get("source_sha")
+                or result.get("plan_job_digest") !=
+                    old_entry.get("plan_job_digest")
+                or fresh_entry.get("request_id") != old_entry.get("request_id")
+                or fresh_entry.get("source_sha") != old_entry.get("source_sha")
+                or fresh_entry.get("identity_return_target") !=
+                    old_entry.get("identity_return_target")
+                or fresh_entry.get("status") not in {
+                    "PENDING", "SKIPPED_GITHUB_POST_VERIFIED"
+                }):
+            return False
+        receipt_path = (state_dir / "products" / job["request_id"] /
+                        "official-identity.json")
+        receipt = operator.read_json(receipt_path, 64_000)
+        for key in ("request_id", "slug", "source_sha",
+                    "source_repository", "source_branch",
+                    "identity_return_target"):
+            if receipt.get(key) != job.get(key):
+                return False
+        if (receipt.get("queue_job_digest") != result.get("queue_job_digest")
+                or result.get("store_id") != receipt.get("store_id")
+                or result.get("pfn") != receipt.get("package_family_name")
+                or result.get("package_sid") != receipt.get("package_sid")
+                or result.get("identity_return_commit_sha") !=
+                    job.get("identity_return_commit_sha")
+                    and fresh_entry.get("status") ==
+                        "SKIPPED_GITHUB_POST_VERIFIED"):
+            return False
+        observation = existing_observation(driver, receipt)
+        if driver.verify_current(observation, receipt) is not True:
+            return False
+        source_path = (state_dir / "mixed-preflight" / "sources" /
+                       job["source_repository"].split("/", 1)[1] /
+                       job["source_sha"][:12])
+        return github_result_verified(
+            job, receipt, result["identity_return_commit_sha"],
+            central_head, source_path
+        )
+    except (OSError, KeyError, ValueError, RunnerHold, operator.OperatorHold,
+            PartnerCenterHold):
+        return False
+
+
+def prepare_mixed_resume_state(args, *, verify_local_returns: bool = False) -> dict:
     """Persist a verified mixed PRE/POST resume contract, without UI or CAS.
 
     This is intentionally a pre-execution gate, not the executable mixed
@@ -678,24 +742,47 @@ def prepare_mixed_resume_state(args) -> dict:
             if live_branch_head(item["source_repository"],
                                 item["source_branch"]) != item["source_sha"]:
                 raise RunnerHold("HOLD_CANONICAL_PRODUCT_REVISION_MISMATCH")
+        ui_rechecked = False
         if state_path.exists():
             state = operator.read_json(state_path, 512_000)
-            if state.get("central_head_sha") != central_head:
+            needs_ui = any(
+                item.get("status") == "IDENTITY_RETURN_VERIFIED"
+                for item in state.get("products", [])
+                if isinstance(item, dict)
+            )
+            driver = PartnerCenterDriver() if verify_local_returns and needs_ui else None
+            try:
+                def verified_return(old, result, fresh):
+                    if driver is None:
+                        return False
+                    return verify_mixed_local_return(
+                        old, result, fresh, ledger, state_dir, central_head, driver
+                    )
+                if state.get("central_head_sha") != central_head:
                 # The central single writer may advance HEAD for unrelated
                 # evidence. Rebase only unchanged PRE/verified POST entries.
                 # There is NO independent UI+GitHub return verifier in this
                 # preparation mode: a locally claimed successful return or
                 # name HOLD must fail closed, never be silently promoted.
-                state = mixed_rebase.rebase_after_reconciliation(
-                    state, plan, new_central_head_sha=central_head,
-                    execution_origin=args.execution_origin,
-                    independent_return_verifier=None,
-                )
-                recheck_central(central_head)
-                batch.atomic_write(state_path, state)
-                rebase_applied = True
-            else:
-                mixed_resume.validate_replay(state, expected)
+                    state = mixed_rebase.rebase_after_reconciliation(
+                        state, plan, new_central_head_sha=central_head,
+                        execution_origin=args.execution_origin,
+                        independent_return_verifier=verified_return if driver else None,
+                    )
+                    recheck_central(central_head)
+                    batch.atomic_write(state_path, state)
+                    rebase_applied = True
+                else:
+                    mixed_resume.validate_replay(
+                        state, expected,
+                        verified_result_verifier=(
+                            lambda old, result: verified_return(old, result, old)
+                        ) if driver else None,
+                    )
+                ui_rechecked = driver is not None
+            finally:
+                if driver is not None:
+                    driver.close()
         else:
             batch.atomic_write(state_path, expected)
             state = expected
@@ -706,12 +793,14 @@ def prepare_mixed_resume_state(args) -> dict:
         "central_head_sha": central_head,
         "state_path": str(state_path),
         "central_rebase_applied": rebase_applied,
+        "independent_ui_github_return_rechecked": ui_rechecked,
         "pre_identity_preflight_count": len(verified),
         "post_identity_skip_count": plan["post_identity_skip_count"],
         "local_windows_no_llm_pass": False,
         "multi_product_identity_batch_pass": False,
         "task_scheduler_registration_allowed": False,
-        "partner_center": "NOT_OPENED",
+        "partner_center": ("READ_ONLY_AUTHENTICATED_UI_RECHECK" if ui_rechecked
+                           else "NOT_OPENED"),
         "identity_capture": "NOT_PERFORMED",
         "cas": "NOT_PERFORMED",
         "store_submission": "NOT_PERFORMED",
@@ -1028,15 +1117,19 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--plan-queue", action="store_true")
     parser.add_argument("--mixed-local-preflight", action="store_true")
     parser.add_argument("--prepare-mixed-resume", action="store_true")
+    parser.add_argument("--verify-mixed-rebase-ui", action="store_true")
     args = parser.parse_args(argv)
     try:
         if sum((args.audit_queue, args.plan_queue, args.preflight_only,
-                args.mixed_local_preflight, args.prepare_mixed_resume)) > 1:
+                args.mixed_local_preflight, args.prepare_mixed_resume,
+                args.verify_mixed_rebase_ui)) > 1:
             raise RunnerHold("HOLD_CONFLICTING_READ_ONLY_MODES")
         result = (audit_queue_only(args) if args.audit_queue else
                   plan_queue_only(args) if args.plan_queue else
                   preflight_mixed_local(args) if args.mixed_local_preflight else
-                  prepare_mixed_resume_state(args) if args.prepare_mixed_resume else
+                  prepare_mixed_resume_state(
+                      args, verify_local_returns=args.verify_mixed_rebase_ui
+                  ) if (args.prepare_mixed_resume or args.verify_mixed_rebase_ui) else
                   preflight_only(args) if args.preflight_only else run_batch(args))
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0 if result.get("status") in {
