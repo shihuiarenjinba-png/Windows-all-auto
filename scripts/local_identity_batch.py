@@ -355,10 +355,17 @@ def complete_active(state: dict, result: dict, *, independent_evidence_verifier=
 
 
 def attest_local_execution(state: dict, execution_origin: str, *, verifier=None) -> dict:
-    """Bind the batch to a trusted host observation, never a JSON claim alone."""
+    """Only independent proof of a real scheduled host launch may set PASS.
+
+    A manual terminal run, a manually started Task Scheduler task, or an
+    arbitrary execution_origin string cannot prove the saved 36-minute
+    automation actually triggered the local Windows worker.
+    """
     require(execution_origin in EXECUTION_ORIGINS
             and state.get("execution_origin") == execution_origin,
             "HOLD_EXECUTION_ORIGIN_CONFLICT")
+    require(execution_origin == "WINDOWS_TASK_SCHEDULER",
+            "BATCH_SCHEDULE_TRIGGER_NOT_PROVEN")
     require(callable(verifier), "HOLD_EXECUTION_ORIGIN_VERIFIER_UNAVAILABLE")
     try:
         verified = verifier(state=deepcopy(state), execution_origin=execution_origin)
