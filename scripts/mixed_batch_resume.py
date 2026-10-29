@@ -129,8 +129,14 @@ def initialize(plan: dict, *, central_head_sha: str,
     }
 
 
-def validate_replay(state: dict, expected: dict) -> None:
-    """Fail closed on changed central HEAD, plan, or persisted local state."""
+def validate_replay(state: dict, expected: dict, *,
+                    verified_result_verifier: Callable[[dict, dict], bool]
+                    | None = None) -> None:
+    """Fail closed on changed plan or unauthenticated persisted success.
+
+    Completed local results MUST be independently reverified on every resume.
+    A self-edited state file cannot be promoted to an authenticated PASS.
+    """
     _require(isinstance(state, dict) and isinstance(expected, dict)
              and state.get("schema_version") == 1
              and state.get("central_head_sha") == expected.get("central_head_sha")
@@ -168,6 +174,11 @@ def validate_replay(state: dict, expected: dict) -> None:
                      and old["result"].get("source_sha") == old["source_sha"]
                      and old["result"].get("store_submission") == "NOT_PERFORMED",
                      "HOLD_MIXED_RESUME_REPLAY_CONFLICT")
+            _require(callable(verified_result_verifier),
+                     "HOLD_MIXED_RESUME_REPLAY_REQUIRES_INDEPENDENT_EVIDENCE")
+            _require(verified_result_verifier(deepcopy(old),
+                                              deepcopy(old["result"])) is True,
+                     "HOLD_MIXED_RESUME_REPLAY_EVIDENCE_CONFLICT")
     _require(len(active) <= 1
              and state.get("active_request_id") ==
                  (active[0] if active else None),
