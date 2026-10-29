@@ -327,7 +327,7 @@ def write_once(path: Path, value: dict) -> None:
 
 
 def complete_name_unavailable(state: dict, claimed: dict,
-                              product_dir: Path) -> dict:
+                              product_dir: Path, source_sync_status: str) -> dict:
     """Advance one product only when name availability failed before Reserve.
 
     Authentication, uncertain creation, duplicate products and CAS conflicts
@@ -341,6 +341,7 @@ def complete_name_unavailable(state: dict, claimed: dict,
         "source_sha": claimed["source_sha"],
         "identity_return_target": claimed["identity_return_target"],
         "github_return_status": "HOLD",
+        "source_sync_status": source_sync_status,
         "package_version_gate": "HOLD",
         "store_submission": "NOT_PERFORMED",
         "error_code": "HOLD_NAME_UNAVAILABLE",
@@ -533,7 +534,10 @@ def run_batch(args) -> dict:
                         # is safe to skip. Auth/MFA/uncertain creation stop all.
                         if str(exc) != "HOLD_NAME_UNAVAILABLE":
                             raise
-                        state = complete_name_unavailable(state, claimed, product_dir)
+                        state = complete_name_unavailable(
+                            state, claimed, product_dir,
+                            operator_job["source_snapshot_status"],
+                        )
                         continue
                     receipt = operator.validate_capture(operator_job, captured)
                     write_once(receipt_path, receipt)
@@ -647,8 +651,15 @@ def run_batch(args) -> dict:
                 "store_submission": "NOT_PERFORMED",
                 "error_code": result.get("error_code"),
             })
+        completed_at = utc_now()
         final = {
             "schema_version": 1,
+            "batch_id": state["batch_id"],
+            "trigger_origin": batch.TRIGGER_ORIGIN,
+            "automation_id": batch.AUTOMATION_ID,
+            "started_at": state["scheduled_at"],
+            "completed_at": completed_at,
+            "batch_total": 4,
             "status": ("LOCAL_WINDOWS_NO_LLM_AUTOMATION_PASS" if batch_pass
                        else "MULTI_PRODUCT_IDENTITY_BATCH_PARTIAL"),
             "batch_status": state["final_status"],
@@ -681,7 +692,7 @@ def run_batch(args) -> dict:
             "store_submission": "NOT_PERFORMED",
             "ollama": "NOT_USED", "openai_api": "NOT_USED",
             **prerequisite,
-            "finished_at": utc_now(),
+            "finished_at": completed_at,
         }
         write_once(final_path, final)
         return final
