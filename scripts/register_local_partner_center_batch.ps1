@@ -7,23 +7,36 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-$receiptPath = Join-Path $StateDir 'final-batch-receipt.json'
-if (-not (Test-Path -LiteralPath $receiptPath -PathType Leaf)) {
-    throw 'TERMINAL_4_OF_4_PASS_REQUIRED'
-}
-$receipt = Get-Content -LiteralPath $receiptPath -Raw | ConvertFrom-Json
-if ($receipt.status -ne 'LOCAL_WINDOWS_NO_LLM_AUTOMATION_PASS' -or
-    $receipt.batch_status -ne 'MULTI_PRODUCT_IDENTITY_BATCH_PASS' -or
-    $receipt.processed -ne 4 -or $receipt.replay -ne 4) {
-    throw 'TERMINAL_4_OF_4_PASS_REQUIRED'
-}
-
+# A terminal 4/4 PASS cannot be a registration prerequisite: the trusted
+# scheduled-host trigger has not yet occurred. Require a live, side-effect-free
+# GitHub queue/artifact/source preflight instead. This does NOT attest the
+# saved ChatGPT 36-minute schedule or authorize Identity CAS.
 $existing = Get-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinue
 if ($null -ne $existing) {
     throw 'SCHEDULED_TASK_ALREADY_EXISTS_NO_OVERWRITE'
 }
 
 $python = (Get-Command py.exe -ErrorAction Stop).Source
+Push-Location -LiteralPath $RunnerRoot
+try {
+    $preflightOutput = & $python -3 -m scripts.run_local_partner_center_batch `
+        --preflight-only --execution-origin WINDOWS_TASK_SCHEDULER `
+        --provisioner-root $ProvisionerRoot --state-dir $StateDir 2>&1
+    if ($LASTEXITCODE -ne 0) {
+        throw 'BATCH_QUEUE_PREFLIGHT_HOLD'
+    }
+    $preflight = ($preflightOutput | Out-String | ConvertFrom-Json)
+    if ($preflight.status -ne 'BATCH_PREFLIGHT_READY' -or
+        $preflight.discovered_count -ne 4 -or
+        $preflight.execution_trigger_proven -ne $false -or
+        $preflight.local_execution -ne 'NOT_PERFORMED') {
+        throw 'BATCH_QUEUE_PREFLIGHT_HOLD'
+    }
+}
+finally {
+    Pop-Location
+}
+
 $arguments = @(
     '-3', '-m', 'scripts.run_local_partner_center_batch',
     '--execution-origin', 'WINDOWS_TASK_SCHEDULER',
@@ -44,7 +57,10 @@ Register-ScheduledTask -TaskName $TaskName -InputObject $task -ErrorAction Stop 
 
 $registered = Get-ScheduledTask -TaskName $TaskName -ErrorAction Stop
 [ordered]@{
-    status = 'REGISTERED'
+    status = 'REGISTERED__SCHEDULE_PROOF_PENDING'
+    registration_gate = 'LIVE_GITHUB_BATCH_PREFLIGHT_ONLY'
+    scheduled_36_min_trigger_proven = $false
+    preflight_central_head_sha = $preflight.central_head_sha
     task = $TaskName
     frequency = '12 HOURS'
     multiple_instances = $registered.Settings.MultipleInstances
