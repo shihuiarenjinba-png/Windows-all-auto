@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-29T17:40:27.202Z",
+  "updated_at_utc": "2026-10-29T17:41:34.564Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -2398,7 +2398,7 @@
     }
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-29T17:40:27.202Z",
+    "observed_at_utc": "2026-10-29T17:41:34.564Z",
     "scope": "MIXED_PRE_POST_RESUME_STATE_CONTRACT_PR56_WINDOWS_UBUNTU_CI_GREEN__LOCAL_EXECUTOR_NOT_WIRED",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
@@ -2527,9 +2527,9 @@
     "mixed_resume_state_contract": {
       "draft_pr": 56,
       "branch": "codex/e2e-mixed-resume-state-20261030-0236",
-      "head_sha": "eaa8a2615d095dc65415afb83499b3bbae175e72",
+      "head_sha": "5aa7e97d788b5438ae4371e4f4a8f161facbf276",
       "base_pr": 55,
-      "offline_qa_run_id": 40923455229,
+      "offline_qa_run_id": 40923650232,
       "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
       "scope": "PURE_MIXED_PRE_POST_SERIAL_RESTART_SAFE_STATE__POST_SKIP__PRE_SINGLE_ACTIVE__INDEPENDENT_EVIDENCE_CALLBACK__CROSS_PRODUCT_COLLISION_HOLD",
       "tests": "TWELVE_NEW_OFFLINE_REGRESSIONS",
@@ -2539,12 +2539,13 @@
       "identity_capture": "NOT_PERFORMED",
       "cas": "NOT_PERFORMED",
       "task_scheduler_registration": "HOLD",
-      "store_submission": "NOT_PERFORMED"
+      "store_submission": "NOT_PERFORMED",
+      "fix": "PERSISTED_SUCCESS_REQUIRES_FRESH_INDEPENDENT_REVERIFICATION_ON_RESUME"
     }
   },
   "post_identity_pipeline": {
     "schema_version": 1,
-    "updated_at_utc": "2026-10-29T17:40:27.202Z",
+    "updated_at_utc": "2026-10-29T17:41:34.564Z",
     "writer": "36_WINDOWS_E2E_ONLY",
     "reconciliation_basis": "GITHUB_APPROVED_IDENTITY_FILES_VERIFIED_FOR_FOCUS_AND_PRISM__NO_LOCAL_RECEIPTS_READ_THIS_RUN",
     "product_count": 7,
@@ -2803,9 +2804,9 @@
       "mixed_resume_state_contract": {
         "draft_pr": 56,
         "branch": "codex/e2e-mixed-resume-state-20261030-0236",
-        "head_sha": "eaa8a2615d095dc65415afb83499b3bbae175e72",
+        "head_sha": "5aa7e97d788b5438ae4371e4f4a8f161facbf276",
         "base_pr": 55,
-        "offline_qa_run_id": 40923455229,
+        "offline_qa_run_id": 40923650232,
         "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
         "scope": "PURE_MIXED_PRE_POST_SERIAL_RESTART_SAFE_STATE__POST_SKIP__PRE_SINGLE_ACTIVE__INDEPENDENT_EVIDENCE_CALLBACK__CROSS_PRODUCT_COLLISION_HOLD",
         "tests": "TWELVE_NEW_OFFLINE_REGRESSIONS",
@@ -2815,7 +2816,8 @@
         "identity_capture": "NOT_PERFORMED",
         "cas": "NOT_PERFORMED",
         "task_scheduler_registration": "HOLD",
-        "store_submission": "NOT_PERFORMED"
+        "store_submission": "NOT_PERFORMED",
+        "fix": "PERSISTED_SUCCESS_REQUIRES_FRESH_INDEPENDENT_REVERIFICATION_ON_RESUME"
       }
     }
   },
