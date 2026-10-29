@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-29T04:36:59.937Z",
+  "updated_at_utc": "2026-10-29T05:37:33.451Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -1101,7 +1101,13 @@
     "unresolved_policy": "HOLD_REGISTRATION_TYPE_UNRESOLVED",
     "store_fixtures": "EXISTING_KNOWN_GOOD_REFERENCE_NOT_NEW_USER_ID_REQUEST",
     "ci_run_id": 40638938248,
-    "ci_conclusion": "SUCCESS"
+    "ci_conclusion": "SUCCESS",
+    "local_cdp_driver": {
+      "draft_pr": 47,
+      "head_sha": "6fde63b262cc1bab7a92c20c5b9527e1238fef4e",
+      "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+      "scope": "OFFLINE_TESTED_ONLY__PHYSICAL_WINDOWS_PARTNER_CENTER_UNVERIFIED"
+    }
   },
   "local_availability": {
     "mode": "LOCAL_MODE",
@@ -2126,6 +2132,27 @@
         "local_task_registration": "NOT_PERFORMED",
         "schedule_trigger_proven": false,
         "store_submission": 0
+      },
+      "windows_all_auto_registration_lane_cdp_guard": {
+        "draft_pr": 47,
+        "branch": "codex/e2e-partner-center-registration-router-20261029",
+        "head_sha": "6fde63b262cc1bab7a92c20c5b9527e1238fef4e",
+        "base_pr": 46,
+        "offline_qa_run_ids": [
+          40824414551,
+          40824421496
+        ],
+        "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+        "fixes": [
+          "REGISTRATION_TYPE_EXACT_PARTNER_CENTER_LABEL",
+          "CROSS_LANE_FAIL_CLOSED_BEFORE_UI",
+          "EXPLICIT_CHECK_AVAILABILITY_REQUIRED",
+          "CDP_QUERY_HREF_PASSWORD_INPUT_VALUE_REDACTION"
+        ],
+        "physical_windows_execution": "NOT_OBSERVED",
+        "identity_capture": "NOT_PERFORMED",
+        "cas": "NOT_PERFORMED",
+        "store_submission": 0
       }
     },
     "products": [
@@ -2294,22 +2321,25 @@
     }
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-29T04:36:59.937Z",
-    "scope": "PR46_SCHEDULED_ORIGIN_MARKER_SINGLE_FLIGHT_RACE_FIX",
+    "observed_at_utc": "2026-10-29T05:37:33.451Z",
+    "scope": "PR47_PARTNER_CENTER_REGISTRATION_LANE_AND_CDP_SECRET_SAFE_GATE",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
-    "implementation_branch": "codex/e2e-batch4-lock-trigger-marker-20261029",
-    "implementation_pr": 46,
-    "implementation_head_sha": "c51a3e089403350140bf64928bdd81f3d29a59e6",
-    "implementation_base_pr": 45,
+    "implementation_branch": "codex/e2e-partner-center-registration-router-20261029",
+    "implementation_pr": 47,
+    "implementation_head_sha": "6fde63b262cc1bab7a92c20c5b9527e1238fef4e",
+    "implementation_base_pr": 46,
     "changes": [
-      "Moved one-shot Windows Task Scheduler manual-start marker consumption inside existing OS single-flight lock; lock-denied runner cannot steal the real task's origin",
-      "Kept source sync, Artifact ZIP download, Partner Center UI and Provisioner CAS under the same lock",
-      "Added contested-lock regression verifying marker is preserved and local IO/browser are not started"
+      "Queue-owned registration_type and exact selection route APP/GAME/GAME_3D product creation across all four Partner Center methods; reject cross-lane and malformed metadata before UI",
+      "Check availability control must be explicitly clicked successfully before Reserve product name; ambiguous or missing control fails closed",
+      "CDP diagnostic snapshots strip URL query/fragment, link href, password controls, and input values; return only allowlisted control metadata",
+      "Offline negative regression tests added for four registration routes, cross-lane conflict, wrong label, missing availability, malformed metadata and diagnostic redaction"
     ],
-    "offline_qa_run_id": 40818682995,
-    "ci_status": "SUCCESS_WINDOWS_UBUNTU",
+    "offline_qa_run_ids": [
+      40824414551,
+      40824421496
+    ],
+    "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
     "cloud_pre_identity_discovered": 4,
-    "factory_source_branch_heads": "FOUR_OF_FOUR_EXACT_MATCH_LIVE_GITHUB_COMPARE",
     "local_code_sync": "NOT_OBSERVED_ON_USER_PC_THIS_RUN",
     "local_scheduler_registration": "NOT_PERFORMED",
     "scheduled_trigger_to_local": "BATCH_SCHEDULE_TRIGGER_NOT_PROVEN",
@@ -2329,6 +2359,6 @@
     "next_resume_index": 1,
     "store_submission": 0,
     "no_main_release_merge": true,
-    "next_action": "Physical Windows CDP diagnose and reviewed read-only preflight; only then task registration and serial 4-product Identity batch. Independently attest saved 36-minute trigger. Investigate post-CAS branch HEAD drift on crash/restart without relaxing source binding."
+    "next_action": "On physical Windows use reviewed PR47 independent worktree: py -3 -m scripts.partner_center_cdp diagnose; if authenticated controls are observed, run side-effect-free batch preflight, verify local exact source and artifact receipts, then serial batch with independent UI/CAS attestation. Do not claim saved 36-minute trigger from manual Windows Task Scheduler execution."
   }
 }
