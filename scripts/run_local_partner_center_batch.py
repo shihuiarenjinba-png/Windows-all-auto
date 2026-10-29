@@ -1021,6 +1021,7 @@ def main(argv: list[str] | None = None) -> int:
         result = (audit_queue_only(args) if args.audit_queue else
                   plan_queue_only(args) if args.plan_queue else
                   preflight_mixed_local(args) if args.mixed_local_preflight else
+                  prepare_mixed_resume_state(args) if args.prepare_mixed_resume else
                   preflight_only(args) if args.preflight_only else run_batch(args))
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0 if result.get("status") in {
