@@ -48,6 +48,12 @@ Windows-all-autoが自動取得・検証し、ローカルPCが引き取り、�
 本来は「Factoryで製品企画/コード生成 → Windows-all-autoで新製品登録とIdentity取得
 → Factoryへ承認済みIdentity返信 → Windows MSIX生成 → 受信 → ローカルQA
 → Windows-checker → Windows-Automator → 正式申請」という二段階経路が必要。
+
+## Microsoft Store submission route contract
+
+`submission_route` は上流で確定し、Windows-all-autoのpreflight・Windows-Automator入力・結果照合まで同じ値を保持する。許可IDは `msix_pwa_app`、`exe_msi_app`、`gdk_game`、`msix_pwa_game` の4つだけである。packageとの不一致は `SUBMISSION_ROUTE_PACKAGE_MISMATCH` で停止し、拡張子やAIからrouteを再推論しない。
+
+Windows-Automatorの `DRAFT_SAVED` を受理する際は `expected_submission_route` を必須とし、結果の `submission_route` と完全一致しなければ成功扱いにしない。
 **Identity返却の自動実装はまだない。未登録製品はMSIXビルドをHOLDする。**
 
 ## 品質・経費・権限

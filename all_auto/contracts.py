@@ -21,6 +21,7 @@ WINDOWS_DATA_STATUSES = {
 }
 CHECKER_STATUSES = {"BLOCKED", "NEEDS_REVIEW", "READY_CANDIDATE_NOT_CERTIFIED"}
 AUTOMATOR_STATUSES = {"DONE", "DRAFT_SAVED", "HOLD", "UNKNOWN", "ERROR", "AUTH_ERROR"}
+SUBMISSION_ROUTES = {"msix_pwa_app", "exe_msi_app", "gdk_game", "msix_pwa_game"}
 AUTOMATOR_REQUIRED_SECTIONS = {
     "pricing_availability",
     "properties",
@@ -180,6 +181,7 @@ def parse_windows_automator(
     *,
     product_name: str,
     expected_product_id: str | None = None,
+    expected_submission_route: str | None = None,
     expected_package_sha256: str | None = None,
     expected_source_sha: str | None = None,
     expected_identity_name: str | None = None,
@@ -208,6 +210,14 @@ def parse_windows_automator(
     actions = _list(item.get("actions"), "windows-automator actions")
     if any(not isinstance(action, str) for action in actions):
         raise ContractError("windows-automator actions must be strings")
+    submission_route = item.get("submission_route")
+    if submission_route is not None and submission_route not in SUBMISSION_ROUTES:
+        raise ContractError(f"unsupported windows-automator submission_route: {submission_route!r}")
+    if expected_submission_route is not None:
+        if expected_submission_route not in SUBMISSION_ROUTES:
+            raise ContractError(f"unsupported expected_submission_route: {expected_submission_route!r}")
+        if submission_route != expected_submission_route:
+            raise ContractError("windows-automator submission_route does not match immutable handoff")
 
     execution_mode = item.get("execution_mode", "dry_run")
     if execution_mode not in {"dry_run", "live"}:
@@ -221,6 +231,7 @@ def parse_windows_automator(
             raise ContractError("DRAFT_SAVED requires execution_mode=live")
         required_expected = {
             "expected_product_id": expected_product_id,
+            "expected_submission_route": expected_submission_route,
             "expected_package_sha256": expected_package_sha256,
             "expected_source_sha": expected_source_sha,
             "expected_identity_name": expected_identity_name,
@@ -294,6 +305,7 @@ def parse_windows_automator(
             "package_uploaded": True,
             "package_validation": "VALID",
             "product_id": product_id,
+            "submission_route": submission_route,
             "draft_id": draft_id,
             "package_sha256": package_sha,
             "source_sha": source_sha,
@@ -307,7 +319,7 @@ def parse_windows_automator(
         }
 
     normalized_status = "DRY_RUN_DONE" if status == "DONE" else status
-    return {
+    normalized = {
         "schema_version": "windows-automator/dryrun-1" if execution_mode == "dry_run" else "windows-automator/live-2",
         "status": normalized_status,
         "execution_mode": execution_mode,
@@ -317,3 +329,6 @@ def parse_windows_automator(
         "certified": False,
         "published": False,
     }
+    if submission_route is not None:
+        normalized["submission_route"] = submission_route
+    return normalized

@@ -83,6 +83,7 @@ class UpstreamContractTests(unittest.TestCase):
                     "findings": [],
                     "actions": ["packages:upload:C:/qa/Example.msix", "packages:save_draft"],
                     "execution_mode": "live",
+                    "submission_route": "msix_pwa_app",
                     "draft_saved": True,
                     "save_verified_after_reload": True,
                     "package_uploaded": True,
@@ -179,6 +180,7 @@ class UpstreamContractTests(unittest.TestCase):
         values = {
             "product_name": "Example",
             "expected_product_id": "9REALTEST",
+            "expected_submission_route": "msix_pwa_app",
             "expected_package_sha256": "b" * 64,
             "expected_source_sha": "a" * 40,
             "expected_identity_name": "Example.Identity",
@@ -252,6 +254,16 @@ class UpstreamContractTests(unittest.TestCase):
         obj["results"][0]["execution_mode"] = "live"
         with self.assertRaises(ContractError):
             parse_windows_automator(obj, product_name="Example")
+
+    def test_19_live_contract_requires_exact_immutable_submission_route(self):
+        result = self._parse_live()
+        self.assertEqual(result["submission_route"], "msix_pwa_app")
+        with self.assertRaises(ContractError):
+            self._parse_live(expected_submission_route="exe_msi_app")
+        obj = copy.deepcopy(self.automator_live)
+        del obj["results"][0]["submission_route"]
+        with self.assertRaises(ContractError):
+            self._parse_live(obj)
 
 
 if __name__ == "__main__":
