@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-29T05:37:55.148Z",
+  "updated_at_utc": "2026-10-29T06:41:47.160Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -824,7 +824,9 @@
     "batch4_schedule_origin_guard_ci_pass": true,
     "batch4_product_level_name_unavailable_ci_pass": true,
     "batch4_pre_download_expiry_guard_code_committed": true,
-    "batch4_pre_download_expiry_guard_ci_pass": true
+    "batch4_pre_download_expiry_guard_ci_pass": true,
+    "batch4_search_control_fail_closed_code_committed": true,
+    "batch4_search_control_fail_closed_ci_pass": false
   },
   "user_id_requests": {
     "schema_version": 1,
@@ -2153,6 +2155,20 @@
         "identity_capture": "NOT_PERFORMED",
         "cas": "NOT_PERFORMED",
         "store_submission": 0
+      },
+      "windows_all_auto_ambiguous_search_guard": {
+        "draft_pr": 48,
+        "branch": "codex/e2e-partner-center-ambiguous-ui-fail-closed-20261029",
+        "head_sha": "5f08e84f7c477cbf66caceda80cbe7c41f5f2510",
+        "base_pr": 47,
+        "ci_run_id": 40830713394,
+        "ci_status": "IN_PROGRESS_UBUNTU_PASS_WINDOWS_PENDING",
+        "defect": "BROAD_PARTNER_CENTER_SEARCH_EXCEPTION_FALLBACK_SENT_ENTER_AFTER_AMBIGUOUS_CONTROL",
+        "fix": "EXACT_SEARCH_CONTROL_REQUIRED__NO_ENTER_FALLBACK__NO_PRODUCT_COUNT_AFTER_HOLD",
+        "local_windows_execution": "NOT_OBSERVED",
+        "identity_capture": "NOT_PERFORMED",
+        "cas": "NOT_PERFORMED",
+        "store_submission": 0
       }
     },
     "products": [
@@ -2321,24 +2337,19 @@
     }
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-29T05:37:33.451Z",
-    "scope": "PR47_PARTNER_CENTER_REGISTRATION_LANE_AND_CDP_SECRET_SAFE_GATE",
+    "observed_at_utc": "2026-10-29T06:41:47.160Z",
+    "scope": "PR48_PARTNER_CENTER_SEARCH_AMBIGUITY_FAIL_CLOSED",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
-    "implementation_branch": "codex/e2e-partner-center-registration-router-20261029",
-    "implementation_pr": 47,
-    "implementation_head_sha": "6fde63b262cc1bab7a92c20c5b9527e1238fef4e",
-    "implementation_base_pr": 46,
+    "implementation_branch": "codex/e2e-partner-center-ambiguous-ui-fail-closed-20261029",
+    "implementation_pr": 48,
+    "implementation_head_sha": "5f08e84f7c477cbf66caceda80cbe7c41f5f2510",
+    "implementation_base_pr": 47,
     "changes": [
-      "Queue-owned registration_type and exact selection route APP/GAME/GAME_3D product creation across all four Partner Center methods; reject cross-lane and malformed metadata before UI",
-      "Check availability control must be explicitly clicked successfully before Reserve product name; ambiguous or missing control fails closed",
-      "CDP diagnostic snapshots strip URL query/fragment, link href, password controls, and input values; return only allowlisted control metadata",
-      "Offline negative regression tests added for four registration routes, cross-lane conflict, wrong label, missing availability, malformed metadata and diagnostic redaction"
+      "Remove catch-all Search-control exception fallback to Enter; changed/ambiguous UI now HOLD before product count or creation",
+      "Add offline regression asserting no Enter and no product count after ambiguous Search control"
     ],
-    "offline_qa_run_ids": [
-      40824414551,
-      40824421496
-    ],
-    "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+    "ci_run_id": 40830713394,
+    "ci_status": "IN_PROGRESS_UBUNTU_PASS_WINDOWS_PENDING",
     "cloud_pre_identity_discovered": 4,
     "local_code_sync": "NOT_OBSERVED_ON_USER_PC_THIS_RUN",
     "local_scheduler_registration": "NOT_PERFORMED",
@@ -2359,15 +2370,6 @@
     "next_resume_index": 1,
     "store_submission": 0,
     "no_main_release_merge": true,
-    "next_action": "On physical Windows use reviewed PR47 independent worktree: py -3 -m scripts.partner_center_cdp diagnose; if authenticated controls are observed, run side-effect-free batch preflight, verify local exact source and artifact receipts, then serial batch with independent UI/CAS attestation. Do not claim saved 36-minute trigger from manual Windows Task Scheduler execution.",
-    "factory_source_branch_heads": "FOUR_OF_FOUR_EXACT_MATCH_LIVE_GITHUB_2026_10_29",
-    "factory_artifact_metadata": "FOUR_OF_FOUR_UNEXPIRED_AND_PINNED_ZIP_DIGEST_MATCH_LIVE_GITHUB_2026_10_29",
-    "artifact_expiry_utc": [
-      "2026-11-02T10:02:58Z",
-      "2026-11-02T15:04:16Z",
-      "2026-11-02T12:15:44Z",
-      "2026-11-02T13:05:55Z"
-    ],
-    "updated_after_cloud_recheck_utc": "2026-10-29T05:37:55.148Z"
+    "next_action": "Await PR48 Windows/Ubuntu CI; on physical Windows in independent reviewed worktree run py -3 -m scripts.partner_center_cdp diagnose, then read-only batch preflight and serial 4-product capture only if controls/auth and exact source/artifact gates pass. Do not infer saved 36-minute host trigger from manual Task Scheduler start."
   }
 }
