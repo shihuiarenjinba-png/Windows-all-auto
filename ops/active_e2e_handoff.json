@@ -832,7 +832,9 @@
     "batch4_mixed_status_runner_ci_pass": false,
     "batch4_queue_reconciliation_cloud_pass": true,
     "post_identity_queue_materialized": true,
-    "post_identity_real_package_pass": false
+    "post_identity_real_package_pass": false,
+    "post_identity_reconcile_contract_ci_pass": true,
+    "post_identity_local_runner_mixed_status_pass": false
   },
   "user_id_requests": {
     "schema_version": 1,
@@ -2388,7 +2390,10 @@
     "success_count_cloud_verified": 1,
     "remaining_app_identity_returns": 3,
     "next_resume_index": 2,
-    "next_action": "Implement safe mixed-state runner reconciliation before Task Scheduler. Resume Ledger existing product only after exact UI capture, then Text Diff and Image Inventory; package version gate remains HOLD."
+    "next_action": "Integrate PR49 pure reconciler into single-writer 36 flow, then update local runner across divergent PR41/PR48 to safely recognize POST Identity jobs and skip duplicate CAS; verify on Windows Terminal before Task Scheduler.",
+    "post_identity_reconcile_pr": 49,
+    "post_identity_reconcile_ci_run": 40851883814,
+    "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU"
   },
   "post_identity_pipeline": {
     "schema_version": 1,
@@ -2568,6 +2573,16 @@
           "store_final_submission": "NOT_PERFORMED"
         }
       }
-    ]
+    ],
+    "reconciliation_implementation": {
+      "draft_pr": 49,
+      "branch": "codex/post-identity-reconcile-20261029",
+      "head_sha": "589692971a3e27bcaf1946355e00dcdec78a041f",
+      "offline_qa_run_id": 40851883814,
+      "offline_qa_status": "SUCCESS_WINDOWS_UBUNTU",
+      "scope": "PURE_EXACT_GITHUB_IDENTITY_RETURN_RECONCILIATION__NO_GITHUB_WRITE_OR_CAS",
+      "integration_status": "DRAFT_NOT_MERGED",
+      "local_runner_mixed_status_support": "NOT_IMPLEMENTED__HOLD_TASK_SCHEDULER"
+    }
   }
 }
