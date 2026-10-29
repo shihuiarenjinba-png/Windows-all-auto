@@ -450,6 +450,10 @@ def run_batch(args) -> dict:
     ledger, central_head, central_blob = fetch_central()
     spec, jobs = validate_queue(ledger, central_head, execution_origin)
     recheck_central(central_head)
+    # Fail before any local source checkout or Artifact download when the
+    # central queue's Factory artifact has expired or has invalid metadata.
+    # The prior ordering ran sync/download before this mandatory gate.
+    preflight_state = batch.discover(ledger, spec)
 
     sync_receipt = sync_sources(jobs, state_dir)
     artifacts = {job["slug"]: verify_artifact(job, state_dir / "artifacts") for job in jobs}
@@ -464,7 +468,7 @@ def run_batch(args) -> dict:
                 state, spec, central_head, execution_origin
             )
         else:
-            state = batch.discover(ledger, spec)
+            state = preflight_state
             # Windows presence and a caller-provided execution_origin are not
             # independent evidence of the saved 36-minute schedule. Keep the
             # scheduled trigger gate false until a trusted host attestor exists.
