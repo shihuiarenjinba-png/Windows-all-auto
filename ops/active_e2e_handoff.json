@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-29T07:41:43.673Z",
+  "updated_at_utc": "2026-10-29T09:38:22Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -826,7 +826,11 @@
     "batch4_pre_download_expiry_guard_code_committed": true,
     "batch4_pre_download_expiry_guard_ci_pass": true,
     "batch4_search_control_fail_closed_code_committed": true,
-    "batch4_search_control_fail_closed_ci_pass": true
+    "batch4_search_control_fail_closed_ci_pass": true,
+    "focus_github_return_verified": true,
+    "focus_post_identity_ready": true,
+    "batch4_mixed_status_runner_ci_pass": false,
+    "batch4_queue_reconciliation_cloud_pass": true
   },
   "user_id_requests": {
     "schema_version": 1,
@@ -914,22 +918,23 @@
         "source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
         "identity_target": "%LOCALAPPDATA%/FactoryIdentityWorker/secure/<request_id>/official-identity.json",
         "identity_return_target": "products/focus-session-desk/store/approved-identity.json",
-        "requested_fields": [
-          "Store ID",
-          "reserved display name",
-          "Package Identity Name",
-          "Publisher",
-          "Publisher Display Name",
-          "PFN",
-          "Package SID"
-        ],
-        "status": "LOCAL_PARTNER_CENTER_OPERATOR_ACTIVE",
+        "requested_fields": [],
+        "status": "USER_IDENTITY_RECEIVED",
         "registration_type": "MSIX_OR_PWA_APP",
         "partner_center_selection": "MSIX or PWA app",
-        "allow_local_product_creation": true,
-        "partner_center_product_status": "NOT_VERIFIED_CREATED",
+        "allow_local_product_creation": false,
+        "partner_center_product_status": "EXISTING_GITHUB_RETURN_VERIFIED",
         "user_manual_identity_entry_required": false,
-        "next_gate": "SCHEDULED_BATCH_PROVENANCE__EXACT_SOURCE_LOCAL_SYNC__OVERVIEW_EXACT_ONE__IDENTITY_CAPTURE__SINGLE_WRITER_RETURN"
+        "next_gate": "POST_IDENTITY_PACKAGE_VERSION_GATE_HOLD",
+        "received_fields": [
+          "store_id",
+          "reserved_display_name",
+          "identity_name",
+          "publisher",
+          "publisher_display_name",
+          "package_family_name",
+          "package_sid"
+        ]
       },
       {
         "product_name": "File Integrity Ledger",
@@ -953,10 +958,10 @@
         "status": "LOCAL_PARTNER_CENTER_OPERATOR_ACTIVE",
         "registration_type": "MSIX_OR_PWA_APP",
         "partner_center_selection": "MSIX or PWA app",
-        "allow_local_product_creation": true,
-        "partner_center_product_status": "NOT_VERIFIED_CREATED",
+        "allow_local_product_creation": false,
+        "partner_center_product_status": "USER_REPORTED_CREATED__IDENTITY_CAPTURE_PENDING",
         "user_manual_identity_entry_required": false,
-        "next_gate": "SCHEDULED_BATCH_PROVENANCE__EXACT_SOURCE_LOCAL_SYNC__OVERVIEW_EXACT_ONE__IDENTITY_CAPTURE__SINGLE_WRITER_RETURN"
+        "next_gate": "EXISTING_PRODUCT_VIEW_IDENTITY__CAPTURE_7_FIELDS__SINGLE_WRITER_RETURN"
       },
       {
         "product_name": "Offline Text Diff Desk",
@@ -1022,7 +1027,6 @@
     "pending_requests": [],
     "rotation_pending_3d": "PRE_IDENTITY_READY__MANUAL_REFERENCE_OBSERVED__AUTO_CAPTURE_PENDING",
     "operator_active_requests": [
-      "app-focus-session-desk-8b00bc4e9082",
       "app-file-integrity-ledger-d1108d12f7d1",
       "app-offline-text-diff-desk-a7d372800898",
       "app-offline-image-inventory-desk-16b6a772952c"
@@ -1072,16 +1076,16 @@
         "repository": "shihuiarenjinba-png/AI-App-Factory",
         "registration_type": "MSIX_OR_PWA_APP",
         "partner_center_selection": "MSIX or PWA app",
-        "identity_status": "LOCAL_PARTNER_CENTER_OPERATOR_ACTIVE__CAPTURE_PENDING",
-        "next_action": "SCHEDULED_BATCH_PROVENANCE__LOCAL_SOURCE_SYNC__PARTNER_CENTER_CREATE_OR_REUSE__VERSIONLESS_IDENTITY_RETURN"
+        "identity_status": "GITHUB_APPROVED_IDENTITY_RETURN_VERIFIED",
+        "next_action": "POST_IDENTITY_PACKAGE_VERSION_GATE_HOLD"
       },
       {
         "product": "File Integrity Ledger",
         "repository": "shihuiarenjinba-png/AI-App-Factory",
         "registration_type": "MSIX_OR_PWA_APP",
         "partner_center_selection": "MSIX or PWA app",
-        "identity_status": "LOCAL_PARTNER_CENTER_OPERATOR_ACTIVE__CAPTURE_PENDING",
-        "next_action": "SCHEDULED_BATCH_PROVENANCE__LOCAL_SOURCE_SYNC__PARTNER_CENTER_CREATE_OR_REUSE__VERSIONLESS_IDENTITY_RETURN"
+        "identity_status": "PRODUCT_CREATED_USER_REPORTED__IDENTITY_CAPTURE_PENDING",
+        "next_action": "CAPTURE_EXISTING_PRODUCT_IDENTITY_AND_RETURN"
       },
       {
         "product": "Offline Text Diff Desk",
@@ -1137,20 +1141,20 @@
         "product_type": "APP",
         "display_name": "Focus Session Desk",
         "slug": "focus-session-desk",
-        "status": "PRE_IDENTITY_READY",
+        "status": "POST_IDENTITY_READY",
         "request_id": "app-focus-session-desk-8b00bc4e9082",
         "source_repository": "shihuiarenjinba-png/AI-App-Factory",
         "source_branch": "codex/app-cohort-focus-controller-20261028",
         "source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
         "factory_build_head": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
-        "observed_pr_head": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+        "observed_pr_head": "8a7139375524830bf823469526837259266172be",
         "expected_exe_sha256": "04b2d7e4eae215855217285f07f8835ffe3cf60dc5aab24ede141d28f563416d",
         "expected_exe_bytes": 11475865,
         "packaging_family": "MSIX",
         "packaging_strategy": "APP_MSIX",
         "registration_type": "MSIX_OR_PWA_APP",
         "partner_center_selection": "MSIX or PWA app",
-        "identity_status": "LOCAL_PARTNER_CENTER_OPERATOR_ACTIVE__NO_CAPTURE_YET",
+        "identity_status": "GITHUB_APPROVED_IDENTITY_RETURN_VERIFIED__PACKAGE_VERSION_HOLD",
         "factory_workflow_run_id": 40668807091,
         "factory_workflow_conclusion": "SUCCESS",
         "factory_artifact_id": 12807496604,
@@ -1158,14 +1162,18 @@
         "factory_artifact_expiry_utc": "2026-11-02T10:02:58Z",
         "artifact_metadata_verified": true,
         "exe_sha256_basis": "INDEPENDENT_GITHUB_ARTIFACT_ZIP_AND_EXTRACTED_EXE_SHA256_MATCH",
-        "next_action": "LOCAL_EXACT_SOURCE_SNAPSHOT__GITHUB_QUEUE_ORIGIN__AUTHENTICATED_PARTNER_CENTER_UI__APP_SINGLE_WRITER_RETURN",
+        "next_action": "POST_IDENTITY_PACKAGE_VERSION_GATE_HOLD__DO_NOT_REENTER_PARTNER_CENTER_OR_REAPPLY_CAS__BUILD_ONLY_AFTER_VERSION_AND_ASSET_APPROVAL",
         "identity_cas_allowed": false,
         "real_msix": "NOT_BUILT",
         "local_execution": "NOT_OBSERVED",
         "identity_return_target": "products/focus-session-desk/store/approved-identity.json",
         "factory_artifact_zip_sha256": "06189361745a9cc175f1fe5bde27d758b71518ac1d2e955436939e3e7ed2a04d",
         "exe_bytes_independently_verified": true,
-        "remote_branch_head_verified": true
+        "remote_branch_head_verified": true,
+        "identity_return_commit_sha": "8a7139375524830bf823469526837259266172be",
+        "identity_store_id": "9P6452C61N7B",
+        "identity_return_evidence": "EXACT_GITHUB_APPROVED_IDENTITY_FILE_AND_BRANCH_HEAD_MATCH",
+        "package_version_gate": "HOLD"
       },
       {
         "product_type": "APP",
@@ -1185,7 +1193,7 @@
         "registration_type": "MSIX_OR_PWA_APP",
         "partner_center_selection": "MSIX or PWA app",
         "identity_return_target": "products/file-integrity-ledger/store/approved-identity.json",
-        "identity_status": "LOCAL_PARTNER_CENTER_OPERATOR_ACTIVE__NO_CAPTURE_YET",
+        "identity_status": "USER_REPORTED_PARTNER_CENTER_PRODUCT_CREATED__IDENTITY_CAPTURE_PENDING",
         "factory_workflow_run_id": 40711443897,
         "factory_workflow_conclusion": "SUCCESS",
         "factory_artifact_id": 12826068537,
@@ -1199,7 +1207,9 @@
         "identity_cas_allowed": false,
         "real_msix": "NOT_BUILT",
         "local_execution": "NOT_OBSERVED",
-        "next_action": "LOCAL_EXACT_SOURCE_SNAPSHOT__GITHUB_QUEUE_ORIGIN__AUTHENTICATED_PARTNER_CENTER_UI__APP_SINGLE_WRITER_RETURN"
+        "next_action": "LOCAL_VIEW_PRODUCT_IDENTITY_7_FIELDS__EXACT_REQUEST_SOURCE_BINDING__SINGLE_WRITER_CAS__REPLAY",
+        "partner_center_product_status": "USER_SCREENSHOT_PRODUCT_CREATED__NOT_GITHUB_RETURNED",
+        "reported_store_id": "9PGZ445SR5GM"
       },
       {
         "product_type": "APP",
@@ -1320,8 +1330,8 @@
   "rotation_metrics": {
     "total_jobs": 4,
     "pre_identity_pass": 4,
-    "waiting_user_identity": 4,
-    "identity_received": 0,
+    "waiting_user_identity": 3,
+    "identity_received": 1,
     "conflicts": 0,
     "retries": 0,
     "artifact_mismatch": 0,
@@ -1332,7 +1342,7 @@
     "3d_waiting_identity": 0,
     "3d_conflicts": 0,
     "3d_artifact_mismatch": 0,
-    "metrics_basis": "FOUR_GITHUB_FACTORY_BRANCH_HEADS_MATCH_PINNED_SHAS__FOUR_GITHUB_ARTIFACT_ZIP_DIGESTS_AND_EXTRACTED_EXE_SHA256_BYTES_VERIFIED__NO_PHYSICAL_WINDOWS_OR_PARTNER_CENTER_CAPTURE",
+    "metrics_basis": "FOUR_GITHUB_PRE_IDENTITY_ARTIFACTS_VERIFIED__FOCUS_APPROVED_IDENTITY_GITHUB_FILE_AND_RETURN_HEAD_VERIFIED__THREE_APP_RETURNS_NOT_OBSERVED",
     "3d_source_branch_head_drift_observed": 1
   },
   "local_source_code_sync": {
@@ -1899,14 +1909,14 @@
     "processed_count": 0,
     "success_count": 0,
     "hold_count": 0,
-    "next_resume_index": 1,
+    "next_resume_index": 2,
     "serial_execution": "NOT_STARTED",
     "cross_product_contamination": 0,
     "duplicate_creation": 0,
     "store_submission": 0,
     "package_upload": 0,
     "package_version_gate": "HOLD",
-    "status": "MULTI_PRODUCT_IDENTITY_BATCH_PARTIAL",
+    "status": "MULTI_PRODUCT_IDENTITY_BATCH_PARTIAL__FOCUS_GITHUB_RETURN_VERIFIED",
     "preflight_evidence": "FOUR_FACTORY_BRANCH_HEADS_IDENTICAL__FOUR_FACTORY_ARTIFACTS_PRESENT_UNEXPIRED_EXPECTED_DIGEST_MATCH__PR48_OFFLINE_QA_WINDOWS_UBUNTU_SUCCESS__NO_LOCAL_CDP_OR_CAS_RECEIPT",
     "code_contracts": {
       "windows_all_auto_pr": 33,
@@ -2188,18 +2198,24 @@
         "artifact_expiry_utc": "2026-11-02T10:02:58Z",
         "exe_sha256": "04b2d7e4eae215855217285f07f8835ffe3cf60dc5aab24ede141d28f563416d",
         "exe_bytes": 11475865,
-        "source_remote_head": "MATCH",
+        "source_remote_head": "POST_IDENTITY_RETURN_COMMIT_VERIFIED",
         "source_sync_status": "LOCAL_NOT_RUN",
         "partner_center_search_count": null,
-        "creation_status": "NOT_RUN",
-        "identity_capture_status": "NOT_RUN",
-        "github_return_status": "NOT_RUN",
-        "identity_return_commit_sha": null,
+        "creation_status": "USER_REPORTED_CREATED__GITHUB_IDENTITY_RETURN_VERIFIED",
+        "identity_capture_status": "GITHUB_APPROVED_IDENTITY_VERIFIED__LOCAL_RECEIPT_NOT_INDEPENDENTLY_READ",
+        "github_return_status": "APPLIED__GITHUB_RETURN_COMMIT_VERIFIED",
+        "identity_return_commit_sha": "8a7139375524830bf823469526837259266172be",
         "package_version_gate": "HOLD",
         "store_submission": "NOT_PERFORMED",
-        "error_code": "LOCAL_BATCH_NOT_STARTED",
+        "error_code": null,
         "artifact_live_metadata_status": "GITHUB_ACTIONS_ARTIFACT_PRESENT_UNEXPIRED_DIGEST_MATCH",
-        "artifact_live_metadata_checked_at_utc": "2026-10-28T23:35:53.183Z"
+        "artifact_live_metadata_checked_at_utc": "2026-10-28T23:35:53.183Z",
+        "github_replay_status": "USER_REPORTED_EXISTING_VERIFIED__LOCAL_REPLAY_RECEIPT_NOT_READ",
+        "store_id": "9P6452C61N7B",
+        "identity_name": "OkinawaDesktopTools.FocusSessionDesk",
+        "pfn": "OkinawaDesktopTools.FocusSessionDesk_j8yefg9jgfh58",
+        "package_sid": "S-1-15-2-2225260970-543926136-1440257008-848151149-3671298483-3004677799-2420668959",
+        "submission_draft_opened": "NOT_VERIFIED"
       },
       {
         "batch_index": 2,
@@ -2220,15 +2236,16 @@
         "source_remote_head": "MATCH",
         "source_sync_status": "LOCAL_NOT_RUN",
         "partner_center_search_count": null,
-        "creation_status": "NOT_RUN",
+        "creation_status": "USER_REPORTED_CREATED__IDENTITY_CAPTURE_PENDING",
         "identity_capture_status": "NOT_RUN",
         "github_return_status": "NOT_RUN",
         "identity_return_commit_sha": null,
         "package_version_gate": "HOLD",
         "store_submission": "NOT_PERFORMED",
-        "error_code": "LOCAL_BATCH_NOT_STARTED",
+        "error_code": "HOLD_IDENTITY_CAPTURE_AND_GITHUB_RETURN_PENDING",
         "artifact_live_metadata_status": "GITHUB_ACTIONS_ARTIFACT_PRESENT_UNEXPIRED_DIGEST_MATCH",
-        "artifact_live_metadata_checked_at_utc": "2026-10-28T23:35:53.183Z"
+        "artifact_live_metadata_checked_at_utc": "2026-10-28T23:35:53.183Z",
+        "store_id": "9PGZ445SR5GM"
       },
       {
         "batch_index": 3,
@@ -2289,7 +2306,7 @@
         "artifact_live_metadata_checked_at_utc": "2026-10-28T23:35:53.183Z"
       }
     ],
-    "next_action": "Run reviewed PR45 runner on actual Windows: first py -3 -m scripts.partner_center_cdp diagnose against the user-confirmed authenticated Edge Overview, distinguish wrong CDP instance from auth failure, then read-only --preflight-only; only if PASS register local task. Lock now protects source sync, ZIP IO and CAS. Four Identity captures and independent schedule-to-local proof remain pending. Factory artifacts expire 2026-11-02 UTC.",
+    "next_action": "Before local batch resume, adapt and CI-test runner for mixed PRE_IDENTITY_READY and POST_IDENTITY_READY without recapture/CAS of Focus. Ledger existing product: capture 7 Identity fields, return and replay; then Text Diff and Image Inventory. Draft opening requires separate UI proof. No Store submission.",
     "cloud_discover_contract_run_id": 40728641133,
     "cloud_discover_contract_ci": "SUCCESS_WINDOWS_UBUNTU",
     "cloud_discover_from_pinned_central_commit": "0fe4dc510b37b0574f96d13bc95ade6ef1635032",
@@ -2335,46 +2352,40 @@
         }
       ]
     },
-    "last_live_recheck_utc": "2026-10-29T07:41:43.673Z"
+    "last_live_recheck_utc": "2026-10-29T07:41:43.673Z",
+    "cloud_verified_return_count": 1,
+    "cloud_verified_pending_return_count": 3,
+    "queue_reconciliation_status": "FOCUS_POST_IDENTITY_RECONCILED__LOCAL_RUNNER_MIXED_STATUS_COMPATIBILITY_HOLD"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-29T07:41:43.673Z",
-    "scope": "LIVE_BATCH4_SOURCE_AND_ARTIFACT_RECHECK__PR48_CI__LOCAL_CDP_GATE",
+    "observed_at_utc": "2026-10-29T09:38:22Z",
+    "scope": "FOCUS_GITHUB_APPROVED_IDENTITY_EXACT_BINDING_RECONCILIATION__LEDGER_USER_REPORTED_CREATED",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
-    "reviewed_draft_pr": 48,
-    "reviewed_branch": "codex/e2e-partner-center-ambiguous-ui-fail-closed-20261029",
-    "reviewed_head_sha": "5f08e84f7c477cbf66caceda80cbe7c41f5f2510",
-    "reviewed_ci_run_id": 40830713394,
-    "reviewed_ci_status": "SUCCESS_WINDOWS_UBUNTU",
-    "cloud_pre_identity_discovered": 4,
-    "cloud_source_heads": "4_OF_4_IDENTICAL_TO_PINNED_SHA__COMPARE_2026_10_29",
-    "cloud_artifact_metadata": "4_OF_4_PRESENT_UNEXPIRED_EXPECTED_NAME_AND_ZIP_DIGEST_MATCH__2026_10_29",
-    "factory_artifact_expiry_utc": [
-      "2026-11-02T10:02:58Z",
-      "2026-11-02T15:04:16Z",
-      "2026-11-02T12:15:44Z",
-      "2026-11-02T13:05:55Z"
-    ],
-    "local_code_sync": "NOT_OBSERVED_ON_USER_PC_THIS_RUN",
-    "local_cdp_diagnose": "NOT_EXECUTED_FROM_THIS_RUNTIME__BROWSER_ORIGIN_CONTEXT_UNAVAILABLE",
-    "partner_center_login": "USER_SCREENSHOT_OBSERVED_AUTHENTICATED_OVERVIEW__DO_NOT_RECLASSIFY_AS_AUTH_REQUIRED",
-    "partner_center_product": "NOT_OBSERVED_FOR_BATCH4_THIS_RUN",
-    "identity_capture": "NOT_OBSERVED",
-    "identity_route": "NOT_RUN_FOR_BATCH4",
-    "cas": "NOT_RUN_FOR_BATCH4",
-    "real_msix": "NOT_BUILT_FOR_BATCH4",
-    "github_backlog_real_product": "NOT_RUN_FOR_BATCH4",
-    "local_pull": "NOT_RUN_FOR_BATCH4",
-    "checker": "NOT_RUN_FOR_BATCH4",
-    "gui_install_qa": "NOT_RUN_FOR_BATCH4",
-    "success_count": 0,
-    "hold_count": 0,
-    "unprocessed_count": 4,
-    "next_resume_index": 1,
-    "scheduled_trigger_to_local": "BATCH_SCHEDULE_TRIGGER_NOT_PROVEN",
+    "canonical_branch": "codex/e2e-belt-connection-20261027",
+    "canonical_previous_blob_sha": "98d40cce07567e00657e895aeca2c44d2e47bf26",
+    "focus_return_commit_sha": "8a7139375524830bf823469526837259266172be",
+    "focus_store_id": "9P6452C61N7B",
+    "focus_source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+    "focus_identity_return": "GITHUB_FILE_AND_HEAD_VERIFIED",
+    "focus_local_replay": "USER_REPORTED_NOT_INDEPENDENTLY_READ",
+    "focus_submission_draft": "NOT_VERIFIED",
+    "ledger_product_creation": "USER_REPORTED_CREATED__STORE_ID_9PGZ445SR5GM",
+    "ledger_identity_capture": "NOT_VERIFIED",
+    "text_diff_identity_capture": "NOT_VERIFIED",
+    "image_inventory_identity_capture": "NOT_VERIFIED",
+    "mixed_status_runner": "HOLD_REQUIRES_COMPATIBILITY_CODE_AND_CI",
+    "local_code_sync": "NOT_RUN_THIS_CLOUD_EXECUTION",
+    "partner_center_cdp": "NOT_RUN_THIS_CLOUD_EXECUTION",
+    "cas": "NO_NEW_CAS_THIS_EXECUTION",
+    "package": "NOT_BUILT",
+    "github_backlog": "NO_NEW_REAL_MSIX",
+    "local_pull": "NOT_RUN",
+    "checker": "NOT_RUN",
+    "gui_install_qa": "NOT_RUN",
     "store_submission": 0,
-    "no_main_release_merge": true,
-    "resume_safety_note": "CENTRAL_LEDGER_HEAD_IS_LIVE_QUEUE_REVISION; EXISTING_LOCAL_STATE_PINNED_TO_OLDER_HEAD_MUST_FAIL_CLOSED_AND_REQUIRE_RECONCILIATION. DO_NOT_REUSE_OR_FORGE_OLD_RECEIPTS.",
-    "next_action": "On physical Windows reviewed worktree: py -3 -m scripts.partner_center_cdp diagnose; require PARTNER_CENTER_CONTROLS_OBSERVED before serial batch resume. Recheck 4 exact source SHA and artifact metadata; independent saved 36-minute host trigger proof remains separate. Never infer auth failure solely from CDP unavailability."
+    "success_count_cloud_verified": 1,
+    "remaining_app_identity_returns": 3,
+    "next_resume_index": 2,
+    "next_action": "Implement safe mixed-state runner reconciliation before Task Scheduler. Resume Ledger existing product only after exact UI capture, then Text Diff and Image Inventory; package version gate remains HOLD."
   }
 }
