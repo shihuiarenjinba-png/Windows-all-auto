@@ -4,7 +4,9 @@ import unittest
 from unittest.mock import MagicMock, call, patch
 
 from scripts import partner_center_cdp as cdp
-from scripts.partner_center_cdp import CdpPage, PartnerCenterHold
+from scripts.partner_center_cdp import (
+    CdpPage, PARTNER_PRODUCTS_URL, PartnerCenterHold, _is_products_overview,
+)
 
 
 class PartnerCenterReadinessTests(unittest.TestCase):
@@ -44,7 +46,10 @@ class PartnerCenterReadinessTests(unittest.TestCase):
             "u": "https://partner.microsoft.com/dashboard/products",
             "t": "Overview", "r": "complete",
         })
-        page.evaluate = MagicMock(return_value=state)
+        page.evaluate = MagicMock(side_effect=[
+            "https://partner.microsoft.com/dashboard/v2/home",
+            state, state, state, state,
+        ])
         with patch("scripts.partner_center_cdp.time.sleep"):
             page.navigate(
                 "https://partner.microsoft.com/dashboard/products", timeout=45.0
@@ -53,6 +58,27 @@ class PartnerCenterReadinessTests(unittest.TestCase):
             "Page.navigate",
             {"url": "https://partner.microsoft.com/dashboard/products"},
             timeout=45.0,
+        ))
+
+    def test_current_localized_overview_is_not_reloaded(self):
+        page = CdpPage("target", None)
+        page.command = MagicMock(return_value={})
+        page.evaluate = MagicMock(return_value=(
+            "https://partner.microsoft.com/en-us/dashboard/apps-and-games/overview"
+        ))
+        page.navigate(PARTNER_PRODUCTS_URL)
+        page.command.assert_not_called()
+
+    def test_only_known_products_overview_paths_are_equivalent(self):
+        self.assertTrue(_is_products_overview(PARTNER_PRODUCTS_URL))
+        self.assertTrue(_is_products_overview(
+            "https://partner.microsoft.com/en-us/dashboard/apps-and-games/overview"
+        ))
+        self.assertFalse(_is_products_overview(
+            "https://partner.microsoft.com/en-us/dashboard/products/ABC/overview"
+        ))
+        self.assertFalse(_is_products_overview(
+            "https://login.microsoftonline.com/common/oauth2/authorize"
         ))
 
     def test_websocket_timeout_becomes_fail_closed_hold(self):
@@ -71,7 +97,8 @@ class PartnerCenterReadinessTests(unittest.TestCase):
         )
         with patch.object(cdp, "websocket", fake_websocket):
             with self.assertRaisesRegex(
-                    PartnerCenterHold, "HOLD_BROWSER_COMMAND_TIMEOUT"):
+                    PartnerCenterHold,
+                    "HOLD_BROWSER_COMMAND_TIMEOUT:Page.navigate"):
                 page.command("Page.navigate", {"url": "https://example.invalid"})
 
     def test_stable_nonblocking_controls_are_ready(self):

@@ -11,6 +11,7 @@ import argparse
 from dataclasses import dataclass
 import json
 from pathlib import Path
+import re
 import subprocess
 import time
 from typing import Any
@@ -34,6 +35,19 @@ CDP_PORT = 9222
 CDP_BASE = f"http://{CDP_HOST}:{CDP_PORT}"
 PARTNER_HOST = "partner.microsoft.com"
 PARTNER_PRODUCTS_URL = "https://partner.microsoft.com/dashboard/products"
+
+
+def _is_products_overview(url: str) -> bool:
+    parsed = urlparse(url)
+    if parsed.scheme != "https" or parsed.hostname != PARTNER_HOST:
+        return False
+    path = parsed.path.rstrip("/").lower()
+    return (
+        path == "/dashboard/products"
+        or re.fullmatch(
+            r"/[a-z]{2}-[a-z]{2}/dashboard/apps-and-games/overview", path
+        ) is not None
+    )
 
 
 class PartnerCenterHold(RuntimeError):
@@ -152,7 +166,9 @@ class CdpPage:
                     raise PartnerCenterHold("HOLD_BROWSER_STATE_AMBIGUOUS")
                 return message.get("result", {})
         except websocket.WebSocketTimeoutException as exc:
-            raise PartnerCenterHold("HOLD_BROWSER_COMMAND_TIMEOUT") from exc
+            raise PartnerCenterHold(
+                f"HOLD_BROWSER_COMMAND_TIMEOUT:{method}"
+            ) from exc
         except (websocket.WebSocketException, OSError, ValueError) as exc:
             raise PartnerCenterHold("HOLD_BROWSER_AUTOMATION_UNAVAILABLE") from exc
 
@@ -172,6 +188,11 @@ class CdpPage:
         parsed = urlparse(url)
         if parsed.scheme != "https" or parsed.hostname != PARTNER_HOST:
             raise PartnerCenterHold("HOLD_BROWSER_NAVIGATION_REJECTED")
+        current_url = self.evaluate("location.href")
+        if (url == PARTNER_PRODUCTS_URL
+                and isinstance(current_url, str)
+                and _is_products_overview(current_url)):
+            return
         self.command("Page.enable")
         self.command("Page.navigate", {"url": url}, timeout=timeout)
         deadline = time.monotonic() + timeout
