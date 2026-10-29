@@ -30,6 +30,21 @@ single-writer contract must stop the whole batch.
 Package Version remains a separate gate. Every Identity-only result records
 `package_version_gate=HOLD` and `store_submission=NOT_PERFORMED`.
 
+## Factory artifact expiry gate
+
+Discovery now requires a valid future UTC `factory_artifact_expiry_utc`
+on every queued APP. Missing, malformed, or expired timestamps stop the
+batch before Partner Center UI or Identity CAS, and the timestamp is copied
+into each queued job as `artifact_expires_at`. The Windows runner also
+checks live GitHub Actions artifact metadata, `expired=false`, ZIP digest,
+and extracted EXE SHA-256/bytes. A timestamp in the ledger is not itself
+proof of artifact availability. Historical CI injects its pinned observation
+clock; production uses the actual UTC clock.
+
+The four current Factory artifacts expire on 2026-11-02 UTC. A fresh
+artifact must be independently verified and requeued after expiration;
+do not bypass this check by editing a timestamp.
+
 ## Completion evidence and fail-closed classification
 
 The four Factory PRE_IDENTITY artifacts have separately verifiable ZIP digests,
