@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-29T00:35:30Z",
+  "updated_at_utc": "2026-10-29T00:35:48Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -1893,7 +1893,7 @@
     "store_submission": 0,
     "package_upload": 0,
     "package_version_gate": "HOLD",
-    "status": "CLOUD_PREIDENTITY_4_OF_4__PR41_LOCAL_RUNNER_EXPIRY_INTEGRATION_CI_PENDING__LOCAL_BATCH_NOT_STARTED",
+    "status": "CLOUD_PREIDENTITY_4_OF_4__PR41_LOCAL_RUNNER_EXPIRY_INTEGRATION_CI_GREEN__LOCAL_BATCH_NOT_STARTED",
     "preflight_evidence": "FOUR_FACTORY_BRANCH_HEADS_EXACT_MATCH__FOUR_GITHUB_ACTIONS_ARTIFACTS_UNEXPIRED_DIGEST_MATCH__PR40_WINDOWS_UBUNTU_CI_GREEN__NO_USER_PC_LOCAL_RECEIPT",
     "code_contracts": {
       "windows_all_auto_pr": 33,
@@ -2013,7 +2013,7 @@
         "original_offline_qa_run_id": 40789308231,
         "original_ci_status": "SUCCESS_WINDOWS_UBUNTU",
         "artifact_expiry_integrated_head": "f995f35b350d71532a670d63782fa4d984aab59a",
-        "artifact_expiry_ci_status": "PENDING",
+        "artifact_expiry_ci_status": "SUCCESS_WINDOWS_UBUNTU",
         "contract_ci_run_id": 40795052290,
         "offline_qa_run_id": 40795052301,
         "local_physical_execution": "NOT_OBSERVED",
@@ -2150,7 +2150,7 @@
         "artifact_live_metadata_checked_at_utc": "2026-10-28T23:35:53.183Z"
       }
     ],
-    "next_action": "Review PR41 latest Windows/Ubuntu CI; then physical Windows exact-source sync and artifact recheck, authenticated serial four-product capture and APP single-writer CAS/replay. Never claim batch PASS from GitHub CI alone.",
+    "next_action": "PR41 Windows/Ubuntu CI green. On user Windows run read-only exact-source and artifact checks, then serial Partner Center capture and APP single-writer CAS/replay. Independent host schedule trigger must be proven separately. Do not claim batch PASS until four local receipts are verified.",
     "cloud_discover_contract_run_id": 40728641133,
     "cloud_discover_contract_ci": "SUCCESS_WINDOWS_UBUNTU",
     "cloud_discover_from_pinned_central_commit": "0fe4dc510b37b0574f96d13bc95ade6ef1635032",
@@ -2210,12 +2210,12 @@
       "Integrated PR40 artifact-expiry fail-closed discovery into PR41 live runner branch without merging or touching main/release",
       "Discovery rejects missing, malformed or expired factory_artifact_expiry_utc and persists artifact_expires_at",
       "Added expiry regression fixtures and pinned historical CI clock; production UTC clock remains live",
-      "Updated runbook; PR41 new HEAD CI queued at 2026-10-29T00:35:30Z"
+      "PR41 integrated HEAD f995f35: contract CI 40795052290 and Offline QA 40795052301 both SUCCESS on Windows and Ubuntu"
     ],
     "original_runner_contract_ci_run_id": 40789308213,
     "original_runner_offline_qa_run_id": 40789308231,
     "original_runner_ci": "SUCCESS_WINDOWS_UBUNTU",
-    "integrated_expiry_head_ci": "PENDING",
+    "integrated_expiry_head_ci": "SUCCESS_WINDOWS_UBUNTU",
     "integrated_expiry_contract_ci_run_id": 40795052290,
     "integrated_expiry_offline_qa_run_id": 40795052301,
     "cloud_pre_identity_discovered": 4,
@@ -2236,6 +2236,6 @@
     "next_resume_index": 1,
     "store_submission": 0,
     "no_main_release_merge": true,
-    "next_action": "Wait for PR41 integrated HEAD Windows/Ubuntu CI green, then run trusted no-LLM local Windows runner with exact source/artifact checks. Independent UI capture/CAS/replay and actual host schedule attestation are mandatory; no physical local evidence yet. Four Factory artifacts expire 2026-11-02 UTC."
+    "next_action": "PR41 integrated HEAD CI green on Windows/Ubuntu. Next physical Windows no-LLM runner exact-source/artifact verification, authenticated serial four-product capture, single-writer CAS/replay and actual host schedule attestation. No local PASS evidence; four Factory artifacts expire 2026-11-02 UTC."
   }
 }
