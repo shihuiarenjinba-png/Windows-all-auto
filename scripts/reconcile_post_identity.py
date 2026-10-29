@@ -88,6 +88,8 @@ def reconcile_approved_return(
              "HOLD_APPROVED_IDENTITY_FILE_INVALID")
     try:
         approved = json.loads(raw, object_pairs_hook=_unique_object)
+    except ReconcileHold:
+        raise
     except (ValueError, TypeError) as exc:
         raise ReconcileHold("HOLD_APPROVED_IDENTITY_JSON_INVALID") from exc
     _require(isinstance(approved, dict), "HOLD_APPROVED_IDENTITY_JSON_INVALID")
@@ -111,7 +113,7 @@ def reconcile_approved_return(
     _require(re.fullmatch(r"[A-Za-z0-9]{8,32}", approved["store_id"]) is not None
              and re.fullmatch(r"[A-Za-z0-9._-]+_[a-z0-9]{13}",
                               approved["package_family_name"]) is not None
-             and re.fullmatch(r"S-1-15-2(?:-\\d+){7}",
+             and re.fullmatch(r"S-1-15-2(?:-\d+){7}",
                               approved["package_sid"]) is not None,
              "HOLD_APPROVED_IDENTITY_SCHEMA")
     if job.get("expected_exe_sha256") is not None:
