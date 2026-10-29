@@ -1,5 +1,6 @@
 """Read-only mixed PRE/POST queue regression; no network/browser/CAS."""
-from copy import deepcopy
+from pathlib import Path
+import tempfile
 from datetime import datetime, timezone
 import json
 from types import SimpleNamespace
@@ -156,6 +157,15 @@ class MixedAuditTests(unittest.TestCase):
         }]
         with self.assertRaisesRegex(audit.AuditHold, "CROSS_LANE_BINDING"):
             check(ledger, approved, artifacts)
+
+    def test_audit_hold_does_not_create_local_state(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "must-not-create"
+            with patch.object(runner, "audit_queue_only",
+                              side_effect=audit.AuditHold("HOLD_PRE_IDENTITY_HEAD_DRIFT")):
+                code = runner.main(["--audit-queue", "--state-dir", str(root)])
+            self.assertEqual(code, 2)
+            self.assertFalse(root.exists())
 
     def test_audit_entrypoint_never_calls_browser_or_local_cas(self):
         ledger, approved, artifacts = fixture()
