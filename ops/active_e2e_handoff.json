@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-29T10:38:07Z",
+  "updated_at_utc": "2026-10-29T10:42:41Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -2364,11 +2364,32 @@
     "last_live_recheck_utc": "2026-10-29T07:41:43.673Z",
     "cloud_verified_return_count": 1,
     "cloud_verified_pending_return_count": 3,
-    "queue_reconciliation_status": "FOCUS_POST_IDENTITY_RECONCILED__LOCAL_RUNNER_MIXED_STATUS_COMPATIBILITY_HOLD"
+    "queue_reconciliation_status": "FOCUS_POST_IDENTITY_RECONCILED__LOCAL_RUNNER_MIXED_STATUS_COMPATIBILITY_HOLD",
+    "mixed_status_read_only_audit": {
+      "draft_pr": 50,
+      "branch": "codex/e2e-mixed-identity-audit-20261029",
+      "head_sha": "8534557f6f76030fd65cb59f351a8372bd7e3e10",
+      "stacked_on_pr": 48,
+      "offline_qa_run_id": 40859613405,
+      "ci_conclusion": "SUCCESS_WINDOWS_UBUNTU",
+      "offline_tests": "448_TESTS_1_SKIP",
+      "source_of_truth": "LIVE_GITHUB_EXACT_BRANCH_HEAD_AND_APPROVED_IDENTITY_FOR_POST__ARTIFACT_METADATA_FOR_PRE",
+      "expected_queue": "ONE_POST_IDENTITY_FOCUS_THREE_PRE_IDENTITY_APP",
+      "status": "READ_ONLY_AUDIT_CODE_READY__PHYSICAL_LOCAL_EXECUTION_NOT_RUN",
+      "operator_runner_ready": false,
+      "task_scheduler_registration_allowed": false,
+      "reasons": [
+        "MIXED_STATE_RUNNER_NOT_YET_RECONCILED",
+        "FOCUS_LOCAL_REPLAY_AND_SUBMISSION_DRAFT_NOT_INDEPENDENTLY_VERIFIED",
+        "THREE_APP_IDENTITY_RETURNS_PENDING"
+      ],
+      "next_action": "INTEGRATE_VERIFIED_MIXED_STATE_RUNNER_AND_LOCAL_RECEIPT_IMPORT__NO_DUPLICATE_FOCUS_CAS",
+      "store_submission": "NOT_PERFORMED"
+    }
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-29T10:38:07Z",
-    "scope": "PRISM_POST_IDENTITY_CANONICAL_QUEUE_RECONCILIATION__FOCUS_ALREADY_POST_IDENTITY",
+    "observed_at_utc": "2026-10-29T10:42:41Z",
+    "scope": "PRISM_CANONICAL_POST_IDENTITY_RECONCILED__MIXED_APP_ROTATION_READ_ONLY_AUDIT_CI_GREEN",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
     "canonical_previous_blob_sha": "98d40cce07567e00657e895aeca2c44d2e47bf26",
@@ -2395,7 +2416,7 @@
     "success_count_cloud_verified": 1,
     "remaining_app_identity_returns": 3,
     "next_resume_index": 2,
-    "next_action": "Fix mixed POST/PRE identity batch runner and revalidate before any Windows Task Scheduler registration",
+    "next_action": "Implement safe mixed-state local resume for Focus NO_WORK and Ledger/Text/Image; import trusted local receipts and verify submission draft before 12-hour task registration",
     "post_identity_reconcile_pr": 49,
     "post_identity_reconcile_ci_run": 40851883814,
     "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU",
@@ -2423,7 +2444,17 @@
     ],
     "new_local_execution": "NOT_PERFORMED",
     "new_cas": "NOT_PERFORMED",
-    "new_store_submission": 0
+    "new_store_submission": 0,
+    "canonical_prism_post_identity_commit": "1944c38abea1a0dcd6d3d1b377a41d3ac7d73bcb",
+    "mixed_audit_pr": 50,
+    "mixed_audit_head": "8534557f6f76030fd65cb59f351a8372bd7e3e10",
+    "mixed_audit_ci_run": 40859613405,
+    "mixed_audit_ci": "SUCCESS_WINDOWS_UBUNTU_448_TESTS_1_SKIP",
+    "mixed_audit_physical_execution": "NOT_PERFORMED",
+    "local_partner_center_operator": "NOT_EXECUTED_IN_THIS_CLOUD_RUNTIME",
+    "cloud_verified_app_post_identity": 1,
+    "cloud_verified_app_pre_identity": 3,
+    "cloud_verified_3d_post_identity": 1
   },
   "post_identity_pipeline": {
     "schema_version": 1,
