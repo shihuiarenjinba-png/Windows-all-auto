@@ -162,7 +162,60 @@ def recheck_central(expected: str) -> None:
         raise RunnerHold("HOLD_CENTRAL_QUEUE_HEAD_DRIFT")
 
 
-def validate_queue(ledger: dict, central_head: str, execution_origin: str) -> tuple[dict, list[dict]]:
+def completed_identity_return_matches(job: dict, current_head: str,
+                                      state_dir: Path | None,
+                                      central_head: str) -> bool:
+    if state_dir is None:
+        return False
+    state_path = state_dir / "batch-state.json"
+    if not state_path.is_file():
+        return False
+    try:
+        state = operator.read_json(state_path, 512_000)
+        if state.get("central_head_sha") != central_head:
+            return False
+        products = [
+            item for item in state.get("products", [])
+            if isinstance(item, dict)
+            and item.get("request_id") == job.get("request_id")
+        ]
+        if len(products) != 1 or products[0].get("state") != "SUCCESS":
+            return False
+        result = products[0].get("result")
+        if (not isinstance(result, dict)
+                or result.get("source_sha") != job.get("source_sha")
+                or result.get("identity_return_commit_sha") != current_head
+                or result.get("github_replay_status") != "EXISTING_VERIFIED"):
+            return False
+        item = gh_json(
+            f"repos/{job['source_repository']}/contents/{job['identity_return_target']}"
+            f"?ref={job['source_branch']}", allow_missing=True,
+        )
+        if item is None or item.get("encoding") != "base64":
+            return False
+        raw = base64.b64decode(
+            "".join(str(item["content"]).split()), validate=True
+        )
+        approved = json.loads(
+            raw.decode("utf-8"), object_pairs_hook=operator._no_duplicates
+        )
+        exact = {
+            "request_id": job["request_id"],
+            "source_sha": job["source_sha"],
+            "store_id": result.get("store_id"),
+            "name": result.get("identity_name"),
+            "package_family_name": result.get("pfn"),
+            "package_sid": result.get("package_sid"),
+            "dispatch_origin": batch.DISPATCH_ORIGIN,
+            "execution_origin": result.get("execution_origin"),
+        }
+        return all(approved.get(key) == value for key, value in exact.items())
+    except Exception:
+        return False
+
+
+def validate_queue(ledger: dict, central_head: str, execution_origin: str,
+                   state_dir: Path | None = None) -> tuple[dict, list[dict]]:
     jobs = (ledger.get("rotation_cohorts") or {}).get("app_jobs")
     ready = [x for x in jobs or [] if isinstance(x, dict)
              and x.get("status") == "PRE_IDENTITY_READY"]
@@ -170,7 +223,13 @@ def validate_queue(ledger: dict, central_head: str, execution_origin: str) -> tu
         raise RunnerHold("HOLD_BATCH_DISCOVERY_INCOMPLETE")
     products = []
     for index, job in enumerate(ready, 1):
-        if live_branch_head(job["source_repository"], job["source_branch"]) != job["source_sha"]:
+        current_head = live_branch_head(
+            job["source_repository"], job["source_branch"]
+        )
+        if (current_head != job["source_sha"]
+                and not completed_identity_return_matches(
+                    job, current_head, state_dir, central_head
+                )):
             raise RunnerHold("HOLD_CANONICAL_PRODUCT_REVISION_MISMATCH")
         artifact = gh_json(
             f"repos/{job['source_repository']}/actions/artifacts/{job['factory_artifact_id']}"
@@ -413,7 +472,9 @@ def run_batch(args) -> dict:
     execution_origin = resolve_execution_origin(args.execution_origin, state_dir)
     prerequisite = check_prerequisites(args.provisioner_root.resolve())
     ledger, central_head, central_blob = fetch_central()
-    spec, jobs = validate_queue(ledger, central_head, execution_origin)
+    spec, jobs = validate_queue(
+        ledger, central_head, execution_origin, state_dir
+    )
     recheck_central(central_head)
 
     sync_receipt = sync_sources(jobs, state_dir)

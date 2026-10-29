@@ -1,5 +1,7 @@
 """Offline runner safety tests; no GitHub, browser, CAS, or Store action."""
+import base64
 import hashlib
+import json
 from pathlib import Path
 import tempfile
 import unittest
@@ -83,6 +85,66 @@ class RunnerTests(unittest.TestCase):
         with patch.object(runner, "live_branch_head", return_value="f" * 40):
             with self.assertRaisesRegex(runner.RunnerHold, "REVISION_MISMATCH"):
                 runner.validate_queue(value, "a" * 40, "MANUAL_WINDOWS_TERMINAL")
+
+    def test_completed_cas_commit_is_valid_resume_revision(self):
+        value = ledger()
+        focus = value["rotation_cohorts"]["app_jobs"][0]
+        return_head = "c" * 40
+        result = {
+            "request_id": focus["request_id"],
+            "source_sha": focus["source_sha"],
+            "identity_return_commit_sha": return_head,
+            "github_replay_status": "EXISTING_VERIFIED",
+            "store_id": "9P6452C61N7B",
+            "identity_name": "OkinawaDesktopTools.FocusSessionDesk",
+            "pfn": "OkinawaDesktopTools.FocusSessionDesk_j8yefg9jgfh58",
+            "package_sid": "S-1-15-2-1-2-3-4-5-6-7",
+            "execution_origin": "MANUAL_WINDOWS_TERMINAL",
+        }
+        approved = {
+            "request_id": focus["request_id"],
+            "source_sha": focus["source_sha"],
+            "store_id": result["store_id"],
+            "name": result["identity_name"],
+            "package_family_name": result["pfn"],
+            "package_sid": result["package_sid"],
+            "dispatch_origin": "CHATGPT_36_MIN_LOOP",
+            "execution_origin": "MANUAL_WINDOWS_TERMINAL",
+        }
+        artifacts = {job["factory_artifact_id"]: {
+            "expired": False, "name": job["factory_artifact_name"],
+            "digest": "sha256:" + job["factory_artifact_zip_sha256"],
+        } for job in value["rotation_cohorts"]["app_jobs"]}
+
+        def fake_head(repo, branch):
+            job = next(item for item in value["rotation_cohorts"]["app_jobs"]
+                       if item["source_branch"] == branch)
+            return return_head if job is focus else job["source_sha"]
+
+        def fake_gh(endpoint, allow_missing=False):
+            if "/contents/" in endpoint:
+                return {"encoding": "base64", "content": base64.b64encode(
+                    json.dumps(approved).encode("utf-8")
+                ).decode("ascii")}
+            return artifacts[int(endpoint.rsplit("/", 1)[-1])]
+
+        with tempfile.TemporaryDirectory() as directory:
+            state_dir = Path(directory)
+            (state_dir / "batch-state.json").write_text(json.dumps({
+                "central_head_sha": "a" * 40,
+                "products": [{
+                    "request_id": focus["request_id"],
+                    "state": "SUCCESS", "result": result,
+                }],
+            }), encoding="utf-8")
+            with patch.object(runner, "live_branch_head", side_effect=fake_head), \
+                 patch.object(runner, "gh_json", side_effect=fake_gh):
+                spec, jobs = runner.validate_queue(
+                    value, "a" * 40, "MANUAL_WINDOWS_TERMINAL", state_dir
+                )
+
+        self.assertEqual(len(jobs), 4)
+        self.assertEqual(spec["central_head_sha"], "a" * 40)
 
     def test_artifact_and_exe_are_both_hashed(self):
         payload = b"MZ" + b"x" * 4094
