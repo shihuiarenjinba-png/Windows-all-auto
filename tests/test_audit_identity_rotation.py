@@ -74,7 +74,7 @@ def check(ledger, approved, artifacts, **overrides):
         )
     def fetch_approved(repo, path, branch):
         slug = path.split("/")[1]
-        value = overrides.get("approved", approved).get(slug)
+        value = overrides.get("approved_override", approved).get(slug)
         return json.dumps(value) if isinstance(value, dict) else value
     return audit.audit_rotation(
         ledger, fetch_head=fetch_head, fetch_approved=fetch_approved,
@@ -117,7 +117,7 @@ class MixedAuditTests(unittest.TestCase):
         raw = '{"store_id":"A","store_id":"B"}'
         with self.assertRaisesRegex(audit.AuditHold, "DUPLICATE_KEY"):
             check(ledger, approved, artifacts,
-                  approved={"focus-session-desk": raw})
+                  approved_override={"focus-session-desk": raw})
 
     def test_pre_identity_file_present_requires_reconciliation(self):
         ledger, approved, artifacts = fixture()
