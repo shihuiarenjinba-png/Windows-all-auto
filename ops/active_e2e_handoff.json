@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-29T03:42:24.910Z",
+  "updated_at_utc": "2026-10-29T04:36:59.937Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -2112,6 +2112,20 @@
         "local_task_registration": "NOT_PERFORMED",
         "scheduled_trigger_proven": false,
         "store_submission": 0
+      },
+      "windows_all_auto_origin_marker_lock": {
+        "draft_pr": 46,
+        "branch": "codex/e2e-batch4-lock-trigger-marker-20261029",
+        "head_sha": "c51a3e089403350140bf64928bdd81f3d29a59e6",
+        "base_pr": 45,
+        "offline_qa_run_id": 40818682995,
+        "ci_status": "SUCCESS_WINDOWS_UBUNTU",
+        "fix": "SCHEDULER_MANUAL_START_MARKER_CONSUMED_ONLY_AFTER_OS_SINGLE_FLIGHT_LOCK",
+        "regression": "CONTESTED_LOCK_PRESERVES_ORIGIN_MARKER_AND_PERFORMS_ZERO_SOURCE_SYNC_ARTIFACT_IO_BROWSER",
+        "physical_local_execution": "NOT_OBSERVED",
+        "local_task_registration": "NOT_PERFORMED",
+        "schedule_trigger_proven": false,
+        "store_submission": 0
       }
     },
     "products": [
@@ -2280,24 +2294,22 @@
     }
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-29T03:42:24.910Z",
-    "scope": "PR45_SINGLE_FLIGHT_BEFORE_LOCAL_SOURCE_AND_ARTIFACT_IO",
+    "observed_at_utc": "2026-10-29T04:36:59.937Z",
+    "scope": "PR46_SCHEDULED_ORIGIN_MARKER_SINGLE_FLIGHT_RACE_FIX",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
-    "implementation_branch": "codex/e2e-batch4-lock-before-local-io-20261029",
-    "implementation_pr": 45,
-    "implementation_head_sha": "ee398a2dd7a604eb2aaf4dc9dba8cb514f997e1a",
-    "implementation_base_pr": 44,
+    "implementation_branch": "codex/e2e-batch4-lock-trigger-marker-20261029",
+    "implementation_pr": 46,
+    "implementation_head_sha": "c51a3e089403350140bf64928bdd81f3d29a59e6",
+    "implementation_base_pr": 45,
     "changes": [
-      "Moved existing OS non-overlap lock ahead of local exact-source sync and Factory Artifact ZIP download/extraction; previously two runners could race before lock",
-      "Terminal batch replays now return before local source/Artifact IO",
-      "Resumable state created only after source/Artifact bytes verify under lock",
-      "Added contested-lock regression proving no source sync, ZIP IO or browser work on lock denial",
-      "Draft PR45 Offline QA Windows/Ubuntu PASS"
+      "Moved one-shot Windows Task Scheduler manual-start marker consumption inside existing OS single-flight lock; lock-denied runner cannot steal the real task's origin",
+      "Kept source sync, Artifact ZIP download, Partner Center UI and Provisioner CAS under the same lock",
+      "Added contested-lock regression verifying marker is preserved and local IO/browser are not started"
     ],
-    "offline_qa_run_id": 40813570808,
-    "offline_qa_push_run_id": 40813564406,
+    "offline_qa_run_id": 40818682995,
     "ci_status": "SUCCESS_WINDOWS_UBUNTU",
     "cloud_pre_identity_discovered": 4,
+    "factory_source_branch_heads": "FOUR_OF_FOUR_EXACT_MATCH_LIVE_GITHUB_COMPARE",
     "local_code_sync": "NOT_OBSERVED_ON_USER_PC_THIS_RUN",
     "local_scheduler_registration": "NOT_PERFORMED",
     "scheduled_trigger_to_local": "BATCH_SCHEDULE_TRIGGER_NOT_PROVEN",
@@ -2317,6 +2329,6 @@
     "next_resume_index": 1,
     "store_submission": 0,
     "no_main_release_merge": true,
-    "next_action": "Physical Windows CDP diagnose → read-only preflight → safe local task registration → single-flight four-product Identity batch. Do not label scheduled 36-minute trigger proven without independent host attestation."
+    "next_action": "Physical Windows CDP diagnose and reviewed read-only preflight; only then task registration and serial 4-product Identity batch. Independently attest saved 36-minute trigger. Investigate post-CAS branch HEAD drift on crash/restart without relaxing source binding."
   }
 }
