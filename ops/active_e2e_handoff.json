@@ -2188,6 +2188,13 @@
         "identity_capture": "NOT_PERFORMED",
         "cas": "NOT_PERFORMED",
         "store_submission": 0
+      },
+      "windows_all_auto_mixed_artifact_expiry_guard": {
+        "draft_pr": 54,
+        "head_sha": "c217f686e9555fbad7452be80211e0c963c02c69",
+        "ci_run_id": 40903829997,
+        "ci_status": "SUCCESS_WINDOWS_UBUNTU",
+        "scope": "MIXED_PRE_POST_LOCAL_PREFLIGHT_ONLY__NO_BROWSER_OR_CAS"
       }
     },
     "products": [
@@ -2483,6 +2490,21 @@
       "local_windows": "NOT_ACCESSED",
       "cas": "NOT_PERFORMED_THIS_RUN",
       "store_submission": "NOT_PERFORMED"
+    },
+    "mixed_artifact_expiry_guard": {
+      "draft_pr": 54,
+      "branch": "codex/e2e-mixed-artifact-expiry-20261030",
+      "head_sha": "c217f686e9555fbad7452be80211e0c963c02c69",
+      "base_pr": 53,
+      "ci_run_id": 40903829997,
+      "ci_conclusion": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+      "fix": "LIVE_GITHUB_ARTIFACT_EXPIRES_AT_MUST_EQUAL_CENTRAL_JOB_EXPIRY_AND_BE_IN_FUTURE_UTC_BEFORE_LOCAL_SOURCE_SYNC_OR_ZIP_IO",
+      "tests": "SEVEN_NEW_EXPIRY_REGRESSIONS_PLUS_EXISTING_MIXED_PREFLIGHT_FIXTURES",
+      "physical_windows_execution": "NOT_PERFORMED",
+      "task_scheduler_registration": "HOLD",
+      "partner_center": "NOT_ACCESSED",
+      "cas": "NOT_PERFORMED",
+      "store_submission": "NOT_PERFORMED"
     }
   },
   "post_identity_pipeline": {
@@ -2718,6 +2740,15 @@
         "task_scheduler_registration": "HOLD",
         "store_submission": "NOT_PERFORMED",
         "integration_status": "STACKED_DRAFT_NOT_MERGED"
+      },
+      "mixed_artifact_expiry_guard": {
+        "draft_pr": 54,
+        "head_sha": "c217f686e9555fbad7452be80211e0c963c02c69",
+        "ci_run_id": 40903829997,
+        "ci_status": "SUCCESS_WINDOWS_UBUNTU",
+        "mixed_local_preflight": "CODE_CI_PASS__PHYSICAL_WINDOWS_HOLD",
+        "mixed_local_partner_center_runner": "NOT_IMPLEMENTED",
+        "task_scheduler_registration": "HOLD"
       }
     }
   },
