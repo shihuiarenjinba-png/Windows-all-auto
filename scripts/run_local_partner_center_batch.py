@@ -17,6 +17,7 @@ from typing import Any
 import zipfile
 
 from scripts import local_code_sync
+from scripts import audit_identity_rotation as rotation_audit
 from scripts import local_identity_batch as batch
 from scripts import local_partner_center_operator as operator
 from scripts.partner_center_cdp import (
@@ -442,6 +443,44 @@ def validate_existing_state(state: dict, spec: dict, central_head: str,
     return False
 
 
+def audit_queue_only(args) -> dict:
+    """Read-only GitHub audit; NEVER a local Identity, CAS, or scheduler PASS.
+
+    Unlike the legacy four-PRE-Identity runner this can inspect a returned
+    Focus Identity and three still-PRE products without treating the former
+    as a new Partner Center product. No browser or local Windows required.
+    """
+    ledger, central_head, _ = fetch_central()
+
+    def fetch_approved(repository: str, target: str, source_branch: str):
+        item = gh_json(
+            f"repos/{repository}/contents/{target}?ref={source_branch}",
+            allow_missing=True,
+        )
+        if item is None:
+            return None
+        if item.get("encoding") != "base64":
+            raise RunnerHold("HOLD_APPROVED_IDENTITY_FILE_INVALID")
+        try:
+            raw = base64.b64decode(
+                "".join(str(item["content"]).split()), validate=True
+            )
+            return raw.decode("utf-8")
+        except (KeyError, ValueError, UnicodeError) as exc:
+            raise RunnerHold("HOLD_APPROVED_IDENTITY_FILE_INVALID") from exc
+
+    result = rotation_audit.audit_rotation(
+        ledger,
+        fetch_head=live_branch_head,
+        fetch_approved=fetch_approved,
+        fetch_artifact=lambda repo, artifact_id: gh_json(
+            f"repos/{repo}/actions/artifacts/{artifact_id}"
+        ),
+    )
+    recheck_central(central_head)
+    return {**result, "central_head_sha": central_head}
+
+
 def preflight_only(args) -> dict:
     """Read-only live queue gate for task registration, never host proof.
 
@@ -747,14 +786,19 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--execution-origin", choices=sorted(EXECUTION_ORIGINS),
                         default="MANUAL_WINDOWS_TERMINAL")
     parser.add_argument("--preflight-only", action="store_true")
+    parser.add_argument("--audit-queue", action="store_true")
     args = parser.parse_args(argv)
     try:
-        result = preflight_only(args) if args.preflight_only else run_batch(args)
+        if args.audit_queue and args.preflight_only:
+            raise RunnerHold("HOLD_CONFLICTING_READ_ONLY_MODES")
+        result = (audit_queue_only(args) if args.audit_queue else
+                  preflight_only(args) if args.preflight_only else run_batch(args))
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0 if result.get("status") in {
-            "LOCAL_WINDOWS_NO_LLM_AUTOMATION_PASS", "BATCH_PREFLIGHT_READY"
+            "LOCAL_WINDOWS_NO_LLM_AUTOMATION_PASS", "BATCH_PREFLIGHT_READY",
+            "MIXED_ROTATION_AUDITED"
         } else 2
-    except (RunnerHold, batch.BatchHold, operator.OperatorHold,
+    except (RunnerHold, rotation_audit.AuditHold, batch.BatchHold, operator.OperatorHold,
             local_code_sync.SyncHold, PartnerCenterHold) as exc:
         code = exc.code if isinstance(exc, RunnerHold) else str(exc)
         result = {
