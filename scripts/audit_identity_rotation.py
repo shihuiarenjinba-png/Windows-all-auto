@@ -13,7 +13,7 @@ import re
 SHA40 = re.compile(r"[0-9a-f]{40}\Z")
 SHA64 = re.compile(r"[0-9a-f]{64}\Z")
 PFN = re.compile(r"[A-Za-z0-9._-]+_[a-z0-9]{13}\Z")
-SID = re.compile(r"S-1-15-2(?:-\\d+){7}\Z")
+SID = re.compile(r"S-1-15-2(?:-\d+){7}\Z")
 ORDER = ("focus-session-desk", "file-integrity-ledger",
          "offline-text-diff-desk", "offline-image-inventory-desk")
 SELECTION = "MSIX or PWA app"
