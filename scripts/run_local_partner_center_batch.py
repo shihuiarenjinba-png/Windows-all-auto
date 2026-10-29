@@ -20,6 +20,7 @@ from scripts import local_code_sync
 from scripts import audit_identity_rotation as rotation_audit
 from scripts import mixed_rotation_dispatch as rotation_plan
 from scripts import mixed_artifact_expiry as artifact_expiry
+from scripts import mixed_batch_resume as mixed_resume
 from scripts import local_identity_batch as batch
 from scripts import local_partner_center_operator as operator
 from scripts.partner_center_cdp import (
@@ -612,6 +613,98 @@ def preflight_mixed_local(args) -> dict:
     }
 
 
+
+def prepare_mixed_resume_state(args) -> dict:
+    """Persist a verified mixed PRE/POST resume contract, without UI or CAS.
+
+    This is intentionally a pre-execution gate, not the executable mixed
+    Partner Center worker.  The existing exact-source/EXE preflight runs
+    under the same OS lock first; a second locked phase rejects queue drift
+    before persisting a restart-safe state.  Persisted success cannot be
+    replayed without an independent UI+GitHub verifier, so this mode never
+    silently upgrades a local JSON receipt into PASS.
+    """
+    preflight = preflight_mixed_local(args)
+    if preflight.get("status") not in {
+            "MIXED_LOCAL_PRECHECK_PASS", "MIXED_LOCAL_NO_IDENTITY_WORK",
+            "MIXED_RESUME_STATE_PREPARED"}:
+        raise RunnerHold("HOLD_MIXED_RESUME_PREFLIGHT")
+    snapshot = fetch_central()
+    ledger, central_head, _ = snapshot
+    if preflight.get("central_head_sha") != central_head:
+        raise RunnerHold("HOLD_MIXED_RESUME_CENTRAL_DRIFT")
+    audit = audit_queue_only(args, central_snapshot=snapshot)
+    plan = rotation_plan.build_dispatch_plan(ledger, audit)
+    expected = mixed_resume.initialize(
+        plan, central_head_sha=central_head,
+        execution_origin=args.execution_origin,
+    )
+    pending = [item for item in plan["products"]
+               if item["dispatch_action"] == mixed_resume.PRE_ACTION]
+    verified = preflight.get("products", [])
+    if not isinstance(verified, list) or len(verified) != len(pending):
+        raise RunnerHold("HOLD_MIXED_RESUME_PREFLIGHT_COUNT")
+    jobs = (ledger.get("rotation_cohorts") or {}).get("app_jobs")
+    if not isinstance(jobs, list) or len(jobs) != 4:
+        raise RunnerHold("HOLD_MIXED_RESUME_DISCOVERY")
+    by_slug = {item.get("slug"): item for item in jobs}
+    if len(by_slug) != 4:
+        raise RunnerHold("HOLD_MIXED_RESUME_DISCOVERY")
+    for planned, proof in zip(pending, verified):
+        job = by_slug.get(planned["slug"])
+        if not isinstance(job, dict):
+            raise RunnerHold("HOLD_MIXED_RESUME_PREFLIGHT_BINDING")
+        required = (
+            proof.get("batch_index") == planned["batch_index"]
+            and proof.get("slug") == planned["slug"]
+            and proof.get("request_id") == planned["request_id"]
+            and proof.get("source_sha") == planned["source_sha"]
+            and proof.get("source_snapshot_head") == planned["source_sha"]
+            and proof.get("identity_return_target") ==
+                planned["identity_return_target"]
+            and proof.get("queue_job_digest") == operator.canonical_digest(job)
+            and proof.get("exe_sha256") == job.get("expected_exe_sha256")
+            and proof.get("identity_capture") == "NOT_PERFORMED"
+            and proof.get("github_return") == "NOT_PERFORMED"
+        )
+        if not required:
+            raise RunnerHold("HOLD_MIXED_RESUME_PREFLIGHT_BINDING")
+    state_dir = args.state_dir.resolve()
+    state_path = state_dir / "mixed-resume-state.json"
+    with batch.state_lock(state_dir / "batch-state.json"):
+        recheck_central(central_head)
+        for item in pending:
+            if live_branch_head(item["source_repository"],
+                                item["source_branch"]) != item["source_sha"]:
+                raise RunnerHold("HOLD_CANONICAL_PRODUCT_REVISION_MISMATCH")
+        if state_path.exists():
+            state = operator.read_json(state_path, 512_000)
+            # No verifier is supplied: any forged or previously completed
+            # local success fails closed until the real mixed executor can
+            # independently re-observe UI and GitHub evidence.
+            mixed_resume.validate_replay(state, expected)
+        else:
+            batch.atomic_write(state_path, expected)
+            state = expected
+    result = mixed_resume.summary(state)
+    return {
+        **result,
+        "status": "MIXED_RESUME_STATE_PREPARED",
+        "central_head_sha": central_head,
+        "state_path": str(state_path),
+        "pre_identity_preflight_count": len(verified),
+        "post_identity_skip_count": plan["post_identity_skip_count"],
+        "local_windows_no_llm_pass": False,
+        "multi_product_identity_batch_pass": False,
+        "task_scheduler_registration_allowed": False,
+        "partner_center": "NOT_OPENED",
+        "identity_capture": "NOT_PERFORMED",
+        "cas": "NOT_PERFORMED",
+        "store_submission": "NOT_PERFORMED",
+        "next_action": "REVIEW_AND_WIRE_AUTHENTICATED_MIXED_EXECUTOR",
+    }
+
+
 def preflight_only(args) -> dict:
     """Read-only live queue gate for task registration, never host proof.
 
@@ -920,10 +1013,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--audit-queue", action="store_true")
     parser.add_argument("--plan-queue", action="store_true")
     parser.add_argument("--mixed-local-preflight", action="store_true")
+    parser.add_argument("--prepare-mixed-resume", action="store_true")
     args = parser.parse_args(argv)
     try:
         if sum((args.audit_queue, args.plan_queue, args.preflight_only,
-                args.mixed_local_preflight)) > 1:
+                args.mixed_local_preflight, args.prepare_mixed_resume)) > 1:
             raise RunnerHold("HOLD_CONFLICTING_READ_ONLY_MODES")
         result = (audit_queue_only(args) if args.audit_queue else
                   plan_queue_only(args) if args.plan_queue else
@@ -936,7 +1030,7 @@ def main(argv: list[str] | None = None) -> int:
             "MIXED_LOCAL_PRECHECK_PASS", "MIXED_LOCAL_NO_IDENTITY_WORK"
         } else 2
     except (RunnerHold, rotation_audit.AuditHold, rotation_plan.PlanHold,
-            batch.BatchHold, operator.OperatorHold,
+            mixed_resume.MixedResumeHold, batch.BatchHold, operator.OperatorHold,
             local_code_sync.SyncHold, PartnerCenterHold) as exc:
         code = exc.code if isinstance(exc, RunnerHold) else str(exc)
         result = {
