@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-29T12:40:26.355Z",
+  "updated_at_utc": "2026-10-29T13:42:37.745Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -2388,8 +2388,8 @@
     }
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-29T12:40:26.355Z",
-    "scope": "LIVE_GITHUB_FOUR_APP_BRANCH_AND_APPROVED_IDENTITY_FILE_RECHECK__UNIFIED_POST_IDENTITY_AUDIT_IMPLEMENTED",
+    "observed_at_utc": "2026-10-29T13:42:37.745Z",
+    "scope": "MIXED_APP_DISPATCH_PLAN_IMPLEMENTED_AND_WINDOWS_UBUNTU_CI_GREEN__LOCAL_RUNNER_HOLD",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
     "canonical_previous_blob_sha": "98d40cce07567e00657e895aeca2c44d2e47bf26",
@@ -2416,7 +2416,7 @@
     "success_count_cloud_verified": 1,
     "remaining_app_identity_returns": 3,
     "next_resume_index": 2,
-    "next_action": "Implement mixed PRE_POST local runner with independently verified Focus skip, process remaining three serially; only then terminal no-LLM and 12-hour task registration",
+    "next_action": "Implement reviewed mixed-state resumable Windows runner; independently verify local Focus skip and remaining 3 Identity captures/returns, then terminal no-LLM replay before scheduler registration",
     "post_identity_reconcile_pr": 49,
     "post_identity_reconcile_ci_run": 40851883814,
     "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU",
@@ -2456,11 +2456,16 @@
     "cloud_verified_app_pre_identity": 3,
     "cloud_verified_3d_post_identity": 1,
     "remote_live_check": "FOUR_APP_BRANCH_HEADS__FOUR_APPROVED_IDENTITY_PATHS__FOUR_FACTORY_ARTIFACTS_UNEXPIRED_AND_DIGEST_MATCH",
-    "mixed_audit_unification": "PR49_PURE_RECONCILER_PORTED_ONTO_PR50_STACK__NO_MERGE"
+    "mixed_audit_unification": "PR49_PURE_RECONCILER_PORTED_ONTO_PR50_STACK__NO_MERGE",
+    "mixed_dispatch_plan_pr": 52,
+    "mixed_dispatch_plan_head": "8d8acf535d8b99b4fd3068769934cac64fbb60b2",
+    "mixed_dispatch_plan_ci": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+    "mixed_dispatch_plan_execution": "READ_ONLY_CONTRACT_TESTS_ONLY",
+    "mixed_dispatch_plan_result": "FOCUS_SKIP_EXISTING_GITHUB_RETURN__LEDGER_TEXT_IMAGE_PENDING"
   },
   "post_identity_pipeline": {
     "schema_version": 1,
-    "updated_at_utc": "2026-10-29T12:40:01.499Z",
+    "updated_at_utc": "2026-10-29T13:42:37.745Z",
     "writer": "36_WINDOWS_E2E_ONLY",
     "reconciliation_basis": "GITHUB_APPROVED_IDENTITY_FILES_VERIFIED_FOR_FOCUS_AND_PRISM__NO_LOCAL_RECEIPTS_READ_THIS_RUN",
     "product_count": 7,
@@ -2660,6 +2665,23 @@
         "scope": "READ_ONLY_MIXED_ROTATION_AUDIT_CALLS_CANONICAL_POST_IDENTITY_RECONCILER__EXE_HASH_AND_CROSS_LANE_STORE_ID_FAIL_CLOSED",
         "integration_status": "DRAFT_NOT_MERGED",
         "local_mixed_state_runner": "NOT_IMPLEMENTED__HOLD_TASK_SCHEDULER"
+      },
+      "mixed_dispatch_plan": {
+        "draft_pr": 52,
+        "branch": "codex/e2e-mixed-dispatch-plan-20261029",
+        "head_sha": "8d8acf535d8b99b4fd3068769934cac64fbb60b2",
+        "base_pr": 51,
+        "ci_run_ids": [
+          40884310742,
+          40884321807
+        ],
+        "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+        "scope": "READ_ONLY_MIXED_APP_DISPATCH_PLAN__FOCUS_POST_SKIP__THREE_PRE_PENDING__FAIL_CLOSED_BINDINGS",
+        "tested_behavior": "ELEVEN_OFFLINE_TESTS__NO_BROWSER_CAS_LOCAL_STATE_OR_STORE_ACTIONS",
+        "local_runner_status": "NOT_IMPLEMENTED__HOLD_TASK_SCHEDULER",
+        "integration_status": "DRAFT_NOT_MERGED",
+        "local_execution": "NOT_PERFORMED",
+        "store_submission": "NOT_PERFORMED"
       }
     }
   },
@@ -2734,6 +2756,16 @@
       "expired_count": 0,
       "digest_mismatch_count": 0,
       "source": "GITHUB_ACTIONS_RUN_ARTIFACT_METADATA__NO_LOCAL_DOWNLOAD"
+    },
+    "dispatch_plan": {
+      "draft_pr": 52,
+      "head_sha": "8d8acf535d8b99b4fd3068769934cac64fbb60b2",
+      "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+      "post_skip_count": 1,
+      "pre_pending_count": 3,
+      "local_runner_ready": false,
+      "task_scheduler_registration": "HOLD",
+      "scope": "CI_CONTRACT_ONLY__NOT_LIVE_LOCAL_EXECUTION"
     }
   }
 }
