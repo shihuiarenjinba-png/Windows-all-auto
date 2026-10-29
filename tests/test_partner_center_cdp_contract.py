@@ -120,6 +120,24 @@ class PartnerCenterRegistrationTests(unittest.TestCase):
             page.safe_snapshot()
 
 
+    def test_search_control_ambiguity_does_not_submit_enter(self):
+        page = CdpPage("target", None)
+        page.navigate = MagicMock()
+        page.safe_snapshot = MagicMock(return_value={"controls": []})
+        page._wait_not_busy = MagicMock()
+        page.fill_textbox = MagicMock()
+        page.click_exact = MagicMock(side_effect=PartnerCenterHold(
+            "HOLD_BROWSER_STATE_AMBIGUOUS"
+        ))
+        page.press_enter = MagicMock()
+        page.exact_product_count = MagicMock(return_value=0)
+        with self.assertRaisesRegex(
+            PartnerCenterHold, "HOLD_BROWSER_STATE_AMBIGUOUS"
+        ):
+            page.search_product("Sample Product")
+        page.press_enter.assert_not_called()
+        page.exact_product_count.assert_not_called()
+
     def test_reservation_requires_explicit_availability_click(self):
         page = CdpPage("target", None)
         page.click_exact = MagicMock(side_effect=[
