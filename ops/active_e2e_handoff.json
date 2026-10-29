@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-29T05:37:33.451Z",
+  "updated_at_utc": "2026-10-29T05:37:55.148Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -1905,7 +1905,7 @@
     "package_upload": 0,
     "package_version_gate": "HOLD",
     "status": "MULTI_PRODUCT_IDENTITY_BATCH_PARTIAL",
-    "preflight_evidence": "FOUR_FACTORY_BRANCH_HEADS_EXACT_MATCH__FOUR_GITHUB_ACTIONS_ARTIFACTS_UNEXPIRED_DIGEST_MATCH__PR40_WINDOWS_UBUNTU_CI_GREEN__NO_USER_PC_LOCAL_RECEIPT",
+    "preflight_evidence": "FOUR_FACTORY_BRANCH_HEADS_EXACT_MATCH__FOUR_GITHUB_ACTIONS_ARTIFACTS_UNEXPIRED_DIGEST_MATCH__PR47_WINDOWS_UBUNTU_CI_GREEN__NO_USER_PC_LOCAL_RECEIPT",
     "code_contracts": {
       "windows_all_auto_pr": 33,
       "windows_all_auto_head": "019eca325eae5f36f160af287482da4e666b5b49",
@@ -2359,6 +2359,15 @@
     "next_resume_index": 1,
     "store_submission": 0,
     "no_main_release_merge": true,
-    "next_action": "On physical Windows use reviewed PR47 independent worktree: py -3 -m scripts.partner_center_cdp diagnose; if authenticated controls are observed, run side-effect-free batch preflight, verify local exact source and artifact receipts, then serial batch with independent UI/CAS attestation. Do not claim saved 36-minute trigger from manual Windows Task Scheduler execution."
+    "next_action": "On physical Windows use reviewed PR47 independent worktree: py -3 -m scripts.partner_center_cdp diagnose; if authenticated controls are observed, run side-effect-free batch preflight, verify local exact source and artifact receipts, then serial batch with independent UI/CAS attestation. Do not claim saved 36-minute trigger from manual Windows Task Scheduler execution.",
+    "factory_source_branch_heads": "FOUR_OF_FOUR_EXACT_MATCH_LIVE_GITHUB_2026_10_29",
+    "factory_artifact_metadata": "FOUR_OF_FOUR_UNEXPIRED_AND_PINNED_ZIP_DIGEST_MATCH_LIVE_GITHUB_2026_10_29",
+    "artifact_expiry_utc": [
+      "2026-11-02T10:02:58Z",
+      "2026-11-02T15:04:16Z",
+      "2026-11-02T12:15:44Z",
+      "2026-11-02T13:05:55Z"
+    ],
+    "updated_after_cloud_recheck_utc": "2026-10-29T05:37:55.148Z"
   }
 }
