@@ -48,6 +48,10 @@ def build_dispatch_plan(ledger: dict, audit: dict) -> dict:
     require(all(isinstance(x, list) and len(x) == 4
                 for x in (jobs, records, evidence)),
             "HOLD_MIXED_PLAN_DISCOVERY")
+    require(all(isinstance(item, dict)
+                for collection in (jobs, records, evidence)
+                for item in collection),
+            "HOLD_MIXED_PLAN_SCHEMA")
     require(tuple(x.get("slug") for x in jobs) == ORDER
             and tuple(x.get("slug") for x in records) == ORDER
             and tuple(x.get("slug") for x in evidence) == ORDER,
