@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-29T14:40:00Z",
+  "updated_at_utc": "2026-10-29T15:36:24Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -232,7 +232,7 @@
   },
   "other_lanes": {
     "APP": {
-      "phase": "FOCUS_SESSION_DESK_PRE_IDENTITY_READY__LOCAL_OPERATOR_PENDING__OFFLINE_NOTES_UNBOUND",
+      "phase": "FOCUS_POST_IDENTITY_READY__THREE_APP_PRE_IDENTITY_PENDING__OFFLINE_NOTES_IDENTITY_UNBOUND",
       "status": "HOLD",
       "factory_branch": "codex/app-msix-prebuilt-exe-20261027-1300",
       "factory_head": "e8e3ca613a114cd0e919cf2f3a4454fa8149510a",
@@ -1029,7 +1029,7 @@
     ],
     "exclusion_reason": "EXISTING_KNOWN_GOOD_STORE_IDENTITY_REFERENCE__NO_NEW_REQUEST__NO_CLOUD_AUTHENTICATION_CLAIM",
     "pending_requests": [],
-    "rotation_pending_3d": "PRE_IDENTITY_READY__MANUAL_REFERENCE_OBSERVED__AUTO_CAPTURE_PENDING",
+    "rotation_pending_3d": "POST_IDENTITY_READY__PRISM_GITHUB_IDENTITY_RETURN_VERIFIED__PACKAGE_VERSION_HOLD",
     "operator_active_requests": [
       "app-file-integrity-ledger-d1108d12f7d1",
       "app-offline-text-diff-desk-a7d372800898",
@@ -1285,7 +1285,7 @@
       }
     ],
     "app_candidate_count": 5,
-    "app_candidate_note": "Four independent promoted APP PRE_IDENTITY products with exact source HEAD and independently verified EXE bytes; Offline Notes identity reference remains separate and unbound.",
+    "app_candidate_note": "Four independently verified APP pre-identity EXE artifacts; Focus has exact GitHub Identity return and is POST_IDENTITY_READY, while Ledger/Text Diff/Image Inventory remain PRE_IDENTITY_READY. Offline Notes Identity reference remains separate and unbound.",
     "three_d_max_jobs": 1,
     "three_d_jobs": [
       {
@@ -2388,8 +2388,8 @@
     }
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-29T14:40:00Z",
-    "scope": "MIXED_LOCAL_EXACT_SOURCE_ARTIFACT_PREFLIGHT_CODE_CI_GREEN__REAL_WINDOWS_EXECUTION_HOLD",
+    "observed_at_utc": "2026-10-29T15:36:24Z",
+    "scope": "LIVE_GITHUB_FOUR_APP_IDENTITY_RECHECK__PR53_MIXED_PREFLIGHT_CI_VERIFIED__LOCAL_EXECUTION_HOLD",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
     "canonical_previous_blob_sha": "98d40cce07567e00657e895aeca2c44d2e47bf26",
@@ -2416,7 +2416,7 @@
     "success_count_cloud_verified": 1,
     "remaining_app_identity_returns": 3,
     "next_resume_index": 2,
-    "next_action": "Run reviewed --mixed-local-preflight on Windows; implement and independently test mixed-state resumable Partner Center runner with POST skip and PRE single-writer CAS; reconcile central queue before any 12-hour Task Scheduler registration",
+    "next_action": "Review and implement mixed PRE/POST resumable local execution after exact-source preflight; preserve Focus POST skip; Ledger/Text/Image pending; 12-hour Task Scheduler remains HOLD until real Windows no-LLM proof and queue reconciliation.",
     "post_identity_reconcile_pr": 49,
     "post_identity_reconcile_ci_run": 40851883814,
     "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU",
@@ -2466,13 +2466,28 @@
     "mixed_local_preflight_branch": "codex/e2e-mixed-local-preflight-20261029",
     "mixed_local_preflight_head": "5e044c8bc03d5771d193068bd7e131bc936db2a1",
     "mixed_local_preflight_ci_run": 40893502934,
-    "mixed_local_preflight_ci": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+    "mixed_local_preflight_ci": "SUCCESS_AT_EXACT_HEAD",
     "mixed_local_preflight_capability": "FOCUS_POST_SKIP__THREE_PRE_EXACT_SOURCE_AND_EXE_VERIFICATION__SHARED_LOCK__NO_BROWSER_CAS",
-    "mixed_local_preflight_execution": "NOT_RUN_ON_USER_WINDOWS"
+    "mixed_local_preflight_execution": "NOT_RUN_ON_USER_WINDOWS",
+    "canonical_head_before_write": "ec107ba55b0b844728a6c809d0d35c0fddec9fb6",
+    "latest_remote_recheck": {
+      "verified_at_utc": "2026-10-29T15:36:24Z",
+      "focus": "APPROVED_IDENTITY_PRESENT__SOURCE_8b00bc4e_PLUS_ONE_RETURN_COMMIT__POST_IDENTITY_READY",
+      "ledger": "APPROVED_IDENTITY_404__BRANCH_SOURCE_SHA_IDENTICAL__PRE_IDENTITY_READY",
+      "text_diff": "APPROVED_IDENTITY_404__BRANCH_SOURCE_SHA_IDENTICAL__PRE_IDENTITY_READY",
+      "image_inventory": "APPROVED_IDENTITY_404__BRANCH_SOURCE_SHA_IDENTICAL__PRE_IDENTITY_READY",
+      "registration_type": "MSIX_OR_PWA_APP_FOR_ALL_FOUR",
+      "post_identity_ready": 1,
+      "pre_identity_pending": 3,
+      "partner_center": "NOT_ACCESSED",
+      "local_windows": "NOT_ACCESSED",
+      "cas": "NOT_PERFORMED_THIS_RUN",
+      "store_submission": "NOT_PERFORMED"
+    }
   },
   "post_identity_pipeline": {
     "schema_version": 1,
-    "updated_at_utc": "2026-10-29T14:40:00Z",
+    "updated_at_utc": "2026-10-29T15:36:24Z",
     "writer": "36_WINDOWS_E2E_ONLY",
     "reconciliation_basis": "GITHUB_APPROVED_IDENTITY_FILES_VERIFIED_FOR_FOCUS_AND_PRISM__NO_LOCAL_RECEIPTS_READ_THIS_RUN",
     "product_count": 7,
