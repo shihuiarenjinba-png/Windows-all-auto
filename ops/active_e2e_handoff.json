@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-29T18:37:18.403Z",
+  "updated_at_utc": "2026-10-29T19:38:58.320Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -841,7 +841,9 @@
     "mixed_resume_host_code_committed": true,
     "mixed_resume_host_ci_pass": true,
     "mixed_resume_host_physical_pass": false,
-    "mixed_authenticated_executor_wired": false
+    "mixed_authenticated_executor_wired": false,
+    "mixed_resume_rebase_contract_ci_pass": true,
+    "mixed_resume_rebase_host_integrated": false
   },
   "user_id_requests": {
     "schema_version": 1,
@@ -2402,8 +2404,8 @@
     }
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-29T18:37:18.403Z",
-    "scope": "MIXED_RESUME_HOST_PREPARE_PR57_WINDOWS_UBUNTU_CI_PASS__PHYSICAL_WINDOWS_NOT_RUN",
+    "observed_at_utc": "2026-10-29T19:38:58.320Z",
+    "scope": "MIXED_RESUME_CENTRAL_HEAD_REBASE_PR58_WINDOWS_UBUNTU_CI_PASS__PHYSICAL_WINDOWS_NOT_RUN",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
     "canonical_previous_blob_sha": "98d40cce07567e00657e895aeca2c44d2e47bf26",
@@ -2430,7 +2432,7 @@
     "success_count_cloud_verified": 1,
     "remaining_app_identity_returns": 3,
     "next_resume_index": 2,
-    "next_action": "PR57 exact-HEAD Windows/Ubuntu CI green; wire authenticated mixed UI/CAS executor with independent replay under same OS lock. Then run physical Windows Terminal for remaining Ledger/Text/Image; reconcile each GitHub Identity return before next job. Do not register 12-hour task or submit Store until local host gates pass.",
+    "next_action": "Wire PR58 verified monotonic rebase into the reviewed mixed Windows executor under existing OS lock and atomic writer, with independent authenticated UI+GitHub re-verification. Then run Ledger/Text/Image on real Windows, reconcile each return through central single writer, and hold at Package Version gate. No Task Scheduler registration or Store final submission before physical evidence.",
     "post_identity_reconcile_pr": 49,
     "post_identity_reconcile_ci_run": 40851883814,
     "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU",
@@ -2564,11 +2566,16 @@
       "task_scheduler_registration": "HOLD",
       "store_submission": "NOT_PERFORMED",
       "security": "PERSISTED_SUCCESS_REQUIRES_INDEPENDENT_UI_GITHUB_REVERIFICATION__FOCUS_IMMUTABLE_SKIP__THREE_PRE_DISTINCT_BINDINGS"
-    }
+    },
+    "mixed_resume_rebase_pr": 58,
+    "mixed_resume_rebase_head": "0b58f7a2ee180035e5b388d5efc0d720f1e2d2cc",
+    "mixed_resume_rebase_ci_run": 40941875394,
+    "mixed_resume_rebase_ci": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+    "mixed_resume_rebase_host": "PURE_CONTRACT_ONLY__AUTHENTICATED_MIXED_EXECUTOR_NOT_WIRED"
   },
   "post_identity_pipeline": {
     "schema_version": 1,
-    "updated_at_utc": "2026-10-29T18:37:18.403Z",
+    "updated_at_utc": "2026-10-29T19:38:58.320Z",
     "writer": "36_WINDOWS_E2E_ONLY",
     "reconciliation_basis": "GITHUB_APPROVED_IDENTITY_FILES_VERIFIED_FOR_FOCUS_AND_PRISM__NO_LOCAL_RECEIPTS_READ_THIS_RUN",
     "product_count": 7,
@@ -2860,6 +2867,20 @@
         "task_scheduler_registration": "HOLD",
         "store_submission": "NOT_PERFORMED",
         "security": "PERSISTED_SUCCESS_REQUIRES_INDEPENDENT_UI_GITHUB_REVERIFICATION__FOCUS_IMMUTABLE_SKIP__THREE_PRE_DISTINCT_BINDINGS"
+      },
+      "mixed_resume_rebase": {
+        "draft_pr": 58,
+        "branch": "codex/e2e-mixed-resume-rebase-20261030-0436",
+        "head_sha": "0b58f7a2ee180035e5b388d5efc0d720f1e2d2cc",
+        "base_pr": 57,
+        "offline_qa_run_id": 40941875394,
+        "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+        "scope": "MONOTONIC_PRE_VERIFIED_TO_GITHUB_POST_SKIP_AFTER_CENTRAL_HEAD_ADVANCE__INDEPENDENT_UI_GITHUB_VERIFIER_REQUIRED",
+        "tests": "TWELVE_NEW_STANDARD_LIBRARY_REGRESSIONS",
+        "integration_status": "DRAFT_NOT_MERGED__PURE_REBASE_NOT_YET_WIRED_TO_AUTHENTICATED_MIXED_EXECUTOR",
+        "physical_windows_execution": "NOT_PERFORMED",
+        "task_scheduler_registration": "HOLD",
+        "store_submission": "NOT_PERFORMED"
       }
     }
   },
