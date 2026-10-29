@@ -326,6 +326,31 @@ def write_once(path: Path, value: dict) -> None:
         os.fsync(stream.fileno())
 
 
+def complete_name_unavailable(state: dict, claimed: dict,
+                              product_dir: Path) -> dict:
+    """Advance one product only when name availability failed before Reserve.
+
+    Authentication, uncertain creation, duplicate products and CAS conflicts
+    are intentionally *not* handled here: those stop the whole batch.
+    """
+    result = {
+        "batch_id": state["batch_id"],
+        "batch_index": claimed["batch_index"],
+        "request_id": claimed["request_id"],
+        "slug": claimed["slug"],
+        "source_sha": claimed["source_sha"],
+        "identity_return_target": claimed["identity_return_target"],
+        "github_return_status": "HOLD",
+        "package_version_gate": "HOLD",
+        "store_submission": "NOT_PERFORMED",
+        "error_code": "HOLD_NAME_UNAVAILABLE",
+    }
+    completed = batch.complete_active(state, result)
+    batch.atomic_write(product_dir.parent.parent / "batch-state.json", completed)
+    write_once(product_dir / "result.json", result)
+    return completed
+
+
 def existing_observation(driver: PartnerCenterDriver, receipt: dict) -> IdentityObservation:
     count = driver.page.search_product(receipt["display_name"])
     if count != 1:
@@ -501,7 +526,15 @@ def run_batch(args) -> dict:
                     receipt = operator.read_json(receipt_path, 64_000)
                     observation = existing_observation(driver, receipt)
                 else:
-                    captured, observation = driver.process(operator_job)
+                    try:
+                        captured, observation = driver.process(operator_job)
+                    except PartnerCenterHold as exc:
+                        # Only a confirmed unavailable name (before Reserve)
+                        # is safe to skip. Auth/MFA/uncertain creation stop all.
+                        if str(exc) != "HOLD_NAME_UNAVAILABLE":
+                            raise
+                        state = complete_name_unavailable(state, claimed, product_dir)
+                        continue
                     receipt = operator.validate_capture(operator_job, captured)
                     write_once(receipt_path, receipt)
 
