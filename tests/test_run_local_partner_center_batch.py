@@ -32,6 +32,7 @@ def ledger():
             "factory_artifact_name": f"artifact-{index}",
             "factory_artifact_zip_sha256": f"{index + 4}" * 64,
             "artifact_metadata_verified": True,
+            "factory_artifact_expiry_utc": "2099-01-01T00:00:00Z",
             "registration_type": "MSIX_OR_PWA_APP",
             "partner_center_selection": "MSIX or PWA app",
             "identity_return_target": f"products/{slug}/store/approved-identity.json",
