@@ -830,7 +830,9 @@
     "focus_github_return_verified": true,
     "focus_post_identity_ready": true,
     "batch4_mixed_status_runner_ci_pass": false,
-    "batch4_queue_reconciliation_cloud_pass": true
+    "batch4_queue_reconciliation_cloud_pass": true,
+    "post_identity_queue_materialized": true,
+    "post_identity_real_package_pass": false
   },
   "user_id_requests": {
     "schema_version": 1,
@@ -2387,5 +2389,185 @@
     "remaining_app_identity_returns": 3,
     "next_resume_index": 2,
     "next_action": "Implement safe mixed-state runner reconciliation before Task Scheduler. Resume Ledger existing product only after exact UI capture, then Text Diff and Image Inventory; package version gate remains HOLD."
+  },
+  "post_identity_pipeline": {
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-29T09:38:22Z",
+    "writer": "36_WINDOWS_E2E_ONLY",
+    "reconciliation_basis": "GITHUB_APPROVED_IDENTITY_FILES_VERIFIED_FOR_FOCUS_AND_PRISM__NO_LOCAL_RECEIPTS_READ_THIS_RUN",
+    "product_count": 7,
+    "post_identity_ready_count": 2,
+    "identity_return_pending_count": 3,
+    "source_binding_hold_count": 1,
+    "cas_approval_hold_count": 1,
+    "version_approved_count": 0,
+    "real_package_verified_count": 0,
+    "e2e_pass_count": 0,
+    "provenance_policy": "IMMUTABLE_SOURCE_SHA__SEPARATE_FACTORY_BUILD_HEAD__NO_VERSION_OR_ASSET_INFERENCE",
+    "on_return_rule": "APPROVED_IDENTITY_GITHUB_FILE_EXACT_REQUEST_SOURCE_BRANCH_AND_HEAD_VERIFIED_THEN_POST_IDENTITY_READY__NEVER_REENTER_PRE_IDENTITY",
+    "on_missing_evidence": "HOLD_WITH_EXPLICIT_GATE__NEVER_FABRICATE_LOCAL_RECEIPT_OR_STORE_PASS",
+    "products": [
+      {
+        "product": "Focus Session Desk",
+        "lane": "APP",
+        "request_id": "app-focus-session-desk-8b00bc4e9082",
+        "source_repository": "shihuiarenjinba-png/AI-App-Factory",
+        "source_branch": "codex/app-cohort-focus-controller-20261028",
+        "source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+        "identity_return_target": "products/focus-session-desk/store/approved-identity.json",
+        "identity_status": "CAS_RETURN_COMMIT_GITHUB_VERIFIED",
+        "identity_return_commit_sha": "8a7139375524830bf823469526837259266172be",
+        "state": "POST_IDENTITY_READY",
+        "next_action": "PACKAGE_VERSION_AND_ASSET_APPROVAL_GATE",
+        "gates": {
+          "package_version": "HOLD_NOT_APPROVED",
+          "real_msix_or_gdk": "NOT_BUILT",
+          "embedded_identity_and_hash": "NOT_VERIFIED",
+          "github_backlog": "NOT_QUEUED_REAL_PACKAGE",
+          "local_pull": "NOT_RUN",
+          "windows_checker": "NOT_RUN",
+          "gui_install_qa": "NOT_RUN",
+          "store_final_submission": "NOT_PERFORMED"
+        }
+      },
+      {
+        "product": "File Integrity Ledger",
+        "lane": "APP",
+        "request_id": "app-file-integrity-ledger-d1108d12f7d1",
+        "source_repository": "shihuiarenjinba-png/AI-App-Factory",
+        "source_branch": "codex/app-ledger-snapshot-size-20261028",
+        "source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
+        "identity_return_target": "products/file-integrity-ledger/store/approved-identity.json",
+        "identity_status": "PRODUCT_CREATED_USER_REPORTED__IDENTITY_NOT_RETURNED",
+        "identity_return_commit_sha": null,
+        "state": "WAITING_IDENTITY_CAPTURE_AND_CAS",
+        "next_action": "REUSE_EXISTING_PARTNER_CENTER_PRODUCT__CAPTURE_7_FIELDS__CAS__REPLAY",
+        "gates": {
+          "package_version": "HOLD_NOT_APPROVED",
+          "real_msix_or_gdk": "NOT_BUILT",
+          "embedded_identity_and_hash": "NOT_VERIFIED",
+          "github_backlog": "NOT_QUEUED_REAL_PACKAGE",
+          "local_pull": "NOT_RUN",
+          "windows_checker": "NOT_RUN",
+          "gui_install_qa": "NOT_RUN",
+          "store_final_submission": "NOT_PERFORMED"
+        }
+      },
+      {
+        "product": "Offline Text Diff Desk",
+        "lane": "APP",
+        "request_id": "app-offline-text-diff-desk-a7d372800898",
+        "source_repository": "shihuiarenjinba-png/AI-App-Factory",
+        "source_branch": "codex/app-cohort-text-diff-20261028",
+        "source_sha": "a7d37280089893a9ea4b9ac3336020a920e73e0c",
+        "identity_return_target": "products/offline-text-diff-desk/store/approved-identity.json",
+        "identity_status": "PRE_IDENTITY_READY__NO_APPROVED_FILE",
+        "identity_return_commit_sha": null,
+        "state": "WAITING_IDENTITY_CAPTURE_AND_CAS",
+        "next_action": "LOCAL_OPERATOR_EXACT_PRODUCT__IDENTITY_RETURN__REPLAY",
+        "gates": {
+          "package_version": "HOLD_NOT_APPROVED",
+          "real_msix_or_gdk": "NOT_BUILT",
+          "embedded_identity_and_hash": "NOT_VERIFIED",
+          "github_backlog": "NOT_QUEUED_REAL_PACKAGE",
+          "local_pull": "NOT_RUN",
+          "windows_checker": "NOT_RUN",
+          "gui_install_qa": "NOT_RUN",
+          "store_final_submission": "NOT_PERFORMED"
+        }
+      },
+      {
+        "product": "Offline Image Inventory Desk",
+        "lane": "APP",
+        "request_id": "app-offline-image-inventory-desk-16b6a772952c",
+        "source_repository": "shihuiarenjinba-png/AI-App-Factory",
+        "source_branch": "codex/app-cohort-image-inventory-20261028",
+        "source_sha": "16b6a772952ca0988f2ae2f8b5f4db2e59ec5877",
+        "identity_return_target": "products/offline-image-inventory-desk/store/approved-identity.json",
+        "identity_status": "PRE_IDENTITY_READY__NO_APPROVED_FILE",
+        "identity_return_commit_sha": null,
+        "state": "WAITING_IDENTITY_CAPTURE_AND_CAS",
+        "next_action": "LOCAL_OPERATOR_EXACT_PRODUCT__IDENTITY_RETURN__REPLAY",
+        "gates": {
+          "package_version": "HOLD_NOT_APPROVED",
+          "real_msix_or_gdk": "NOT_BUILT",
+          "embedded_identity_and_hash": "NOT_VERIFIED",
+          "github_backlog": "NOT_QUEUED_REAL_PACKAGE",
+          "local_pull": "NOT_RUN",
+          "windows_checker": "NOT_RUN",
+          "gui_install_qa": "NOT_RUN",
+          "store_final_submission": "NOT_PERFORMED"
+        }
+      },
+      {
+        "product": "Offline Notes Canary",
+        "lane": "APP",
+        "request_id": null,
+        "source_repository": "shihuiarenjinba-png/AI-App-Factory",
+        "source_branch": "codex/app-canary-offline-notes-20261027",
+        "source_sha": null,
+        "identity_return_target": null,
+        "identity_status": "USER_IDENTITY_REFERENCE_RECEIVED__SOURCE_REQUEST_UNBOUND",
+        "identity_return_commit_sha": null,
+        "state": "HOLD_SOURCE_REQUEST_BINDING",
+        "next_action": "00_APP_LANE_PROMOTE_EXACT_SOURCE_REQUEST_AND_EXE_THEN_VALIDATE_IDENTITY",
+        "gates": {
+          "package_version": "HOLD_NOT_APPROVED",
+          "real_msix_or_gdk": "NOT_BUILT",
+          "embedded_identity_and_hash": "NOT_VERIFIED",
+          "github_backlog": "NOT_QUEUED_REAL_PACKAGE",
+          "local_pull": "NOT_RUN",
+          "windows_checker": "NOT_RUN",
+          "gui_install_qa": "NOT_RUN",
+          "store_final_submission": "NOT_PERFORMED"
+        }
+      },
+      {
+        "product": "Prism Route 3D",
+        "lane": "GAME_3D",
+        "request_id": "3d-prism-route-3d-15fdcb52e46e",
+        "source_repository": "shihuiarenjinba-png/3d-game-factory",
+        "source_branch": "codex/3d-canary-prism-route-20261028",
+        "source_sha": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
+        "identity_return_target": "products/prism-route-3d/store/approved-identity.json",
+        "identity_status": "CAS_RETURN_COMMIT_GITHUB_VERIFIED",
+        "identity_return_commit_sha": "11417b75636ee18816028ffd5221884c4c9a9836",
+        "state": "POST_IDENTITY_READY",
+        "next_action": "PACKAGE_VERSION_AND_ASSET_APPROVAL_GATE",
+        "gates": {
+          "package_version": "HOLD_NOT_APPROVED",
+          "real_msix_or_gdk": "NOT_BUILT",
+          "embedded_identity_and_hash": "NOT_VERIFIED",
+          "github_backlog": "NOT_QUEUED_REAL_PACKAGE",
+          "local_pull": "NOT_RUN",
+          "windows_checker": "NOT_RUN",
+          "gui_install_qa": "NOT_RUN",
+          "store_final_submission": "NOT_PERFORMED"
+        }
+      },
+      {
+        "product": "Signal Sprint",
+        "lane": "GAME",
+        "request_id": "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e",
+        "source_repository": "shihuiarenjinba-png/AI-Game-Factory",
+        "source_branch": "codex/game-signal-sprint-undo-20261027",
+        "source_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
+        "identity_return_target": "products/signal-sprint/store/approved-identity.json",
+        "identity_status": "USER_IDENTITY_RECEIVED__NO_GITHUB_APPROVED_FILE",
+        "identity_return_commit_sha": null,
+        "state": "HOLD_CAS_APPROVAL_AND_RETURN",
+        "next_action": "EXACT_SOURCE_AND_USER_IDENTITY_CHECK_ONLY__EXPLICIT_PROVISIONER_CAS",
+        "gates": {
+          "package_version": "HOLD_NOT_APPROVED",
+          "real_msix_or_gdk": "GDK_PACKAGE_NOT_BUILT",
+          "embedded_identity_and_hash": "NOT_VERIFIED",
+          "github_backlog": "NOT_QUEUED_REAL_PACKAGE",
+          "local_pull": "NOT_RUN",
+          "windows_checker": "NOT_RUN",
+          "gui_install_qa": "NOT_RUN",
+          "store_final_submission": "NOT_PERFORMED"
+        }
+      }
+    ]
   }
 }
