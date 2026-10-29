@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-29T09:38:22Z",
+  "updated_at_utc": "2026-10-29T10:38:07Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -1299,16 +1299,16 @@
         "expected_exe_sha256": "66b26ad96df7458ea917b632a73ac7c88bb058db24dbd11a457fd50435ab7b13",
         "factory_build_branch": "codex/3d-canary-prism-route-20261028",
         "factory_build_head": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
-        "status": "PRE_IDENTITY_READY",
+        "status": "POST_IDENTITY_READY",
         "artifact_provenance": "REAL_WINDOWS_EXPORT_VERIFIED",
         "packaging_strategy": "GODOT_WINDOWS_EXE_PCK_MAKEAPPX_MSIX",
         "packaging_family": "MSIX",
         "registration_type": "MSIX_OR_PWA_GAME",
         "partner_center_selection": "MSIX or PWA game",
-        "identity_status": "APPROVED_IDENTITY_RETURNED_GITHUB_VERIFIED__PACKAGE_VERSION_HOLD",
+        "identity_status": "GITHUB_APPROVED_IDENTITY_RETURN_VERIFIED__PACKAGE_VERSION_HOLD",
         "observed_pr_head": "11417b75636ee18816028ffd5221884c4c9a9836",
         "observed_ci_run_id": 40640963381,
-        "next_action": "PACKAGE_VERSION_GATE_HOLD__DO_NOT_RECREATE_PRODUCT_OR_REPIN_SOURCE__LOCAL_CAS_RECEIPT_SEPARATE",
+        "next_action": "PACKAGE_VERSION_AND_ASSET_APPROVAL_GATE",
         "expected_pck_sha256": "2cd8af6496cf288bc3e6aef317e472b480f21d2052cbd4ae0cd171e6285ab1ef",
         "artifact_id": 12795476435,
         "artifact_run_id": 40640951915,
@@ -1325,7 +1325,12 @@
           "scope": "AUTHENTICATED_FACTORY_ARTIFACT_BYTES_NOT_STORE_E2E"
         },
         "approved_identity_return_commit": "11417b75636ee18816028ffd5221884c4c9a9836",
-        "approved_identity_return_file": "products/prism-route-3d/store/approved-identity.json"
+        "approved_identity_return_file": "products/prism-route-3d/store/approved-identity.json",
+        "identity_return_commit_sha": "11417b75636ee18816028ffd5221884c4c9a9836",
+        "identity_store_id": "9N95J2T57B41",
+        "identity_pfn": "OkinawaDesktopTools.PrismRoute3D_j8yefg9jgfh58",
+        "identity_cas_allowed": false,
+        "package_version_gate": "HOLD"
       }
     ],
     "provenance_policy": "READY requires exact source/build HEAD, verified Windows EXE SHA256, unique request_id/slug and separate USER_ID_REQUEST; no intermediate EXE registration inference",
@@ -1346,7 +1351,7 @@
     "3d_waiting_identity": 0,
     "3d_conflicts": 0,
     "3d_artifact_mismatch": 0,
-    "metrics_basis": "FOUR_GITHUB_PRE_IDENTITY_ARTIFACTS_VERIFIED__FOCUS_APPROVED_IDENTITY_GITHUB_FILE_AND_RETURN_HEAD_VERIFIED__THREE_APP_RETURNS_NOT_OBSERVED",
+    "metrics_basis": "FOUR_APP_ARTIFACTS_VERIFIED__FOCUS_AND_PRISM_GITHUB_APPROVED_IDENTITY_EXACT_HEAD_VERIFIED__THREE_APP_RETURNS_NOT_OBSERVED",
     "3d_source_branch_head_drift_observed": 1
   },
   "local_source_code_sync": {
@@ -2362,8 +2367,8 @@
     "queue_reconciliation_status": "FOCUS_POST_IDENTITY_RECONCILED__LOCAL_RUNNER_MIXED_STATUS_COMPATIBILITY_HOLD"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-29T09:38:22Z",
-    "scope": "FOCUS_GITHUB_APPROVED_IDENTITY_EXACT_BINDING_RECONCILIATION__LEDGER_USER_REPORTED_CREATED",
+    "observed_at_utc": "2026-10-29T10:38:07Z",
+    "scope": "PRISM_POST_IDENTITY_CANONICAL_QUEUE_RECONCILIATION__FOCUS_ALREADY_POST_IDENTITY",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
     "canonical_previous_blob_sha": "98d40cce07567e00657e895aeca2c44d2e47bf26",
@@ -2390,10 +2395,35 @@
     "success_count_cloud_verified": 1,
     "remaining_app_identity_returns": 3,
     "next_resume_index": 2,
-    "next_action": "Integrate PR49 pure reconciler into single-writer 36 flow, then update local runner across divergent PR41/PR48 to safely recognize POST Identity jobs and skip duplicate CAS; verify on Windows Terminal before Task Scheduler.",
+    "next_action": "Fix mixed POST/PRE identity batch runner and revalidate before any Windows Task Scheduler registration",
     "post_identity_reconcile_pr": 49,
     "post_identity_reconcile_ci_run": 40851883814,
-    "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU"
+    "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU",
+    "prism_identity_return": "GITHUB_FILE_AND_HEAD_EXACT_BINDING_VERIFIED",
+    "prism_identity_return_commit_sha": "11417b75636ee18816028ffd5221884c4c9a9836",
+    "prism_queue_state": "POST_IDENTITY_READY",
+    "prism_package_version_gate": "HOLD",
+    "app_queue_states": [
+      {
+        "slug": "focus-session-desk",
+        "status": "POST_IDENTITY_READY"
+      },
+      {
+        "slug": "file-integrity-ledger",
+        "status": "PRE_IDENTITY_READY"
+      },
+      {
+        "slug": "offline-text-diff-desk",
+        "status": "PRE_IDENTITY_READY"
+      },
+      {
+        "slug": "offline-image-inventory-desk",
+        "status": "PRE_IDENTITY_READY"
+      }
+    ],
+    "new_local_execution": "NOT_PERFORMED",
+    "new_cas": "NOT_PERFORMED",
+    "new_store_submission": 0
   },
   "post_identity_pipeline": {
     "schema_version": 1,
