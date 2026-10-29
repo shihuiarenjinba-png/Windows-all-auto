@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-29T00:35:48Z",
+  "updated_at_utc": "2026-10-29T00:43:13.032Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -819,7 +819,9 @@
     "batch4_artifact_expiry_guard_ci_pass": true,
     "batch4_artifact_metadata_live_recheck_pass": true,
     "batch4_local_artifact_download_verified": false,
-    "batch4_physical_local_pass": false
+    "batch4_physical_local_pass": false,
+    "batch4_schedule_origin_guard_code_committed": true,
+    "batch4_schedule_origin_guard_ci_pass": true
   },
   "user_id_requests": {
     "schema_version": 1,
@@ -1893,7 +1895,7 @@
     "store_submission": 0,
     "package_upload": 0,
     "package_version_gate": "HOLD",
-    "status": "CLOUD_PREIDENTITY_4_OF_4__PR41_LOCAL_RUNNER_EXPIRY_INTEGRATION_CI_GREEN__LOCAL_BATCH_NOT_STARTED",
+    "status": "CLOUD_PREIDENTITY_4_OF_4__PR42_SCHEDULED_ORIGIN_GUARD_CI_GREEN__LOCAL_BATCH_NOT_STARTED",
     "preflight_evidence": "FOUR_FACTORY_BRANCH_HEADS_EXACT_MATCH__FOUR_GITHUB_ACTIONS_ARTIFACTS_UNEXPIRED_DIGEST_MATCH__PR40_WINDOWS_UBUNTU_CI_GREEN__NO_USER_PC_LOCAL_RECEIPT",
     "code_contracts": {
       "windows_all_auto_pr": 33,
@@ -2030,6 +2032,25 @@
         "ci_run_id": 40788690959,
         "ci_status": "SUCCESS",
         "physical_local_cas": "NOT_PERFORMED"
+      },
+      "windows_all_auto_schedule_proof_guard": {
+        "draft_pr": 42,
+        "branch": "codex/e2e-batch4-scheduled-proof-gate-20261029",
+        "head_sha": "a2b08d168864554b4bea455fbad6e43d47f0b3b1",
+        "base_pr": 41,
+        "contract_ci_run_id": 40795809309,
+        "offline_qa_run_id": 40795809323,
+        "ci_status": "SUCCESS_WINDOWS_UBUNTU",
+        "changes": [
+          "MANUAL_AND_MANUALLY_STARTED_TASK_CANNOT_PROVE_SCHEDULED_TRIGGER",
+          "NO_OS_NAME_OR_ORIGIN_STRING_SELF_ATTESTATION",
+          "FOUR_PRODUCT_SANITIZED_PARTIAL_RECEIPT_PERSISTED",
+          "REJECT_LEGACY_FORGED_MANUAL_PASS_ON_RESUME"
+        ],
+        "local_physical_execution": "NOT_OBSERVED",
+        "host_schedule_attestation": "NOT_PROVEN",
+        "cas": "NOT_PERFORMED",
+        "store_submission": 0
       }
     },
     "products": [
@@ -2150,7 +2171,7 @@
         "artifact_live_metadata_checked_at_utc": "2026-10-28T23:35:53.183Z"
       }
     ],
-    "next_action": "PR41 Windows/Ubuntu CI green. On user Windows run read-only exact-source and artifact checks, then serial Partner Center capture and APP single-writer CAS/replay. Independent host schedule trigger must be proven separately. Do not claim batch PASS until four local receipts are verified.",
+    "next_action": "PR42 scheduled-origin proof guard Windows/Ubuntu CI green. On physical Windows run four-product serial exact source/Artifact/UI/CAS verification. Even 4/4 manual capture must remain PARTIAL until independent saved 36-minute schedule-to-local host attestation is proven. Preserve all four sanitized results in local final receipt. No Store submission.",
     "cloud_discover_contract_run_id": 40728641133,
     "cloud_discover_contract_ci": "SUCCESS_WINDOWS_UBUNTU",
     "cloud_discover_from_pinned_central_commit": "0fe4dc510b37b0574f96d13bc95ade6ef1635032",
@@ -2198,26 +2219,23 @@
     }
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-29T00:35:30Z",
-    "scope": "PR41_WINDOWS_LOCAL_RUNNER_ARTIFACT_EXPIRY_GUARD_INTEGRATION",
+    "observed_at_utc": "2026-10-29T00:43:13.032Z",
+    "scope": "PR42_SCHEDULED_HOST_ATTESTATION_TRUST_BOUNDARY_AND_PARTIAL_RECEIPT",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
-    "implementation_branch": "codex/local-partner-center-runner-20261029",
-    "implementation_pr": 41,
-    "implementation_head_sha": "f995f35b350d71532a670d63782fa4d984aab59a",
-    "implementation_base_pr": 39,
+    "implementation_branch": "codex/e2e-batch4-scheduled-proof-gate-20261029",
+    "implementation_pr": 42,
+    "implementation_head_sha": "a2b08d168864554b4bea455fbad6e43d47f0b3b1",
+    "implementation_base_pr": 41,
     "changes": [
-      "PR41 local no-LLM Edge CDP four-product runner already CI-green at original HEAD 04637f330d829f3177daa14505206095876e372a",
-      "Integrated PR40 artifact-expiry fail-closed discovery into PR41 live runner branch without merging or touching main/release",
-      "Discovery rejects missing, malformed or expired factory_artifact_expiry_utc and persists artifact_expires_at",
-      "Added expiry regression fixtures and pinned historical CI clock; production UTC clock remains live",
-      "PR41 integrated HEAD f995f35: contract CI 40795052290 and Offline QA 40795052301 both SUCCESS on Windows and Ubuntu"
+      "Removed false schedule PASS from Windows presence and caller-controlled execution_origin",
+      "Manual and manually started Windows task remain PARTIAL even if all four Identity/CAS returns are verified",
+      "Final local private receipt retains four sanitized product results and success/hold/next_resume_index on PARTIAL",
+      "Legacy manually claimed PASS state is rejected on restart",
+      "Added fail-closed negative tests and documentation"
     ],
-    "original_runner_contract_ci_run_id": 40789308213,
-    "original_runner_offline_qa_run_id": 40789308231,
-    "original_runner_ci": "SUCCESS_WINDOWS_UBUNTU",
-    "integrated_expiry_head_ci": "SUCCESS_WINDOWS_UBUNTU",
-    "integrated_expiry_contract_ci_run_id": 40795052290,
-    "integrated_expiry_offline_qa_run_id": 40795052301,
+    "contract_ci_run_id": 40795809309,
+    "offline_qa_run_id": 40795809323,
+    "ci_status": "SUCCESS_WINDOWS_UBUNTU",
     "cloud_pre_identity_discovered": 4,
     "local_code_sync": "NOT_OBSERVED_ON_USER_PC",
     "scheduled_trigger_to_local": "BATCH_SCHEDULE_TRIGGER_NOT_PROVEN",
@@ -2236,6 +2254,6 @@
     "next_resume_index": 1,
     "store_submission": 0,
     "no_main_release_merge": true,
-    "next_action": "PR41 integrated HEAD CI green on Windows/Ubuntu. Next physical Windows no-LLM runner exact-source/artifact verification, authenticated serial four-product capture, single-writer CAS/replay and actual host schedule attestation. No local PASS evidence; four Factory artifacts expire 2026-11-02 UTC."
+    "next_action": "Physical Windows batch 4 serial run, independent UI and CAS evidence, then independent schedule-to-local attestation. Registration remains HOLD until actual PASS; no invented scheduler proof."
   }
 }
