@@ -121,10 +121,10 @@ The prior runner incorrectly accepted `os.name == "nt"` and an
 `execution_origin` string as sufficient host proof. Those checks have been
 removed. A future independent host verifier must establish that the *saved*
 36-minute schedule actually invoked the Windows task; until then
-`execution_trigger_proven=false` and registration remains HOLD. The
-12-hour registration script's existing PASS prerequisite is intentionally
-unchanged. No task registration, Partner Center action, or CAS is performed by
-this fix.
+`execution_trigger_proven=false`. Registration is independently gated by a
+live, read-only four-job GitHub preflight instead of a circular terminal PASS
+prerequisite. Registration does not prove schedule origin or perform Partner
+Center action, Identity CAS, or Store submission.
 
 ## No-LLM Windows terminal runner
 
@@ -165,18 +165,32 @@ resume.  Authentication redirects return `HOLD_PARTNER_CENTER_AUTH_REQUIRED`
 without changing the active product; finish normal Microsoft authentication
 in Edge and run the same command again.
 
-Only after `LOCAL_WINDOWS_NO_LLM_AUTOMATION_PASS` and
-`MULTI_PRODUCT_IDENTITY_BATCH_PASS` for all four products may the 12-hour task
-be registered:
+The 12-hour local task may be registered after a successful **read-only**
+preflight of the live four-product GitHub queue (matching source HEADs,
+unexpired Factory artifacts, exact artifact metadata and reviewed local
+Provisioner). No terminal 4/4 Identity result is needed for registration.
+To inspect the preflight without registering:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts\register_local_partner_center_batch.ps1
+py -3 -m scripts.run_local_partner_center_batch --preflight-only --execution-origin WINDOWS_TASK_SCHEDULER
+```
+
+Then register on the user's Windows PC:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\\register_local_partner_center_batch.ps1
 ```
 
 The registration script refuses to overwrite an existing task and requires
-the terminal 4/4 final receipt.  It registers
+`BATCH_PREFLIGHT_READY`, with `execution_trigger_proven=false` and
+`local_execution=NOT_PERFORMED`. It registers
 `WindowsAllAuto-PartnerCenter-Batch` with `IgnoreNew`, `Limited`, an interactive
-logon, a four-hour timeout and a 12-hour repetition.  The one-shot validation
+logon, a four-hour timeout and a 12-hour repetition. This Windows-local
+12-hour trigger is **not** evidence that the separate saved ChatGPT 36-minute
+automation launched it. That cross-system trigger remains unproven until an
+independent trusted attestation channel is implemented.
+
+The one-shot validation
 script creates a local one-use marker and starts the same registered action:
 
 ```powershell

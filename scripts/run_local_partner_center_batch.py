@@ -442,6 +442,33 @@ def validate_existing_state(state: dict, spec: dict, central_head: str,
     return False
 
 
+def preflight_only(args) -> dict:
+    """Read-only live queue gate for task registration, never host proof.
+
+    Do not create local state, download EXEs, sync sources, open a browser,
+    apply Identity CAS, or infer a scheduled 36-minute trigger here.
+    """
+    prerequisite = check_prerequisites(args.provisioner_root.resolve())
+    ledger, central_head, _ = fetch_central()
+    spec, jobs = validate_queue(ledger, central_head, args.execution_origin)
+    recheck_central(central_head)
+    state = batch.discover(ledger, spec)
+    recheck_central(central_head)
+    return {
+        "status": "BATCH_PREFLIGHT_READY",
+        "discovered_count": state["discovered_count"],
+        "central_head_sha": central_head,
+        "execution_trigger_proven": False,
+        "local_execution": "NOT_PERFORMED",
+        "identity_capture": "NOT_PERFORMED",
+        "cas": "NOT_PERFORMED",
+        "store_submission": "NOT_PERFORMED",
+        "source_snapshots": "NOT_VERIFIED_ON_LOCAL_PC",
+        "artifact_bytes": "NOT_DOWNLOADED",
+        **prerequisite,
+    }
+
+
 def run_batch(args) -> dict:
     state_dir = args.state_dir.resolve()
     state_dir.mkdir(parents=True, exist_ok=True)
@@ -712,11 +739,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--provisioner-root", type=Path, default=default_provisioner)
     parser.add_argument("--execution-origin", choices=sorted(EXECUTION_ORIGINS),
                         default="MANUAL_WINDOWS_TERMINAL")
+    parser.add_argument("--preflight-only", action="store_true")
     args = parser.parse_args(argv)
     try:
-        result = run_batch(args)
+        result = preflight_only(args) if args.preflight_only else run_batch(args)
         print(json.dumps(result, ensure_ascii=False, indent=2))
-        return 0 if result.get("status") == "LOCAL_WINDOWS_NO_LLM_AUTOMATION_PASS" else 2
+        return 0 if result.get("status") in {
+            "LOCAL_WINDOWS_NO_LLM_AUTOMATION_PASS", "BATCH_PREFLIGHT_READY"
+        } else 2
     except (RunnerHold, batch.BatchHold, operator.OperatorHold,
             local_code_sync.SyncHold, PartnerCenterHold) as exc:
         code = exc.code if isinstance(exc, RunnerHold) else str(exc)
