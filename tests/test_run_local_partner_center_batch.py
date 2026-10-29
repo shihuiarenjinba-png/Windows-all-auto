@@ -143,6 +143,7 @@ class RunnerTests(unittest.TestCase):
             "central_head_sha": "a" * 40,
             "execution_origin": "MANUAL_WINDOWS_TERMINAL",
             "execution_trigger_proven": True,
+            "processed_count": 4,
             "final_status": "MULTI_PRODUCT_IDENTITY_BATCH_PASS",
         }
         with self.assertRaisesRegex(runner.RunnerHold, "SCHEDULE_TRIGGER_NOT_PROVEN"):
@@ -157,6 +158,7 @@ class RunnerTests(unittest.TestCase):
             "central_head_sha": "a" * 40,
             "execution_origin": "WINDOWS_TASK_SCHEDULER",
             "execution_trigger_proven": False,
+            "processed_count": 4,
             "final_status": "MULTI_PRODUCT_IDENTITY_BATCH_PASS",
         }
         with self.assertRaisesRegex(runner.RunnerHold, "SCHEDULE_TRIGGER_NOT_PROVEN"):
@@ -169,6 +171,23 @@ class RunnerTests(unittest.TestCase):
             state, {"batch_id": "batch-1"}, "a" * 40,
             "WINDOWS_TASK_SCHEDULER",
         ))
+
+    def test_terminal_partial_is_not_reclassified_as_success(self):
+        state = {
+            "batch_id": "batch-1",
+            "central_head_sha": "a" * 40,
+            "execution_origin": "MANUAL_WINDOWS_TERMINAL",
+            "execution_trigger_proven": False,
+            "processed_count": 4,
+            "success_count": 4,
+            "hold_count": 0,
+            "final_status": "MULTI_PRODUCT_IDENTITY_BATCH_PARTIAL",
+        }
+        self.assertTrue(runner.validate_existing_state(
+            state, {"batch_id": "batch-1"}, "a" * 40,
+            "MANUAL_WINDOWS_TERMINAL",
+        ))
+        self.assertEqual(state["final_status"], "MULTI_PRODUCT_IDENTITY_BATCH_PARTIAL")
 
     def test_in_progress_manual_batch_cannot_be_taken_over_by_scheduler(self):
         state = {
