@@ -188,6 +188,7 @@ class MixedLocalPreflightTests(unittest.TestCase):
                 "factory_artifact_name": f"artifact-{index}",
                 "factory_artifact_zip_sha256": str(index) * 64,
                 "factory_build_head": job["source_sha"],
+                "factory_artifact_expiry_utc": "2099-01-01T00:00:00Z",
                 "artifact_metadata_verified": True,
             })
         return ledger, audit
@@ -207,6 +208,7 @@ class MixedLocalPreflightTests(unittest.TestCase):
                          endpoint.endswith("/" + str(j.get("factory_artifact_id"))))
                 return {
                     "expired": False, "name": j["factory_artifact_name"],
+                    "expires_at": j["factory_artifact_expiry_utc"],
                     "digest": "sha256:" + j["factory_artifact_zip_sha256"],
                 }
             def prepared(_ledger, _receipt, _root, slug, **_kwargs):
