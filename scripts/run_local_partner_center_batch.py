@@ -482,12 +482,11 @@ def run_batch(args) -> dict:
     # The prior ordering ran sync/download before this mandatory gate.
     preflight_state = batch.discover(ledger, spec)
 
-    sync_receipt = sync_sources(jobs, state_dir)
-    artifacts = {job["slug"]: verify_artifact(job, state_dir / "artifacts") for job in jobs}
-    recheck_central(central_head)
-
     state_path = state_dir / "batch-state.json"
     final_path = state_dir / "final-batch-receipt.json"
+    # The single-flight lock must cover local source sync and Artifact ZIP
+    # extraction as well as UI/Identity/CAS. Otherwise two simultaneous
+    # runners can race on the same snapshots before either holds the lock.
     with batch.state_lock(state_path):
         if state_path.exists():
             state = operator.read_json(state_path, 512_000)
@@ -496,15 +495,10 @@ def run_batch(args) -> dict:
             )
         else:
             state = preflight_state
-            # Windows presence and a caller-provided execution_origin are not
-            # independent evidence of the saved 36-minute schedule. Keep the
-            # scheduled trigger gate false until a trusted host attestor exists.
-            # The local operator may still collect four exact, verified Identity
-            # receipts; that is a PARTIAL batch, never a scheduled batch PASS.
-            batch.atomic_write(state_path, state)
             already_complete = False
         if already_complete:
-            # Never turn a terminal PARTIAL state into a no-work PASS.
+            # A terminal batch must never re-download, re-open the browser,
+            # or turn a terminal PARTIAL state into a no-work PASS.
             if not final_path.is_file():
                 raise RunnerHold("HOLD_FINAL_BATCH_RECEIPT_MISSING")
             final_receipt = operator.read_json(final_path, 256_000)
@@ -519,6 +513,20 @@ def run_batch(args) -> dict:
                 "receipt": str(final_path),
                 "execution_origin": execution_origin,
             }
+
+        recheck_central(central_head)
+        sync_receipt = sync_sources(jobs, state_dir)
+        artifacts = {
+            job["slug"]: verify_artifact(job, state_dir / "artifacts")
+            for job in jobs
+        }
+        recheck_central(central_head)
+        if not state_path.exists():
+            # Do not create resumable state until the local source/Artifact
+            # bytes have been independently verified. The lock stays held.
+            # Windows presence or a claimed execution origin never proves
+            # the saved ChatGPT 36-minute scheduled trigger.
+            batch.atomic_write(state_path, state)
 
         provisioner, provisioner_core = import_provisioner(args.provisioner_root.resolve())
         config = provisioner_core.ProductConfig.load(args.provisioner_root / "config.json")
