@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-29T13:42:37.745Z",
+  "updated_at_utc": "2026-10-29T14:40:00Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -2388,8 +2388,8 @@
     }
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-29T13:42:37.745Z",
-    "scope": "MIXED_APP_DISPATCH_PLAN_IMPLEMENTED_AND_WINDOWS_UBUNTU_CI_GREEN__LOCAL_RUNNER_HOLD",
+    "observed_at_utc": "2026-10-29T14:40:00Z",
+    "scope": "MIXED_LOCAL_EXACT_SOURCE_ARTIFACT_PREFLIGHT_CODE_CI_GREEN__REAL_WINDOWS_EXECUTION_HOLD",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
     "canonical_previous_blob_sha": "98d40cce07567e00657e895aeca2c44d2e47bf26",
@@ -2416,7 +2416,7 @@
     "success_count_cloud_verified": 1,
     "remaining_app_identity_returns": 3,
     "next_resume_index": 2,
-    "next_action": "Implement reviewed mixed-state resumable Windows runner; independently verify local Focus skip and remaining 3 Identity captures/returns, then terminal no-LLM replay before scheduler registration",
+    "next_action": "Run reviewed --mixed-local-preflight on Windows; implement and independently test mixed-state resumable Partner Center runner with POST skip and PRE single-writer CAS; reconcile central queue before any 12-hour Task Scheduler registration",
     "post_identity_reconcile_pr": 49,
     "post_identity_reconcile_ci_run": 40851883814,
     "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU",
@@ -2461,11 +2461,18 @@
     "mixed_dispatch_plan_head": "8d8acf535d8b99b4fd3068769934cac64fbb60b2",
     "mixed_dispatch_plan_ci": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
     "mixed_dispatch_plan_execution": "READ_ONLY_CONTRACT_TESTS_ONLY",
-    "mixed_dispatch_plan_result": "FOCUS_SKIP_EXISTING_GITHUB_RETURN__LEDGER_TEXT_IMAGE_PENDING"
+    "mixed_dispatch_plan_result": "FOCUS_SKIP_EXISTING_GITHUB_RETURN__LEDGER_TEXT_IMAGE_PENDING",
+    "mixed_local_preflight_pr": 53,
+    "mixed_local_preflight_branch": "codex/e2e-mixed-local-preflight-20261029",
+    "mixed_local_preflight_head": "5e044c8bc03d5771d193068bd7e131bc936db2a1",
+    "mixed_local_preflight_ci_run": 40893502934,
+    "mixed_local_preflight_ci": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+    "mixed_local_preflight_capability": "FOCUS_POST_SKIP__THREE_PRE_EXACT_SOURCE_AND_EXE_VERIFICATION__SHARED_LOCK__NO_BROWSER_CAS",
+    "mixed_local_preflight_execution": "NOT_RUN_ON_USER_WINDOWS"
   },
   "post_identity_pipeline": {
     "schema_version": 1,
-    "updated_at_utc": "2026-10-29T13:42:37.745Z",
+    "updated_at_utc": "2026-10-29T14:40:00Z",
     "writer": "36_WINDOWS_E2E_ONLY",
     "reconciliation_basis": "GITHUB_APPROVED_IDENTITY_FILES_VERIFIED_FOR_FOCUS_AND_PRISM__NO_LOCAL_RECEIPTS_READ_THIS_RUN",
     "product_count": 7,
@@ -2682,6 +2689,20 @@
         "integration_status": "DRAFT_NOT_MERGED",
         "local_execution": "NOT_PERFORMED",
         "store_submission": "NOT_PERFORMED"
+      },
+      "mixed_local_preflight": {
+        "draft_pr": 53,
+        "branch": "codex/e2e-mixed-local-preflight-20261029",
+        "head_sha": "5e044c8bc03d5771d193068bd7e131bc936db2a1",
+        "base_pr": 52,
+        "ci_run_id": 40893502934,
+        "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+        "scope": "WINDOWS_ONLY_EXACT_SOURCE_SYNC_AND_EXE_HASH_FOR_THREE_PRE__FOCUS_POST_SKIP__NO_BROWSER_CAS",
+        "local_execution": "NOT_PERFORMED",
+        "mixed_state_local_runner": "NOT_IMPLEMENTED",
+        "task_scheduler_registration": "HOLD",
+        "store_submission": "NOT_PERFORMED",
+        "integration_status": "STACKED_DRAFT_NOT_MERGED"
       }
     }
   },
