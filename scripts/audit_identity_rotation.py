@@ -10,6 +10,8 @@ from datetime import datetime, timezone
 import json
 import re
 
+from scripts.reconcile_post_identity import ReconcileHold, reconcile_approved_return
+
 SHA40 = re.compile(r"[0-9a-f]{40}\Z")
 SHA64 = re.compile(r"[0-9a-f]{64}\Z")
 PFN = re.compile(r"[A-Za-z0-9._-]+_[a-z0-9]{13}\Z")
@@ -139,6 +141,18 @@ def audit_rotation(ledger, *, fetch_head, fetch_approved, fetch_artifact,
             seen_pfns.add(approved["package_family_name"])
             require(job.get("identity_store_id") == approved["store_id"],
                     "HOLD_CENTRAL_IDENTITY_CONFLICT")
+            # The same exact-GitHub evidence must also satisfy the canonical
+            # single-writer POST_IDENTITY reconciler. No ledger write here.
+            try:
+                _, transition = reconcile_approved_return(
+                    ledger, slug,
+                    fetch_branch_head=lambda _repo, _branch: head,
+                    fetch_approved_file=lambda _repo, _target, _branch: raw,
+                )
+            except ReconcileHold as exc:
+                raise AuditHold(str(exc)) from exc
+            require(transition == "EXISTING_VERIFIED",
+                    "HOLD_POST_IDENTITY_RECONCILIATION_CONFLICT")
             output.append({
                 "batch_index": index, "slug": slug, "request_id": job["request_id"],
                 "status": "POST_IDENTITY_GITHUB_VERIFIED",
