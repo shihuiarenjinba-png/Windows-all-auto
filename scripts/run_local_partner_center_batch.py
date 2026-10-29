@@ -492,6 +492,119 @@ def plan_queue_only(args) -> dict:
     return {**result, "central_head_sha": snapshot[1]}
 
 
+def preflight_mixed_local(args) -> dict:
+    """Windows-only exact-source/EXE preflight for a mixed PRE/POST APP queue.
+
+    A POST job is GitHub-verified and deliberately skipped. PRE jobs receive
+    exact local source and Artifact verification but NO browser, Identity
+    capture, CAS, submission draft, or Task Scheduler registration. This
+    preflight does not mutate the central ledger or grant local E2E PASS.
+    """
+    prerequisite = check_prerequisites(args.provisioner_root.resolve())
+    snapshot = fetch_central()
+    ledger, central_head, _ = snapshot
+    audit = audit_queue_only(args, central_snapshot=snapshot)
+    plan = rotation_plan.build_dispatch_plan(ledger, audit)
+    pending = [p for p in plan["products"]
+               if p["dispatch_action"] ==
+               "LOCAL_OPERATOR_PENDING_REVIEWED_MIXED_RUNNER"]
+    jobs = (ledger.get("rotation_cohorts") or {}).get("app_jobs", [])
+    by_slug = {job["slug"]: job for job in jobs}
+    if len(by_slug) != 4:
+        raise RunnerHold("HOLD_MIXED_LOCAL_DISCOVERY")
+    # The same lock used by the legacy runner prevents simultaneous local
+    # source/Artifact work. Keep a separate preflight manifest so a former
+    # four-PRE manifest cannot be mistaken for the current three-PRE cohort.
+    with batch.state_lock(args.state_dir.resolve() / "batch-state.json"):
+        recheck_central(central_head)
+        if not pending:
+            return {
+                "status": "MIXED_LOCAL_NO_IDENTITY_WORK",
+                "central_head_sha": central_head,
+                "post_identity_skip_count": 4,
+                "pre_identity_preflight_count": 0,
+                "local_windows_no_llm_pass": False,
+                "task_scheduler_registration_allowed": False,
+                "store_submission": "NOT_PERFORMED",
+                **prerequisite,
+            }
+        ready = []
+        for item in pending:
+            job = by_slug[item["slug"]]
+            if any(job.get(k) != item.get(k) for k in (
+                    "request_id", "slug", "source_repository", "source_branch",
+                    "source_sha", "identity_return_target", "registration_type",
+                    "partner_center_selection")):
+                raise RunnerHold("HOLD_MIXED_LOCAL_BINDING_CONFLICT")
+            if live_branch_head(job["source_repository"], job["source_branch"]) != job["source_sha"]:
+                raise RunnerHold("HOLD_CANONICAL_PRODUCT_REVISION_MISMATCH")
+            artifact = gh_json(
+                f"repos/{job['source_repository']}/actions/artifacts/{job['factory_artifact_id']}"
+            )
+            if (artifact is None or artifact.get("expired") is not False
+                    or artifact.get("name") != job.get("factory_artifact_name")
+                    or artifact.get("digest") !=
+                    "sha256:" + str(job.get("factory_artifact_zip_sha256", ""))
+                    or job.get("factory_build_head") != job["source_sha"]
+                    or job.get("artifact_metadata_verified") is not True):
+                raise RunnerHold("HOLD_ARTIFACT_MISMATCH")
+            ready.append(job)
+        isolated = args.state_dir.resolve() / "mixed-preflight"
+        sync_receipt = sync_sources(ready, isolated)
+        if (sync_receipt.get("status") != "PASS"
+                or sync_receipt.get("exact_sha_verified") is not True):
+            raise RunnerHold("HOLD_LOCAL_SOURCE_SYNC")
+        verified = []
+        for item, job in zip(pending, ready):
+            prepared = operator.prepare(
+                ledger, sync_receipt, isolated / "sources", job["slug"],
+                central_repository=batch.CENTRAL_REPOSITORY,
+                central_branch=batch.CENTRAL_BRANCH,
+                central_head_sha=central_head,
+                batch=None,
+            )
+            if (prepared.get("request_id") != job["request_id"]
+                    or prepared.get("source_snapshot_head") != job["source_sha"]
+                    or prepared.get("queue_job_digest") !=
+                    operator.canonical_digest(job)):
+                raise RunnerHold("HOLD_MIXED_LOCAL_BINDING_CONFLICT")
+            artifact = verify_artifact(job, isolated / "artifacts")
+            if live_branch_head(job["source_repository"], job["source_branch"]) != job["source_sha"]:
+                raise RunnerHold("HOLD_CANONICAL_PRODUCT_REVISION_MISMATCH")
+            verified.append({
+                "batch_index": item["batch_index"],
+                "slug": job["slug"], "request_id": job["request_id"],
+                "source_sha": job["source_sha"],
+                "source_snapshot_status": prepared["source_snapshot_status"],
+                "source_snapshot_head": prepared["source_snapshot_head"],
+                "queue_job_digest": prepared["queue_job_digest"],
+                "artifact_id": artifact["artifact_id"],
+                "exe_sha256": artifact["exe_sha256"],
+                "exe_bytes": artifact["exe_bytes"],
+                "identity_return_target": job["identity_return_target"],
+                "identity_capture": "NOT_PERFORMED",
+                "github_return": "NOT_PERFORMED",
+            })
+        recheck_central(central_head)
+    return {
+        "status": "MIXED_LOCAL_PRECHECK_PASS",
+        "central_head_sha": central_head,
+        "discovered_count": 4,
+        "post_identity_skip_count": plan["post_identity_skip_count"],
+        "pre_identity_preflight_count": len(verified),
+        "products": verified,
+        "mixed_state_local_runner_ready": False,
+        "local_windows_no_llm_pass": False,
+        "multi_product_identity_batch_pass": False,
+        "task_scheduler_registration_allowed": False,
+        "partner_center": "NOT_OPENED",
+        "cas": "NOT_PERFORMED",
+        "store_submission": "NOT_PERFORMED",
+        "next_action": "REVIEW_MIXED_STATE_RESUMABLE_EXECUTION_RUNNER",
+        **prerequisite,
+    }
+
+
 def preflight_only(args) -> dict:
     """Read-only live queue gate for task registration, never host proof.
 
@@ -799,17 +912,21 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--preflight-only", action="store_true")
     parser.add_argument("--audit-queue", action="store_true")
     parser.add_argument("--plan-queue", action="store_true")
+    parser.add_argument("--mixed-local-preflight", action="store_true")
     args = parser.parse_args(argv)
     try:
-        if sum((args.audit_queue, args.plan_queue, args.preflight_only)) > 1:
+        if sum((args.audit_queue, args.plan_queue, args.preflight_only,
+                args.mixed_local_preflight)) > 1:
             raise RunnerHold("HOLD_CONFLICTING_READ_ONLY_MODES")
         result = (audit_queue_only(args) if args.audit_queue else
                   plan_queue_only(args) if args.plan_queue else
+                  preflight_mixed_local(args) if args.mixed_local_preflight else
                   preflight_only(args) if args.preflight_only else run_batch(args))
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0 if result.get("status") in {
             "LOCAL_WINDOWS_NO_LLM_AUTOMATION_PASS", "BATCH_PREFLIGHT_READY",
-            "MIXED_ROTATION_AUDITED", "MIXED_ROTATION_DISPATCH_PLAN_READY"
+            "MIXED_ROTATION_AUDITED", "MIXED_ROTATION_DISPATCH_PLAN_READY",
+            "MIXED_LOCAL_PRECHECK_PASS", "MIXED_LOCAL_NO_IDENTITY_WORK"
         } else 2
     except (RunnerHold, rotation_audit.AuditHold, rotation_plan.PlanHold,
             batch.BatchHold, operator.OperatorHold,
