@@ -60,7 +60,8 @@ def audit_rotation(ledger, *, fetch_head, fetch_approved, fetch_artifact,
     require(isinstance(now, datetime) and now.tzinfo is not None,
             "HOLD_CLOCK_UNTRUSTED")
     now = now.astimezone(timezone.utc)
-    jobs = (ledger.get("rotation_cohorts") or {}).get("app_jobs")
+    cohorts = ledger.get("rotation_cohorts") or {}
+    jobs = cohorts.get("app_jobs")
     batch = (ledger.get("multi_product_partner_center_batch_4") or {}).get("products")
     require(isinstance(jobs, list) and isinstance(batch, list)
             and len(jobs) == len(batch) == 4, "HOLD_BATCH_DISCOVERY_INCOMPLETE")
@@ -68,6 +69,19 @@ def audit_rotation(ledger, *, fetch_head, fetch_approved, fetch_artifact,
             and tuple(x.get("slug") for x in batch) == ORDER
             and [x.get("batch_index") for x in batch] == [1, 2, 3, 4],
             "HOLD_BATCH_ORDER_OR_SCOPE")
+    all_jobs = list(jobs)
+    for collection, lane in (("three_d_jobs", "GAME_3D"), ("game_jobs", "GAME")):
+        other = cohorts.get(collection, [])
+        require(isinstance(other, list), "HOLD_ROTATION_SCHEMA")
+        for item in other:
+            require(isinstance(item, dict) and item.get("product_type") == lane,
+                    "HOLD_CROSS_LANE_PRODUCT_TYPE")
+            all_jobs.append(item)
+    for key in ("request_id", "slug", "identity_return_target"):
+        values = [x.get(key) for x in all_jobs]
+        require(all(isinstance(x, str) and x for x in values)
+                and len(set(values)) == len(values),
+                "HOLD_CROSS_LANE_BINDING")
     for key in ("request_id", "slug", "source_sha", "identity_return_target"):
         values = [x.get(key) for x in jobs]
         require(all(isinstance(x, str) and x for x in values)
