@@ -189,6 +189,32 @@ class RunnerTests(unittest.TestCase):
         ))
         self.assertEqual(state["final_status"], "MULTI_PRODUCT_IDENTITY_BATCH_PARTIAL")
 
+    def test_name_unavailable_advances_one_product_without_identity_cas(self):
+        job = {
+            "batch_index": 1, "state": "PROCESSING",
+            "request_id": "app-example-" + "a" * 12,
+            "slug": "example", "source_sha": "a" * 40,
+            "identity_return_target": "products/example/store/approved-identity.json",
+        }
+        state = {
+            "batch_id": "batch-1", "active_index": 1,
+            "next_resume_index": 1, "products": [job],
+            "processed_count": 0, "success_count": 0, "hold_count": 0,
+            "batch_total": 4, "discovered_count": 4,
+            "execution_trigger_proven": False,
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            product_dir = Path(directory) / "products" / job["request_id"]
+            result = runner.complete_name_unavailable(state, job, product_dir)
+            self.assertEqual(result["hold_count"], 1)
+            self.assertEqual(result["success_count"], 0)
+            self.assertEqual(result["next_resume_index"], 2)
+            self.assertEqual(result["active_index"], None)
+            self.assertTrue((product_dir / "result.json").is_file())
+            self.assertTrue((Path(directory) / "batch-state.json").is_file())
+            self.assertEqual(result["products"][0]["result"]["error_code"],
+                             "HOLD_NAME_UNAVAILABLE")
+
     def test_in_progress_manual_batch_cannot_be_taken_over_by_scheduler(self):
         state = {
             "batch_id": "batch-1",
