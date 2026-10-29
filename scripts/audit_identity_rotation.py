@@ -11,6 +11,7 @@ import json
 import re
 
 from scripts.reconcile_post_identity import ReconcileHold, reconcile_approved_return
+from scripts.mixed_artifact_expiry import ExpiryHold, validate as validate_artifact_expiry
 
 SHA40 = re.compile(r"[0-9a-f]{40}\Z")
 SHA64 = re.compile(r"[0-9a-f]{64}\Z")
@@ -180,6 +181,12 @@ def audit_rotation(ledger, *, fetch_head, fetch_approved, fetch_artifact,
                     and artifact.get("digest") ==
                     "sha256:" + str(job.get("factory_artifact_zip_sha256", "")),
                     "HOLD_ARTIFACT_MISMATCH")
+            # The GitHub expired flag can lag expires_at. Match the remote UTC
+            # deadline to the immutable queue before reporting PRE verified.
+            try:
+                validate_artifact_expiry(job, artifact, now=now)
+            except ExpiryHold as exc:
+                raise AuditHold(str(exc)) from exc
             output.append({
                 "batch_index": index, "slug": slug, "request_id": job["request_id"],
                 "status": "PRE_IDENTITY_GITHUB_VERIFIED",
