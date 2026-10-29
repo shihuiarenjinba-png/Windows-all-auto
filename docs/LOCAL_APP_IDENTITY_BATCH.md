@@ -109,6 +109,12 @@ must still list all four products, counts, Identity return commits, remaining
 gate and next resume index. A terminal PARTIAL is idempotently reusable and
 cannot be promoted by changing its JSON fields.
 
+A confirmed `HOLD_NAME_UNAVAILABLE` raised before the Reserve click is
+recorded as one product-level HOLD and advances the next index. Authentication,
+MFA, uncertain creation, duplicate-product suspicion and CAS conflicts still
+stop the whole batch. This preserves the requested serial best-effort behavior
+without ever retrying an ambiguous Reserve action.
+
 The prior runner incorrectly accepted `os.name == "nt"` and an
 `execution_origin` string as sufficient host proof. Those checks have been
 removed. A future independent host verifier must establish that the *saved*
