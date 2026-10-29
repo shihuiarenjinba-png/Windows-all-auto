@@ -193,8 +193,10 @@ class PartnerCenterReadinessTests(unittest.TestCase):
             "u": "https://partner.microsoft.com/dashboard/products",
             "t": "Overview", "r": "complete",
         })
+        page.current_target_url = MagicMock(return_value=(
+            "https://partner.microsoft.com/dashboard/v2/home"
+        ))
         page.evaluate = MagicMock(side_effect=[
-            "https://partner.microsoft.com/dashboard/v2/home",
             True,
             state, state, state, state,
         ])
@@ -203,7 +205,7 @@ class PartnerCenterReadinessTests(unittest.TestCase):
                 "https://partner.microsoft.com/dashboard/products", timeout=45.0
             )
         page.command.assert_not_called()
-        assignment = page.evaluate.call_args_list[1].args[0]
+        assignment = page.evaluate.call_args_list[0].args[0]
         self.assertIn("location.assign", assignment)
         self.assertIn(PARTNER_PRODUCTS_URL, assignment)
 
@@ -259,11 +261,31 @@ class PartnerCenterReadinessTests(unittest.TestCase):
     def test_current_localized_overview_is_not_reloaded(self):
         page = CdpPage("target", None)
         page.command = MagicMock(return_value={})
-        page.evaluate = MagicMock(return_value=(
+        page.current_target_url = MagicMock(return_value=(
             "https://partner.microsoft.com/en-us/dashboard/apps-and-games/overview"
         ))
         page.navigate(PARTNER_PRODUCTS_URL)
         page.command.assert_not_called()
+
+    def test_product_page_returns_via_trusted_apps_breadcrumb(self):
+        page = CdpPage("target", None)
+        overview = json.dumps({
+            "u": "https://partner.microsoft.com/en-us/dashboard/apps-and-games/overview",
+            "t": "Overview | Apps and games | Partner Center",
+            "r": "complete",
+        })
+        page.current_target_url = MagicMock(return_value=(
+            "https://partner.microsoft.com/en-us/dashboard/products/"
+            "9PGZ445SR5GM/overview"
+        ))
+        page.evaluate = MagicMock(side_effect=[
+            overview, overview, overview, overview,
+        ])
+        page.pointer_click_exact_link = MagicMock()
+        with patch("scripts.partner_center_cdp.time.sleep"):
+            page.navigate(PARTNER_PRODUCTS_URL)
+
+        page.pointer_click_exact_link.assert_called_once_with("Apps and games")
 
     def test_navigation_does_not_accept_stable_previous_page(self):
         page = CdpPage("target", None)
@@ -280,8 +302,10 @@ class PartnerCenterReadinessTests(unittest.TestCase):
             "t": "Application overview | File Integrity Ledger | Partner Center",
             "r": "complete",
         })
+        page.current_target_url = MagicMock(return_value=(
+            "https://partner.microsoft.com/en-us/dashboard/apps-and-games/overview"
+        ))
         page.evaluate = MagicMock(side_effect=[
-            "https://partner.microsoft.com/en-us/dashboard/apps-and-games/overview",
             True, old, old, old, reached, reached, reached, reached,
         ])
         with patch("scripts.partner_center_cdp.time.sleep"):

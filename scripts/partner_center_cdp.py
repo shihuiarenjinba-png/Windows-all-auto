@@ -50,6 +50,19 @@ def _is_products_overview(url: str) -> bool:
     )
 
 
+def _is_product_overview(url: str) -> bool:
+    parsed = urlparse(url)
+    return (
+        parsed.scheme == "https"
+        and parsed.hostname == PARTNER_HOST
+        and re.fullmatch(
+            r"/[a-z]{2}-[a-z]{2}/dashboard/products/"
+            r"[A-Za-z0-9]{8,32}/overview",
+            parsed.path.rstrip("/"),
+        ) is not None
+    )
+
+
 class PartnerCenterHold(RuntimeError):
     pass
 
@@ -149,6 +162,20 @@ class CdpPage:
     def close(self) -> None:
         self.socket.close()
 
+    def current_target_url(self) -> str:
+        try:
+            targets = _get_json("/json")
+        except REQUEST_ERRORS as exc:
+            raise PartnerCenterHold("HOLD_BROWSER_AUTOMATION_UNAVAILABLE") from exc
+        matches = [
+            item for item in targets if isinstance(item, dict)
+            and item.get("type") == "page"
+            and item.get("id") == self.target_id
+        ] if isinstance(targets, list) else []
+        if len(matches) != 1 or not isinstance(matches[0].get("url"), str):
+            raise PartnerCenterHold("HOLD_BROWSER_STATE_AMBIGUOUS")
+        return str(matches[0]["url"])
+
     def command(self, method: str, params: dict | None = None,
                 timeout: float = 15.0) -> dict:
         self.next_id += 1
@@ -188,16 +215,21 @@ class CdpPage:
         parsed = urlparse(url)
         if parsed.scheme != "https" or parsed.hostname != PARTNER_HOST:
             raise PartnerCenterHold("HOLD_BROWSER_NAVIGATION_REJECTED")
-        current_url = self.evaluate("location.href")
+        current_url = self.current_target_url()
         if (url == PARTNER_PRODUCTS_URL
                 and isinstance(current_url, str)
                 and _is_products_overview(current_url)):
             return
-        assigned = self.evaluate(
-            "location.assign(" + json.dumps(url, ensure_ascii=False) + "); true"
-        )
-        if assigned is not True:
-            raise PartnerCenterHold("HOLD_BROWSER_NAVIGATION_REJECTED")
+        if (url == PARTNER_PRODUCTS_URL
+                and isinstance(current_url, str)
+                and _is_product_overview(current_url)):
+            self.pointer_click_exact_link("Apps and games")
+        else:
+            assigned = self.evaluate(
+                "location.assign(" + json.dumps(url, ensure_ascii=False) + "); true"
+            )
+            if assigned is not True:
+                raise PartnerCenterHold("HOLD_BROWSER_NAVIGATION_REJECTED")
         deadline = time.monotonic() + timeout
         last = None
         stable = 0
