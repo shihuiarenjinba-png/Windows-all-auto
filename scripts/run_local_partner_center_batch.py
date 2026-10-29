@@ -19,6 +19,7 @@ import zipfile
 from scripts import local_code_sync
 from scripts import audit_identity_rotation as rotation_audit
 from scripts import mixed_rotation_dispatch as rotation_plan
+from scripts import mixed_artifact_expiry as artifact_expiry
 from scripts import local_identity_batch as batch
 from scripts import local_partner_center_operator as operator
 from scripts.partner_center_cdp import (
@@ -548,6 +549,12 @@ def preflight_mixed_local(args) -> dict:
                     or job.get("factory_build_head") != job["source_sha"]
                     or job.get("artifact_metadata_verified") is not True):
                 raise RunnerHold("HOLD_ARTIFACT_MISMATCH")
+            # GitHub's expired=false flag can lag the actual UTC deadline.
+            # Validate both recorded and live expiry before source sync or ZIP IO.
+            try:
+                artifact_expiry.validate(job, artifact)
+            except artifact_expiry.ExpiryHold as exc:
+                raise RunnerHold(exc.code) from exc
             ready.append(job)
         isolated = args.state_dir.resolve() / "mixed-preflight"
         sync_receipt = sync_sources(ready, isolated)
