@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-29T21:44:00Z",
+  "updated_at_utc": "2026-10-29T22:41:11.174Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -232,13 +232,13 @@
   },
   "other_lanes": {
     "APP": {
-      "phase": "FOCUS_POST_IDENTITY_READY__THREE_APP_PRE_IDENTITY_PENDING__OFFLINE_NOTES_IDENTITY_UNBOUND",
+      "phase": "FOCUS_AND_LEDGER_POST_IDENTITY_READY__TWO_APP_PRE_IDENTITY_PENDING__OFFLINE_NOTES_IDENTITY_UNBOUND",
       "status": "HOLD",
       "factory_branch": "codex/app-msix-prebuilt-exe-20261027-1300",
       "factory_head": "e8e3ca613a114cd0e919cf2f3a4454fa8149510a",
       "provisioner_branch": "codex/e2e-belt-connection-20261027",
       "provisioner_head": "99a06968ff0637fc644b876df18e799bb730554d",
-      "next_action": "Focus exact source and artifact metadata verified; GitHub-origin local queue/physical code sync and new product UI flow pending. Offline Notes remains separate.",
+      "next_action": "Focus and Ledger have GitHub-approved Identity returns; Text Diff and Image Inventory still PRE. Await local authenticated mixed executor and Version gates; do not reprocess returned products.",
       "provisioner_ci_run_id": 40642147303,
       "provisioner_ci_conclusion": "SUCCESS",
       "canary_proposal": {
@@ -849,7 +849,7 @@
   },
   "user_id_requests": {
     "schema_version": 1,
-    "generated_at_utc": "2026-10-28T16:39:00Z",
+    "generated_at_utc": "2026-10-29T22:41:11.174Z",
     "acquisition_owner": "LOCAL_PARTNER_CENTER_OPERATOR_PERMITTED_FROM_2026_10_28_17_44_JST",
     "storage_policy": "LOCAL_OPERATOR_RECEIPT_AND_PRIVATE_IDENTITY_ONLY__NO_AUTH_COOKIES_TOKENS_SESSIONS_IN_GITHUB",
     "items": [
@@ -961,22 +961,24 @@
         "source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
         "identity_target": "%LOCALAPPDATA%/FactoryIdentityWorker/secure/<request_id>/official-identity.json",
         "identity_return_target": "products/file-integrity-ledger/store/approved-identity.json",
-        "requested_fields": [
-          "Store ID",
-          "reserved display name",
-          "Package Identity Name",
-          "Publisher",
-          "Publisher Display Name",
-          "PFN",
-          "Package SID"
-        ],
-        "status": "LOCAL_PARTNER_CENTER_OPERATOR_ACTIVE",
+        "requested_fields": [],
+        "status": "USER_IDENTITY_RECEIVED",
         "registration_type": "MSIX_OR_PWA_APP",
         "partner_center_selection": "MSIX or PWA app",
         "allow_local_product_creation": false,
-        "partner_center_product_status": "USER_REPORTED_CREATED__IDENTITY_CAPTURE_PENDING",
+        "partner_center_product_status": "EXISTING_GITHUB_RETURN_VERIFIED",
         "user_manual_identity_entry_required": false,
-        "next_gate": "EXISTING_PRODUCT_VIEW_IDENTITY__CAPTURE_7_FIELDS__SINGLE_WRITER_RETURN"
+        "next_gate": "POST_IDENTITY_PACKAGE_VERSION_GATE_HOLD",
+        "received_fields": [
+          "store_id",
+          "reserved_display_name",
+          "identity_name",
+          "publisher",
+          "publisher_display_name",
+          "package_family_name",
+          "package_sid"
+        ],
+        "identity_reference_status": "GITHUB_APPROVED_IDENTITY_RETURN_VERIFIED"
       },
       {
         "product_name": "Offline Text Diff Desk",
@@ -1042,7 +1044,6 @@
     "pending_requests": [],
     "rotation_pending_3d": "POST_IDENTITY_READY__PRISM_GITHUB_IDENTITY_RETURN_VERIFIED__PACKAGE_VERSION_HOLD",
     "operator_active_requests": [
-      "app-file-integrity-ledger-d1108d12f7d1",
       "app-offline-text-diff-desk-a7d372800898",
       "app-offline-image-inventory-desk-16b6a772952c"
     ]
@@ -1194,13 +1195,13 @@
         "product_type": "APP",
         "display_name": "File Integrity Ledger",
         "slug": "file-integrity-ledger",
-        "status": "PRE_IDENTITY_READY",
+        "status": "POST_IDENTITY_READY",
         "request_id": "app-file-integrity-ledger-d1108d12f7d1",
         "source_repository": "shihuiarenjinba-png/AI-App-Factory",
         "source_branch": "codex/app-ledger-snapshot-size-20261028",
         "source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
         "factory_build_head": "d1108d12f7d1697af30400f97c7db39cba5e6791",
-        "observed_pr_head": "d1108d12f7d1697af30400f97c7db39cba5e6791",
+        "observed_pr_head": "db9a57af822788af4c8384499a6e343ec7b0353d",
         "expected_exe_sha256": "9100bbcfba20ed2768e5d2dffcb39c987466377d26a34af1e03cc166071e02ca",
         "expected_exe_bytes": 11393466,
         "packaging_family": "MSIX",
@@ -1208,7 +1209,7 @@
         "registration_type": "MSIX_OR_PWA_APP",
         "partner_center_selection": "MSIX or PWA app",
         "identity_return_target": "products/file-integrity-ledger/store/approved-identity.json",
-        "identity_status": "USER_REPORTED_PARTNER_CENTER_PRODUCT_CREATED__IDENTITY_CAPTURE_PENDING",
+        "identity_status": "GITHUB_APPROVED_IDENTITY_RETURN_VERIFIED__PACKAGE_VERSION_HOLD",
         "factory_workflow_run_id": 40711443897,
         "factory_workflow_conclusion": "SUCCESS",
         "factory_artifact_id": 12826068537,
@@ -1222,9 +1223,13 @@
         "identity_cas_allowed": false,
         "real_msix": "NOT_BUILT",
         "local_execution": "NOT_OBSERVED",
-        "next_action": "LOCAL_VIEW_PRODUCT_IDENTITY_7_FIELDS__EXACT_REQUEST_SOURCE_BINDING__SINGLE_WRITER_CAS__REPLAY",
+        "next_action": "POST_IDENTITY_PACKAGE_VERSION_GATE_HOLD__DO_NOT_REENTER_PARTNER_CENTER_OR_REAPPLY_CAS__BUILD_ONLY_AFTER_VERSION_AND_ASSET_APPROVAL",
         "partner_center_product_status": "USER_SCREENSHOT_PRODUCT_CREATED__NOT_GITHUB_RETURNED",
-        "reported_store_id": "9PGZ445SR5GM"
+        "reported_store_id": "9PGZ445SR5GM",
+        "identity_return_commit_sha": "db9a57af822788af4c8384499a6e343ec7b0353d",
+        "identity_store_id": "9PGZ445SR5GM",
+        "identity_return_evidence": "EXACT_GITHUB_APPROVED_IDENTITY_FILE__ONE_COMMIT_FROM_PINNED_SOURCE__ONLY_IDENTITY_FILE_ADDED",
+        "package_version_gate": "HOLD"
       },
       {
         "product_type": "APP",
@@ -1296,7 +1301,7 @@
       }
     ],
     "app_candidate_count": 5,
-    "app_candidate_note": "Four independently verified APP pre-identity EXE artifacts; Focus has exact GitHub Identity return and is POST_IDENTITY_READY, while Ledger/Text Diff/Image Inventory remain PRE_IDENTITY_READY. Offline Notes Identity reference remains separate and unbound.",
+    "app_candidate_note": "Four independently verified APP pre-identity EXE artifacts; Focus and Ledger have exact GitHub Identity return and are POST_IDENTITY_READY. Text Diff/Image Inventory remain PRE_IDENTITY_READY. Offline Notes Identity reference remains separate and unbound.",
     "three_d_max_jobs": 1,
     "three_d_jobs": [
       {
@@ -1350,8 +1355,8 @@
   "rotation_metrics": {
     "total_jobs": 4,
     "pre_identity_pass": 4,
-    "waiting_user_identity": 3,
-    "identity_received": 1,
+    "waiting_user_identity": 2,
+    "identity_received": 2,
     "conflicts": 0,
     "retries": 0,
     "artifact_mismatch": 0,
@@ -1362,7 +1367,7 @@
     "3d_waiting_identity": 0,
     "3d_conflicts": 0,
     "3d_artifact_mismatch": 0,
-    "metrics_basis": "FOUR_APP_ARTIFACTS_VERIFIED__FOCUS_AND_PRISM_GITHUB_APPROVED_IDENTITY_EXACT_HEAD_VERIFIED__THREE_APP_RETURNS_NOT_OBSERVED",
+    "metrics_basis": "FOUR_APP_PRE_IDENTITY_EXE_ARTIFACTS_PREVIOUSLY_VERIFIED__FOCUS_AND_LEDGER_GITHUB_APPROVED_IDENTITY_EXACT_SOURCE_RETURN_VERIFIED__TWO_APP_RETURNS_NOT_OBSERVED__NO_LOCAL_RECEIPTS_READ",
     "3d_source_branch_head_drift_observed": 1
   },
   "local_source_code_sync": {
@@ -1929,14 +1934,14 @@
     "processed_count": 0,
     "success_count": 0,
     "hold_count": 0,
-    "next_resume_index": 2,
+    "next_resume_index": 3,
     "serial_execution": "NOT_STARTED",
     "cross_product_contamination": 0,
     "duplicate_creation": 0,
     "store_submission": 0,
     "package_upload": 0,
     "package_version_gate": "HOLD",
-    "status": "MULTI_PRODUCT_IDENTITY_BATCH_PARTIAL__FOCUS_GITHUB_RETURN_VERIFIED",
+    "status": "MULTI_PRODUCT_IDENTITY_BATCH_PARTIAL__TWO_GITHUB_RETURNS_VERIFIED__LOCAL_SCHEDULED_PROOF_MISSING",
     "preflight_evidence": "FOUR_FACTORY_BRANCH_HEADS_IDENTICAL__FOUR_FACTORY_ARTIFACTS_PRESENT_UNEXPIRED_EXPECTED_DIGEST_MATCH__PR48_OFFLINE_QA_WINDOWS_UBUNTU_SUCCESS__NO_LOCAL_CDP_OR_CAS_RECEIPT",
     "code_contracts": {
       "windows_all_auto_pr": 33,
@@ -2403,14 +2408,16 @@
       ],
       "next_action": "INTEGRATE_VERIFIED_MIXED_STATE_RUNNER_AND_LOCAL_RECEIPT_IMPORT__NO_DUPLICATE_FOCUS_CAS",
       "store_submission": "NOT_PERFORMED"
-    }
+    },
+    "cloud_verified_post_identity_count": 2,
+    "remaining_pre_identity_count": 2
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-29T21:44:00Z",
-    "scope": "PR60_AUTHENTICATED_UI_GITHUB_RETURN_REBASE_GUARD_WINDOWS_UBUNTU_CI_PASS__PHYSICAL_WINDOWS_NOT_RUN",
+    "observed_at_utc": "2026-10-29T22:41:11.174Z",
+    "scope": "PR61_MIXED_COHORT_SOURCE_SNAPSHOT_ISOLATION_CI_PASS__LEDGER_GITHUB_IDENTITY_RETURN_RECONCILED",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
-    "canonical_previous_blob_sha": "98d40cce07567e00657e895aeca2c44d2e47bf26",
+    "canonical_previous_blob_sha": "83dbf5f051572ad8b7e6bf0c1986fce3443668dc",
     "focus_return_commit_sha": "8a7139375524830bf823469526837259266172be",
     "focus_store_id": "9P6452C61N7B",
     "focus_source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
@@ -2418,10 +2425,10 @@
     "focus_local_replay": "USER_REPORTED_NOT_INDEPENDENTLY_READ",
     "focus_submission_draft": "NOT_VERIFIED",
     "ledger_product_creation": "USER_REPORTED_CREATED__STORE_ID_9PGZ445SR5GM",
-    "ledger_identity_capture": "NOT_VERIFIED__APPROVED_FILE_404",
+    "ledger_identity_capture": "GITHUB_APPROVED_IDENTITY_FILE_EXACT_REQUEST_SOURCE_EXE_HASH__LOCAL_UI_RECEIPT_NOT_INDEPENDENTLY_READ",
     "text_diff_identity_capture": "NOT_VERIFIED__APPROVED_FILE_404",
     "image_inventory_identity_capture": "NOT_VERIFIED__APPROVED_FILE_404",
-    "mixed_status_runner": "HOLD_AUTHENTICATED_MIXED_CAS_EXECUTOR_NOT_WIRED__PR60_UI_GITHUB_REBASE_VERIFIER_CI_GREEN_ONLY",
+    "mixed_status_runner": "HOLD_AUTHENTICATED_MIXED_CAS_EXECUTOR_NOT_WIRED__PR61_COHORT_ISOLATION_CI_GREEN_ONLY",
     "local_code_sync": "NOT_RUN_THIS_CLOUD_EXECUTION",
     "partner_center_cdp": "NOT_RUN_THIS_CLOUD_EXECUTION",
     "cas": "NO_NEW_CAS_THIS_EXECUTION",
@@ -2431,10 +2438,10 @@
     "checker": "NOT_RUN",
     "gui_install_qa": "NOT_RUN",
     "store_submission": 0,
-    "success_count_cloud_verified": 1,
-    "remaining_app_identity_returns": 3,
-    "next_resume_index": 2,
-    "next_action": "PR60 adds opt-in authenticated read-only UI+GitHub return revalidation before a mixed-state rebase; exact-head Windows/Ubuntu CI green. It is not an executor. Wire serial mixed APP UI capture and existing Provisioner CAS replay under the OS lock, verify physical Windows execution and central POST reconciliation. Ledger/Text/Image still lack GitHub approved-identity returns. No Version approval, real MSIX, Task Scheduler or Store submission.",
+    "success_count_cloud_verified": 2,
+    "remaining_app_identity_returns": 2,
+    "next_resume_index": 3,
+    "next_action": "Ledger exact GitHub return commit verified and central ledger promoted to POST. Focus/Ledger skip; Text Diff/Image Inventory remain PRE. PR61 fixes immutable cohort shrink and receipt source path confinement; physical Windows validation and serial authenticated mixed CAS executor remain pending. Version/asset gates HOLD; no Store submission.",
     "post_identity_reconcile_pr": 49,
     "post_identity_reconcile_ci_run": 40851883814,
     "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU",
@@ -2449,7 +2456,7 @@
       },
       {
         "slug": "file-integrity-ledger",
-        "status": "PRE_IDENTITY_READY"
+        "status": "POST_IDENTITY_READY"
       },
       {
         "slug": "offline-text-diff-desk",
@@ -2470,8 +2477,8 @@
     "mixed_audit_ci": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
     "mixed_audit_physical_execution": "NOT_PERFORMED",
     "local_partner_center_operator": "NOT_EXECUTED_IN_THIS_CLOUD_RUNTIME",
-    "cloud_verified_app_post_identity": 1,
-    "cloud_verified_app_pre_identity": 3,
+    "cloud_verified_app_post_identity": 2,
+    "cloud_verified_app_pre_identity": 2,
     "cloud_verified_3d_post_identity": 1,
     "remote_live_check": "FOUR_APP_BRANCH_HEADS__FOUR_APPROVED_IDENTITY_PATHS__FOUR_FACTORY_ARTIFACTS_UNEXPIRED_AND_DIGEST_MATCH",
     "mixed_audit_unification": "PR49_PURE_RECONCILER_PORTED_ONTO_PR50_STACK__NO_MERGE",
@@ -2487,16 +2494,16 @@
     "mixed_local_preflight_ci": "SUCCESS_AT_EXACT_HEAD",
     "mixed_local_preflight_capability": "FOCUS_POST_SKIP__THREE_PRE_EXACT_SOURCE_AND_EXE_VERIFICATION__SHARED_LOCK__NO_BROWSER_CAS",
     "mixed_local_preflight_execution": "NOT_RUN_ON_USER_WINDOWS",
-    "canonical_head_before_write": "df9e0efed75a69eb7dcdbb183f68d6995711e6d9",
+    "canonical_head_before_write": "5ba457aadd821d20c614c5056c234bf26caecb28",
     "latest_remote_recheck": {
-      "verified_at_utc": "2026-10-29T21:37:13Z",
-      "focus": "POST_IDENTITY_READY__APPROVED_FILE_PRESENT__EXACT_SOURCE_REQUEST__STORE_ID_9P6452C61N7B",
-      "ledger": "PRE_IDENTITY_READY__APPROVED_FILE_404__USER_REPORTED_STORE_ID_9PGZ445SR5GM",
+      "verified_at_utc": "2026-10-29T22:41:11.174Z",
+      "focus": "POST_IDENTITY_READY__APPROVED_FILE_PRESENT",
+      "ledger": "POST_IDENTITY_READY__APPROVED_FILE_PRESENT__COMMIT_db9a57af822788af4c8384499a6e343ec7b0353d",
       "text_diff": "PRE_IDENTITY_READY__APPROVED_FILE_404",
       "image_inventory": "PRE_IDENTITY_READY__APPROVED_FILE_404",
-      "prism": "POST_IDENTITY_READY__APPROVED_FILE_PRESENT__EXACT_SOURCE_REQUEST__STORE_ID_9N95J2T57B41",
-      "signal_sprint": "USER_IDENTITY_RECEIVED__APPROVED_FILE_404__CAS_HOLD",
-      "artifacts": "LAST_VERIFIED_2026_10_29T16_37_29Z__NOT_REDOWNLOADED_THIS_RUN",
+      "prism": "POST_IDENTITY_READY__APPROVED_FILE_PRESENT",
+      "signal_sprint": "USER_IDENTITY_RECEIVED__APPROVED_FILE_404",
+      "artifacts": "PREVIOUSLY_VERIFIED_NOT_REDOWNLOADED_THIS_RUN",
       "local_windows": "NOT_ACCESSED",
       "partner_center": "NOT_ACCESSED",
       "cas": "NOT_PERFORMED",
@@ -2612,16 +2619,23 @@
       "real_msix": "NOT_BUILT",
       "store_submission": "NOT_PERFORMED",
       "next_gate": "INTEGRATE_SINGLE_FLIGHT_MIXED_UI_CAPTURE_AND_APP_SINGLE_WRITER_CAS_APPLY_REPLAY__PHYSICAL_WINDOWS_VALIDATION"
-    }
+    },
+    "ledger_identity_return_commit_sha": "db9a57af822788af4c8384499a6e343ec7b0353d",
+    "ledger_identity_return": "GITHUB_FILE_AND_ONE_COMMIT_SOURCE_ANCESTRY_VERIFIED",
+    "ledger_store_id": "9PGZ445SR5GM",
+    "mixed_preflight_cohort_isolation_pr": 61,
+    "mixed_preflight_cohort_isolation_head": "7b9317a26a2504c077e389cd350acec23be604af",
+    "mixed_preflight_cohort_isolation_ci_run": 40967599437,
+    "mixed_preflight_cohort_isolation_ci": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD"
   },
   "post_identity_pipeline": {
     "schema_version": 1,
-    "updated_at_utc": "2026-10-29T19:38:58.320Z",
+    "updated_at_utc": "2026-10-29T22:41:11.174Z",
     "writer": "36_WINDOWS_E2E_ONLY",
-    "reconciliation_basis": "GITHUB_APPROVED_IDENTITY_FILES_VERIFIED_FOR_FOCUS_AND_PRISM__NO_LOCAL_RECEIPTS_READ_THIS_RUN",
+    "reconciliation_basis": "GITHUB_APPROVED_IDENTITY_FILES_VERIFIED_FOR_FOCUS_LEDGER_PRISM__NO_LOCAL_RECEIPTS_READ_THIS_RUN",
     "product_count": 7,
-    "post_identity_ready_count": 2,
-    "identity_return_pending_count": 3,
+    "post_identity_ready_count": 3,
+    "identity_return_pending_count": 2,
     "source_binding_hold_count": 1,
     "cas_approval_hold_count": 1,
     "version_approved_count": 0,
@@ -2662,10 +2676,10 @@
         "source_branch": "codex/app-ledger-snapshot-size-20261028",
         "source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
         "identity_return_target": "products/file-integrity-ledger/store/approved-identity.json",
-        "identity_status": "PRODUCT_CREATED_USER_REPORTED__IDENTITY_NOT_RETURNED",
-        "identity_return_commit_sha": null,
-        "state": "WAITING_IDENTITY_CAPTURE_AND_CAS",
-        "next_action": "REUSE_EXISTING_PARTNER_CENTER_PRODUCT__CAPTURE_7_FIELDS__CAS__REPLAY",
+        "identity_status": "CAS_RETURN_COMMIT_GITHUB_VERIFIED",
+        "identity_return_commit_sha": "db9a57af822788af4c8384499a6e343ec7b0353d",
+        "state": "POST_IDENTITY_READY",
+        "next_action": "PACKAGE_VERSION_AND_ASSET_APPROVAL_GATE",
         "gates": {
           "package_version": "HOLD_NOT_APPROVED",
           "real_msix_or_gdk": "NOT_BUILT",
@@ -2922,6 +2936,18 @@
         "physical_windows_execution": "NOT_PERFORMED",
         "task_scheduler_registration": "HOLD",
         "store_submission": "NOT_PERFORMED"
+      },
+      "mixed_preflight_cohort_isolation": {
+        "draft_pr": 61,
+        "branch": "codex/e2e-mixed-preflight-cohort-isolation-20261030-0736",
+        "head_sha": "7b9317a26a2504c077e389cd350acec23be604af",
+        "base_pr": 60,
+        "offline_qa_run_id": 40967599437,
+        "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+        "scope": "IMMUTABLE_PER_PENDING_COHORT_SOURCE_ARTIFACT_NAMESPACE__CONFINED_REPLAY_RECEIPT_SOURCE_PATH",
+        "physical_windows_execution": "NOT_PERFORMED",
+        "mixed_authenticated_executor": "NOT_YET_WIRED",
+        "store_submission": "NOT_PERFORMED"
       }
     }
   },
@@ -2932,7 +2958,7 @@
     "central_head_before_write": "6aeb2867594dbde3eb8cfe070d7974d4208c66cd",
     "identity_return_files": {
       "focus": "PRESENT_EXACT_REQUEST_SOURCE_AND_VERSION_HOLD",
-      "ledger": "NOT_FOUND_404",
+      "ledger": "PRESENT_EXACT_REQUEST_SOURCE_AND_VERSION_HOLD",
       "text_diff": "NOT_FOUND_404",
       "image_inventory": "NOT_FOUND_404"
     },
@@ -2978,7 +3004,7 @@
     "cas": "NOT_PERFORMED",
     "store_submission": "NOT_PERFORMED",
     "local_runner_ready": false,
-    "task_scheduler_registration": "HOLD_MIXED_PRE_POST_QUEUE",
+    "task_scheduler_registration": "HOLD_AUTHENTICATED_MIXED_EXECUTOR",
     "post_identity_version_gate": "HOLD_NO_APPROVED_VERSION",
     "e2e_pass": false,
     "unified_post_identity_audit_pr": 51,
@@ -3008,15 +3034,15 @@
       "task_scheduler_registration": "HOLD",
       "scope": "CI_CONTRACT_ONLY__NOT_LIVE_LOCAL_EXECUTION"
     },
-    "latest_identity_file_recheck_at_utc": "2026-10-29T21:37:13Z",
+    "latest_identity_file_recheck_at_utc": "2026-10-29T22:41:11.174Z",
     "latest_identity_file_recheck": {
       "focus": "PRESENT",
-      "ledger": "NOT_FOUND_404",
+      "ledger": "PRESENT",
       "text_diff": "NOT_FOUND_404",
       "image_inventory": "NOT_FOUND_404",
       "prism": "PRESENT",
       "signal_sprint": "NOT_FOUND_404"
     },
-    "latest_identity_file_recheck_scope": "GITHUB_FILE_CONTENTS_ONLY__NO_LOCAL_OR_PARTNER_CENTER"
+    "latest_identity_file_recheck_scope": "GITHUB_FILE_CONTENTS_AND_LEDGER_COMMIT_ANCESTRY_ONLY__NO_LOCAL_OR_PARTNER_CENTER"
   }
 }
