@@ -401,6 +401,10 @@ def validate_existing_state(state: dict, spec: dict, central_head: str,
             or state.get("central_head_sha") != central_head):
         raise RunnerHold("BATCH_EXISTING_STATE_CONFLICT")
     if state.get("final_status") == "MULTI_PRODUCT_IDENTITY_BATCH_PASS":
+        # Legacy or user-edited state cannot turn a manual run into a scheduled PASS.
+        if (state.get("execution_origin") != "WINDOWS_TASK_SCHEDULER"
+                or state.get("execution_trigger_proven") is not True):
+            raise RunnerHold("BATCH_SCHEDULE_TRIGGER_NOT_PROVEN")
         return True
     if state.get("execution_origin") != execution_origin:
         raise RunnerHold("BATCH_EXISTING_STATE_CONFLICT")
@@ -430,14 +434,11 @@ def run_batch(args) -> dict:
             )
         else:
             state = batch.discover(ledger, spec)
-            state = batch.attest_local_execution(
-                state, execution_origin,
-                verifier=lambda **kw: (
-                    os.name == "nt"
-                    and kw.get("execution_origin") == execution_origin
-                    and kw.get("state", {}).get("central_head_sha") == central_head
-                ),
-            )
+            # Windows presence and a caller-provided execution_origin are not
+            # independent evidence of the saved 36-minute schedule. Keep the
+            # scheduled trigger gate false until a trusted host attestor exists.
+            # The local operator may still collect four exact, verified Identity
+            # receipts; that is a PARTIAL batch, never a scheduled batch PASS.
             batch.atomic_write(state_path, state)
             already_complete = False
         if already_complete:
