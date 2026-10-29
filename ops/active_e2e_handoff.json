@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-29T12:40:01.499Z",
+  "updated_at_utc": "2026-10-29T12:40:26.355Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -2388,7 +2388,7 @@
     }
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-29T12:40:01.499Z",
+    "observed_at_utc": "2026-10-29T12:40:26.355Z",
     "scope": "LIVE_GITHUB_FOUR_APP_BRANCH_AND_APPROVED_IDENTITY_FILE_RECHECK__UNIFIED_POST_IDENTITY_AUDIT_IMPLEMENTED",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
@@ -2455,7 +2455,7 @@
     "cloud_verified_app_post_identity": 1,
     "cloud_verified_app_pre_identity": 3,
     "cloud_verified_3d_post_identity": 1,
-    "remote_live_check": "FOUR_APP_BRANCH_HEADS_AND_FOUR_FACTORY_ARTIFACTS_VERIFIED",
+    "remote_live_check": "FOUR_APP_BRANCH_HEADS__FOUR_APPROVED_IDENTITY_PATHS__FOUR_FACTORY_ARTIFACTS_UNEXPIRED_AND_DIGEST_MATCH",
     "mixed_audit_unification": "PR49_PURE_RECONCILER_PORTED_ONTO_PR50_STACK__NO_MERGE"
   },
   "post_identity_pipeline": {
@@ -2665,8 +2665,8 @@
   },
   "mixed_rotation_live_recheck": {
     "schema_version": 1,
-    "observed_at_utc": "2026-10-29T12:40:01.499Z",
-    "scope": "REMOTE_FOUR_APP_BRANCH_HEAD_AND_APPROVED_IDENTITY_FILE_RECHECK__PR51_CI",
+    "observed_at_utc": "2026-10-29T12:40:26.355Z",
+    "scope": "LIVE_FOUR_APP_BRANCH_HEADS__APPROVED_IDENTITY_FILES__FOUR_FACTORY_ARTIFACTS_UNEXPIRED_AND_DIGEST_MATCH",
     "central_head_before_write": "6aeb2867594dbde3eb8cfe070d7974d4208c66cd",
     "identity_return_files": {
       "focus": "PRESENT_EXACT_REQUEST_SOURCE_AND_VERSION_HOLD",
@@ -2721,6 +2721,19 @@
     "e2e_pass": false,
     "unified_post_identity_audit_pr": 51,
     "unified_post_identity_audit_head": "6cc8f396e4de6700cc6665e2619eda8da16c766f",
-    "unified_post_identity_audit_ci": "SUCCESS_WINDOWS_UBUNTU"
+    "unified_post_identity_audit_ci": "SUCCESS_WINDOWS_UBUNTU",
+    "artifact_live_recheck": {
+      "checked_at_utc": "2026-10-29T12:40:26.355Z",
+      "artifact_ids": [
+        12807496604,
+        12826068537,
+        12815845218,
+        12817339804
+      ],
+      "verified_count": 4,
+      "expired_count": 0,
+      "digest_mismatch_count": 0,
+      "source": "GITHUB_ACTIONS_RUN_ARTIFACT_METADATA__NO_LOCAL_DOWNLOAD"
+    }
   }
 }
