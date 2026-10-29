@@ -145,7 +145,7 @@ class MixedAuditTests(unittest.TestCase):
         ledger["rotation_cohorts"]["app_jobs"][1]["request_id"] = (
             ledger["rotation_cohorts"]["app_jobs"][0]["request_id"]
         )
-        with self.assertRaisesRegex(audit.AuditHold, "CROSS_PRODUCT_BINDING"):
+        with self.assertRaisesRegex(audit.AuditHold, "CROSS_LANE_BINDING"):
             check(ledger, approved, artifacts)
 
     def test_cross_lane_request_collision_holds(self):
