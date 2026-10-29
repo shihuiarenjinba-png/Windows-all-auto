@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-29T10:42:41Z",
+  "updated_at_utc": "2026-10-29T11:38:58.174Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -2388,8 +2388,8 @@
     }
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-29T10:42:41Z",
-    "scope": "PRISM_CANONICAL_POST_IDENTITY_RECONCILED__MIXED_APP_ROTATION_READ_ONLY_AUDIT_CI_GREEN",
+    "observed_at_utc": "2026-10-29T11:38:58.174Z",
+    "scope": "LIVE_FOUR_APP_BRANCH_HEAD_AND_ARTIFACT_RECHECK__MIXED_STATE_HOLD_PRESERVED",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
     "canonical_previous_blob_sha": "98d40cce07567e00657e895aeca2c44d2e47bf26",
@@ -2454,7 +2454,8 @@
     "local_partner_center_operator": "NOT_EXECUTED_IN_THIS_CLOUD_RUNTIME",
     "cloud_verified_app_post_identity": 1,
     "cloud_verified_app_pre_identity": 3,
-    "cloud_verified_3d_post_identity": 1
+    "cloud_verified_3d_post_identity": 1,
+    "remote_live_check": "FOUR_APP_BRANCH_HEADS_AND_FOUR_FACTORY_ARTIFACTS_VERIFIED"
   },
   "post_identity_pipeline": {
     "schema_version": 1,
@@ -2645,5 +2646,62 @@
       "integration_status": "DRAFT_NOT_MERGED",
       "local_runner_mixed_status_support": "NOT_IMPLEMENTED__HOLD_TASK_SCHEDULER"
     }
+  },
+  "mixed_rotation_live_recheck": {
+    "schema_version": 1,
+    "observed_at_utc": "2026-10-29T11:38:58.174Z",
+    "scope": "REMOTE_GITHUB_BRANCH_HEAD_AND_ACTIONS_ARTIFACT_METADATA_ONLY",
+    "central_head_before_write": "6aeb2867594dbde3eb8cfe070d7974d4208c66cd",
+    "identity_return_files": {
+      "focus": "PRESENT_EXACT_REQUEST_SOURCE_AND_VERSION_HOLD",
+      "ledger": "NOT_FOUND_404",
+      "text_diff": "NOT_FOUND_404",
+      "image_inventory": "NOT_FOUND_404"
+    },
+    "jobs": [
+      {
+        "slug": "focus-session-desk",
+        "source_branch_head": "8a7139375524830bf823469526837259266172be",
+        "source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+        "state": "POST_IDENTITY_READY",
+        "artifact_id": 12807496604,
+        "artifact_expired": false,
+        "artifact_expires_at": "2026-11-02T10:02:58Z"
+      },
+      {
+        "slug": "file-integrity-ledger",
+        "source_branch_head": "d1108d12f7d1697af30400f97c7db39cba5e6791",
+        "state": "PRE_IDENTITY_READY",
+        "artifact_id": 12826068537,
+        "artifact_expired": false,
+        "artifact_expires_at": "2026-11-02T15:04:16Z"
+      },
+      {
+        "slug": "offline-text-diff-desk",
+        "source_branch_head": "a7d37280089893a9ea4b9ac3336020a920e73e0c",
+        "state": "PRE_IDENTITY_READY",
+        "artifact_id": 12815845218,
+        "artifact_expired": false,
+        "artifact_expires_at": "2026-11-02T12:15:44Z"
+      },
+      {
+        "slug": "offline-image-inventory-desk",
+        "source_branch_head": "16b6a772952ca0988f2ae2f8b5f4db2e59ec5877",
+        "state": "PRE_IDENTITY_READY",
+        "artifact_id": 12817339804,
+        "artifact_expired": false,
+        "artifact_expires_at": "2026-11-02T13:05:55Z"
+      }
+    ],
+    "prism_return_branch_head": "11417b75636ee18816028ffd5221884c4c9a9836",
+    "signal_sprint_source_head": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
+    "partner_center": "NOT_ACCESSED",
+    "local_source_sync": "NOT_RUN",
+    "cas": "NOT_PERFORMED",
+    "store_submission": "NOT_PERFORMED",
+    "local_runner_ready": false,
+    "task_scheduler_registration": "HOLD_MIXED_PRE_POST_QUEUE",
+    "post_identity_version_gate": "HOLD_NO_APPROVED_VERSION",
+    "e2e_pass": false
   }
 }
