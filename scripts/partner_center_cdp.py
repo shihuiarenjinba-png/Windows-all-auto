@@ -223,7 +223,20 @@ class CdpPage:
         if (url == PARTNER_PRODUCTS_URL
                 and isinstance(current_url, str)
                 and _is_product_overview(current_url)):
-            self.pointer_click_exact_link("Apps and games")
+            try:
+                self.pointer_click_exact_link("Apps and games")
+            except PartnerCenterHold as exc:
+                if str(exc) != "HOLD_PRODUCT_LINK_AMBIGUOUS":
+                    raise
+                # Some Partner Center layouts omit the breadcrumb from the
+                # targetable DOM. The destination is the fixed same-host
+                # products overview, so a location assignment is read-only.
+                assigned = self.evaluate(
+                    "location.assign(" + json.dumps(url, ensure_ascii=False)
+                    + "); true"
+                )
+                if assigned is not True:
+                    raise PartnerCenterHold("HOLD_BROWSER_NAVIGATION_REJECTED")
         else:
             assigned = self.evaluate(
                 "location.assign(" + json.dumps(url, ensure_ascii=False) + "); true"

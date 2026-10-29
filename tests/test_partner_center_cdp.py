@@ -355,6 +355,30 @@ class PartnerCenterReadinessTests(unittest.TestCase):
 
         page.pointer_click_exact_link.assert_called_once_with("Apps and games")
 
+    def test_product_page_without_breadcrumb_uses_same_host_overview(self):
+        page = CdpPage("target", None)
+        overview = json.dumps({
+            "u": "https://partner.microsoft.com/en-us/dashboard/apps-and-games/overview",
+            "t": "Overview | Apps and games | Partner Center",
+            "r": "complete",
+        })
+        page.current_target_url = MagicMock(return_value=(
+            "https://partner.microsoft.com/en-us/dashboard/products/"
+            "9P6452C61N7B/overview"
+        ))
+        page.pointer_click_exact_link = MagicMock(
+            side_effect=PartnerCenterHold("HOLD_PRODUCT_LINK_AMBIGUOUS")
+        )
+        page.evaluate = MagicMock(side_effect=[
+            True, overview, overview, overview, overview,
+        ])
+        with patch("scripts.partner_center_cdp.time.sleep"):
+            page.navigate(PARTNER_PRODUCTS_URL)
+
+        assignment = page.evaluate.call_args_list[0].args[0]
+        self.assertIn("location.assign", assignment)
+        self.assertIn(PARTNER_PRODUCTS_URL, assignment)
+
     def test_navigation_does_not_accept_stable_previous_page(self):
         page = CdpPage("target", None)
         target = (
