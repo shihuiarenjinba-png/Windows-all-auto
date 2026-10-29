@@ -93,7 +93,7 @@ class MixedResumeHostTests(TestCase):
         )
 
     def run_host(self, *, post=1, mutate=None, drift=False,
-                 central_head=HEAD):
+                 central_head=HEAD, verify=False):
         ledger, plan, preflight = fixtures(post)
         preflight["central_head_sha"] = central_head
         if mutate is not None:
@@ -119,7 +119,9 @@ class MixedResumeHostTests(TestCase):
             stack.enter_context(patch.object(
                 host.operator, "canonical_digest",
                 side_effect=lambda job: "digest-" + job["slug"]))
-            return host.prepare_mixed_resume_state(self.args)
+            return host.prepare_mixed_resume_state(
+                self.args, verify_local_returns=verify
+            )
 
     def test_one_post_three_pre_state_is_persisted_without_ui(self):
         result = self.run_host()
@@ -258,6 +260,90 @@ class MixedResumeHostTests(TestCase):
         self.assertEqual(result["status"], "MIXED_RESUME_STATE_PREPARED")
         self.assertFalse(result["multi_product_identity_batch_pass"])
         self.assertEqual(result["store_submission"], "NOT_PERFORMED")
+
+
+    def write_completed_ledger_return(self):
+        first = self.run_host()
+        path = Path(first["state_path"])
+        state = json.loads(path.read_text())
+        entry = state["products"][1]
+        entry["status"] = "IDENTITY_RETURN_VERIFIED"
+        entry["result"] = {
+            **{key: entry[key] for key in (
+                "request_id", "source_sha", "identity_return_target",
+                "registration_type", "partner_center_selection",
+                "plan_job_digest",
+            )},
+            "github_return_status": "APPLIED",
+            "github_replay_status": "EXISTING_VERIFIED",
+            "identity_capture_status":
+                "IDENTITY_CAPTURED__AUTHENTICATED_UI__GITHUB_BOUND",
+            "identity_return_commit_sha": "c" * 40,
+            "store_id": "9PGZ445SR5GM",
+            "pfn": "OkinawaDesktopTools.FileIntegrityLedger_j8yefg9jgfh58",
+            "package_sid": "S-1-15-2-1-2-3-4-5-6-7",
+            "package_version_gate": "HOLD",
+            "store_submission": "NOT_PERFORMED",
+            "duplicate_creation": 0,
+            "cross_product_contamination": 0,
+        }
+        path.write_text(json.dumps(state), encoding="utf-8")
+        return path
+
+    def test_authenticated_ui_rebase_of_verified_local_return(self):
+        path = self.write_completed_ledger_return()
+        with patch.object(host, "PartnerCenterDriver") as driver:
+            with patch.object(host, "verify_mixed_local_return",
+                              return_value=True) as verifier:
+                result = self.run_host(
+                    post=2, central_head="b" * 40, verify=True
+                )
+        self.assertTrue(result["central_rebase_applied"])
+        self.assertTrue(result["independent_ui_github_return_rechecked"])
+        self.assertEqual(result["partner_center"],
+                         "READ_ONLY_AUTHENTICATED_UI_RECHECK")
+        self.assertEqual([x["status"] for x in json.loads(
+            path.read_text())["products"]], [
+                "SKIPPED_GITHUB_POST_VERIFIED",
+                "SKIPPED_GITHUB_POST_VERIFIED", "PENDING", "PENDING",
+            ])
+        self.assertTrue(verifier.called)
+        driver.return_value.close.assert_called_once()
+        self.assertFalse(result["local_windows_no_llm_pass"])
+        self.assertFalse(result["task_scheduler_registration_allowed"])
+
+    def test_authenticated_ui_rebase_refuses_failed_independent_check(self):
+        path = self.write_completed_ledger_return()
+        before = path.read_bytes()
+        with patch.object(host, "PartnerCenterDriver") as driver:
+            with patch.object(host, "verify_mixed_local_return",
+                              return_value=False):
+                with self.assertRaisesRegex(
+                    rebase.RebaseHold,
+                    "HOLD_REBASE_INDEPENDENT_RETURN_EVIDENCE"
+                ):
+                    self.run_host(post=2, central_head="b" * 40, verify=True)
+        self.assertEqual(path.read_bytes(), before)
+        driver.return_value.close.assert_called_once()
+
+    def test_authenticated_same_head_replay_requires_fresh_ui_github_check(self):
+        path = self.write_completed_ledger_return()
+        before = path.read_bytes()
+        with patch.object(host, "PartnerCenterDriver") as driver:
+            with patch.object(host, "verify_mixed_local_return",
+                              return_value=True):
+                result = self.run_host(verify=True)
+        self.assertFalse(result["central_rebase_applied"])
+        self.assertTrue(result["independent_ui_github_return_rechecked"])
+        self.assertEqual(path.read_bytes(), before)
+        driver.return_value.close.assert_called_once()
+
+    def test_verifier_mode_without_local_return_does_not_open_browser(self):
+        with patch.object(host, "PartnerCenterDriver") as driver:
+            result = self.run_host(verify=True)
+        self.assertFalse(result["independent_ui_github_return_rechecked"])
+        driver.assert_not_called()
+
 
 
 if __name__ == "__main__":
