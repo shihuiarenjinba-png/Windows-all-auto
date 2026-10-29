@@ -495,6 +495,59 @@ def plan_queue_only(args) -> dict:
     return {**result, "central_head_sha": snapshot[1]}
 
 
+def mixed_preflight_root(state_dir: Path, pending: list[dict]) -> Path:
+    """Namespace immutable source/EXE snapshots by the exact pending cohort.
+
+    After a successful CAS, the central single writer promotes one PRE job to
+    POST. Reusing the previous mutable manifest would otherwise cause a
+    permanent HOLD_LOCAL_SOURCE_SYNC on the next (smaller) cohort. Never
+    rewrite the previous cohort's manifest or immutable source snapshots.
+    """
+    if not isinstance(pending, list) or not pending:
+        raise RunnerHold("HOLD_MIXED_PREFLIGHT_COHORT_INVALID")
+    keys = ("batch_index", "slug", "request_id", "source_repository",
+            "source_branch", "source_sha", "identity_return_target")
+    try:
+        binding = [{key: item[key] for key in keys} for item in pending]
+    except (KeyError, TypeError) as exc:
+        raise RunnerHold("HOLD_MIXED_PREFLIGHT_COHORT_INVALID") from exc
+    if any(not isinstance(value, (str, int)) or value == ""
+           for item in binding for value in item.values()):
+        raise RunnerHold("HOLD_MIXED_PREFLIGHT_COHORT_INVALID")
+    digest = hashlib.sha256(json.dumps(
+        binding, sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+    ).encode("utf-8")).hexdigest()[:24]
+    return state_dir.resolve() / "mixed-preflight" / "cohorts" / digest
+
+
+def validated_mixed_source_path(state_dir: Path, receipt: dict,
+                                job: dict) -> Path:
+    """Resolve an untrusted receipt path only inside a pinned cohort snapshot."""
+    raw = receipt.get("source_snapshot_path")
+    if not isinstance(raw, str) or not raw:
+        raise RunnerHold("HOLD_MIXED_SOURCE_PATH_UNTRUSTED")
+    supplied = Path(raw)
+    if not supplied.is_absolute():
+        raise RunnerHold("HOLD_MIXED_SOURCE_PATH_UNTRUSTED")
+    try:
+        path = supplied.resolve(strict=True)
+        root = (state_dir / "mixed-preflight" / "cohorts").resolve(strict=True)
+        relative = path.relative_to(root)
+    except (OSError, ValueError, RuntimeError) as exc:
+        raise RunnerHold("HOLD_MIXED_SOURCE_PATH_UNTRUSTED") from exc
+    repository = str(job.get("source_repository", ""))
+    sha = str(job.get("source_sha", ""))
+    if (path != supplied or not path.is_dir()
+            or len(relative.parts) != 4
+            or re.fullmatch(r"[0-9a-f]{24}", relative.parts[0]) is None
+            or relative.parts[1] != "sources"
+            or relative.parts[2] != repository.split("/")[-1]
+            or relative.parts[3] != sha[:12]
+            or re.fullmatch(r"[0-9a-f]{40}", sha) is None):
+        raise RunnerHold("HOLD_MIXED_SOURCE_PATH_UNTRUSTED")
+    return path
+
+
 def preflight_mixed_local(args) -> dict:
     """Windows-only exact-source/EXE preflight for a mixed PRE/POST APP queue.
 
@@ -558,7 +611,7 @@ def preflight_mixed_local(args) -> dict:
             except artifact_expiry.ExpiryHold as exc:
                 raise RunnerHold(exc.code) from exc
             ready.append(job)
-        isolated = args.state_dir.resolve() / "mixed-preflight"
+        isolated = mixed_preflight_root(args.state_dir, pending)
         sync_receipt = sync_sources(ready, isolated)
         if (sync_receipt.get("status") != "PASS"
                 or sync_receipt.get("exact_sha_verified") is not True):
@@ -601,6 +654,7 @@ def preflight_mixed_local(args) -> dict:
         "discovered_count": 4,
         "post_identity_skip_count": plan["post_identity_skip_count"],
         "pre_identity_preflight_count": len(verified),
+        "preflight_namespace": str(isolated),
         "products": verified,
         "mixed_state_local_runner_ready": False,
         "local_windows_no_llm_pass": False,
@@ -668,9 +722,7 @@ def verify_mixed_local_return(old_entry: dict, result: dict, fresh_entry: dict,
         observation = existing_observation(driver, receipt)
         if driver.verify_current(observation, receipt) is not True:
             return False
-        source_path = (state_dir / "mixed-preflight" / "sources" /
-                       job["source_repository"].split("/", 1)[1] /
-                       job["source_sha"][:12])
+        source_path = validated_mixed_source_path(state_dir, receipt, job)
         return github_result_verified(
             job, receipt, result["identity_return_commit_sha"],
             central_head, source_path
