@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-29T21:37:13Z",
+  "updated_at_utc": "2026-10-29T21:44:00Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -843,7 +843,9 @@
     "mixed_resume_host_physical_pass": false,
     "mixed_authenticated_executor_wired": false,
     "mixed_resume_rebase_contract_ci_pass": true,
-    "mixed_resume_rebase_host_integrated": true
+    "mixed_resume_rebase_host_integrated": true,
+    "mixed_authenticated_rebase_ui_contract_ci_pass": true,
+    "mixed_authenticated_rebase_ui_physical_pass": false
   },
   "user_id_requests": {
     "schema_version": 1,
@@ -2404,8 +2406,8 @@
     }
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-29T21:37:13Z",
-    "scope": "PR59_EXACT_HEAD_WINDOWS_UBUNTU_CI_REVERIFIED__FOUR_APP_AND_PRISM_APPROVED_FILES_LIVE_CHECK__PHYSICAL_WINDOWS_HOLD",
+    "observed_at_utc": "2026-10-29T21:44:00Z",
+    "scope": "PR60_AUTHENTICATED_UI_GITHUB_RETURN_REBASE_GUARD_WINDOWS_UBUNTU_CI_PASS__PHYSICAL_WINDOWS_NOT_RUN",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
     "canonical_previous_blob_sha": "98d40cce07567e00657e895aeca2c44d2e47bf26",
@@ -2419,7 +2421,7 @@
     "ledger_identity_capture": "NOT_VERIFIED__APPROVED_FILE_404",
     "text_diff_identity_capture": "NOT_VERIFIED__APPROVED_FILE_404",
     "image_inventory_identity_capture": "NOT_VERIFIED__APPROVED_FILE_404",
-    "mixed_status_runner": "HOLD_AUTHENTICATED_MIXED_EXECUTOR_NOT_WIRED__PR59_LOCKED_PREPARE_AND_REBASE_ONLY",
+    "mixed_status_runner": "HOLD_AUTHENTICATED_MIXED_CAS_EXECUTOR_NOT_WIRED__PR60_UI_GITHUB_REBASE_VERIFIER_CI_GREEN_ONLY",
     "local_code_sync": "NOT_RUN_THIS_CLOUD_EXECUTION",
     "partner_center_cdp": "NOT_RUN_THIS_CLOUD_EXECUTION",
     "cas": "NO_NEW_CAS_THIS_EXECUTION",
@@ -2432,7 +2434,7 @@
     "success_count_cloud_verified": 1,
     "remaining_app_identity_returns": 3,
     "next_resume_index": 2,
-    "next_action": "PR59 locked mixed PRE/POST resume host CI is green, but only preparation/rebase is wired. Implement the independently authenticated UI + GitHub CAS replay executor under the same OS lock; run Ledger/Text/Image serially on physical Windows; reconcile verified returns as POST_IDENTITY_READY. Then obtain explicit Version/assets before real MSIX, backlog, local pull, Checker and GUI/install QA. No Task Scheduler registration or Store submission without independent host proof.",
+    "next_action": "PR60 adds opt-in authenticated read-only UI+GitHub return revalidation before a mixed-state rebase; exact-head Windows/Ubuntu CI green. It is not an executor. Wire serial mixed APP UI capture and existing Provisioner CAS replay under the OS lock, verify physical Windows execution and central POST reconciliation. Ledger/Text/Image still lack GitHub approved-identity returns. No Version approval, real MSIX, Task Scheduler or Store submission.",
     "post_identity_reconcile_pr": 49,
     "post_identity_reconcile_ci_run": 40851883814,
     "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU",
@@ -2589,6 +2591,27 @@
       "task_scheduler_registration": "HOLD",
       "store_submission": "NOT_PERFORMED",
       "next_gate": "WIRE_INDEPENDENT_AUTHENTICATED_UI_AND_GITHUB_CAS_REPLAY_VERIFIER_TO_MIXED_EXECUTOR__NO_TASK_REGISTRATION_BEFORE_PHYSICAL_WINDOWS_PROOF"
+    },
+    "mixed_authenticated_rebase": {
+      "draft_pr": 60,
+      "branch": "codex/e2e-mixed-authenticated-rebase-20261030-0636",
+      "head_sha": "788f22eb0ad481cac75b351101741cf78e8c3f12",
+      "base_pr": 59,
+      "offline_qa_run_id": 40959975573,
+      "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+      "scope": "OPT_IN_READ_ONLY_EXISTING_PRODUCT_UI_IDENTITY_COMPARE__EXACT_LOCAL_SOURCE_AND_GITHUB_RETURN_COMMIT_RECHECK__CENTRAL_HEAD_REBASE_OR_SAME_HEAD_REPLAY",
+      "entrypoint": "py -3 -m scripts.run_local_partner_center_batch --verify-mixed-rebase-ui",
+      "default_prepare_mode": "BROWSER_FREE_FAIL_CLOSED",
+      "tests": "FOUR_ADDITIONAL_MIXED_HOST_REGRESSIONS",
+      "physical_windows_execution": "NOT_PERFORMED",
+      "authenticated_mixed_cas_executor": "NOT_YET_WIRED",
+      "partner_center_product_creation": "NOT_PERFORMED",
+      "identity_capture": "NOT_PERFORMED",
+      "cas": "NOT_PERFORMED",
+      "task_scheduler_registration": "HOLD",
+      "real_msix": "NOT_BUILT",
+      "store_submission": "NOT_PERFORMED",
+      "next_gate": "INTEGRATE_SINGLE_FLIGHT_MIXED_UI_CAPTURE_AND_APP_SINGLE_WRITER_CAS_APPLY_REPLAY__PHYSICAL_WINDOWS_VALIDATION"
     }
   },
   "post_identity_pipeline": {
