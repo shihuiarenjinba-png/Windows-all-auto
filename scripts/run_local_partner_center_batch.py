@@ -339,7 +339,8 @@ def verify_artifact(job: dict, root: Path) -> dict:
     }
 
 
-def sync_sources(jobs: list[dict], state_dir: Path) -> dict:
+def sync_sources(jobs: list[dict], state_dir: Path,
+                 central_head: str) -> dict:
     manifest_path = state_dir / "source-sync-manifest.json"
     receipt_path = state_dir / "source-sync-receipt.json"
     manifest = {"schema_version": 1, "jobs": [{
@@ -355,9 +356,42 @@ def sync_sources(jobs: list[dict], state_dir: Path) -> dict:
     if not manifest_path.exists():
         manifest_path.write_text(encoded, encoding="utf-8")
     try:
-        return local_code_sync.sync_manifest(
-            manifest_path, state_dir / "sources", receipt_path
-        )
+        root = state_dir / "sources"
+        loaded = local_code_sync.load_jobs(manifest_path)
+        products = []
+        for job in loaded:
+            current_head = live_branch_head(job["repository"], job["branch"])
+            cas_resume = current_head != job["source_sha"]
+            if (cas_resume and not completed_identity_return_matches(
+                    {
+                        "source_repository": job["repository"],
+                        "source_branch": job["branch"],
+                        "source_sha": job["source_sha"],
+                        "slug": job["slug"],
+                        "request_id": job["request_id"],
+                        "identity_return_target": (
+                            f"products/{job['slug']}/store/approved-identity.json"
+                        ),
+                    },
+                    current_head, state_dir, central_head,
+            )):
+                raise RunnerHold("HOLD_LOCAL_SOURCE_SYNC")
+            products.append(local_code_sync.sync_one(
+                root, job, verify_remote_head=not cas_resume
+            ))
+        result = {
+            "schema_version": 1,
+            "status": "PASS",
+            "products": products,
+            "snapshots": len(products),
+            "exact_sha_verified": True,
+            "development_checkout_modified": False,
+            "product_code_executed": False,
+            "store_submission": False,
+            "cas_applied": False,
+        }
+        local_code_sync.atomic_json(receipt_path, result)
+        return result
     except (local_code_sync.SyncHold, OSError) as exc:
         raise RunnerHold("HOLD_LOCAL_SOURCE_SYNC") from exc
 
@@ -477,7 +511,7 @@ def run_batch(args) -> dict:
     )
     recheck_central(central_head)
 
-    sync_receipt = sync_sources(jobs, state_dir)
+    sync_receipt = sync_sources(jobs, state_dir, central_head)
     artifacts = {job["slug"]: verify_artifact(job, state_dir / "artifacts") for job in jobs}
     recheck_central(central_head)
 
