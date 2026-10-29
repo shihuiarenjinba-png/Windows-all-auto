@@ -119,8 +119,12 @@ class RunnerTests(unittest.TestCase):
             args = SimpleNamespace(
                 state_dir=Path(directory),
                 provisioner_root=Path(directory),
-                execution_origin="MANUAL_WINDOWS_TERMINAL",
+                execution_origin="WINDOWS_TASK_SCHEDULER",
             )
+            # A concurrent process cannot consume a one-shot Task Scheduler
+            # manual-start marker if it fails to acquire the batch lock.
+            marker = Path(directory) / "scheduler-manual-start.marker"
+            marker.write_text("manual\\n", encoding="utf-8")
             with (
                 patch.object(runner, "check_prerequisites", return_value={}),
                 patch.object(runner, "fetch_central", return_value=({}, "a" * 40, "blob")),
@@ -139,6 +143,7 @@ class RunnerTests(unittest.TestCase):
                 sync.assert_not_called()
                 download.assert_not_called()
                 browser.assert_not_called()
+                self.assertTrue(marker.exists())
 
     def test_expired_artifact_holds_before_source_sync_and_artifact_download(self):
         # Cloud preflight must reject stale Factory bytes before touching any

@@ -472,22 +472,21 @@ def preflight_only(args) -> dict:
 def run_batch(args) -> dict:
     state_dir = args.state_dir.resolve()
     state_dir.mkdir(parents=True, exist_ok=True)
-    execution_origin = resolve_execution_origin(args.execution_origin, state_dir)
     prerequisite = check_prerequisites(args.provisioner_root.resolve())
     ledger, central_head, central_blob = fetch_central()
-    spec, jobs = validate_queue(ledger, central_head, execution_origin)
-    recheck_central(central_head)
-    # Fail before any local source checkout or Artifact download when the
-    # central queue's Factory artifact has expired or has invalid metadata.
-    # The prior ordering ran sync/download before this mandatory gate.
-    preflight_state = batch.discover(ledger, spec)
-
     state_path = state_dir / "batch-state.json"
     final_path = state_dir / "final-batch-receipt.json"
-    # The single-flight lock must cover local source sync and Artifact ZIP
-    # extraction as well as UI/Identity/CAS. Otherwise two simultaneous
-    # runners can race on the same snapshots before either holds the lock.
+    # A manually started scheduled task leaves a one-shot marker. Do not
+    # consume that marker until the OS single-flight lock is held: a
+    # competing runner must not steal the real task's execution origin.
+    # The lock also protects local source/Artifact IO, browser and CAS.
     with batch.state_lock(state_path):
+        execution_origin = resolve_execution_origin(args.execution_origin, state_dir)
+        spec, jobs = validate_queue(ledger, central_head, execution_origin)
+        recheck_central(central_head)
+        # Reject expired or malformed Factory artifacts before local sync,
+        # ZIP download, browser interaction or CAS.
+        preflight_state = batch.discover(ledger, spec)
         if state_path.exists():
             state = operator.read_json(state_path, 512_000)
             already_complete = validate_existing_state(
