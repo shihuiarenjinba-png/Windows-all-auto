@@ -1,9 +1,9 @@
 import json
+from types import SimpleNamespace
 import unittest
 from unittest.mock import MagicMock, call, patch
 
-import websocket
-
+from scripts import partner_center_cdp as cdp
 from scripts.partner_center_cdp import CdpPage, PartnerCenterHold
 
 
@@ -27,12 +27,23 @@ class PartnerCenterReadinessTests(unittest.TestCase):
         ))
 
     def test_websocket_timeout_becomes_fail_closed_hold(self):
+        class FakeWebSocketException(Exception):
+            pass
+
+        class FakeWebSocketTimeoutException(FakeWebSocketException):
+            pass
+
         socket = MagicMock()
-        socket.recv.side_effect = websocket.WebSocketTimeoutException("timeout")
+        socket.recv.side_effect = FakeWebSocketTimeoutException("timeout")
         page = CdpPage("target", socket)
-        with self.assertRaisesRegex(
-                PartnerCenterHold, "HOLD_BROWSER_COMMAND_TIMEOUT"):
-            page.command("Page.navigate", {"url": "https://example.invalid"})
+        fake_websocket = SimpleNamespace(
+            WebSocketException=FakeWebSocketException,
+            WebSocketTimeoutException=FakeWebSocketTimeoutException,
+        )
+        with patch.object(cdp, "websocket", fake_websocket):
+            with self.assertRaisesRegex(
+                    PartnerCenterHold, "HOLD_BROWSER_COMMAND_TIMEOUT"):
+                page.command("Page.navigate", {"url": "https://example.invalid"})
 
     def test_stable_nonblocking_controls_are_ready(self):
         page = CdpPage("target", None)
