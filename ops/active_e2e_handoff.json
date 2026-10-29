@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-29T06:42:09.167Z",
+  "updated_at_utc": "2026-10-29T07:41:43.673Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -1907,7 +1907,7 @@
     "package_upload": 0,
     "package_version_gate": "HOLD",
     "status": "MULTI_PRODUCT_IDENTITY_BATCH_PARTIAL",
-    "preflight_evidence": "FOUR_FACTORY_BRANCH_HEADS_EXACT_MATCH__FOUR_GITHUB_ACTIONS_ARTIFACTS_UNEXPIRED_DIGEST_MATCH__PR48_WINDOWS_UBUNTU_CI_GREEN__NO_USER_PC_LOCAL_RECEIPT",
+    "preflight_evidence": "FOUR_FACTORY_BRANCH_HEADS_IDENTICAL__FOUR_FACTORY_ARTIFACTS_PRESENT_UNEXPIRED_EXPECTED_DIGEST_MATCH__PR48_OFFLINE_QA_WINDOWS_UBUNTU_SUCCESS__NO_LOCAL_CDP_OR_CAS_RECEIPT",
     "code_contracts": {
       "windows_all_auto_pr": 33,
       "windows_all_auto_head": "019eca325eae5f36f160af287482da4e666b5b49",
@@ -2334,29 +2334,32 @@
           "expires_at": "2026-11-02T13:05:55Z"
         }
       ]
-    }
+    },
+    "last_live_recheck_utc": "2026-10-29T07:41:43.673Z"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-29T06:41:47.160Z",
-    "scope": "PR48_PARTNER_CENTER_SEARCH_AMBIGUITY_FAIL_CLOSED",
+    "observed_at_utc": "2026-10-29T07:41:43.673Z",
+    "scope": "LIVE_BATCH4_SOURCE_AND_ARTIFACT_RECHECK__PR48_CI__LOCAL_CDP_GATE",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
-    "implementation_branch": "codex/e2e-partner-center-ambiguous-ui-fail-closed-20261029",
-    "implementation_pr": 48,
-    "implementation_head_sha": "5f08e84f7c477cbf66caceda80cbe7c41f5f2510",
-    "implementation_base_pr": 47,
-    "changes": [
-      "Remove catch-all Search-control exception fallback to Enter; changed/ambiguous UI now HOLD before product count or creation",
-      "Add offline regression asserting no Enter and no product count after ambiguous Search control"
-    ],
-    "ci_run_id": 40830713394,
-    "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+    "reviewed_draft_pr": 48,
+    "reviewed_branch": "codex/e2e-partner-center-ambiguous-ui-fail-closed-20261029",
+    "reviewed_head_sha": "5f08e84f7c477cbf66caceda80cbe7c41f5f2510",
+    "reviewed_ci_run_id": 40830713394,
+    "reviewed_ci_status": "SUCCESS_WINDOWS_UBUNTU",
     "cloud_pre_identity_discovered": 4,
+    "cloud_source_heads": "4_OF_4_IDENTICAL_TO_PINNED_SHA__COMPARE_2026_10_29",
+    "cloud_artifact_metadata": "4_OF_4_PRESENT_UNEXPIRED_EXPECTED_NAME_AND_ZIP_DIGEST_MATCH__2026_10_29",
+    "factory_artifact_expiry_utc": [
+      "2026-11-02T10:02:58Z",
+      "2026-11-02T15:04:16Z",
+      "2026-11-02T12:15:44Z",
+      "2026-11-02T13:05:55Z"
+    ],
     "local_code_sync": "NOT_OBSERVED_ON_USER_PC_THIS_RUN",
-    "local_scheduler_registration": "NOT_PERFORMED",
-    "scheduled_trigger_to_local": "BATCH_SCHEDULE_TRIGGER_NOT_PROVEN",
-    "partner_center_login": "USER_SCREENSHOT_OBSERVED_AUTHENTICATED_OVERVIEW__LOCAL_CDP_DIAGNOSIS_NOT_RUN",
+    "local_cdp_diagnose": "NOT_EXECUTED_FROM_THIS_RUNTIME__BROWSER_ORIGIN_CONTEXT_UNAVAILABLE",
+    "partner_center_login": "USER_SCREENSHOT_OBSERVED_AUTHENTICATED_OVERVIEW__DO_NOT_RECLASSIFY_AS_AUTH_REQUIRED",
     "partner_center_product": "NOT_OBSERVED_FOR_BATCH4_THIS_RUN",
-    "partner_center_capture": "NOT_OBSERVED",
+    "identity_capture": "NOT_OBSERVED",
     "identity_route": "NOT_RUN_FOR_BATCH4",
     "cas": "NOT_RUN_FOR_BATCH4",
     "real_msix": "NOT_BUILT_FOR_BATCH4",
@@ -2368,17 +2371,10 @@
     "hold_count": 0,
     "unprocessed_count": 4,
     "next_resume_index": 1,
+    "scheduled_trigger_to_local": "BATCH_SCHEDULE_TRIGGER_NOT_PROVEN",
     "store_submission": 0,
     "no_main_release_merge": true,
-    "next_action": "PR48 Windows/Ubuntu CI green. Physical Windows still required: use reviewed independent worktree, run py -3 -m scripts.partner_center_cdp diagnose and read-only preflight, then 4 serial jobs only after authenticated controls/exact source/artifact gates; preserve independent schedule attestation HOLD.",
-    "cloud_factory_source_heads": "4_OF_4_EXACT_PINNED_SHA_IDENTICAL",
-    "cloud_artifact_metadata": "4_OF_4_UNEXPIRED_EXPECTED_NAME_AND_ZIP_SHA256_DIGEST_MATCH",
-    "artifact_expiry_utc": [
-      "2026-11-02T10:02:58Z",
-      "2026-11-02T15:04:16Z",
-      "2026-11-02T12:15:44Z",
-      "2026-11-02T13:05:55Z"
-    ],
-    "updated_after_cloud_recheck_utc": "2026-10-29T06:42:09.167Z"
+    "resume_safety_note": "CENTRAL_LEDGER_HEAD_IS_LIVE_QUEUE_REVISION; EXISTING_LOCAL_STATE_PINNED_TO_OLDER_HEAD_MUST_FAIL_CLOSED_AND_REQUIRE_RECONCILIATION. DO_NOT_REUSE_OR_FORGE_OLD_RECEIPTS.",
+    "next_action": "On physical Windows reviewed worktree: py -3 -m scripts.partner_center_cdp diagnose; require PARTNER_CENTER_CONTROLS_OBSERVED before serial batch resume. Recheck 4 exact source SHA and artifact metadata; independent saved 36-minute host trigger proof remains separate. Never infer auth failure solely from CDP unavailability."
   }
 }
