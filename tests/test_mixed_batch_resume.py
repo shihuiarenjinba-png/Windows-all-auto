@@ -107,7 +107,15 @@ class MixedResumeTests(unittest.TestCase):
             independent_evidence_verifier=lambda *_: True)
         self.assertEqual(current["products"][1]["status"],
                          "IDENTITY_RETURN_VERIFIED")
-        resume.validate_replay(current, state())
+        with self.assertRaisesRegex(resume.MixedResumeHold,
+                                    "REQUIRES_INDEPENDENT_EVIDENCE"):
+            resume.validate_replay(current, state())
+        with self.assertRaisesRegex(resume.MixedResumeHold,
+                                    "REPLAY_EVIDENCE_CONFLICT"):
+            resume.validate_replay(current, state(),
+                                   verified_result_verifier=lambda *_: False)
+        resume.validate_replay(current, state(),
+                               verified_result_verifier=lambda *_: True)
         current, next_job = resume.claim_next(current)
         self.assertEqual(next_job["batch_index"], 3)
 
