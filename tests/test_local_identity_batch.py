@@ -298,11 +298,31 @@ class BatchTests(unittest.TestCase):
         self.assertEqual(state["success_count"], 4)
         self.assertEqual(state["final_status"], "MULTI_PRODUCT_IDENTITY_BATCH_PARTIAL")
 
-    def test_trusted_manual_execution_can_complete_batch(self):
+    def test_manual_execution_cannot_prove_scheduled_batch(self):
         state = batch.discover(ledger(), spec())
+        with self.assertRaisesRegex(batch.BatchHold, "SCHEDULE_TRIGGER_NOT_PROVEN"):
+            batch.attest_local_execution(
+                state, "MANUAL_WINDOWS_TERMINAL",
+                verifier=lambda **kwargs: True,
+            )
+
+    def test_manually_started_task_cannot_prove_saved_schedule(self):
+        value = spec()
+        value["execution_origin"] = "WINDOWS_TASK_SCHEDULER_MANUAL_START"
+        state = batch.discover(ledger(), value)
+        with self.assertRaisesRegex(batch.BatchHold, "SCHEDULE_TRIGGER_NOT_PROVEN"):
+            batch.attest_local_execution(
+                state, "WINDOWS_TASK_SCHEDULER_MANUAL_START",
+                verifier=lambda **kwargs: True,
+            )
+
+    def test_synthetic_independent_scheduled_host_proof_can_complete_batch(self):
+        value = spec()
+        value["execution_origin"] = "WINDOWS_TASK_SCHEDULER"
+        state = batch.discover(ledger(), value)
         state = batch.attest_local_execution(
-            state, "MANUAL_WINDOWS_TERMINAL",
-            verifier=lambda **kwargs: True,
+            state, "WINDOWS_TASK_SCHEDULER",
+            verifier=lambda **kwargs: True,  # synthetic test only; not production
         )
         for _ in range(4):
             state, job = batch.claim_next(state)

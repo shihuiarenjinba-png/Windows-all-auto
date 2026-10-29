@@ -326,6 +326,32 @@ def write_once(path: Path, value: dict) -> None:
         os.fsync(stream.fileno())
 
 
+def complete_name_unavailable(state: dict, claimed: dict,
+                              product_dir: Path, source_sync_status: str) -> dict:
+    """Advance one product only when name availability failed before Reserve.
+
+    Authentication, uncertain creation, duplicate products and CAS conflicts
+    are intentionally *not* handled here: those stop the whole batch.
+    """
+    result = {
+        "batch_id": state["batch_id"],
+        "batch_index": claimed["batch_index"],
+        "request_id": claimed["request_id"],
+        "slug": claimed["slug"],
+        "source_sha": claimed["source_sha"],
+        "identity_return_target": claimed["identity_return_target"],
+        "github_return_status": "HOLD",
+        "source_sync_status": source_sync_status,
+        "package_version_gate": "HOLD",
+        "store_submission": "NOT_PERFORMED",
+        "error_code": "HOLD_NAME_UNAVAILABLE",
+    }
+    completed = batch.complete_active(state, result)
+    batch.atomic_write(product_dir.parent.parent / "batch-state.json", completed)
+    write_once(product_dir / "result.json", result)
+    return completed
+
+
 def existing_observation(driver: PartnerCenterDriver, receipt: dict) -> IdentityObservation:
     count = driver.page.search_product(receipt["display_name"])
     if count != 1:
@@ -400,7 +426,16 @@ def validate_existing_state(state: dict, spec: dict, central_head: str,
     if (state.get("batch_id") != spec["batch_id"]
             or state.get("central_head_sha") != central_head):
         raise RunnerHold("BATCH_EXISTING_STATE_CONFLICT")
-    if state.get("final_status") == "MULTI_PRODUCT_IDENTITY_BATCH_PASS":
+    if state.get("final_status") in {
+            "MULTI_PRODUCT_IDENTITY_BATCH_PASS",
+            "MULTI_PRODUCT_IDENTITY_BATCH_PARTIAL"}:
+        if state.get("processed_count") != 4:
+            raise RunnerHold("BATCH_EXISTING_STATE_CONFLICT")
+        if state["final_status"] == "MULTI_PRODUCT_IDENTITY_BATCH_PASS":
+            # Legacy or user-edited state cannot turn a manual run into PASS.
+            if (state.get("execution_origin") != "WINDOWS_TASK_SCHEDULER"
+                    or state.get("execution_trigger_proven") is not True):
+                raise RunnerHold("BATCH_SCHEDULE_TRIGGER_NOT_PROVEN")
         return True
     if state.get("execution_origin") != execution_origin:
         raise RunnerHold("BATCH_EXISTING_STATE_CONFLICT")
@@ -430,20 +465,27 @@ def run_batch(args) -> dict:
             )
         else:
             state = batch.discover(ledger, spec)
-            state = batch.attest_local_execution(
-                state, execution_origin,
-                verifier=lambda **kw: (
-                    os.name == "nt"
-                    and kw.get("execution_origin") == execution_origin
-                    and kw.get("state", {}).get("central_head_sha") == central_head
-                ),
-            )
+            # Windows presence and a caller-provided execution_origin are not
+            # independent evidence of the saved 36-minute schedule. Keep the
+            # scheduled trigger gate false until a trusted host attestor exists.
+            # The local operator may still collect four exact, verified Identity
+            # receipts; that is a PARTIAL batch, never a scheduled batch PASS.
             batch.atomic_write(state_path, state)
             already_complete = False
         if already_complete:
+            # Never turn a terminal PARTIAL state into a no-work PASS.
+            if not final_path.is_file():
+                raise RunnerHold("HOLD_FINAL_BATCH_RECEIPT_MISSING")
+            final_receipt = operator.read_json(final_path, 256_000)
+            if (final_receipt.get("batch_status") != state["final_status"]
+                    or final_receipt.get("central_head_sha") != central_head):
+                raise RunnerHold("HOLD_FINAL_BATCH_RECEIPT_CONFLICT")
             return {
-                "status": "NO_WORK", "discovered": 4, "processed": 4,
-                "success": 4, "receipt": str(final_path),
+                "status": state["final_status"], "discovered": 4,
+                "processed": state["processed_count"],
+                "success": state["success_count"],
+                "hold": state["hold_count"],
+                "receipt": str(final_path),
                 "execution_origin": execution_origin,
             }
 
@@ -485,7 +527,18 @@ def run_batch(args) -> dict:
                     receipt = operator.read_json(receipt_path, 64_000)
                     observation = existing_observation(driver, receipt)
                 else:
-                    captured, observation = driver.process(operator_job)
+                    try:
+                        captured, observation = driver.process(operator_job)
+                    except PartnerCenterHold as exc:
+                        # Only a confirmed unavailable name (before Reserve)
+                        # is safe to skip. Auth/MFA/uncertain creation stop all.
+                        if str(exc) != "HOLD_NAME_UNAVAILABLE":
+                            raise
+                        state = complete_name_unavailable(
+                            state, claimed, product_dir,
+                            operator_job["source_snapshot_status"],
+                        )
+                        continue
                     receipt = operator.validate_capture(operator_job, captured)
                     write_once(receipt_path, receipt)
 
@@ -569,11 +622,46 @@ def run_batch(args) -> dict:
         finally:
             driver.close()
 
-        if state.get("final_status") != "MULTI_PRODUCT_IDENTITY_BATCH_PASS":
-            raise RunnerHold("MULTI_PRODUCT_IDENTITY_BATCH_PARTIAL")
+        schedule_proven = state.get("execution_trigger_proven") is True
+        batch_pass = state.get("final_status") == "MULTI_PRODUCT_IDENTITY_BATCH_PASS"
+        # A successful manual 4/4 Identity return is still PARTIAL until the
+        # independently proven scheduled-host trigger gate has passed.
+        products = []
+        for job in state["products"]:
+            result = job.get("result") or {}
+            products.append({
+                "batch_index": job["batch_index"],
+                "product": job["display_name"],
+                "slug": job["slug"],
+                "request_id": job["request_id"],
+                "source_sha": job["source_sha"],
+                "source_sync_status": result.get("source_sync_status", "NOT_RUN"),
+                "partner_center_search_count": result.get("partner_center_search_count"),
+                "creation_status": result.get("creation_status", "HOLD"),
+                "registration_type": job["registration_type"],
+                "partner_center_selection": job["partner_center_selection"],
+                "identity_capture_status": result.get("identity_capture_status", "NOT_RUN"),
+                "store_id": result.get("store_id"),
+                "identity_name": result.get("identity_name"),
+                "pfn": result.get("pfn"),
+                "package_sid": result.get("package_sid"),
+                "github_return_status": result.get("github_return_status", "NOT_RUN"),
+                "identity_return_commit_sha": result.get("identity_return_commit_sha"),
+                "package_version_gate": "HOLD",
+                "store_submission": "NOT_PERFORMED",
+                "error_code": result.get("error_code"),
+            })
+        completed_at = utc_now()
         final = {
             "schema_version": 1,
-            "status": "LOCAL_WINDOWS_NO_LLM_AUTOMATION_PASS",
+            "batch_id": state["batch_id"],
+            "trigger_origin": batch.TRIGGER_ORIGIN,
+            "automation_id": batch.AUTOMATION_ID,
+            "started_at": state["scheduled_at"],
+            "completed_at": completed_at,
+            "batch_total": 4,
+            "status": ("LOCAL_WINDOWS_NO_LLM_AUTOMATION_PASS" if batch_pass
+                       else "MULTI_PRODUCT_IDENTITY_BATCH_PARTIAL"),
             "batch_status": state["final_status"],
             "dispatch_origin": batch.DISPATCH_ORIGIN,
             "execution_origin": execution_origin,
@@ -582,14 +670,29 @@ def run_batch(args) -> dict:
             "central_head_sha": central_head,
             "central_blob_sha": central_blob,
             "fetched_at": spec["scheduled_at"],
-            "discovered": 4, "processed": 4, "identity_captured": 4,
-            "github_return": 4, "replay": 4,
+            "discovered_count": 4,
+            "processed_count": state["processed_count"],
+            "success_count": state["success_count"],
+            "hold_count": state["hold_count"],
+            "next_resume_index": state["next_resume_index"],
+            "schedule_trigger_proven": schedule_proven,
+            "products": products,
+            "identity_captured": sum(
+                p["identity_capture_status"] ==
+                "IDENTITY_CAPTURED__AUTHENTICATED_UI__GITHUB_BOUND"
+                for p in products
+            ),
+            "github_return": sum(
+                p["github_return_status"] in {"APPLIED", "EXISTING_VERIFIED"}
+                for p in products
+            ),
+            "replay": state["success_count"],
             "duplicate_creation": state["duplicate_creation"],
             "cross_product_contamination": state["cross_product_contamination"],
             "store_submission": "NOT_PERFORMED",
             "ollama": "NOT_USED", "openai_api": "NOT_USED",
             **prerequisite,
-            "finished_at": utc_now(),
+            "finished_at": completed_at,
         }
         write_once(final_path, final)
         return final
@@ -609,7 +712,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         result = run_batch(args)
         print(json.dumps(result, ensure_ascii=False, indent=2))
-        return 0
+        return 0 if result.get("status") == "LOCAL_WINDOWS_NO_LLM_AUTOMATION_PASS" else 2
     except (RunnerHold, batch.BatchHold, operator.OperatorHold,
             local_code_sync.SyncHold, PartnerCenterHold) as exc:
         code = exc.code if isinstance(exc, RunnerHold) else str(exc)
