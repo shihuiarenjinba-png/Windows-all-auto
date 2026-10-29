@@ -131,6 +131,12 @@ class MixedPlanTests(unittest.TestCase):
         with self.assertRaisesRegex(planner.PlanHold, "IDENTITY_COLLISION"):
             planner.build_dispatch_plan(ledger, audit)
 
+    def test_malformed_batch_entry_fails_with_hold(self):
+        ledger, audit = fixture()
+        ledger["multi_product_partner_center_batch_4"]["products"][2] = None
+        with self.assertRaisesRegex(planner.PlanHold, "PLAN_SCHEMA"):
+            planner.build_dispatch_plan(ledger, audit)
+
     def test_batch_binding_tamper_holds(self):
         ledger, audit = fixture()
         ledger["multi_product_partner_center_batch_4"]["products"][2]["source_sha"] = "f" * 40
