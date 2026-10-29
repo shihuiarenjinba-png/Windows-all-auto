@@ -119,7 +119,6 @@ def audit_rotation(ledger, *, fetch_head, fetch_approved, fetch_artifact,
                 "source_branch": job["source_branch"],
                 "source_sha": job["source_sha"],
                 "expected_head_sha": job["source_sha"],
-                "package_sha256": job["expected_exe_sha256"],
                 "package_version_gate": "HOLD",
                 "reviewed": True, "source": "partner_center",
             }
