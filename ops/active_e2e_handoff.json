@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-29T16:37:29.675Z",
+  "updated_at_utc": "2026-10-29T17:40:27.202Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -836,7 +836,8 @@
     "post_identity_reconcile_contract_ci_pass": true,
     "post_identity_local_runner_mixed_status_pass": false,
     "mixed_audit_remote_expiry_guard_ci_pass": true,
-    "mixed_local_runner_physical_pass": false
+    "mixed_local_runner_physical_pass": false,
+    "mixed_batch_resume_state_contract_ci_pass": true
   },
   "user_id_requests": {
     "schema_version": 1,
@@ -2397,8 +2398,8 @@
     }
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-29T16:37:29.675Z",
-    "scope": "LIVE_GITHUB_FOUR_APP_BRANCHES_AND_ARTIFACT_EXPIRY_RECHECK__PR55_CI_GREEN__NO_LOCAL_EXECUTION",
+    "observed_at_utc": "2026-10-29T17:40:27.202Z",
+    "scope": "MIXED_PRE_POST_RESUME_STATE_CONTRACT_PR56_WINDOWS_UBUNTU_CI_GREEN__LOCAL_EXECUTOR_NOT_WIRED",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
     "canonical_previous_blob_sha": "98d40cce07567e00657e895aeca2c44d2e47bf26",
@@ -2425,7 +2426,7 @@
     "success_count_cloud_verified": 1,
     "remaining_app_identity_returns": 3,
     "next_resume_index": 2,
-    "next_action": "Implement and review safe mixed PRE/POST local runner; never use legacy four-PRE worker or register 12-hour scheduler before physical Windows no-LLM proof. Then Ledger, Text Diff, Image Inventory Identity return; hold package version until explicit approval.",
+    "next_action": "Wire PR56 pure mixed resume state into reviewed local Windows runner under existing OS single-flight lock and atomic writer; preserve GitHub POST skip and three PRE exact-source/artifact checks. Then independent Windows Terminal authenticated UI/CAS proof; no 12-hour Task Scheduler registration or Store submission until gates pass.",
     "post_identity_reconcile_pr": 49,
     "post_identity_reconcile_ci_run": 40851883814,
     "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU",
@@ -2522,11 +2523,28 @@
       "local_execution": "NOT_PERFORMED",
       "task_scheduler_registration": "HOLD",
       "store_submission": "NOT_PERFORMED"
+    },
+    "mixed_resume_state_contract": {
+      "draft_pr": 56,
+      "branch": "codex/e2e-mixed-resume-state-20261030-0236",
+      "head_sha": "eaa8a2615d095dc65415afb83499b3bbae175e72",
+      "base_pr": 55,
+      "offline_qa_run_id": 40923455229,
+      "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+      "scope": "PURE_MIXED_PRE_POST_SERIAL_RESTART_SAFE_STATE__POST_SKIP__PRE_SINGLE_ACTIVE__INDEPENDENT_EVIDENCE_CALLBACK__CROSS_PRODUCT_COLLISION_HOLD",
+      "tests": "TWELVE_NEW_OFFLINE_REGRESSIONS",
+      "integration_status": "DRAFT_NOT_MERGED__NOT_WIRED_TO_WINDOWS_EXECUTOR",
+      "physical_windows_execution": "NOT_PERFORMED",
+      "partner_center": "NOT_ACCESSED",
+      "identity_capture": "NOT_PERFORMED",
+      "cas": "NOT_PERFORMED",
+      "task_scheduler_registration": "HOLD",
+      "store_submission": "NOT_PERFORMED"
     }
   },
   "post_identity_pipeline": {
     "schema_version": 1,
-    "updated_at_utc": "2026-10-29T16:37:29.675Z",
+    "updated_at_utc": "2026-10-29T17:40:27.202Z",
     "writer": "36_WINDOWS_E2E_ONLY",
     "reconciliation_basis": "GITHUB_APPROVED_IDENTITY_FILES_VERIFIED_FOR_FOCUS_AND_PRISM__NO_LOCAL_RECEIPTS_READ_THIS_RUN",
     "product_count": 7,
@@ -2781,6 +2799,23 @@
         "mixed_local_runner": "NOT_IMPLEMENTED",
         "task_scheduler_registration": "HOLD",
         "integration_status": "STACKED_DRAFT_NOT_MERGED"
+      },
+      "mixed_resume_state_contract": {
+        "draft_pr": 56,
+        "branch": "codex/e2e-mixed-resume-state-20261030-0236",
+        "head_sha": "eaa8a2615d095dc65415afb83499b3bbae175e72",
+        "base_pr": 55,
+        "offline_qa_run_id": 40923455229,
+        "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+        "scope": "PURE_MIXED_PRE_POST_SERIAL_RESTART_SAFE_STATE__POST_SKIP__PRE_SINGLE_ACTIVE__INDEPENDENT_EVIDENCE_CALLBACK__CROSS_PRODUCT_COLLISION_HOLD",
+        "tests": "TWELVE_NEW_OFFLINE_REGRESSIONS",
+        "integration_status": "DRAFT_NOT_MERGED__NOT_WIRED_TO_WINDOWS_EXECUTOR",
+        "physical_windows_execution": "NOT_PERFORMED",
+        "partner_center": "NOT_ACCESSED",
+        "identity_capture": "NOT_PERFORMED",
+        "cas": "NOT_PERFORMED",
+        "task_scheduler_registration": "HOLD",
+        "store_submission": "NOT_PERFORMED"
       }
     }
   },
