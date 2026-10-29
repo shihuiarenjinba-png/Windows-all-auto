@@ -146,6 +146,107 @@ class RunnerTests(unittest.TestCase):
         self.assertEqual(len(jobs), 4)
         self.assertEqual(spec["central_head_sha"], "a" * 40)
 
+    def test_mixed_queue_accepts_only_verified_post_identity_product(self):
+        value = ledger()
+        focus = value["rotation_cohorts"]["app_jobs"][0]
+        focus["status"] = "POST_IDENTITY_READY"
+        return_head = "c" * 40
+        result = {
+            "request_id": focus["request_id"], "source_sha": focus["source_sha"],
+            "identity_return_commit_sha": return_head,
+            "github_replay_status": "EXISTING_VERIFIED",
+            "store_id": "9P6452C61N7B",
+            "identity_name": "OkinawaDesktopTools.FocusSessionDesk",
+            "pfn": "OkinawaDesktopTools.FocusSessionDesk_j8yefg9jgfh58",
+            "package_sid": "S-1-15-2-1-2-3-4-5-6-7",
+            "execution_origin": "MANUAL_WINDOWS_TERMINAL",
+        }
+        approved = {
+            "request_id": focus["request_id"], "source_sha": focus["source_sha"],
+            "store_id": result["store_id"], "name": result["identity_name"],
+            "package_family_name": result["pfn"],
+            "package_sid": result["package_sid"],
+            "dispatch_origin": "CHATGPT_36_MIN_LOOP",
+            "execution_origin": result["execution_origin"],
+        }
+        artifacts = {job["factory_artifact_id"]: {
+            "expired": False, "name": job["factory_artifact_name"],
+            "digest": "sha256:" + job["factory_artifact_zip_sha256"],
+        } for job in value["rotation_cohorts"]["app_jobs"]}
+
+        def fake_head(repo, branch):
+            job = next(x for x in value["rotation_cohorts"]["app_jobs"]
+                       if x["source_branch"] == branch)
+            return return_head if job is focus else job["source_sha"]
+
+        def fake_gh(endpoint, allow_missing=False):
+            if "/contents/" in endpoint:
+                return {"encoding": "base64", "content": base64.b64encode(
+                    json.dumps(approved).encode("utf-8")
+                ).decode("ascii")}
+            return artifacts[int(endpoint.rsplit("/", 1)[-1])]
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "batch-state.json").write_text(json.dumps({
+                "batch_id": "app-batch4-old", "central_head_sha": "a" * 40,
+                "products": [{"request_id": focus["request_id"],
+                              "state": "SUCCESS", "result": result}],
+            }), encoding="utf-8")
+            with patch.object(runner, "live_branch_head", side_effect=fake_head), \
+                 patch.object(runner, "gh_json", side_effect=fake_gh):
+                spec, jobs = runner.validate_queue(
+                    value, "b" * 40, "MANUAL_WINDOWS_TERMINAL", root
+                )
+        self.assertEqual(spec["batch_id"], "app-batch4-old")
+        self.assertEqual([job["status"] for job in jobs], [
+            "POST_IDENTITY_READY", "PRE_IDENTITY_READY",
+            "PRE_IDENTITY_READY", "PRE_IDENTITY_READY",
+        ])
+
+    def test_reconcile_updates_only_unfinished_queue_provenance(self):
+        value = ledger()
+        jobs = value["rotation_cohorts"]["app_jobs"]
+        products = []
+        for index, job in enumerate(jobs):
+            products.append({
+                "request_id": job["request_id"], "slug": job["slug"],
+                "source_sha": job["source_sha"],
+                "identity_return_target": job["identity_return_target"],
+                "artifact_id": job["factory_artifact_id"],
+                "expected_exe_sha256": job["expected_exe_sha256"],
+                "queue_job_digest": "old", "state": "SUCCESS" if index == 0 else "PENDING",
+                "result": {"immutable": True} if index == 0 else None,
+            })
+        state = {"central_head_sha": "a" * 40, "products": products}
+        runner._reconcile_existing_state(state, jobs, "b" * 40)
+        self.assertEqual(state["central_head_sha"], "b" * 40)
+        self.assertEqual(state["products"][0]["queue_job_digest"], "old")
+        self.assertEqual(state["products"][0]["result"], {"immutable": True})
+        self.assertEqual(
+            state["products"][1]["queue_job_digest"],
+            runner.operator.canonical_digest(jobs[1]),
+        )
+
+    def test_reconciled_operator_job_preserves_original(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            original = {
+                "request_id": "app-sample-aaaaaaaaaaaa", "slug": "sample",
+                "product_type": "APP", "display_name": "Sample",
+                "source_repository": "owner/repo", "source_branch": "codex/sample",
+                "source_sha": "a" * 40,
+                "identity_return_target": "products/sample/store/approved-identity.json",
+                "batch_id": "batch-old", "batch_index": 2, "batch_total": 4,
+                "central_head_sha": "a" * 40,
+            }
+            runner.write_once(root / "operator-job.json", original)
+            updated = {**original, "central_head_sha": "b" * 40}
+            path = runner.write_reconciled_operator_job(root, updated)
+            self.assertEqual(path.name, "operator-job.bbbbbbbbbbbb.json")
+            self.assertEqual(json.loads((root / "operator-job.json").read_text()), original)
+            self.assertEqual(json.loads(path.read_text()), updated)
+
     def test_artifact_and_exe_are_both_hashed(self):
         payload = b"MZ" + b"x" * 4094
         with tempfile.TemporaryDirectory() as directory:

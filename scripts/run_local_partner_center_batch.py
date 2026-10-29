@@ -172,8 +172,6 @@ def completed_identity_return_matches(job: dict, current_head: str,
         return False
     try:
         state = operator.read_json(state_path, 512_000)
-        if state.get("central_head_sha") != central_head:
-            return False
         products = [
             item for item in state.get("products", [])
             if isinstance(item, dict)
@@ -217,19 +215,31 @@ def completed_identity_return_matches(job: dict, current_head: str,
 def validate_queue(ledger: dict, central_head: str, execution_origin: str,
                    state_dir: Path | None = None) -> tuple[dict, list[dict]]:
     jobs = (ledger.get("rotation_cohorts") or {}).get("app_jobs")
-    ready = [x for x in jobs or [] if isinstance(x, dict)
-             and x.get("status") == "PRE_IDENTITY_READY"]
-    if len(ready) != 4 or tuple(x.get("slug") for x in ready) != EXPECTED_ORDER:
+    cohort = [x for x in jobs or [] if isinstance(x, dict)
+              and x.get("slug") in EXPECTED_ORDER]
+    if (len(cohort) != 4
+            or tuple(x.get("slug") for x in cohort) != EXPECTED_ORDER
+            or any(x.get("status") not in {
+                "PRE_IDENTITY_READY", "POST_IDENTITY_READY",
+            } for x in cohort)):
         raise RunnerHold("HOLD_BATCH_DISCOVERY_INCOMPLETE")
+    existing_state = None
+    if state_dir is not None and (state_dir / "batch-state.json").is_file():
+        existing_state = operator.read_json(state_dir / "batch-state.json", 512_000)
+    if any(x.get("status") == "POST_IDENTITY_READY" for x in cohort) and existing_state is None:
+        raise RunnerHold("HOLD_MIXED_QUEUE_LOCAL_STATE_MISSING")
     products = []
-    for index, job in enumerate(ready, 1):
+    for index, job in enumerate(cohort, 1):
         current_head = live_branch_head(
             job["source_repository"], job["source_branch"]
         )
-        if (current_head != job["source_sha"]
-                and not completed_identity_return_matches(
-                    job, current_head, state_dir, central_head
-                )):
+        completed = completed_identity_return_matches(
+            job, current_head, state_dir, central_head
+        )
+        if (job.get("status") == "POST_IDENTITY_READY" and not completed):
+            raise RunnerHold("HOLD_POST_IDENTITY_LOCAL_EVIDENCE_MISMATCH")
+        if (job.get("status") == "PRE_IDENTITY_READY"
+                and current_head != job["source_sha"] and not completed):
             raise RunnerHold("HOLD_CANONICAL_PRODUCT_REVISION_MISMATCH")
         artifact = gh_json(
             f"repos/{job['source_repository']}/actions/artifacts/{job['factory_artifact_id']}"
@@ -252,7 +262,8 @@ def validate_queue(ledger: dict, central_head: str, execution_origin: str,
         })
     spec = {
         "schema_version": 1,
-        "batch_id": "app-batch4-" + central_head[:12],
+        "batch_id": (existing_state.get("batch_id") if existing_state
+                     else "app-batch4-" + central_head[:12]),
         "trigger_origin": batch.TRIGGER_ORIGIN,
         "dispatch_origin": batch.DISPATCH_ORIGIN,
         "execution_origin": execution_origin,
@@ -263,7 +274,7 @@ def validate_queue(ledger: dict, central_head: str, execution_origin: str,
         "scheduled_at": utc_now(),
         "products": products,
     }
-    return spec, ready
+    return spec, cohort
 
 
 def sha256_file(path: Path) -> str:
@@ -419,6 +430,62 @@ def write_once(path: Path, value: dict) -> None:
         os.fsync(stream.fileno())
 
 
+def write_reconciled_operator_job(product_dir: Path, value: dict) -> Path:
+    """Preserve an older central-head job and write a new immutable version."""
+    primary = product_dir / "operator-job.json"
+    if not primary.exists():
+        write_once(primary, value)
+        return primary
+    existing = operator.read_json(primary, 64_000)
+    if existing == value:
+        return primary
+    exact = (
+        "request_id", "slug", "product_type", "display_name",
+        "source_repository", "source_branch", "source_sha",
+        "identity_return_target", "batch_id", "batch_index", "batch_total",
+    )
+    if any(existing.get(key) != value.get(key) for key in exact):
+        raise RunnerHold("HOLD_RECEIPT_CONFLICT")
+    head = str(value.get("central_head_sha", ""))
+    if re.fullmatch(r"[0-9a-f]{40}", head) is None:
+        raise RunnerHold("HOLD_RECEIPT_CONFLICT")
+    versioned = product_dir / f"operator-job.{head[:12]}.json"
+    write_once(versioned, value)
+    return versioned
+
+
+def record_submission_draft(state: dict, claimed: dict, result: dict,
+                            product_dir: Path,
+                            driver: PartnerCenterDriver) -> tuple[dict, dict]:
+    """Verify/open one Store draft after CAS evidence has already passed."""
+    draft_status = driver.page.ensure_submission_draft_open(
+        claimed["display_name"]
+    )
+    updated_result = dict(result)
+    updated_result.update({
+        "submission_draft_opened": True,
+        "submission_draft_status": draft_status,
+        "store_submission": "NOT_PERFORMED",
+    })
+    updated_state = state
+    matches = [item for item in updated_state.get("products", [])
+               if item.get("request_id") == claimed.get("request_id")]
+    if len(matches) != 1 or matches[0].get("state") != "SUCCESS":
+        raise RunnerHold("HOLD_SUBMISSION_DRAFT_STATE_AMBIGUOUS")
+    matches[0]["result"] = updated_result
+    write_once(product_dir / "submission-draft.json", {
+        "schema_version": 1,
+        "request_id": claimed["request_id"],
+        "slug": claimed["slug"],
+        "source_sha": claimed["source_sha"],
+        "identity_return_commit_sha": updated_result["identity_return_commit_sha"],
+        "submission_draft_opened": True,
+        "submission_draft_status": draft_status,
+        "store_submission": "NOT_PERFORMED",
+    })
+    return updated_state, updated_result
+
+
 def existing_observation(driver: PartnerCenterDriver, receipt: dict) -> IdentityObservation:
     count = driver.page.search_product(receipt["display_name"])
     if count != 1:
@@ -482,18 +549,53 @@ def resolve_execution_origin(requested: str, state_dir: Path) -> str:
     return requested
 
 
+def _reconcile_existing_state(state: dict, jobs: list[dict],
+                              central_head: str) -> None:
+    """Apply a monotonic central-ledger observation to durable local state.
+
+    Only queue metadata for unfinished products may advance. Completed products
+    remain bound to their original source SHA and verified Factory return.
+    """
+    products = state.get("products")
+    if not isinstance(products, list) or len(products) != 4 or len(jobs) != 4:
+        raise RunnerHold("BATCH_EXISTING_STATE_CONFLICT")
+    for local, remote in zip(products, jobs):
+        exact = {
+            "request_id": remote.get("request_id"),
+            "slug": remote.get("slug"),
+            "source_sha": remote.get("source_sha"),
+            "identity_return_target": remote.get("identity_return_target"),
+            "artifact_id": remote.get("factory_artifact_id"),
+            "expected_exe_sha256": remote.get("expected_exe_sha256"),
+        }
+        if any(local.get(key) != value for key, value in exact.items()):
+            raise RunnerHold("BATCH_EXISTING_STATE_CONFLICT")
+        if local.get("state") != "SUCCESS":
+            local["queue_job_digest"] = operator.canonical_digest(remote)
+    state["central_head_sha"] = central_head
+
+
 def validate_existing_state(state: dict, spec: dict, central_head: str,
-                            execution_origin: str) -> bool:
+                            execution_origin: str,
+                            jobs: list[dict] | None = None) -> bool:
     """Validate resumability and report whether this batch already completed.
 
     A completed manual batch is intentionally reusable by the scheduled runner as
     a no-work receipt.  An in-progress batch remains bound to its original
     execution origin so that a scheduler cannot take over a terminal run.
     """
-    if (state.get("batch_id") != spec["batch_id"]
-            or state.get("central_head_sha") != central_head):
+    if state.get("batch_id") != spec["batch_id"]:
         raise RunnerHold("BATCH_EXISTING_STATE_CONFLICT")
+    if state.get("central_head_sha") != central_head:
+        if jobs is None:
+            raise RunnerHold("BATCH_EXISTING_STATE_CONFLICT")
+        _reconcile_existing_state(state, jobs, central_head)
     if state.get("final_status") == "MULTI_PRODUCT_IDENTITY_BATCH_PASS":
+        if (jobs is not None
+                and (any(job.get("status") != "POST_IDENTITY_READY" for job in jobs)
+                or any((item.get("result") or {}).get("submission_draft_opened") is not True
+                       for item in state.get("products", [])))):
+            raise RunnerHold("HOLD_COMPLETED_BATCH_NOT_RECONCILED")
         return True
     if state.get("execution_origin") != execution_origin:
         raise RunnerHold("BATCH_EXISTING_STATE_CONFLICT")
@@ -520,9 +622,12 @@ def run_batch(args) -> dict:
     with batch.state_lock(state_path):
         if state_path.exists():
             state = operator.read_json(state_path, 512_000)
+            previous_central_head = state.get("central_head_sha")
             already_complete = validate_existing_state(
-                state, spec, central_head, execution_origin
+                state, spec, central_head, execution_origin, jobs
             )
+            if state.get("central_head_sha") != previous_central_head:
+                batch.atomic_write(state_path, state)
         else:
             state = batch.discover(ledger, spec)
             state = batch.attest_local_execution(
@@ -540,12 +645,37 @@ def run_batch(args) -> dict:
                 "status": "NO_WORK", "discovered": 4, "processed": 4,
                 "success": 4, "receipt": str(final_path),
                 "execution_origin": execution_origin,
+                "central_head_sha": central_head,
+                "duplicate_creation": 0,
+                "cross_product_contamination": 0,
+                "store_submission": "NOT_PERFORMED",
+                "ollama": "NOT_USED", "openai_api": "NOT_USED",
             }
 
         provisioner, provisioner_core = import_provisioner(args.provisioner_root.resolve())
         config = provisioner_core.ProductConfig.load(args.provisioner_root / "config.json")
         driver = PartnerCenterDriver()
         try:
+            # A central reconciliation may mark an earlier local success as
+            # POST_IDENTITY_READY before this runner revision learned to open
+            # the draft. Re-observe that exact product and record the draft;
+            # never repeat CAS or product creation.
+            for completed in state.get("products", []):
+                completed_result = completed.get("result") or {}
+                if (completed.get("state") != "SUCCESS"
+                        or completed_result.get("submission_draft_opened") is True):
+                    continue
+                current_head = live_branch_head(
+                    completed["source_repository"], completed["source_branch"]
+                )
+                if not completed_identity_return_matches(
+                        completed, current_head, state_dir, central_head):
+                    raise RunnerHold("HOLD_POST_IDENTITY_LOCAL_EVIDENCE_MISMATCH")
+                product_dir = state_dir / "products" / completed["request_id"]
+                state, completed_result = record_submission_draft(
+                    state, completed, completed_result, product_dir, driver
+                )
+                batch.atomic_write(state_path, state)
             while state.get("processed_count") < 4:
                 state, claimed = batch.claim_or_resume(state)
                 batch.atomic_write(state_path, state)
@@ -573,9 +703,8 @@ def run_batch(args) -> dict:
                     batch=batch_meta,
                 )
                 product_dir = state_dir / "products" / claimed["request_id"]
-                job_path = product_dir / "operator-job.json"
                 receipt_path = product_dir / "official-identity.json"
-                write_once(job_path, operator_job)
+                write_reconciled_operator_job(product_dir, operator_job)
                 if receipt_path.exists():
                     receipt = operator.read_json(receipt_path, 64_000)
                     observation = existing_observation(driver, receipt)
@@ -656,9 +785,13 @@ def run_batch(args) -> dict:
                         )
                     )
 
-                state = batch.complete_active(
+                completed_state = batch.complete_active(
                     state, result, independent_evidence_verifier=evidence_verifier
                 )
+                completed_state, result = record_submission_draft(
+                    completed_state, claimed, result, product_dir, driver
+                )
+                state = completed_state
                 batch.atomic_write(state_path, state)
                 write_once(product_dir / "result.json", result)
         finally:
@@ -666,6 +799,9 @@ def run_batch(args) -> dict:
 
         if state.get("final_status") != "MULTI_PRODUCT_IDENTITY_BATCH_PASS":
             raise RunnerHold("MULTI_PRODUCT_IDENTITY_BATCH_PARTIAL")
+        if any((item.get("result") or {}).get("submission_draft_opened") is not True
+               for item in state.get("products", [])):
+            raise RunnerHold("HOLD_SUBMISSION_DRAFT_NOT_CONFIRMED")
         final = {
             "schema_version": 1,
             "status": "LOCAL_WINDOWS_NO_LLM_AUTOMATION_PASS",
@@ -679,6 +815,7 @@ def run_batch(args) -> dict:
             "fetched_at": spec["scheduled_at"],
             "discovered": 4, "processed": 4, "identity_captured": 4,
             "github_return": 4, "replay": 4,
+            "submission_draft": 4,
             "duplicate_creation": state["duplicate_creation"],
             "cross_product_contamination": state["cross_product_contamination"],
             "store_submission": "NOT_PERFORMED",

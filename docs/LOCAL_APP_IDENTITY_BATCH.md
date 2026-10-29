@@ -30,6 +30,14 @@ single-writer contract must stop the whole batch.
 Package Version remains a separate gate. Every Identity-only result records
 `package_version_gate=HOLD` and `store_submission=NOT_PERFORMED`.
 
+After a product's authenticated Identity capture, APP single-writer CAS and
+immediate `EXISTING_VERIFIED` replay have all passed, the Windows runner may
+open exactly one Partner Center submission draft.  An existing same-product
+submission link is reused; otherwise the exact `Start submission` control is
+clicked once and an uncertain outcome is re-observed without a second click.
+This step performs no package upload, certification submission, pricing or
+availability change, publication, or final Store submission.
+
 ## Factory artifact expiry gate
 
 Discovery now requires a valid future UTC `factory_artifact_expiry_utc`
@@ -114,6 +122,15 @@ requires exactly the ordered four APP jobs, rechecks each Factory branch,
 verifies the GitHub Artifact ZIP digest and the extracted EXE SHA-256/size,
 creates exact detached source snapshots, then holds before UI work unless the
 authenticated Partner Center products page is observable.
+
+The same entry point also supports a monotonic mixed queue such as one verified
+`POST_IDENTITY_READY` product followed by three `PRE_IDENTITY_READY` products.
+It requires the local success receipt, approved Identity file, Factory return
+commit and replay to agree before skipping a POST product.  A central HEAD
+advance may update only unfinished queue provenance after request, slug, source
+SHA, artifact and return-target equality checks.  Older operator jobs are kept;
+a reconciled job is written under a central-HEAD-suffixed filename.  Missing or
+ambiguous evidence is a HOLD, never permission to repeat product creation.
 
 The Edge worker reads no cookies, storage, headers, password, MFA value, raw
 HTML, or authenticated page dump.  It searches the exact product name,

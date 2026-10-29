@@ -104,6 +104,49 @@ class PartnerCenterReadinessTests(unittest.TestCase):
 
         page.click_exact.assert_called_once_with(["Toggle Product identity"])
 
+    def test_submission_draft_reuses_existing_same_product_link(self):
+        page = CdpPage("target", None)
+        page._open_exact_product = MagicMock()
+        page._wait_not_busy = MagicMock()
+        page._submission_draft_state = MagicMock(return_value={
+            "product_id": "9P6452C61N7B",
+            "current_submission_id": None,
+            "submission_links": [{"name": "242", "href": "same-product"}],
+            "start_submission_count": 0,
+        })
+        page.click_exact = MagicMock()
+
+        self.assertEqual(
+            page.ensure_submission_draft_open("Focus Session Desk"),
+            "ALREADY_OPEN",
+        )
+        page.click_exact.assert_not_called()
+
+    def test_submission_draft_clicks_start_only_once_then_confirms(self):
+        page = CdpPage("target", None)
+        page._open_exact_product = MagicMock()
+        page._wait_not_busy = MagicMock()
+        page._submission_draft_state = MagicMock(side_effect=[
+            {
+                "product_id": "9P6452C61N7B",
+                "current_submission_id": None,
+                "submission_links": [],
+                "start_submission_count": 1,
+            },
+            {
+                "product_id": "9P6452C61N7B",
+                "current_submission_id": "1152921505702265161",
+                "submission_links": [],
+                "start_submission_count": 0,
+            },
+        ])
+        page.click_exact = MagicMock()
+
+        self.assertEqual(
+            page.ensure_submission_draft_open("Focus Session Desk"), "OPENED"
+        )
+        page.click_exact.assert_called_once_with(["Start submission"])
+
     def test_identity_control_waits_for_async_render(self):
         page = CdpPage("target", None)
         page._visible_controls = MagicMock(side_effect=[

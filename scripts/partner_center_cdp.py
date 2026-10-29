@@ -681,6 +681,74 @@ JSON.stringify((() => {
         self.safe_snapshot()
         return identity
 
+    def _submission_draft_state(self) -> dict:
+        """Return same-product draft evidence without opening or submitting it."""
+        raw = self.evaluate(r"""
+JSON.stringify((() => {
+  const clean=v=>String(v||'').replace(/\s+/g,' ').trim();
+  const visible=e=>{const s=getComputedStyle(e),r=e.getBoundingClientRect();return s.display!=='none'&&s.visibility!=='hidden'&&r.width>0&&r.height>0;};
+  const path=location.pathname.replace(/\/$/,'');
+  const product=path.match(/\/dashboard\/products\/([A-Za-z0-9]{8,32})(?:\/|$)/i);
+  const productId=product ? product[1] : '';
+  const submissionPath=new RegExp('/dashboard/products/'+productId+'/submissions/([0-9]+)(?:/|$)','i');
+  const links=[...document.querySelectorAll('a[href]')].filter(visible).map(e=>({
+    name:clean(e.innerText||e.textContent), href:String(e.href||'')
+  })).filter(x=>productId && (()=>{try{return new URL(x.href,location.href).pathname.match(submissionPath);}catch(_){return false;}})());
+  const current=productId ? path.match(submissionPath) : null;
+  const starts=[...document.querySelectorAll('button,a,[role="button"]')].filter(visible)
+    .filter(e=>clean(e.innerText||e.textContent)==='Start submission');
+  return {product_id:productId,current_submission_id:current?current[1]:null,
+          submission_links:links,start_submission_count:starts.length};
+})())
+""")
+        state = json.loads(raw) if isinstance(raw, str) else {}
+        if (not isinstance(state, dict)
+                or not re.fullmatch(r"[A-Za-z0-9]{8,32}", str(state.get("product_id", "")))
+                or type(state.get("start_submission_count")) is not int
+                or not isinstance(state.get("submission_links"), list)):
+            raise PartnerCenterHold("HOLD_SUBMISSION_DRAFT_STATE_AMBIGUOUS")
+        return state
+
+    @staticmethod
+    def _draft_is_open(state: dict) -> bool:
+        if state.get("current_submission_id"):
+            return True
+        links = state.get("submission_links", [])
+        return len(links) > 0
+
+    def ensure_submission_draft_open(self, display_name: str) -> str:
+        """Open one draft only after the caller has proven CAS + replay.
+
+        An existing same-product submission link is sufficient proof and is
+        never clicked.  If Start submission is used, it is clicked once; an
+        uncertain outcome is re-observed and never retried in this call.
+        """
+        self._open_exact_product(display_name)
+        self._wait_not_busy()
+        before = self._submission_draft_state()
+        if self._draft_is_open(before):
+            return "ALREADY_OPEN"
+        if before["start_submission_count"] != 1:
+            raise PartnerCenterHold("HOLD_SUBMISSION_DRAFT_STATE_AMBIGUOUS")
+        self.click_exact(["Start submission"])
+        deadline = time.monotonic() + 90.0
+        while time.monotonic() < deadline:
+            self._wait_not_busy()
+            after = self._submission_draft_state()
+            if self._draft_is_open(after):
+                return "OPENED"
+            time.sleep(0.5)
+        # Do not click again after an uncertain outcome. Re-open the exact
+        # product once and observe whether Partner Center created the draft.
+        count = self.search_product(display_name)
+        if count != 1:
+            raise PartnerCenterHold("HOLD_SUBMISSION_DRAFT_NOT_CONFIRMED")
+        self._open_exact_product(display_name)
+        self._wait_not_busy()
+        if self._draft_is_open(self._submission_draft_state()):
+            return "OPENED_AFTER_RECHECK"
+        raise PartnerCenterHold("HOLD_SUBMISSION_DRAFT_NOT_CONFIRMED")
+
 
 @dataclass(frozen=True)
 class IdentityObservation:
