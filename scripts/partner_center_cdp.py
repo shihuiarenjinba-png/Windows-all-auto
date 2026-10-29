@@ -15,7 +15,7 @@ import re
 import subprocess
 import time
 from typing import Any
-from urllib.parse import urlparse
+from urllib.parse import urljoin, urlparse
 
 try:  # Windows runtime dependencies; offline Linux contract CI may omit them.
     import requests
@@ -172,12 +172,12 @@ class CdpPage:
         except (websocket.WebSocketException, OSError, ValueError) as exc:
             raise PartnerCenterHold("HOLD_BROWSER_AUTOMATION_UNAVAILABLE") from exc
 
-    def evaluate(self, expression: str) -> Any:
+    def evaluate(self, expression: str, *, user_gesture: bool = False) -> Any:
         result = self.command("Runtime.evaluate", {
             "expression": expression,
             "returnByValue": True,
             "awaitPromise": True,
-            "userGesture": False,
+            "userGesture": user_gesture,
         })
         value = result.get("result", {})
         if value.get("subtype") == "error" or "exceptionDetails" in result:
@@ -207,7 +207,14 @@ class CdpPage:
             )
             if isinstance(state, str):
                 current = json.loads(state)
-                if current == last and current.get("r") == "complete":
+                observed_url = str(current.get("u", ""))
+                reached = (
+                    _is_products_overview(observed_url)
+                    if url == PARTNER_PRODUCTS_URL
+                    else observed_url.rstrip("/") == url.rstrip("/")
+                )
+                if (current == last and current.get("r") == "complete"
+                        and reached):
                     stable += 1
                     if stable >= 3:
                         return
@@ -347,11 +354,37 @@ JSON.stringify((() => {
   return {ok:true,name:items[0].n};
 })())
 """.replace("__NAMES__", raw_names)
-        result = self.evaluate(script)
+        result = self.evaluate(script, user_gesture=True)
         parsed = json.loads(result) if isinstance(result, str) else {}
         if parsed.get("ok") is not True:
             raise PartnerCenterHold("HOLD_BROWSER_STATE_AMBIGUOUS")
         return str(parsed["name"])
+
+    def pointer_click_exact_link(self, name: str) -> None:
+        script = r"""
+JSON.stringify((() => {
+  const wanted=__NAME__;
+  const clean=v=>String(v||'').replace(/\s+/g,' ').trim();
+  const visible=e=>{const s=getComputedStyle(e),r=e.getBoundingClientRect();return s.display!=='none'&&s.visibility!=='hidden'&&r.width>0&&r.height>0;};
+  const items=[...document.querySelectorAll('a')]
+    .filter(visible).filter(e=>clean(e.innerText)===wanted);
+  if(items.length!==1) return {ok:false,count:items.length};
+  const r=items[0].getBoundingClientRect();
+  return {ok:true,x:r.left+r.width/2,y:r.top+r.height/2};
+})())
+""".replace("__NAME__", json.dumps(name, ensure_ascii=False))
+        raw = self.evaluate(script)
+        result = json.loads(raw) if isinstance(raw, str) else {}
+        x, y = result.get("x"), result.get("y")
+        if (result.get("ok") is not True
+                or type(x) not in {int, float} or type(y) not in {int, float}
+                or not 0 <= x <= 100_000 or not 0 <= y <= 100_000):
+            raise PartnerCenterHold("HOLD_PRODUCT_LINK_AMBIGUOUS")
+        for event_type in ("mousePressed", "mouseReleased"):
+            self.command("Input.dispatchMouseEvent", {
+                "type": event_type, "x": x, "y": y,
+                "button": "left", "clickCount": 1,
+            })
 
     def open_product_create_menu(self) -> None:
         result = self.evaluate(r"""
@@ -446,7 +479,28 @@ JSON.stringify((() => {
         return self.exact_product_count(display_name)
 
     def _open_exact_product(self, display_name: str) -> None:
-        self.click_exact([display_name])
+        matches = [
+            control for control in self._visible_controls()
+            if control.get("tag") == "a"
+            and control.get("name") == display_name
+            and isinstance(control.get("href"), str)
+        ]
+        if len(matches) != 1:
+            raise PartnerCenterHold("HOLD_PRODUCT_LINK_AMBIGUOUS")
+        target = urljoin(PARTNER_PRODUCTS_URL, matches[0]["href"])
+        parsed = urlparse(target)
+        if (parsed.scheme != "https" or parsed.hostname != PARTNER_HOST
+                or re.fullmatch(
+                    r"/[a-z]{2}-[a-z]{2}/dashboard/products/"
+                    r"[A-Za-z0-9]{8,32}/overview",
+                    parsed.path.rstrip("/"),
+                ) is None):
+            raise PartnerCenterHold("HOLD_PRODUCT_LINK_AMBIGUOUS")
+        self.pointer_click_exact_link(display_name)
+        self._wait_product_creation_outcome(
+            display_name, timeout=90.0,
+            failure_code="HOLD_PRODUCT_OPEN_NOT_CONFIRMED",
+        )
         self._wait_not_busy()
 
     def _create_product(self, display_name: str) -> None:
@@ -483,8 +537,9 @@ JSON.stringify((() => {
                 raise PartnerCenterHold("HOLD_DUPLICATE_PRODUCT") from exc
             raise
 
-    def _wait_product_creation_outcome(self, display_name: str,
-                                       timeout: float = 60.0) -> None:
+    def _wait_product_creation_outcome(
+            self, display_name: str, timeout: float = 60.0,
+            failure_code: str = "HOLD_PRODUCT_CREATE_NOT_CONFIRMED") -> None:
         deadline = time.monotonic() + timeout
         while time.monotonic() < deadline:
             value = self.evaluate(r"""
@@ -501,7 +556,7 @@ JSON.stringify({url:location.href,title:document.title,ready:document.readyState
                     and display_name in title):
                 return
             time.sleep(0.5)
-        raise PartnerCenterHold("HOLD_PRODUCT_CREATE_NOT_CONFIRMED")
+        raise PartnerCenterHold(failure_code)
 
     def _identity_values(self, display_name: str) -> dict:
         labels = {

@@ -184,6 +184,7 @@ class PartnerCenterReadinessTests(unittest.TestCase):
         script = page.evaluate.call_args.args[0]
         self.assertIn('[role="menuitem"]', script)
         self.assertIn("info-tooltip-container", script)
+        self.assertTrue(page.evaluate.call_args.kwargs["user_gesture"])
 
     def test_navigation_uses_same_host_location_assignment(self):
         page = CdpPage("target", None)
@@ -206,6 +207,55 @@ class PartnerCenterReadinessTests(unittest.TestCase):
         self.assertIn("location.assign", assignment)
         self.assertIn(PARTNER_PRODUCTS_URL, assignment)
 
+    def test_open_product_uses_unique_validated_overview_href(self):
+        page = CdpPage("target", None)
+        target = (
+            "https://partner.microsoft.com/en-us/dashboard/products/"
+            "9PGZ445SR5GM/overview"
+        )
+        page._visible_controls = MagicMock(return_value=[{
+            "tag": "a", "name": "File Integrity Ledger",
+            "href": "/en-us/dashboard/products/9PGZ445SR5GM/overview",
+        }])
+        page.pointer_click_exact_link = MagicMock()
+        page._wait_product_creation_outcome = MagicMock()
+        page._wait_not_busy = MagicMock()
+
+        page._open_exact_product("File Integrity Ledger")
+
+        page.pointer_click_exact_link.assert_called_once_with(
+            "File Integrity Ledger"
+        )
+        page._wait_product_creation_outcome.assert_called_once_with(
+            "File Integrity Ledger", timeout=90.0,
+            failure_code="HOLD_PRODUCT_OPEN_NOT_CONFIRMED",
+        )
+
+    def test_open_product_rejects_cross_host_href(self):
+        page = CdpPage("target", None)
+        page._visible_controls = MagicMock(return_value=[{
+            "tag": "a", "name": "File Integrity Ledger",
+            "href": "https://example.invalid/products/9PGZ445SR5GM/overview",
+        }])
+        with self.assertRaisesRegex(PartnerCenterHold,
+                                    "HOLD_PRODUCT_LINK_AMBIGUOUS"):
+            page._open_exact_product("File Integrity Ledger")
+
+    def test_pointer_link_click_dispatches_one_trusted_click(self):
+        page = CdpPage("target", None)
+        page.evaluate = MagicMock(return_value=json.dumps({
+            "ok": True, "x": 120.5, "y": 240.25,
+        }))
+        page.command = MagicMock(return_value={})
+
+        page.pointer_click_exact_link("File Integrity Ledger")
+
+        self.assertEqual(page.command.call_count, 2)
+        self.assertEqual(
+            [call.args[1]["type"] for call in page.command.call_args_list],
+            ["mousePressed", "mouseReleased"],
+        )
+
     def test_current_localized_overview_is_not_reloaded(self):
         page = CdpPage("target", None)
         page.command = MagicMock(return_value={})
@@ -214,6 +264,30 @@ class PartnerCenterReadinessTests(unittest.TestCase):
         ))
         page.navigate(PARTNER_PRODUCTS_URL)
         page.command.assert_not_called()
+
+    def test_navigation_does_not_accept_stable_previous_page(self):
+        page = CdpPage("target", None)
+        target = (
+            "https://partner.microsoft.com/en-us/dashboard/products/"
+            "9PGZ445SR5GM/overview"
+        )
+        old = json.dumps({
+            "u": "https://partner.microsoft.com/en-us/dashboard/apps-and-games/overview",
+            "t": "Overview", "r": "complete",
+        })
+        reached = json.dumps({
+            "u": target,
+            "t": "Application overview | File Integrity Ledger | Partner Center",
+            "r": "complete",
+        })
+        page.evaluate = MagicMock(side_effect=[
+            "https://partner.microsoft.com/en-us/dashboard/apps-and-games/overview",
+            True, old, old, old, reached, reached, reached, reached,
+        ])
+        with patch("scripts.partner_center_cdp.time.sleep"):
+            page.navigate(target)
+
+        self.assertGreaterEqual(page.evaluate.call_count, 8)
 
     def test_only_known_products_overview_paths_are_equivalent(self):
         self.assertTrue(_is_products_overview(PARTNER_PRODUCTS_URL))
