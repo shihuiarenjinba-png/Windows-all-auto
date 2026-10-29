@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-29T17:41:34.564Z",
+  "updated_at_utc": "2026-10-29T18:37:18.403Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -837,7 +837,11 @@
     "post_identity_local_runner_mixed_status_pass": false,
     "mixed_audit_remote_expiry_guard_ci_pass": true,
     "mixed_local_runner_physical_pass": false,
-    "mixed_batch_resume_state_contract_ci_pass": true
+    "mixed_batch_resume_state_contract_ci_pass": true,
+    "mixed_resume_host_code_committed": true,
+    "mixed_resume_host_ci_pass": true,
+    "mixed_resume_host_physical_pass": false,
+    "mixed_authenticated_executor_wired": false
   },
   "user_id_requests": {
     "schema_version": 1,
@@ -2398,8 +2402,8 @@
     }
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-29T17:41:34.564Z",
-    "scope": "MIXED_PRE_POST_RESUME_STATE_CONTRACT_PR56_WINDOWS_UBUNTU_CI_GREEN__LOCAL_EXECUTOR_NOT_WIRED",
+    "observed_at_utc": "2026-10-29T18:37:18.403Z",
+    "scope": "MIXED_RESUME_HOST_PREPARE_PR57_WINDOWS_UBUNTU_CI_PASS__PHYSICAL_WINDOWS_NOT_RUN",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
     "canonical_previous_blob_sha": "98d40cce07567e00657e895aeca2c44d2e47bf26",
@@ -2413,7 +2417,7 @@
     "ledger_identity_capture": "NOT_VERIFIED__APPROVED_FILE_404",
     "text_diff_identity_capture": "NOT_VERIFIED__APPROVED_FILE_404",
     "image_inventory_identity_capture": "NOT_VERIFIED__APPROVED_FILE_404",
-    "mixed_status_runner": "HOLD_MIXED_PRE_POST_LOCAL_RESUME_NOT_IMPLEMENTED",
+    "mixed_status_runner": "HOLD_AUTHENTICATED_MIXED_EXECUTOR_NOT_WIRED__PR57_PREPARE_ONLY",
     "local_code_sync": "NOT_RUN_THIS_CLOUD_EXECUTION",
     "partner_center_cdp": "NOT_RUN_THIS_CLOUD_EXECUTION",
     "cas": "NO_NEW_CAS_THIS_EXECUTION",
@@ -2426,7 +2430,7 @@
     "success_count_cloud_verified": 1,
     "remaining_app_identity_returns": 3,
     "next_resume_index": 2,
-    "next_action": "Wire PR56 pure mixed resume state into reviewed local Windows runner under existing OS single-flight lock and atomic writer; preserve GitHub POST skip and three PRE exact-source/artifact checks. Then independent Windows Terminal authenticated UI/CAS proof; no 12-hour Task Scheduler registration or Store submission until gates pass.",
+    "next_action": "PR57 exact-HEAD Windows/Ubuntu CI green; wire authenticated mixed UI/CAS executor with independent replay under same OS lock. Then run physical Windows Terminal for remaining Ledger/Text/Image; reconcile each GitHub Identity return before next job. Do not register 12-hour task or submit Store until local host gates pass.",
     "post_identity_reconcile_pr": 49,
     "post_identity_reconcile_ci_run": 40851883814,
     "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU",
@@ -2479,7 +2483,7 @@
     "mixed_local_preflight_ci": "SUCCESS_AT_EXACT_HEAD",
     "mixed_local_preflight_capability": "FOCUS_POST_SKIP__THREE_PRE_EXACT_SOURCE_AND_EXE_VERIFICATION__SHARED_LOCK__NO_BROWSER_CAS",
     "mixed_local_preflight_execution": "NOT_RUN_ON_USER_WINDOWS",
-    "canonical_head_before_write": "3274cfe8296491ba70a5fc868282f271cd8e4340",
+    "canonical_head_before_write": "df9e0efed75a69eb7dcdbb183f68d6995711e6d9",
     "latest_remote_recheck": {
       "verified_at_utc": "2026-10-29T16:37:29.675Z",
       "focus": "POST_IDENTITY_READY__RETURN_HEAD_8a713937",
@@ -2541,11 +2545,30 @@
       "task_scheduler_registration": "HOLD",
       "store_submission": "NOT_PERFORMED",
       "fix": "PERSISTED_SUCCESS_REQUIRES_FRESH_INDEPENDENT_REVERIFICATION_ON_RESUME"
+    },
+    "mixed_resume_host": {
+      "draft_pr": 57,
+      "branch": "codex/e2e-mixed-resume-host-20261030-0336",
+      "head_sha": "68f3202e2f89d3f4fa926ab72891ddbca91bcdc5",
+      "base_pr": 56,
+      "offline_qa_run_id": 40932378869,
+      "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+      "scope": "MIXED_AUDIT_AND_DISPATCH_TO_EXACT_SOURCE_EXE_PREFLIGHT_THEN_OS_LOCKED_ATOMIC_RESTART_SAFE_STATE",
+      "mode": "py -3 -m scripts.run_local_partner_center_batch --prepare-mixed-resume",
+      "tests": "SEVEN_NEW_OFFLINE_HOST_REGRESSIONS",
+      "integration_status": "DRAFT_NOT_MERGED__HOST_PREPARE_ONLY__AUTHENTICATED_MIXED_EXECUTOR_NOT_WIRED",
+      "physical_windows_execution": "NOT_PERFORMED",
+      "partner_center": "NOT_ACCESSED",
+      "identity_capture": "NOT_PERFORMED",
+      "cas": "NOT_PERFORMED",
+      "task_scheduler_registration": "HOLD",
+      "store_submission": "NOT_PERFORMED",
+      "security": "PERSISTED_SUCCESS_REQUIRES_INDEPENDENT_UI_GITHUB_REVERIFICATION__FOCUS_IMMUTABLE_SKIP__THREE_PRE_DISTINCT_BINDINGS"
     }
   },
   "post_identity_pipeline": {
     "schema_version": 1,
-    "updated_at_utc": "2026-10-29T17:41:34.564Z",
+    "updated_at_utc": "2026-10-29T18:37:18.403Z",
     "writer": "36_WINDOWS_E2E_ONLY",
     "reconciliation_basis": "GITHUB_APPROVED_IDENTITY_FILES_VERIFIED_FOR_FOCUS_AND_PRISM__NO_LOCAL_RECEIPTS_READ_THIS_RUN",
     "product_count": 7,
@@ -2818,6 +2841,25 @@
         "task_scheduler_registration": "HOLD",
         "store_submission": "NOT_PERFORMED",
         "fix": "PERSISTED_SUCCESS_REQUIRES_FRESH_INDEPENDENT_REVERIFICATION_ON_RESUME"
+      },
+      "mixed_resume_host": {
+        "draft_pr": 57,
+        "branch": "codex/e2e-mixed-resume-host-20261030-0336",
+        "head_sha": "68f3202e2f89d3f4fa926ab72891ddbca91bcdc5",
+        "base_pr": 56,
+        "offline_qa_run_id": 40932378869,
+        "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+        "scope": "MIXED_AUDIT_AND_DISPATCH_TO_EXACT_SOURCE_EXE_PREFLIGHT_THEN_OS_LOCKED_ATOMIC_RESTART_SAFE_STATE",
+        "mode": "py -3 -m scripts.run_local_partner_center_batch --prepare-mixed-resume",
+        "tests": "SEVEN_NEW_OFFLINE_HOST_REGRESSIONS",
+        "integration_status": "DRAFT_NOT_MERGED__HOST_PREPARE_ONLY__AUTHENTICATED_MIXED_EXECUTOR_NOT_WIRED",
+        "physical_windows_execution": "NOT_PERFORMED",
+        "partner_center": "NOT_ACCESSED",
+        "identity_capture": "NOT_PERFORMED",
+        "cas": "NOT_PERFORMED",
+        "task_scheduler_registration": "HOLD",
+        "store_submission": "NOT_PERFORMED",
+        "security": "PERSISTED_SUCCESS_REQUIRES_INDEPENDENT_UI_GITHUB_REVERIFICATION__FOCUS_IMMUTABLE_SKIP__THREE_PRE_DISTINCT_BINDINGS"
       }
     }
   },
