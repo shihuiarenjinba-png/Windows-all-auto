@@ -169,7 +169,11 @@ def expected_job(ledger: dict, slug: str) -> dict:
     if type(allow) is not bool:
         raise OperatorHold("LOCAL_OPERATOR_NOT_AUTHORIZED")
     job["allow_local_product_creation"] = allow
-    job["queue_job_digest"] = canonical_digest(source)
+    queue_source = {
+        key: value for key, value in source.items()
+        if key != "_inferred_product_type"
+    }
+    job["queue_job_digest"] = canonical_digest(queue_source)
     sync._normalize_job({
         "repository": job["source_repository"], "branch": job["source_branch"],
         "source_sha": job["source_sha"], "slug": job["slug"],

@@ -89,9 +89,14 @@ class OperatorGateTests(unittest.TestCase):
             self.assertFalse(result["browser_action_performed"])
 
     def test_product_values_are_read_from_job_not_prism_constants(self):
-        job = op.expected_job(ledger(), SLUG)
+        value = ledger()
+        job = op.expected_job(value, SLUG)
         self.assertEqual(job["display_name"], "Focus Session Desk")
         self.assertEqual(job["registration_type"], "MSIX_OR_PWA_APP")
+        self.assertEqual(
+            job["queue_job_digest"],
+            op.canonical_digest(value["rotation_cohorts"]["app_jobs"][0]),
+        )
 
     def test_cross_product_request_binding_rejected(self):
         value = ledger()
