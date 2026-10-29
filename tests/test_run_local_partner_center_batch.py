@@ -137,16 +137,37 @@ class RunnerTests(unittest.TestCase):
                 "WINDOWS_TASK_SCHEDULER",
             )
 
-    def test_completed_manual_batch_is_no_work_for_scheduler(self):
+    def test_forged_completed_manual_batch_is_rejected(self):
         state = {
             "batch_id": "batch-1",
             "central_head_sha": "a" * 40,
             "execution_origin": "MANUAL_WINDOWS_TERMINAL",
+            "execution_trigger_proven": True,
             "final_status": "MULTI_PRODUCT_IDENTITY_BATCH_PASS",
         }
+        with self.assertRaisesRegex(runner.RunnerHold, "SCHEDULE_TRIGGER_NOT_PROVEN"):
+            runner.validate_existing_state(
+                state, {"batch_id": "batch-1"}, "a" * 40,
+                "WINDOWS_TASK_SCHEDULER_MANUAL_START",
+            )
+
+    def test_completed_scheduled_batch_requires_host_proof(self):
+        state = {
+            "batch_id": "batch-1",
+            "central_head_sha": "a" * 40,
+            "execution_origin": "WINDOWS_TASK_SCHEDULER",
+            "execution_trigger_proven": False,
+            "final_status": "MULTI_PRODUCT_IDENTITY_BATCH_PASS",
+        }
+        with self.assertRaisesRegex(runner.RunnerHold, "SCHEDULE_TRIGGER_NOT_PROVEN"):
+            runner.validate_existing_state(
+                state, {"batch_id": "batch-1"}, "a" * 40,
+                "WINDOWS_TASK_SCHEDULER",
+            )
+        state["execution_trigger_proven"] = True
         self.assertTrue(runner.validate_existing_state(
             state, {"batch_id": "batch-1"}, "a" * 40,
-            "WINDOWS_TASK_SCHEDULER_MANUAL_START",
+            "WINDOWS_TASK_SCHEDULER",
         ))
 
     def test_in_progress_manual_batch_cannot_be_taken_over_by_scheduler(self):
