@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-29T01:48:59.279Z",
+  "updated_at_utc": "2026-10-29T02:35:23.089Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -1898,7 +1898,7 @@
     "store_submission": 0,
     "package_upload": 0,
     "package_version_gate": "HOLD",
-    "status": "CLOUD_PREIDENTITY_4_OF_4__PR43_EXPIRY_BEFORE_LOCAL_SIDE_EFFECTS_CI_GREEN__LOCAL_BATCH_NOT_STARTED",
+    "status": "CLOUD_PREIDENTITY_4_OF_4__PR44_SAFE_REGISTRATION_BOOTSTRAP_CI_GREEN__LOCAL_BATCH_NOT_STARTED",
     "preflight_evidence": "FOUR_FACTORY_BRANCH_HEADS_EXACT_MATCH__FOUR_GITHUB_ACTIONS_ARTIFACTS_UNEXPIRED_DIGEST_MATCH__PR40_WINDOWS_UBUNTU_CI_GREEN__NO_USER_PC_LOCAL_RECEIPT",
     "code_contracts": {
       "windows_all_auto_pr": 33,
@@ -2071,9 +2071,33 @@
         "store_submission": 0
       },
       "local_scheduler_registration_gate": {
-        "status": "HOLD_CIRCULAR_PASS_PRECONDITION",
-        "observed_issue": "register_local_partner_center_batch.ps1 requires MULTI_PRODUCT_IDENTITY_BATCH_PASS before registering the Task Scheduler job, while PR42 has no independent scheduled host attestor; do not weaken PASS gate without separate verified bootstrap design",
-        "no_registration_performed": true
+        "status": "BOOTSTRAP_CODE_READY_CI_GREEN__LOCAL_REGISTRATION_NOT_RUN",
+        "previous_issue": "HOLD_CIRCULAR_PASS_PRECONDITION",
+        "resolution": "Draft PR44 registration now requires BATCH_PREFLIGHT_READY from read-only live queue/HEAD/artifact/expiry gate, not terminal 4/4 PASS. The Windows-local 12-hour task is independent of the saved ChatGPT 36-minute schedule.",
+        "no_registration_performed": true,
+        "schedule_trigger_proven": false,
+        "next_gate": "REAL_WINDOWS_PREFLIGHT_AND_TASK_REGISTRATION__INDEPENDENT_SCHEDULE_TO_LOCAL_ATTESTATION_STILL_REQUIRED"
+      },
+      "windows_all_auto_safe_registration_bootstrap": {
+        "draft_pr": 44,
+        "branch": "codex/e2e-batch4-safe-registration-20261029",
+        "head_sha": "53d00721eb939c914e0da400032319bf80c69d80",
+        "stacked_on_pr": 43,
+        "contract_ci_run_id": 40807173716,
+        "offline_qa_run_id": 40807174012,
+        "ci_status": "SUCCESS_WINDOWS_UBUNTU",
+        "changes": [
+          "READ_ONLY_LIVE_GITHUB_FOUR_PRODUCT_QUEUE_PREFLIGHT",
+          "REQUIRE_REVIEWED_LOCAL_PROVISIONER_AND_UNEXPIRED_FACTORY_ARTIFACTS",
+          "REMOVE_CIRCULAR_TERMINAL_4_OF_4_PASS_REGISTRATION_PREREQUISITE",
+          "NO_SOURCE_SYNC_DOWNLOAD_BROWSER_OR_CAS_DURING_PREFLIGHT",
+          "DO_NOT_ATTEST_SAVED_36_MIN_SCHEDULE_FROM_WINDOWS_TASK_SCHEDULER"
+        ],
+        "physical_local_registration": "NOT_PERFORMED",
+        "scheduled_host_proof": "NOT_PROVEN",
+        "identity_capture": "NOT_PERFORMED",
+        "cas": "NOT_PERFORMED",
+        "store_submission": 0
       }
     },
     "products": [
@@ -2194,7 +2218,7 @@
         "artifact_live_metadata_checked_at_utc": "2026-10-28T23:35:53.183Z"
       }
     ],
-    "next_action": "PR42 latest HEAD Windows/Ubuntu contract and offline CI green. On physical Windows run four-product serial exact source/Artifact/Partner Center/CAS verification. Confirmed name unavailable advances one product HOLD, while auth/MFA/uncertain creation/duplicate/CAS conflict stop batch. Always write full PARTIAL receipt if schedule proof absent; no Store submission.",
+    "next_action": "On physical Windows verify reviewed APP Provisioner, run --preflight-only then register task if 4/4 live queue and unexpired Artifact preflight PASS. Windows Task Scheduler registration is not saved 36-minute ChatGPT trigger proof. Four product source/EXE/UI Identity/CAS receipts and independent schedule-to-local attestation remain pending. Artifacts expire 2026-11-02 UTC; no Store submission.",
     "cloud_discover_contract_run_id": 40728641133,
     "cloud_discover_contract_ci": "SUCCESS_WINDOWS_UBUNTU",
     "cloud_discover_from_pinned_central_commit": "0fe4dc510b37b0574f96d13bc95ade6ef1635032",
@@ -2242,26 +2266,26 @@
     }
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-29T01:48:59.279Z",
-    "scope": "PR43_EXPIRED_FACTORY_ARTIFACT_PREFLIGHT_BEFORE_LOCAL_SIDE_EFFECTS",
+    "observed_at_utc": "2026-10-29T02:35:23.089Z",
+    "scope": "PR44_SAFE_LOCAL_BATCH_TASK_REGISTRATION_BOOTSTRAP",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
-    "implementation_branch": "codex/e2e-batch4-preflight-order-20261029",
-    "implementation_pr": 43,
-    "implementation_head_sha": "ca3a0a1e66c03cfbf84b15f5938e9b108468abc7",
-    "implementation_base_pr": 42,
+    "implementation_branch": "codex/e2e-batch4-safe-registration-20261029",
+    "implementation_pr": 44,
+    "implementation_head_sha": "53d00721eb939c914e0da400032319bf80c69d80",
+    "implementation_base_pr": 43,
     "changes": [
-      "Moved central Factory artifact expiry/schema discovery before local source sync and Artifact ZIP download",
-      "Reused the validated preflight state on first-run initialization instead of discovering after local side effects",
-      "Added negative regression proving expired Artifact HOLD before sync_sources and verify_artifact",
-      "Corrected initial test syntax failure and confirmed Windows/Ubuntu CI green",
-      "Confirmed four APP Identity return files still absent on their exact Factory source branches",
-      "No physical Windows Partner Center capture, CAS, scheduled host proof or real MSIX claimed"
+      "Added --preflight-only read-only live four-job queue/HEAD/artifact/expiry gate without local sync, download, browser, CAS or Store action",
+      "Removed impossible terminal 4/4 PASS prerequisite from local Task Scheduler registration; still refuses overwrite",
+      "Preserved independent saved 36-minute schedule attestation as NOT_PROVEN; separate 12-hour Windows trigger is not sufficient",
+      "Added negative offline tests for no side effects, expiry fail-closed and registration script contract",
+      "Updated local batch runbook; Draft PR44 Windows/Ubuntu CI green"
     ],
-    "contract_ci_run_id": 40802596692,
-    "offline_qa_run_id": 40802596688,
+    "contract_ci_run_id": 40807173716,
+    "offline_qa_run_id": 40807174012,
     "ci_status": "SUCCESS_WINDOWS_UBUNTU",
     "cloud_pre_identity_discovered": 4,
     "local_code_sync": "NOT_OBSERVED_ON_USER_PC",
+    "local_scheduler_registration": "NOT_PERFORMED",
     "scheduled_trigger_to_local": "BATCH_SCHEDULE_TRIGGER_NOT_PROVEN",
     "partner_center_product": "NOT_OBSERVED_FOR_BATCH4",
     "partner_center_capture": "NOT_OBSERVED",
@@ -2278,6 +2302,6 @@
     "next_resume_index": 1,
     "store_submission": 0,
     "no_main_release_merge": true,
-    "next_action": "Physical local batch remains 0/4. Exact source/EXE and independent authenticated UI capture/CAS required; scheduled-host attestation remains unimplemented. Review circular PASS prerequisite in local task registration without downgrading proof. Factory artifacts expire 2026-11-02 UTC."
+    "next_action": "On physical Windows run read-only --preflight-only, then install local task if PASS. Independent schedule-to-local attestation still absent; do not claim batch PASS. Artifacts expire Nov 2 UTC."
   }
 }
