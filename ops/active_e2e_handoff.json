@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-29T15:36:24Z",
+  "updated_at_utc": "2026-10-29T16:37:29.675Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -732,7 +732,7 @@
   },
   "quality_gates": {
     "pre_identity_ready": "PRE_IDENTITY_QUEUE_CONTRACT_PR19_WINDOWS_UBUNTU_CI_PASS__LOCAL_EXE_SHA_RECHECK_PENDING",
-    "waiting_user_identity": "FOCUS_OPERATOR_PENDING__SIGNAL_IDENTITY_REFERENCE_RECEIVED__PRISM_GITHUB_RETURN_VERIFIED",
+    "waiting_user_identity": "FOCUS_AND_PRISM_GITHUB_RETURN_VERIFIED__LEDGER_TEXT_IMAGE_LOCAL_OPERATOR_PENDING__SIGNAL_USER_IDENTITY_RECEIVED",
     "user_identity_validated": false,
     "cas_return_pass": false,
     "real_msix_pass": false,
@@ -834,7 +834,9 @@
     "post_identity_queue_materialized": true,
     "post_identity_real_package_pass": false,
     "post_identity_reconcile_contract_ci_pass": true,
-    "post_identity_local_runner_mixed_status_pass": false
+    "post_identity_local_runner_mixed_status_pass": false,
+    "mixed_audit_remote_expiry_guard_ci_pass": true,
+    "mixed_local_runner_physical_pass": false
   },
   "user_id_requests": {
     "schema_version": 1,
@@ -1036,7 +1038,7 @@
       "app-offline-image-inventory-desk-16b6a772952c"
     ]
   },
-  "classification": "APP_BATCH4_CLOUD_PREIDENTITY_4_OF_4__PR39_AND_APP_PR12_CI_GREEN__LOCAL_BATCH_NOT_RUN__E2E_HOLD",
+  "classification": "APP_MIXED_FOCUS_POST_1__LEDGER_TEXT_IMAGE_PRE_3__PR55_EXACT_HEAD_CI_GREEN__LOCAL_MIXED_RUNNER_HOLD__E2E_HOLD",
   "registration_router": {
     "schema_version": 1,
     "status": "WINDOWS_UBUNTU_ROUTER_CI_PASS__LOCAL_MODE__PRISM_EXISTING_MANUAL_REFERENCE",
@@ -2395,8 +2397,8 @@
     }
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-29T15:36:24Z",
-    "scope": "LIVE_GITHUB_FOUR_APP_IDENTITY_RECHECK__PR53_MIXED_PREFLIGHT_CI_VERIFIED__LOCAL_EXECUTION_HOLD",
+    "observed_at_utc": "2026-10-29T16:37:29.675Z",
+    "scope": "LIVE_GITHUB_FOUR_APP_BRANCHES_AND_ARTIFACT_EXPIRY_RECHECK__PR55_CI_GREEN__NO_LOCAL_EXECUTION",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
     "canonical_previous_blob_sha": "98d40cce07567e00657e895aeca2c44d2e47bf26",
@@ -2423,7 +2425,7 @@
     "success_count_cloud_verified": 1,
     "remaining_app_identity_returns": 3,
     "next_resume_index": 2,
-    "next_action": "Review and implement mixed PRE/POST resumable local execution after exact-source preflight; preserve Focus POST skip; Ledger/Text/Image pending; 12-hour Task Scheduler remains HOLD until real Windows no-LLM proof and queue reconciliation.",
+    "next_action": "Implement and review safe mixed PRE/POST local runner; never use legacy four-PRE worker or register 12-hour scheduler before physical Windows no-LLM proof. Then Ledger, Text Diff, Image Inventory Identity return; hold package version until explicit approval.",
     "post_identity_reconcile_pr": 49,
     "post_identity_reconcile_ci_run": 40851883814,
     "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU",
@@ -2476,19 +2478,19 @@
     "mixed_local_preflight_ci": "SUCCESS_AT_EXACT_HEAD",
     "mixed_local_preflight_capability": "FOCUS_POST_SKIP__THREE_PRE_EXACT_SOURCE_AND_EXE_VERIFICATION__SHARED_LOCK__NO_BROWSER_CAS",
     "mixed_local_preflight_execution": "NOT_RUN_ON_USER_WINDOWS",
-    "canonical_head_before_write": "ec107ba55b0b844728a6c809d0d35c0fddec9fb6",
+    "canonical_head_before_write": "3274cfe8296491ba70a5fc868282f271cd8e4340",
     "latest_remote_recheck": {
-      "verified_at_utc": "2026-10-29T15:36:24Z",
-      "focus": "APPROVED_IDENTITY_PRESENT__SOURCE_8b00bc4e_PLUS_ONE_RETURN_COMMIT__POST_IDENTITY_READY",
-      "ledger": "APPROVED_IDENTITY_404__BRANCH_SOURCE_SHA_IDENTICAL__PRE_IDENTITY_READY",
-      "text_diff": "APPROVED_IDENTITY_404__BRANCH_SOURCE_SHA_IDENTICAL__PRE_IDENTITY_READY",
-      "image_inventory": "APPROVED_IDENTITY_404__BRANCH_SOURCE_SHA_IDENTICAL__PRE_IDENTITY_READY",
-      "registration_type": "MSIX_OR_PWA_APP_FOR_ALL_FOUR",
-      "post_identity_ready": 1,
-      "pre_identity_pending": 3,
-      "partner_center": "NOT_ACCESSED",
+      "verified_at_utc": "2026-10-29T16:37:29.675Z",
+      "focus": "POST_IDENTITY_READY__RETURN_HEAD_8a713937",
+      "ledger": "PRE_IDENTITY_READY__APPROVED_FILE_404__SOURCE_HEAD_d1108d12",
+      "text_diff": "PRE_IDENTITY_READY__APPROVED_FILE_404__SOURCE_HEAD_a7d37280",
+      "image_inventory": "PRE_IDENTITY_READY__APPROVED_FILE_404__SOURCE_HEAD_16b6a772",
+      "prism": "POST_IDENTITY_READY__RETURN_HEAD_11417b75",
+      "signal_sprint": "USER_IDENTITY_RECEIVED__SOURCE_HEAD_c058cbf7__CAS_HOLD",
+      "artifacts": "FOUR_LIVE_GITHUB_WORKFLOW_ARTIFACTS_EXPIRED_FALSE__EXPIRES_AT_AND_DIGEST_MATCH_CENTRAL",
       "local_windows": "NOT_ACCESSED",
-      "cas": "NOT_PERFORMED_THIS_RUN",
+      "partner_center": "NOT_ACCESSED",
+      "cas": "NOT_PERFORMED",
       "store_submission": "NOT_PERFORMED"
     },
     "mixed_artifact_expiry_guard": {
@@ -2505,11 +2507,26 @@
       "partner_center": "NOT_ACCESSED",
       "cas": "NOT_PERFORMED",
       "store_submission": "NOT_PERFORMED"
+    },
+    "mixed_audit_remote_expiry_guard": {
+      "draft_pr": 55,
+      "branch": "codex/e2e-mixed-audit-artifact-expiry-20261030",
+      "head_sha": "d5e5f49fe97b1cedb284d6a37eabc2ed74f7f1f9",
+      "base_pr": 54,
+      "ci_run_ids": [
+        40913157706,
+        40913190142
+      ],
+      "ci_conclusion": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+      "fix": "READ_ONLY_AUDIT_CORRELATES_GITHUB_EXPIRES_AT_TO_CENTRAL_JOB_AND_UTC_NOW",
+      "local_execution": "NOT_PERFORMED",
+      "task_scheduler_registration": "HOLD",
+      "store_submission": "NOT_PERFORMED"
     }
   },
   "post_identity_pipeline": {
     "schema_version": 1,
-    "updated_at_utc": "2026-10-29T15:36:24Z",
+    "updated_at_utc": "2026-10-29T16:37:29.675Z",
     "writer": "36_WINDOWS_E2E_ONLY",
     "reconciliation_basis": "GITHUB_APPROVED_IDENTITY_FILES_VERIFIED_FOR_FOCUS_AND_PRISM__NO_LOCAL_RECEIPTS_READ_THIS_RUN",
     "product_count": 7,
@@ -2749,13 +2766,28 @@
         "mixed_local_preflight": "CODE_CI_PASS__PHYSICAL_WINDOWS_HOLD",
         "mixed_local_partner_center_runner": "NOT_IMPLEMENTED",
         "task_scheduler_registration": "HOLD"
+      },
+      "mixed_audit_artifact_expiry_guard": {
+        "draft_pr": 55,
+        "head_sha": "d5e5f49fe97b1cedb284d6a37eabc2ed74f7f1f9",
+        "base_pr": 54,
+        "ci_run_ids": [
+          40913157706,
+          40913190142
+        ],
+        "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+        "scope": "READ_ONLY_GITHUB_AUDIT_REMOTE_ARTIFACT_EXPIRY_FAIL_CLOSED",
+        "physical_windows_execution": "NOT_PERFORMED",
+        "mixed_local_runner": "NOT_IMPLEMENTED",
+        "task_scheduler_registration": "HOLD",
+        "integration_status": "STACKED_DRAFT_NOT_MERGED"
       }
     }
   },
   "mixed_rotation_live_recheck": {
     "schema_version": 1,
-    "observed_at_utc": "2026-10-29T12:40:26.355Z",
-    "scope": "LIVE_FOUR_APP_BRANCH_HEADS__APPROVED_IDENTITY_FILES__FOUR_FACTORY_ARTIFACTS_UNEXPIRED_AND_DIGEST_MATCH",
+    "observed_at_utc": "2026-10-29T16:37:29.675Z",
+    "scope": "LIVE_GITHUB_FOUR_APP_BRANCH_HEADS__APPROVED_FILES__ARTIFACT_EXPIRES_AT_AND_DIGEST",
     "central_head_before_write": "6aeb2867594dbde3eb8cfe070d7974d4208c66cd",
     "identity_return_files": {
       "focus": "PRESENT_EXACT_REQUEST_SOURCE_AND_VERSION_HOLD",
@@ -2812,7 +2844,7 @@
     "unified_post_identity_audit_head": "6cc8f396e4de6700cc6665e2619eda8da16c766f",
     "unified_post_identity_audit_ci": "SUCCESS_WINDOWS_UBUNTU",
     "artifact_live_recheck": {
-      "checked_at_utc": "2026-10-29T12:40:26.355Z",
+      "checked_at_utc": "2026-10-29T16:37:29.675Z",
       "artifact_ids": [
         12807496604,
         12826068537,
@@ -2822,7 +2854,8 @@
       "verified_count": 4,
       "expired_count": 0,
       "digest_mismatch_count": 0,
-      "source": "GITHUB_ACTIONS_RUN_ARTIFACT_METADATA__NO_LOCAL_DOWNLOAD"
+      "expiry_mismatch_count": 0,
+      "source": "GITHUB_WORKFLOW_RUN_ARTIFACT_METADATA__NO_LOCAL_DOWNLOAD"
     },
     "dispatch_plan": {
       "draft_pr": 52,
