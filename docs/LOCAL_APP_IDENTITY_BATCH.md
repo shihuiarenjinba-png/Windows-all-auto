@@ -39,7 +39,9 @@ into each queued job as `artifact_expires_at`. The Windows runner also
 checks live GitHub Actions artifact metadata, `expired=false`, ZIP digest,
 and extracted EXE SHA-256/bytes. A timestamp in the ledger is not itself
 proof of artifact availability. Historical CI injects its pinned observation
-clock; production uses the actual UTC clock.
+clock; production uses the actual UTC clock. The live Windows runner now
+performs this central-ledger expiry/schema preflight **before** local source
+sync and Artifact ZIP download; a stale queue must not touch those resources.
 
 The four current Factory artifacts expire on 2026-11-02 UTC. A fresh
 artifact must be independently verified and requeued after expiration;

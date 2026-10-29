@@ -1,6 +1,7 @@
 """Offline runner safety tests; no GitHub, browser, CAS, or Store action."""
 import hashlib
 from pathlib import Path
+from types import SimpleNamespace
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -55,6 +56,30 @@ def ledger():
 
 
 class RunnerTests(unittest.TestCase):
+    def test_expired_artifact_holds_before_source_sync_and_artifact_download(self):
+        # Cloud preflight must reject stale Factory bytes before touching any
+        # local snapshot, artifact ZIP, browser session, or GitHub CAS.
+        with tempfile.TemporaryDirectory() as directory:
+            args = SimpleNamespace(
+                state_dir=Path(directory),
+                provisioner_root=Path(directory),
+                execution_origin="MANUAL_WINDOWS_TERMINAL",
+            )
+            with (
+                patch.object(runner, "check_prerequisites", return_value={}),
+                patch.object(runner, "fetch_central", return_value=({}, "a" * 40, "blob")),
+                patch.object(runner, "validate_queue", return_value=({}, [])),
+                patch.object(runner, "recheck_central"),
+                patch.object(runner.batch, "discover",
+                             side_effect=runner.batch.BatchHold("HOLD_ARTIFACT_EXPIRED")),
+                patch.object(runner, "sync_sources") as sync,
+                patch.object(runner, "verify_artifact") as download,
+            ):
+                with self.assertRaisesRegex(runner.batch.BatchHold, "HOLD_ARTIFACT_EXPIRED"):
+                    runner.run_batch(args)
+                sync.assert_not_called()
+                download.assert_not_called()
+
     def test_queue_discovers_exact_four_with_split_provenance(self):
         value = ledger()
         artifacts = {job["factory_artifact_id"]: {
