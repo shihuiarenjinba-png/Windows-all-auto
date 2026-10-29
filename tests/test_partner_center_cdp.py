@@ -1,7 +1,7 @@
 import json
 from types import SimpleNamespace
 import unittest
-from unittest.mock import MagicMock, call, patch
+from unittest.mock import MagicMock, patch
 
 from scripts import partner_center_cdp as cdp
 from scripts.partner_center_cdp import (
@@ -75,7 +75,7 @@ class PartnerCenterReadinessTests(unittest.TestCase):
         self.assertIn('[role="menuitem"]', script)
         self.assertIn("info-tooltip-container", script)
 
-    def test_navigation_timeout_is_forwarded_to_cdp_command(self):
+    def test_navigation_uses_same_host_location_assignment(self):
         page = CdpPage("target", None)
         page.command = MagicMock(return_value={})
         state = json.dumps({
@@ -84,17 +84,17 @@ class PartnerCenterReadinessTests(unittest.TestCase):
         })
         page.evaluate = MagicMock(side_effect=[
             "https://partner.microsoft.com/dashboard/v2/home",
+            True,
             state, state, state, state,
         ])
         with patch("scripts.partner_center_cdp.time.sleep"):
             page.navigate(
                 "https://partner.microsoft.com/dashboard/products", timeout=45.0
             )
-        self.assertEqual(page.command.call_args_list[1], call(
-            "Page.navigate",
-            {"url": "https://partner.microsoft.com/dashboard/products"},
-            timeout=45.0,
-        ))
+        page.command.assert_not_called()
+        assignment = page.evaluate.call_args_list[1].args[0]
+        self.assertIn("location.assign", assignment)
+        self.assertIn(PARTNER_PRODUCTS_URL, assignment)
 
     def test_current_localized_overview_is_not_reloaded(self):
         page = CdpPage("target", None)

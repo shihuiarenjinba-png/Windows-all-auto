@@ -193,8 +193,11 @@ class CdpPage:
                 and isinstance(current_url, str)
                 and _is_products_overview(current_url)):
             return
-        self.command("Page.enable")
-        self.command("Page.navigate", {"url": url}, timeout=timeout)
+        assigned = self.evaluate(
+            "location.assign(" + json.dumps(url, ensure_ascii=False) + "); true"
+        )
+        if assigned is not True:
+            raise PartnerCenterHold("HOLD_BROWSER_NAVIGATION_REJECTED")
         deadline = time.monotonic() + timeout
         last = None
         stable = 0
