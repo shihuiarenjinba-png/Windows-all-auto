@@ -120,5 +120,31 @@ class PartnerCenterRegistrationTests(unittest.TestCase):
             page.safe_snapshot()
 
 
+    def test_reservation_requires_explicit_availability_click(self):
+        page = CdpPage("target", None)
+        page.click_exact = MagicMock(side_effect=[
+            "New product", "MSIX or PWA app",
+            PartnerCenterHold("HOLD_BROWSER_STATE_AMBIGUOUS"),
+        ])
+        page._wait_not_busy = MagicMock()
+        page.fill_textbox = MagicMock()
+        page.evaluate = MagicMock()
+        with self.assertRaisesRegex(
+            PartnerCenterHold, "HOLD_BROWSER_STATE_AMBIGUOUS"
+        ):
+            page._create_product("Sample Product", "MSIX or PWA app")
+        self.assertEqual(page.click_exact.call_count, 3)
+        page.evaluate.assert_not_called()
+
+    def test_malformed_registration_metadata_fails_closed(self):
+        driver = self.driver()
+        invalid = job("APP", "MSIX_OR_PWA_APP")
+        invalid["registration_type"] = {"unexpected": "mapping"}
+        with self.assertRaisesRegex(
+            PartnerCenterHold, "HOLD_REGISTRATION_TYPE_UNRESOLVED"
+        ):
+            driver.process(invalid)
+        driver.page.search_product.assert_not_called()
+
 if __name__ == "__main__":
     unittest.main()
