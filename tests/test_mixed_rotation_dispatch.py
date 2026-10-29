@@ -174,5 +174,138 @@ class MixedPlanTests(unittest.TestCase):
             self.assertFalse(state.exists())
 
 
+class MixedLocalPreflightTests(unittest.TestCase):
+    """Preflight is real local IO, but never browser/CAS/Store work."""
+
+    @staticmethod
+    def prepared(post_count=1):
+        ledger, audit = fixture(post_count)
+        for index, job in enumerate(ledger["rotation_cohorts"]["app_jobs"], 1):
+            if job["status"] != "PRE_IDENTITY_READY":
+                continue
+            job.update({
+                "factory_artifact_id": 12340 + index,
+                "factory_artifact_name": f"artifact-{index}",
+                "factory_artifact_zip_sha256": str(index) * 64,
+                "factory_build_head": job["source_sha"],
+                "artifact_metadata_verified": True,
+            })
+        return ledger, audit
+
+    def test_mixed_preflight_skips_post_and_verifies_three_exact_pre(self):
+        ledger, audit = self.prepared()
+        jobs = ledger["rotation_cohorts"]["app_jobs"]
+        central = "c" * 40
+        with TemporaryDirectory() as directory:
+            args = SimpleNamespace(
+                state_dir=Path(directory), provisioner_root=Path(directory))
+            def head(_repo, branch):
+                return next(j["source_sha"] for j in jobs
+                            if j["source_branch"] == branch)
+            def artifact(endpoint):
+                j = next(j for j in jobs if
+                         endpoint.endswith("/" + str(j.get("factory_artifact_id"))))
+                return {
+                    "expired": False, "name": j["factory_artifact_name"],
+                    "digest": "sha256:" + j["factory_artifact_zip_sha256"],
+                }
+            def prepared(_ledger, _receipt, _root, slug, **_kwargs):
+                j = next(j for j in jobs if j["slug"] == slug)
+                return {
+                    "request_id": j["request_id"],
+                    "source_snapshot_head": j["source_sha"],
+                    "source_snapshot_status": "REUSED_EXACT_SNAPSHOT",
+                    "queue_job_digest": runner.operator.canonical_digest(j),
+                }
+            def verified(job, _root):
+                return {
+                    "artifact_id": job["factory_artifact_id"],
+                    "exe_sha256": "a" * 64, "exe_bytes": 123,
+                }
+            with (
+                patch.object(runner, "check_prerequisites",
+                             return_value={"provisioner_head": "p" * 40}),
+                patch.object(runner, "fetch_central",
+                             return_value=(ledger, central, "blob")),
+                patch.object(runner, "audit_queue_only", return_value=audit),
+                patch.object(runner, "live_branch_head", side_effect=head),
+                patch.object(runner, "gh_json", side_effect=artifact),
+                patch.object(runner, "sync_sources",
+                             return_value={"status": "PASS",
+                                           "exact_sha_verified": True}) as sync,
+                patch.object(runner.operator, "prepare",
+                             side_effect=prepared) as prepare,
+                patch.object(runner, "verify_artifact",
+                             side_effect=verified) as verify,
+                patch.object(runner, "recheck_central"),
+                patch.object(runner, "PartnerCenterDriver") as browser,
+                patch.object(runner, "import_provisioner") as cas,
+            ):
+                result = runner.preflight_mixed_local(args)
+            self.assertEqual(result["status"], "MIXED_LOCAL_PRECHECK_PASS")
+            self.assertEqual(result["post_identity_skip_count"], 1)
+            self.assertEqual(result["pre_identity_preflight_count"], 3)
+            self.assertEqual([p["slug"] for p in result["products"]],
+                             list(planner.ORDER[1:]))
+            self.assertFalse(result["task_scheduler_registration_allowed"])
+            self.assertFalse(result["local_windows_no_llm_pass"])
+            self.assertEqual(result["cas"], "NOT_PERFORMED")
+            self.assertEqual(sync.call_args.args[0], jobs[1:])
+            self.assertEqual(prepare.call_count, 3)
+            self.assertEqual(verify.call_count, 3)
+            browser.assert_not_called()
+            cas.assert_not_called()
+
+    def test_all_post_does_not_touch_sources_or_browser(self):
+        ledger, audit = self.prepared(4)
+        with TemporaryDirectory() as directory:
+            args = SimpleNamespace(
+                state_dir=Path(directory), provisioner_root=Path(directory))
+            with (
+                patch.object(runner, "check_prerequisites", return_value={}),
+                patch.object(runner, "fetch_central",
+                             return_value=(ledger, "c" * 40, "blob")),
+                patch.object(runner, "audit_queue_only", return_value=audit),
+                patch.object(runner, "recheck_central"),
+                patch.object(runner, "sync_sources") as sync,
+                patch.object(runner, "verify_artifact") as artifact,
+                patch.object(runner, "PartnerCenterDriver") as browser,
+            ):
+                result = runner.preflight_mixed_local(args)
+            self.assertEqual(result["status"], "MIXED_LOCAL_NO_IDENTITY_WORK")
+            self.assertFalse(result["task_scheduler_registration_allowed"])
+            sync.assert_not_called()
+            artifact.assert_not_called()
+            browser.assert_not_called()
+
+    def test_artifact_digest_mismatch_holds_before_local_download(self):
+        ledger, audit = self.prepared()
+        with TemporaryDirectory() as directory:
+            args = SimpleNamespace(
+                state_dir=Path(directory), provisioner_root=Path(directory))
+            with (
+                patch.object(runner, "check_prerequisites", return_value={}),
+                patch.object(runner, "fetch_central",
+                             return_value=(ledger, "c" * 40, "blob")),
+                patch.object(runner, "audit_queue_only", return_value=audit),
+                patch.object(runner, "live_branch_head",
+                             side_effect=lambda repo, branch: next(
+                                 j["source_sha"] for j in
+                                 ledger["rotation_cohorts"]["app_jobs"]
+                                 if j["source_branch"] == branch)),
+                patch.object(runner, "gh_json",
+                             return_value={"expired": False, "name": "wrong",
+                                           "digest": "sha256:" + "0" * 64}),
+                patch.object(runner, "recheck_central"),
+                patch.object(runner, "sync_sources") as sync,
+                patch.object(runner, "PartnerCenterDriver") as browser,
+            ):
+                with self.assertRaisesRegex(
+                        runner.RunnerHold, "HOLD_ARTIFACT_MISMATCH"):
+                    runner.preflight_mixed_local(args)
+            sync.assert_not_called()
+            browser.assert_not_called()
+
+
 if __name__ == "__main__":
     unittest.main()
