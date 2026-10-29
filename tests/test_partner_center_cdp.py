@@ -1,11 +1,39 @@
 import json
 import unittest
-from unittest.mock import patch
+from unittest.mock import MagicMock, call, patch
+
+import websocket
 
 from scripts.partner_center_cdp import CdpPage, PartnerCenterHold
 
 
 class PartnerCenterReadinessTests(unittest.TestCase):
+    def test_navigation_timeout_is_forwarded_to_cdp_command(self):
+        page = CdpPage("target", None)
+        page.command = MagicMock(return_value={})
+        state = json.dumps({
+            "u": "https://partner.microsoft.com/dashboard/products",
+            "t": "Overview", "r": "complete",
+        })
+        page.evaluate = MagicMock(return_value=state)
+        with patch("scripts.partner_center_cdp.time.sleep"):
+            page.navigate(
+                "https://partner.microsoft.com/dashboard/products", timeout=45.0
+            )
+        self.assertEqual(page.command.call_args_list[1], call(
+            "Page.navigate",
+            {"url": "https://partner.microsoft.com/dashboard/products"},
+            timeout=45.0,
+        ))
+
+    def test_websocket_timeout_becomes_fail_closed_hold(self):
+        socket = MagicMock()
+        socket.recv.side_effect = websocket.WebSocketTimeoutException("timeout")
+        page = CdpPage("target", socket)
+        with self.assertRaisesRegex(
+                PartnerCenterHold, "HOLD_BROWSER_COMMAND_TIMEOUT"):
+            page.command("Page.navigate", {"url": "https://example.invalid"})
+
     def test_stable_nonblocking_controls_are_ready(self):
         page = CdpPage("target", None)
         sample = json.dumps({

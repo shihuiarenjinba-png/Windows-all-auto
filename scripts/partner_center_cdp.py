@@ -139,17 +139,22 @@ class CdpPage:
                 timeout: float = 15.0) -> dict:
         self.next_id += 1
         command_id = self.next_id
-        self.socket.settimeout(timeout)
-        self.socket.send(json.dumps({
-            "id": command_id, "method": method, "params": params or {},
-        }))
-        while True:
-            message = json.loads(self.socket.recv())
-            if message.get("id") != command_id:
-                continue
-            if "error" in message:
-                raise PartnerCenterHold("HOLD_BROWSER_STATE_AMBIGUOUS")
-            return message.get("result", {})
+        try:
+            self.socket.settimeout(timeout)
+            self.socket.send(json.dumps({
+                "id": command_id, "method": method, "params": params or {},
+            }))
+            while True:
+                message = json.loads(self.socket.recv())
+                if message.get("id") != command_id:
+                    continue
+                if "error" in message:
+                    raise PartnerCenterHold("HOLD_BROWSER_STATE_AMBIGUOUS")
+                return message.get("result", {})
+        except websocket.WebSocketTimeoutException as exc:
+            raise PartnerCenterHold("HOLD_BROWSER_COMMAND_TIMEOUT") from exc
+        except (websocket.WebSocketException, OSError, ValueError) as exc:
+            raise PartnerCenterHold("HOLD_BROWSER_AUTOMATION_UNAVAILABLE") from exc
 
     def evaluate(self, expression: str) -> Any:
         result = self.command("Runtime.evaluate", {
@@ -168,7 +173,7 @@ class CdpPage:
         if parsed.scheme != "https" or parsed.hostname != PARTNER_HOST:
             raise PartnerCenterHold("HOLD_BROWSER_NAVIGATION_REJECTED")
         self.command("Page.enable")
-        self.command("Page.navigate", {"url": url})
+        self.command("Page.navigate", {"url": url}, timeout=timeout)
         deadline = time.monotonic() + timeout
         last = None
         stable = 0
