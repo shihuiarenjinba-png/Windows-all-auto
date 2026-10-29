@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-29T02:35:23.089Z",
+  "updated_at_utc": "2026-10-29T03:42:24.910Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -1898,7 +1898,7 @@
     "store_submission": 0,
     "package_upload": 0,
     "package_version_gate": "HOLD",
-    "status": "CLOUD_PREIDENTITY_4_OF_4__PR44_SAFE_REGISTRATION_BOOTSTRAP_CI_GREEN__LOCAL_BATCH_NOT_STARTED",
+    "status": "MULTI_PRODUCT_IDENTITY_BATCH_PARTIAL",
     "preflight_evidence": "FOUR_FACTORY_BRANCH_HEADS_EXACT_MATCH__FOUR_GITHUB_ACTIONS_ARTIFACTS_UNEXPIRED_DIGEST_MATCH__PR40_WINDOWS_UBUNTU_CI_GREEN__NO_USER_PC_LOCAL_RECEIPT",
     "code_contracts": {
       "windows_all_auto_pr": 33,
@@ -2098,6 +2098,20 @@
         "identity_capture": "NOT_PERFORMED",
         "cas": "NOT_PERFORMED",
         "store_submission": 0
+      },
+      "windows_all_auto_single_flight_local_io": {
+        "draft_pr": 45,
+        "branch": "codex/e2e-batch4-lock-before-local-io-20261029",
+        "head_sha": "ee398a2dd7a604eb2aaf4dc9dba8cb514f997e1a",
+        "base_pr": 44,
+        "offline_qa_run_id": 40813570808,
+        "offline_qa_status": "SUCCESS_WINDOWS_UBUNTU",
+        "fix": "ACQUIRE_EXISTING_OS_SINGLE_FLIGHT_LOCK_BEFORE_SOURCE_SYNC_AND_ARTIFACT_ZIP_IO__KEEP_LOCK_THROUGH_BROWSER_AND_CAS",
+        "regression": "CONTESTED_LOCK_ZERO_SOURCE_SYNC_ZERO_ARTIFACT_IO_ZERO_BROWSER",
+        "physical_local_execution": "NOT_OBSERVED",
+        "local_task_registration": "NOT_PERFORMED",
+        "scheduled_trigger_proven": false,
+        "store_submission": 0
       }
     },
     "products": [
@@ -2218,7 +2232,7 @@
         "artifact_live_metadata_checked_at_utc": "2026-10-28T23:35:53.183Z"
       }
     ],
-    "next_action": "On physical Windows verify reviewed APP Provisioner, run --preflight-only then register task if 4/4 live queue and unexpired Artifact preflight PASS. Windows Task Scheduler registration is not saved 36-minute ChatGPT trigger proof. Four product source/EXE/UI Identity/CAS receipts and independent schedule-to-local attestation remain pending. Artifacts expire 2026-11-02 UTC; no Store submission.",
+    "next_action": "Run reviewed PR45 runner on actual Windows: first py -3 -m scripts.partner_center_cdp diagnose against the user-confirmed authenticated Edge Overview, distinguish wrong CDP instance from auth failure, then read-only --preflight-only; only if PASS register local task. Lock now protects source sync, ZIP IO and CAS. Four Identity captures and independent schedule-to-local proof remain pending. Factory artifacts expire 2026-11-02 UTC.",
     "cloud_discover_contract_run_id": 40728641133,
     "cloud_discover_contract_ci": "SUCCESS_WINDOWS_UBUNTU",
     "cloud_discover_from_pinned_central_commit": "0fe4dc510b37b0574f96d13bc95ade6ef1635032",
@@ -2266,28 +2280,29 @@
     }
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-29T02:35:23.089Z",
-    "scope": "PR44_SAFE_LOCAL_BATCH_TASK_REGISTRATION_BOOTSTRAP",
+    "observed_at_utc": "2026-10-29T03:42:24.910Z",
+    "scope": "PR45_SINGLE_FLIGHT_BEFORE_LOCAL_SOURCE_AND_ARTIFACT_IO",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
-    "implementation_branch": "codex/e2e-batch4-safe-registration-20261029",
-    "implementation_pr": 44,
-    "implementation_head_sha": "53d00721eb939c914e0da400032319bf80c69d80",
-    "implementation_base_pr": 43,
+    "implementation_branch": "codex/e2e-batch4-lock-before-local-io-20261029",
+    "implementation_pr": 45,
+    "implementation_head_sha": "ee398a2dd7a604eb2aaf4dc9dba8cb514f997e1a",
+    "implementation_base_pr": 44,
     "changes": [
-      "Added --preflight-only read-only live four-job queue/HEAD/artifact/expiry gate without local sync, download, browser, CAS or Store action",
-      "Removed impossible terminal 4/4 PASS prerequisite from local Task Scheduler registration; still refuses overwrite",
-      "Preserved independent saved 36-minute schedule attestation as NOT_PROVEN; separate 12-hour Windows trigger is not sufficient",
-      "Added negative offline tests for no side effects, expiry fail-closed and registration script contract",
-      "Updated local batch runbook; Draft PR44 Windows/Ubuntu CI green"
+      "Moved existing OS non-overlap lock ahead of local exact-source sync and Factory Artifact ZIP download/extraction; previously two runners could race before lock",
+      "Terminal batch replays now return before local source/Artifact IO",
+      "Resumable state created only after source/Artifact bytes verify under lock",
+      "Added contested-lock regression proving no source sync, ZIP IO or browser work on lock denial",
+      "Draft PR45 Offline QA Windows/Ubuntu PASS"
     ],
-    "contract_ci_run_id": 40807173716,
-    "offline_qa_run_id": 40807174012,
+    "offline_qa_run_id": 40813570808,
+    "offline_qa_push_run_id": 40813564406,
     "ci_status": "SUCCESS_WINDOWS_UBUNTU",
     "cloud_pre_identity_discovered": 4,
-    "local_code_sync": "NOT_OBSERVED_ON_USER_PC",
+    "local_code_sync": "NOT_OBSERVED_ON_USER_PC_THIS_RUN",
     "local_scheduler_registration": "NOT_PERFORMED",
     "scheduled_trigger_to_local": "BATCH_SCHEDULE_TRIGGER_NOT_PROVEN",
-    "partner_center_product": "NOT_OBSERVED_FOR_BATCH4",
+    "partner_center_login": "USER_SCREENSHOT_OBSERVED_AUTHENTICATED_OVERVIEW__LOCAL_CDP_DIAGNOSIS_NOT_RUN",
+    "partner_center_product": "NOT_OBSERVED_FOR_BATCH4_THIS_RUN",
     "partner_center_capture": "NOT_OBSERVED",
     "identity_route": "NOT_RUN_FOR_BATCH4",
     "cas": "NOT_RUN_FOR_BATCH4",
@@ -2302,6 +2317,6 @@
     "next_resume_index": 1,
     "store_submission": 0,
     "no_main_release_merge": true,
-    "next_action": "On physical Windows run read-only --preflight-only, then install local task if PASS. Independent schedule-to-local attestation still absent; do not claim batch PASS. Artifacts expire Nov 2 UTC."
+    "next_action": "Physical Windows CDP diagnose → read-only preflight → safe local task registration → single-flight four-product Identity batch. Do not label scheduled 36-minute trigger proven without independent host attestation."
   }
 }
