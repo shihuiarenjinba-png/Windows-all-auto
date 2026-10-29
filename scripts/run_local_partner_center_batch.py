@@ -808,13 +808,14 @@ def main(argv: list[str] | None = None) -> int:
             "store_submission": "NOT_PERFORMED",
             "ollama": "NOT_USED", "openai_api": "NOT_USED",
         }
-        try:
-            args.state_dir.mkdir(parents=True, exist_ok=True)
-            (args.state_dir / "last-hold-receipt.json").write_text(
-                json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
-            )
-        except OSError:
-            pass
+        if not args.audit_queue:
+            try:
+                args.state_dir.mkdir(parents=True, exist_ok=True)
+                (args.state_dir / "last-hold-receipt.json").write_text(
+                    json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+                )
+            except OSError:
+                pass
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 2
 
