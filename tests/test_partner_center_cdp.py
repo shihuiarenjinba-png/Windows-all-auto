@@ -8,6 +8,35 @@ from scripts.partner_center_cdp import CdpPage, PartnerCenterHold
 
 
 class PartnerCenterReadinessTests(unittest.TestCase):
+    def test_product_search_excludes_global_header_shadow_host(self):
+        page = CdpPage("target", None)
+        page.evaluate = MagicMock(return_value=json.dumps({"ok": True}))
+        page.fill_textbox(["search", "search products"], "Focus Session Desk")
+        script = page.evaluate.call_args.args[0]
+        self.assertIn("shadowRoot", script)
+        self.assertIn("pc-header-search-box", script)
+        self.assertIn("wantsSearch", script)
+
+    def test_create_menu_requires_unique_product_table_control(self):
+        page = CdpPage("target", None)
+        page.evaluate = MagicMock(return_value=json.dumps({"ok": True}))
+        page.open_product_create_menu()
+        script = page.evaluate.call_args.args[0]
+        self.assertIn("offers-table lib-table-command-bar", script)
+        self.assertIn("items.length!==1", script)
+
+    def test_msix_selection_uses_exact_menuitem_label(self):
+        page = CdpPage("target", None)
+        page.evaluate = MagicMock(return_value=json.dumps({
+            "ok": True, "name": "MSIX or PWA app",
+        }))
+        self.assertEqual(
+            page.click_exact(["MSIX or PWA app"]), "MSIX or PWA app"
+        )
+        script = page.evaluate.call_args.args[0]
+        self.assertIn('[role="menuitem"]', script)
+        self.assertIn("info-tooltip-container", script)
+
     def test_navigation_timeout_is_forwarded_to_cdp_command(self):
         page = CdpPage("target", None)
         page.command = MagicMock(return_value={})

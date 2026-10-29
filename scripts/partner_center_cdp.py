@@ -293,9 +293,14 @@ JSON.stringify((() => {
   const wanted = __NAMES__;
   const clean = v => String(v || '').replace(/\s+/g,' ').trim();
   const visible = e => { const s=getComputedStyle(e),r=e.getBoundingClientRect(); return s.display!=='none'&&s.visibility!=='hidden'&&r.width>0&&r.height>0; };
-  const items=[...document.querySelectorAll('button,a,[role="button"],[role="link"],input[type="button"],input[type="submit"]')]
+  const label = e => {
+    const menuLabel = e.getAttribute('role')==='menuitem'
+      ? e.querySelector('.info-tooltip-container') : null;
+    return clean(e.getAttribute('aria-label') || menuLabel?.innerText || e.innerText || e.value);
+  };
+  const items=[...document.querySelectorAll('button,a,[role="button"],[role="link"],[role="menuitem"],input[type="button"],input[type="submit"]')]
     .filter(visible)
-    .map(e => ({e,n:clean(e.getAttribute('aria-label')||e.innerText||e.value)}))
+    .map(e => ({e,n:label(e)}))
     .filter(x => wanted.includes(x.n));
   if(items.length!==1) return {ok:false,count:items.length,names:items.map(x=>x.n)};
   items[0].e.click();
@@ -308,6 +313,21 @@ JSON.stringify((() => {
             raise PartnerCenterHold("HOLD_BROWSER_STATE_AMBIGUOUS")
         return str(parsed["name"])
 
+    def open_product_create_menu(self) -> None:
+        result = self.evaluate(r"""
+JSON.stringify((() => {
+  const visible=e=>{const s=getComputedStyle(e),r=e.getBoundingClientRect();return s.display!=='none'&&s.visibility!=='hidden'&&r.width>0&&r.height>0;};
+  const selector='offers-table lib-table-command-bar .command-bar-item-highlight button.btn.btn-dropdown.no-outline';
+  const items=[...document.querySelectorAll(selector)].filter(visible);
+  if(items.length!==1) return {ok:false,count:items.length};
+  items[0].click();
+  return {ok:true};
+})())
+""")
+        parsed = json.loads(result) if isinstance(result, str) else {}
+        if parsed.get("ok") is not True:
+            raise PartnerCenterHold("HOLD_BROWSER_STATE_AMBIGUOUS")
+
     def fill_textbox(self, hints: list[str], value: str) -> None:
         script = r"""
 JSON.stringify((() => {
@@ -315,8 +335,19 @@ JSON.stringify((() => {
   const value=__VALUE__;
   const clean=v=>String(v||'').replace(/\s+/g,' ').trim();
   const visible=e=>{const s=getComputedStyle(e),r=e.getBoundingClientRect();return s.display!=='none'&&s.visibility!=='hidden'&&r.width>0&&r.height>0&&!e.disabled;};
-  const inputs=[...document.querySelectorAll('input:not([type]),input[type="text"],input[type="search"],textarea,[role="textbox"]')]
+  const deepQuery=(selector,root=document) => {
+    const output=[...root.querySelectorAll(selector)];
+    for(const element of root.querySelectorAll('*')) {
+      if(element.shadowRoot) output.push(...deepQuery(selector,element.shadowRoot));
+    }
+    return output;
+  };
+  const shadowHosts=e=>{const hosts=[];let node=e;while(node){const root=node.getRootNode();const host=root&&root.host;if(!host)break;hosts.push(host);node=host;}return hosts;};
+  const isProductSearch=e=>!shadowHosts(e).some(host=>host.id==='pc-header-search-box');
+  const wantsSearch=hints.some(h=>h.includes('search'));
+  const inputs=deepQuery('input:not([type]),input[type="text"],input[type="search"],textarea,[role="textbox"]')
     .filter(visible)
+    .filter(e=>!wantsSearch||isProductSearch(e))
     .filter(e=>{const label=clean(e.getAttribute('aria-label')||e.getAttribute('placeholder')||e.name).toLowerCase();return hints.some(h=>label===h||label.includes(h));});
   if(inputs.length!==1) return {ok:false,count:inputs.length};
   const e=inputs[0]; e.focus();
@@ -379,7 +410,7 @@ JSON.stringify((() => {
         self._wait_not_busy()
 
     def _create_product(self, display_name: str) -> None:
-        self.click_exact(["New product", "Create a new product", "+ New product"])
+        self.open_product_create_menu()
         self._wait_not_busy()
         self.click_exact(["MSIX or PWA app"])
         self._wait_not_busy()
