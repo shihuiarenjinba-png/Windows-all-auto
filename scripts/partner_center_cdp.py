@@ -321,6 +321,7 @@ JSON.stringify((() => {
   };
   const items=[...document.querySelectorAll('button,a,[role="button"],[role="link"],[role="menuitem"],input[type="button"],input[type="submit"]')]
     .filter(visible)
+    .filter(e=>!e.disabled && e.getAttribute('aria-disabled')!=='true')
     .map(e => ({e,n:label(e)}))
     .filter(x => wanted.includes(x.n));
   if(items.length!==1) return {ok:false,count:items.length,names:items.map(x=>x.n)};
@@ -452,28 +453,54 @@ JSON.stringify((() => {
         if body_state.get("available") is not True:
             raise PartnerCenterHold("HOLD_BROWSER_STATE_AMBIGUOUS")
         self.click_exact(["Reserve product name"])
-        self._wait_not_busy(45)
+        self._wait_product_creation_outcome(display_name)
 
-    def _identity_values(self) -> dict:
+    def _wait_product_creation_outcome(self, display_name: str,
+                                       timeout: float = 60.0) -> None:
+        deadline = time.monotonic() + timeout
+        while time.monotonic() < deadline:
+            value = self.evaluate(r"""
+JSON.stringify({url:location.href,title:document.title,ready:document.readyState})
+""")
+            state = json.loads(value) if isinstance(value, str) else {}
+            path = urlparse(str(state.get("url", ""))).path.rstrip("/")
+            title = str(state.get("title", ""))
+            if (state.get("ready") == "complete"
+                    and re.fullmatch(
+                        r"/[a-z]{2}-[a-z]{2}/dashboard/products/"
+                        r"[A-Za-z0-9]{8,32}/overview", path,
+                    ) is not None
+                    and display_name in title):
+                return
+            time.sleep(0.5)
+        raise PartnerCenterHold("HOLD_PRODUCT_CREATE_NOT_CONFIRMED")
+
+    def _identity_values(self, display_name: str) -> dict:
         labels = {
             "store_id": ["Store ID"],
-            "reserved_display_name": ["Reserved display name", "Reserved product name"],
-            "identity_name": ["Package/Identity name", "Identity name", "Package identity name"],
-            "publisher": ["Publisher"],
-            "publisher_display_name": ["Publisher display name"],
-            "package_family_name": ["Package family name", "PFN"],
+            "identity_name": ["Package/Identity/Name", "Package/Identity name", "Identity name", "Package identity name"],
+            "publisher": ["Package/Identity/Publisher", "Publisher"],
+            "publisher_display_name": ["Package/Properties/PublisherDisplayName", "Publisher display name"],
+            "package_family_name": ["Package Family Name (PFN)", "Package family name", "PFN"],
             "package_sid": ["Package SID"],
         }
         script = r"""
 JSON.stringify((() => {
  const labels=__LABELS__;
+ const expectedName=__DISPLAY_NAME__;
  const clean=v=>String(v||'').replace(/\s+/g,' ').trim();
  const visible=e=>{const s=getComputedStyle(e),r=e.getBoundingClientRect();return s.display!=='none'&&s.visibility!=='hidden'&&r.width>0&&r.height>0;};
- const all=[...document.querySelectorAll('dt,th,td,div,span,p,label')].filter(visible);
+ const deepQuery=(selector,root=document) => {
+   const output=[...root.querySelectorAll(selector)];
+   for(const element of root.querySelectorAll('*')) if(element.shadowRoot) output.push(...deepQuery(selector,element.shadowRoot));
+   return output;
+ };
+ const all=deepQuery('dt,th,td,div,span,p,label').filter(visible);
  const read=(names) => {
-   const hits=all.filter(e=>names.includes(clean(e.innerText||e.textContent)));
    const values=[];
-   for(const label of hits){
+   for(const name of names){
+    const exact=all.filter(e=>clean(e.innerText||e.textContent)===name);
+    for(const label of exact){
      const candidates=[];
      if(label.tagName==='DT' && label.nextElementSibling) candidates.push(label.nextElementSibling);
      if(label.tagName==='TH' && label.parentElement) candidates.push(...label.parentElement.querySelectorAll('td'));
@@ -483,17 +510,28 @@ JSON.stringify((() => {
        const index=children.indexOf(label); if(index>=0) candidates.push(...children.slice(index+1));
      }
      for(const c of candidates){const v=clean(c.innerText||c.textContent||c.value);if(v&&!names.includes(v)) values.push(v);}
+    }
+    const combined=all.filter(e=>{
+      const text=clean(e.innerText||e.textContent);
+      if(!text.startsWith(name+' ')) return false;
+      return ![...e.children].some(child=>clean(child.innerText||child.textContent).startsWith(name+' '));
+    });
+    for(const item of combined){const v=clean(item.innerText||item.textContent).slice(name.length).trim();if(v) values.push(v);}
    }
    return [...new Set(values)];
  };
  const output={}; for(const [key,names] of Object.entries(labels)) output[key]=read(names);
+ const headings=deepQuery('h1,[role="heading"]').filter(visible).filter(e=>clean(e.innerText||e.textContent)===expectedName);
+ output.reserved_display_name=headings.length ? [expectedName] : [];
  return output;
 })())
-""".replace("__LABELS__", json.dumps(labels, ensure_ascii=False))
+""".replace("__LABELS__", json.dumps(labels, ensure_ascii=False)).replace(
+            "__DISPLAY_NAME__", json.dumps(display_name, ensure_ascii=False)
+        )
         raw = self.evaluate(script)
         values = json.loads(raw) if isinstance(raw, str) else {}
         result = {}
-        for key in labels:
+        for key in (*labels, "reserved_display_name"):
             candidates = values.get(key)
             if not isinstance(candidates, list) or len(candidates) != 1:
                 raise PartnerCenterHold("HOLD_IDENTITY_DETAILS_AMBIGUOUS")
@@ -507,14 +545,15 @@ JSON.stringify((() => {
         self._open_exact_product(display_name)
         self._wait_not_busy()
         try:
-            self.click_exact(["View product identity", "Product identity"])
+            self.click_exact(["Toggle Product identity"])
             self._wait_not_busy()
         except PartnerCenterHold:
-            # Some Partner Center product pages expose Identity in navigation.
-            self.click_exact(["Identity"])
+            self.click_exact([
+                "View product identity", "Product identity", "Product Identity",
+            ])
             self._wait_not_busy()
         self.safe_snapshot()
-        return self._identity_values()
+        return self._identity_values(display_name)
 
 
 @dataclass(frozen=True)
@@ -580,7 +619,7 @@ class PartnerCenterDriver:
 
     def verify_current(self, observation: IdentityObservation, receipt: dict) -> bool:
         snapshot = self.page.safe_snapshot()
-        current = self.page._identity_values()
+        current = self.page._identity_values(observation.display_name)
         return (
             self.page.target_id == observation.target_id
             and snapshot.get("url") == observation.observed_url

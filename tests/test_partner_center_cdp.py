@@ -10,6 +10,42 @@ from scripts.partner_center_cdp import (
 
 
 class PartnerCenterReadinessTests(unittest.TestCase):
+    def test_product_creation_waits_for_exact_product_overview(self):
+        page = CdpPage("target", None)
+        state = json.dumps({
+            "url": "https://partner.microsoft.com/en-us/dashboard/products/9P6452C61N7B/overview",
+            "title": "Application overview | Focus Session Desk | Partner Center",
+            "ready": "complete",
+        })
+        page.evaluate = MagicMock(return_value=state)
+        with patch("scripts.partner_center_cdp.time.sleep"):
+            page._wait_product_creation_outcome("Focus Session Desk")
+
+    def test_current_identity_card_maps_seven_exact_fields(self):
+        page = CdpPage("target", None)
+        values = {
+            "store_id": ["9P6452C61N7B"],
+            "reserved_display_name": ["Focus Session Desk"],
+            "identity_name": ["OkinawaDesktopTools.FocusSessionDesk"],
+            "publisher": ["CN=46263F21-A700-41DB-8C9B-114C22FB82FC"],
+            "publisher_display_name": ["Okinawa Desktop Tools"],
+            "package_family_name": [
+                "OkinawaDesktopTools.FocusSessionDesk_j8yefg9jgfh58"
+            ],
+            "package_sid": [
+                "S-1-15-2-2225260970-543926136-1440257008-848151149-"
+                "3671298483-3004677799-2420668959"
+            ],
+        }
+        page.evaluate = MagicMock(return_value=json.dumps(values))
+        result = page._identity_values("Focus Session Desk")
+        self.assertEqual(result["store_id"], "9P6452C61N7B")
+        self.assertEqual(result["reserved_display_name"], "Focus Session Desk")
+        script = page.evaluate.call_args.args[0]
+        self.assertIn("Package/Identity/Name", script)
+        self.assertIn("Package/Properties/PublisherDisplayName", script)
+        self.assertIn("Package Family Name (PFN)", script)
+
     def test_product_search_excludes_global_header_shadow_host(self):
         page = CdpPage("target", None)
         page.evaluate = MagicMock(return_value=json.dumps({"ok": True}))
