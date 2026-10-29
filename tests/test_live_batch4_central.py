@@ -1,5 +1,6 @@
 """Pinned central-branch integration preflight; never a local schedule/UI proof."""
 import json
+from datetime import datetime, timezone
 import os
 from pathlib import Path
 import unittest
@@ -36,7 +37,9 @@ class LiveCentralPreflight(unittest.TestCase):
                 "identity_return_target": f"products/{slug}/store/approved-identity.json",
             } for i, slug, rid, sha, aid, exe in EXPECTED],
         }
-        state = batch.discover(ledger, spec)
+        state = batch.discover(
+            ledger, spec, now_utc=datetime(2026, 10, 29, tzinfo=timezone.utc)
+        )
         self.assertEqual(state["discovered_count"], 4)
         self.assertEqual([x["slug"] for x in state["products"]], [x[1] for x in EXPECTED])
         self.assertEqual(len({x["queue_job_digest"] for x in state["products"]}), 4)
