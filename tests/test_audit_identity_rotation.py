@@ -158,6 +158,23 @@ class MixedAuditTests(unittest.TestCase):
         with self.assertRaisesRegex(audit.AuditHold, "CROSS_LANE_BINDING"):
             check(ledger, approved, artifacts)
 
+    def test_post_exe_hash_conflict_rejected_by_shared_reconciler(self):
+        ledger, approved, artifacts = fixture()
+        approved["focus-session-desk"]["package_sha256"] = "f" * 64
+        with self.assertRaisesRegex(audit.AuditHold, "PREIDENTITY_ARTIFACT_CONFLICT"):
+            check(ledger, approved, artifacts)
+
+    def test_post_store_id_collision_with_3d_rejected(self):
+        ledger, approved, artifacts = fixture()
+        ledger["rotation_cohorts"]["three_d_jobs"] = [{
+            "product_type": "GAME_3D", "slug": "prism-route-3d",
+            "request_id": "3d-prism-route-3d-abcdef",
+            "identity_return_target": "products/prism-route-3d/store/approved-identity.json",
+            "identity_store_id": "9P6452C61N7B",
+        }]
+        with self.assertRaisesRegex(audit.AuditHold, "CROSS_PRODUCT_IDENTITY"):
+            check(ledger, approved, artifacts)
+
     def test_audit_hold_does_not_create_local_state(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory) / "must-not-create"
