@@ -56,6 +56,62 @@ def ledger():
 
 
 class RunnerTests(unittest.TestCase):
+    def test_registration_preflight_is_read_only_and_not_host_attestation(self):
+        args = SimpleNamespace(
+            provisioner_root=Path("C:/isolated-provisioner"),
+            execution_origin="WINDOWS_TASK_SCHEDULER",
+        )
+        with (
+            patch.object(runner, "check_prerequisites", return_value={"provisioner_head": "a" * 40}),
+            patch.object(runner, "fetch_central", return_value=({}, "b" * 40, "blob")),
+            patch.object(runner, "validate_queue", return_value=({"batch_id": "batch"}, [{}] * 4)),
+            patch.object(runner, "recheck_central") as recheck,
+            patch.object(runner.batch, "discover", return_value={"discovered_count": 4}),
+            patch.object(runner, "sync_sources") as sync,
+            patch.object(runner, "verify_artifact") as artifact,
+            patch.object(runner, "PartnerCenterDriver") as browser,
+        ):
+            result = runner.preflight_only(args)
+            self.assertEqual(result["status"], "BATCH_PREFLIGHT_READY")
+            self.assertEqual(result["discovered_count"], 4)
+            self.assertIs(result["execution_trigger_proven"], False)
+            self.assertEqual(result["local_execution"], "NOT_PERFORMED")
+            self.assertEqual(result["cas"], "NOT_PERFORMED")
+            self.assertEqual(result["store_submission"], "NOT_PERFORMED")
+            self.assertEqual(recheck.call_count, 2)
+            sync.assert_not_called()
+            artifact.assert_not_called()
+            browser.assert_not_called()
+
+    def test_registration_preflight_expired_artifact_blocks_without_side_effects(self):
+        args = SimpleNamespace(
+            provisioner_root=Path("C:/isolated-provisioner"),
+            execution_origin="WINDOWS_TASK_SCHEDULER",
+        )
+        with (
+            patch.object(runner, "check_prerequisites", return_value={}),
+            patch.object(runner, "fetch_central", return_value=({}, "a" * 40, "blob")),
+            patch.object(runner, "validate_queue", return_value=({}, [{}] * 4)),
+            patch.object(runner, "recheck_central"),
+            patch.object(runner.batch, "discover",
+                         side_effect=runner.batch.BatchHold("HOLD_ARTIFACT_EXPIRED")),
+            patch.object(runner, "sync_sources") as sync,
+            patch.object(runner, "PartnerCenterDriver") as browser,
+        ):
+            with self.assertRaisesRegex(runner.batch.BatchHold, "HOLD_ARTIFACT_EXPIRED"):
+                runner.preflight_only(args)
+            sync.assert_not_called()
+            browser.assert_not_called()
+
+    def test_registration_script_uses_preflight_not_terminal_pass(self):
+        script = (Path(__file__).resolve().parents[1] / "scripts" /
+                  "register_local_partner_center_batch.ps1").read_text(encoding="utf-8")
+        self.assertIn("--preflight-only", script)
+        self.assertIn("BATCH_PREFLIGHT_READY", script)
+        self.assertIn("SCHEDULED_TASK_ALREADY_EXISTS_NO_OVERWRITE", script)
+        self.assertNotIn("TERMINAL_4_OF_4_PASS_REQUIRED", script)
+        self.assertIn("scheduled_36_min_trigger_proven = $false", script)
+
     def test_expired_artifact_holds_before_source_sync_and_artifact_download(self):
         # Cloud preflight must reject stale Factory bytes before touching any
         # local snapshot, artifact ZIP, browser session, or GitHub CAS.
