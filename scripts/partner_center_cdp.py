@@ -34,6 +34,17 @@ CDP_PORT = 9222
 CDP_BASE = f"http://{CDP_HOST}:{CDP_PORT}"
 PARTNER_HOST = "partner.microsoft.com"
 PARTNER_PRODUCTS_URL = "https://partner.microsoft.com/dashboard/products"
+REGISTRATION_LABELS = {
+    "MSIX_OR_PWA_APP": "MSIX or PWA app",
+    "EXE_OR_MSI_APP": "EXE or MSI app",
+    "GDK_GAME": "GDK game",
+    "MSIX_OR_PWA_GAME": "MSIX or PWA game",
+}
+REGISTRATION_LANES = {
+    "APP": {"MSIX_OR_PWA_APP", "EXE_OR_MSI_APP"},
+    "GAME": {"GDK_GAME", "MSIX_OR_PWA_GAME"},
+    "GAME_3D": {"GDK_GAME", "MSIX_OR_PWA_GAME"},
+}
 
 
 class PartnerCenterHold(RuntimeError):
@@ -206,21 +217,38 @@ JSON.stringify((() => {
       tag: element.tagName.toLowerCase(),
       role: clean(element.getAttribute('role')),
       type: clean(element.getAttribute('type')),
-      name: clean(element.getAttribute('aria-label') || element.innerText || element.value),
-      placeholder: clean(element.getAttribute('placeholder')),
-      href: element.tagName === 'A' ? clean(element.getAttribute('href')) : ''
+      name: clean(element.getAttribute('aria-label') || element.innerText),
+      placeholder: element.type === 'password' ? '' : clean(element.getAttribute('placeholder'))
     }));
-  return {url: location.href, title: document.title, ready: document.readyState, controls};
+  return {url: location.origin + location.pathname, title: document.title, ready: document.readyState, controls};
 })())
 """
         raw = self.evaluate(script)
         if not isinstance(raw, str):
             raise PartnerCenterHold("HOLD_BROWSER_STATE_AMBIGUOUS")
         snapshot = json.loads(raw)
-        host = urlparse(str(snapshot.get("url", ""))).hostname
-        if host != PARTNER_HOST:
+        parsed = urlparse(str(snapshot.get("url", "")))
+        if parsed.scheme != "https" or parsed.hostname != PARTNER_HOST:
             raise PartnerCenterHold("HOLD_PARTNER_CENTER_AUTH_REQUIRED")
-        return snapshot
+        controls = snapshot.get("controls")
+        if not isinstance(controls, list):
+            raise PartnerCenterHold("HOLD_BROWSER_STATE_AMBIGUOUS")
+        # Return an explicit allowlist, never raw URLs (query/fragment), hrefs,
+        # input values, or password fields from the CDP response.
+        safe_controls = []
+        for item in controls[:120]:
+            if not isinstance(item, dict):
+                raise PartnerCenterHold("HOLD_BROWSER_STATE_AMBIGUOUS")
+            if item.get("type") == "password":
+                continue
+            safe_controls.append({key: str(item.get(key, ""))[:160]
+                                  for key in ("tag", "role", "type", "name", "placeholder")})
+        return {
+            "url": f"https://{PARTNER_HOST}{parsed.path}",
+            "title": str(snapshot.get("title", ""))[:160],
+            "ready": str(snapshot.get("ready", ""))[:32],
+            "controls": safe_controls,
+        }
 
     def _visible_controls(self) -> list[dict]:
         snapshot = self.safe_snapshot()
@@ -345,10 +373,12 @@ JSON.stringify((() => {
         self.click_exact([display_name])
         self._wait_not_busy()
 
-    def _create_product(self, display_name: str) -> None:
+    def _create_product(self, display_name: str, selection: str) -> None:
+        if selection not in REGISTRATION_LABELS.values():
+            raise PartnerCenterHold("HOLD_REGISTRATION_TYPE_UNRESOLVED")
         self.click_exact(["New product", "Create a new product", "+ New product"])
         self._wait_not_busy()
-        self.click_exact(["MSIX or PWA app"])
+        self.click_exact([selection])
         self._wait_not_busy()
         self.fill_textbox(["product name", "name", "reserve a name"], display_name)
         try:
@@ -453,13 +483,19 @@ class PartnerCenterDriver:
 
     def process(self, job: dict) -> tuple[dict, IdentityObservation]:
         name = str(job["display_name"])
+        registration = job.get("registration_type")
+        lane = job.get("product_type")
+        selection = REGISTRATION_LABELS.get(registration)
+        if (selection is None or registration not in REGISTRATION_LANES.get(lane, set())
+                or job.get("partner_center_selection") != selection):
+            raise PartnerCenterHold("HOLD_REGISTRATION_TYPE_UNRESOLVED")
         count = self.page.search_product(name)
         if count > 1:
             raise PartnerCenterHold("HOLD_DUPLICATE_PRODUCT")
         if count == 0:
             if job.get("allow_local_product_creation") is not True:
                 raise PartnerCenterHold("HOLD_DUPLICATE_PRODUCT_CREATE_FORBIDDEN")
-            self.page._create_product(name)
+            self.page._create_product(name, selection)
             after = self.page.search_product(name)
             if after != 1:
                 raise PartnerCenterHold("HOLD_PRODUCT_CREATE_NOT_CONFIRMED")
