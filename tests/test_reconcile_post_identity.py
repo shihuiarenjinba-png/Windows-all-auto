@@ -1,0 +1,144 @@
+"""Offline contract tests: no browser, network, CAS or Store writes."""
+import copy
+import json
+import unittest
+
+from scripts.reconcile_post_identity import ReconcileHold, reconcile_approved_return
+
+SOURCE = "a" * 40
+RETURN = "b" * 40
+EXE = "c" * 64
+REPO = "shihuiarenjinba-png/AI-App-Factory"
+BRANCH = "codex/test-app"
+
+
+def fixture():
+    job = {
+        "product_type": "APP", "display_name": "Test App",
+        "slug": "test-app", "status": "PRE_IDENTITY_READY",
+        "request_id": "app-test-app-aaaaaaaaaaaa",
+        "source_repository": REPO, "source_branch": BRANCH,
+        "source_sha": SOURCE, "expected_exe_sha256": EXE,
+        "identity_return_target": "products/test-app/store/approved-identity.json",
+    }
+    ledger = {
+        "rotation_cohorts": {"app_jobs": [job], "three_d_jobs": []},
+        "user_id_requests": {"items": [{
+            "request_id": job["request_id"], "status": "LOCAL_PARTNER_CENTER_OPERATOR_ACTIVE",
+            "requested_fields": ["Store ID"], "allow_local_product_creation": True,
+        }]},
+        "registration_router": {"entries": [{"product": "Test App",
+            "identity_status": "LOCAL_OPERATOR_ACTIVE"}]},
+        "post_identity_pipeline": {"products": [{
+            "request_id": job["request_id"], "state": "WAITING_IDENTITY_CAPTURE_AND_CAS",
+        }]},
+    }
+    approved = {
+        "reviewed": True, "source": "partner_center",
+        "request_id": job["request_id"], "product_type": "APP",
+        "source_repository": REPO, "source_branch": BRANCH,
+        "source_sha": SOURCE, "expected_head_sha": SOURCE,
+        "package_sha256": EXE, "package_version_gate": "HOLD",
+        "store_id": "9P6452C61N7B", "name": "OkinawaDesktopTools.TestApp",
+        "publisher": "CN=Test", "package_family_name": "OkinawaDesktopTools.TestApp_j8yefg9jgfh58",
+        "package_sid": "S-1-15-2-1-2-3-4-5-6-7",
+    }
+    return ledger, approved
+
+
+def reconcile(ledger, approved, head=RETURN):
+    return reconcile_approved_return(
+        ledger, "test-app",
+        fetch_branch_head=lambda repo, branch: head,
+        fetch_approved_file=lambda repo, path, branch: (
+            json.dumps(approved) if isinstance(approved, dict) else approved
+        ),
+    )
+
+
+class ReconcileTests(unittest.TestCase):
+    def test_valid_promotion_and_immutable_input(self):
+        ledger, approved = fixture()
+        original = copy.deepcopy(ledger)
+        result, status = reconcile(ledger, approved)
+        self.assertEqual(status, "POST_IDENTITY_READY")
+        self.assertEqual(ledger, original)
+        job = result["rotation_cohorts"]["app_jobs"][0]
+        self.assertEqual(job["source_sha"], SOURCE)
+        self.assertEqual(job["identity_return_commit_sha"], RETURN)
+        self.assertEqual(job["status"], "POST_IDENTITY_READY")
+        self.assertEqual(job["package_version_gate"], "HOLD")
+        self.assertFalse(job["identity_cas_allowed"])
+        self.assertEqual(result["user_id_requests"]["items"][0]["requested_fields"], [])
+        self.assertEqual(result["post_identity_pipeline"]["products"][0]["state"],
+                         "POST_IDENTITY_READY")
+
+    def test_idempotent_replay_requires_same_return_head(self):
+        ledger, approved = fixture()
+        once, _ = reconcile(ledger, approved)
+        twice, status = reconcile(once, approved)
+        self.assertEqual(status, "EXISTING_VERIFIED")
+        self.assertEqual(once, twice)
+        with self.assertRaisesRegex(ReconcileHold, "HOLD_RETURN_COMMIT_DRIFT"):
+            reconcile(once, approved, head="d" * 40)
+
+    def test_source_binding_conflict(self):
+        ledger, approved = fixture()
+        approved["request_id"] = "other-request"
+        with self.assertRaisesRegex(ReconcileHold, "HOLD_APPROVED_IDENTITY_SOURCE_CONFLICT"):
+            reconcile(ledger, approved)
+
+    def test_exe_hash_conflict(self):
+        ledger, approved = fixture()
+        approved["package_sha256"] = "d" * 64
+        with self.assertRaisesRegex(ReconcileHold, "HOLD_PREIDENTITY_ARTIFACT_CONFLICT"):
+            reconcile(ledger, approved)
+
+    def test_return_not_observed(self):
+        ledger, approved = fixture()
+        with self.assertRaisesRegex(ReconcileHold, "HOLD_RETURN_COMMIT_NOT_OBSERVED"):
+            reconcile(ledger, approved, head=SOURCE)
+
+    def test_version_not_approved_is_not_inferred(self):
+        ledger, approved = fixture()
+        approved["package_version_gate"] = "PASS"
+        with self.assertRaisesRegex(ReconcileHold, "HOLD_IDENTITY_OR_VERSION_GATE"):
+            reconcile(ledger, approved)
+
+    def test_duplicate_json_key_rejected(self):
+        ledger, approved = fixture()
+        raw = json.dumps(approved).replace('"reviewed": true',
+                                           '"reviewed": true, "reviewed": true')
+        with self.assertRaisesRegex(ReconcileHold, "HOLD_APPROVED_IDENTITY_DUPLICATE_KEY"):
+            reconcile(ledger, raw)
+
+    def test_cross_product_duplicate_request_rejected(self):
+        ledger, approved = fixture()
+        other = copy.deepcopy(ledger["rotation_cohorts"]["app_jobs"][0])
+        other["slug"] = "another"
+        ledger["rotation_cohorts"]["app_jobs"].append(other)
+        with self.assertRaisesRegex(ReconcileHold, "HOLD_CROSS_PRODUCT_IDENTITY"):
+            reconcile(ledger, approved)
+
+    def test_cross_product_duplicate_store_id_rejected(self):
+        ledger, approved = fixture()
+        other = copy.deepcopy(ledger["rotation_cohorts"]["app_jobs"][0])
+        other.update({"slug": "another", "request_id": "another-request",
+                      "identity_return_target": "products/another/store/approved-identity.json",
+                      "identity_store_id": approved["store_id"]})
+        ledger["rotation_cohorts"]["app_jobs"].append(other)
+        with self.assertRaisesRegex(ReconcileHold, "HOLD_CROSS_PRODUCT_IDENTITY"):
+            reconcile(ledger, approved)
+
+    def test_no_file_no_promotion(self):
+        ledger, approved = fixture()
+        with self.assertRaisesRegex(ReconcileHold, "HOLD_APPROVED_IDENTITY_FILE_INVALID"):
+            reconcile_approved_return(
+                ledger, "test-app",
+                fetch_branch_head=lambda *_: RETURN,
+                fetch_approved_file=lambda *_: None,
+            )
+
+
+if __name__ == "__main__":
+    unittest.main()
