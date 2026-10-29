@@ -177,13 +177,8 @@ def completed_identity_return_matches(job: dict, current_head: str,
             if isinstance(item, dict)
             and item.get("request_id") == job.get("request_id")
         ]
-        if len(products) != 1 or products[0].get("state") != "SUCCESS":
-            return False
-        result = products[0].get("result")
-        if (not isinstance(result, dict)
-                or result.get("source_sha") != job.get("source_sha")
-                or result.get("identity_return_commit_sha") != current_head
-                or result.get("github_replay_status") != "EXISTING_VERIFIED"):
+        if len(products) != 1 or products[0].get("state") not in {
+                "SUCCESS", "PROCESSING"}:
             return False
         item = gh_json(
             f"repos/{job['source_repository']}/contents/{job['identity_return_target']}"
@@ -197,16 +192,54 @@ def completed_identity_return_matches(job: dict, current_head: str,
         approved = json.loads(
             raw.decode("utf-8"), object_pairs_hook=operator._no_duplicates
         )
-        exact = {
-            "request_id": job["request_id"],
-            "source_sha": job["source_sha"],
-            "store_id": result.get("store_id"),
-            "name": result.get("identity_name"),
-            "package_family_name": result.get("pfn"),
-            "package_sid": result.get("package_sid"),
-            "dispatch_origin": batch.DISPATCH_ORIGIN,
-            "execution_origin": result.get("execution_origin"),
-        }
+        result = products[0].get("result")
+        if products[0].get("state") == "SUCCESS":
+            if (not isinstance(result, dict)
+                    or result.get("source_sha") != job.get("source_sha")
+                    or result.get("identity_return_commit_sha") != current_head
+                    or result.get("github_replay_status") != "EXISTING_VERIFIED"):
+                return False
+            exact = {
+                "request_id": job["request_id"],
+                "source_sha": job["source_sha"],
+                "store_id": result.get("store_id"),
+                "name": result.get("identity_name"),
+                "package_family_name": result.get("pfn"),
+                "package_sid": result.get("package_sid"),
+                "dispatch_origin": batch.DISPATCH_ORIGIN,
+                "execution_origin": result.get("execution_origin"),
+            }
+        else:
+            # Recovery for CAS/replay completed immediately before a crash or
+            # post-CAS draft HOLD. This evidence only permits exact resume; the
+            # normal worker still re-observes UI and replays the single writer.
+            receipt_path = (state_dir / "products" / job["request_id"] /
+                            "official-identity.json")
+            if result is not None or not receipt_path.is_file():
+                return False
+            receipt = operator.read_json(receipt_path, 64_000)
+            binding = {
+                "request_id": job["request_id"], "slug": job["slug"],
+                "source_repository": job["source_repository"],
+                "source_branch": job["source_branch"],
+                "source_sha": job["source_sha"],
+                "identity_return_target": job["identity_return_target"],
+            }
+            if (current_head == job["source_sha"]
+                    or any(receipt.get(key) != value
+                           for key, value in binding.items())):
+                return False
+            exact = {
+                "request_id": job["request_id"],
+                "source_sha": job["source_sha"],
+                "store_id": receipt.get("store_id"),
+                "name": receipt.get("identity_name"),
+                "publisher": receipt.get("publisher"),
+                "package_family_name": receipt.get("package_family_name"),
+                "package_sid": receipt.get("package_sid"),
+                "dispatch_origin": batch.DISPATCH_ORIGIN,
+                "execution_origin": receipt.get("execution_origin"),
+            }
         return all(approved.get(key) == value for key, value in exact.items())
     except Exception:
         return False

@@ -762,7 +762,10 @@ JSON.stringify((() => {
         never clicked.  If Start submission is used, it is clicked once; an
         uncertain outcome is re-observed and never retried in this call.
         """
-        self._open_exact_product(display_name)
+        current = self.safe_snapshot()
+        if (not _is_product_overview(str(current.get("url", "")))
+                or display_name not in str(current.get("title", ""))):
+            self._open_exact_product(display_name)
         self._wait_not_busy()
         before = self._submission_draft_state()
         if self._draft_is_open(before):

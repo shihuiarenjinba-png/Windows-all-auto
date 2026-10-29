@@ -204,6 +204,51 @@ class RunnerTests(unittest.TestCase):
             "PRE_IDENTITY_READY", "PRE_IDENTITY_READY",
         ])
 
+    def test_inflight_applied_identity_allows_exact_replay_resume(self):
+        value = ledger()
+        job = value["rotation_cohorts"]["app_jobs"][1]
+        return_head = "d" * 40
+        receipt = {
+            "request_id": job["request_id"], "slug": job["slug"],
+            "source_repository": job["source_repository"],
+            "source_branch": job["source_branch"], "source_sha": job["source_sha"],
+            "identity_return_target": job["identity_return_target"],
+            "store_id": "9PGZ445SR5GM",
+            "identity_name": "OkinawaDesktopTools.FileIntegrityLedger",
+            "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+            "package_family_name": "OkinawaDesktopTools.FileIntegrityLedger_j8yefg9jgfh58",
+            "package_sid": "S-1-15-2-1-2-3-4-5-6-7",
+            "execution_origin": "MANUAL_WINDOWS_TERMINAL",
+        }
+        approved = {
+            "request_id": job["request_id"], "source_sha": job["source_sha"],
+            "store_id": receipt["store_id"], "name": receipt["identity_name"],
+            "publisher": receipt["publisher"],
+            "package_family_name": receipt["package_family_name"],
+            "package_sid": receipt["package_sid"],
+            "dispatch_origin": "CHATGPT_36_MIN_LOOP",
+            "execution_origin": receipt["execution_origin"],
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            product = root / "products" / job["request_id"]
+            product.mkdir(parents=True)
+            (product / "official-identity.json").write_text(
+                json.dumps(receipt), encoding="utf-8"
+            )
+            (root / "batch-state.json").write_text(json.dumps({
+                "products": [{"request_id": job["request_id"],
+                              "state": "PROCESSING", "result": None}],
+            }), encoding="utf-8")
+            with patch.object(runner, "gh_json", return_value={
+                "encoding": "base64", "content": base64.b64encode(
+                    json.dumps(approved).encode("utf-8")
+                ).decode("ascii"),
+            }):
+                self.assertTrue(runner.completed_identity_return_matches(
+                    job, return_head, root, "a" * 40
+                ))
+
     def test_reconcile_updates_only_unfinished_queue_provenance(self):
         value = ledger()
         jobs = value["rotation_cohorts"]["app_jobs"]

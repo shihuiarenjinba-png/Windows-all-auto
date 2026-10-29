@@ -106,6 +106,10 @@ class PartnerCenterReadinessTests(unittest.TestCase):
 
     def test_submission_draft_reuses_existing_same_product_link(self):
         page = CdpPage("target", None)
+        page.safe_snapshot = MagicMock(return_value={
+            "url": PARTNER_PRODUCTS_URL,
+            "title": "Overview | Apps and games | Partner Center",
+        })
         page._open_exact_product = MagicMock()
         page._wait_not_busy = MagicMock()
         page._submission_draft_state = MagicMock(return_value={
@@ -122,8 +126,33 @@ class PartnerCenterReadinessTests(unittest.TestCase):
         )
         page.click_exact.assert_not_called()
 
+    def test_submission_draft_keeps_current_exact_product_page(self):
+        page = CdpPage("target", None)
+        page.safe_snapshot = MagicMock(return_value={
+            "url": ("https://partner.microsoft.com/en-us/dashboard/products/"
+                    "9PGZ445SR5GM/overview"),
+            "title": "Application overview | File Integrity Ledger | Partner Center",
+        })
+        page._open_exact_product = MagicMock()
+        page._wait_not_busy = MagicMock()
+        page._submission_draft_state = MagicMock(return_value={
+            "product_id": "9PGZ445SR5GM", "current_submission_id": None,
+            "submission_links": [{"name": "242", "href": "same-product"}],
+            "start_submission_count": 0,
+        })
+
+        self.assertEqual(
+            page.ensure_submission_draft_open("File Integrity Ledger"),
+            "ALREADY_OPEN",
+        )
+        page._open_exact_product.assert_not_called()
+
     def test_submission_draft_clicks_start_only_once_then_confirms(self):
         page = CdpPage("target", None)
+        page.safe_snapshot = MagicMock(return_value={
+            "url": PARTNER_PRODUCTS_URL,
+            "title": "Overview | Apps and games | Partner Center",
+        })
         page._open_exact_product = MagicMock()
         page._wait_not_busy = MagicMock()
         page._submission_draft_state = MagicMock(side_effect=[
