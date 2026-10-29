@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-29T06:41:47.160Z",
+  "updated_at_utc": "2026-10-29T06:42:09.167Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -826,7 +826,7 @@
     "batch4_pre_download_expiry_guard_code_committed": true,
     "batch4_pre_download_expiry_guard_ci_pass": true,
     "batch4_search_control_fail_closed_code_committed": true,
-    "batch4_search_control_fail_closed_ci_pass": false
+    "batch4_search_control_fail_closed_ci_pass": true
   },
   "user_id_requests": {
     "schema_version": 1,
@@ -1907,7 +1907,7 @@
     "package_upload": 0,
     "package_version_gate": "HOLD",
     "status": "MULTI_PRODUCT_IDENTITY_BATCH_PARTIAL",
-    "preflight_evidence": "FOUR_FACTORY_BRANCH_HEADS_EXACT_MATCH__FOUR_GITHUB_ACTIONS_ARTIFACTS_UNEXPIRED_DIGEST_MATCH__PR47_WINDOWS_UBUNTU_CI_GREEN__NO_USER_PC_LOCAL_RECEIPT",
+    "preflight_evidence": "FOUR_FACTORY_BRANCH_HEADS_EXACT_MATCH__FOUR_GITHUB_ACTIONS_ARTIFACTS_UNEXPIRED_DIGEST_MATCH__PR48_WINDOWS_UBUNTU_CI_GREEN__NO_USER_PC_LOCAL_RECEIPT",
     "code_contracts": {
       "windows_all_auto_pr": 33,
       "windows_all_auto_head": "019eca325eae5f36f160af287482da4e666b5b49",
@@ -2162,7 +2162,7 @@
         "head_sha": "5f08e84f7c477cbf66caceda80cbe7c41f5f2510",
         "base_pr": 47,
         "ci_run_id": 40830713394,
-        "ci_status": "IN_PROGRESS_UBUNTU_PASS_WINDOWS_PENDING",
+        "ci_status": "SUCCESS_WINDOWS_UBUNTU",
         "defect": "BROAD_PARTNER_CENTER_SEARCH_EXCEPTION_FALLBACK_SENT_ENTER_AFTER_AMBIGUOUS_CONTROL",
         "fix": "EXACT_SEARCH_CONTROL_REQUIRED__NO_ENTER_FALLBACK__NO_PRODUCT_COUNT_AFTER_HOLD",
         "local_windows_execution": "NOT_OBSERVED",
@@ -2349,7 +2349,7 @@
       "Add offline regression asserting no Enter and no product count after ambiguous Search control"
     ],
     "ci_run_id": 40830713394,
-    "ci_status": "IN_PROGRESS_UBUNTU_PASS_WINDOWS_PENDING",
+    "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
     "cloud_pre_identity_discovered": 4,
     "local_code_sync": "NOT_OBSERVED_ON_USER_PC_THIS_RUN",
     "local_scheduler_registration": "NOT_PERFORMED",
@@ -2370,6 +2370,15 @@
     "next_resume_index": 1,
     "store_submission": 0,
     "no_main_release_merge": true,
-    "next_action": "Await PR48 Windows/Ubuntu CI; on physical Windows in independent reviewed worktree run py -3 -m scripts.partner_center_cdp diagnose, then read-only batch preflight and serial 4-product capture only if controls/auth and exact source/artifact gates pass. Do not infer saved 36-minute host trigger from manual Task Scheduler start."
+    "next_action": "PR48 Windows/Ubuntu CI green. Physical Windows still required: use reviewed independent worktree, run py -3 -m scripts.partner_center_cdp diagnose and read-only preflight, then 4 serial jobs only after authenticated controls/exact source/artifact gates; preserve independent schedule attestation HOLD.",
+    "cloud_factory_source_heads": "4_OF_4_EXACT_PINNED_SHA_IDENTICAL",
+    "cloud_artifact_metadata": "4_OF_4_UNEXPIRED_EXPECTED_NAME_AND_ZIP_SHA256_DIGEST_MATCH",
+    "artifact_expiry_utc": [
+      "2026-11-02T10:02:58Z",
+      "2026-11-02T15:04:16Z",
+      "2026-11-02T12:15:44Z",
+      "2026-11-02T13:05:55Z"
+    ],
+    "updated_after_cloud_recheck_utc": "2026-10-29T06:42:09.167Z"
   }
 }
