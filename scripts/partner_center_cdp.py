@@ -232,6 +232,7 @@ JSON.stringify((() => {
     def _wait_not_busy(self, timeout: float = 30.0) -> None:
         deadline = time.monotonic() + timeout
         stable = 0
+        last_signature = None
         while time.monotonic() < deadline:
             value = self.evaluate(r"""
 JSON.stringify((() => {
@@ -239,17 +240,44 @@ JSON.stringify((() => {
     const s=getComputedStyle(e), r=e.getBoundingClientRect();
     return s.display!=='none' && s.visibility!=='hidden' && r.width>0 && r.height>0;
   };
-  const busy=[...document.querySelectorAll('[aria-busy="true"],[role="progressbar"],.spinner,.loading')].filter(visible).length;
-  return {ready:document.readyState,busy};
+  const isPersistentShellBar = e => {
+    const r=e.getBoundingClientRect();
+    return e.getAttribute('role')==='progressbar'
+      && e.getAttribute('aria-label')==='Progress bar'
+      && e.classList.contains('progress-bar')
+      && e.classList.contains('indeterminate')
+      && e.classList.contains('indeterminate-bar')
+      && r.height<=4;
+  };
+  const busy=[...new Set(document.querySelectorAll(
+    '[aria-busy="true"],[role="progressbar"],.spinner,.loading'
+  ))].filter(visible).filter(e=>!isPersistentShellBar(e));
+  const clean=v=>String(v||'').replace(/\s+/g,' ').trim();
+  const controls=[...document.querySelectorAll(
+    'button,a,input,select,[role="button"],[role="link"],[role="textbox"]'
+  )].filter(visible).map(e=>[
+    e.tagName, clean(e.getAttribute('aria-label')||e.innerText||e.value),
+    clean(e.getAttribute('href')), Boolean(e.disabled)
+  ]);
+  return {
+    ready:document.readyState,
+    blocking:busy.length,
+    signature:JSON.stringify([location.href,document.title,controls])
+  };
 })())
 """)
             state = json.loads(value) if isinstance(value, str) else {}
-            if state.get("ready") == "complete" and state.get("busy") == 0:
-                stable += 1
+            signature = state.get("signature")
+            if (state.get("ready") == "complete"
+                    and state.get("blocking") == 0
+                    and isinstance(signature, str)):
+                stable = stable + 1 if signature == last_signature else 1
+                last_signature = signature
                 if stable >= 3:
                     return
             else:
                 stable = 0
+                last_signature = None
             time.sleep(0.4)
         raise PartnerCenterHold("HOLD_BROWSER_LOAD_TIMEOUT")
 
