@@ -33,6 +33,9 @@ class PartnerCenterReadinessTests(unittest.TestCase):
             PartnerCenterHold("HOLD_IDENTITY_DETAILS_AMBIGUOUS"), identity,
         ])
         page.safe_snapshot = MagicMock(return_value={})
+        page.wait_for_exact_control = MagicMock(
+            return_value="Toggle Product identity"
+        )
         page.click_exact = MagicMock(return_value="Toggle Product identity")
 
         self.assertEqual(page.open_identity("Focus Session Desk"), identity)
@@ -49,6 +52,9 @@ class PartnerCenterReadinessTests(unittest.TestCase):
         page._identity_values = MagicMock(
             side_effect=PartnerCenterHold("HOLD_IDENTITY_DETAILS_AMBIGUOUS")
         )
+        page.wait_for_exact_control = MagicMock(
+            return_value="Toggle Product identity"
+        )
         page.click_exact = MagicMock(return_value="Toggle Product identity")
 
         with self.assertRaisesRegex(PartnerCenterHold,
@@ -56,6 +62,22 @@ class PartnerCenterReadinessTests(unittest.TestCase):
             page.open_identity("Focus Session Desk")
 
         page.click_exact.assert_called_once_with(["Toggle Product identity"])
+
+    def test_identity_control_waits_for_async_render(self):
+        page = CdpPage("target", None)
+        page._visible_controls = MagicMock(side_effect=[
+            [], [{"name": "Toggle Product identity"}],
+        ])
+
+        with patch("scripts.partner_center_cdp.time.sleep"), \
+             patch("scripts.partner_center_cdp.time.monotonic",
+                   side_effect=[0.0, 0.0, 0.1]):
+            result = page.wait_for_exact_control(
+                ["Toggle Product identity"], timeout=1.0
+            )
+
+        self.assertEqual(result, "Toggle Product identity")
+        self.assertEqual(page._visible_controls.call_count, 2)
 
     def test_product_creation_waits_for_exact_product_overview(self):
         page = CdpPage("target", None)

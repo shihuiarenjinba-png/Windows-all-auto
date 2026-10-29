@@ -258,6 +258,21 @@ JSON.stringify((() => {
             raise PartnerCenterHold("HOLD_BROWSER_STATE_AMBIGUOUS")
         return controls
 
+    def wait_for_exact_control(self, names: list[str],
+                               timeout: float = 15.0) -> str:
+        deadline = time.monotonic() + timeout
+        while time.monotonic() < deadline:
+            matches = [
+                control for control in self._visible_controls()
+                if control.get("name") in names
+            ]
+            if len(matches) == 1:
+                return str(matches[0]["name"])
+            if len(matches) > 1:
+                raise PartnerCenterHold("HOLD_BROWSER_STATE_AMBIGUOUS")
+            time.sleep(0.25)
+        raise PartnerCenterHold("HOLD_IDENTITY_CONTROL_NOT_READY")
+
     def _wait_not_busy(self, timeout: float = 30.0) -> None:
         deadline = time.monotonic() + timeout
         stable = 0
@@ -552,14 +567,18 @@ JSON.stringify((() => {
         except PartnerCenterHold as exc:
             if str(exc) != "HOLD_IDENTITY_DETAILS_AMBIGUOUS":
                 raise
+            control = self.wait_for_exact_control([
+                "Toggle Product identity", "View product identity",
+                "Product identity", "Product Identity",
+            ])
             try:
-                self.click_exact(["Toggle Product identity"])
+                self.click_exact([control])
             except PartnerCenterHold as click_exc:
-                if str(click_exc) != "HOLD_BROWSER_STATE_AMBIGUOUS":
-                    raise
-                self.click_exact([
-                    "View product identity", "Product identity", "Product Identity",
-                ])
+                if str(click_exc) == "HOLD_BROWSER_STATE_AMBIGUOUS":
+                    raise PartnerCenterHold(
+                        "HOLD_IDENTITY_CONTROL_CHANGED"
+                    ) from click_exc
+                raise
             self._wait_not_busy()
             identity = self._identity_values(display_name)
         self.safe_snapshot()
