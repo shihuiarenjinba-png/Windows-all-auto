@@ -612,6 +612,7 @@ def preflight_mixed_local(args) -> dict:
                 raise RunnerHold(exc.code) from exc
             ready.append(job)
         isolated = mixed_preflight_root(args.state_dir, pending)
+        isolated.mkdir(parents=True, exist_ok=True)
         sync_receipt = sync_sources(ready, isolated)
         if (sync_receipt.get("status") != "PASS"
                 or sync_receipt.get("exact_sha_verified") is not True):
