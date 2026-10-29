@@ -644,7 +644,8 @@ def verify_mixed_local_return(old_entry: dict, result: dict, fresh_entry: dict,
                 or fresh_entry.get("identity_return_target") !=
                     old_entry.get("identity_return_target")
                 or fresh_entry.get("status") not in {
-                    "PENDING", "SKIPPED_GITHUB_POST_VERIFIED"
+                    "PENDING", "SKIPPED_GITHUB_POST_VERIFIED",
+                    "IDENTITY_RETURN_VERIFIED"
                 }):
             return False
         receipt_path = (state_dir / "products" / job["request_id"] /
@@ -759,11 +760,9 @@ def prepare_mixed_resume_state(args, *, verify_local_returns: bool = False) -> d
                         old, result, fresh, ledger, state_dir, central_head, driver
                     )
                 if state.get("central_head_sha") != central_head:
-                # The central single writer may advance HEAD for unrelated
-                # evidence. Rebase only unchanged PRE/verified POST entries.
-                # There is NO independent UI+GitHub return verifier in this
-                # preparation mode: a locally claimed successful return or
-                # name HOLD must fail closed, never be silently promoted.
+                    # The central single writer may advance HEAD. Only a
+                    # fresh authenticated UI+GitHub check may rebase a local
+                    # return; the default preparation mode fails closed.
                     state = mixed_rebase.rebase_after_reconciliation(
                         state, plan, new_central_head_sha=central_head,
                         execution_origin=args.execution_origin,
