@@ -626,8 +626,7 @@ def prepare_mixed_resume_state(args) -> dict:
     """
     preflight = preflight_mixed_local(args)
     if preflight.get("status") not in {
-            "MIXED_LOCAL_PRECHECK_PASS", "MIXED_LOCAL_NO_IDENTITY_WORK",
-            "MIXED_RESUME_STATE_PREPARED"}:
+            "MIXED_LOCAL_PRECHECK_PASS", "MIXED_LOCAL_NO_IDENTITY_WORK"}:
         raise RunnerHold("HOLD_MIXED_RESUME_PREFLIGHT")
     snapshot = fetch_central()
     ledger, central_head, _ = snapshot
@@ -1027,7 +1026,8 @@ def main(argv: list[str] | None = None) -> int:
         return 0 if result.get("status") in {
             "LOCAL_WINDOWS_NO_LLM_AUTOMATION_PASS", "BATCH_PREFLIGHT_READY",
             "MIXED_ROTATION_AUDITED", "MIXED_ROTATION_DISPATCH_PLAN_READY",
-            "MIXED_LOCAL_PRECHECK_PASS", "MIXED_LOCAL_NO_IDENTITY_WORK"
+            "MIXED_LOCAL_PRECHECK_PASS", "MIXED_LOCAL_NO_IDENTITY_WORK",
+            "MIXED_RESUME_STATE_PREPARED"
         } else 2
     except (RunnerHold, rotation_audit.AuditHold, rotation_plan.PlanHold,
             mixed_resume.MixedResumeHold, batch.BatchHold, operator.OperatorHold,
