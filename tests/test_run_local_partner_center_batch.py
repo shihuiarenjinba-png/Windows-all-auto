@@ -205,7 +205,9 @@ class RunnerTests(unittest.TestCase):
         }
         with tempfile.TemporaryDirectory() as directory:
             product_dir = Path(directory) / "products" / job["request_id"]
-            result = runner.complete_name_unavailable(state, job, product_dir)
+            result = runner.complete_name_unavailable(
+                state, job, product_dir, "REUSED_EXACT_SNAPSHOT"
+            )
             self.assertEqual(result["hold_count"], 1)
             self.assertEqual(result["success_count"], 0)
             self.assertEqual(result["next_resume_index"], 2)
@@ -214,6 +216,8 @@ class RunnerTests(unittest.TestCase):
             self.assertTrue((Path(directory) / "batch-state.json").is_file())
             self.assertEqual(result["products"][0]["result"]["error_code"],
                              "HOLD_NAME_UNAVAILABLE")
+            self.assertEqual(result["products"][0]["result"]["source_sync_status"],
+                             "REUSED_EXACT_SNAPSHOT")
 
     def test_in_progress_manual_batch_cannot_be_taken_over_by_scheduler(self):
         state = {
