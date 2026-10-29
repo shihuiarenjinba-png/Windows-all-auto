@@ -713,12 +713,20 @@ def run_batch(args) -> dict:
                 state, claimed = batch.claim_or_resume(state)
                 batch.atomic_write(state_path, state)
                 recheck_central(central_head)
-                if live_branch_head(claimed["source_repository"], claimed["source_branch"]) != claimed["source_sha"]:
+                claimed_current_head = live_branch_head(
+                    claimed["source_repository"], claimed["source_branch"]
+                )
+                cas_resume = claimed_current_head != claimed["source_sha"]
+                if cas_resume:
                     existing = gh_json(
                         f"repos/{claimed['source_repository']}/contents/{claimed['identity_return_target']}"
                         f"?ref={claimed['source_branch']}", allow_missing=True,
                     )
                     if existing is None:
+                        raise RunnerHold("HOLD_CANONICAL_PRODUCT_REVISION_MISMATCH")
+                    if not completed_identity_return_matches(
+                            claimed, claimed_current_head, state_dir,
+                            central_head):
                         raise RunnerHold("HOLD_CANONICAL_PRODUCT_REVISION_MISMATCH")
                 batch_meta = {
                     "batch_id": state["batch_id"],
@@ -734,6 +742,7 @@ def run_batch(args) -> dict:
                     central_branch=batch.CENTRAL_BRANCH,
                     central_head_sha=central_head,
                     batch=batch_meta,
+                    verify_remote_head=not cas_resume,
                 )
                 product_dir = state_dir / "products" / claimed["request_id"]
                 receipt_path = product_dir / "official-identity.json"

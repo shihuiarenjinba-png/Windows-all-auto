@@ -184,7 +184,8 @@ def expected_job(ledger: dict, slug: str) -> dict:
 
 def prepare(ledger: dict, receipt: dict, root: Path, slug: str | None = None, *,
             central_repository: str | None = None, central_branch: str | None = None,
-            central_head_sha: str | None = None, batch: dict | None = None) -> dict:
+            central_head_sha: str | None = None, batch: dict | None = None,
+            verify_remote_head: bool = True) -> dict:
     if slug is None:
         ready = [x for field in ("app_jobs", "three_d_jobs", "game_jobs")
                  for x in ledger.get("rotation_cohorts", {}).get(field, [])
@@ -235,7 +236,7 @@ def prepare(ledger: dict, receipt: dict, root: Path, slug: str | None = None, *,
         sync._verify_existing(expected, {
             "repository": job["source_repository"], "branch": job["source_branch"],
             "source_sha": job["source_sha"],
-        })
+        }, verify_remote_head=verify_remote_head)
     except (sync.SyncHold, OSError) as exc:
         raise OperatorHold("LOCAL_CODE_SYNC_REVALIDATION_FAILED") from exc
     return {

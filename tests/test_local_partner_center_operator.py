@@ -2,7 +2,7 @@
 from pathlib import Path
 import tempfile
 import unittest
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from scripts import local_partner_center_operator as op
 
@@ -87,6 +87,26 @@ class OperatorGateTests(unittest.TestCase):
             self.assertEqual(result["product_type"], "APP")
             self.assertEqual(result["identity_return_target"], TARGET)
             self.assertFalse(result["browser_action_performed"])
+
+    def test_prepare_cas_resume_keeps_snapshot_check_without_remote_head(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            target = root / "AI-App-Factory" / SHA[:12]
+            target.mkdir(parents=True)
+            receipt = {"status": "PASS", "exact_sha_verified": True, "products": [{
+                "repository": REPO, "branch": BRANCH, "source_sha": SHA, "slug": SLUG,
+                "request_id": REQUEST, "status": "REUSED_EXACT_SNAPSHOT", "path": str(target),
+            }]}
+            verifier = MagicMock(return_value={"status": "REUSED_EXACT_SNAPSHOT"})
+            with patch.object(op.sync, "_verify_existing", verifier):
+                op.prepare(
+                    ledger(), receipt, root, SLUG,
+                    central_repository="shihuiarenjinba-png/Windows-all-auto",
+                    central_branch="codex/e2e-belt-connection-20261027",
+                    central_head_sha="a" * 40,
+                    verify_remote_head=False,
+                )
+            self.assertFalse(verifier.call_args.kwargs["verify_remote_head"])
 
     def test_product_values_are_read_from_job_not_prism_constants(self):
         value = ledger()
