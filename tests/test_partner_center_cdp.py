@@ -10,6 +10,47 @@ from scripts.partner_center_cdp import (
 
 
 class PartnerCenterReadinessTests(unittest.TestCase):
+    def test_create_product_rechecks_overview_without_repeating_reserve(self):
+        page = CdpPage("target", None)
+        page.open_product_create_menu = MagicMock()
+        page._wait_not_busy = MagicMock()
+        page.fill_textbox = MagicMock()
+        page.click_exact = MagicMock()
+        page.evaluate = MagicMock(return_value={
+            "available": True, "unavailable": False,
+        })
+        page._wait_product_creation_outcome = MagicMock(
+            side_effect=PartnerCenterHold("HOLD_PRODUCT_CREATE_NOT_CONFIRMED")
+        )
+        page.search_product = MagicMock(return_value=1)
+
+        page._create_product("File Integrity Ledger")
+
+        page.search_product.assert_called_once_with("File Integrity Ledger")
+        reserve_calls = [
+            call for call in page.click_exact.call_args_list
+            if call.args == (["Reserve product name"],)
+        ]
+        self.assertEqual(len(reserve_calls), 1)
+
+    def test_create_product_still_holds_when_overview_has_no_match(self):
+        page = CdpPage("target", None)
+        page.open_product_create_menu = MagicMock()
+        page._wait_not_busy = MagicMock()
+        page.fill_textbox = MagicMock()
+        page.click_exact = MagicMock()
+        page.evaluate = MagicMock(return_value={
+            "available": True, "unavailable": False,
+        })
+        page._wait_product_creation_outcome = MagicMock(
+            side_effect=PartnerCenterHold("HOLD_PRODUCT_CREATE_NOT_CONFIRMED")
+        )
+        page.search_product = MagicMock(return_value=0)
+
+        with self.assertRaisesRegex(
+                PartnerCenterHold, "HOLD_PRODUCT_CREATE_NOT_CONFIRMED"):
+            page._create_product("File Integrity Ledger")
+
     def test_open_identity_reuses_already_visible_identity(self):
         page = CdpPage("target", None)
         identity = {"store_id": "9P6452C61N7B"}

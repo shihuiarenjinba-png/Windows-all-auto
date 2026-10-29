@@ -471,7 +471,17 @@ JSON.stringify((() => {
         if body_state.get("available") is not True:
             raise PartnerCenterHold("HOLD_BROWSER_STATE_AMBIGUOUS")
         self.click_exact(["Reserve product name"])
-        self._wait_product_creation_outcome(display_name)
+        try:
+            self._wait_product_creation_outcome(display_name)
+        except PartnerCenterHold as exc:
+            if str(exc) != "HOLD_PRODUCT_CREATE_NOT_CONFIRMED":
+                raise
+            count = self.search_product(display_name)
+            if count == 1:
+                return
+            if count > 1:
+                raise PartnerCenterHold("HOLD_DUPLICATE_PRODUCT") from exc
+            raise
 
     def _wait_product_creation_outcome(self, display_name: str,
                                        timeout: float = 60.0) -> None:
