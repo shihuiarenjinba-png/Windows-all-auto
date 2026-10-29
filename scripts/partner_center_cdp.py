@@ -529,11 +529,37 @@ JSON.stringify((() => {
                 ) is None):
             raise PartnerCenterHold("HOLD_PRODUCT_LINK_AMBIGUOUS")
         self.pointer_click_exact_link(display_name)
-        self._wait_product_creation_outcome(
-            display_name, timeout=90.0,
-            failure_code="HOLD_PRODUCT_OPEN_NOT_CONFIRMED",
-        )
+        try:
+            self._wait_exact_url(
+                target, timeout=45.0,
+                failure_code="HOLD_PRODUCT_OPEN_NOT_CONFIRMED",
+            )
+        except PartnerCenterHold as exc:
+            if str(exc) != "HOLD_PRODUCT_OPEN_NOT_CONFIRMED":
+                raise
+            # The trusted pointer click is never repeated. Navigation to the
+            # already validated same-host exact-product URL is read-only.
+            self.navigate(target, timeout=90.0)
+            self._wait_exact_url(
+                target, timeout=90.0,
+                failure_code="HOLD_PRODUCT_OPEN_NOT_CONFIRMED",
+            )
         self._wait_not_busy()
+
+    def _wait_exact_url(self, target: str, timeout: float,
+                        failure_code: str) -> None:
+        expected = target.rstrip("/")
+        deadline = time.monotonic() + timeout
+        while time.monotonic() < deadline:
+            value = self.evaluate(r"""
+JSON.stringify({url:location.href,ready:document.readyState})
+""")
+            state = json.loads(value) if isinstance(value, str) else {}
+            if (state.get("ready") == "complete"
+                    and str(state.get("url", "")).rstrip("/") == expected):
+                return
+            time.sleep(0.5)
+        raise PartnerCenterHold(failure_code)
 
     def _create_product(self, display_name: str) -> None:
         self.open_product_create_menu()

@@ -263,7 +263,7 @@ class PartnerCenterReadinessTests(unittest.TestCase):
             "href": "/en-us/dashboard/products/9PGZ445SR5GM/overview",
         }])
         page.pointer_click_exact_link = MagicMock()
-        page._wait_product_creation_outcome = MagicMock()
+        page._wait_exact_url = MagicMock()
         page._wait_not_busy = MagicMock()
 
         page._open_exact_product("File Integrity Ledger")
@@ -271,10 +271,35 @@ class PartnerCenterReadinessTests(unittest.TestCase):
         page.pointer_click_exact_link.assert_called_once_with(
             "File Integrity Ledger"
         )
-        page._wait_product_creation_outcome.assert_called_once_with(
-            "File Integrity Ledger", timeout=90.0,
+        page._wait_exact_url.assert_called_once_with(
+            target, timeout=45.0,
             failure_code="HOLD_PRODUCT_OPEN_NOT_CONFIRMED",
         )
+
+    def test_open_product_falls_back_to_validated_url_without_second_click(self):
+        page = CdpPage("target", None)
+        target = (
+            "https://partner.microsoft.com/en-us/dashboard/products/"
+            "9PGZ445SR5GM/overview"
+        )
+        page._visible_controls = MagicMock(return_value=[{
+            "tag": "a", "name": "File Integrity Ledger",
+            "href": "/en-us/dashboard/products/9PGZ445SR5GM/overview",
+        }])
+        page.pointer_click_exact_link = MagicMock()
+        page._wait_exact_url = MagicMock(side_effect=[
+            PartnerCenterHold("HOLD_PRODUCT_OPEN_NOT_CONFIRMED"), None,
+        ])
+        page.navigate = MagicMock()
+        page._wait_not_busy = MagicMock()
+
+        page._open_exact_product("File Integrity Ledger")
+
+        page.pointer_click_exact_link.assert_called_once_with(
+            "File Integrity Ledger"
+        )
+        page.navigate.assert_called_once_with(target, timeout=90.0)
+        self.assertEqual(page._wait_exact_url.call_count, 2)
 
     def test_open_product_rejects_cross_host_href(self):
         page = CdpPage("target", None)
