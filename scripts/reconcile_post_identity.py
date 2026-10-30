@@ -56,7 +56,7 @@ def reconcile_approved_return(
     ledger: dict, slug: str, *,
     fetch_branch_head: Callable[[str, str], str],
     fetch_approved_file: Callable[[str, str, str], str],
-    verify_source_ancestry: Callable[[str, str, str], bool] | None = None,
+    verify_source_ancestry: Callable[[str, str, str, str], bool] | None = None,
 ) -> tuple[dict, str]:
     """Return (updated ledger copy, transition), without performing a write.
 
@@ -89,7 +89,8 @@ def reconcile_approved_return(
     _require(callable(verify_source_ancestry),
              "HOLD_SOURCE_ANCESTRY_VERIFIER_MISSING")
     _require(verify_source_ancestry(job["source_repository"],
-                                    job["source_sha"], head) is True,
+                                    job["source_sha"], head,
+                                    expected_target) is True,
              "HOLD_SOURCE_ANCESTRY_CONFLICT")
     raw = fetch_approved_file(job["source_repository"], expected_target,
                               job["source_branch"])

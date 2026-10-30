@@ -168,25 +168,38 @@ def live_branch_head(repository: str, branch: str) -> str:
     return value
 
 
-def verify_source_ancestry(repository: str, source_sha: str, head: str) -> bool:
-    """Independently prove the immutable source is an ancestor of live HEAD.
+def verify_source_ancestry(
+        repository: str, source_sha: str, head: str, identity_return_target: str) -> bool:
+    """Verify the CAS return is exactly one Identity-only commit on source.
 
-    GitHub compare is a separate authenticated read. Missing or malformed
-    responses never count as successful Identity-return provenance.
+    An arbitrary descendant is not sufficient: a changed app binary or a
+    second commit must never be misclassified as a Provisioner Identity CAS.
+    Compare evidence comes from an independent authenticated GitHub read.
     """
     if (not isinstance(repository, str) or not repository.startswith("shihuiarenjinba-png/")
             or not re.fullmatch(r"[0-9a-f]{40}", str(source_sha))
             or not re.fullmatch(r"[0-9a-f]{40}", str(head))
+            or not isinstance(identity_return_target, str)
+            or not re.fullmatch(
+                r"products/[a-z0-9]+(?:-[a-z0-9]+)*/store/approved-identity\.json",
+                identity_return_target)
             or source_sha == head):
         return False
     comparison = gh_json(f"repos/{repository}/compare/{source_sha}...{head}")
-    return (isinstance(comparison, dict)
-            and comparison.get("status") == "ahead"
+    if not isinstance(comparison, dict):
+        return False
+    files = comparison.get("files")
+    return (comparison.get("status") == "ahead"
             and type(comparison.get("ahead_by")) is int
-            and comparison["ahead_by"] >= 1
-            and comparison.get("behind_by") == 0
+            and comparison["ahead_by"] == 1
+            and type(comparison.get("behind_by")) is int
+            and comparison["behind_by"] == 0
             and isinstance(comparison.get("merge_base_commit"), dict)
-            and comparison["merge_base_commit"].get("sha") == source_sha)
+            and comparison["merge_base_commit"].get("sha") == source_sha
+            and isinstance(files, list) and len(files) == 1
+            and isinstance(files[0], dict)
+            and files[0].get("filename") == identity_return_target
+            and files[0].get("status") == "added")
 
 
 def recheck_central(expected: str) -> None:
