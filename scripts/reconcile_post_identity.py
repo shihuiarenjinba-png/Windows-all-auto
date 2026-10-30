@@ -211,7 +211,8 @@ def reconcile_approved_return(
     _require(isinstance(requests, list) and all(isinstance(x, dict) for x in requests),
              "HOLD_USER_ID_REQUEST_SCHEMA")
     matching_requests = [x for x in requests if x.get("request_id") == job["request_id"]]
-    _require(len(matching_requests) == 1, "HOLD_USER_ID_REQUEST_MISSING_OR_DUPLICATE")
+    _require(len(matching_requests) >= 1, "HOLD_USER_ID_REQUEST_MISSING")
+    _require(len(matching_requests) == 1, "HOLD_USER_ID_REQUEST_DUPLICATE")
     for request in matching_requests:
         for field, expected in (
             ("product_name", job["display_name"]),
@@ -238,7 +239,8 @@ def reconcile_approved_return(
              "HOLD_REGISTRATION_ROUTER_SCHEMA")
     matching_routes = [x for x in router_entries
                        if x.get("product") == job["display_name"]]
-    _require(len(matching_routes) == 1, "HOLD_REGISTRATION_ROUTER_MISSING_OR_DUPLICATE")
+    _require(len(matching_routes) >= 1, "HOLD_REGISTRATION_ROUTER_MISSING")
+    _require(len(matching_routes) == 1, "HOLD_REGISTRATION_ROUTER_DUPLICATE")
     for entry in matching_routes:
         _require(entry.get("repository") == job["source_repository"],
                  "HOLD_REGISTRATION_ROUTER_SOURCE_CONFLICT")
