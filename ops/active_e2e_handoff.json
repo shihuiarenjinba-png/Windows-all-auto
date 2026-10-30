@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-30T23:41:33.803Z",
+  "updated_at_utc": "2026-10-30T23:42:33.474Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -2447,8 +2447,8 @@
     "local_execution_this_run": "NOT_PERFORMED"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-30T23:41:33.803Z",
-    "scope": "AUTHENTICATED_IMMUTABLE_POST_IDENTITY_GITHUB_READERS_DRAFT_PR84__PR83_CI_SUCCESS__SIX_FACTORY_APPROVED_FILE_RECHECK__NO_GATE_PROMOTION",
+    "observed_at_utc": "2026-10-30T23:42:33.474Z",
+    "scope": "PR84_AUTHENTICATED_POST_IDENTITY_READERS_WINDOWS_UBUNTU_CI_SUCCESS__PR83_CANONICAL_BRIDGE_CI_SUCCESS__FACTORY_IDENTITY_RECHECK__E2E_HOLD",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
     "canonical_previous_blob_sha": "b386620fabdfe489b3d3fd9f85a75e260e8ecefb",
@@ -2475,7 +2475,7 @@
     "success_count_cloud_verified": 2,
     "remaining_app_identity_returns": 2,
     "next_resume_index": 3,
-    "next_action": "PR84_WINDOWS_UBUNTU_CI_AND_REVIEW__THEN_EXPECTED_HEAD_SINGLE_WRITER_LEDGER_COMMIT_BOUNDARY__TEXT_DIFF_IMAGE_IDENTITY_CAPTURE_PENDING__APP_MARKET_FIT_HOLD__NO_REAL_MSIX",
+    "next_action": "PR84_REVIEW__IMPLEMENT_EXPECTED_HEAD_SINGLE_WRITER_LEDGER_BOUNDARY__DO_NOT_PROMOTE_MARKET_FIT_OR_VERSION__TEXT_DIFF_IMAGE_IDENTITY_RETURN_PENDING__LOCAL_GUI_E2E_NOT_VERIFIED",
     "post_identity_reconcile_pr": 49,
     "post_identity_reconcile_ci_run": 40851883814,
     "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU",
@@ -2984,13 +2984,13 @@
     "authenticated_post_readers": {
       "draft_pr": 84,
       "branch": "codex/e2e-authenticated-post-readers-20261031-0836",
-      "head_sha": "ce8a48db8603e8ed88f3643bdab8fcb6c1e65d40",
+      "head_sha": "d648c74d386de1241d784bd98230d4b498f4704c",
       "base_pr": 83,
       "base_branch": "codex/e2e-canonical-post-identity-bridge-20261031-0736",
       "scope": "GH_AUTH_IMMUTABLE_BRANCH_HEAD_AND_CONTENTS__ONE_COMMIT_ONE_ADDED_IDENTITY_FILE_ANCESTRY__IN_MEMORY_PROPOSAL",
       "tests": "NINE_OFFLINE_REGRESSIONS",
-      "ci_run_id": 41145915757,
-      "ci_status_at_write": "IN_PROGRESS_NOT_PASS",
+      "ci_run_id": 41145988737,
+      "ci_status_at_write": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
       "canonical_ledger_writer": "36_WINDOWS_E2E_ONLY",
       "expected_head_writer": "NOT_YET_IMPLEMENTED",
       "local_windows": "NOT_RUN",
@@ -2998,7 +2998,10 @@
       "cas": "NOT_PERFORMED",
       "real_msix": "NOT_BUILT",
       "store_submission": "NOT_PERFORMED",
-      "merge": "NOT_PERFORMED"
+      "merge": "NOT_PERFORMED",
+      "previous_failed_head": "ce8a48db8603e8ed88f3643bdab8fcb6c1e65d40",
+      "previous_failure_fix": "REGEX_ANCHORS_CORRECTED_AND_BOTH_PLATFORM_JOBS_GREEN",
+      "review_status": "DRAFT_UNMERGED"
     }
   },
   "post_identity_pipeline": {
