@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-30T11:43:18.538Z",
+  "updated_at_utc": "2026-10-30T12:38:15Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -2444,8 +2444,8 @@
     "local_execution_this_run": "NOT_PERFORMED"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-30T10:41:56Z",
-    "scope": "PR73_AUTHENTICATED_IMMUTABLE_MARKET_FIT_READER_CI_GREEN__FOUR_APP_SOURCE_EVIDENCE_404__PHYSICAL_WINDOWS_AND_PACKAGE_HOLD",
+    "observed_at_utc": "2026-10-30T12:38:15Z",
+    "scope": "PR74_IMMUTABLE_MARKET_FIT_REVIEW_COMMIT_CONTRACT__CI_IN_PROGRESS__REAL_PRODUCT_MARKET_FIT_HOLD__NO_LOCAL_OR_STORE_ACTION",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
     "canonical_previous_blob_sha": "a1ba4e8d9b2d5c2595d1c64d2562319249088d88",
@@ -2863,7 +2863,13 @@
       "store_submission": "NOT_PERFORMED",
       "integration": "STACKED_DRAFT_NOT_MERGED__RECONCILER_ADAPTER_AVAILABLE__NOT_WIRED_INTO_LOCAL_PACKAGE_DISPATCH",
       "next_action": "FACTORY_REVIEWED_EVIDENCE_AT_NEW_PINNED_SOURCE_IF_NEEDED__REVIEW_REPIN_AND_EXE_REBUILD__THEN_WIRE_READ_ONLY_MARKET_FIT_ADAPTER_INTO_DISPATCHER__VERSION_ASSETS_STILL_SEPARATE"
-    }
+    },
+    "market_fit_review_commit_pr": 74,
+    "market_fit_review_commit_head": "ce78d2b2ae2481d956b68a9c728641b5a16a0215",
+    "market_fit_review_commit_ci": "IN_PROGRESS_NOT_PASS",
+    "market_fit_review_commit_run": 41056843287,
+    "market_fit_review_commit_real_product_pass_count": 0,
+    "market_fit_review_commit_next_action": "REVIEW_FACTORIES_AND_PIN_EXACT_REVIEW_COMMIT_ONLY_AFTER_HUMAN_APPROVAL__PACKAGE_HOLD"
   },
   "post_identity_pipeline": {
     "schema_version": 1,
@@ -3299,6 +3305,29 @@
         "cas": "NOT_PERFORMED",
         "real_package": "NOT_BUILT",
         "store_submission": "NOT_PERFORMED"
+      },
+      "market_fit_review_commit_contract": {
+        "draft_pr": 74,
+        "branch": "codex/e2e-market-fit-review-commit-20261030-2136",
+        "head_sha": "ce78d2b2ae2481d956b68a9c728641b5a16a0215",
+        "base_pr": 73,
+        "ci_run_id": 41056843287,
+        "ci_status": "IN_PROGRESS_NOT_PASS",
+        "scope": "OPT_IN_REVIEW_ONLY_SINGLE_ADDED_MARKET_FIT_JSON_COMMIT_FROM_IMMUTABLE_FACTORY_SOURCE_SHA__EXACT_GITHUB_COMPARE_AND_CONTENTS_READ__NO_SOURCE_REPIN",
+        "offline_tests": "13_ISOLATED_LOCAL_TESTS_PASS_WITH_STUBBED_EXISTING_IMPORTS__FULL_REPO_CI_PENDING",
+        "current_real_factory_review_sha_count": 0,
+        "current_app_market_fit_pass_count": 0,
+        "app_package_gate": "MARKET_FIT_HOLD",
+        "identity_post_reconciliation": "VALID_IDENTITY_RETURN_CAN_PROMOTE_POST_EVEN_IF_MARKET_FIT_HOLD",
+        "source_sha_unchanged": true,
+        "version_assets": "HOLD",
+        "real_msix": "NOT_BUILT",
+        "local_windows": "NOT_PERFORMED",
+        "partner_center": "NOT_ACCESSED",
+        "cas": "NOT_PERFORMED",
+        "store_submission": "NOT_PERFORMED",
+        "integration": "STACKED_DRAFT_NOT_MERGED__NOT_WIRED_INTO_PACKAGE_DISPATCH",
+        "next_action": "FACTORY_OWNER_CREATE_REVIEWED_SINGLE_FILE_MARKET_FIT_COMMIT_ON_PINNED_SOURCE__36_WRITER_VERIFY_AND_PIN_REVIEW_SHA__NO_PACKAGE_BEFORE_MARKET_FIT_AND_VERSION_ASSET_APPROVAL"
       }
     },
     "market_fit_pass_count": 0,
