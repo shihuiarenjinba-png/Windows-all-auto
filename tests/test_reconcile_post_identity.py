@@ -80,6 +80,21 @@ class ReconcileTests(unittest.TestCase):
         self.assertEqual(result["post_identity_pipeline"]["products"][0]["state"],
                          "POST_IDENTITY_READY")
 
+    def test_approved_file_read_uses_immutable_verified_head(self):
+        ledger, approved = fixture()
+        observed = []
+        result, transition = reconcile_approved_return(
+            ledger, "test-app",
+            fetch_branch_head=lambda repo, branch: RETURN,
+            verify_source_ancestry=lambda *_: True,
+            fetch_approved_file=lambda repo, target, ref: (
+                observed.append((repo, target, ref)) or json.dumps(approved)),
+        )
+        self.assertEqual(transition, "POST_IDENTITY_READY")
+        self.assertEqual(observed, [(REPO,
+            "products/test-app/store/approved-identity.json", RETURN)])
+        self.assertNotEqual(observed[0][2], BRANCH)
+
     def test_idempotent_replay_requires_same_return_head(self):
         ledger, approved = fixture()
         once, _ = reconcile(ledger, approved)
