@@ -218,6 +218,42 @@ class ReconcileTests(unittest.TestCase):
                         reconcile(ledger, approved)
                     self.assertEqual(ledger, original)
 
+    def test_ambiguous_or_invalid_partner_center_display_names_hold(self):
+        for display_name in ("Test App", "test app", " Test App",
+                             "Test App ", "", None):
+            with self.subTest(display_name=display_name):
+                ledger, approved = fixture()
+                second = copy.deepcopy(ledger["rotation_cohorts"]["app_jobs"][0])
+                second.update({
+                    "request_id": "app-second-app-" + "d" * 12,
+                    "slug": "second-app",
+                    "source_branch": "codex/second-app",
+                    "source_sha": "d" * 40,
+                    "identity_return_target":
+                        "products/second-app/store/approved-identity.json",
+                    "display_name": display_name,
+                })
+                ledger["rotation_cohorts"]["app_jobs"].append(second)
+                original = copy.deepcopy(ledger)
+                with self.assertRaisesRegex(
+                        ReconcileHold, "HOLD_CROSS_PRODUCT_DISPLAY_NAME"):
+                    reconcile(ledger, approved)
+                self.assertEqual(ledger, original)
+
+    def test_malformed_auxiliary_roots_fail_closed_with_hold(self):
+        for field, code in (
+            ("user_id_requests", "HOLD_USER_ID_REQUEST_SCHEMA"),
+            ("registration_router", "HOLD_REGISTRATION_ROUTER_SCHEMA"),
+        ):
+            for invalid in (None, [], ["invalid"], "invalid", 42, {}):
+                with self.subTest(field=field, invalid=invalid):
+                    ledger, approved = fixture()
+                    ledger[field] = invalid
+                    original = copy.deepcopy(ledger)
+                    with self.assertRaisesRegex(ReconcileHold, code):
+                        reconcile(ledger, approved)
+                    self.assertEqual(ledger, original)
+
     def test_duplicate_user_identity_request_holds(self):
         ledger, approved = fixture()
         ledger["user_id_requests"]["items"].append(
