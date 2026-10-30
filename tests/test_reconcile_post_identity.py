@@ -457,7 +457,7 @@ class ReconcileTests(unittest.TestCase):
         self.assertEqual(ledger, original)
 
     def test_registration_type_missing_or_unknown_holds(self):
-        for value in (None, "OTHER"):
+        for value in (None, "OTHER", ["GDK_GAME"]):
             with self.subTest(value=value):
                 ledger, approved = fixture()
                 ledger["rotation_cohorts"]["app_jobs"][0]["registration_type"] = value
