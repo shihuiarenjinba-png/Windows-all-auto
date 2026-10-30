@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-30T14:36:07.262Z",
+  "updated_at_utc": "2026-10-30T14:36:44.080Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -3364,6 +3364,33 @@
         "app_package_gate": "MARKET_FIT_HOLD",
         "local_windows_execution": "NOT_PERFORMED",
         "real_msix": "NOT_BUILT",
+        "store_submission": "NOT_PERFORMED"
+      },
+      "factory_market_fit_export_gate": {
+        "repository": "shihuiarenjinba-png/AI-App-Factory",
+        "draft_pr": 44,
+        "branch": "codex/app5-market-fit-msix-failclosed-20261030",
+        "head_sha": "3e65976c8fe92e64a24584e042fae341719dd0e2",
+        "exact_head_ci_run_id": 41068055189,
+        "ci_status": "SUCCESS_AT_EXACT_HEAD",
+        "scope": "FACTORY_MSIX_PUSH_SELECTOR_AND_DIRECT_BUILDER_BOTH_FAIL_CLOSED_ON_REVIEWED_APP5_MARKET_FIT",
+        "factory_policy_min_score": 80,
+        "central_policy_min_score": 70,
+        "factory_schema": "app5-market-fit-v1__docs/market/<slug>.market-fit.json",
+        "central_schema": "schema_version_1__products/<slug>/market-fit.json__IMMUTABLE_REVIEW_COMMIT",
+        "status": "HOLD_MARKET_FIT_CROSS_REPO_CONTRACT_ALIGNMENT",
+        "market_scores_observed_from_factory_draft_prs": {
+          "offline-notes-canary": 45,
+          "focus-session-desk": 47,
+          "file-integrity-ledger": 61,
+          "offline-text-diff-desk": 46,
+          "offline-image-inventory-desk": 64
+        },
+        "factory_market_fit_pass_count": 0,
+        "note": "Factory's stricter 80-point gate and evidence schema differ from central 70-point read contract. Do not treat central 70+ alone as Factory package approval; no automatic score/schema downgrade or fabricated review SHA.",
+        "integration_status": "STACKED_DRAFT_NOT_MERGED",
+        "real_msix": "NOT_BUILT",
+        "local_windows_execution": "NOT_PERFORMED",
         "store_submission": "NOT_PERFORMED"
       }
     },
