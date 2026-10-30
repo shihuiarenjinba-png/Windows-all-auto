@@ -307,6 +307,7 @@ class MixedAuditTests(unittest.TestCase):
         ledger, approved, artifacts = fixture()
         ledger["rotation_cohorts"]["three_d_jobs"] = [{
             "product_type": "GAME_3D", "slug": "prism-route-3d",
+            "display_name": "Prism Route 3D",
             "request_id": "3d-prism-route-3d-abcdef",
             "identity_return_target": "products/prism-route-3d/store/approved-identity.json",
             "identity_store_id": "9P6452C61N7B",
