@@ -45,6 +45,7 @@ def fixture():
         "source_sha": SOURCE, "expected_head_sha": SOURCE,
         "package_sha256": EXE, "package_version_gate": "HOLD",
         "store_id": "9P6452C61N7B", "name": "OkinawaDesktopTools.TestApp",
+        "reserved_display_name": "Test App", "publisher_display_name": "Test Publisher",
         "publisher": "CN=Test", "package_family_name": "OkinawaDesktopTools.TestApp_j8yefg9jgfh58",
         "package_sid": "S-1-15-2-1-2-3-4-5-6-7",
     }
@@ -200,6 +201,36 @@ class ReconcileTests(unittest.TestCase):
         ledger, approved = fixture()
         approved["request_id"] = "other-request"
         with self.assertRaisesRegex(ReconcileHold, "HOLD_APPROVED_IDENTITY_SOURCE_CONFLICT"):
+            reconcile(ledger, approved)
+
+    def test_store_reserved_name_must_match_queue_product(self):
+        ledger, approved = fixture()
+        approved["reserved_display_name"] = "Different App"
+        with self.assertRaisesRegex(ReconcileHold, "HOLD_APPROVED_IDENTITY_PRODUCT_CONFLICT"):
+            reconcile(ledger, approved)
+
+    def test_store_reserved_name_missing_is_not_sufficient(self):
+        ledger, approved = fixture()
+        del approved["reserved_display_name"]
+        with self.assertRaisesRegex(ReconcileHold, "HOLD_APPROVED_IDENTITY_SCHEMA"):
+            reconcile(ledger, approved)
+
+    def test_optional_display_name_mismatch_is_rejected(self):
+        ledger, approved = fixture()
+        approved["display_name"] = "Different App"
+        with self.assertRaisesRegex(ReconcileHold, "HOLD_APPROVED_IDENTITY_PRODUCT_CONFLICT"):
+            reconcile(ledger, approved)
+
+    def test_pfn_prefix_must_equal_identity_name(self):
+        ledger, approved = fixture()
+        approved["name"] = "OkinawaDesktopTools.DifferentApp"
+        with self.assertRaisesRegex(ReconcileHold, "HOLD_APPROVED_IDENTITY_PRODUCT_CONFLICT"):
+            reconcile(ledger, approved)
+
+    def test_publisher_display_name_required(self):
+        ledger, approved = fixture()
+        approved.pop("publisher_display_name")
+        with self.assertRaisesRegex(ReconcileHold, "HOLD_APPROVED_IDENTITY_SCHEMA"):
             reconcile(ledger, approved)
 
     def test_exe_hash_conflict(self):
