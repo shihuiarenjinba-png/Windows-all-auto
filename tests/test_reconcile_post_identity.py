@@ -368,6 +368,40 @@ class MarketFitPackageGateTests(unittest.TestCase):
         self.assertEqual(result["post_identity_pipeline"]["products"][0]["market_fit_gate"],
                          "MARKET_FIT_PASS")
 
+    def test_market_fit_evidence_flag_is_synchronized_on_pass_and_replay_hold(self):
+        ledger, approved = fixture()
+        evidence = self.market_evidence()
+        callbacks = {
+            "fetch_branch_head": lambda *_: RETURN,
+            "verify_source_ancestry": lambda *_: True,
+            "fetch_approved_file": lambda *_: json.dumps(approved),
+        }
+        passed, transition = reconcile_approved_return(
+            ledger, "test-app", **callbacks,
+            fetch_market_fit=lambda *_: json.dumps(evidence))
+        self.assertEqual(transition, "POST_IDENTITY_READY")
+        self.assertTrue(passed["rotation_cohorts"]["app_jobs"][0]["market_fit_evidence_verified"])
+        self.assertTrue(passed["post_identity_pipeline"]["products"][0]["market_fit_evidence_verified"])
+
+        held, transition = reconcile_approved_return(
+            passed, "test-app", **callbacks,
+            fetch_market_fit=lambda *_: None)
+        self.assertEqual(transition, "EXISTING_VERIFIED")
+        for item in (held["rotation_cohorts"]["app_jobs"][0],
+                     held["post_identity_pipeline"]["products"][0]):
+            self.assertEqual(item["market_fit_gate"], "MARKET_FIT_HOLD")
+            self.assertIs(item["market_fit_evidence_verified"], False)
+        self.assertEqual(held["rotation_cohorts"]["app_jobs"][0]["package_version_gate"], "HOLD")
+        self.assertTrue(passed["rotation_cohorts"]["app_jobs"][0]["market_fit_evidence_verified"])
+
+    def test_stale_market_fit_flag_is_cleared_without_reader(self):
+        ledger, approved = fixture()
+        ledger["rotation_cohorts"]["app_jobs"][0]["market_fit_evidence_verified"] = True
+        ledger["post_identity_pipeline"]["products"][0]["market_fit_evidence_verified"] = True
+        result, _ = reconcile(ledger, approved)
+        self.assertIs(result["rotation_cohorts"]["app_jobs"][0]["market_fit_evidence_verified"], False)
+        self.assertIs(result["post_identity_pipeline"]["products"][0]["market_fit_evidence_verified"], False)
+
     def test_missing_schema_version_holds(self):
         evidence = self.market_evidence()
         evidence.pop("schema_version")
