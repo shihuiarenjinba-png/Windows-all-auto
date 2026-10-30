@@ -139,7 +139,8 @@ def audit_rotation(ledger, *, fetch_head, fetch_approved, fetch_artifact,
                     "HOLD_CROSS_PRODUCT_IDENTITY_COLLISION")
             seen_ids.add(approved["store_id"])
             seen_pfns.add(approved["package_family_name"])
-            require(job.get("identity_store_id") == approved["store_id"],
+            require(job.get("identity_store_id") == approved["store_id"]
+                    and job.get("identity_pfn") == approved["package_family_name"],
                     "HOLD_CENTRAL_IDENTITY_CONFLICT")
             # The same exact-GitHub evidence must also satisfy the canonical
             # single-writer POST_IDENTITY reconciler. No ledger write here.
