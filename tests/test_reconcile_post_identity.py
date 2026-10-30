@@ -154,6 +154,72 @@ class ReconcileTests(unittest.TestCase):
             )
         self.assertEqual(promoted, original)
 
+    def test_user_identity_request_cross_product_binding_holds(self):
+        for field, wrong in (
+            ("product_name", "Different App"),
+            ("repo", "shihuiarenjinba-png/Other-Factory"),
+            ("source_branch", "codex/other"),
+            ("source_sha", "d" * 40),
+            ("identity_return_target", "products/other/store/approved-identity.json"),
+            ("product_type", "GAME"),
+            ("slug", "different-app"),
+        ):
+            with self.subTest(field=field):
+                ledger, approved = fixture()
+                ledger["user_id_requests"]["items"][0][field] = wrong
+                original = copy.deepcopy(ledger)
+                with self.assertRaisesRegex(
+                        ReconcileHold, "HOLD_USER_ID_REQUEST_SOURCE_CONFLICT"):
+                    reconcile(ledger, approved)
+                self.assertEqual(ledger, original)
+
+    def test_user_identity_request_exact_binding_is_accepted(self):
+        ledger, approved = fixture()
+        request = ledger["user_id_requests"]["items"][0]
+        job = ledger["rotation_cohorts"]["app_jobs"][0]
+        request.update({
+            "product_name": job["display_name"], "repo": REPO,
+            "source_branch": BRANCH, "source_sha": SOURCE,
+            "identity_return_target": job["identity_return_target"],
+            "product_type": "APP", "slug": "test-app",
+        })
+        result, transition = reconcile(ledger, approved)
+        self.assertEqual(transition, "POST_IDENTITY_READY")
+        self.assertEqual(result["user_id_requests"]["items"][0]["status"],
+                         "USER_IDENTITY_RECEIVED")
+
+    def test_duplicate_user_identity_request_holds(self):
+        ledger, approved = fixture()
+        ledger["user_id_requests"]["items"].append(
+            copy.deepcopy(ledger["user_id_requests"]["items"][0]))
+        with self.assertRaisesRegex(ReconcileHold, "HOLD_USER_ID_REQUEST_DUPLICATE"):
+            reconcile(ledger, approved)
+
+    def test_registration_router_wrong_repository_holds(self):
+        ledger, approved = fixture()
+        ledger["registration_router"]["entries"][0]["repository"] = (
+            "shihuiarenjinba-png/Other-Factory")
+        with self.assertRaisesRegex(
+                ReconcileHold, "HOLD_REGISTRATION_ROUTER_SOURCE_CONFLICT"):
+            reconcile(ledger, approved)
+
+    def test_registration_router_wrong_type_holds(self):
+        ledger, approved = fixture()
+        ledger["rotation_cohorts"]["app_jobs"][0]["registration_type"] = (
+            "MSIX_OR_PWA_APP")
+        ledger["registration_router"]["entries"][0]["registration_type"] = (
+            "GDK_GAME")
+        with self.assertRaisesRegex(
+                ReconcileHold, "HOLD_REGISTRATION_ROUTER_SOURCE_CONFLICT"):
+            reconcile(ledger, approved)
+
+    def test_duplicate_registration_router_entry_holds(self):
+        ledger, approved = fixture()
+        ledger["registration_router"]["entries"].append(
+            copy.deepcopy(ledger["registration_router"]["entries"][0]))
+        with self.assertRaisesRegex(ReconcileHold, "HOLD_REGISTRATION_ROUTER_DUPLICATE"):
+            reconcile(ledger, approved)
+
     def test_idempotent_replay_requires_same_return_head(self):
         ledger, approved = fixture()
         once, _ = reconcile(ledger, approved)
