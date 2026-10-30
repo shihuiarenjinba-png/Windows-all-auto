@@ -20,6 +20,7 @@ def fixture():
         target = f"products/{slug}/store/approved-identity.json"
         job = {
             "product_type": "APP", "slug": slug,
+            "display_name": slug.replace("-", " ").title(),
             "status": "POST_IDENTITY_READY" if i == 1 else "PRE_IDENTITY_READY",
             "source_repository": "shihuiarenjinba-png/AI-App-Factory",
             "source_branch": source_branch, "source_sha": sha,
