@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-30T17:40:00Z",
+  "updated_at_utc": "2026-10-30T18:35:33.088Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -2444,8 +2444,8 @@
     "local_execution_this_run": "NOT_PERFORMED"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-30T17:40:00Z",
-    "scope": "PR78_REGISTRATION_LANE_AND_SELECTION_BINDING_GUARD_DRAFT__FOUR_APP_GITHUB_RETURN_RECHECK__E2E_HOLD",
+    "observed_at_utc": "2026-10-30T18:35:33.088Z",
+    "scope": "PR78_EXACT_HEAD_CI_SUCCESS__PR79_REQUIRED_AUX_BINDINGS_DRAFT_CI_PENDING__SIX_FACTORY_IDENTITY_RETURN_RECHECK__E2E_HOLD",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
     "canonical_previous_blob_sha": "de5b32e367a9f808007c6c25097231deb27a0730",
@@ -2472,7 +2472,7 @@
     "success_count_cloud_verified": 2,
     "remaining_app_identity_returns": 2,
     "next_resume_index": 3,
-    "next_action": "WAIT_PR78_EXACT_HEAD_WINDOWS_UBUNTU_CI__REVIEW_REGISTRATION_ROUTER_BINDING__TEXT_DIFF_IMAGE_INVENTORY_GITHUB_RETURN_STILL_MISSING__APP_MARKET_FIT_REVIEWED_EVIDENCE_HOLD__VERSION_ASSET_MSIX_LOCAL_QA_HOLD",
+    "next_action": "WAIT_PR79_EXACT_HEAD_WINDOWS_UBUNTU_CI__REVIEW_AUX_REQUIRED_BINDING__TEXT_DIFF_AND_IMAGE_INVENTORY_APPROVED_IDENTITY_404__APP_MARKET_FIT_REVIEWED_EVIDENCE_HOLD__PACKAGE_VERSION_ASSET_REAL_MSIX_AND_LOCAL_QA_HOLD",
     "post_identity_reconcile_pr": 49,
     "post_identity_reconcile_ci_run": 40851883814,
     "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU",
@@ -2525,15 +2525,16 @@
     "mixed_local_preflight_ci": "SUCCESS_AT_EXACT_HEAD",
     "mixed_local_preflight_capability": "FOCUS_POST_SKIP__THREE_PRE_EXACT_SOURCE_AND_EXE_VERIFICATION__SHARED_LOCK__NO_BROWSER_CAS",
     "mixed_local_preflight_execution": "NOT_RUN_ON_USER_WINDOWS",
-    "canonical_head_before_write": "a4d0741019c534a6e5ac5623bd2e2295d7ffcad3",
+    "canonical_head_before_write": "10303fb2b79c02fee9b769b49f1aa4c55665a78b",
     "latest_remote_recheck": {
-      "verified_at_utc": "2026-10-30T17:40:00Z",
-      "focus": "POST_IDENTITY_READY__APPROVED_FILE_PRESENT__REQUEST_SOURCE_PFN_MATCH__VERSION_HOLD",
-      "ledger": "POST_IDENTITY_READY__APPROVED_FILE_PRESENT__REQUEST_SOURCE_PFN_MATCH__VERSION_HOLD",
-      "text_diff": "PRE_IDENTITY_READY__APPROVED_FILE_404",
-      "image_inventory": "PRE_IDENTITY_READY__APPROVED_FILE_404",
-      "prism": "POST_IDENTITY_READY__PREVIOUS_GITHUB_IDENTITY_RETURN_VERIFIED__NOT_RECHECKED_THIS_RUN",
-      "signal_sprint": "USER_IDENTITY_RECEIVED__CAS_APPROVAL_HOLD__NOT_RECHECKED_THIS_RUN",
+      "verified_at_utc": "2026-10-30T18:35:33.088Z",
+      "focus": "POST_IDENTITY_READY__APPROVED_FILE_PRESENT__REQUEST_SOURCE_STORE_ID_MATCH__VERSION_HOLD",
+      "ledger": "POST_IDENTITY_READY__APPROVED_FILE_PRESENT__REQUEST_SOURCE_STORE_ID_MATCH__VERSION_HOLD",
+      "text_diff": "PRE_IDENTITY_READY__APPROVED_FILE_404__SOURCE_HEAD_EXACT",
+      "image_inventory": "PRE_IDENTITY_READY__APPROVED_FILE_404__SOURCE_HEAD_EXACT",
+      "prism": "POST_IDENTITY_READY__APPROVED_FILE_PRESENT__REQUEST_SOURCE_STORE_ID_MATCH__VERSION_HOLD",
+      "signal_sprint": "USER_IDENTITY_RECEIVED__APPROVED_FILE_404__SOURCE_HEAD_EXACT",
+      "factory_artifact_metadata": "NOT_RECHECKED_THIS_RUN__CONNECTOR_ENDPOINT_UNAVAILABLE",
       "local_windows": "NOT_ACCESSED",
       "partner_center": "NOT_ACCESSED",
       "cas": "NOT_PERFORMED",
@@ -2906,7 +2907,16 @@
       "canonical_ledger_mutation": "OBSERVATION_ONLY__NO_IDENTITY_OR_PACKAGE_GATE_PROMOTION",
       "physical_windows": "NOT_PERFORMED",
       "store_submission": "NOT_PERFORMED"
-    }
+    },
+    "registration_lane_binding_pr": 78,
+    "registration_lane_binding_head": "e8c1a19bd0602d098015b67ee504aab4e9ee9907",
+    "registration_lane_binding_ci_run": 41100588411,
+    "registration_lane_binding_ci": "SUCCESS_AT_EXACT_HEAD",
+    "auxiliary_required_binding_pr": 79,
+    "auxiliary_required_binding_head": "a0dc5a19a1bfddc96f2a5f026ccd9da5376478ea",
+    "auxiliary_required_binding_ci_run": 41108174878,
+    "auxiliary_required_binding_ci": "QUEUED_NOT_YET_PASS",
+    "auxiliary_required_binding_scope": "REQUIRE_EXACTLY_ONE_CANONICAL_USER_ID_REQUEST_AND_REGISTRATION_ROUTE__REQUIRE_EXPLICIT_ROUTER_REPOSITORY__FAIL_CLOSED"
   },
   "post_identity_pipeline": {
     "schema_version": 1,
@@ -3423,6 +3433,18 @@
         "tests": "SIX_NEW_OFFLINE_REGRESSIONS",
         "canonical_ledger_write": "ONLY_36_MIN_OWNER__NO_AUTOMATED_CAS_OR_STORE_WRITE",
         "integration_status": "STACKED_DRAFT_NOT_MERGED",
+        "physical_windows_execution": "NOT_PERFORMED",
+        "store_submission": "NOT_PERFORMED"
+      },
+      "auxiliary_required_binding": {
+        "draft_pr": 79,
+        "branch": "codex/e2e-aux-records-required-20261031-0336",
+        "head_sha": "a0dc5a19a1bfddc96f2a5f026ccd9da5376478ea",
+        "base_pr": 78,
+        "ci_run_id": 41108174878,
+        "ci_status": "QUEUED_NOT_YET_PASS",
+        "scope": "MISSING_USER_ID_REQUEST_OR_REGISTRATION_ROUTE_AND_MISSING_ROUTER_REPOSITORY_FAIL_CLOSED",
+        "canonical_ledger_changed_by_code_pr": false,
         "physical_windows_execution": "NOT_PERFORMED",
         "store_submission": "NOT_PERFORMED"
       }
