@@ -84,6 +84,20 @@ def fixture():
         "rotation_cohorts": {"app_jobs": jobs},
         "multi_product_partner_center_batch_4": {"products": records},
         "post_identity_pipeline": {"products": pipeline},
+        "user_id_requests": {"items": [
+            {"request_id": job["request_id"], "product_name": job["display_name"],
+             "repo": job["source_repository"], "source_branch": job["source_branch"],
+             "source_sha": job["source_sha"],
+             "registration_type": job["registration_type"],
+             "partner_center_selection": job["partner_center_selection"]}
+            for job in jobs
+        ]},
+        "registration_router": {"entries": [
+            {"product": job["display_name"], "repository": job["source_repository"],
+             "registration_type": job["registration_type"],
+             "partner_center_selection": job["partner_center_selection"]}
+            for job in jobs
+        ]},
     }
     return ledger, approved, artifacts
 
