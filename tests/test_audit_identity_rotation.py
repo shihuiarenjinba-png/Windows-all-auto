@@ -47,6 +47,8 @@ def fixture():
                 "package_sha256": job["expected_exe_sha256"],
                 "package_version_gate": "HOLD",
                 "store_id": "9P6452C61N7B", "name": "Publisher.Focus",
+                "reserved_display_name": job["display_name"],
+                "publisher_display_name": "Example Publisher",
                 "publisher": "CN=Example",
                 "package_family_name": "Publisher.Focus_abcdefghijklm",
                 "package_sid": "S-1-15-2-1-2-3-4-5-6-7",
