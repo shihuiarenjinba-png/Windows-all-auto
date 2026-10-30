@@ -148,6 +148,8 @@ class MarketFitReviewReaderTests(unittest.TestCase):
                 JOB["source_repository"], PATH, SOURCE))
             updated = copy.deepcopy(source)
             updated["rotation_cohorts"]["app_jobs"][0]["status"] = "POST_IDENTITY_READY"
+            updated["rotation_cohorts"]["app_jobs"][0]["market_fit_evidence_verified"] = True
+            updated["post_identity_pipeline"]["products"][0]["market_fit_evidence_verified"] = True
             return updated, "POST_IDENTITY_READY"
         reconcile.side_effect = fake_reconcile
         updated, transition = reconcile_with_reviewed_market_fit(
@@ -156,6 +158,8 @@ class MarketFitReviewReaderTests(unittest.TestCase):
             verify_source_ancestry=lambda *a: False,
         )
         self.assertEqual(transition, "POST_IDENTITY_READY")
+        self.assertIs(updated["rotation_cohorts"]["app_jobs"][0]["market_fit_evidence_verified"], False)
+        self.assertIs(updated["post_identity_pipeline"]["products"][0]["market_fit_evidence_verified"], False)
         self.assertEqual(
             updated["rotation_cohorts"]["app_jobs"][0]["market_fit_gate"],
             "MARKET_FIT_HOLD",

@@ -134,8 +134,10 @@ def reconcile_with_reviewed_market_fit(
             if item.get("slug") == slug:
                 item["market_fit_gate"] = "MARKET_FIT_HOLD"
                 item["market_fit_reason"] = read_hold[0]
+                item["market_fit_evidence_verified"] = False
         for item in updated["post_identity_pipeline"]["products"]:
             if item.get("request_id") == job["request_id"]:
                 item["market_fit_gate"] = "MARKET_FIT_HOLD"
                 item["market_fit_reason"] = read_hold[0]
+                item["market_fit_evidence_verified"] = False
     return updated, transition
