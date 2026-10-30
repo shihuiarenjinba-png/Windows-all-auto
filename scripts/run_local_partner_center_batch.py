@@ -181,7 +181,7 @@ def verify_source_ancestry(
             or not re.fullmatch(r"[0-9a-f]{40}", str(head))
             or not isinstance(identity_return_target, str)
             or not re.fullmatch(
-                r"products/[a-z0-9]+(?:-[a-z0-9]+)*/store/approved-identity\\.json",
+                r"products/[a-z0-9]+(?:-[a-z0-9]+)*/store/approved-identity\.json",
                 identity_return_target)
             or source_sha == head):
         return False
