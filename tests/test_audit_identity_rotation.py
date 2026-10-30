@@ -81,7 +81,7 @@ def check(ledger, approved, artifacts, **overrides):
         return json.dumps(value) if isinstance(value, dict) else value
     return audit.audit_rotation(
         ledger, fetch_head=fetch_head, fetch_approved=fetch_approved,
-        fetch_ancestry=lambda repo, source, head: overrides.get("ancestry", True),
+        fetch_ancestry=lambda repo, source, head, target: overrides.get("ancestry", True),
         fetch_artifact=lambda repo, artifact_id: artifacts[artifact_id],
         now_utc=datetime(2026, 10, 29, tzinfo=timezone.utc),
     )
@@ -108,21 +108,32 @@ class MixedAuditTests(unittest.TestCase):
         repo = "shihuiarenjinba-png/AI-App-Factory"
         source, head = "a" * 40, "b" * 40
         good = {"status": "ahead", "ahead_by": 1, "behind_by": 0,
-                "merge_base_commit": {"sha": source}}
+                "merge_base_commit": {"sha": source},
+                "files": [{"filename": "products/focus-session-desk/store/approved-identity.json",
+                           "status": "added"}]}
+        target = "products/focus-session-desk/store/approved-identity.json"
         with patch.object(runner, "gh_json", return_value=good) as gh:
-            self.assertTrue(runner.verify_source_ancestry(repo, source, head))
+            self.assertTrue(runner.verify_source_ancestry(repo, source, head, target))
             gh.assert_called_once_with(f"repos/{repo}/compare/{source}...{head}")
         for bad in (
             {**good, "status": "diverged"},
             {**good, "ahead_by": 0},
+            {**good, "ahead_by": 2},
             {**good, "behind_by": 1},
             {**good, "merge_base_commit": {"sha": "c" * 40}},
+            {**good, "files": []},
+            {**good, "files": [{"filename": "README.md", "status": "modified"}]},
+            {**good, "files": [{"filename": target, "status": "modified"}]},
+            {**good, "files": good["files"] + [
+                {"filename": "src/app.py", "status": "modified"}]},
+            {**good, "files": [{"filename": "products/other/store/approved-identity.json",
+                               "status": "added"}]},
             None,
         ):
             with self.subTest(bad=bad), patch.object(runner, "gh_json", return_value=bad):
-                self.assertFalse(runner.verify_source_ancestry(repo, source, head))
+                self.assertFalse(runner.verify_source_ancestry(repo, source, head, target))
         with patch.object(runner, "gh_json") as gh:
-            self.assertFalse(runner.verify_source_ancestry(repo, source, source))
+            self.assertFalse(runner.verify_source_ancestry(repo, source, source, target))
             gh.assert_not_called()
 
     def test_post_head_drift_holds(self):
@@ -259,7 +270,9 @@ class MixedAuditTests(unittest.TestCase):
                 self.assertEqual(source, "1" * 40)
                 self.assertEqual(head, "a" * 40)
                 return {"status": "ahead", "ahead_by": 1, "behind_by": 0,
-                        "merge_base_commit": {"sha": source}}
+                        "merge_base_commit": {"sha": source},
+                        "files": [{"filename": "products/focus-session-desk/store/approved-identity.json",
+                                   "status": "added"}]}
             if "/contents/" in endpoint:
                 slug = endpoint.split("/products/")[1].split("/")[0]
                 item = approved.get(slug)
