@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-30T22:39:08.515Z",
+  "updated_at_utc": "2026-10-30T22:39:46.429Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -2971,6 +2971,15 @@
       "evidence_commit": "11417b75636ee18816028ffd5221884c4c9a9836",
       "gate_promotion": "NONE",
       "package_version_gate": "HOLD"
+    },
+    "canonical_prism_pipeline_fix": {
+      "status": "POST_IDENTITY_REPLAY_BINDING_COMPLETED_FROM_EXISTING_VERIFIED_IDENTITY",
+      "request_id": "3d-prism-route-3d-15fdcb52e46e",
+      "identity_store_id": "9N95J2T57B41",
+      "identity_pfn": "OkinawaDesktopTools.PrismRoute3D_j8yefg9jgfh58",
+      "return_commit_sha": "11417b75636ee18816028ffd5221884c4c9a9836",
+      "package_version_gate": "HOLD",
+      "e2e_pass": false
     }
   },
   "post_identity_pipeline": {
@@ -3145,7 +3154,9 @@
           "windows_checker": "NOT_RUN",
           "gui_install_qa": "NOT_RUN",
           "store_final_submission": "NOT_PERFORMED"
-        }
+        },
+        "identity_store_id": "9N95J2T57B41",
+        "identity_pfn": "OkinawaDesktopTools.PrismRoute3D_j8yefg9jgfh58"
       },
       {
         "product": "Signal Sprint",
