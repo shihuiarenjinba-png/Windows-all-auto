@@ -117,6 +117,31 @@ class MixedAuditTests(unittest.TestCase):
         self.assertEqual(result["store_submission"], "NOT_PERFORMED")
         self.assertEqual(result["cas"], "NOT_PERFORMED")
 
+    def test_all_identity_file_reads_use_immutable_observed_heads(self):
+        ledger, approved, artifacts = fixture()
+        observed = []
+        def head(repo, branch):
+            job = next(j for j in ledger["rotation_cohorts"]["app_jobs"]
+                       if j["source_branch"] == branch)
+            return job.get("identity_return_commit_sha", job["source_sha"])
+        def approved_at_commit(repo, path, commit_sha):
+            slug = path.split("/")[1]
+            job = next(j for j in ledger["rotation_cohorts"]["app_jobs"]
+                       if j["slug"] == slug)
+            self.assertEqual(commit_sha, head(repo, job["source_branch"]))
+            self.assertNotEqual(commit_sha, job["source_branch"])
+            observed.append((slug, commit_sha))
+            return json.dumps(approved[slug]) if slug in approved else None
+        result = audit.audit_rotation(
+            ledger, fetch_head=head, fetch_approved=approved_at_commit,
+            fetch_ancestry=lambda *_: True,
+            fetch_artifact=lambda repo, aid: artifacts[aid],
+            now_utc=datetime(2026, 10, 29, tzinfo=timezone.utc),
+        )
+        self.assertEqual(result["discovered_count"], 4)
+        self.assertEqual(len(observed), 4)
+        self.assertEqual(observed[0][1], "a" * 40)
+
     def test_post_unrelated_head_holds_before_promotion(self):
         ledger, approved, artifacts = fixture()
         with self.assertRaisesRegex(audit.AuditHold, "HOLD_SOURCE_ANCESTRY_CONFLICT"):
@@ -293,6 +318,10 @@ class MixedAuditTests(unittest.TestCase):
                                    "status": "added"}]}
             if "/contents/" in endpoint:
                 slug = endpoint.split("/products/")[1].split("/")[0]
+                job = next(j for j in ledger["rotation_cohorts"]["app_jobs"]
+                           if j["slug"] == slug)
+                expected = job.get("identity_return_commit_sha", job["source_sha"])
+                self.assertTrue(endpoint.endswith(f"?ref={expected}"))
                 item = approved.get(slug)
                 if item is None:
                     return None
