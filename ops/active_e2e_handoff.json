@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-30T00:39:58Z",
+  "updated_at_utc": "2026-10-30T01:43:55Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -1049,7 +1049,7 @@
       "app-offline-image-inventory-desk-16b6a772952c"
     ]
   },
-  "classification": "APP_MIXED_FOCUS_LEDGER_POST_2__TEXT_IMAGE_PRE_2__PR61_EXACT_HEAD_CI_GREEN__AUTHENTICATED_MIXED_EXECUTOR_HOLD__E2E_HOLD",
+  "classification": "APP_MIXED_FOCUS_LEDGER_POST_2__TEXT_IMAGE_PRE_2__PR63_CAS_CRASH_RECOVERY_CI_GREEN__PHYSICAL_WINDOWS_AND_E2E_HOLD",
   "registration_router": {
     "schema_version": 1,
     "status": "WINDOWS_UBUNTU_ROUTER_CI_PASS__LOCAL_MODE__PRISM_EXISTING_MANUAL_REFERENCE",
@@ -2417,8 +2417,8 @@
     "local_execution_this_run": "NOT_PERFORMED"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-30T00:39:58Z",
-    "scope": "FOUR_APP_LIVE_GITHUB_RETURN_RECHECK__OPT_IN_MIXED_SERIAL_EXECUTOR_DRAFT_CI_PASS__LOCAL_EXECUTION_HOLD",
+    "observed_at_utc": "2026-10-30T01:43:55Z",
+    "scope": "FOUR_APP_EXACT_GITHUB_RETURN_RECHECK__MIXED_ACTIVE_AFTER_CAS_CRASH_RECOVERY_DRAFT_CI_PASS__LOCAL_EXECUTION_HOLD",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
     "canonical_previous_blob_sha": "83dbf5f051572ad8b7e6bf0c1986fce3443668dc",
@@ -2432,7 +2432,7 @@
     "ledger_identity_capture": "GITHUB_APPROVED_IDENTITY_FILE_EXACT_REQUEST_SOURCE_EXE_HASH__LOCAL_UI_RECEIPT_NOT_INDEPENDENTLY_READ",
     "text_diff_identity_capture": "NOT_VERIFIED__APPROVED_FILE_404",
     "image_inventory_identity_capture": "NOT_VERIFIED__APPROVED_FILE_404",
-    "mixed_status_runner": "PR62_OPT_IN_EXECUTOR_CODE_CI_GREEN__PHYSICAL_WINDOWS_AND_CRASH_RECOVERY_HOLD",
+    "mixed_status_runner": "PR63_CRASH_RECOVERY_CODE_CI_GREEN__PHYSICAL_WINDOWS_CRASH_RESTART_AND_CAS_REPLAY_ATTESTATION_HOLD",
     "local_code_sync": "NOT_RUN_THIS_CLOUD_EXECUTION",
     "partner_center_cdp": "NOT_RUN_THIS_CLOUD_EXECUTION",
     "cas": "NO_NEW_CAS_THIS_EXECUTION",
@@ -2445,7 +2445,7 @@
     "success_count_cloud_verified": 2,
     "remaining_app_identity_returns": 2,
     "next_resume_index": 3,
-    "next_action": "Review PR62 mixed serial executor and Provisioner compatibility, fix crash-after-CAS recovery, then run physical Windows two remaining APPs and verify receipts. Reconcile each approved return before package/version gate; no Store submission.",
+    "next_action": "Review PR63 and existing Provisioner single-writer contract; physical Windows crash/restart proof then serial Text Diff and Image Inventory Identity return. Central writer must reconcile exact approved files before package/version gate. No Task Scheduler registration or Store submission before proof.",
     "post_identity_reconcile_pr": 49,
     "post_identity_reconcile_ci_run": 40851883814,
     "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU",
@@ -2498,15 +2498,15 @@
     "mixed_local_preflight_ci": "SUCCESS_AT_EXACT_HEAD",
     "mixed_local_preflight_capability": "FOCUS_POST_SKIP__THREE_PRE_EXACT_SOURCE_AND_EXE_VERIFICATION__SHARED_LOCK__NO_BROWSER_CAS",
     "mixed_local_preflight_execution": "NOT_RUN_ON_USER_WINDOWS",
-    "canonical_head_before_write": "00a4e53cfe40da8814341e22803e3da87de0d3f4",
+    "canonical_head_before_write": "c1896cbb5c236e3c786f1955744fe8f0285a5925",
     "latest_remote_recheck": {
-      "verified_at_utc": "2026-10-29T22:41:11.174Z",
-      "focus": "POST_IDENTITY_READY__APPROVED_FILE_PRESENT",
-      "ledger": "POST_IDENTITY_READY__APPROVED_FILE_PRESENT__COMMIT_db9a57af822788af4c8384499a6e343ec7b0353d",
-      "text_diff": "PRE_IDENTITY_READY__APPROVED_FILE_404",
-      "image_inventory": "PRE_IDENTITY_READY__APPROVED_FILE_404",
-      "prism": "POST_IDENTITY_READY__APPROVED_FILE_PRESENT",
-      "signal_sprint": "USER_IDENTITY_RECEIVED__APPROVED_FILE_404",
+      "verified_at_utc": "2026-10-30T01:43:55Z",
+      "focus": "POST_IDENTITY_READY__APPROVED_FILE_EXACT_REQUEST_SOURCE__HEAD_8a7139375524830bf823469526837259266172be",
+      "ledger": "POST_IDENTITY_READY__APPROVED_FILE_EXACT_REQUEST_SOURCE__HEAD_db9a57af822788af4c8384499a6e343ec7b0353d",
+      "text_diff": "PRE_IDENTITY_READY__APPROVED_FILE_404__SOURCE_HEAD_EXACT",
+      "image_inventory": "PRE_IDENTITY_READY__APPROVED_FILE_404__SOURCE_HEAD_EXACT",
+      "prism": "PREVIOUSLY_VERIFIED_NOT_RECHECKED_THIS_RUN",
+      "signal_sprint": "USER_IDENTITY_RECEIVED__CAS_PENDING_NOT_RECHECKED_THIS_RUN",
       "artifacts": "PREVIOUSLY_VERIFIED_NOT_REDOWNLOADED_THIS_RUN",
       "local_windows": "NOT_ACCESSED",
       "partner_center": "NOT_ACCESSED",
@@ -2647,11 +2647,26 @@
       "real_msix": "NOT_BUILT",
       "store_submission": "NOT_PERFORMED",
       "next_gate": "REVIEW_PROVISIONER_COMPATIBILITY__PHYSICAL_WINDOWS_SERIAL_TEST__CRASH_RECOVERY__SCHEDULED_TRIGGER_PROOF"
+    },
+    "mixed_cas_crash_recovery": {
+      "draft_pr": 63,
+      "branch": "codex/e2e-mixed-cas-crash-recovery-20261030-1036",
+      "head_sha": "ccbe40db0afca27e42894185ba0279714dc0afb6",
+      "base_pr": 62,
+      "offline_qa_run_id": 40987481417,
+      "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+      "scope": "ACTIVE_AFTER_REMOTE_CAS_TO_GITHUB_RECONCILED_POST_SKIP__INDEPENDENT_READ_ONLY_AUTHENTICATED_UI_GITHUB_RETURN_VERIFICATION__NO_FABRICATED_CAS_REPLAY",
+      "tests": "NEW_FAIL_CLOSED_CRASH_WINDOW_REGRESSIONS",
+      "physical_windows_execution": "NOT_PERFORMED",
+      "crash_recovery_on_local_pc": "NOT_VERIFIED",
+      "task_scheduler_registration": "HOLD",
+      "store_submission": "NOT_PERFORMED",
+      "next_gate": "PHYSICAL_WINDOWS_CRASH_RESTART_EXERCISE__REVIEW_CAS_REPLAY_EVIDENCE__THEN_CONTROLLED_TWO_PRODUCT_SERIAL_RUN"
     }
   },
   "post_identity_pipeline": {
     "schema_version": 1,
-    "updated_at_utc": "2026-10-30T00:39:58Z",
+    "updated_at_utc": "2026-10-30T01:43:55Z",
     "writer": "36_WINDOWS_E2E_ONLY",
     "reconciliation_basis": "FRESH_GITHUB_FOUR_APP_HEADS_AND_APPROVED_IDENTITY_FILES__FOUR_ARTIFACT_METADATA_DIGEST_EXPIRY_MATCH__NO_LOCAL_RECEIPTS",
     "product_count": 7,
@@ -2986,6 +3001,21 @@
         "real_msix": "NOT_BUILT",
         "store_submission": "NOT_PERFORMED",
         "next_gate": "REVIEW_PROVISIONER_COMPATIBILITY__PHYSICAL_WINDOWS_SERIAL_TEST__CRASH_RECOVERY__SCHEDULED_TRIGGER_PROOF"
+      },
+      "mixed_cas_crash_recovery": {
+        "draft_pr": 63,
+        "branch": "codex/e2e-mixed-cas-crash-recovery-20261030-1036",
+        "head_sha": "ccbe40db0afca27e42894185ba0279714dc0afb6",
+        "base_pr": 62,
+        "offline_qa_run_id": 40987481417,
+        "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+        "scope": "ACTIVE_AFTER_REMOTE_CAS_TO_GITHUB_RECONCILED_POST_SKIP__INDEPENDENT_READ_ONLY_AUTHENTICATED_UI_GITHUB_RETURN_VERIFICATION__NO_FABRICATED_CAS_REPLAY",
+        "tests": "NEW_FAIL_CLOSED_CRASH_WINDOW_REGRESSIONS",
+        "physical_windows_execution": "NOT_PERFORMED",
+        "crash_recovery_on_local_pc": "NOT_VERIFIED",
+        "task_scheduler_registration": "HOLD",
+        "store_submission": "NOT_PERFORMED",
+        "next_gate": "PHYSICAL_WINDOWS_CRASH_RESTART_EXERCISE__REVIEW_CAS_REPLAY_EVIDENCE__THEN_CONTROLLED_TWO_PRODUCT_SERIAL_RUN"
       }
     }
   },
@@ -3075,7 +3105,7 @@
       "task_scheduler_registration": "HOLD",
       "scope": "CI_CONTRACT_ONLY__NOT_LIVE_LOCAL_EXECUTION"
     },
-    "latest_identity_file_recheck_at_utc": "2026-10-29T23:33:54.756Z",
+    "latest_identity_file_recheck_at_utc": "2026-10-30T01:43:55Z",
     "latest_identity_file_recheck": {
       "focus": "PRESENT_EXACT",
       "ledger": "PRESENT_EXACT",
@@ -3084,7 +3114,7 @@
       "prism": "PREVIOUSLY_VERIFIED_NOT_RECHECKED_THIS_WRITE",
       "signal_sprint": "PREVIOUSLY_ABSENT_NOT_RECHECKED_THIS_WRITE"
     },
-    "latest_identity_file_recheck_scope": "GITHUB_FILE_CONTENTS_AND_LEDGER_COMMIT_ANCESTRY_ONLY__NO_LOCAL_OR_PARTNER_CENTER",
+    "latest_identity_file_recheck_scope": "FRESH_FOUR_APP_GITHUB_SOURCE_BRANCH_HEADS_AND_APPROVED_FILES_ONLY__ARTIFACT_EXPIRY_PREVIOUS_EVIDENCE",
     "latest_app_remote_evidence": {
       "checked_at_utc": "2026-10-29T23:33:54.756Z",
       "app_states": {
