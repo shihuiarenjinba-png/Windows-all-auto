@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-30T04:38:25.745Z",
+  "updated_at_utc": "2026-10-30T05:40:45.540Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -2425,8 +2425,8 @@
     "local_execution_this_run": "NOT_PERFORMED"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-30T04:38:25.745Z",
-    "scope": "POST_IDENTITY_REPLAY_BINDING_GUARD_PR66_WINDOWS_UBUNTU_CI_SUCCESS__PHYSICAL_WINDOWS_HOLD",
+    "observed_at_utc": "2026-10-30T05:40:45.540Z",
+    "scope": "PR67_POST_IDENTITY_SOURCE_ANCESTRY_GUARD_CI_SUCCESS__PHYSICAL_WINDOWS_HOLD",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
     "canonical_previous_blob_sha": "5cbec2c18c2879b2346a37f8b7cc4335000f94b5",
@@ -2453,7 +2453,7 @@
     "success_count_cloud_verified": 2,
     "remaining_app_identity_returns": 2,
     "next_resume_index": 3,
-    "next_action": "PR66 code/CI green; physical Windows reviewed-worktree mixed serial and crash/restart remain HOLD. Text Diff/Image approved Identity files still 404; do not infer Store Identity or re-enter POST jobs. Version/asset approval then real MSIX/GDK/backlog/local pull/Checker/GUI QA required.",
+    "next_action": "PR67 CI green and stacked Draft; do not merge. Physical Windows reviewed mixed serial and crash/restart verification remain HOLD. Text Diff/Image approved Identity files 404; wait for authenticated exact capture and existing Provisioner CAS. Focus/Ledger/Prism stay POST_IDENTITY_READY with Package Version/asset approval HOLD; no real MSIX/GDK/backlog/local QA evidence.",
     "post_identity_reconcile_pr": 49,
     "post_identity_reconcile_ci_run": 40851883814,
     "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU",
@@ -2729,11 +2729,35 @@
       "store_submission": "NOT_PERFORMED",
       "offline_qa_run_id": 41003943519,
       "offline_qa_url": "https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/41003943519"
+    },
+    "source_ancestry_guard_pr": 67,
+    "source_ancestry_guard_branch": "codex/e2e-post-identity-source-ancestry-20261030-1436",
+    "source_ancestry_guard_head": "fa797548d482ff997514f0e395c96ff4bda27b61",
+    "source_ancestry_guard_ci_run": 41009697722,
+    "source_ancestry_guard_ci": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+    "source_ancestry_live_evidence": {
+      "focus": {
+        "source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+        "return_head": "8a7139375524830bf823469526837259266172be",
+        "compare": "AHEAD_1_MERGE_BASE_EQUALS_SOURCE"
+      },
+      "ledger": {
+        "source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
+        "return_head": "db9a57af822788af4c8384499a6e343ec7b0353d",
+        "compare": "AHEAD_1_MERGE_BASE_EQUALS_SOURCE"
+      },
+      "prism": {
+        "source_sha": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
+        "return_head": "11417b75636ee18816028ffd5221884c4c9a9836",
+        "compare": "AHEAD_1_MERGE_BASE_EQUALS_SOURCE"
+      },
+      "text_diff": "SOURCE_BRANCH_IDENTICAL_TO_PINNED_SHA__APPROVED_IDENTITY_404",
+      "image_inventory": "SOURCE_BRANCH_IDENTICAL_TO_PINNED_SHA__APPROVED_IDENTITY_404"
     }
   },
   "post_identity_pipeline": {
     "schema_version": 1,
-    "updated_at_utc": "2026-10-30T03:35:10Z",
+    "updated_at_utc": "2026-10-30T05:40:45.540Z",
     "writer": "36_WINDOWS_E2E_ONLY",
     "reconciliation_basis": "FRESH_GITHUB_FOUR_APP_SOURCE_BRANCH_HEADS_AND_APPROVED_IDENTITY_FILES__PREVIOUS_ARTIFACT_METADATA_DIGEST_EXPIRY_EVIDENCE__NO_LOCAL_RECEIPTS",
     "product_count": 7,
@@ -3087,6 +3111,22 @@
         "task_scheduler_registration": "HOLD",
         "store_submission": "NOT_PERFORMED",
         "next_gate": "PHYSICAL_WINDOWS_CRASH_RESTART_EXERCISE__REVIEW_CAS_REPLAY_EVIDENCE__THEN_CONTROLLED_TWO_PRODUCT_SERIAL_RUN"
+      },
+      "source_ancestry_guard": {
+        "draft_pr": 67,
+        "branch": "codex/e2e-post-identity-source-ancestry-20261030-1436",
+        "head_sha": "fa797548d482ff997514f0e395c96ff4bda27b61",
+        "base_pr": 66,
+        "ci_run_id": 41009697722,
+        "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+        "scope": "POST_IDENTITY_REQUIRES_LIVE_GITHUB_COMPARE_PINNED_SOURCE_SHA_ANCESTOR_OF_RETURN_HEAD",
+        "proof_contract": "status=ahead__ahead_by>=1__behind_by=0__merge_base_commit.sha==immutable_source_sha",
+        "test_scope": "MISSING_VERIFIER_UNRELATED_RETURN_HEAD_INVALID_COMPARE_AND_MOCKED_AUDIT_ENTRYPOINT_FAIL_CLOSED",
+        "integration_status": "STACKED_DRAFT_NOT_MERGED",
+        "physical_windows_execution": "NOT_PERFORMED",
+        "cas": "NOT_PERFORMED",
+        "real_msix": "NOT_BUILT",
+        "store_submission": "NOT_PERFORMED"
       }
     }
   },
