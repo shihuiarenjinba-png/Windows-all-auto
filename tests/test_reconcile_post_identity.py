@@ -459,6 +459,7 @@ class ReconcileTests(unittest.TestCase):
         ledger, approved = fixture()
         other = copy.deepcopy(ledger["rotation_cohorts"]["app_jobs"][0])
         other.update({"slug": "another", "request_id": "another-request",
+                      "display_name": "Another App",
                       "identity_return_target": "products/another/store/approved-identity.json",
                       "identity_store_id": approved["store_id"]})
         ledger["rotation_cohorts"]["app_jobs"].append(other)
