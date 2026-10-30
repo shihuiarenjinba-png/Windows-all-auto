@@ -47,6 +47,8 @@ def assess_market_fit(job: dict, fetch_factory_evidence=None) -> tuple[str, str]
         return "MARKET_FIT_HOLD", "HOLD_MARKET_FIT_JSON_INVALID"
     if not isinstance(evidence, dict):
         return "MARKET_FIT_HOLD", "HOLD_MARKET_FIT_SCHEMA"
+    if type(evidence.get("schema_version")) is not int or evidence["schema_version"] != 1:
+        return "MARKET_FIT_HOLD", "HOLD_MARKET_FIT_SCHEMA"
     for field in ("slug", "request_id", "source_repository", "source_branch",
                   "source_sha"):
         if evidence.get(field) != job.get(field):
