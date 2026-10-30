@@ -2820,12 +2820,12 @@
     "market_fit_gate": {
       "draft_pr": 72,
       "branch": "codex/e2e-market-fit-package-gate-20261030-1936",
-      "head_sha": "d2921015425bcd6d8ec1409192bf8abba1bb4097",
+      "head_sha": "5f939a9d6a860044b61539d6a29a83a1dbeb871f",
       "base_pr": 71,
-      "ci_run_id": 41042653333,
-      "ci_status": "QUEUED_NOT_PASS",
+      "ci_run_id": null,
+      "ci_status": "PENDING_EXACT_HEAD_WORKFLOW_DISCOVERY",
       "scope": "AUTHENTICATED_IMMUTABLE_FACTORY_SOURCE_SHA_MARKET_FIT_EVIDENCE__SCORE_GE_70__WHY_PAY__FREE_ALTERNATIVE_DIFFERENCE__COMPETITOR_RESEARCH__CROSS_PRODUCT_BINDING",
-      "tests_added": 12,
+      "tests_added": 13,
       "app_jobs_market_fit_hold": 4,
       "app_pipeline_market_fit_hold": 5,
       "real_market_fit_evidence": "NOT_VERIFIED",
@@ -2836,7 +2836,8 @@
       "partner_center": "NOT_ACCESSED",
       "cas": "NOT_PERFORMED",
       "store_submission": "NOT_PERFORMED",
-      "next_action": "WAIT_EXACT_HEAD_WINDOWS_UBUNTU_CI__FACTORY_REVIEWED_MARKET_FIT_EVIDENCE__AUTHENTICATED_IMMUTABLE_READER__THEN_VERSION_ASSETS_GATE"
+      "next_action": "WAIT_EXACT_HEAD_WINDOWS_UBUNTU_CI__FACTORY_REVIEWED_MARKET_FIT_EVIDENCE__AUTHENTICATED_IMMUTABLE_READER__THEN_VERSION_ASSETS_GATE",
+      "schema_version_guard": true
     }
   },
   "post_identity_pipeline": {
