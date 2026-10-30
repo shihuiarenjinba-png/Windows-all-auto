@@ -16,6 +16,8 @@ def fixture():
     job = {
         "product_type": "APP", "display_name": "Test App",
         "slug": "test-app", "status": "PRE_IDENTITY_READY",
+        "registration_type": "MSIX_OR_PWA_APP",
+        "partner_center_selection": "MSIX or PWA app",
         "request_id": "app-test-app-aaaaaaaaaaaa",
         "source_repository": REPO, "source_branch": BRANCH,
         "source_sha": SOURCE, "expected_exe_sha256": EXE,
@@ -28,6 +30,8 @@ def fixture():
             "requested_fields": ["Store ID"], "allow_local_product_creation": True,
         }]},
         "registration_router": {"entries": [{"product": "Test App",
+            "registration_type": "MSIX_OR_PWA_APP",
+            "partner_center_selection": "MSIX or PWA app",
             "identity_status": "LOCAL_OPERATOR_ACTIVE"}]},
         "post_identity_pipeline": {"products": [{
             "product": "Test App", "lane": "APP",
@@ -437,6 +441,69 @@ class ReconcileTests(unittest.TestCase):
                 verify_source_ancestry=lambda *_: True,
             )
 
+
+
+    def test_registration_lane_conflict_even_when_router_agrees(self):
+        ledger, approved = fixture()
+        job = ledger["rotation_cohorts"]["app_jobs"][0]
+        job["registration_type"] = "GDK_GAME"
+        job["partner_center_selection"] = "GDK game"
+        router = ledger["registration_router"]["entries"][0]
+        router["registration_type"] = "GDK_GAME"
+        router["partner_center_selection"] = "GDK game"
+        original = copy.deepcopy(ledger)
+        with self.assertRaisesRegex(ReconcileHold, "HOLD_REGISTRATION_LANE_CONFLICT"):
+            reconcile(ledger, approved)
+        self.assertEqual(ledger, original)
+
+    def test_registration_type_missing_or_unknown_holds(self):
+        for value in (None, "OTHER"):
+            with self.subTest(value=value):
+                ledger, approved = fixture()
+                ledger["rotation_cohorts"]["app_jobs"][0]["registration_type"] = value
+                with self.assertRaisesRegex(ReconcileHold, "HOLD_REGISTRATION_LANE_CONFLICT"):
+                    reconcile(ledger, approved)
+
+    def test_job_partner_center_selection_must_match_type(self):
+        ledger, approved = fixture()
+        ledger["rotation_cohorts"]["app_jobs"][0]["partner_center_selection"] = "GDK game"
+        with self.assertRaisesRegex(ReconcileHold, "HOLD_REGISTRATION_SELECTION_CONFLICT"):
+            reconcile(ledger, approved)
+
+    def test_request_registration_and_selection_must_match(self):
+        for field, wrong in (("registration_type", "GDK_GAME"),
+                             ("partner_center_selection", "GDK game")):
+            with self.subTest(field=field):
+                ledger, approved = fixture()
+                ledger["user_id_requests"]["items"][0][field] = wrong
+                with self.assertRaisesRegex(
+                        ReconcileHold, "HOLD_USER_ID_REQUEST_SOURCE_CONFLICT"):
+                    reconcile(ledger, approved)
+
+    def test_router_registration_and_selection_required(self):
+        for field, wrong in (("registration_type", None),
+                             ("partner_center_selection", None),
+                             ("partner_center_selection", "GDK game")):
+            with self.subTest(field=field, wrong=wrong):
+                ledger, approved = fixture()
+                entry = ledger["registration_router"]["entries"][0]
+                if wrong is None:
+                    del entry[field]
+                else:
+                    entry[field] = wrong
+                with self.assertRaisesRegex(
+                        ReconcileHold, "HOLD_REGISTRATION_ROUTER_SOURCE_CONFLICT"):
+                    reconcile(ledger, approved)
+
+    def test_full_registration_binding_promotes(self):
+        ledger, approved = fixture()
+        request = ledger["user_id_requests"]["items"][0]
+        request["registration_type"] = "MSIX_OR_PWA_APP"
+        request["partner_center_selection"] = "MSIX or PWA app"
+        result, transition = reconcile(ledger, approved)
+        self.assertEqual(transition, "POST_IDENTITY_READY")
+        self.assertEqual(result["registration_router"]["entries"][0]
+                         ["identity_status"], "GITHUB_APPROVED_IDENTITY_RETURN_VERIFIED")
 
 
 class MarketFitPackageGateTests(unittest.TestCase):
