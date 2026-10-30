@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-30T10:41:56Z",
+  "updated_at_utc": "2026-10-30T10:43:00Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -851,7 +851,7 @@
     "post_identity_immutable_head_read_guard_ci_pass": true,
     "post_identity_immutable_head_read_guard_physical_windows_pass": false,
     "market_fit_gate_draft_code_committed": true,
-    "market_fit_gate_ci_pass": false,
+    "market_fit_gate_ci_pass": true,
     "market_fit_factory_evidence_verified": false,
     "market_fit_package_runner_integrated": false,
     "market_fit_real_app_pass": false
@@ -1057,7 +1057,7 @@
       "app-offline-image-inventory-desk-16b6a772952c"
     ]
   },
-  "classification": "APP_POST_IDENTITY_2_PRE_2__PRISM_POST__SIGNAL_CAS_HOLD__APP_MARKET_FIT_HOLD_5__PR72_CI_QUEUED__REAL_PACKAGE_AND_E2E_HOLD",
+  "classification": "APP_POST_IDENTITY_2_PRE_2__PRISM_POST__SIGNAL_CAS_HOLD__APP_MARKET_FIT_HOLD_5__PR72_CI_GREEN_DRAFT__REAL_PACKAGE_AND_E2E_HOLD",
   "registration_router": {
     "schema_version": 1,
     "status": "WINDOWS_UBUNTU_ROUTER_CI_PASS__LOCAL_MODE__PRISM_EXISTING_MANUAL_REFERENCE",
@@ -2445,7 +2445,7 @@
   },
   "last_36_execution": {
     "observed_at_utc": "2026-10-30T10:41:56Z",
-    "scope": "PR72_APP_MARKET_FIT_PRE_MSIX_FAIL_CLOSED_GUARD_DRAFT__CI_QUEUED__PHYSICAL_WINDOWS_HOLD",
+    "scope": "PR72_APP_MARKET_FIT_PRE_MSIX_FAIL_CLOSED_GUARD__EXACT_HEAD_WINDOWS_UBUNTU_CI_PASS__FACTORY_EVIDENCE_AND_PHYSICAL_WINDOWS_HOLD",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
     "canonical_previous_blob_sha": "a1ba4e8d9b2d5c2595d1c64d2562319249088d88",
@@ -2472,7 +2472,7 @@
     "success_count_cloud_verified": 2,
     "remaining_app_identity_returns": 2,
     "next_resume_index": 3,
-    "next_action": "Review PR72 exact-head CI and Factory MARKET_FIT evidence contract; APP 4 cohort plus Offline Notes remain MARKET_FIT_HOLD before formal MSIX. Focus/Ledger/Prism Identity POST remains intact; Text Diff/Image PRE; Signal CAS HOLD. No local execution, package, Store upload or submission.",
+    "next_action": "Factory owner must provide reviewed MARKET_FIT_PASS evidence with score>=70, why-pay, free alternative difference and competitor research for each APP at pinned source SHA. Review authenticated GitHub evidence adapter and enforce package dispatcher before real MSIX; separately require Version/assets. Existing POST Identity preserved, PRE Text/Image and Signal CAS remain HOLD; no Store submission.",
     "post_identity_reconcile_pr": 49,
     "post_identity_reconcile_ci_run": 40851883814,
     "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU",
@@ -2822,8 +2822,8 @@
       "branch": "codex/e2e-market-fit-package-gate-20261030-1936",
       "head_sha": "5f939a9d6a860044b61539d6a29a83a1dbeb871f",
       "base_pr": 71,
-      "ci_run_id": null,
-      "ci_status": "PENDING_EXACT_HEAD_WORKFLOW_DISCOVERY",
+      "ci_run_id": 41042744533,
+      "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
       "scope": "AUTHENTICATED_IMMUTABLE_FACTORY_SOURCE_SHA_MARKET_FIT_EVIDENCE__SCORE_GE_70__WHY_PAY__FREE_ALTERNATIVE_DIFFERENCE__COMPETITOR_RESEARCH__CROSS_PRODUCT_BINDING",
       "tests_added": 13,
       "app_jobs_market_fit_hold": 4,
@@ -2837,12 +2837,13 @@
       "cas": "NOT_PERFORMED",
       "store_submission": "NOT_PERFORMED",
       "next_action": "WAIT_EXACT_HEAD_WINDOWS_UBUNTU_CI__FACTORY_REVIEWED_MARKET_FIT_EVIDENCE__AUTHENTICATED_IMMUTABLE_READER__THEN_VERSION_ASSETS_GATE",
-      "schema_version_guard": true
+      "schema_version_guard": true,
+      "ci_url": "https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/41042744533"
     }
   },
   "post_identity_pipeline": {
     "schema_version": 1,
-    "updated_at_utc": "2026-10-30T10:41:56Z",
+    "updated_at_utc": "2026-10-30T10:43:00Z",
     "writer": "36_WINDOWS_E2E_ONLY",
     "reconciliation_basis": "FRESH_GITHUB_FOUR_APP_SOURCE_BRANCH_HEADS_AND_APPROVED_IDENTITY_FILES__PREVIOUS_ARTIFACT_METADATA_DIGEST_EXPIRY_EVIDENCE__NO_LOCAL_RECEIPTS",
     "product_count": 7,
