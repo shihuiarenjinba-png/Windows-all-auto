@@ -96,6 +96,64 @@ class ReconcileTests(unittest.TestCase):
             "products/test-app/store/approved-identity.json", RETURN)])
         self.assertNotEqual(observed[0][2], BRANCH)
 
+    def test_factory_head_rechecked_after_immutable_reads(self):
+        ledger, approved = fixture()
+        observed = []
+        result, transition = reconcile_approved_return(
+            ledger, "test-app",
+            fetch_branch_head=lambda *_: (observed.append(RETURN) or RETURN),
+            verify_source_ancestry=lambda *_: True,
+            fetch_approved_file=lambda *_: json.dumps(approved),
+        )
+        self.assertEqual(transition, "POST_IDENTITY_READY")
+        self.assertEqual(observed, [RETURN, RETURN])
+        self.assertEqual(result["rotation_cohorts"]["app_jobs"][0]
+                         ["identity_return_commit_sha"], RETURN)
+
+    def test_factory_head_drift_during_identity_read_holds_without_mutation(self):
+        ledger, approved = fixture()
+        original = copy.deepcopy(ledger)
+        heads = iter((RETURN, "d" * 40))
+        with self.assertRaisesRegex(ReconcileHold, "HOLD_FACTORY_HEAD_DRIFT"):
+            reconcile_approved_return(
+                ledger, "test-app",
+                fetch_branch_head=lambda *_: next(heads),
+                verify_source_ancestry=lambda *_: True,
+                fetch_approved_file=lambda *_: json.dumps(approved),
+            )
+        self.assertEqual(ledger, original)
+
+    def test_factory_head_drift_during_market_fit_read_holds(self):
+        ledger, approved = fixture()
+        current = [RETURN]
+        def read_market_fit(*_):
+            current[0] = "d" * 40
+            return None
+        with self.assertRaisesRegex(ReconcileHold, "HOLD_FACTORY_HEAD_DRIFT"):
+            reconcile_approved_return(
+                ledger, "test-app",
+                fetch_branch_head=lambda *_: current[0],
+                verify_source_ancestry=lambda *_: True,
+                fetch_approved_file=lambda *_: json.dumps(approved),
+                fetch_market_fit=read_market_fit,
+            )
+        self.assertEqual(ledger["rotation_cohorts"]["app_jobs"][0]["status"],
+                         "PRE_IDENTITY_READY")
+
+    def test_factory_head_drift_on_post_replay_holds(self):
+        ledger, approved = fixture()
+        promoted, _ = reconcile(ledger, approved)
+        original = copy.deepcopy(promoted)
+        heads = iter((RETURN, "e" * 40))
+        with self.assertRaisesRegex(ReconcileHold, "HOLD_FACTORY_HEAD_DRIFT"):
+            reconcile_approved_return(
+                promoted, "test-app",
+                fetch_branch_head=lambda *_: next(heads),
+                verify_source_ancestry=lambda *_: True,
+                fetch_approved_file=lambda *_: json.dumps(approved),
+            )
+        self.assertEqual(promoted, original)
+
     def test_idempotent_replay_requires_same_return_head(self):
         ledger, approved = fixture()
         once, _ = reconcile(ledger, approved)
