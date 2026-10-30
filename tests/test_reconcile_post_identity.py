@@ -27,6 +27,12 @@ def fixture():
         "rotation_cohorts": {"app_jobs": [job], "three_d_jobs": []},
         "user_id_requests": {"items": [{
             "request_id": job["request_id"], "status": "LOCAL_PARTNER_CENTER_OPERATOR_ACTIVE",
+            "product_name": job["display_name"], "repo": REPO,
+            "source_branch": BRANCH, "source_sha": SOURCE,
+            "identity_return_target": job["identity_return_target"],
+            "product_type": "APP", "slug": "test-app",
+            "registration_type": "MSIX_OR_PWA_APP",
+            "partner_center_selection": "MSIX or PWA app",
             "requested_fields": ["Store ID"], "allow_local_product_creation": True,
         }]},
         "registration_router": {"entries": [{"product": "Test App",
@@ -192,6 +198,25 @@ class ReconcileTests(unittest.TestCase):
         self.assertEqual(transition, "POST_IDENTITY_READY")
         self.assertEqual(result["user_id_requests"]["items"][0]["status"],
                          "USER_IDENTITY_RECEIVED")
+
+    def test_missing_canonical_request_binding_fails_closed(self):
+        fields = ("product_name", "repo", "source_branch", "source_sha",
+                  "identity_return_target", "product_type", "slug",
+                  "registration_type", "partner_center_selection")
+        for field in fields:
+            for invalid in ("missing", "empty", "null"):
+                with self.subTest(field=field, invalid=invalid):
+                    ledger, approved = fixture()
+                    request = ledger["user_id_requests"]["items"][0]
+                    if invalid == "missing":
+                        request.pop(field)
+                    else:
+                        request[field] = "" if invalid == "empty" else None
+                    original = copy.deepcopy(ledger)
+                    with self.assertRaisesRegex(
+                            ReconcileHold, "HOLD_USER_ID_REQUEST_BINDING_INCOMPLETE"):
+                        reconcile(ledger, approved)
+                    self.assertEqual(ledger, original)
 
     def test_duplicate_user_identity_request_holds(self):
         ledger, approved = fixture()
