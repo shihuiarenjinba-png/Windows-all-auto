@@ -121,7 +121,8 @@ def reconcile_approved_return(
              and approved.get("source") == "partner_center"
              and approved.get("package_version_gate") == "HOLD",
              "HOLD_IDENTITY_OR_VERSION_GATE")
-    for key in ("store_id", "name", "publisher", "package_family_name", "package_sid"):
+    for key in ("store_id", "name", "publisher", "publisher_display_name",
+                "reserved_display_name", "package_family_name", "package_sid"):
         _require(isinstance(approved.get(key), str) and bool(approved[key].strip()),
                  "HOLD_APPROVED_IDENTITY_SCHEMA")
     _require(re.fullmatch(r"[A-Za-z0-9]{8,32}", approved["store_id"]) is not None
@@ -130,6 +131,13 @@ def reconcile_approved_return(
              and re.fullmatch(r"S-1-15-2(?:-\d+){7}",
                               approved["package_sid"]) is not None,
              "HOLD_APPROVED_IDENTITY_SCHEMA")
+    # Identity provenance alone does not prove the Store product is the one
+    # named by the queue. Bind the reserved Store display name and the PFN
+    # identity prefix to this exact job before any POST promotion or replay.
+    _require(approved["reserved_display_name"] == job.get("display_name")
+             and approved.get("display_name") in (None, job.get("display_name"))
+             and approved["package_family_name"].rsplit("_", 1)[0] == approved["name"],
+             "HOLD_APPROVED_IDENTITY_PRODUCT_CONFLICT")
     if job.get("expected_exe_sha256") is not None:
         _require(approved.get("package_sha256") == job["expected_exe_sha256"],
                  "HOLD_PREIDENTITY_ARTIFACT_CONFLICT")
