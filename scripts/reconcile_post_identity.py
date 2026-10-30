@@ -181,18 +181,48 @@ def reconcile_approved_return(
         "package_version_gate": "HOLD",
         "next_action": next_package_action,
     })
-    for request in (result.get("user_id_requests") or {}).get("items", []):
-        if request.get("request_id") == job["request_id"]:
-            request.update({
-                "status": "USER_IDENTITY_RECEIVED",
-                "requested_fields": [],
-                "next_gate": "POST_IDENTITY_PACKAGE_VERSION_GATE_HOLD",
-                "allow_local_product_creation": False,
-            })
-    for entry in (result.get("registration_router") or {}).get("entries", []):
-        if entry.get("product") == job.get("display_name"):
-            entry["identity_status"] = "GITHUB_APPROVED_IDENTITY_RETURN_VERIFIED"
-            entry["next_action"] = "PACKAGE_VERSION_GATE_HOLD"
+    # The auxiliary request list and registration router are also canonical
+    # product bindings. Matching only request_id or display_name could silently
+    # mark another product as returned if either collection were corrupted.
+    # Validate every available correlation field before changing either entry.
+    requests = (result.get("user_id_requests") or {}).get("items", [])
+    _require(isinstance(requests, list) and all(isinstance(x, dict) for x in requests),
+             "HOLD_USER_ID_REQUEST_SCHEMA")
+    matching_requests = [x for x in requests if x.get("request_id") == job["request_id"]]
+    _require(len(matching_requests) <= 1, "HOLD_USER_ID_REQUEST_DUPLICATE")
+    for request in matching_requests:
+        for field, expected in (
+            ("product_name", job["display_name"]),
+            ("repo", job["source_repository"]),
+            ("source_branch", job["source_branch"]),
+            ("source_sha", job["source_sha"]),
+            ("identity_return_target", expected_target),
+            ("product_type", job["product_type"]),
+            ("slug", slug),
+        ):
+            if field in request:
+                _require(request[field] == expected, "HOLD_USER_ID_REQUEST_SOURCE_CONFLICT")
+        request.update({
+            "status": "USER_IDENTITY_RECEIVED",
+            "requested_fields": [],
+            "next_gate": "POST_IDENTITY_PACKAGE_VERSION_GATE_HOLD",
+            "allow_local_product_creation": False,
+        })
+    router_entries = (result.get("registration_router") or {}).get("entries", [])
+    _require(isinstance(router_entries, list)
+             and all(isinstance(x, dict) for x in router_entries),
+             "HOLD_REGISTRATION_ROUTER_SCHEMA")
+    matching_routes = [x for x in router_entries
+                       if x.get("product") == job["display_name"]]
+    _require(len(matching_routes) <= 1, "HOLD_REGISTRATION_ROUTER_DUPLICATE")
+    for entry in matching_routes:
+        _require(entry.get("repository", job["source_repository"]) == job["source_repository"],
+                 "HOLD_REGISTRATION_ROUTER_SOURCE_CONFLICT")
+        if "registration_type" in entry and "registration_type" in job:
+            _require(entry["registration_type"] == job["registration_type"],
+                     "HOLD_REGISTRATION_ROUTER_SOURCE_CONFLICT")
+        entry["identity_status"] = "GITHUB_APPROVED_IDENTITY_RETURN_VERIFIED"
+        entry["next_action"] = "PACKAGE_VERSION_GATE_HOLD"
     pipeline = result.get("post_identity_pipeline")
     _require(isinstance(pipeline, dict)
              and isinstance(pipeline.get("products"), list),
