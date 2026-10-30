@@ -2281,7 +2281,9 @@
         "store_id": "9PGZ445SR5GM",
         "github_replay_status": "LOCAL_REPLAY_RECEIPT_NOT_INDEPENDENTLY_READ",
         "identity_name": "OkinawaDesktopTools.FileIntegrityLedger",
-        "submission_draft_opened": "NOT_VERIFIED"
+        "submission_draft_opened": "NOT_VERIFIED",
+        "pfn": "OkinawaDesktopTools.FileIntegrityLedger_j8yefg9jgfh58",
+        "package_sid": "S-1-15-2-2274655552-279405227-1363969010-2374809771-3931767711-1402132735-1386413113"
       },
       {
         "batch_index": 3,
