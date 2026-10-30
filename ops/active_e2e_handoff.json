@@ -426,5 +426,103 @@
       "verified_at_replay_correlation": true,
       "local_execution": "NOT_OBSERVED_ON_LATEST_HEAD"
     }
+  },
+  "last_verified_36m_review": {
+    "observed_at_utc": "2026-10-30T21:37:56Z",
+    "status": "AUDIT_ONLY_NO_GATE_PROMOTION",
+    "historical_root_status_stale": true,
+    "source": "authenticated GitHub repository contents reads at exact product source branches",
+    "reviewed_identity_returns": [
+      {
+        "product": "Focus Session Desk",
+        "lane": "APP",
+        "source_repository": "shihuiarenjinba-png/AI-App-Factory",
+        "source_branch": "codex/app-cohort-focus-controller-20261028",
+        "request_id": "app-focus-session-desk-8b00bc4e9082",
+        "source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+        "store_id": "9P6452C61N7B",
+        "approved_identity_blob_sha": "00c56e85ec7590783284e372ba100a3127614971",
+        "package_version_gate": "HOLD",
+        "market_fit_gate": "NOT_VERIFIED",
+        "e2e_pass": false
+      },
+      {
+        "product": "File Integrity Ledger",
+        "lane": "APP",
+        "source_repository": "shihuiarenjinba-png/AI-App-Factory",
+        "source_branch": "codex/app-ledger-snapshot-size-20261028",
+        "request_id": "app-file-integrity-ledger-d1108d12f7d1",
+        "source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
+        "store_id": "9PGZ445SR5GM",
+        "approved_identity_blob_sha": "78034cf62be3479f9ed752a2585ab31bb24c49ff",
+        "package_version_gate": "HOLD",
+        "market_fit_gate": "NOT_VERIFIED",
+        "e2e_pass": false
+      },
+      {
+        "product": "Prism Route 3D",
+        "lane": "GAME_3D",
+        "source_repository": "shihuiarenjinba-png/3d-game-factory",
+        "source_branch": "codex/3d-canary-prism-route-20261028",
+        "request_id": "3d-prism-route-3d-15fdcb52e46e",
+        "source_sha": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
+        "store_id": "9N95J2T57B41",
+        "approved_identity_blob_sha": "9b38b20527b81c85fd03b5373d4a8f8245047115",
+        "package_version_gate": "HOLD",
+        "e2e_pass": false
+      }
+    ],
+    "identity_return_not_observed_at_pinned_branch": [
+      {
+        "product": "Offline Text Diff Desk",
+        "lane": "APP",
+        "source_repository": "shihuiarenjinba-png/AI-App-Factory",
+        "source_branch": "codex/app-cohort-text-diff-20261028",
+        "request_id": "app-offline-text-diff-desk-a7d372800898",
+        "registration_type": "MSIX_OR_PWA_APP",
+        "partner_center_selection": "MSIX or PWA app",
+        "observation": "APPROVED_IDENTITY_FILE_404_AT_BRANCH"
+      },
+      {
+        "product": "Offline Image Inventory Desk",
+        "lane": "APP",
+        "source_repository": "shihuiarenjinba-png/AI-App-Factory",
+        "source_branch": "codex/app-cohort-image-inventory-20261028",
+        "request_id": "app-offline-image-inventory-desk-16b6a772952c",
+        "registration_type": "MSIX_OR_PWA_APP",
+        "partner_center_selection": "MSIX or PWA app",
+        "observation": "APPROVED_IDENTITY_FILE_404_AT_BRANCH"
+      }
+    ],
+    "user_provided_identity_pending_verified_cas": [
+      {
+        "product": "Signal Sprint",
+        "lane": "GAME",
+        "registration_type": "GDK_GAME",
+        "partner_center_selection": "GDK game",
+        "identity_reference": "USER_PROVIDED_NOT_REREQUESTED",
+        "source_branch": "codex/game-signal-sprint-undo-20261027",
+        "approved_identity_at_source": "404_NOT_OBSERVED"
+      },
+      {
+        "product": "Offline Notes Canary",
+        "lane": "APP",
+        "registration_type": "MSIX_OR_PWA_APP",
+        "partner_center_selection": "MSIX or PWA app",
+        "identity_reference": "USER_PROVIDED_NOT_REREQUESTED",
+        "approved_identity_at_checked_branch": "404_NOT_OBSERVED",
+        "binding": "SOURCE_REQUEST_NOT_FIXED_IN_THIS_REVIEW"
+      }
+    ],
+    "gate_summary": {
+      "real_msix": "NOT_REVERIFIED",
+      "github_backlog": "NOT_REVERIFIED",
+      "local_pull": "NOT_REVERIFIED",
+      "checker": "NOT_REVERIFIED",
+      "gui_install_qa": "NOT_REVERIFIED",
+      "market_fit": "NOT_APPROVED",
+      "e2e": "HOLD"
+    },
+    "next_action": "Reconcile verified Factory returns into POST_IDENTITY_READY using exact branch HEAD, ancestry, canonical queue/user request/router/pipeline bindings; obtain MARKET_FIT_PASS before APP package Version/MSIX; complete Text Diff and Image Inventory returns without cross-product reuse. Do not treat this audit snapshot as a CAS receipt or E2E PASS."
   }
 }
