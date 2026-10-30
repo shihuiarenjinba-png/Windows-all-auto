@@ -56,8 +56,9 @@ def audit_rotation(ledger, *, fetch_head, fetch_approved, fetch_artifact,
                    fetch_ancestry=None, now_utc=None):
     """Audit four exact jobs using live GitHub readers, with no writes.
 
-    fetch_approved(repository, path, branch) returns UTF-8 text or None for
-    an exact 404; all other API errors must propagate as HOLD, not as 404.
+    fetch_approved(repository, path, commit_sha) reads the exact immutable
+    HEAD returned by fetch_head, and returns UTF-8 text or None for an exact
+    404; all other API errors must propagate as HOLD, not as 404.
     """
     now = now_utc if now_utc is not None else datetime.now(timezone.utc)
     require(isinstance(now, datetime) and now.tzinfo is not None,
@@ -108,7 +109,9 @@ def audit_rotation(ledger, *, fetch_head, fetch_approved, fetch_artifact,
         head = fetch_head(job["source_repository"], job["source_branch"])
         require(isinstance(head, str) and SHA40.fullmatch(head) is not None,
                 "HOLD_FACTORY_HEAD_UNVERIFIED")
-        raw = fetch_approved(job["source_repository"], target, job["source_branch"])
+        # Bind the contents lookup to the same immutable commit as the HEAD
+        # check; a concurrent CAS/Factory push cannot substitute another file.
+        raw = fetch_approved(job["source_repository"], target, head)
         if job.get("status") == "POST_IDENTITY_READY":
             require(head == job.get("identity_return_commit_sha")
                     and head != job["source_sha"],
