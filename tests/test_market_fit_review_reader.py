@@ -20,6 +20,7 @@ JOB = {
     "source_repository": "shihuiarenjinba-png/AI-App-Factory",
     "source_branch": "codex/app-cohort-focus-controller-20261028",
     "source_sha": SOURCE, "market_fit_review_commit_sha": REVIEW,
+    "identity_return_target": "products/focus-session-desk/store/approved-identity.json",
 }
 
 
