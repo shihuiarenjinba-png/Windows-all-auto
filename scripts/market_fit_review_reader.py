@@ -13,7 +13,7 @@ import subprocess
 from scripts.market_fit_gate import assess_market_fit
 from scripts.market_fit_github_reader import MarketFitReadHold, read_factory_market_fit
 
-_SHA = re.compile(r"[0-9a-f]{40}\\Z")
+_SHA = re.compile(r"[0-9a-f]{40}\Z")
 _REPO = "shihuiarenjinba-png/AI-App-Factory"
 _MAX_COMPARE_RESPONSE = 256 * 1024
 
