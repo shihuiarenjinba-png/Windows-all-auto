@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-30T13:43:37.329Z",
+  "updated_at_utc": "2026-10-30T14:36:07.262Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -3347,6 +3347,24 @@
         "integration": "STACKED_DRAFT_NOT_MERGED__NOT_WIRED_INTO_PACKAGE_DISPATCH",
         "next_action": "FACTORY_OWNER_CREATE_REVIEWED_SINGLE_FILE_MARKET_FIT_COMMIT_ON_PINNED_SOURCE__36_WRITER_VERIFY_AND_PIN_REVIEW_SHA__NO_PACKAGE_BEFORE_MARKET_FIT_AND_VERSION_ASSET_APPROVAL",
         "initial_ci_failure": "RUN_41056843287_TEST_FIXTURE_MISSING_IDENTITY_RETURN_TARGET__FIXED"
+      },
+      "market_fit_evidence_flag_replay_guard": {
+        "draft_pr": 75,
+        "branch": "codex/e2e-market-fit-evidence-flag-20261030-2236",
+        "head_sha": "bdafad7bac4a04338d7dbef3018fe9b2614d417d",
+        "base_pr": 74,
+        "exact_head_ci_run_ids": [
+          41065425471,
+          41065449769
+        ],
+        "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+        "scope": "POST_IDENTITY_REPLAY_DERIVES_MARKET_FIT_EVIDENCE_VERIFIED_FROM_CURRENT_AUTHENTICATED_PASS__CLEARS_STALE_TRUE_ON_HOLD_AND_REVIEW_READ_FAILURE",
+        "status": "STACKED_DRAFT_NOT_MERGED__NO_CANONICAL_CODE_ADOPTION",
+        "current_factory_market_fit_review_evidence": "NOT_OBSERVED",
+        "app_package_gate": "MARKET_FIT_HOLD",
+        "local_windows_execution": "NOT_PERFORMED",
+        "real_msix": "NOT_BUILT",
+        "store_submission": "NOT_PERFORMED"
       }
     },
     "market_fit_pass_count": 0,
