@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-30T16:36:03Z",
+  "updated_at_utc": "2026-10-30T17:40:00Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -2444,11 +2444,11 @@
     "local_execution_this_run": "NOT_PERFORMED"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-30T16:36:03Z",
-    "scope": "PR76_FACTORY_HEAD_RECHECK_AND_PR77_AUXILIARY_IDENTITY_BINDING_GUARD_CI_GREEN__LIVE_FOUR_APP_RECHECK__E2E_HOLD",
+    "observed_at_utc": "2026-10-30T17:40:00Z",
+    "scope": "PR78_REGISTRATION_LANE_AND_SELECTION_BINDING_GUARD_DRAFT__FOUR_APP_GITHUB_RETURN_RECHECK__E2E_HOLD",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
-    "canonical_previous_blob_sha": "a1ba4e8d9b2d5c2595d1c64d2562319249088d88",
+    "canonical_previous_blob_sha": "de5b32e367a9f808007c6c25097231deb27a0730",
     "focus_return_commit_sha": "8a7139375524830bf823469526837259266172be",
     "focus_store_id": "9P6452C61N7B",
     "focus_source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
@@ -2472,7 +2472,7 @@
     "success_count_cloud_verified": 2,
     "remaining_app_identity_returns": 2,
     "next_resume_index": 3,
-    "next_action": "REVIEW_PR77_STACKED_DRAFT_AND_KEEP_PR76_CI_GREEN__TEXT_DIFF_AND_IMAGE_INVENTORY_IDENTITY_RETURN_PENDING__APP_MARKET_FIT_REVIEWED_EVIDENCE_HOLD__VERSION_ASSET_AND_REAL_MSIX_HOLD",
+    "next_action": "WAIT_PR78_EXACT_HEAD_WINDOWS_UBUNTU_CI__REVIEW_REGISTRATION_ROUTER_BINDING__TEXT_DIFF_IMAGE_INVENTORY_GITHUB_RETURN_STILL_MISSING__APP_MARKET_FIT_REVIEWED_EVIDENCE_HOLD__VERSION_ASSET_MSIX_LOCAL_QA_HOLD",
     "post_identity_reconcile_pr": 49,
     "post_identity_reconcile_ci_run": 40851883814,
     "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU",
@@ -2527,11 +2527,11 @@
     "mixed_local_preflight_execution": "NOT_RUN_ON_USER_WINDOWS",
     "canonical_head_before_write": "a4d0741019c534a6e5ac5623bd2e2295d7ffcad3",
     "latest_remote_recheck": {
-      "verified_at_utc": "2026-10-30T16:36:03Z",
-      "focus": "POST_IDENTITY_READY__APPROVED_FILE_PRESENT__RETURN_HEAD_8a7139375524830bf823469526837259266172be__VERSION_HOLD",
-      "ledger": "POST_IDENTITY_READY__APPROVED_FILE_PRESENT__RETURN_HEAD_db9a57af822788af4c8384499a6e343ec7b0353d__VERSION_HOLD",
-      "text_diff": "PRE_IDENTITY_READY__SOURCE_HEAD_EXACT__APPROVED_FILE_404",
-      "image_inventory": "PRE_IDENTITY_READY__SOURCE_HEAD_EXACT__APPROVED_FILE_404",
+      "verified_at_utc": "2026-10-30T17:40:00Z",
+      "focus": "POST_IDENTITY_READY__APPROVED_FILE_PRESENT__REQUEST_SOURCE_PFN_MATCH__VERSION_HOLD",
+      "ledger": "POST_IDENTITY_READY__APPROVED_FILE_PRESENT__REQUEST_SOURCE_PFN_MATCH__VERSION_HOLD",
+      "text_diff": "PRE_IDENTITY_READY__APPROVED_FILE_404",
+      "image_inventory": "PRE_IDENTITY_READY__APPROVED_FILE_404",
       "prism": "POST_IDENTITY_READY__PREVIOUS_GITHUB_IDENTITY_RETURN_VERIFIED__NOT_RECHECKED_THIS_RUN",
       "signal_sprint": "USER_IDENTITY_RECEIVED__CAS_APPROVAL_HOLD__NOT_RECHECKED_THIS_RUN",
       "local_windows": "NOT_ACCESSED",
@@ -2892,7 +2892,21 @@
     "implementation_base_pr": 76,
     "implementation_ci": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
     "previous_head_guard_ci_run_id": 41082515203,
-    "previous_head_guard_ci": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD"
+    "previous_head_guard_ci": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+    "registration_lane_guard": {
+      "draft_pr": 78,
+      "branch": "codex/e2e-registration-lane-binding-20261031-0236",
+      "base_pr": 77,
+      "base_head_sha": "49c6883ba57a36c3012a2020dc4f44d4e3cda74e",
+      "head_sha": "e8c1a19bd0602d098015b67ee504aab4e9ee9907",
+      "code_scope": "REQUIRE_APP_GAME_GAME_3D_LANE_COMPATIBLE_REGISTRATION_TYPE_AND_EXACT_PARTNER_CENTER_SELECTION__VALIDATE_REQUEST_AND_ROUTER_BINDING",
+      "ci_run_id": 41100588411,
+      "ci_status": "QUEUED_NOT_PASS",
+      "execution": "CODE_COMMITTED_DRAFT_PR__NO_PHYSICAL_WINDOWS_OR_STORE_ACTION",
+      "canonical_ledger_mutation": "OBSERVATION_ONLY__NO_IDENTITY_OR_PACKAGE_GATE_PROMOTION",
+      "physical_windows": "NOT_PERFORMED",
+      "store_submission": "NOT_PERFORMED"
+    }
   },
   "post_identity_pipeline": {
     "schema_version": 1,
