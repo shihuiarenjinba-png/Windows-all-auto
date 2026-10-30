@@ -12,10 +12,10 @@ import re
 import subprocess
 from urllib.parse import quote
 
-_REPO = re.compile(r"shihuiarenjinba-png/(?:AI-App-Factory|AI-Game-Factory|3d-game-factory)\\Z")
-_BRANCH = re.compile(r"codex/[A-Za-z0-9_-]+(?:[./-][A-Za-z0-9_-]+)*\\Z")
-_SHA = re.compile(r"[0-9a-f]{40}\\Z")
-_TARGET = re.compile(r"products/[a-z0-9]+(?:-[a-z0-9]+)*/store/approved-identity\\.json\\Z")
+_REPO = re.compile(r"shihuiarenjinba-png/(?:AI-App-Factory|AI-Game-Factory|3d-game-factory)\Z")
+_BRANCH = re.compile(r"codex/[A-Za-z0-9_-]+(?:[./-][A-Za-z0-9_-]+)*\Z")
+_SHA = re.compile(r"[0-9a-f]{40}\Z")
+_TARGET = re.compile(r"products/[a-z0-9]+(?:-[a-z0-9]+)*/store/approved-identity\.json\Z")
 _MAX_RESPONSE = 512 * 1024
 _MAX_IDENTITY = 65536
 
