@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-30T22:38:37.437Z",
+  "updated_at_utc": "2026-10-30T22:39:08.515Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -1371,7 +1371,8 @@
         "identity_store_id": "9N95J2T57B41",
         "identity_pfn": "OkinawaDesktopTools.PrismRoute3D_j8yefg9jgfh58",
         "identity_cas_allowed": false,
-        "package_version_gate": "HOLD"
+        "package_version_gate": "HOLD",
+        "identity_return_target": "products/prism-route-3d/store/approved-identity.json"
       }
     ],
     "provenance_policy": "READY requires exact source/build HEAD, verified Windows EXE SHA256, unique request_id/slug and separate USER_ID_REQUEST; no intermediate EXE registration inference",
@@ -2962,6 +2963,14 @@
       "local_pull": "NOT_EXECUTED",
       "checker": "NOT_EXECUTED",
       "gui_install": "NOT_EXECUTED"
+    },
+    "canonical_prism_binding_fix": {
+      "status": "CANONICAL_TARGET_REPAIRED_FROM_VERIFIED_APPROVED_RETURN_PATH",
+      "request_id": "3d-prism-route-3d-15fdcb52e46e",
+      "identity_return_target": "products/prism-route-3d/store/approved-identity.json",
+      "evidence_commit": "11417b75636ee18816028ffd5221884c4c9a9836",
+      "gate_promotion": "NONE",
+      "package_version_gate": "HOLD"
     }
   },
   "post_identity_pipeline": {
