@@ -63,6 +63,14 @@ def _all_jobs(ledger: dict) -> list[dict]:
         values = [x.get(key) for x in jobs]
         _require(all(isinstance(v, str) and v for v in values)
                  and len(values) == len(set(values)), "HOLD_CROSS_PRODUCT_IDENTITY")
+    # Partner Center product names are case-insensitive identifiers for routing.
+    # Two queue jobs sharing a display name could otherwise update the same
+    # registration_router entry even when request_id/slug are distinct.
+    names = [job.get("display_name") for job in jobs]
+    _require(all(isinstance(name, str) and name and name == name.strip()
+                 for name in names)
+             and len({name.casefold() for name in names}) == len(names),
+             "HOLD_CROSS_PRODUCT_DISPLAY_NAME")
     return jobs
 
 
@@ -207,7 +215,9 @@ def reconcile_approved_return(
     # product bindings. Matching only request_id or display_name could silently
     # mark another product as returned if either collection were corrupted.
     # Validate every available correlation field before changing either entry.
-    requests = (result.get("user_id_requests") or {}).get("items", [])
+    request_record = result.get("user_id_requests")
+    _require(isinstance(request_record, dict), "HOLD_USER_ID_REQUEST_SCHEMA")
+    requests = request_record.get("items")
     _require(isinstance(requests, list) and all(isinstance(x, dict) for x in requests),
              "HOLD_USER_ID_REQUEST_SCHEMA")
     matching_requests = [x for x in requests if x.get("request_id") == job["request_id"]]
@@ -239,7 +249,9 @@ def reconcile_approved_return(
             "next_gate": "POST_IDENTITY_PACKAGE_VERSION_GATE_HOLD",
             "allow_local_product_creation": False,
         })
-    router_entries = (result.get("registration_router") or {}).get("entries", [])
+    router_record = result.get("registration_router")
+    _require(isinstance(router_record, dict), "HOLD_REGISTRATION_ROUTER_SCHEMA")
+    router_entries = router_record.get("entries")
     _require(isinstance(router_entries, list)
              and all(isinstance(x, dict) for x in router_entries),
              "HOLD_REGISTRATION_ROUTER_SCHEMA")
