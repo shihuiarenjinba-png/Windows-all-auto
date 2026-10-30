@@ -50,7 +50,8 @@ def reconcile(ledger, approved, head=RETURN, ancestry=True):
     return reconcile_approved_return(
         ledger, "test-app",
         fetch_branch_head=lambda repo, branch: head,
-        verify_source_ancestry=lambda repo, source, actual: ancestry,
+        verify_source_ancestry=lambda repo, source, actual, target: (
+            ancestry and target == "products/test-app/store/approved-identity.json"),
         fetch_approved_file=lambda repo, path, branch: (
             json.dumps(approved) if isinstance(approved, dict) else approved
         ),
@@ -174,6 +175,20 @@ class ReconcileTests(unittest.TestCase):
         ledger["rotation_cohorts"]["app_jobs"].append(other)
         with self.assertRaisesRegex(ReconcileHold, "HOLD_CROSS_PRODUCT_IDENTITY"):
             reconcile(ledger, approved)
+
+    def test_independent_verifier_receives_exact_return_target(self):
+        ledger, approved = fixture()
+        observed = []
+        result, status = reconcile_approved_return(
+            ledger, "test-app",
+            fetch_branch_head=lambda *_: RETURN,
+            fetch_approved_file=lambda *_: json.dumps(approved),
+            verify_source_ancestry=lambda repo, source, head, target: (
+                observed.append((repo, source, head, target)) or True),
+        )
+        self.assertEqual(status, "POST_IDENTITY_READY")
+        self.assertEqual(observed, [(
+            REPO, SOURCE, RETURN, "products/test-app/store/approved-identity.json")])
 
     def test_unrelated_return_head_is_rejected(self):
         ledger, approved = fixture()
