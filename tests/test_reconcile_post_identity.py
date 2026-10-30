@@ -46,10 +46,11 @@ def fixture():
     return ledger, approved
 
 
-def reconcile(ledger, approved, head=RETURN):
+def reconcile(ledger, approved, head=RETURN, ancestry=True):
     return reconcile_approved_return(
         ledger, "test-app",
         fetch_branch_head=lambda repo, branch: head,
+        verify_source_ancestry=lambda repo, source, actual: ancestry,
         fetch_approved_file=lambda repo, path, branch: (
             json.dumps(approved) if isinstance(approved, dict) else approved
         ),
@@ -174,6 +175,20 @@ class ReconcileTests(unittest.TestCase):
         with self.assertRaisesRegex(ReconcileHold, "HOLD_CROSS_PRODUCT_IDENTITY"):
             reconcile(ledger, approved)
 
+    def test_unrelated_return_head_is_rejected(self):
+        ledger, approved = fixture()
+        with self.assertRaisesRegex(ReconcileHold, "HOLD_SOURCE_ANCESTRY_CONFLICT"):
+            reconcile(ledger, approved, ancestry=False)
+
+    def test_missing_independent_ancestry_reader_is_rejected(self):
+        ledger, approved = fixture()
+        with self.assertRaisesRegex(ReconcileHold, "HOLD_SOURCE_ANCESTRY_VERIFIER_MISSING"):
+            reconcile_approved_return(
+                ledger, "test-app",
+                fetch_branch_head=lambda *_: RETURN,
+                fetch_approved_file=lambda *_: json.dumps(approved),
+            )
+
     def test_no_file_no_promotion(self):
         ledger, approved = fixture()
         with self.assertRaisesRegex(ReconcileHold, "HOLD_APPROVED_IDENTITY_FILE_INVALID"):
@@ -181,6 +196,7 @@ class ReconcileTests(unittest.TestCase):
                 ledger, "test-app",
                 fetch_branch_head=lambda *_: RETURN,
                 fetch_approved_file=lambda *_: None,
+                verify_source_ancestry=lambda *_: True,
             )
 
 

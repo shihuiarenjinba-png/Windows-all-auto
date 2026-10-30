@@ -56,6 +56,7 @@ def reconcile_approved_return(
     ledger: dict, slug: str, *,
     fetch_branch_head: Callable[[str, str], str],
     fetch_approved_file: Callable[[str, str, str], str],
+    verify_source_ancestry: Callable[[str, str, str], bool] | None = None,
 ) -> tuple[dict, str]:
     """Return (updated ledger copy, transition), without performing a write.
 
@@ -82,6 +83,14 @@ def reconcile_approved_return(
     head = fetch_branch_head(job["source_repository"], job["source_branch"])
     _require(isinstance(head, str) and SHA40.fullmatch(head) is not None,
              "HOLD_FACTORY_HEAD_UNVERIFIED")
+    # A returned branch HEAD must be a descendant of the pinned immutable
+    # source commit. An unrelated branch containing a plausible Identity JSON
+    # is not evidence of a legitimate Provisioner CAS return.
+    _require(callable(verify_source_ancestry),
+             "HOLD_SOURCE_ANCESTRY_VERIFIER_MISSING")
+    _require(verify_source_ancestry(job["source_repository"],
+                                    job["source_sha"], head) is True,
+             "HOLD_SOURCE_ANCESTRY_CONFLICT")
     raw = fetch_approved_file(job["source_repository"], expected_target,
                               job["source_branch"])
     _require(isinstance(raw, str) and len(raw) <= 65536,

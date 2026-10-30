@@ -53,7 +53,7 @@ def _approved(raw):
 
 
 def audit_rotation(ledger, *, fetch_head, fetch_approved, fetch_artifact,
-                   now_utc=None):
+                   fetch_ancestry=None, now_utc=None):
     """Audit four exact jobs using live GitHub readers, with no writes.
 
     fetch_approved(repository, path, branch) returns UTF-8 text or None for
@@ -149,6 +149,7 @@ def audit_rotation(ledger, *, fetch_head, fetch_approved, fetch_artifact,
                     ledger, slug,
                     fetch_branch_head=lambda _repo, _branch: head,
                     fetch_approved_file=lambda _repo, _target, _branch: raw,
+                    verify_source_ancestry=fetch_ancestry,
                 )
             except ReconcileHold as exc:
                 raise AuditHold(str(exc)) from exc
