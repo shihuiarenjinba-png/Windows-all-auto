@@ -225,8 +225,14 @@ def reconcile_approved_return(
             ("registration_type", registration_type),
             ("partner_center_selection", REGISTRATION_SELECTION[registration_type]),
         ):
-            if field in request:
-                _require(request[field] == expected, "HOLD_USER_ID_REQUEST_SOURCE_CONFLICT")
+            # A request_id-only placeholder is not an independently bound
+            # USER_ID_REQUEST. All queue-owned fields must be present before
+            # marking an authenticated Factory return as received.
+            _require(field in request and isinstance(request[field], str)
+                     and bool(request[field].strip()),
+                     "HOLD_USER_ID_REQUEST_BINDING_INCOMPLETE")
+            _require(request[field] == expected,
+                     "HOLD_USER_ID_REQUEST_SOURCE_CONFLICT")
         request.update({
             "status": "USER_IDENTITY_RECEIVED",
             "requested_fields": [],
