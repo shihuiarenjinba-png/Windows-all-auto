@@ -61,7 +61,9 @@ def reconcile_approved_return(
     """Return (updated ledger copy, transition), without performing a write.
 
     Readers MUST retrieve the exact live Factory branch and raw UTF-8 file via
-    authenticated GitHub; never pass a local operator's unverified assertion.
+    authenticated GitHub. fetch_approved_file's third argument is the verified
+    immutable commit SHA, not a mutable branch name. Never pass a local
+    operator's unverified assertion.
     An approved file is Identity evidence only, not Package Version approval,
     a local GUI PASS, or permission to submit to Store.
     """
@@ -92,8 +94,10 @@ def reconcile_approved_return(
                                     job["source_sha"], head,
                                     expected_target) is True,
              "HOLD_SOURCE_ANCESTRY_CONFLICT")
-    raw = fetch_approved_file(job["source_repository"], expected_target,
-                              job["source_branch"])
+    # Read from the immutable observed return commit, never a moving branch:
+    # otherwise a concurrent Factory push could swap the Identity bytes
+    # between the HEAD/ancestry verification and the contents API request.
+    raw = fetch_approved_file(job["source_repository"], expected_target, head)
     _require(isinstance(raw, str) and len(raw) <= 65536,
              "HOLD_APPROVED_IDENTITY_FILE_INVALID")
     try:
