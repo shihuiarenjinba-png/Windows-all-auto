@@ -280,7 +280,8 @@ class ReconcileTests(unittest.TestCase):
             reconcile(ledger, approved)
 
     def test_casefold_or_malformed_aux_route_holds_without_mutation(self):
-        for invalid in ("test app", "TEST APP", " Test App", "", None):
+        for invalid in ("test app", "TEST APP", " Test App", "", None,
+                        [], {"name": "Test App"}):
             with self.subTest(invalid=invalid):
                 ledger, approved = fixture()
                 other = copy.deepcopy(ledger["registration_router"]["entries"][0])
