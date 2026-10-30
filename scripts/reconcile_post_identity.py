@@ -179,7 +179,8 @@ def reconcile_approved_return(
     matches = [entry for entry in pipeline["products"]
                if isinstance(entry, dict)
                and entry.get("request_id") == job["request_id"]]
-    _require(len(matches) == 1, "HOLD_POST_IDENTITY_PIPELINE_MISSING_OR_DUPLICATE")
+    _require(len(matches) >= 1, "HOLD_POST_IDENTITY_PIPELINE_MISSING")
+    _require(len(matches) == 1, "HOLD_POST_IDENTITY_PIPELINE_DUPLICATE")
     entry = matches[0]
     # A valid Identity return must have exactly one matching downstream
     # pipeline record. Matching request_id alone does not prove product/lane
