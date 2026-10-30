@@ -69,6 +69,7 @@ def rebase_after_reconciliation(
     execution_origin: str,
     independent_return_verifier: Callable[[dict, dict, dict], bool] | None,
     independent_name_hold_verifier: Callable[[dict], bool] | None = None,
+    independent_active_return_verifier: Callable[[dict, dict], bool] | None = None,
 ) -> dict:
     """Rebind a local state to an independently audited newer central plan.
 
@@ -80,6 +81,11 @@ def rebase_after_reconciliation(
 
     The verifier receives (old_entry, old_result, fresh_entry). It must not
     merely trust the persisted receipt or the new plan's status label.
+
+    If the host crashed after remote CAS but before persisting a local result,
+    an ACTIVE entry may become a POST skip only after a *separate* read-only
+    authenticated UI + GitHub verifier establishes the exact return. No
+    fabricated CAS replay or local batch PASS is inferred from recovery.
     """
     expected = resume.initialize(
         fresh_plan,
@@ -103,6 +109,12 @@ def rebase_after_reconciliation(
     require(isinstance(old_entries, list) and len(old_entries) == 4
             and all(isinstance(x, dict) for x in old_entries),
             "HOLD_REBASE_OLD_STATE_UNTRUSTED")
+    old_active = [x['request_id'] for x in old_entries
+                  if x.get('status') == 'ACTIVE']
+    require(len(old_active) <= 1
+            and previous.get('active_request_id') ==
+                (old_active[0] if old_active else None),
+            'HOLD_REBASE_CONCURRENT_ACTIVE')
     active = []
     store_ids = set()
     rebased = deepcopy(expected)
@@ -129,6 +141,14 @@ def rebase_after_reconciliation(
             store_ids.add(result["store_id"])
             # The fresh audited GitHub POST record becomes the sole authority.
             # Never carry a local result forward as a second CAS candidate.
+        elif old_status == 'ACTIVE' and fresh_status == 'SKIPPED_GITHUB_POST_VERIFIED':
+            require(old.get('result') is None
+                    and callable(independent_active_return_verifier)
+                    and independent_active_return_verifier(
+                        deepcopy(old), deepcopy(fresh)) is True,
+                    'HOLD_REBASE_CRASH_RETURN_EVIDENCE')
+            # The independently reconciled GitHub POST entry is authoritative.
+            # No local result or unproven replay status is manufactured.
         elif old_status in {"PENDING", "ACTIVE"}:
             require(fresh_status == "PENDING"
                     and old.get("plan_job_digest") == fresh["plan_job_digest"]
@@ -150,10 +170,7 @@ def rebase_after_reconciliation(
             fresh["result"] = deepcopy(old["result"])
         else:
             raise RebaseHold("HOLD_REBASE_UNKNOWN_OLD_STATUS")
-    require(len(active) <= 1
-            and previous.get("active_request_id") ==
-                (active[0] if active else None),
-            "HOLD_REBASE_CONCURRENT_ACTIVE")
+    require(len(active) <= 1, 'HOLD_REBASE_CONCURRENT_ACTIVE')
     rebased["active_request_id"] = active[0] if active else None
     # Rebased state contains no locally asserted success. The existing replay
     # validator can now check its full immutable binding without a verifier.
