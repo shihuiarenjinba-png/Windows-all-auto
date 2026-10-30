@@ -81,6 +81,7 @@ def check(ledger, approved, artifacts, **overrides):
         return json.dumps(value) if isinstance(value, dict) else value
     return audit.audit_rotation(
         ledger, fetch_head=fetch_head, fetch_approved=fetch_approved,
+        fetch_ancestry=lambda repo, source, head: overrides.get("ancestry", True),
         fetch_artifact=lambda repo, artifact_id: artifacts[artifact_id],
         now_utc=datetime(2026, 10, 29, tzinfo=timezone.utc),
     )
@@ -97,6 +98,32 @@ class MixedAuditTests(unittest.TestCase):
         self.assertFalse(result["local_windows_no_llm_pass"])
         self.assertEqual(result["store_submission"], "NOT_PERFORMED")
         self.assertEqual(result["cas"], "NOT_PERFORMED")
+
+    def test_post_unrelated_head_holds_before_promotion(self):
+        ledger, approved, artifacts = fixture()
+        with self.assertRaisesRegex(audit.AuditHold, "HOLD_SOURCE_ANCESTRY_CONFLICT"):
+            check(ledger, approved, artifacts, ancestry=False)
+
+    def test_live_compare_requires_exact_merge_base_and_ahead(self):
+        repo = "shihuiarenjinba-png/AI-App-Factory"
+        source, head = "a" * 40, "b" * 40
+        good = {"status": "ahead", "ahead_by": 1, "behind_by": 0,
+                "merge_base_commit": {"sha": source}}
+        with patch.object(runner, "gh_json", return_value=good) as gh:
+            self.assertTrue(runner.verify_source_ancestry(repo, source, head))
+            gh.assert_called_once_with(f"repos/{repo}/compare/{source}...{head}")
+        for bad in (
+            {**good, "status": "diverged"},
+            {**good, "ahead_by": 0},
+            {**good, "behind_by": 1},
+            {**good, "merge_base_commit": {"sha": "c" * 40}},
+            None,
+        ):
+            with self.subTest(bad=bad), patch.object(runner, "gh_json", return_value=bad):
+                self.assertFalse(runner.verify_source_ancestry(repo, source, head))
+        with patch.object(runner, "gh_json") as gh:
+            self.assertFalse(runner.verify_source_ancestry(repo, source, source))
+            gh.assert_not_called()
 
     def test_post_head_drift_holds(self):
         ledger, approved, artifacts = fixture()
