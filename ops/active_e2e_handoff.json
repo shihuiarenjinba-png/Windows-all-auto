@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-30T02:41:06Z",
+  "updated_at_utc": "2026-10-30T03:34:03Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -1049,7 +1049,7 @@
       "app-offline-image-inventory-desk-16b6a772952c"
     ]
   },
-  "classification": "APP_MIXED_FOCUS_LEDGER_POST_2__TEXT_IMAGE_PRE_2__PR63_CAS_CRASH_RECOVERY_CI_GREEN__PHYSICAL_WINDOWS_AND_E2E_HOLD",
+  "classification": "APP_MIXED_POST_2_PRE_2__POST_IDENTITY_PFN_RECONCILED__PR64_CI_GREEN__PHYSICAL_WINDOWS_AND_E2E_HOLD",
   "registration_router": {
     "schema_version": 1,
     "status": "WINDOWS_UBUNTU_ROUTER_CI_PASS__LOCAL_MODE__PRISM_EXISTING_MANUAL_REFERENCE",
@@ -1190,7 +1190,8 @@
         "identity_return_commit_sha": "8a7139375524830bf823469526837259266172be",
         "identity_store_id": "9P6452C61N7B",
         "identity_return_evidence": "EXACT_GITHUB_APPROVED_IDENTITY_FILE_AND_BRANCH_HEAD_MATCH",
-        "package_version_gate": "HOLD"
+        "package_version_gate": "HOLD",
+        "identity_pfn": "OkinawaDesktopTools.FocusSessionDesk_j8yefg9jgfh58"
       },
       {
         "product_type": "APP",
@@ -1230,7 +1231,8 @@
         "identity_return_commit_sha": "db9a57af822788af4c8384499a6e343ec7b0353d",
         "identity_store_id": "9PGZ445SR5GM",
         "identity_return_evidence": "EXACT_GITHUB_APPROVED_IDENTITY_FILE__ONE_COMMIT_FROM_PINNED_SOURCE__ONLY_IDENTITY_FILE_ADDED",
-        "package_version_gate": "HOLD"
+        "package_version_gate": "HOLD",
+        "identity_pfn": "OkinawaDesktopTools.FileIntegrityLedger_j8yefg9jgfh58"
       },
       {
         "product_type": "APP",
@@ -2422,8 +2424,8 @@
     "local_execution_this_run": "NOT_PERFORMED"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-30T02:41:06Z",
-    "scope": "REVIEWED_PROVISIONER_EXACT_PIN_PR64_CI_PASS__FOUR_APP_LIVE_GITHUB_RETURN_RECHECK__NO_LOCAL_EXECUTION",
+    "observed_at_utc": "2026-10-30T03:34:03Z",
+    "scope": "POST_IDENTITY_APP_PFN_BINDING_REPAIRED_FROM_EXACT_GITHUB_APPROVED_IDENTITY_FILES__PR64_WINDOWS_UBUNTU_CI_GREEN__NO_LOCAL_EXECUTION",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
     "canonical_previous_blob_sha": "e876d01616e52d95c97ea49487092a67c9b2dfd6",
@@ -2503,7 +2505,7 @@
     "mixed_local_preflight_ci": "SUCCESS_AT_EXACT_HEAD",
     "mixed_local_preflight_capability": "FOCUS_POST_SKIP__THREE_PRE_EXACT_SOURCE_AND_EXE_VERIFICATION__SHARED_LOCK__NO_BROWSER_CAS",
     "mixed_local_preflight_execution": "NOT_RUN_ON_USER_WINDOWS",
-    "canonical_head_before_write": "630e545d0c693c057f59f2b2d8949c509fb583ae",
+    "canonical_head_before_write": "25a3b6b3f7b0a1b0888932e60b0c292ad66a6d09",
     "latest_remote_recheck": {
       "verified_at_utc": "2026-10-30T02:41:06Z",
       "focus": "POST_IDENTITY_READY__APPROVED_FILE_EXACT_REQUEST_SOURCE__HEAD_8a7139375524830bf823469526837259266172be",
@@ -2685,11 +2687,23 @@
       "task_scheduler_registration": "HOLD",
       "store_submission": "NOT_PERFORMED",
       "next_gate": "PHYSICAL_WINDOWS_REVIEWED_WORKTREE_TEST__CRASH_RESTART__SERIAL_RETURN_AND_REPLAY"
+    },
+    "post_identity_pfn_reconciliation": {
+      "status": "TWO_APP_POST_IDENTITY_PFN_BINDINGS_REPAIRED",
+      "source": "EXACT_APPROVED_IDENTITY_JSON_FROM_FOCUS_AND_LEDGER_SOURCE_BRANCHES",
+      "focus": "OkinawaDesktopTools.FocusSessionDesk_j8yefg9jgfh58",
+      "ledger": "OkinawaDesktopTools.FileIntegrityLedger_j8yefg9jgfh58",
+      "effect": "ENABLES_EXISTING_PR63_CRASH_RECOVERY_EXACT_PFN_GATE_AND_CROSS_PRODUCT_PFN_REJECTION",
+      "security": "NO_CAS_NO_PARTNER_CENTER_NO_STORE_NO_VERSION_APPROVAL",
+      "pr64_head": "118bb470db641e474a2b5d5a6356799d3c95f6b5",
+      "pr64_ci_run": 40993001449,
+      "pr64_ci": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+      "physical_windows": "NOT_PERFORMED"
     }
   },
   "post_identity_pipeline": {
     "schema_version": 1,
-    "updated_at_utc": "2026-10-30T02:41:06Z",
+    "updated_at_utc": "2026-10-30T03:34:03Z",
     "writer": "36_WINDOWS_E2E_ONLY",
     "reconciliation_basis": "FRESH_GITHUB_FOUR_APP_SOURCE_BRANCH_HEADS_AND_APPROVED_IDENTITY_FILES__PREVIOUS_ARTIFACT_METADATA_DIGEST_EXPIRY_EVIDENCE__NO_LOCAL_RECEIPTS",
     "product_count": 7,
@@ -2725,7 +2739,9 @@
           "windows_checker": "NOT_RUN",
           "gui_install_qa": "NOT_RUN",
           "store_final_submission": "NOT_PERFORMED"
-        }
+        },
+        "identity_store_id": "9P6452C61N7B",
+        "identity_pfn": "OkinawaDesktopTools.FocusSessionDesk_j8yefg9jgfh58"
       },
       {
         "product": "File Integrity Ledger",
@@ -2748,7 +2764,9 @@
           "windows_checker": "NOT_RUN",
           "gui_install_qa": "NOT_RUN",
           "store_final_submission": "NOT_PERFORMED"
-        }
+        },
+        "identity_store_id": "9PGZ445SR5GM",
+        "identity_pfn": "OkinawaDesktopTools.FileIntegrityLedger_j8yefg9jgfh58"
       },
       {
         "product": "Offline Text Diff Desk",
