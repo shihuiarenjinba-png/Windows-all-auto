@@ -6,8 +6,9 @@ WindowsアプリやゲームをMicrosoft Storeへ登録するときの **GitHub 
 - GitHubの作業ブランチのみで開発（main/release直接変更なし）。
 - オフライン事前検証コア、日英切替の試験的GUI、CLI、SQLiteの安全なキュー台帳を実装。
 - **自動テスト75件 / Windows・Ubuntuの両方でPASS**（オフライン検査のみ）。CI: https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/40284671809
-- Windows-data / Windows-checker / Windows-Automator の読取専用JSON契約アダプタを追加済み。未知schema/statusはfail-closedで停止し、Windows-Automatorの現行 DONE は DRY_RUN_DONE として扱います。
-- **未完成/未検証**: 3ツールのsubprocess実行アダプタ、Windows-Automatorの正式ライブ接続、Partner CenterのDOMセレクタ、MSIX実アップロード、保存成功確認、Windows実機GUI QA。これはStore登録の完成を意味しません。
+- Windows-data / Windows-checker / Windows-Automator の読取専用JSON契約アダプタを追加済み。未知schema/statusはfail-closedで停止し、Windows-Automatorの `DONE` は引き続き `DRY_RUN_DONE` として扱います。
+- Windows-Automator live v2 の `DRAFT_SAVED` は、execution_mode、Save後の再読込、package validation/section completion、全必須section、証拠、Store ID / package SHA / source SHA / Identity / Versionの期待値一致をすべて確認した場合だけ受理します。Submit/Certified/Publishedのclaimは拒否します。
+- **未完成/未検証**: 3ツールのsubprocess実行アダプタ、実MSIXのPartner Center upload、Microsoft validation DOM、Save成功DOM、Windows実機GUI QA。contract追加はStore登録の実機完了を意味しません。
 - 全てのオンライン/高影響操作は未実装・停止状態。Submit for certification、公開、名前予約、Store商品ID/Identity推測は禁止。
 
 ## 関連リポジトリ（役割を分離）

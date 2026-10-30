@@ -39,6 +39,8 @@ class CoordinatorPreflightTests(unittest.TestCase):
         self.product = {
             "id": "sample",
             "type": "app",
+            "submission_route": "msix_pwa_app",
+            "package_type": "msix",
             "submission_kind": "update",
             "repository": "https://github.com/shihuiarenjinba-png/sample",
             "source_ref": "codex/qa",
@@ -325,6 +327,18 @@ class CoordinatorPreflightTests(unittest.TestCase):
         obj = copy.deepcopy(self.product)
         self._swap_report(obj, "build", {"holds": [{"code": "IDENTITY_UNVERIFIED"}]})
         self.assert_finding("WINDOWS_DATA_REPORT_HAS_HOLDS", obj)
+
+    def test_41_submission_route_is_retained_in_preflight_result(self):
+        result = self.check()
+        self.assertEqual(result["submission_route"], "msix_pwa_app")
+        self.assertEqual(result["package_type"], "msix")
+
+    def test_42_submission_route_package_mismatch_is_blocked_without_rewrite(self):
+        obj = copy.deepcopy(self.product)
+        obj["submission_route"] = "exe_msi_app"
+        result = self.check(obj)
+        self.assertIn("SUBMISSION_ROUTE_PACKAGE_MISMATCH", result["findings"])
+        self.assertEqual(result["submission_route"], "exe_msi_app")
 
 
 if __name__ == "__main__":
