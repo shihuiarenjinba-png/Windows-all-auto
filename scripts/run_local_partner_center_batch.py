@@ -498,9 +498,13 @@ def audit_queue_only(args, *, central_snapshot=None) -> dict:
     ledger, central_head, _ = (central_snapshot if central_snapshot is not None
                                else fetch_central())
 
-    def fetch_approved(repository: str, target: str, source_branch: str):
+    def fetch_approved(repository: str, target: str, commit_sha: str):
+        # The audit passes the independently observed immutable Factory HEAD.
+        # Never query a moving branch after validating its HEAD/ancestry.
+        if re.fullmatch(r"[0-9a-f]{40}", commit_sha) is None:
+            raise RunnerHold("HOLD_FACTORY_HEAD_UNVERIFIED")
         item = gh_json(
-            f"repos/{repository}/contents/{target}?ref={source_branch}",
+            f"repos/{repository}/contents/{target}?ref={commit_sha}",
             allow_missing=True,
         )
         if item is None:
