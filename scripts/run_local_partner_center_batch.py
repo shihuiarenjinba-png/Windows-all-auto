@@ -38,6 +38,11 @@ EXPECTED_ORDER = (
     "offline-image-inventory-desk",
 )
 PROVISIONER_BASE_SHA = "5d8f28520f8d6e89874c1cc8ce9cffede18a5e1b"
+# The CAS implementation is imported and executed in-process. An arbitrary
+# descendant of the safety base is NOT a reviewed implementation. Fail closed
+# until an explicitly reviewed Provisioner PR head is pinned here.
+PROVISIONER_REVIEWED_BRANCH = "codex/app-identity-execution-provenance-20261029"
+PROVISIONER_REVIEWED_HEAD = "9f43f80a21b585ed4bbd81621260c8c650e6e185"
 EXECUTION_ORIGINS = batch.EXECUTION_ORIGINS
 MAX_ARTIFACT_BYTES = 512 * 1024 * 1024
 
@@ -112,6 +117,8 @@ def check_prerequisites(provisioner_root: Path) -> dict:
     if not provisioner_root.is_dir():
         raise RunnerHold("HOLD_LOCAL_PREREQUISITE")
     head = git_value(provisioner_root, "rev-parse", "HEAD")
+    if head != PROVISIONER_REVIEWED_HEAD:
+        raise RunnerHold("HOLD_UNREVIEWED_PROVISIONER")
     try:
         run(["git", "-C", str(provisioner_root), "merge-base", "--is-ancestor",
              PROVISIONER_BASE_SHA, head], timeout=30)
@@ -120,7 +127,7 @@ def check_prerequisites(provisioner_root: Path) -> dict:
     if git_value(provisioner_root, "status", "--porcelain"):
         raise RunnerHold("HOLD_UNREVIEWED_PROVISIONER")
     branch = git_value(provisioner_root, "branch", "--show-current")
-    if not branch.startswith("codex/"):
+    if branch != PROVISIONER_REVIEWED_BRANCH:
         raise RunnerHold("HOLD_UNREVIEWED_PROVISIONER")
     remote = gh_json(
         "repos/shihuiarenjinba-png/Repository-Provisioner-app/git/ref/heads/" + branch
