@@ -860,6 +860,232 @@ def prepare_mixed_resume_state(args, *, verify_local_returns: bool = False) -> d
     }
 
 
+
+def reject_mixed_identity_collision(ledger: dict, job: dict,
+                                    receipt: dict, state: dict) -> None:
+    """Reject reuse of another product's Store ID/PFN before any CAS write."""
+    store_id = receipt.get("store_id")
+    pfn = receipt.get("package_family_name")
+    if not isinstance(store_id, str) or not store_id or not isinstance(pfn, str) or not pfn:
+        raise RunnerHold("HOLD_MIXED_IDENTITY_SCHEMA")
+    for collection in ("app_jobs", "three_d_jobs", "game_jobs"):
+        for other in (ledger.get("rotation_cohorts") or {}).get(collection, []):
+            if not isinstance(other, dict):
+                raise RunnerHold("HOLD_MIXED_CROSS_LANE_SCHEMA")
+            if other.get("request_id") == job.get("request_id"):
+                continue
+            if (other.get("identity_store_id") == store_id
+                    or other.get("identity_pfn") == pfn):
+                raise RunnerHold("HOLD_MIXED_CROSS_PRODUCT_IDENTITY")
+    for other in state.get("products", []):
+        if other.get("request_id") == job.get("request_id"):
+            continue
+        previous = other.get("result") or {}
+        if previous.get("store_id") == store_id or previous.get("pfn") == pfn:
+            raise RunnerHold("HOLD_MIXED_CROSS_PRODUCT_IDENTITY")
+
+
+def execute_mixed_serial(args) -> dict:
+    """Opt-in physical-Windows mixed PRE/POST executor; never a Store submit.
+
+    Preparation and actual execution each recheck canonical HEAD under the
+    shared OS lock. POST jobs are immutable skips. Only a current PRE job
+    may enter authenticated UI and the existing Provisioner single-writer
+    Identity return. Any uncertain crash after CAS but before durable result
+    fails closed for independent operator recovery; no fabricated PASS.
+    """
+    prepared = prepare_mixed_resume_state(args, verify_local_returns=True)
+    if prepared.get("status") != "MIXED_RESUME_STATE_PREPARED":
+        raise RunnerHold("HOLD_MIXED_EXECUTOR_PREPARATION")
+    state_dir = args.state_dir.resolve()
+    state_path = state_dir / "mixed-resume-state.json"
+    with batch.state_lock(state_dir / "batch-state.json"):
+        ledger, central_head, _ = fetch_central()
+        if prepared.get("central_head_sha") != central_head:
+            raise RunnerHold("HOLD_MIXED_EXECUTOR_CENTRAL_DRIFT")
+        audit = audit_queue_only(args, central_snapshot=(ledger, central_head, ""))
+        plan = rotation_plan.build_dispatch_plan(ledger, audit)
+        expected = mixed_resume.initialize(
+            plan, central_head_sha=central_head,
+            execution_origin=args.execution_origin,
+        )
+        state = operator.read_json(state_path, 512_000)
+        pending = [item for item in plan["products"]
+                   if item["dispatch_action"] == mixed_resume.PRE_ACTION]
+        jobs = (ledger.get("rotation_cohorts") or {}).get("app_jobs", [])
+        by_slug = {job.get("slug"): job for job in jobs}
+        if len(jobs) != 4 or len(by_slug) != 4:
+            raise RunnerHold("HOLD_MIXED_EXECUTOR_DISCOVERY")
+        recheck_central(central_head)
+        if not pending:
+            mixed_resume.validate_replay(state, expected)
+            return {
+                **mixed_resume.summary(state),
+                "status": "MIXED_LOCAL_NO_IDENTITY_WORK",
+                "central_head_sha": central_head,
+                "identity_capture": "NOT_PERFORMED",
+                "cas": "NOT_PERFORMED",
+                "task_scheduler_registration_allowed": False,
+                "store_submission": "NOT_PERFORMED",
+            }
+        isolated = mixed_preflight_root(state_dir, pending)
+        sync_receipt = operator.read_json(
+            isolated / "source-sync-receipt.json", 512_000
+        )
+        provisioner, provisioner_core = import_provisioner(
+            args.provisioner_root.resolve()
+        )
+        config = provisioner_core.ProductConfig.load(
+            args.provisioner_root / "config.json"
+        )
+        driver = PartnerCenterDriver()
+        try:
+            def independent(old, result):
+                return verify_mixed_local_return(
+                    old, result, old, ledger, state_dir, central_head, driver
+                )
+            mixed_resume.validate_replay(
+                state, expected, verified_result_verifier=independent
+            )
+            while True:
+                state, claimed = mixed_resume.claim_next(state)
+                if claimed is None:
+                    break
+                batch.atomic_write(state_path, state)
+                job = by_slug.get(claimed["slug"])
+                if (not isinstance(job, dict)
+                        or job.get("status") != "PRE_IDENTITY_READY"
+                        or any(job.get(key) != claimed.get(key) for key in (
+                            "request_id", "slug", "source_sha",
+                            "identity_return_target", "registration_type",
+                            "partner_center_selection"))):
+                    raise RunnerHold("HOLD_MIXED_EXECUTOR_JOB_DRIFT")
+                if (live_branch_head(job["source_repository"],
+                                     job["source_branch"]) != job["source_sha"]):
+                    raise RunnerHold("HOLD_MIXED_EXECUTOR_SOURCE_HEAD_DRIFT")
+                recheck_central(central_head)
+                metadata = {
+                    "batch_id": "mixed-app-" + central_head[:12],
+                    "batch_index": claimed["batch_index"],
+                    "batch_total": 4,
+                    "trigger_origin": batch.TRIGGER_ORIGIN,
+                    "dispatch_origin": batch.DISPATCH_ORIGIN,
+                    "execution_origin": args.execution_origin,
+                    "automation_id": batch.AUTOMATION_ID,
+                }
+                operator_job = operator.prepare(
+                    ledger, sync_receipt, isolated / "sources", claimed["slug"],
+                    central_repository=batch.CENTRAL_REPOSITORY,
+                    central_branch=batch.CENTRAL_BRANCH,
+                    central_head_sha=central_head, batch=metadata,
+                )
+                if (operator_job.get("queue_job_digest") !=
+                        operator.canonical_digest(job)):
+                    raise RunnerHold("HOLD_MIXED_EXECUTOR_QUEUE_DIGEST")
+                product_dir = state_dir / "products" / claimed["request_id"]
+                receipt_path = product_dir / "official-identity.json"
+                write_once(product_dir / "operator-job.json", operator_job)
+                if receipt_path.exists():
+                    receipt = operator.read_json(receipt_path, 64_000)
+                    observation = existing_observation(driver, receipt)
+                else:
+                    try:
+                        captured, observation = driver.process(operator_job)
+                    except PartnerCenterHold as exc:
+                        if str(exc) != "HOLD_NAME_UNAVAILABLE":
+                            raise
+                        state = mixed_resume.hold_name_unavailable(
+                            state, request_id=claimed["request_id"],
+                            verified_name_unavailable=True,
+                        )
+                        batch.atomic_write(state_path, state)
+                        continue
+                    receipt = operator.validate_capture(operator_job, captured)
+                    write_once(receipt_path, receipt)
+                reject_mixed_identity_collision(ledger, job, receipt, state)
+                if driver.verify_current(observation, receipt) is not True:
+                    raise RunnerHold("HOLD_MIXED_EXECUTOR_UI_EVIDENCE")
+                recheck_central(central_head)
+                if live_branch_head(job["source_repository"], job["source_branch"]) != job["source_sha"]:
+                    raise RunnerHold("HOLD_MIXED_EXECUTOR_SOURCE_HEAD_DRIFT")
+                def ui_verifier(candidate, job_object, queue_job):
+                    return (
+                        candidate.get("request_id") == claimed["request_id"]
+                        and queue_job.get("source_sha") == claimed["source_sha"]
+                        and driver.verify_current(observation, candidate)
+                    )
+                first = provisioner.run_identity_return(
+                    ledger=ledger, operator_job=operator_job,
+                    receipt_path=receipt_path, config=config, apply=True,
+                    independent_ui_verifier=ui_verifier,
+                )
+                if first.get("status") not in {"APPLIED", "EXISTING_VERIFIED"}:
+                    raise RunnerHold("HOLD_MIXED_EXECUTOR_CAS")
+                replay = provisioner.run_identity_return(
+                    ledger=ledger, operator_job=operator_job,
+                    receipt_path=receipt_path, config=config, apply=True,
+                    independent_ui_verifier=ui_verifier,
+                )
+                commit = (replay.get("github_return") or {}).get("commit_sha")
+                if (replay.get("status") != "EXISTING_VERIFIED"
+                        or not isinstance(commit, str)
+                        or re.fullmatch(r"[0-9a-f]{40}", commit) is None):
+                    raise RunnerHold("HOLD_MIXED_EXECUTOR_CAS_REPLAY")
+                result = {
+                    "batch_index": claimed["batch_index"],
+                    "slug": claimed["slug"],
+                    "request_id": claimed["request_id"],
+                    "source_sha": claimed["source_sha"],
+                    "identity_return_target": claimed["identity_return_target"],
+                    "registration_type": claimed["registration_type"],
+                    "partner_center_selection": claimed["partner_center_selection"],
+                    "plan_job_digest": claimed["plan_job_digest"],
+                    "queue_job_digest": operator_job["queue_job_digest"],
+                    "identity_capture_status":
+                        "IDENTITY_CAPTURED__AUTHENTICATED_UI__GITHUB_BOUND",
+                    "store_id": receipt["store_id"],
+                    "pfn": receipt["package_family_name"],
+                    "package_sid": receipt["package_sid"],
+                    "github_return_status": first["status"],
+                    "github_replay_status": replay["status"],
+                    "identity_return_commit_sha": commit,
+                    "package_version_gate": "HOLD",
+                    "store_submission": "NOT_PERFORMED",
+                    "duplicate_creation": 0,
+                    "cross_product_contamination": 0,
+                }
+                source_path = validated_mixed_source_path(
+                    state_dir, receipt, job
+                )
+                def evidence_verifier(entry, candidate):
+                    return (
+                        driver.verify_current(observation, receipt) is True
+                        and github_result_verified(
+                            job, receipt, commit, central_head, source_path
+                        )
+                    )
+                state = mixed_resume.complete_active(
+                    state, result,
+                    independent_evidence_verifier=evidence_verifier,
+                )
+                batch.atomic_write(state_path, state)
+                write_once(product_dir / "result.json", result)
+                recheck_central(central_head)
+        finally:
+            driver.close()
+    summary = mixed_resume.summary(state)
+    return {
+        **summary,
+        "central_head_sha": central_head,
+        "state_path": str(state_path),
+        "identity_capture": "LOCAL_UI_AND_GITHUB_VERIFIED_PER_COMPLETED_JOB",
+        "cas": "EXISTING_PROVISIONER_SINGLE_WRITER_ONLY",
+        "task_scheduler_registration_allowed": False,
+        "store_submission": "NOT_PERFORMED",
+        "next_action": "CENTRAL_WRITER_RECONCILE_EACH_GITHUB_RETURN_THEN_VERSION_GATE",
+    }
+
+
 def preflight_only(args) -> dict:
     """Read-only live queue gate for task registration, never host proof.
 
@@ -1170,15 +1396,17 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--mixed-local-preflight", action="store_true")
     parser.add_argument("--prepare-mixed-resume", action="store_true")
     parser.add_argument("--verify-mixed-rebase-ui", action="store_true")
+    parser.add_argument("--execute-mixed", action="store_true")
     args = parser.parse_args(argv)
     try:
         if sum((args.audit_queue, args.plan_queue, args.preflight_only,
                 args.mixed_local_preflight, args.prepare_mixed_resume,
-                args.verify_mixed_rebase_ui)) > 1:
+                args.verify_mixed_rebase_ui, args.execute_mixed)) > 1:
             raise RunnerHold("HOLD_CONFLICTING_READ_ONLY_MODES")
         result = (audit_queue_only(args) if args.audit_queue else
                   plan_queue_only(args) if args.plan_queue else
                   preflight_mixed_local(args) if args.mixed_local_preflight else
+                  execute_mixed_serial(args) if args.execute_mixed else
                   prepare_mixed_resume_state(
                       args, verify_local_returns=args.verify_mixed_rebase_ui
                   ) if (args.prepare_mixed_resume or args.verify_mixed_rebase_ui) else
