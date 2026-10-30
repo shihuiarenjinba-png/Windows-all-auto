@@ -30,6 +30,7 @@ def fixture():
             "requested_fields": ["Store ID"], "allow_local_product_creation": True,
         }]},
         "registration_router": {"entries": [{"product": "Test App",
+            "repository": REPO,
             "registration_type": "MSIX_OR_PWA_APP",
             "partner_center_selection": "MSIX or PWA app",
             "identity_status": "LOCAL_OPERATOR_ACTIVE"}]},
@@ -539,7 +540,7 @@ class ReconcileTests(unittest.TestCase):
 
     def test_missing_router_repository_cannot_default_to_job(self):
         ledger, approved = fixture()
-        self.assertNotIn("repository", ledger["registration_router"]["entries"][0])
+        del ledger["registration_router"]["entries"][0]["repository"]
         with self.assertRaisesRegex(ReconcileHold, "HOLD_REGISTRATION_ROUTER_SOURCE_CONFLICT"):
             reconcile(ledger, approved)
 
