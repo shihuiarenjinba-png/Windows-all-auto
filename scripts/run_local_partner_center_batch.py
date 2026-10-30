@@ -168,6 +168,27 @@ def live_branch_head(repository: str, branch: str) -> str:
     return value
 
 
+def verify_source_ancestry(repository: str, source_sha: str, head: str) -> bool:
+    """Independently prove the immutable source is an ancestor of live HEAD.
+
+    GitHub compare is a separate authenticated read. Missing or malformed
+    responses never count as successful Identity-return provenance.
+    """
+    if (not isinstance(repository, str) or not repository.startswith("shihuiarenjinba-png/")
+            or not re.fullmatch(r"[0-9a-f]{40}", str(source_sha))
+            or not re.fullmatch(r"[0-9a-f]{40}", str(head))
+            or source_sha == head):
+        return False
+    comparison = gh_json(f"repos/{repository}/compare/{source_sha}...{head}")
+    return (isinstance(comparison, dict)
+            and comparison.get("status") == "ahead"
+            and type(comparison.get("ahead_by")) is int
+            and comparison["ahead_by"] >= 1
+            and comparison.get("behind_by") == 0
+            and isinstance(comparison.get("merge_base_commit"), dict)
+            and comparison["merge_base_commit"].get("sha") == source_sha)
+
+
 def recheck_central(expected: str) -> None:
     current = live_branch_head(batch.CENTRAL_REPOSITORY, batch.CENTRAL_BRANCH)
     if current != expected:
@@ -485,6 +506,7 @@ def audit_queue_only(args, *, central_snapshot=None) -> dict:
         ledger,
         fetch_head=live_branch_head,
         fetch_approved=fetch_approved,
+        fetch_ancestry=verify_source_ancestry,
         fetch_artifact=lambda repo, artifact_id: gh_json(
             f"repos/{repo}/actions/artifacts/{artifact_id}"
         ),
