@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-30T03:34:03Z",
+  "updated_at_utc": "2026-10-30T03:35:10Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -1049,7 +1049,7 @@
       "app-offline-image-inventory-desk-16b6a772952c"
     ]
   },
-  "classification": "APP_MIXED_POST_2_PRE_2__POST_IDENTITY_PFN_RECONCILED__PR64_CI_GREEN__PHYSICAL_WINDOWS_AND_E2E_HOLD",
+  "classification": "APP_MIXED_POST_2_PRE_2__POST_PFN_CANONICAL_FIXED__PR65_WINDOWS_UBUNTU_CI_GREEN__PHYSICAL_WINDOWS_AND_E2E_HOLD",
   "registration_router": {
     "schema_version": 1,
     "status": "WINDOWS_UBUNTU_ROUTER_CI_PASS__LOCAL_MODE__PRISM_EXISTING_MANUAL_REFERENCE",
@@ -2424,8 +2424,8 @@
     "local_execution_this_run": "NOT_PERFORMED"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-30T03:34:03Z",
-    "scope": "POST_IDENTITY_APP_PFN_BINDING_REPAIRED_FROM_EXACT_GITHUB_APPROVED_IDENTITY_FILES__PR64_WINDOWS_UBUNTU_CI_GREEN__NO_LOCAL_EXECUTION",
+    "observed_at_utc": "2026-10-30T03:35:10Z",
+    "scope": "POST_IDENTITY_PFN_REPAIRED__PR65_READ_ONLY_PFN_FAIL_CLOSED_GUARD_WINDOWS_UBUNTU_CI_SUCCESS__NO_PHYSICAL_WINDOWS",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
     "canonical_previous_blob_sha": "e876d01616e52d95c97ea49487092a67c9b2dfd6",
@@ -2505,7 +2505,7 @@
     "mixed_local_preflight_ci": "SUCCESS_AT_EXACT_HEAD",
     "mixed_local_preflight_capability": "FOCUS_POST_SKIP__THREE_PRE_EXACT_SOURCE_AND_EXE_VERIFICATION__SHARED_LOCK__NO_BROWSER_CAS",
     "mixed_local_preflight_execution": "NOT_RUN_ON_USER_WINDOWS",
-    "canonical_head_before_write": "25a3b6b3f7b0a1b0888932e60b0c292ad66a6d09",
+    "canonical_head_before_write": "a4d0741019c534a6e5ac5623bd2e2295d7ffcad3",
     "latest_remote_recheck": {
       "verified_at_utc": "2026-10-30T02:41:06Z",
       "focus": "POST_IDENTITY_READY__APPROVED_FILE_EXACT_REQUEST_SOURCE__HEAD_8a7139375524830bf823469526837259266172be",
@@ -2698,12 +2698,19 @@
       "pr64_head": "118bb470db641e474a2b5d5a6356799d3c95f6b5",
       "pr64_ci_run": 40993001449,
       "pr64_ci": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
-      "physical_windows": "NOT_PERFORMED"
+      "physical_windows": "NOT_PERFORMED",
+      "guard_pr": 65,
+      "guard_branch": "codex/e2e-post-identity-pfn-integrity-20261030-1236",
+      "guard_head": "b994bbded86b3df95ac72db51da567cc95dc3931",
+      "guard_ci_run": 40998152981,
+      "guard_ci": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+      "guard_tests": "POST_IDENTITY_MISSING_PFN_AND_PFN_MISMATCH_FAIL_CLOSED",
+      "guard_pr_status": "DRAFT_NOT_MERGED"
     }
   },
   "post_identity_pipeline": {
     "schema_version": 1,
-    "updated_at_utc": "2026-10-30T03:34:03Z",
+    "updated_at_utc": "2026-10-30T03:35:10Z",
     "writer": "36_WINDOWS_E2E_ONLY",
     "reconciliation_basis": "FRESH_GITHUB_FOUR_APP_SOURCE_BRANCH_HEADS_AND_APPROVED_IDENTITY_FILES__PREVIOUS_ARTIFACT_METADATA_DIGEST_EXPIRY_EVIDENCE__NO_LOCAL_RECEIPTS",
     "product_count": 7,
