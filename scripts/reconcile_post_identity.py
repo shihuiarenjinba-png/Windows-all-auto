@@ -123,8 +123,16 @@ def reconcile_approved_return(
     if job.get("status") == "POST_IDENTITY_READY":
         _require(job.get("identity_return_commit_sha") == head,
                  "HOLD_RETURN_COMMIT_DRIFT")
+        # A replay is a verification, never an opportunity to overwrite a
+        # previously recorded Store ID/PFN with a different product binding.
+        _require(job.get("identity_store_id") == approved["store_id"]
+                 and job.get("identity_pfn") == approved["package_family_name"],
+                 "HOLD_POST_IDENTITY_BINDING_CONFLICT")
         transition = "EXISTING_VERIFIED"
     else:
+        _require(job.get("identity_store_id") in (None, "")
+                 and job.get("identity_pfn") in (None, ""),
+                 "HOLD_PRE_IDENTITY_STALE_BINDING")
         transition = "POST_IDENTITY_READY"
     for other in jobs:
         if other is job:
@@ -154,12 +162,22 @@ def reconcile_approved_return(
         if entry.get("product") == job.get("display_name"):
             entry["identity_status"] = "GITHUB_APPROVED_IDENTITY_RETURN_VERIFIED"
             entry["next_action"] = "PACKAGE_VERSION_GATE_HOLD"
-    for entry in (result.get("post_identity_pipeline") or {}).get("products", []):
-        if entry.get("request_id") == job["request_id"]:
-            entry.update({
-                "state": "POST_IDENTITY_READY",
-                "identity_status": "CAS_RETURN_COMMIT_GITHUB_VERIFIED",
-                "identity_return_commit_sha": head,
-                "next_action": "PACKAGE_VERSION_AND_ASSET_APPROVAL_GATE",
-            })
+    pipeline = (result.get("post_identity_pipeline") or {}).get("products", [])
+    matches = [entry for entry in pipeline
+               if entry.get("request_id") == job["request_id"]]
+    _require(len(matches) <= 1, "HOLD_POST_IDENTITY_PIPELINE_DUPLICATE")
+    for entry in matches:
+        # Do not silently repair a contradictory central POST binding.
+        for field, expected in (("identity_store_id", approved["store_id"]),
+                                ("identity_pfn", approved["package_family_name"])):
+            _require(entry.get(field) in (None, expected),
+                     "HOLD_POST_IDENTITY_PIPELINE_CONFLICT")
+        entry.update({
+            "state": "POST_IDENTITY_READY",
+            "identity_status": "CAS_RETURN_COMMIT_GITHUB_VERIFIED",
+            "identity_return_commit_sha": head,
+            "identity_store_id": approved["store_id"],
+            "identity_pfn": approved["package_family_name"],
+            "next_action": "PACKAGE_VERSION_AND_ASSET_APPROVAL_GATE",
+        })
     return result, transition

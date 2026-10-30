@@ -82,6 +82,50 @@ class ReconcileTests(unittest.TestCase):
         with self.assertRaisesRegex(ReconcileHold, "HOLD_RETURN_COMMIT_DRIFT"):
             reconcile(once, approved, head="d" * 40)
 
+    def test_post_replay_rejects_changed_store_id(self):
+        ledger, approved = fixture()
+        once, _ = reconcile(ledger, approved)
+        once["rotation_cohorts"]["app_jobs"][0]["identity_store_id"] = "9OTHER123456"
+        with self.assertRaisesRegex(ReconcileHold, "HOLD_POST_IDENTITY_BINDING_CONFLICT"):
+            reconcile(once, approved)
+
+    def test_post_replay_rejects_missing_pfn(self):
+        ledger, approved = fixture()
+        once, _ = reconcile(ledger, approved)
+        del once["rotation_cohorts"]["app_jobs"][0]["identity_pfn"]
+        with self.assertRaisesRegex(ReconcileHold, "HOLD_POST_IDENTITY_BINDING_CONFLICT"):
+            reconcile(once, approved)
+
+    def test_pre_with_stale_identity_cannot_be_promoted(self):
+        ledger, approved = fixture()
+        ledger["rotation_cohorts"]["app_jobs"][0]["identity_pfn"] = (
+            "OkinawaDesktopTools.Other_j8yefg9jgfh58")
+        with self.assertRaisesRegex(ReconcileHold, "HOLD_PRE_IDENTITY_STALE_BINDING"):
+            reconcile(ledger, approved)
+
+    def test_pipeline_receives_verified_store_id_and_pfn(self):
+        ledger, approved = fixture()
+        result, _ = reconcile(ledger, approved)
+        entry = result["post_identity_pipeline"]["products"][0]
+        self.assertEqual(entry["identity_store_id"], approved["store_id"])
+        self.assertEqual(entry["identity_pfn"], approved["package_family_name"])
+
+    def test_pipeline_rejects_conflicting_identity_without_mutating_input(self):
+        ledger, approved = fixture()
+        ledger["post_identity_pipeline"]["products"][0]["identity_pfn"] = (
+            "OkinawaDesktopTools.Other_j8yefg9jgfh58")
+        original = copy.deepcopy(ledger)
+        with self.assertRaisesRegex(ReconcileHold, "HOLD_POST_IDENTITY_PIPELINE_CONFLICT"):
+            reconcile(ledger, approved)
+        self.assertEqual(ledger, original)
+
+    def test_pipeline_rejects_duplicate_request(self):
+        ledger, approved = fixture()
+        ledger["post_identity_pipeline"]["products"].append(
+            copy.deepcopy(ledger["post_identity_pipeline"]["products"][0]))
+        with self.assertRaisesRegex(ReconcileHold, "HOLD_POST_IDENTITY_PIPELINE_DUPLICATE"):
+            reconcile(ledger, approved)
+
     def test_source_binding_conflict(self):
         ledger, approved = fixture()
         approved["request_id"] = "other-request"
