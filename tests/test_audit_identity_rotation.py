@@ -88,6 +88,8 @@ def fixture():
             {"request_id": job["request_id"], "product_name": job["display_name"],
              "repo": job["source_repository"], "source_branch": job["source_branch"],
              "source_sha": job["source_sha"],
+             "identity_return_target": job["identity_return_target"],
+             "product_type": job["product_type"], "slug": job["slug"],
              "registration_type": job["registration_type"],
              "partner_center_selection": job["partner_center_selection"]}
             for job in jobs
