@@ -91,7 +91,8 @@ def reconcile_approved_return(
     # A corrupted APP/GAME router must never be promoted just because the
     # auxiliary entry repeats the same wrong registration type.
     registration_type = job.get("registration_type")
-    _require(registration_type in REGISTRATION_BY_LANE[job["product_type"]],
+    _require(isinstance(registration_type, str)
+             and registration_type in REGISTRATION_BY_LANE[job["product_type"]],
              "HOLD_REGISTRATION_LANE_CONFLICT")
     _require(job.get("partner_center_selection") ==
              REGISTRATION_SELECTION[registration_type],
