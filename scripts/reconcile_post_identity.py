@@ -172,22 +172,46 @@ def reconcile_approved_return(
         if entry.get("product") == job.get("display_name"):
             entry["identity_status"] = "GITHUB_APPROVED_IDENTITY_RETURN_VERIFIED"
             entry["next_action"] = "PACKAGE_VERSION_GATE_HOLD"
-    pipeline = (result.get("post_identity_pipeline") or {}).get("products", [])
-    matches = [entry for entry in pipeline
-               if entry.get("request_id") == job["request_id"]]
-    _require(len(matches) <= 1, "HOLD_POST_IDENTITY_PIPELINE_DUPLICATE")
-    for entry in matches:
-        # Do not silently repair a contradictory central POST binding.
-        for field, expected in (("identity_store_id", approved["store_id"]),
-                                ("identity_pfn", approved["package_family_name"])):
-            _require(entry.get(field) in (None, expected),
+    pipeline = result.get("post_identity_pipeline")
+    _require(isinstance(pipeline, dict)
+             and isinstance(pipeline.get("products"), list),
+             "HOLD_POST_IDENTITY_PIPELINE_MISSING")
+    matches = [entry for entry in pipeline["products"]
+               if isinstance(entry, dict)
+               and entry.get("request_id") == job["request_id"]]
+    _require(len(matches) == 1, "HOLD_POST_IDENTITY_PIPELINE_MISSING_OR_DUPLICATE")
+    entry = matches[0]
+    # A valid Identity return must have exactly one matching downstream
+    # pipeline record. Matching request_id alone does not prove product/lane
+    # ownership: never silently rewrite a cross-product pipeline record.
+    for field, expected in (
+        ("product", job["display_name"]),
+        ("lane", job["product_type"]),
+        ("source_repository", job["source_repository"]),
+        ("source_branch", job["source_branch"]),
+        ("source_sha", job["source_sha"]),
+        ("identity_return_target", expected_target),
+    ):
+        _require(entry.get(field) == expected,
+                 "HOLD_POST_IDENTITY_PIPELINE_SOURCE_CONFLICT")
+    expected_state = ("POST_IDENTITY_READY" if transition == "EXISTING_VERIFIED"
+                      else "WAITING_IDENTITY_CAPTURE_AND_CAS")
+    _require(entry.get("state") == expected_state,
+             "HOLD_POST_IDENTITY_PIPELINE_STATE_CONFLICT")
+    for field, expected in (("identity_store_id", approved["store_id"]),
+                            ("identity_pfn", approved["package_family_name"])):
+        if transition == "EXISTING_VERIFIED":
+            _require(entry.get(field) == expected,
                      "HOLD_POST_IDENTITY_PIPELINE_CONFLICT")
-        entry.update({
-            "state": "POST_IDENTITY_READY",
-            "identity_status": "CAS_RETURN_COMMIT_GITHUB_VERIFIED",
-            "identity_return_commit_sha": head,
-            "identity_store_id": approved["store_id"],
-            "identity_pfn": approved["package_family_name"],
-            "next_action": "PACKAGE_VERSION_AND_ASSET_APPROVAL_GATE",
-        })
+        else:
+            _require(entry.get(field) in (None, ""),
+                     "HOLD_POST_IDENTITY_PIPELINE_CONFLICT")
+    entry.update({
+        "state": "POST_IDENTITY_READY",
+        "identity_status": "CAS_RETURN_COMMIT_GITHUB_VERIFIED",
+        "identity_return_commit_sha": head,
+        "identity_store_id": approved["store_id"],
+        "identity_pfn": approved["package_family_name"],
+        "next_action": "PACKAGE_VERSION_AND_ASSET_APPROVAL_GATE",
+    })
     return result, transition
