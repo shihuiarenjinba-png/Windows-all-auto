@@ -171,6 +171,7 @@ def reconcile_approved_return(
     job.update({
         "market_fit_gate": market_fit_gate,
         "market_fit_reason": market_fit_reason,
+        "market_fit_evidence_verified": market_fit_gate == "MARKET_FIT_PASS",
         "status": "POST_IDENTITY_READY",
         "identity_status": "GITHUB_APPROVED_IDENTITY_RETURN_VERIFIED__PACKAGE_VERSION_HOLD",
         "identity_return_commit_sha": head,
@@ -235,6 +236,7 @@ def reconcile_approved_return(
         "identity_pfn": approved["package_family_name"],
         "market_fit_gate": market_fit_gate,
         "market_fit_reason": market_fit_reason,
+        "market_fit_evidence_verified": market_fit_gate == "MARKET_FIT_PASS",
         "next_action": next_package_action,
     })
     return result, transition
