@@ -320,6 +320,7 @@ class MarketFitPackageGateTests(unittest.TestCase):
         ledger, _ = fixture()
         job = ledger["rotation_cohorts"]["app_jobs"][0]
         return {
+            "schema_version": 1,
             "slug": job["slug"], "request_id": job["request_id"],
             "source_repository": job["source_repository"],
             "source_branch": job["source_branch"],
@@ -366,6 +367,12 @@ class MarketFitPackageGateTests(unittest.TestCase):
         self.assertEqual(job["next_action"], "PACKAGE_VERSION_AND_ASSET_APPROVAL_GATE")
         self.assertEqual(result["post_identity_pipeline"]["products"][0]["market_fit_gate"],
                          "MARKET_FIT_PASS")
+
+    def test_missing_schema_version_holds(self):
+        evidence = self.market_evidence()
+        evidence.pop("schema_version")
+        self.assertEqual(self.run_gate(evidence)["rotation_cohorts"]["app_jobs"][0]
+                         ["market_fit_reason"], "HOLD_MARKET_FIT_SCHEMA")
 
     def test_score_below_70_holds(self):
         evidence = self.market_evidence()
