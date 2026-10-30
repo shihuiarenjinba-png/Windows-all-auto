@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-30T12:38:15Z",
+  "updated_at_utc": "2026-10-30T12:40:00Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -2445,7 +2445,7 @@
   },
   "last_36_execution": {
     "observed_at_utc": "2026-10-30T12:38:15Z",
-    "scope": "PR74_IMMUTABLE_MARKET_FIT_REVIEW_COMMIT_CONTRACT__CI_IN_PROGRESS__REAL_PRODUCT_MARKET_FIT_HOLD__NO_LOCAL_OR_STORE_ACTION",
+    "scope": "PR74_IMMUTABLE_MARKET_FIT_REVIEW_COMMIT_CONTRACT_CI_GREEN__REAL_PRODUCT_MARKET_FIT_HOLD__NO_LOCAL_OR_STORE_ACTION",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
     "canonical_previous_blob_sha": "a1ba4e8d9b2d5c2595d1c64d2562319249088d88",
@@ -2865,9 +2865,9 @@
       "next_action": "FACTORY_REVIEWED_EVIDENCE_AT_NEW_PINNED_SOURCE_IF_NEEDED__REVIEW_REPIN_AND_EXE_REBUILD__THEN_WIRE_READ_ONLY_MARKET_FIT_ADAPTER_INTO_DISPATCHER__VERSION_ASSETS_STILL_SEPARATE"
     },
     "market_fit_review_commit_pr": 74,
-    "market_fit_review_commit_head": "ce78d2b2ae2481d956b68a9c728641b5a16a0215",
-    "market_fit_review_commit_ci": "IN_PROGRESS_NOT_PASS",
-    "market_fit_review_commit_run": 41056843287,
+    "market_fit_review_commit_head": "a868dc3f6c28909e9ccec7e13152aa2540b6de25",
+    "market_fit_review_commit_ci": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+    "market_fit_review_commit_run": 41056950496,
     "market_fit_review_commit_real_product_pass_count": 0,
     "market_fit_review_commit_next_action": "REVIEW_FACTORIES_AND_PIN_EXACT_REVIEW_COMMIT_ONLY_AFTER_HUMAN_APPROVAL__PACKAGE_HOLD"
   },
@@ -3309,12 +3309,12 @@
       "market_fit_review_commit_contract": {
         "draft_pr": 74,
         "branch": "codex/e2e-market-fit-review-commit-20261030-2136",
-        "head_sha": "ce78d2b2ae2481d956b68a9c728641b5a16a0215",
+        "head_sha": "a868dc3f6c28909e9ccec7e13152aa2540b6de25",
         "base_pr": 73,
-        "ci_run_id": 41056843287,
-        "ci_status": "IN_PROGRESS_NOT_PASS",
+        "ci_run_id": 41056950496,
+        "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
         "scope": "OPT_IN_REVIEW_ONLY_SINGLE_ADDED_MARKET_FIT_JSON_COMMIT_FROM_IMMUTABLE_FACTORY_SOURCE_SHA__EXACT_GITHUB_COMPARE_AND_CONTENTS_READ__NO_SOURCE_REPIN",
-        "offline_tests": "13_ISOLATED_LOCAL_TESTS_PASS_WITH_STUBBED_EXISTING_IMPORTS__FULL_REPO_CI_PENDING",
+        "offline_tests": "13_NEW_OFFLINE_REGRESSIONS__FULL_REPO_CI_619_TESTS_PASS_1_SKIP",
         "current_real_factory_review_sha_count": 0,
         "current_app_market_fit_pass_count": 0,
         "app_package_gate": "MARKET_FIT_HOLD",
@@ -3327,7 +3327,8 @@
         "cas": "NOT_PERFORMED",
         "store_submission": "NOT_PERFORMED",
         "integration": "STACKED_DRAFT_NOT_MERGED__NOT_WIRED_INTO_PACKAGE_DISPATCH",
-        "next_action": "FACTORY_OWNER_CREATE_REVIEWED_SINGLE_FILE_MARKET_FIT_COMMIT_ON_PINNED_SOURCE__36_WRITER_VERIFY_AND_PIN_REVIEW_SHA__NO_PACKAGE_BEFORE_MARKET_FIT_AND_VERSION_ASSET_APPROVAL"
+        "next_action": "FACTORY_OWNER_CREATE_REVIEWED_SINGLE_FILE_MARKET_FIT_COMMIT_ON_PINNED_SOURCE__36_WRITER_VERIFY_AND_PIN_REVIEW_SHA__NO_PACKAGE_BEFORE_MARKET_FIT_AND_VERSION_ASSET_APPROVAL",
+        "initial_ci_failure": "RUN_41056843287_TEST_FIXTURE_MISSING_IDENTITY_RETURN_TARGET__FIXED"
       }
     },
     "market_fit_pass_count": 0,
