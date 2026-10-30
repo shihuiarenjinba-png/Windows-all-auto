@@ -11,6 +11,8 @@ import json
 import re
 from typing import Callable
 
+from scripts.market_fit_gate import assess_market_fit
+
 SHA40 = re.compile(r"[0-9a-f]{40}")
 SHA64 = re.compile(r"[0-9a-f]{64}")
 
@@ -57,6 +59,7 @@ def reconcile_approved_return(
     fetch_branch_head: Callable[[str, str], str],
     fetch_approved_file: Callable[[str, str, str], str],
     verify_source_ancestry: Callable[[str, str, str, str], bool] | None = None,
+    fetch_market_fit: Callable[[str, str, str], str | None] | None = None,
 ) -> tuple[dict, str]:
     """Return (updated ledger copy, transition), without performing a write.
 
@@ -162,7 +165,12 @@ def reconcile_approved_return(
         _require(other.get("identity_store_id") != approved["store_id"]
                  and other.get("identity_pfn") != approved["package_family_name"],
                  "HOLD_CROSS_PRODUCT_IDENTITY")
+    market_fit_gate, market_fit_reason = assess_market_fit(job, fetch_market_fit)
+    next_package_action = ("MARKET_FIT_HOLD" if market_fit_gate == "MARKET_FIT_HOLD"
+                           else "PACKAGE_VERSION_AND_ASSET_APPROVAL_GATE")
     job.update({
+        "market_fit_gate": market_fit_gate,
+        "market_fit_reason": market_fit_reason,
         "status": "POST_IDENTITY_READY",
         "identity_status": "GITHUB_APPROVED_IDENTITY_RETURN_VERIFIED__PACKAGE_VERSION_HOLD",
         "identity_return_commit_sha": head,
@@ -170,7 +178,7 @@ def reconcile_approved_return(
         "identity_pfn": approved["package_family_name"],
         "identity_cas_allowed": False,
         "package_version_gate": "HOLD",
-        "next_action": "PACKAGE_VERSION_AND_ASSET_APPROVAL_GATE",
+        "next_action": next_package_action,
     })
     for request in (result.get("user_id_requests") or {}).get("items", []):
         if request.get("request_id") == job["request_id"]:
@@ -225,6 +233,8 @@ def reconcile_approved_return(
         "identity_return_commit_sha": head,
         "identity_store_id": approved["store_id"],
         "identity_pfn": approved["package_family_name"],
-        "next_action": "PACKAGE_VERSION_AND_ASSET_APPROVAL_GATE",
+        "market_fit_gate": market_fit_gate,
+        "market_fit_reason": market_fit_reason,
+        "next_action": next_package_action,
     })
     return result, transition

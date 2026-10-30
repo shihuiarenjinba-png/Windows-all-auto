@@ -314,5 +314,135 @@ class ReconcileTests(unittest.TestCase):
             )
 
 
+
+class MarketFitPackageGateTests(unittest.TestCase):
+    def market_evidence(self):
+        ledger, _ = fixture()
+        job = ledger["rotation_cohorts"]["app_jobs"][0]
+        return {
+            "schema_version": 1,
+            "slug": job["slug"], "request_id": job["request_id"],
+            "source_repository": job["source_repository"],
+            "source_branch": job["source_branch"],
+            "source_sha": job["source_sha"],
+            "reviewed": True, "status": "MARKET_FIT_PASS", "score": 75,
+            "why_pay": "Saves repeated manual reconciliation work",
+            "free_alternative_difference": "One-click offline batch validation",
+            "competitor_research": [{"competitor": "Example Alternative",
+                                      "difference": "Requires manual review"}],
+        }
+
+    def run_gate(self, evidence, *, raw=None):
+        ledger, approved = fixture()
+        observed = []
+        result, transition = reconcile_approved_return(
+            ledger, "test-app",
+            fetch_branch_head=lambda *_: RETURN,
+            verify_source_ancestry=lambda *_: True,
+            fetch_approved_file=lambda *_: json.dumps(approved),
+            fetch_market_fit=lambda repo, path, sha: (
+                observed.append((repo, path, sha))
+                or (raw if raw is not None else json.dumps(evidence))),
+        )
+        self.assertEqual(transition, "POST_IDENTITY_READY")
+        self.assertEqual(observed, [(REPO, "products/test-app/market-fit.json", SOURCE)])
+        return result
+
+    def test_no_factory_reader_holds_package_but_not_identity(self):
+        ledger, approved = fixture()
+        result, status = reconcile(ledger, approved)
+        self.assertEqual(status, "POST_IDENTITY_READY")
+        job = result["rotation_cohorts"]["app_jobs"][0]
+        self.assertEqual(job["market_fit_gate"], "MARKET_FIT_HOLD")
+        self.assertEqual(job["next_action"], "MARKET_FIT_HOLD")
+        self.assertEqual(job["package_version_gate"], "HOLD")
+        self.assertEqual(result["post_identity_pipeline"]["products"][0]["next_action"],
+                         "MARKET_FIT_HOLD")
+
+    def test_factory_source_sha_bound_reviewed_evidence_passes_market_gate_only(self):
+        result = self.run_gate(self.market_evidence())
+        job = result["rotation_cohorts"]["app_jobs"][0]
+        self.assertEqual(job["market_fit_gate"], "MARKET_FIT_PASS")
+        self.assertEqual(job["package_version_gate"], "HOLD")
+        self.assertEqual(job["next_action"], "PACKAGE_VERSION_AND_ASSET_APPROVAL_GATE")
+        self.assertEqual(result["post_identity_pipeline"]["products"][0]["market_fit_gate"],
+                         "MARKET_FIT_PASS")
+
+    def test_missing_schema_version_holds(self):
+        evidence = self.market_evidence()
+        evidence.pop("schema_version")
+        self.assertEqual(self.run_gate(evidence)["rotation_cohorts"]["app_jobs"][0]
+                         ["market_fit_reason"], "HOLD_MARKET_FIT_SCHEMA")
+
+    def test_score_below_70_holds(self):
+        evidence = self.market_evidence()
+        evidence["score"] = 69
+        self.assertEqual(self.run_gate(evidence)["rotation_cohorts"]["app_jobs"][0]
+                         ["market_fit_reason"], "HOLD_MARKET_FIT_SCORE_BELOW_70_OR_INVALID")
+
+    def test_boolean_score_is_not_numeric_approval(self):
+        evidence = self.market_evidence()
+        evidence["score"] = True
+        self.assertEqual(self.run_gate(evidence)["rotation_cohorts"]["app_jobs"][0]
+                         ["market_fit_gate"], "MARKET_FIT_HOLD")
+
+    def test_why_pay_missing_holds(self):
+        evidence = self.market_evidence()
+        evidence["why_pay"] = " "
+        self.assertEqual(self.run_gate(evidence)["rotation_cohorts"]["app_jobs"][0]
+                         ["market_fit_reason"], "HOLD_MARKET_FIT_WHY_PAY_UNCLEAR")
+
+    def test_no_free_alternative_difference_holds(self):
+        evidence = self.market_evidence()
+        evidence["free_alternative_difference"] = ""
+        self.assertEqual(self.run_gate(evidence)["rotation_cohorts"]["app_jobs"][0]
+                         ["market_fit_reason"],
+                         "HOLD_MARKET_FIT_NO_FREE_ALTERNATIVE_DIFFERENCE")
+
+    def test_competitor_research_missing_holds(self):
+        evidence = self.market_evidence()
+        evidence["competitor_research"] = []
+        self.assertEqual(self.run_gate(evidence)["rotation_cohorts"]["app_jobs"][0]
+                         ["market_fit_reason"], "HOLD_MARKET_FIT_COMPETITOR_RESEARCH_MISSING")
+
+    def test_unreviewed_claim_cannot_pass(self):
+        evidence = self.market_evidence()
+        evidence["reviewed"] = False
+        self.assertEqual(self.run_gate(evidence)["rotation_cohorts"]["app_jobs"][0]
+                         ["market_fit_gate"], "MARKET_FIT_HOLD")
+
+    def test_cross_product_source_binding_holds(self):
+        evidence = self.market_evidence()
+        evidence["request_id"] = "different-product"
+        self.assertEqual(self.run_gate(evidence)["rotation_cohorts"]["app_jobs"][0]
+                         ["market_fit_reason"], "HOLD_MARKET_FIT_SOURCE_CONFLICT")
+
+    def test_duplicate_key_in_factory_evidence_holds(self):
+        evidence = self.market_evidence()
+        raw = json.dumps(evidence).replace('"score": 75', '"score": 75, "score": 95')
+        self.assertEqual(self.run_gate(evidence, raw=raw)["rotation_cohorts"]["app_jobs"][0]
+                         ["market_fit_reason"], "HOLD_MARKET_FIT_DUPLICATE_KEY")
+
+    def test_missing_factory_file_holds(self):
+        from scripts.market_fit_gate import assess_market_fit
+        job = fixture()[0]["rotation_cohorts"]["app_jobs"][0]
+        self.assertEqual(assess_market_fit(job, lambda *_: None),
+                         ("MARKET_FIT_HOLD", "HOLD_MARKET_FIT_FACTORY_EVIDENCE_MISSING"))
+
+    def test_market_fit_replay_is_idempotent(self):
+        ledger, approved = fixture()
+        evidence = self.market_evidence()
+        readers = {
+            "fetch_branch_head": lambda *_: RETURN,
+            "verify_source_ancestry": lambda *_: True,
+            "fetch_approved_file": lambda *_: json.dumps(approved),
+            "fetch_market_fit": lambda *_: json.dumps(evidence),
+        }
+        once, _ = reconcile_approved_return(ledger, "test-app", **readers)
+        twice, status = reconcile_approved_return(once, "test-app", **readers)
+        self.assertEqual(status, "EXISTING_VERIFIED")
+        self.assertEqual(once, twice)
+
+
 if __name__ == "__main__":
     unittest.main()
