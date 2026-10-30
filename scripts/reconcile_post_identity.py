@@ -255,6 +255,17 @@ def reconcile_approved_return(
     _require(isinstance(router_entries, list)
              and all(isinstance(x, dict) for x in router_entries),
              "HOLD_REGISTRATION_ROUTER_SCHEMA")
+    # A case-only duplicate or malformed unrelated route is still ambiguous:
+    # never allow one Store display name to address multiple route records.
+    route_names = [entry.get("product") for entry in router_entries]
+    _require(all(isinstance(name, str) and name and name == name.strip()
+                 for name in route_names),
+             "HOLD_REGISTRATION_ROUTER_AMBIGUOUS")
+    # Preserve the established exact-duplicate HOLD code for older callers.
+    _require(len(route_names) == len(set(route_names)),
+             "HOLD_REGISTRATION_ROUTER_DUPLICATE")
+    _require(len({name.casefold() for name in route_names}) == len(route_names),
+             "HOLD_REGISTRATION_ROUTER_AMBIGUOUS")
     matching_routes = [x for x in router_entries
                        if x.get("product") == job["display_name"]]
     _require(len(matching_routes) >= 1, "HOLD_REGISTRATION_ROUTER_MISSING")
@@ -266,15 +277,29 @@ def reconcile_approved_return(
                  and entry.get("partner_center_selection") ==
                  REGISTRATION_SELECTION[registration_type],
                  "HOLD_REGISTRATION_ROUTER_SOURCE_CONFLICT")
+        # Historical router records may omit these fields. If present, they
+        # are provenance constraints and must never be ignored on promotion.
+        for field, expected in (
+            ("request_id", job["request_id"]),
+            ("slug", slug),
+            ("product_type", job["product_type"]),
+            ("source_branch", job["source_branch"]),
+            ("source_sha", job["source_sha"]),
+            ("identity_return_target", expected_target),
+        ):
+            if field in entry:
+                _require(isinstance(entry[field], str) and entry[field] == expected,
+                         "HOLD_REGISTRATION_ROUTER_SOURCE_CONFLICT")
         entry["identity_status"] = "GITHUB_APPROVED_IDENTITY_RETURN_VERIFIED"
         entry["next_action"] = "PACKAGE_VERSION_GATE_HOLD"
     pipeline = result.get("post_identity_pipeline")
     _require(isinstance(pipeline, dict)
              and isinstance(pipeline.get("products"), list),
              "HOLD_POST_IDENTITY_PIPELINE_MISSING")
+    _require(all(isinstance(entry, dict) for entry in pipeline["products"]),
+             "HOLD_POST_IDENTITY_PIPELINE_SCHEMA")
     matches = [entry for entry in pipeline["products"]
-               if isinstance(entry, dict)
-               and entry.get("request_id") == job["request_id"]]
+               if entry.get("request_id") == job["request_id"]]
     _require(len(matches) >= 1, "HOLD_POST_IDENTITY_PIPELINE_MISSING")
     _require(len(matches) == 1, "HOLD_POST_IDENTITY_PIPELINE_DUPLICATE")
     entry = matches[0]

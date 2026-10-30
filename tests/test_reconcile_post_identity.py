@@ -279,6 +279,63 @@ class ReconcileTests(unittest.TestCase):
                 ReconcileHold, "HOLD_REGISTRATION_ROUTER_SOURCE_CONFLICT"):
             reconcile(ledger, approved)
 
+    def test_casefold_or_malformed_aux_route_holds_without_mutation(self):
+        for invalid in ("test app", "TEST APP", " Test App", "", None,
+                        [], {"name": "Test App"}):
+            with self.subTest(invalid=invalid):
+                ledger, approved = fixture()
+                other = copy.deepcopy(ledger["registration_router"]["entries"][0])
+                other["product"] = invalid
+                ledger["registration_router"]["entries"].append(other)
+                original = copy.deepcopy(ledger)
+                with self.assertRaisesRegex(
+                        ReconcileHold, "HOLD_REGISTRATION_ROUTER_AMBIGUOUS"):
+                    reconcile(ledger, approved)
+                self.assertEqual(ledger, original)
+
+    def test_optional_router_provenance_cannot_cross_bind(self):
+        for field, invalid in (
+            ("request_id", "app-other-aaaaaaaaaaaa"),
+            ("slug", "other-app"),
+            ("product_type", "GAME"),
+            ("source_branch", "codex/other"),
+            ("source_sha", "f" * 40),
+            ("identity_return_target",
+             "products/other-app/store/approved-identity.json"),
+        ):
+            with self.subTest(field=field):
+                ledger, approved = fixture()
+                ledger["registration_router"]["entries"][0][field] = invalid
+                original = copy.deepcopy(ledger)
+                with self.assertRaisesRegex(
+                        ReconcileHold, "HOLD_REGISTRATION_ROUTER_SOURCE_CONFLICT"):
+                    reconcile(ledger, approved)
+                self.assertEqual(ledger, original)
+
+    def test_matching_optional_router_provenance_allows_promotion(self):
+        ledger, approved = fixture()
+        job = ledger["rotation_cohorts"]["app_jobs"][0]
+        route = ledger["registration_router"]["entries"][0]
+        for field in ("request_id", "slug", "product_type", "source_branch",
+                      "source_sha", "identity_return_target"):
+            route[field] = job[field]
+        updated, transition = reconcile(ledger, approved)
+        self.assertEqual(transition, "POST_IDENTITY_READY")
+        self.assertEqual(updated["registration_router"]["entries"][0]
+                         ["identity_status"],
+                         "GITHUB_APPROVED_IDENTITY_RETURN_VERIFIED")
+
+    def test_malformed_unrelated_pipeline_record_holds_without_mutation(self):
+        for invalid in (None, "invalid", [], 42):
+            with self.subTest(invalid=invalid):
+                ledger, approved = fixture()
+                ledger["post_identity_pipeline"]["products"].append(invalid)
+                original = copy.deepcopy(ledger)
+                with self.assertRaisesRegex(
+                        ReconcileHold, "HOLD_POST_IDENTITY_PIPELINE_SCHEMA"):
+                    reconcile(ledger, approved)
+                self.assertEqual(ledger, original)
+
     def test_duplicate_registration_router_entry_holds(self):
         ledger, approved = fixture()
         ledger["registration_router"]["entries"].append(
