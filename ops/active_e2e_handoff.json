@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-30T04:37:50.603Z",
+  "updated_at_utc": "2026-10-30T04:38:25.745Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -847,7 +847,7 @@
     "mixed_authenticated_rebase_ui_contract_ci_pass": true,
     "mixed_authenticated_rebase_ui_physical_pass": false,
     "mixed_preflight_cohort_isolation_ci_pass": true,
-    "post_identity_replay_binding_guard_ci_pass": false
+    "post_identity_replay_binding_guard_ci_pass": true
   },
   "user_id_requests": {
     "schema_version": 1,
@@ -2425,8 +2425,8 @@
     "local_execution_this_run": "NOT_PERFORMED"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-30T04:37:50.603Z",
-    "scope": "POST_IDENTITY_REPLAY_AND_PIPELINE_BINDING_FAIL_CLOSED_PR66_DRAFT__CI_PENDING__NO_PHYSICAL_WINDOWS",
+    "observed_at_utc": "2026-10-30T04:38:25.745Z",
+    "scope": "POST_IDENTITY_REPLAY_BINDING_GUARD_PR66_WINDOWS_UBUNTU_CI_SUCCESS__PHYSICAL_WINDOWS_HOLD",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
     "canonical_previous_blob_sha": "5cbec2c18c2879b2346a37f8b7cc4335000f94b5",
@@ -2453,7 +2453,7 @@
     "success_count_cloud_verified": 2,
     "remaining_app_identity_returns": 2,
     "next_resume_index": 3,
-    "next_action": "PR66 exact-head CI and review; then physical Windows mixed runner crash/restart and serial Text Diff/Image return. Approved version/assets still required before real MSIX/GDK. Do not register scheduler or claim E2E PASS.",
+    "next_action": "PR66 code/CI green; physical Windows reviewed-worktree mixed serial and crash/restart remain HOLD. Text Diff/Image approved Identity files still 404; do not infer Store Identity or re-enter POST jobs. Version/asset approval then real MSIX/GDK/backlog/local pull/Checker/GUI QA required.",
     "post_identity_reconcile_pr": 49,
     "post_identity_reconcile_ci_run": 40851883814,
     "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU",
@@ -2713,7 +2713,7 @@
       "branch": "codex/e2e-post-identity-replay-binding-20261030-1336",
       "head_sha": "56f396884bb2dbdbe758928b8637a74bca3e4586",
       "base_pr": 65,
-      "ci_status": "PENDING_NOT_YET_OBSERVED",
+      "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
       "changes": [
         "REPLAY_REJECTS_CHANGED_OR_MISSING_POST_STORE_ID_PFN",
         "PRE_REJECTS_STALE_IDENTITY_FIELDS",
@@ -2726,7 +2726,9 @@
       "cas": "NOT_PERFORMED",
       "real_msix": "NOT_BUILT",
       "task_scheduler_registration": "HOLD",
-      "store_submission": "NOT_PERFORMED"
+      "store_submission": "NOT_PERFORMED",
+      "offline_qa_run_id": 41003943519,
+      "offline_qa_url": "https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/41003943519"
     }
   },
   "post_identity_pipeline": {
