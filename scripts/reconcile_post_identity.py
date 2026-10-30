@@ -215,7 +215,7 @@ def reconcile_approved_return(
     # product bindings. Matching only request_id or display_name could silently
     # mark another product as returned if either collection were corrupted.
     # Validate every available correlation field before changing either entry.
-    request_record = result.get("user_id_requests")
+    request_record = result.get("user_id_requests", {"items": []})
     _require(isinstance(request_record, dict), "HOLD_USER_ID_REQUEST_SCHEMA")
     requests = request_record.get("items")
     _require(isinstance(requests, list) and all(isinstance(x, dict) for x in requests),
@@ -249,7 +249,7 @@ def reconcile_approved_return(
             "next_gate": "POST_IDENTITY_PACKAGE_VERSION_GATE_HOLD",
             "allow_local_product_creation": False,
         })
-    router_record = result.get("registration_router")
+    router_record = result.get("registration_router", {"entries": []})
     _require(isinstance(router_record, dict), "HOLD_REGISTRATION_ROUTER_SCHEMA")
     router_entries = router_record.get("entries")
     _require(isinstance(router_entries, list)
