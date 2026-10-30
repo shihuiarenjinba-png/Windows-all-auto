@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-30T08:34:52.923Z",
+  "updated_at_utc": "2026-10-30T09:39:05.911Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -1052,7 +1052,7 @@
       "app-offline-image-inventory-desk-16b6a772952c"
     ]
   },
-  "classification": "APP_MIXED_POST_2_PRE_2__POST_PFN_CANONICAL_FIXED__PR65_WINDOWS_UBUNTU_CI_GREEN__PHYSICAL_WINDOWS_AND_E2E_HOLD",
+  "classification": "APP_MIXED_POST_2_PRE_2__PRISM_POST__SIGNAL_CAS_HOLD__PR71_PRODUCT_BINDING_CI_GREEN__PHYSICAL_WINDOWS_AND_E2E_HOLD",
   "registration_router": {
     "schema_version": 1,
     "status": "WINDOWS_UBUNTU_ROUTER_CI_PASS__LOCAL_MODE__PRISM_EXISTING_MANUAL_REFERENCE",
@@ -2427,8 +2427,8 @@
     "local_execution_this_run": "NOT_PERFORMED"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-30T08:34:52.923Z",
-    "scope": "PR70_POST_IDENTITY_IMMUTABLE_HEAD_READ_TOCTOU_FIX__WINDOWS_UBUNTU_CI_PASS__PHYSICAL_WINDOWS_HOLD",
+    "observed_at_utc": "2026-10-30T09:39:05.911Z",
+    "scope": "PR71_POST_IDENTITY_PRODUCT_DISPLAY_NAME_PFN_BINDING__EXACT_HEAD_WINDOWS_UBUNTU_CI_PASS__PHYSICAL_WINDOWS_HOLD",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
     "canonical_previous_blob_sha": "a1ba4e8d9b2d5c2595d1c64d2562319249088d88",
@@ -2455,7 +2455,7 @@
     "success_count_cloud_verified": 2,
     "remaining_app_identity_returns": 2,
     "next_resume_index": 3,
-    "next_action": "Review stacked PR70 immutable Factory HEAD contents read; keep Focus/Ledger/Prism POST Identity with Version/asset HOLD, Text Diff/Image Inventory PRE Identity pending authenticated local operator. Run reviewed mixed executor on physical Windows only after independent UI/source/CAS preflight. No Store upload or final submission.",
+    "next_action": "Review stacked Draft PR71 Store reserved-display-name and PFN-prefix binding; preserve Focus/Ledger/Prism POST Identity with Version/asset HOLD, Text Diff/Image PRE pending authenticated local operator, Signal Sprint CAS HOLD. Run reviewed mixed executor on physical Windows with independent evidence before scheduled registration. No Store upload/final submission.",
     "post_identity_reconcile_pr": 49,
     "post_identity_reconcile_ci_run": 40851883814,
     "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU",
@@ -2494,7 +2494,7 @@
     "cloud_verified_app_post_identity": 2,
     "cloud_verified_app_pre_identity": 2,
     "cloud_verified_3d_post_identity": 1,
-    "remote_live_check": "FOCUS_LEDGER_PRISM_COMPARE_ONE_COMMIT_ONLY_IDENTITY_FILE_ADDED__TEXT_IMAGE_APPROVED_FILES_404__NO_NEW_LOCAL_EXECUTION",
+    "remote_live_check": "FOCUS_LEDGER_PRISM_COMPARE_ONE_COMMIT_ONLY_IDENTITY_FILE_ADDED__TEXT_IMAGE_SIGNAL_SOURCE_HEAD_IDENTICAL_AND_APPROVED_FILE_404__NO_NEW_LOCAL_EXECUTION",
     "mixed_audit_unification": "PR49_PURE_RECONCILER_PORTED_ONTO_PR50_STACK__NO_MERGE",
     "mixed_dispatch_plan_pr": 52,
     "mixed_dispatch_plan_head": "8d8acf535d8b99b4fd3068769934cac64fbb60b2",
@@ -2783,11 +2783,27 @@
       "real_msix": "NOT_BUILT",
       "store_submission": "NOT_PERFORMED",
       "integration": "STACKED_DRAFT_NOT_MERGED"
+    },
+    "post_identity_product_binding_guard": {
+      "draft_pr": 71,
+      "branch": "codex/e2e-post-identity-product-binding-20261030-1836",
+      "head_sha": "7f85ee3b2d77f69f532c931aa8772a97c9960d35",
+      "base_pr": 70,
+      "ci_run_id": 41034892650,
+      "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+      "scope": "REQUIRE_EXACT_RESERVED_DISPLAY_NAME__OPTIONAL_DISPLAY_NAME_MATCH__PACKAGE_IDENTITY_NAME_EQUALS_PFN_PREFIX__PUBLISHER_DISPLAY_NAME_REQUIRED",
+      "tests": "FIVE_NEW_NEGATIVE_REGRESSIONS__MIXED_APP_FIXTURE_UPDATED",
+      "integration_status": "STACKED_DRAFT_NOT_MERGED",
+      "local_windows_execution": "NOT_PERFORMED",
+      "partner_center": "NOT_ACCESSED",
+      "cas": "NOT_PERFORMED",
+      "real_package": "NOT_BUILT",
+      "store_submission": "NOT_PERFORMED"
     }
   },
   "post_identity_pipeline": {
     "schema_version": 1,
-    "updated_at_utc": "2026-10-30T07:41:45.857Z",
+    "updated_at_utc": "2026-10-30T09:39:05.911Z",
     "writer": "36_WINDOWS_E2E_ONLY",
     "reconciliation_basis": "FRESH_GITHUB_FOUR_APP_SOURCE_BRANCH_HEADS_AND_APPROVED_IDENTITY_FILES__PREVIOUS_ARTIFACT_METADATA_DIGEST_EXPIRY_EVIDENCE__NO_LOCAL_RECEIPTS",
     "product_count": 7,
@@ -3188,12 +3204,28 @@
         "physical_windows_execution": "NOT_PERFORMED",
         "cas": "NOT_PERFORMED",
         "store_submission": "NOT_PERFORMED"
+      },
+      "latest_product_binding_guard": {
+        "draft_pr": 71,
+        "branch": "codex/e2e-post-identity-product-binding-20261030-1836",
+        "head_sha": "7f85ee3b2d77f69f532c931aa8772a97c9960d35",
+        "base_pr": 70,
+        "ci_run_id": 41034892650,
+        "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+        "scope": "REQUIRE_EXACT_RESERVED_DISPLAY_NAME__OPTIONAL_DISPLAY_NAME_MATCH__PACKAGE_IDENTITY_NAME_EQUALS_PFN_PREFIX__PUBLISHER_DISPLAY_NAME_REQUIRED",
+        "tests": "FIVE_NEW_NEGATIVE_REGRESSIONS__MIXED_APP_FIXTURE_UPDATED",
+        "integration_status": "STACKED_DRAFT_NOT_MERGED",
+        "local_windows_execution": "NOT_PERFORMED",
+        "partner_center": "NOT_ACCESSED",
+        "cas": "NOT_PERFORMED",
+        "real_package": "NOT_BUILT",
+        "store_submission": "NOT_PERFORMED"
       }
     }
   },
   "mixed_rotation_live_recheck": {
     "schema_version": 1,
-    "observed_at_utc": "2026-10-30T07:41:45.857Z",
+    "observed_at_utc": "2026-10-30T09:39:05.911Z",
     "scope": "LIVE_GITHUB_FOUR_APP_BRANCH_HEADS__APPROVED_FILES__ARTIFACT_EXPIRES_AT_AND_DIGEST",
     "central_head_before_write": "6aeb2867594dbde3eb8cfe070d7974d4208c66cd",
     "identity_return_files": {
@@ -3277,16 +3309,16 @@
       "task_scheduler_registration": "HOLD",
       "scope": "CI_CONTRACT_ONLY__NOT_LIVE_LOCAL_EXECUTION"
     },
-    "latest_identity_file_recheck_at_utc": "2026-10-30T07:41:45.857Z",
+    "latest_identity_file_recheck_at_utc": "2026-10-30T09:39:05.911Z",
     "latest_identity_file_recheck": {
-      "focus": "PRESENT__COMPARE_ONE_COMMIT_ONLY_IDENTITY_FILE_ADDED",
-      "ledger": "PRESENT__COMPARE_ONE_COMMIT_ONLY_IDENTITY_FILE_ADDED",
-      "text_diff": "NOT_FOUND_404",
-      "image_inventory": "NOT_FOUND_404",
-      "prism": "PRESENT__COMPARE_ONE_COMMIT_ONLY_IDENTITY_FILE_ADDED",
-      "signal_sprint": "PREVIOUS_EVIDENCE_ONLY__NOT_RECHECKED_THIS_RUN"
+      "focus": "PRESENT__COMPARE_ONE_COMMIT_ONLY_IDENTITY_FILE_ADDED__STORE_ID_PFN_MATCH",
+      "ledger": "PRESENT__COMPARE_ONE_COMMIT_ONLY_IDENTITY_FILE_ADDED__STORE_ID_PFN_MATCH",
+      "text_diff": "NOT_FOUND_404__SOURCE_HEAD_EXACT",
+      "image_inventory": "NOT_FOUND_404__SOURCE_HEAD_EXACT",
+      "prism": "PRESENT__COMPARE_ONE_COMMIT_ONLY_IDENTITY_FILE_ADDED__STORE_ID_PFN_MATCH",
+      "signal_sprint": "NOT_FOUND_404__SOURCE_HEAD_EXACT"
     },
-    "latest_identity_file_recheck_scope": "FRESH_GITHUB_COMPARE_FOCUS_LEDGER_PRISM__FRESH_APPROVED_FILE_404_TEXT_IMAGE__ARTIFACT_METADATA_NOT_RECHECKED_THIS_RUN",
+    "latest_identity_file_recheck_scope": "FRESH_GITHUB_COMPARE_SIX_SOURCE_BRANCHES_AND_APPROVED_FILE_LOOKUPS__ARTIFACT_METADATA_NOT_RECHECKED_THIS_RUN__NO_LOCAL_EXECUTION",
     "latest_app_remote_evidence": {
       "checked_at_utc": "2026-10-29T23:33:54.756Z",
       "app_states": {
