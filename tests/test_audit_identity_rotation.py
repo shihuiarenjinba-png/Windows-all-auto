@@ -61,9 +61,26 @@ def fixture():
             "source_repository": job["source_repository"],
             "source_branch": source_branch, "source_sha": sha,
         })
+    pipeline = []
+    for job in jobs:
+        record = {
+            "product": job["slug"].replace("-", " ").title(),
+            "lane": "APP", "request_id": job["request_id"],
+            "source_repository": job["source_repository"],
+            "source_branch": job["source_branch"],
+            "source_sha": job["source_sha"],
+            "identity_return_target": job["identity_return_target"],
+            "state": ("POST_IDENTITY_READY" if job["status"] == "POST_IDENTITY_READY"
+                      else "WAITING_IDENTITY_CAPTURE_AND_CAS"),
+        }
+        if job["status"] == "POST_IDENTITY_READY":
+            record["identity_store_id"] = job["identity_store_id"]
+            record["identity_pfn"] = job["identity_pfn"]
+        pipeline.append(record)
     ledger = {
         "rotation_cohorts": {"app_jobs": jobs},
         "multi_product_partner_center_batch_4": {"products": records},
+        "post_identity_pipeline": {"products": pipeline},
     }
     return ledger, approved, artifacts
 
