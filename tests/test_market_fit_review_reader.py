@@ -16,6 +16,7 @@ REVIEW = "1" * 40
 PATH = "products/focus-session-desk/market-fit.json"
 JOB = {
     "product_type": "APP", "slug": "focus-session-desk",
+    "display_name": "Focus Session Desk",
     "request_id": "app-focus-session-desk-8b00bc4e9082",
     "source_repository": "shihuiarenjinba-png/AI-App-Factory",
     "source_branch": "codex/app-cohort-focus-controller-20261028",
