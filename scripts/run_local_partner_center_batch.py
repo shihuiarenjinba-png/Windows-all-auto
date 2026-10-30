@@ -733,6 +733,68 @@ def verify_mixed_local_return(old_entry: dict, result: dict, fresh_entry: dict,
         return False
 
 
+def verify_mixed_crash_return(old_entry: dict, fresh_entry: dict,
+                              ledger: dict, state_dir: Path,
+                              central_head: str, previous_head: str,
+                              driver: PartnerCenterDriver) -> bool:
+    """Read-only independent proof for a CAS-completed but locally ACTIVE job.
+
+    Only after the central single writer has reconciled the remote return to
+    POST may this verifier release a crashed ACTIVE slot. The local receipt
+    is a binding input, never proof of success by itself. This function does
+    not replay CAS or claim that a replay occurred.
+    """
+    try:
+        if (old_entry.get("status") != "ACTIVE"
+                or old_entry.get("result") is not None
+                or fresh_entry.get("status") != "SKIPPED_GITHUB_POST_VERIFIED"):
+            return False
+        jobs = (ledger.get("rotation_cohorts") or {}).get("app_jobs", [])
+        matches = [j for j in jobs
+                   if j.get("slug") == old_entry.get("slug")]
+        if len(matches) != 1:
+            return False
+        job = matches[0]
+        if (job.get("status") != "POST_IDENTITY_READY"
+                or any(old_entry.get(k) != fresh_entry.get(k)
+                       or old_entry.get(k) != job.get(k)
+                       for k in ("request_id", "slug", "source_sha",
+                                 "identity_return_target", "registration_type",
+                                 "partner_center_selection"))
+                or re.fullmatch(r"[0-9a-f]{40}",
+                                str(job.get("identity_return_commit_sha", ""))) is None
+                or previous_head == central_head):
+            return False
+        product_dir = state_dir / "products" / job["request_id"]
+        receipt = operator.read_json(product_dir / "official-identity.json", 64_000)
+        operator_job = operator.read_json(product_dir / "operator-job.json", 64_000)
+        for key in ("request_id", "slug", "source_repository", "source_branch",
+                    "source_sha", "identity_return_target", "registration_type",
+                    "partner_center_selection", "display_name"):
+            if (receipt.get(key) != job.get(key)
+                    or operator_job.get(key) != job.get(key)):
+                return False
+        if (operator_job.get("central_head_sha") != previous_head
+                or operator_job.get("source_snapshot_head") != job["source_sha"]
+                or not isinstance(receipt.get("queue_job_digest"), str)
+                or receipt["queue_job_digest"] !=
+                    operator_job.get("queue_job_digest")
+                or receipt.get("store_id") != job.get("identity_store_id")
+                or receipt.get("package_family_name") != job.get("identity_pfn")):
+            return False
+        observation = existing_observation(driver, receipt)
+        if driver.verify_current(observation, receipt) is not True:
+            return False
+        source_path = validated_mixed_source_path(state_dir, receipt, job)
+        return github_result_verified(
+            job, receipt, job["identity_return_commit_sha"],
+            central_head, source_path,
+        )
+    except (OSError, KeyError, ValueError, RunnerHold, operator.OperatorHold,
+            PartnerCenterHold):
+        return False
+
+
 def prepare_mixed_resume_state(args, *, verify_local_returns: bool = False) -> dict:
     """Persist a verified mixed PRE/POST resume contract, without UI or CAS.
 
@@ -790,6 +852,7 @@ def prepare_mixed_resume_state(args, *, verify_local_returns: bool = False) -> d
     state_dir = args.state_dir.resolve()
     state_path = state_dir / "mixed-resume-state.json"
     rebase_applied = False
+    crash_recovery_verified = False
     with batch.state_lock(state_dir / "batch-state.json"):
         recheck_central(central_head)
         for item in pending:
@@ -799,10 +862,15 @@ def prepare_mixed_resume_state(args, *, verify_local_returns: bool = False) -> d
         ui_rechecked = False
         if state_path.exists():
             state = operator.read_json(state_path, 512_000)
+            fresh_by_slug = {item["slug"]: item
+                             for item in expected["products"]}
             needs_ui = any(
-                item.get("status") == "IDENTITY_RETURN_VERIFIED"
+                isinstance(item, dict)
+                and (item.get("status") == "IDENTITY_RETURN_VERIFIED"
+                     or (item.get("status") == "ACTIVE"
+                         and fresh_by_slug.get(item.get("slug"), {}).get(
+                             "status") == "SKIPPED_GITHUB_POST_VERIFIED"))
                 for item in state.get("products", [])
-                if isinstance(item, dict)
             )
             driver = PartnerCenterDriver() if verify_local_returns and needs_ui else None
             try:
@@ -812,6 +880,17 @@ def prepare_mixed_resume_state(args, *, verify_local_returns: bool = False) -> d
                     return verify_mixed_local_return(
                         old, result, fresh, ledger, state_dir, central_head, driver
                     )
+                def verified_crash_return(old, fresh):
+                    nonlocal crash_recovery_verified
+                    if driver is None:
+                        return False
+                    verified = verify_mixed_crash_return(
+                        old, fresh, ledger, state_dir, central_head,
+                        state["central_head_sha"], driver,
+                    )
+                    if verified:
+                        crash_recovery_verified = True
+                    return verified
                 if state.get("central_head_sha") != central_head:
                     # The central single writer may advance HEAD. Only a
                     # fresh authenticated UI+GitHub check may rebase a local
@@ -820,6 +899,9 @@ def prepare_mixed_resume_state(args, *, verify_local_returns: bool = False) -> d
                         state, plan, new_central_head_sha=central_head,
                         execution_origin=args.execution_origin,
                         independent_return_verifier=verified_return if driver else None,
+                        independent_active_return_verifier=(
+                            verified_crash_return if driver else None
+                        ),
                     )
                     recheck_central(central_head)
                     batch.atomic_write(state_path, state)
@@ -845,6 +927,8 @@ def prepare_mixed_resume_state(args, *, verify_local_returns: bool = False) -> d
         "central_head_sha": central_head,
         "state_path": str(state_path),
         "central_rebase_applied": rebase_applied,
+        "crash_active_return_independently_recovered": crash_recovery_verified,
+        "cas_replay_attested_by_crash_recovery": False,
         "independent_ui_github_return_rechecked": ui_rechecked,
         "pre_identity_preflight_count": len(verified),
         "post_identity_skip_count": plan["post_identity_skip_count"],
@@ -856,7 +940,11 @@ def prepare_mixed_resume_state(args, *, verify_local_returns: bool = False) -> d
         "identity_capture": "NOT_PERFORMED",
         "cas": "NOT_PERFORMED",
         "store_submission": "NOT_PERFORMED",
-        "next_action": "REVIEW_AND_WIRE_AUTHENTICATED_MIXED_EXECUTOR",
+        "next_action": (
+            "REVIEW_CAS_REPLAY_EVIDENCE_BEFORE_SCHEDULER"
+            if crash_recovery_verified else
+            "REVIEW_AND_WIRE_AUTHENTICATED_MIXED_EXECUTOR"
+        ),
     }
 
 
