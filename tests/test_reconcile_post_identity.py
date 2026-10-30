@@ -30,7 +30,12 @@ def fixture():
         "registration_router": {"entries": [{"product": "Test App",
             "identity_status": "LOCAL_OPERATOR_ACTIVE"}]},
         "post_identity_pipeline": {"products": [{
-            "request_id": job["request_id"], "state": "WAITING_IDENTITY_CAPTURE_AND_CAS",
+            "product": "Test App", "lane": "APP",
+            "request_id": job["request_id"],
+            "source_repository": REPO, "source_branch": BRANCH,
+            "source_sha": SOURCE,
+            "identity_return_target": job["identity_return_target"],
+            "state": "WAITING_IDENTITY_CAPTURE_AND_CAS",
         }]},
     }
     approved = {
@@ -127,6 +132,54 @@ class ReconcileTests(unittest.TestCase):
             copy.deepcopy(ledger["post_identity_pipeline"]["products"][0]))
         with self.assertRaisesRegex(ReconcileHold, "HOLD_POST_IDENTITY_PIPELINE_DUPLICATE"):
             reconcile(ledger, approved)
+
+    def test_pipeline_missing_record_holds(self):
+        ledger, approved = fixture()
+        ledger["post_identity_pipeline"]["products"] = []
+        with self.assertRaisesRegex(ReconcileHold, "HOLD_POST_IDENTITY_PIPELINE_MISSING"):
+            reconcile(ledger, approved)
+
+    def test_pipeline_missing_collection_holds(self):
+        ledger, approved = fixture()
+        ledger.pop("post_identity_pipeline")
+        with self.assertRaisesRegex(ReconcileHold, "HOLD_POST_IDENTITY_PIPELINE_MISSING"):
+            reconcile(ledger, approved)
+
+    def test_pipeline_cross_product_source_and_lane_holds(self):
+        for field, wrong in (
+            ("product", "Other App"),
+            ("lane", "GAME"),
+            ("source_repository", "shihuiarenjinba-png/AI-Game-Factory"),
+            ("source_branch", "codex/other"),
+            ("source_sha", "f" * 40),
+            ("identity_return_target", "products/other/store/approved-identity.json"),
+        ):
+            with self.subTest(field=field):
+                ledger, approved = fixture()
+                ledger["post_identity_pipeline"]["products"][0][field] = wrong
+                with self.assertRaisesRegex(
+                        ReconcileHold, "HOLD_POST_IDENTITY_PIPELINE_SOURCE_CONFLICT"):
+                    reconcile(ledger, approved)
+
+    def test_pipeline_wrong_state_and_stale_pre_identity_hold(self):
+        ledger, approved = fixture()
+        ledger["post_identity_pipeline"]["products"][0]["state"] = "POST_IDENTITY_READY"
+        with self.assertRaisesRegex(ReconcileHold, "HOLD_POST_IDENTITY_PIPELINE_STATE_CONFLICT"):
+            reconcile(ledger, approved)
+        ledger, approved = fixture()
+        ledger["post_identity_pipeline"]["products"][0]["identity_store_id"] = approved["store_id"]
+        with self.assertRaisesRegex(ReconcileHold, "HOLD_POST_IDENTITY_PIPELINE_CONFLICT"):
+            reconcile(ledger, approved)
+
+    def test_pipeline_post_replay_requires_existing_store_id_and_pfn(self):
+        ledger, approved = fixture()
+        once, _ = reconcile(ledger, approved)
+        for field in ("identity_store_id", "identity_pfn"):
+            changed = copy.deepcopy(once)
+            del changed["post_identity_pipeline"]["products"][0][field]
+            with self.subTest(field=field), self.assertRaisesRegex(
+                    ReconcileHold, "HOLD_POST_IDENTITY_PIPELINE_CONFLICT"):
+                reconcile(changed, approved)
 
     def test_source_binding_conflict(self):
         ledger, approved = fixture()
