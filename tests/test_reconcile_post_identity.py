@@ -506,6 +506,43 @@ class ReconcileTests(unittest.TestCase):
                          ["identity_status"], "GITHUB_APPROVED_IDENTITY_RETURN_VERIFIED")
 
 
+
+    def test_missing_matching_user_id_request_holds_without_mutation(self):
+        for mode in ("absent_collection", "empty_items", "different_request"):
+            with self.subTest(mode=mode):
+                ledger, approved = fixture()
+                if mode == "absent_collection":
+                    del ledger["user_id_requests"]
+                elif mode == "empty_items":
+                    ledger["user_id_requests"]["items"] = []
+                else:
+                    ledger["user_id_requests"]["items"][0]["request_id"] = "other-request"
+                original = copy.deepcopy(ledger)
+                with self.assertRaisesRegex(ReconcileHold, "HOLD_USER_ID_REQUEST_MISSING"):
+                    reconcile(ledger, approved)
+                self.assertEqual(ledger, original)
+
+    def test_missing_matching_registration_route_holds_without_mutation(self):
+        for mode in ("absent_collection", "empty_entries", "different_product"):
+            with self.subTest(mode=mode):
+                ledger, approved = fixture()
+                if mode == "absent_collection":
+                    del ledger["registration_router"]
+                elif mode == "empty_entries":
+                    ledger["registration_router"]["entries"] = []
+                else:
+                    ledger["registration_router"]["entries"][0]["product"] = "Other App"
+                original = copy.deepcopy(ledger)
+                with self.assertRaisesRegex(ReconcileHold, "HOLD_REGISTRATION_ROUTER_MISSING"):
+                    reconcile(ledger, approved)
+                self.assertEqual(ledger, original)
+
+    def test_missing_router_repository_cannot_default_to_job(self):
+        ledger, approved = fixture()
+        self.assertNotIn("repository", ledger["registration_router"]["entries"][0])
+        with self.assertRaisesRegex(ReconcileHold, "HOLD_REGISTRATION_ROUTER_SOURCE_CONFLICT"):
+            reconcile(ledger, approved)
+
 class MarketFitPackageGateTests(unittest.TestCase):
     def market_evidence(self):
         ledger, _ = fixture()
