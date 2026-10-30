@@ -16,6 +16,18 @@ from scripts.market_fit_gate import assess_market_fit
 SHA40 = re.compile(r"[0-9a-f]{40}")
 SHA64 = re.compile(r"[0-9a-f]{64}")
 
+REGISTRATION_SELECTION = {
+    "MSIX_OR_PWA_APP": "MSIX or PWA app",
+    "EXE_OR_MSI_APP": "EXE or MSI app",
+    "GDK_GAME": "GDK game",
+    "MSIX_OR_PWA_GAME": "MSIX or PWA game",
+}
+REGISTRATION_BY_LANE = {
+    "APP": frozenset({"MSIX_OR_PWA_APP", "EXE_OR_MSI_APP"}),
+    "GAME": frozenset({"GDK_GAME", "MSIX_OR_PWA_GAME"}),
+    "GAME_3D": frozenset({"GDK_GAME", "MSIX_OR_PWA_GAME"}),
+}
+
 
 class ReconcileHold(ValueError):
     pass
@@ -75,6 +87,16 @@ def reconcile_approved_return(
     matches = [x for x in jobs if x.get("slug") == slug]
     _require(len(matches) == 1, "HOLD_PRODUCT_NOT_UNIQUE")
     job = matches[0]
+    # Registration is a final packaging contract, not an EXE intermediate.
+    # A corrupted APP/GAME router must never be promoted just because the
+    # auxiliary entry repeats the same wrong registration type.
+    registration_type = job.get("registration_type")
+    _require(isinstance(registration_type, str)
+             and registration_type in REGISTRATION_BY_LANE[job["product_type"]],
+             "HOLD_REGISTRATION_LANE_CONFLICT")
+    _require(job.get("partner_center_selection") ==
+             REGISTRATION_SELECTION[registration_type],
+             "HOLD_REGISTRATION_SELECTION_CONFLICT")
     _require(job.get("status") in {"PRE_IDENTITY_READY", "POST_IDENTITY_READY"},
              "HOLD_PRODUCT_NOT_READY")
     expected_target = f"products/{slug}/store/approved-identity.json"
@@ -199,6 +221,8 @@ def reconcile_approved_return(
             ("identity_return_target", expected_target),
             ("product_type", job["product_type"]),
             ("slug", slug),
+            ("registration_type", registration_type),
+            ("partner_center_selection", REGISTRATION_SELECTION[registration_type]),
         ):
             if field in request:
                 _require(request[field] == expected, "HOLD_USER_ID_REQUEST_SOURCE_CONFLICT")
@@ -218,9 +242,10 @@ def reconcile_approved_return(
     for entry in matching_routes:
         _require(entry.get("repository", job["source_repository"]) == job["source_repository"],
                  "HOLD_REGISTRATION_ROUTER_SOURCE_CONFLICT")
-        if "registration_type" in entry and "registration_type" in job:
-            _require(entry["registration_type"] == job["registration_type"],
-                     "HOLD_REGISTRATION_ROUTER_SOURCE_CONFLICT")
+        _require(entry.get("registration_type") == registration_type
+                 and entry.get("partner_center_selection") ==
+                 REGISTRATION_SELECTION[registration_type],
+                 "HOLD_REGISTRATION_ROUTER_SOURCE_CONFLICT")
         entry["identity_status"] = "GITHUB_APPROVED_IDENTITY_RETURN_VERIFIED"
         entry["next_action"] = "PACKAGE_VERSION_GATE_HOLD"
     pipeline = result.get("post_identity_pipeline")
