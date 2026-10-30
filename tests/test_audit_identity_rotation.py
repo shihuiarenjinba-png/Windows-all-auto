@@ -254,6 +254,12 @@ class MixedAuditTests(unittest.TestCase):
     def test_audit_entrypoint_never_calls_browser_or_local_cas(self):
         ledger, approved, artifacts = fixture()
         def fake_gh(endpoint, allow_missing=False):
+            if "/compare/" in endpoint:
+                source, head = endpoint.split("/compare/", 1)[1].split("...", 1)
+                self.assertEqual(source, "1" * 40)
+                self.assertEqual(head, "a" * 40)
+                return {"status": "ahead", "ahead_by": 1, "behind_by": 0,
+                        "merge_base_commit": {"sha": source}}
             if "/contents/" in endpoint:
                 slug = endpoint.split("/products/")[1].split("/")[0]
                 item = approved.get(slug)
