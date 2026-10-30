@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-30T12:40:00Z",
+  "updated_at_utc": "2026-10-30T13:43:11.902Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -2444,8 +2444,8 @@
     "local_execution_this_run": "NOT_PERFORMED"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-30T12:38:15Z",
-    "scope": "PR74_IMMUTABLE_MARKET_FIT_REVIEW_COMMIT_CONTRACT_CI_GREEN__REAL_PRODUCT_MARKET_FIT_HOLD__NO_LOCAL_OR_STORE_ACTION",
+    "observed_at_utc": "2026-10-30T13:43:11.902Z",
+    "scope": "PR75_MARKET_FIT_EVIDENCE_FLAG_STALE_PASS_GUARD_DRAFT__CI_PENDING__FOUR_APP_REAL_EVIDENCE_ABSENT__E2E_HOLD",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
     "canonical_previous_blob_sha": "a1ba4e8d9b2d5c2595d1c64d2562319249088d88",
@@ -2472,7 +2472,7 @@
     "success_count_cloud_verified": 2,
     "remaining_app_identity_returns": 2,
     "next_resume_index": 3,
-    "next_action": "FACTORY_REVIEWED_EVIDENCE_AT_NEW_PINNED_SOURCE_IF_NEEDED__REVIEW_REPIN_AND_EXE_REBUILD__THEN_WIRE_READ_ONLY_MARKET_FIT_ADAPTER_INTO_DISPATCHER__VERSION_ASSETS_STILL_SEPARATE",
+    "next_action": "WAIT_FOR_PR75_EXACT_HEAD_WINDOWS_UBUNTU_CI__FACTORY_REVIEWED_MARKET_FIT_EVIDENCE_AND_PINNED_REVIEW_COMMIT_REQUIRED__IDENTITY_TEXT_IMAGE_STILL_PENDING__NO_VERSION_OR_MSIX",
     "post_identity_reconcile_pr": 49,
     "post_identity_reconcile_ci_run": 40851883814,
     "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU",
@@ -2869,7 +2869,24 @@
     "market_fit_review_commit_ci": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
     "market_fit_review_commit_run": 41056950496,
     "market_fit_review_commit_real_product_pass_count": 0,
-    "market_fit_review_commit_next_action": "REVIEW_FACTORIES_AND_PIN_EXACT_REVIEW_COMMIT_ONLY_AFTER_HUMAN_APPROVAL__PACKAGE_HOLD"
+    "market_fit_review_commit_next_action": "REVIEW_FACTORIES_AND_PIN_EXACT_REVIEW_COMMIT_ONLY_AFTER_HUMAN_APPROVAL__PACKAGE_HOLD",
+    "market_fit_evidence_flag_guard": {
+      "draft_pr": 75,
+      "branch": "codex/e2e-market-fit-evidence-flag-20261030-2236",
+      "head_sha": "bdafad7bac4a04338d7dbef3018fe9b2614d417d",
+      "base_pr": 74,
+      "ci_run_id": 41065449769,
+      "ci_status": "QUEUED_AT_OBSERVATION__DO_NOT_TREAT_AS_GREEN",
+      "fix": "RECONCILER_AND_REVIEW_READER_CLEAR_STALE_MARKET_FIT_EVIDENCE_VERIFIED_ON_HOLD__SYNCHRONIZE_BOTH_JOB_AND_PIPELINE",
+      "tests": "PASS_TO_HOLD_REPLAY__MISSING_READER_STALE_FLAG__REVIEW_READ_HOLD",
+      "github_real_evidence": "FOCUS_LEDGER_TEXT_DIFF_IMAGE_INVENTORY_PINNED_SOURCE_MARKET_FIT_JSON_404",
+      "factory_review_sha_pinned_count": 0,
+      "market_fit_pass_count": 0,
+      "physical_windows_execution": "NOT_PERFORMED",
+      "package": "NOT_BUILT",
+      "store_submission": "NOT_PERFORMED",
+      "integration": "STACKED_DRAFT_NOT_MERGED"
+    }
   },
   "post_identity_pipeline": {
     "schema_version": 1,
