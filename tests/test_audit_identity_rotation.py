@@ -36,6 +36,7 @@ def fixture():
         if i == 1:
             job["identity_return_commit_sha"] = "a" * 40
             job["identity_store_id"] = "9P6452C61N7B"
+            job["identity_pfn"] = "Publisher.Focus_abcdefghijklm"
             approved[slug] = {
                 "reviewed": True, "source": "partner_center",
                 "request_id": request_id, "product_type": "APP",
@@ -106,6 +107,20 @@ class MixedAuditTests(unittest.TestCase):
         ledger, approved, artifacts = fixture()
         approved["focus-session-desk"]["source_sha"] = "f" * 40
         with self.assertRaisesRegex(audit.AuditHold, "IDENTITY_BINDING_CONFLICT"):
+            check(ledger, approved, artifacts)
+
+    def test_post_missing_canonical_pfn_holds(self):
+        ledger, approved, artifacts = fixture()
+        ledger["rotation_cohorts"]["app_jobs"][0].pop("identity_pfn")
+        with self.assertRaisesRegex(audit.AuditHold, "CENTRAL_IDENTITY_CONFLICT"):
+            check(ledger, approved, artifacts)
+
+    def test_post_canonical_pfn_mismatch_holds(self):
+        ledger, approved, artifacts = fixture()
+        ledger["rotation_cohorts"]["app_jobs"][0]["identity_pfn"] = (
+            "Publisher.Wrong_abcdefghijklm"
+        )
+        with self.assertRaisesRegex(audit.AuditHold, "CENTRAL_IDENTITY_CONFLICT"):
             check(ledger, approved, artifacts)
 
     def test_post_missing_approved_file_holds(self):
