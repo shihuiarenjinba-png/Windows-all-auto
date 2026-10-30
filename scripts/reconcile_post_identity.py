@@ -239,4 +239,10 @@ def reconcile_approved_return(
         "market_fit_evidence_verified": market_fit_gate == "MARKET_FIT_PASS",
         "next_action": next_package_action,
     })
+    # Recheck the authenticated moving Factory branch after every immutable
+    # contents/market-fit read and all validation. A concurrent CAS/push must
+    # never be silently promoted from a stale HEAD snapshot. The eventual
+    # ledger writer must also use an expected-HEAD/CAS write boundary.
+    _require(fetch_branch_head(job["source_repository"], job["source_branch"]) == head,
+             "HOLD_FACTORY_HEAD_DRIFT")
     return result, transition
