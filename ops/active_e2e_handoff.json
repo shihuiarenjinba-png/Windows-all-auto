@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-30T13:43:11.902Z",
+  "updated_at_utc": "2026-10-30T13:43:37.329Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -2444,8 +2444,8 @@
     "local_execution_this_run": "NOT_PERFORMED"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-30T13:43:11.902Z",
-    "scope": "PR75_MARKET_FIT_EVIDENCE_FLAG_STALE_PASS_GUARD_DRAFT__CI_PENDING__FOUR_APP_REAL_EVIDENCE_ABSENT__E2E_HOLD",
+    "observed_at_utc": "2026-10-30T13:43:37.329Z",
+    "scope": "PR75_MARKET_FIT_EVIDENCE_FLAG_STALE_PASS_GUARD_CI_GREEN__FOUR_APP_REAL_EVIDENCE_ABSENT__E2E_HOLD",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
     "canonical_previous_blob_sha": "a1ba4e8d9b2d5c2595d1c64d2562319249088d88",
@@ -2472,7 +2472,7 @@
     "success_count_cloud_verified": 2,
     "remaining_app_identity_returns": 2,
     "next_resume_index": 3,
-    "next_action": "WAIT_FOR_PR75_EXACT_HEAD_WINDOWS_UBUNTU_CI__FACTORY_REVIEWED_MARKET_FIT_EVIDENCE_AND_PINNED_REVIEW_COMMIT_REQUIRED__IDENTITY_TEXT_IMAGE_STILL_PENDING__NO_VERSION_OR_MSIX",
+    "next_action": "REVIEW_PR75_STACKED_DRAFT__FACTORY_REVIEWED_MARKET_FIT_EVIDENCE_AND_PINNED_REVIEW_COMMIT_REQUIRED__TEXT_IMAGE_IDENTITY_PENDING__VERSION_AND_MSIX_HOLD",
     "post_identity_reconcile_pr": 49,
     "post_identity_reconcile_ci_run": 40851883814,
     "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU",
@@ -2876,7 +2876,7 @@
       "head_sha": "bdafad7bac4a04338d7dbef3018fe9b2614d417d",
       "base_pr": 74,
       "ci_run_id": 41065449769,
-      "ci_status": "QUEUED_AT_OBSERVATION__DO_NOT_TREAT_AS_GREEN",
+      "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
       "fix": "RECONCILER_AND_REVIEW_READER_CLEAR_STALE_MARKET_FIT_EVIDENCE_VERIFIED_ON_HOLD__SYNCHRONIZE_BOTH_JOB_AND_PIPELINE",
       "tests": "PASS_TO_HOLD_REPLAY__MISSING_READER_STALE_FLAG__REVIEW_READ_HOLD",
       "github_real_evidence": "FOCUS_LEDGER_TEXT_DIFF_IMAGE_INVENTORY_PINNED_SOURCE_MARKET_FIT_JSON_404",
@@ -2885,7 +2885,8 @@
       "physical_windows_execution": "NOT_PERFORMED",
       "package": "NOT_BUILT",
       "store_submission": "NOT_PERFORMED",
-      "integration": "STACKED_DRAFT_NOT_MERGED"
+      "integration": "STACKED_DRAFT_NOT_MERGED",
+      "ci_url": "https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/41065449769"
     }
   },
   "post_identity_pipeline": {
