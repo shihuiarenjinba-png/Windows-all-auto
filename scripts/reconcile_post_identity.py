@@ -258,12 +258,13 @@ def reconcile_approved_return(
     # A case-only duplicate or malformed unrelated route is still ambiguous:
     # never allow one Store display name to address multiple route records.
     route_names = [entry.get("product") for entry in router_entries]
+    _require(all(isinstance(name, str) and name and name == name.strip()
+                 for name in route_names),
+             "HOLD_REGISTRATION_ROUTER_AMBIGUOUS")
     # Preserve the established exact-duplicate HOLD code for older callers.
     _require(len(route_names) == len(set(route_names)),
              "HOLD_REGISTRATION_ROUTER_DUPLICATE")
-    _require(all(isinstance(name, str) and name and name == name.strip()
-                 for name in route_names)
-             and len({name.casefold() for name in route_names}) == len(route_names),
+    _require(len({name.casefold() for name in route_names}) == len(route_names),
              "HOLD_REGISTRATION_ROUTER_AMBIGUOUS")
     matching_routes = [x for x in router_entries
                        if x.get("product") == job["display_name"]]
