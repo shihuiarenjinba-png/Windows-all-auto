@@ -46,6 +46,13 @@ def require_accounting_package_attestation(
     _require(type(info) is dict, "HOLD_ACCOUNTING_INTAKE_INVALID")
     slug = info.get("slug")
     if slug not in SPECS:
+        # A mislabeled handoff with an accounting request ID must not fall
+        # through the ordinary-app path. This only catches partial relabeling:
+        # fully forged metadata still needs independent GitHub job provenance.
+        request_id = info.get("request_id")
+        _require(not (type(request_id) is str and any(
+            request_id.startswith(f"app-{candidate}-") for candidate in SPECS
+        )), "HOLD_ACCOUNTING_INTAKE_SKU_ALIAS")
         return
     market = SPECS[slug][0]
     source_sha = info.get("source_sha")
