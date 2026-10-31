@@ -68,6 +68,38 @@ def _read_file(path: Path, limit: int) -> bytes:
         _hold("HOLD_ACCOUNTING_EVIDENCE_FILE_UNAVAILABLE")
 
 
+def _hash_file(path: Path, limit: int) -> tuple[str, bytes]:
+    """Stream large MSIX/checker files; never buffer a 2 GiB package in RAM."""
+    _check_no_symlink(path)
+    flags = os.O_RDONLY | getattr(os, "O_BINARY", 0) | getattr(os, "O_NOFOLLOW", 0)
+    try:
+        fd = os.open(path, flags)
+        with os.fdopen(fd, "rb") as handle:
+            meta = os.fstat(handle.fileno())
+            if not stat.S_ISREG(meta.st_mode) or meta.st_size > limit:
+                _hold("HOLD_ACCOUNTING_EVIDENCE_FILE_INVALID")
+            digest = hashlib.sha256()
+            total = 0
+            header = b""
+            while True:
+                block = handle.read(1024 * 1024)
+                if not block:
+                    break
+                if not header:
+                    header = block[:4]
+                total += len(block)
+                if total > limit:
+                    _hold("HOLD_ACCOUNTING_EVIDENCE_FILE_INVALID")
+                digest.update(block)
+            if total != meta.st_size:
+                _hold("HOLD_ACCOUNTING_EVIDENCE_FILE_INVALID")
+            return digest.hexdigest(), header
+    except AccountingHumanQAHold:
+        raise
+    except (OSError, ValueError):
+        _hold("HOLD_ACCOUNTING_EVIDENCE_FILE_UNAVAILABLE")
+
+
 def _png_dimensions(data: bytes):
     if not data.startswith(PNG_SIGNATURE):
         _hold("HOLD_ACCOUNTING_EVIDENCE_PNG_INVALID")
@@ -129,11 +161,11 @@ def read_local_accounting_human_evidence(
         _hold("HOLD_ACCOUNTING_EVIDENCE_SCHEMA")
     if type(job.get("package_sha256")) is not str or type(job.get("checker_report_sha256")) is not str:
         _hold("HOLD_ACCOUNTING_EVIDENCE_JOB_INVALID")
-    package = _read_file(Path(package_path), MAX_PACKAGE_BYTES)
-    if not package.startswith(b"PK\x03\x04") or hashlib.sha256(package).hexdigest() != job["package_sha256"]:
+    package_digest, package_header = _hash_file(Path(package_path), MAX_PACKAGE_BYTES)
+    if package_header != bytes((80, 75, 3, 4)) or package_digest != job["package_sha256"]:
         _hold("HOLD_ACCOUNTING_EVIDENCE_PACKAGE_MISMATCH")
-    checker = _read_file(Path(checker_report_path), MAX_CHECKER_BYTES)
-    if hashlib.sha256(checker).hexdigest() != job["checker_report_sha256"]:
+    checker_digest, _ = _hash_file(Path(checker_report_path), MAX_CHECKER_BYTES)
+    if checker_digest != job["checker_report_sha256"]:
         _hold("HOLD_ACCOUNTING_EVIDENCE_CHECKER_MISMATCH")
     seen = set()
     for name in SCENARIO_ASSERTIONS:
