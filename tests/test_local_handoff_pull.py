@@ -211,6 +211,35 @@ class LocalPullTests(unittest.TestCase):
             (root/"queue.json").write_text(json.dumps(queue))
         return result
 
+    def test_corrupt_existing_second_bundle_holds_before_first_stage(self):
+        # A previously staged but corrupted second package must not allow a
+        # fresh first package to be admitted before the error is detected.
+        inbox=self.root/"inbox"
+        second=inbox/("sample-two-"+self.checksum[:12])
+        second.mkdir(parents=True)
+        shutil.copyfile(self.fixture/"factory-qa"/"package.msix",
+                        second/"package.msix")
+        (second/"handoff.json").write_text("{invalid json",encoding="utf-8")
+        with patch("scripts.local_handoff_pull.gh",
+                   side_effect=self.fake_two_item_gh):
+            with self.assertRaises(ValueError):
+                pull(inbox)
+        self.assertFalse((inbox/("sample-app-"+self.checksum[:12])).exists())
+        self.assertTrue((second/"package.msix").exists())
+
+    def test_existing_second_file_holds_before_first_stage(self):
+        # A path occupied by a file cannot be treated as a reusable bundle.
+        inbox=self.root/"inbox"
+        inbox.mkdir()
+        second=inbox/("sample-two-"+self.checksum[:12])
+        second.write_text("not a package directory",encoding="utf-8")
+        with patch("scripts.local_handoff_pull.gh",
+                   side_effect=self.fake_two_item_gh):
+            with self.assertRaises(ValueError):
+                pull(inbox)
+        self.assertFalse((inbox/("sample-app-"+self.checksum[:12])).exists())
+        self.assertTrue(second.is_file())
+
     def test_capacity_count_is_checked_for_entire_artifact_before_stage(self):
         # With room for only one package, neither of two may be admitted.
         with (patch("scripts.local_handoff_pull.gh",side_effect=self.fake_two_item_gh),

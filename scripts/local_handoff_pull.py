@@ -14,7 +14,7 @@ import sys
 import tempfile
 
 from all_auto.handoff_bridge import stage_bundle, validate_bundle
-from all_auto.lane_queue import relative_package_path
+from all_auto.lane_queue import relative_package_path, check_request_conflict
 
 REMOTE="shihuiarenjinba-png/Windows-all-auto"
 PREFIX="verified-msix-local-qa-"
@@ -233,6 +233,17 @@ def _pull_unlocked(target:Path)->dict:
                 if item.get("security_confirmed") is True or item.get("price_approved") is True:
                     raise ValueError("Local QA queue must not assert Store approvals")
                 verified_items.append((folder,source,verified,checksum,expected_build_head))
+            # A stale or corrupted destination for item N must HOLD before
+            # item 1 is staged. Replay validation is read-only for an existing
+            # destination; for new paths, check global request bindings now.
+            # This also rejects a conflicting persisted APP/GAME/3D receipt
+            # before any new item from this artifact reaches the inbox.
+            for folder,source,verified,_,expected_build_head in verified_items:
+                destination=target/folder
+                if destination.exists() or destination.is_symlink():
+                    stage_bundle(source,target,expected_build_head)
+                else:
+                    check_request_conflict(target,verified)
             # Reserve capacity for the *whole verified artifact* before the
             # first stage. Per-item quota checks could admit item 1 and then
             # reject item 2, leaving a partially imported artifact on HOLD.
