@@ -94,6 +94,11 @@ def _git_blob_sha(content: str) -> str:
     return hashlib.sha1(header + raw).hexdigest()
 
 
+def _proposal_sha256(content: str) -> str:
+    """Bind explicit operator review to the exact proposed ledger bytes."""
+    return hashlib.sha256(content.encode("utf-8")).hexdigest()
+
+
 def fetch_canonical_head() -> str:
     data = _gh_json(f"repos/{REPOSITORY}/git/ref/heads/{BRANCH}")
     obj = data.get("object")
@@ -269,12 +274,16 @@ def prepare(slug: str) -> PreparedLedger:
 
 
 def apply(prepared: PreparedLedger, *, reviewed_head: str,
-          reviewed_blob: str) -> str:
+          reviewed_blob: str, reviewed_proposal_sha256: str) -> str:
     """Explicit write, atomically leased against the exact reviewed HEAD."""
     _require(isinstance(prepared, PreparedLedger),
              "HOLD_CANONICAL_PROPOSAL_INVALID")
     _sha(reviewed_head)
     _sha(reviewed_blob)
+    _require(isinstance(reviewed_proposal_sha256, str)
+             and re.fullmatch(r"[0-9a-f]{64}", reviewed_proposal_sha256) is not None
+             and reviewed_proposal_sha256 == _proposal_sha256(prepared.content),
+             "HOLD_CANONICAL_PROPOSAL_REVIEW_MISMATCH")
     _require(reviewed_head == prepared.expected_head
              and reviewed_blob == prepared.expected_blob,
              "HOLD_CANONICAL_REVIEW_PIN_MISMATCH")
@@ -331,9 +340,12 @@ def main(argv=None) -> int:
     parser.add_argument("--apply", action="store_true")
     parser.add_argument("--expected-head")
     parser.add_argument("--expected-blob")
+    parser.add_argument("--expected-proposal-sha256")
     args = parser.parse_args(argv)
-    if args.apply and (not args.expected_head or not args.expected_blob):
-        parser.error("--apply requires --expected-head and --expected-blob")
+    if args.apply and (not args.expected_head or not args.expected_blob
+                       or not args.expected_proposal_sha256):
+        parser.error("--apply requires --expected-head, --expected-blob "
+                     "and --expected-proposal-sha256")
     try:
         proposal = prepare(args.slug)
         output = {
@@ -341,12 +353,14 @@ def main(argv=None) -> int:
             "transition": proposal.transition,
             "expected_head": proposal.expected_head,
             "expected_blob": proposal.expected_blob,
+            "proposal_sha256": _proposal_sha256(proposal.content),
             "store_submission": "NOT_PERFORMED", "e2e_pass": False,
         }
         if args.apply:
             output["commit_sha"] = apply(
                 proposal, reviewed_head=args.expected_head,
                 reviewed_blob=args.expected_blob,
+                reviewed_proposal_sha256=args.expected_proposal_sha256,
             )
             output["status"] = "ATOMIC_LEDGER_COMMIT_CREATED"
         print(json.dumps(output, sort_keys=True))
