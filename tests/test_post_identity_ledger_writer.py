@@ -296,7 +296,8 @@ class CanonicalLedgerWriterTests(unittest.TestCase):
                 "data": {"createCommitOnBranch": {"commit": {"oid": COMMIT}}}
             }), stderr="",
         )
-        result = writer.apply(proposal, reviewed_head=HEAD, reviewed_blob=BLOB)
+        result = writer.apply(proposal, reviewed_head=HEAD, reviewed_blob=BLOB,
+                     reviewed_proposal_sha256=writer._proposal_sha256(proposal.content))
         self.assertEqual(result, COMMIT)
         self.assertEqual(run.call_args.args[0], ["gh", "api", "graphql", "--input", "-"])
         payload = json.loads(run.call_args.kwargs["input"])
@@ -307,6 +308,31 @@ class CanonicalLedgerWriterTests(unittest.TestCase):
             payload["variables"]["input"]["fileChanges"]["additions"][0]["contents"]
         ), content.encode())
         readback.assert_called_once_with(COMMIT)
+
+    @patch.object(writer.subprocess, "run")
+    @patch.object(writer, "fetch_canonical_head", return_value=HEAD)
+    def test_apply_requires_review_of_exact_proposed_bytes(self, head, run):
+        # HEAD/blob alone pin the old ledger, not the authenticated proposal.
+        # A changed Factory market-fit review could change proposal bytes
+        # without changing the canonical source HEAD/blob.
+        original = json.dumps(ledger()) + "\\n"
+        proposal = writer.PreparedLedger(HEAD, BLOB, SLUG,
+                                         "POST_IDENTITY_READY", original)
+        digest = writer._proposal_sha256(original)
+        self.assertEqual(len(digest), 64)
+        with self.assertRaisesRegex(
+                writer.LedgerWriteHold,
+                "^HOLD_CANONICAL_PROPOSAL_REVIEW_MISMATCH$"):
+            writer.apply(proposal, reviewed_head=HEAD, reviewed_blob=BLOB,
+                         reviewed_proposal_sha256="0" * 64)
+        mutated = writer.PreparedLedger(HEAD, BLOB, SLUG,
+                                        "POST_IDENTITY_READY", original + " ")
+        with self.assertRaisesRegex(
+                writer.LedgerWriteHold,
+                "^HOLD_CANONICAL_PROPOSAL_REVIEW_MISMATCH$"):
+            writer.apply(mutated, reviewed_head=HEAD, reviewed_blob=BLOB,
+                         reviewed_proposal_sha256=digest)
+        run.assert_not_called()
 
     @patch.object(writer, "fetch_canonical_ledger")
     @patch.object(writer.subprocess, "run")
@@ -323,13 +349,15 @@ class CanonicalLedgerWriterTests(unittest.TestCase):
         readback.return_value = (ledger(), "d" * 40)
         with self.assertRaisesRegex(writer.LedgerWriteHold,
                                     "HOLD_CANONICAL_POSTWRITE_CONTENT_MISMATCH"):
-            writer.apply(proposal, reviewed_head=HEAD, reviewed_blob=BLOB)
+            writer.apply(proposal, reviewed_head=HEAD, reviewed_blob=BLOB,
+                     reviewed_proposal_sha256=writer._proposal_sha256(proposal.content))
         wrong = ledger()
         wrong["e2e_pass"] = True
         readback.return_value = (wrong, writer._git_blob_sha(content))
         with self.assertRaisesRegex(writer.LedgerWriteHold,
                                     "HOLD_CANONICAL_POSTWRITE_CONTENT_MISMATCH"):
-            writer.apply(proposal, reviewed_head=HEAD, reviewed_blob=BLOB)
+            writer.apply(proposal, reviewed_head=HEAD, reviewed_blob=BLOB,
+                     reviewed_proposal_sha256=writer._proposal_sha256(proposal.content))
 
     @patch.object(writer, "fetch_canonical_ledger")
     @patch.object(writer.subprocess, "run")
@@ -345,7 +373,8 @@ class CanonicalLedgerWriterTests(unittest.TestCase):
         readback.side_effect = writer.LedgerWriteHold("internal secret")
         with self.assertRaisesRegex(writer.LedgerWriteHold,
                                     "^HOLD_CANONICAL_POSTWRITE_READ_UNAVAILABLE$"):
-            writer.apply(proposal, reviewed_head=HEAD, reviewed_blob=BLOB)
+            writer.apply(proposal, reviewed_head=HEAD, reviewed_blob=BLOB,
+                     reviewed_proposal_sha256=writer._proposal_sha256(proposal.content))
 
     @patch.object(writer.subprocess, "run")
     @patch.object(writer, "fetch_canonical_head", return_value=HEAD)
@@ -353,11 +382,13 @@ class CanonicalLedgerWriterTests(unittest.TestCase):
         proposal = writer.PreparedLedger(HEAD, BLOB, SLUG,
                                          "POST_IDENTITY_READY", "{}")
         with self.assertRaisesRegex(writer.LedgerWriteHold, "REVIEW_PIN_MISMATCH"):
-            writer.apply(proposal, reviewed_head=COMMIT, reviewed_blob=BLOB)
+            writer.apply(proposal, reviewed_head=COMMIT, reviewed_blob=BLOB,
+                         reviewed_proposal_sha256=writer._proposal_sha256(proposal.content))
         run.assert_not_called()
         head.return_value = COMMIT
         with self.assertRaisesRegex(writer.LedgerWriteHold, "HEAD_DRIFT"):
-            writer.apply(proposal, reviewed_head=HEAD, reviewed_blob=BLOB)
+            writer.apply(proposal, reviewed_head=HEAD, reviewed_blob=BLOB,
+                     reviewed_proposal_sha256=writer._proposal_sha256(proposal.content))
         run.assert_not_called()
 
     @patch.object(writer.subprocess, "run")
@@ -372,7 +403,8 @@ class CanonicalLedgerWriterTests(unittest.TestCase):
         )
         with self.assertRaisesRegex(writer.LedgerWriteHold,
                                     "^HOLD_CANONICAL_ATOMIC_WRITE_REJECTED$"):
-            writer.apply(proposal, reviewed_head=HEAD, reviewed_blob=BLOB)
+            writer.apply(proposal, reviewed_head=HEAD, reviewed_blob=BLOB,
+                     reviewed_proposal_sha256=writer._proposal_sha256(proposal.content))
 
     @patch.object(writer, "prepare")
     @patch.object(writer, "apply")
