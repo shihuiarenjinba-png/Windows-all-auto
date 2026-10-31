@@ -1,4 +1,4 @@
-"""Run the existing Windows-checker on real, verified local APP/GAME MSIX bytes.
+"""Run Windows-checker on verified APP/GAME/GAME_3D local QA MSIX bytes.
 
 Read-only toward packages. Never installs, signs, submits or claims E2E PASS.
 Run after local_handoff_pull, with an independently checked-out Windows-checker.
@@ -14,13 +14,18 @@ import sys
 import tempfile
 
 from all_auto.handoff_bridge import validate_bundle
+from all_auto.lane_queue import check_request_conflict
 
 VERDICTS = {
     0: "READY_CANDIDATE_NOT_CERTIFIED",
     1: "NEEDS_REVIEW",
     2: "BLOCKED",
 }
-LANES = {"APP": "app", "GAME": "game"}
+# GAME_3D has a distinct immutable transport lane. Windows-checker's CLI
+# currently accepts only app/game, so its *preflight* uses game while the
+# product_type and receipts remain GAME_3D. Never silently skip this lane.
+LANES = {"APP": "app", "GAME": "game", "GAME_3D": "game"}
+MAX_QUEUED_BYTES = 2 * 1024 * 1024 * 1024
 
 
 def check_local_queue(inbox: Path, checker: Path, reports: Path) -> dict:
@@ -54,20 +59,27 @@ def check_local_queue(inbox: Path, checker: Path, reports: Path) -> dict:
 
     # Validate *all* MSIX bytes before executing any checker subprocess.
     checked = []
-    seen = {}
+    total_bytes = 0
     for lane, kind, folder in bundles:
         if (folder / "handoff.json").is_symlink() or (folder / "package.msix").is_symlink():
             raise ValueError("LOCAL_QA_HOLD: linked package")
         meta = json.loads((folder / "handoff.json").read_text(encoding="utf-8"))
-        expected = meta.get("factory_head_sha", meta.get("source_sha"))
+        # The 3D build HEAD may be a separate post-Identity commit. Never
+        # substitute its immutable pre-Identity source_sha for the build HEAD.
+        expected = meta.get("factory_build_head",
+                            meta.get("factory_head_sha", meta.get("source_sha")))
         info = validate_bundle(folder, expected)
-        if info.get("product_type") != lane or info.get("contract_status") != "IMMUTABLE_QA_ONLY":
-            raise ValueError("LOCAL_QA_HOLD: only immutable APP/GAME queue accepted")
-        request = info["request_id"]
-        prior = seen.get((lane, request))
-        if prior is not None and prior != info["source_sha"]:
-            raise ValueError("LOCAL_QA_CONFLICT: request_id reused with changed source SHA")
-        seen[(lane, request)] = info["source_sha"]
+        if (info.get("product_type") != lane
+                or info.get("contract_status") != "IMMUTABLE_QA_ONLY"):
+            raise ValueError("LOCAL_QA_HOLD: only immutable APP/GAME/GAME_3D queue accepted")
+        # The staging gate already rejects global request-id collisions. Recheck
+        # independently at the last Checker boundary so a modified inbox or a
+        # manually copied bundle cannot bypass that protection. The check also
+        # binds Store ID, embedded identity and 3D PFN/SID across revisions.
+        check_request_conflict(inbox, info)
+        total_bytes += info["package_bytes"]
+        if total_bytes > MAX_QUEUED_BYTES:
+            raise ValueError("LOCAL_QA_HOLD: local package capacity exceeded")
         checked.append((lane, kind, folder, info))
     reports.mkdir(parents=True, exist_ok=True)
     results = []
@@ -94,6 +106,10 @@ def check_local_queue(inbox: Path, checker: Path, reports: Path) -> dict:
                 "schema_version": 1, "status": "HOLD",
                 "checker_verdict": parsed["verdict"],
                 "request_id": info["request_id"], "product_type": lane,
+                "checker_cli_type": kind,
+                "factory_build_head": info.get("factory_build_head",
+                                                info.get("factory_head_sha",
+                                                         info["source_sha"])),
                 "source_factory": info["source_factory"],
                 "source_repository": info["source_repository"],
                 "source_branch": info["source_branch"],

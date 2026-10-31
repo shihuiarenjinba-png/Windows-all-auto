@@ -5,6 +5,7 @@ from pathlib import Path
 import tempfile
 import unittest
 import zipfile
+from unittest.mock import patch
 
 from scripts.local_checker_queue import check_local_queue
 
@@ -33,7 +34,7 @@ class LocalCheckerQueueTests(unittest.TestCase):
             "sys.exit(1)\n", encoding="utf-8")
 
     def bundle(self, lane, slug, source=SOURCE, request=None):
-        kind = lane.lower()
+        kind = {"APP": "app", "GAME": "game", "GAME_3D": "3d-game"}[lane]
         folder = self.inbox / lane / slug
         folder.mkdir(parents=True)
         package = folder / "package.msix"
@@ -43,10 +44,13 @@ class LocalCheckerQueueTests(unittest.TestCase):
             z.writestr("[Content_Types].xml", b"<Types/>")
             z.writestr("main.exe", EXE)
         payload = package.read_bytes()
-        factory = "AI-App-Factory" if lane == "APP" else "AI-Game-Factory"
+        factory = {"APP": "AI-App-Factory", "GAME": "AI-Game-Factory",
+                   "GAME_3D": "3d-game-factory"}[lane]
+        repository = ("shihuiarenjinba-png/3d-game-factory"
+                      if lane == "GAME_3D"
+                      else "https://github.com/shihuiarenjinba-png/" + factory)
         meta = {
-            "schema_version": 1, "source_repository":
-                "https://github.com/shihuiarenjinba-png/" + factory,
+            "schema_version": 1, "source_repository": repository,
             "source_sha": source, "type": kind, "slug": slug,
             "package": "package.msix", "status": "QA_UNSIGNED",
             "package_bytes": len(payload),
@@ -64,6 +68,15 @@ class LocalCheckerQueueTests(unittest.TestCase):
                 "factory_head_sha": source,
                 "display_name": "Sample App",
                 "prebuilt_exe_sha256": hashlib.sha256(EXE).hexdigest(),
+            })
+        elif lane == "GAME_3D":
+            meta.pop("store_id")
+            meta["factory_build_head"] = "b" * 40
+            meta["local_package_sha256"] = hashlib.sha256(payload).hexdigest()
+            meta["identity"].update({
+                "store_id": "9N12345678",
+                "package_family_name": "Sample.Test_abcdefghijklm",
+                "package_sid": "S-1-15-2-1-2-3-4-5-6-7",
             })
         (folder / "handoff.json").write_text(json.dumps(meta), encoding="utf-8")
         return folder
@@ -84,6 +97,56 @@ class LocalCheckerQueueTests(unittest.TestCase):
         self.assertTrue(all(x["local_gui_qa"] == "NOT_RUN" for x in result["results"]))
         self.assertFalse(result["e2e_pass"])
         self.assertEqual(len(list(self.reports.glob("*.checker.json"))), 2)
+
+    def test_3d_build_head_distinct_from_source_reaches_game_checker(self):
+        self.bundle("GAME_3D", "sample-3d")
+        result = check_local_queue(self.inbox, self.checker, self.reports)
+        self.assertEqual(result["checked"], 1)
+        receipt = result["results"][0]
+        self.assertEqual(receipt["product_type"], "GAME_3D")
+        self.assertEqual(receipt["checker_cli_type"], "game")
+        self.assertEqual(receipt["source_factory"], "3d-game-factory")
+        self.assertEqual(receipt["source_sha"], SOURCE)
+        self.assertEqual(receipt["factory_build_head"], "b" * 40)
+        self.assertEqual(receipt["checker_verdict"], "NEEDS_REVIEW")
+        self.assertEqual(receipt["local_gui_qa"], "NOT_RUN")
+        self.assertFalse(receipt["e2e_pass"])
+        self.assertFalse(receipt["submitted_to_store"])
+
+    def test_all_three_lanes_reach_checker_with_distinct_receipts(self):
+        self.bundle("APP", "sample-app")
+        self.bundle("GAME", "sample-game")
+        self.bundle("GAME_3D", "sample-3d")
+        result = check_local_queue(self.inbox, self.checker, self.reports)
+        self.assertEqual(result["checked"], 3)
+        self.assertEqual({x["product_type"] for x in result["results"]},
+                         {"APP", "GAME", "GAME_3D"})
+        self.assertEqual(len(list(self.reports.glob("*.checker.json"))), 3)
+        self.assertFalse(result["e2e_pass"])
+
+    def test_cross_lane_same_request_is_global_conflict(self):
+        self.bundle("APP", "sample-app", request="same-request-0001")
+        self.bundle("GAME", "sample-game", request="same-request-0001")
+        with self.assertRaisesRegex(ValueError, "CONFLICT"):
+            check_local_queue(self.inbox, self.checker, self.reports)
+        self.assertFalse(self.reports.exists())
+
+    def test_3d_cannot_relabel_as_ordinary_game(self):
+        folder = self.bundle("GAME_3D", "sample-3d")
+        meta_path = folder / "handoff.json"
+        meta = json.loads(meta_path.read_text(encoding="utf-8"))
+        meta["product_type"] = "GAME"
+        meta_path.write_text(json.dumps(meta), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "collision"):
+            check_local_queue(self.inbox, self.checker, self.reports)
+        self.assertFalse(self.reports.exists())
+
+    def test_checker_enforces_2gib_local_capacity_before_execution(self):
+        self.bundle("GAME_3D", "sample-3d")
+        with patch("scripts.local_checker_queue.MAX_QUEUED_BYTES", 1):
+            with self.assertRaisesRegex(ValueError, "capacity"):
+                check_local_queue(self.inbox, self.checker, self.reports)
+        self.assertFalse(self.reports.exists())
 
     def test_corrupted_msix_rejected_before_checker(self):
         folder = self.bundle("GAME", "sample-game")
