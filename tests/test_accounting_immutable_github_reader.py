@@ -132,8 +132,10 @@ class AccountingImmutableGithubReaderTests(unittest.TestCase):
             read_accounting_immutable_text(REPO, PATH, SHA)
 
 
+    @patch("scripts.market_fit_review_reader.assess_reviewed_market_fit",
+           return_value=("MARKET_FIT_PASS", "REVIEW_COMMIT_VERIFIED"))
     @patch("scripts.accounting_immutable_github_reader.subprocess.run")
-    def test_authenticated_factory_wrapper_still_holds_without_actions(self, run):
+    def test_authenticated_factory_wrapper_still_holds_without_actions(self, run, review):
         from scripts.accounting_immutable_github_reader import (
             check_accounting_e2e_with_authenticated_factory,
         )
@@ -176,6 +178,7 @@ class AccountingImmutableGithubReaderTests(unittest.TestCase):
             check_accounting_e2e_with_authenticated_factory(
                 job, phase="PRE_IDENTITY")
         self.assertEqual(run.call_count, 2)
+        review.assert_called_once_with(job)
 
 
 if __name__ == "__main__":

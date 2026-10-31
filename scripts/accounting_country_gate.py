@@ -21,6 +21,16 @@ SPECS = {
 _SHA = re.compile(r"[0-9a-f]{40}\Z")
 _SCOPE_FIELDS = frozenset({"store_markets", "store_language", "currency",
                            "country_profile", "cross_market_sale"})
+_US_EXTRA_FIELDS = frozenset({
+    "federal_scope", "state_local_tax_automation", "tax_filing",
+    "deductibility_determination", "compliance_claim",
+})
+_US_FEDERAL_SCOPES = {
+    "us-freelance-ledger":
+        "sole_proprietor_recordkeeping_and_schedule_c_preparation_support",
+    "us-bookkeeping-desk":
+        "general_business_bookkeeping_records_not_tax_return_preparation",
+}
 
 
 class CountryMarketHold(ValueError):
@@ -44,7 +54,7 @@ def _reject_constant(_):
     raise CountryMarketHold("HOLD_ACCOUNTING_SCOPE_JSON_INVALID")
 
 
-def _parse_scope(raw: str) -> dict:
+def _parse_scope(raw: str, slug: str) -> dict:
     _require(isinstance(raw, str) and 0 < len(raw.encode("utf-8")) <= 8192,
              "HOLD_ACCOUNTING_SCOPE_MISSING_OR_OVERSIZE")
     try:
@@ -54,7 +64,9 @@ def _parse_scope(raw: str) -> dict:
         raise
     except (ValueError, TypeError, UnicodeError) as exc:
         raise CountryMarketHold("HOLD_ACCOUNTING_SCOPE_JSON_INVALID") from exc
-    _require(isinstance(data, dict) and set(data) == _SCOPE_FIELDS,
+    expected_fields = (_SCOPE_FIELDS | _US_EXTRA_FIELDS
+                       if slug in _US_FEDERAL_SCOPES else _SCOPE_FIELDS)
+    _require(isinstance(data, dict) and set(data) == expected_fields,
              "HOLD_ACCOUNTING_SCOPE_SCHEMA_INVALID")
     return data
 
@@ -112,10 +124,21 @@ def check_accounting_country_gate(
         raise
     except Exception as exc:
         raise CountryMarketHold("HOLD_ACCOUNTING_IMMUTABLE_SCOPE_READ_FAILED") from exc
-    scope = _parse_scope(raw)
-    _require(scope == {"store_markets": [market], "store_language": language,
-                       "currency": currency, "country_profile": country,
-                       "cross_market_sale": False},
+    scope = _parse_scope(raw, slug)
+    expected_scope = {
+        "store_markets": [market], "store_language": language,
+        "currency": currency, "country_profile": country,
+        "cross_market_sale": False,
+    }
+    if slug in _US_FEDERAL_SCOPES:
+        expected_scope.update({
+            "federal_scope": _US_FEDERAL_SCOPES[slug],
+            "state_local_tax_automation": False,
+            "tax_filing": False,
+            "deductibility_determination": False,
+            "compliance_claim": False,
+        })
+    _require(scope == expected_scope,
              "HOLD_ACCOUNTING_COUNTRY_SCOPE_MISMATCH")
     for other in other_jobs:
         _require(isinstance(other, dict), "HOLD_ACCOUNTING_COHORT_INVALID")

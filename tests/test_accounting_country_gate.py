@@ -26,9 +26,22 @@ def job(slug):
 
 def scope(slug):
     market, language, currency, country = SPECS[slug]
-    return json.dumps({"store_markets": [market], "store_language": language,
-                       "currency": currency, "country_profile": country,
-                       "cross_market_sale": False})
+    data = {"store_markets": [market], "store_language": language,
+            "currency": currency, "country_profile": country,
+            "cross_market_sale": False}
+    if slug.startswith("us-"):
+        data.update({
+            "federal_scope": (
+                "sole_proprietor_recordkeeping_and_schedule_c_preparation_support"
+                if slug == "us-freelance-ledger" else
+                "general_business_bookkeeping_records_not_tax_return_preparation"
+            ),
+            "state_local_tax_automation": False,
+            "tax_filing": False,
+            "deductibility_determination": False,
+            "compliance_claim": False,
+        })
+    return json.dumps(data)
 
 
 def reader(slug):
@@ -84,6 +97,40 @@ class AccountingCountryGateTests(unittest.TestCase):
         with self.assertRaisesRegex(CountryMarketHold, "DUPLICATE_KEY"):
             check_accounting_country_gate(j, phase="PRE_IDENTITY",
                                           fetch_immutable_scope=lambda *_: duplicate)
+
+    def test_us_extended_scope_requires_exact_safe_policy(self):
+        for slug in ("us-freelance-ledger", "us-bookkeeping-desk"):
+            valid = json.loads(scope(slug))
+            for field, bad_value in (
+                ("state_local_tax_automation", True),
+                ("tax_filing", True),
+                ("deductibility_determination", True),
+                ("compliance_claim", True),
+                ("federal_scope", "another_market_or_product"),
+            ):
+                with self.subTest(slug=slug, field=field):
+                    bad = dict(valid, **{field: bad_value})
+                    with self.assertRaisesRegex(
+                        CountryMarketHold, "COUNTRY_SCOPE_MISMATCH"
+                    ):
+                        check_accounting_country_gate(
+                            job(slug), phase="PRE_IDENTITY",
+                            fetch_immutable_scope=lambda *_: json.dumps(bad),
+                        )
+            missing = dict(valid)
+            missing.pop("federal_scope")
+            with self.assertRaisesRegex(CountryMarketHold, "SCOPE_SCHEMA_INVALID"):
+                check_accounting_country_gate(
+                    job(slug), phase="PRE_IDENTITY",
+                    fetch_immutable_scope=lambda *_: json.dumps(missing),
+                )
+        jp = json.loads(scope("jp-bookkeeping-desk"))
+        jp["federal_scope"] = "us-only"
+        with self.assertRaisesRegex(CountryMarketHold, "SCOPE_SCHEMA_INVALID"):
+            check_accounting_country_gate(
+                job("jp-bookkeeping-desk"), phase="PRE_IDENTITY",
+                fetch_immutable_scope=lambda *_: json.dumps(jp),
+            )
 
     def test_package_requires_authenticated_exact_store_availability(self):
         slug = "us-bookkeeping-desk"
