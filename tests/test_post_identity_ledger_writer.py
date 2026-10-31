@@ -44,10 +44,23 @@ class CanonicalLedgerWriterTests(unittest.TestCase):
             "sha": BLOB, "size": len(raw),
             "content": base64.b64encode(raw).decode(),
         }
+        gh.return_value["sha"] = writer._git_blob_sha(raw.decode())
         loaded, blob = writer.fetch_canonical_ledger(HEAD)
         self.assertEqual(loaded, ledger())
-        self.assertEqual(blob, BLOB)
+        self.assertEqual(blob, writer._git_blob_sha(raw.decode()))
         self.assertIn("?ref=" + HEAD, gh.call_args.args[0])
+
+    @patch.object(writer, "_gh_json")
+    def test_reject_mismatched_git_blob_for_valid_json(self, gh):
+        raw = json.dumps(ledger()).encode()
+        gh.return_value = {
+            "type": "file", "path": writer.PATH, "encoding": "base64",
+            "sha": BLOB, "size": len(raw),
+            "content": base64.b64encode(raw).decode(),
+        }
+        with self.assertRaisesRegex(writer.LedgerWriteHold,
+                                    "^HOLD_CANONICAL_BLOB_CONTENT_MISMATCH$"):
+            writer.fetch_canonical_ledger(HEAD)
 
     @patch.object(writer, "_gh_json")
     def test_reject_duplicate_json_key(self, gh):
