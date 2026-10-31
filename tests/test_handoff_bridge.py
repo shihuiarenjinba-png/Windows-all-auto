@@ -352,4 +352,36 @@ class HandoffBridgeTests(unittest.TestCase):
             stage_bundle(self.source, target, SHA)
 
 
+    def test_request_id_cannot_rebind_store_id_on_same_app(self):
+        self.set_identity_return_bundle()
+        target = self.root / "queue"
+        stage_bundle(self.source, target, SHA)
+        self.info["store_id"] = "9POTHER123"
+        self.write_info()
+        with self.assertRaisesRegex(ValueError, "HANDOFF_CONFLICT"):
+            stage_bundle(self.source, target, SHA)
+
+    def test_3d_immutable_request_replay_preserves_pfn_and_sid(self):
+        self.use_3d()
+        target = self.root / "queue"
+        first = stage_bundle(self.source, target, BUILD_HEAD)
+        replay = stage_bundle(self.source, target, BUILD_HEAD)
+        self.assertEqual(first, replay)
+        self.assertEqual(
+            first["claimed_package_family_name"],
+            "OkinawaDesktopTools.TestApp_abcdefghijklm",
+        )
+
+    def test_3d_request_id_cannot_rebind_package_family_name(self):
+        self.use_3d()
+        target = self.root / "queue"
+        stage_bundle(self.source, target, BUILD_HEAD)
+        self.info["identity"]["package_family_name"] = (
+            "OkinawaDesktopTools.TestApp_nopqrstuvwxyz"
+        )
+        self.write_info()
+        with self.assertRaisesRegex(ValueError, "HANDOFF_CONFLICT"):
+            stage_bundle(self.source, target, BUILD_HEAD)
+
+
 if __name__=="__main__":unittest.main()
