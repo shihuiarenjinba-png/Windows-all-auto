@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import base64
 import binascii
+import hashlib
 from dataclasses import dataclass
 from datetime import datetime, timezone
 import json
@@ -72,6 +73,13 @@ def _json_load(raw: str) -> dict:
     _require(isinstance(data, dict) and data.get("schema_version") == 1,
              "HOLD_CANONICAL_SCHEMA_INVALID")
     return data
+
+
+def _git_blob_sha(content: str) -> str:
+    """Verify the exact Git object returned by the immutable commit readback."""
+    raw = content.encode("utf-8")
+    header = b"blob " + str(len(raw)).encode("ascii") + b"\0"
+    return hashlib.sha1(header + raw).hexdigest()
 
 
 def fetch_canonical_head() -> str:
@@ -186,6 +194,17 @@ def apply(prepared: PreparedLedger, *, reviewed_head: str,
              "HOLD_CANONICAL_ATOMIC_WRITE_REJECTED")
     commit = response["data"]["createCommitOnBranch"]["commit"].get("oid")
     _sha(commit)
+    # A mutation acknowledgement alone is not a verified ledger update.
+    # Read the new immutable commit and verify the exact Git blob and JSON.
+    # If readback fails, report HOLD even if the write may have succeeded;
+    # the next run can independently reconcile the already-written state.
+    try:
+        persisted, persisted_blob = fetch_canonical_ledger(commit)
+    except Exception as exc:
+        raise LedgerWriteHold("HOLD_CANONICAL_POSTWRITE_READ_UNAVAILABLE") from exc
+    _require(persisted_blob == _git_blob_sha(prepared.content)
+             and persisted == _json_load(prepared.content),
+             "HOLD_CANONICAL_POSTWRITE_CONTENT_MISMATCH")
     return commit
 
 

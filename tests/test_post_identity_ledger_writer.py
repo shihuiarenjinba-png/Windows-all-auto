@@ -109,11 +109,14 @@ class CanonicalLedgerWriterTests(unittest.TestCase):
         with self.assertRaisesRegex(writer.LedgerWriteHold, "HEAD_DRIFT"):
             writer.prepare(SLUG)
 
+    @patch.object(writer, "fetch_canonical_ledger")
     @patch.object(writer.subprocess, "run")
     @patch.object(writer, "fetch_canonical_head", return_value=HEAD)
-    def test_atomic_expected_head_commit(self, head, run):
+    def test_atomic_expected_head_commit(self, head, run, readback):
+        content = json.dumps(ledger()) + "\n"
         proposal = writer.PreparedLedger(HEAD, BLOB, SLUG,
-                                         "EXISTING_VERIFIED", "{}\n")
+                                         "EXISTING_VERIFIED", content)
+        readback.return_value = (ledger(), writer._git_blob_sha(content))
         run.return_value = subprocess.CompletedProcess(
             [], 0, stdout=json.dumps({
                 "data": {"createCommitOnBranch": {"commit": {"oid": COMMIT}}}
@@ -128,7 +131,47 @@ class CanonicalLedgerWriterTests(unittest.TestCase):
                          writer.BRANCH)
         self.assertEqual(base64.b64decode(
             payload["variables"]["input"]["fileChanges"]["additions"][0]["contents"]
-        ), b"{}\n")
+        ), content.encode())
+        readback.assert_called_once_with(COMMIT)
+
+    @patch.object(writer, "fetch_canonical_ledger")
+    @patch.object(writer.subprocess, "run")
+    @patch.object(writer, "fetch_canonical_head", return_value=HEAD)
+    def test_postwrite_readback_rejects_mismatch(self, head, run, readback):
+        content = json.dumps(ledger()) + "\n"
+        proposal = writer.PreparedLedger(HEAD, BLOB, SLUG,
+                                         "POST_IDENTITY_READY", content)
+        run.return_value = subprocess.CompletedProcess(
+            [], 0, stdout=json.dumps({
+                "data": {"createCommitOnBranch": {"commit": {"oid": COMMIT}}}
+            }), stderr="",
+        )
+        readback.return_value = (ledger(), "d" * 40)
+        with self.assertRaisesRegex(writer.LedgerWriteHold,
+                                    "HOLD_CANONICAL_POSTWRITE_CONTENT_MISMATCH"):
+            writer.apply(proposal, reviewed_head=HEAD, reviewed_blob=BLOB)
+        wrong = ledger()
+        wrong["e2e_pass"] = True
+        readback.return_value = (wrong, writer._git_blob_sha(content))
+        with self.assertRaisesRegex(writer.LedgerWriteHold,
+                                    "HOLD_CANONICAL_POSTWRITE_CONTENT_MISMATCH"):
+            writer.apply(proposal, reviewed_head=HEAD, reviewed_blob=BLOB)
+
+    @patch.object(writer, "fetch_canonical_ledger")
+    @patch.object(writer.subprocess, "run")
+    @patch.object(writer, "fetch_canonical_head", return_value=HEAD)
+    def test_postwrite_unavailable_fails_closed(self, head, run, readback):
+        proposal = writer.PreparedLedger(HEAD, BLOB, SLUG,
+                                         "POST_IDENTITY_READY", "{}")
+        run.return_value = subprocess.CompletedProcess(
+            [], 0, stdout=json.dumps({
+                "data": {"createCommitOnBranch": {"commit": {"oid": COMMIT}}}
+            }), stderr="",
+        )
+        readback.side_effect = writer.LedgerWriteHold("internal secret")
+        with self.assertRaisesRegex(writer.LedgerWriteHold,
+                                    "^HOLD_CANONICAL_POSTWRITE_READ_UNAVAILABLE$"):
+            writer.apply(proposal, reviewed_head=HEAD, reviewed_blob=BLOB)
 
     @patch.object(writer.subprocess, "run")
     @patch.object(writer, "fetch_canonical_head", return_value=HEAD)
