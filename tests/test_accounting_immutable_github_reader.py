@@ -156,7 +156,22 @@ class AccountingImmutableGithubReaderTests(unittest.TestCase):
             "currency": "JPY", "country_profile": "Japan",
             "cross_market_sale": False,
         }).encode("utf-8")
-        run.return_value = response(raw=scope)
+        from scripts.accounting_e2e_gate import CASES, INFERENCE_CASES
+        contract = json.dumps({
+            "schema_version": 1, "slug": "jp-freelance-ledger",
+            "market": "JP", "locale": "ja-JP", "currency": "JPY",
+            "tax_filing": False, "compliance_claim": False,
+            "category_suggestions_only": True,
+            "user_confirmation_required": True,
+            "confidence_and_rationale_required": True,
+            "ambiguous_input_fail_safe": True,
+            "fixture_names": sorted(CASES["freelance"] | INFERENCE_CASES),
+        }).encode("utf-8")
+        def fake_run(args, **kwargs):
+            path = ("products/jp-freelance-ledger/accounting-validation.json"
+                    if "accounting-validation.json" in args[4] else PATH)
+            return response(path, contract if path != PATH else scope)
+        run.side_effect = fake_run
         with self.assertRaisesRegex(AccountingE2EHold, "CI_NOT_VERIFIED"):
             check_accounting_e2e_with_authenticated_factory(
                 job, phase="PRE_IDENTITY")
