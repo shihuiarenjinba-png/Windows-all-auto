@@ -7,7 +7,7 @@ import unittest
 from unittest.mock import patch
 import zipfile
 
-from scripts.local_handoff_pull import pull, recent_artifacts
+from scripts.local_handoff_pull import pull, recent_artifacts, _pull_lock
 from all_auto.handoff_bridge import validate_bundle
 
 SOURCE_SHA="b"*40
@@ -318,5 +318,26 @@ class LocalPullTests(unittest.TestCase):
         path.write_text(json.dumps(data),encoding="utf-8")
         with self.assertRaisesRegex(ValueError,"3D local package provenance"):
             validate_bundle(bundle,"c"*40)
+
+    def test_local_pull_single_flight_rejects_overlapping_worker(self):
+        # Two scheduled instances cannot stage into the same inbox at once.
+        inbox = self.root / "inbox"
+        with _pull_lock(inbox):
+            with patch("scripts.local_handoff_pull.gh", side_effect=self.fake_gh):
+                with self.assertRaisesRegex(ValueError, "already active"):
+                    pull(inbox)
+        self.assertFalse(inbox.exists())
+        # The same inbox can be used after the first worker exits.
+        with patch("scripts.local_handoff_pull.gh", side_effect=self.fake_gh):
+            self.assertEqual(pull(inbox)["new_packages"], 1)
+
+    def test_local_pull_lock_is_released_after_failure(self):
+        # OS locks are released on exceptions; no unsafe stale PID cleanup.
+        inbox = self.root / "inbox"
+        with self.assertRaisesRegex(RuntimeError, "simulated failure"):
+            with _pull_lock(inbox):
+                raise RuntimeError("simulated failure")
+        with patch("scripts.local_handoff_pull.gh", side_effect=self.fake_gh):
+            self.assertEqual(pull(inbox)["new_packages"], 1)
 
 if __name__=="__main__":unittest.main()

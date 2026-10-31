@@ -5,6 +5,7 @@ installer execution, signing, packaging, or unattended certification.
 """
 from __future__ import annotations
 import argparse
+from contextlib import contextmanager
 import json
 import os
 from pathlib import Path
@@ -111,7 +112,62 @@ def _preflight_queue_items(items: list[dict]) -> None:
             requests.add(request)
 
 
+@contextmanager
+def _pull_lock(target: Path):
+    """Single-flight OS lock for the 15-minute local QA pull.
+
+    The sibling lock file persists so a second process never locks a new
+    inode while the first still holds the old one. OS locks are automatically
+    released on crash; no PID-based stale-lock deletion is necessary.
+    """
+    if target.is_symlink():
+        raise ValueError("refusing symlink target")
+    target.parent.mkdir(parents=True, exist_ok=True)
+    lock_path = target.with_name(target.name + ".pull.lock")
+    if lock_path.is_symlink():
+        raise ValueError("refusing symlink local QA pull lock")
+    flags = os.O_CREAT | os.O_RDWR
+    if hasattr(os, "O_NOFOLLOW"):
+        flags |= os.O_NOFOLLOW
+    fd = os.open(lock_path, flags, 0o600)
+    acquired = False
+    try:
+        if os.name == "nt":
+            import msvcrt
+            # Windows byte-range locking requires an existing byte.
+            if os.fstat(fd).st_size == 0:
+                os.write(fd, bytes([0]))
+            os.lseek(fd, 0, os.SEEK_SET)
+            try:
+                msvcrt.locking(fd, msvcrt.LK_NBLCK, 1)
+            except OSError as exc:
+                raise ValueError("Local QA pull already active; HOLD") from exc
+        else:
+            import fcntl
+            try:
+                fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except BlockingIOError as exc:
+                raise ValueError("Local QA pull already active; HOLD") from exc
+        acquired = True
+        yield
+    finally:
+        try:
+            if acquired:
+                if os.name == "nt":
+                    os.lseek(fd, 0, os.SEEK_SET)
+                    msvcrt.locking(fd, msvcrt.LK_UNLCK, 1)
+                else:
+                    fcntl.flock(fd, fcntl.LOCK_UN)
+        finally:
+            os.close(fd)
+
+
 def pull(target:Path)->dict:
+    with _pull_lock(target):
+        return _pull_unlocked(target)
+
+
+def _pull_unlocked(target:Path)->dict:
     artifacts=recent_artifacts()
     if not artifacts:
         raise ValueError("No successful central QA handoff artifact is available")
