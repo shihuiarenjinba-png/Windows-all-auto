@@ -1,0 +1,170 @@
+"""Offline guards for canonical E2E ledger single-writer atomic commit."""
+import base64
+import json
+import subprocess
+import unittest
+from unittest.mock import patch
+
+from scripts import post_identity_ledger_writer as writer
+
+HEAD = "a" * 40
+BLOB = "b" * 40
+COMMIT = "c" * 40
+SLUG = "focus-session-desk"
+
+
+def ledger():
+    return {
+        "schema_version": 1, "e2e_pass": False, "e2e_status": "HOLD",
+        "new_product_allowed": False, "rotation_cohorts": {"app_jobs": []},
+        "user_id_requests": {"items": []},
+        "registration_router": {"entries": []},
+        "post_identity_pipeline": {"products": []},
+        "policy": {"store_submission": False},
+    }
+
+
+class CanonicalLedgerWriterTests(unittest.TestCase):
+    @patch.object(writer, "_gh_json")
+    def test_head_exact_ref_and_commit(self, gh):
+        gh.return_value = {
+            "ref": f"refs/heads/{writer.BRANCH}",
+            "object": {"type": "commit", "sha": HEAD},
+        }
+        self.assertEqual(writer.fetch_canonical_head(), HEAD)
+        gh.return_value["ref"] = "refs/heads/main"
+        with self.assertRaisesRegex(writer.LedgerWriteHold, "HEAD_INVALID"):
+            writer.fetch_canonical_head()
+
+    @patch.object(writer, "_gh_json")
+    def test_pinned_ledger_content_and_blob(self, gh):
+        raw = json.dumps(ledger()).encode()
+        gh.return_value = {
+            "type": "file", "path": writer.PATH, "encoding": "base64",
+            "sha": BLOB, "size": len(raw),
+            "content": base64.b64encode(raw).decode(),
+        }
+        loaded, blob = writer.fetch_canonical_ledger(HEAD)
+        self.assertEqual(loaded, ledger())
+        self.assertEqual(blob, BLOB)
+        self.assertIn("?ref=" + HEAD, gh.call_args.args[0])
+
+    @patch.object(writer, "_gh_json")
+    def test_reject_duplicate_json_key(self, gh):
+        raw = b'{"schema_version":1,"schema_version":1}'
+        gh.return_value = {
+            "type": "file", "path": writer.PATH, "encoding": "base64",
+            "sha": BLOB, "size": len(raw),
+            "content": base64.b64encode(raw).decode(),
+        }
+        with self.assertRaisesRegex(writer.LedgerWriteHold, "DUPLICATE"):
+            writer.fetch_canonical_ledger(HEAD)
+
+    @patch.object(writer, "_gh_json")
+    def test_reject_bad_content_and_nan(self, gh):
+        raw = b'{"schema_version":1,"value":NaN}'
+        gh.return_value = {
+            "type": "file", "path": writer.PATH, "encoding": "base64",
+            "sha": BLOB, "size": len(raw),
+            "content": base64.b64encode(raw).decode(),
+        }
+        with self.assertRaisesRegex(writer.LedgerWriteHold, "JSON_INVALID"):
+            writer.fetch_canonical_ledger(HEAD)
+        gh.return_value["size"] = len(raw) + 1
+        with self.assertRaisesRegex(writer.LedgerWriteHold, "CONTENT_INVALID"):
+            writer.fetch_canonical_ledger(HEAD)
+
+    @patch.object(writer, "propose_authenticated_post_identity")
+    @patch.object(writer, "fetch_canonical_ledger")
+    @patch.object(writer, "fetch_canonical_head")
+    def test_prepare_only_allowed_fields(self, head, fetch, propose):
+        head.return_value = HEAD
+        fetch.return_value = (ledger(), BLOB)
+        after = ledger()
+        after["rotation_cohorts"]["app_jobs"].append({"slug": SLUG})
+        propose.return_value = (after, "POST_IDENTITY_READY")
+        prepared = writer.prepare(SLUG)
+        self.assertEqual(prepared.expected_head, HEAD)
+        self.assertEqual(prepared.expected_blob, BLOB)
+        self.assertEqual(prepared.transition, "POST_IDENTITY_READY")
+        self.assertIn('"updated_at_utc"', prepared.content)
+        self.assertEqual(head.call_count, 2)
+        after["policy"]["store_submission"] = True
+        with self.assertRaisesRegex(writer.LedgerWriteHold, "UNRELATED_MUTATION"):
+            writer.prepare(SLUG)
+
+    @patch.object(writer, "propose_authenticated_post_identity")
+    @patch.object(writer, "fetch_canonical_ledger")
+    @patch.object(writer, "fetch_canonical_head")
+    def test_prepare_rejects_escalation_and_drift(self, head, fetch, propose):
+        head.return_value = HEAD
+        fetch.return_value = (ledger(), BLOB)
+        after = ledger()
+        after["e2e_pass"] = True
+        propose.return_value = (after, "POST_IDENTITY_READY")
+        with self.assertRaisesRegex(writer.LedgerWriteHold, "GATE_ESCALATION"):
+            writer.prepare(SLUG)
+        after["e2e_pass"] = False
+        head.side_effect = [HEAD, COMMIT]
+        with self.assertRaisesRegex(writer.LedgerWriteHold, "HEAD_DRIFT"):
+            writer.prepare(SLUG)
+
+    @patch.object(writer.subprocess, "run")
+    @patch.object(writer, "fetch_canonical_head", return_value=HEAD)
+    def test_atomic_expected_head_commit(self, head, run):
+        proposal = writer.PreparedLedger(HEAD, BLOB, SLUG,
+                                         "EXISTING_VERIFIED", "{}\n")
+        run.return_value = subprocess.CompletedProcess(
+            [], 0, stdout=json.dumps({
+                "data": {"createCommitOnBranch": {"commit": {"oid": COMMIT}}}
+            }), stderr="",
+        )
+        result = writer.apply(proposal, reviewed_head=HEAD, reviewed_blob=BLOB)
+        self.assertEqual(result, COMMIT)
+        self.assertEqual(run.call_args.args[0], ["gh", "api", "graphql", "--input", "-"])
+        payload = json.loads(run.call_args.kwargs["input"])
+        self.assertEqual(payload["variables"]["input"]["expectedHeadOid"], HEAD)
+        self.assertEqual(payload["variables"]["input"]["branch"]["branchName"],
+                         writer.BRANCH)
+        self.assertEqual(base64.b64decode(
+            payload["variables"]["input"]["fileChanges"]["additions"][0]["contents"]
+        ), b"{}\n")
+
+    @patch.object(writer.subprocess, "run")
+    @patch.object(writer, "fetch_canonical_head", return_value=HEAD)
+    def test_no_write_on_review_mismatch_or_head_drift(self, head, run):
+        proposal = writer.PreparedLedger(HEAD, BLOB, SLUG,
+                                         "POST_IDENTITY_READY", "{}")
+        with self.assertRaisesRegex(writer.LedgerWriteHold, "REVIEW_PIN_MISMATCH"):
+            writer.apply(proposal, reviewed_head=COMMIT, reviewed_blob=BLOB)
+        run.assert_not_called()
+        head.return_value = COMMIT
+        with self.assertRaisesRegex(writer.LedgerWriteHold, "HEAD_DRIFT"):
+            writer.apply(proposal, reviewed_head=HEAD, reviewed_blob=BLOB)
+        run.assert_not_called()
+
+    @patch.object(writer.subprocess, "run")
+    @patch.object(writer, "fetch_canonical_head", return_value=HEAD)
+    def test_graphql_rejection_is_fail_closed_secret_safe(self, head, run):
+        proposal = writer.PreparedLedger(HEAD, BLOB, SLUG,
+                                         "POST_IDENTITY_READY", "{}")
+        run.return_value = subprocess.CompletedProcess(
+            [], 0, stdout=json.dumps({
+                "errors": [{"message": "token=private-credential"}]
+            }), stderr="secret",
+        )
+        with self.assertRaisesRegex(writer.LedgerWriteHold,
+                                    "^HOLD_CANONICAL_ATOMIC_WRITE_REJECTED$"):
+            writer.apply(proposal, reviewed_head=HEAD, reviewed_blob=BLOB)
+
+    @patch.object(writer, "prepare")
+    @patch.object(writer, "apply")
+    def test_default_cli_does_not_apply(self, apply, prepare):
+        prepare.return_value = writer.PreparedLedger(
+            HEAD, BLOB, SLUG, "EXISTING_VERIFIED", "{}")
+        self.assertEqual(writer.main(["--slug", SLUG]), 0)
+        apply.assert_not_called()
+
+
+if __name__ == "__main__":
+    unittest.main()
