@@ -116,6 +116,21 @@ def check_accounting_e2e_with_authenticated_factory(
     wrapper does not update the canonical ledger or authorize packaging.
     """
     from scripts.accounting_e2e_gate import check_accounting_e2e_gate
+    from scripts.market_fit_review_reader import assess_reviewed_market_fit
+
+    # A queue-owned MARKET_FIT_PASS flag is not a review attestation.
+    # The original Factory source SHA may predate market-fit.json, so
+    # authenticate the exact one-file descendant review commit separately.
+    # Never substitute a local file or infer approval from a job boolean.
+    if isinstance(job, dict) and job.get("slug") in SPECS:
+        try:
+            review_status, _ = assess_reviewed_market_fit(job)
+        except Exception:
+            raise AccountingImmutableReadHold(
+                "HOLD_ACCOUNTING_MARKET_FIT_REVIEW_UNAVAILABLE"
+            ) from None
+        _require(review_status == "MARKET_FIT_PASS",
+                 "HOLD_ACCOUNTING_MARKET_FIT_REVIEW_UNVERIFIED")
 
     return check_accounting_e2e_gate(
         job, phase=phase,
