@@ -230,6 +230,7 @@ def stage_bundle(source:Path,target:Path,expected_run_sha:str|None=None,*,accoun
             "factory_head_sha", "expected_head_sha", "request_id",
             "product_type", "source_factory", "source_branch", "display_name",
             "prebuilt_exe_sha256", "claimed_store_id",
+            "claimed_package_family_name", "claimed_package_sid",
         )
         if any(other.get(key)!=info.get(key) for key in provenance_fields):
             fail("existing target package or provenance changed")
