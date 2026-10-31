@@ -11,6 +11,8 @@
 
 No candidate can enter PRE_IDENTITY before immutable Factory promotion, exact request_id/source_sha, and independently verified MARKET_FIT_PASS.
 
+The authenticated accounting wrapper also calls the existing reviewed-market-fit reader before any accounting Factory-file reads. It requires a separately pinned, single-file descendant `market_fit_review_commit_sha`, verifies the source/review ancestry and exact review file, and independently evaluates the reviewed evidence. A queue field `market_fit_gate=MARKET_FIT_PASS` or `market_fit_evidence_verified=true` is not sufficient. Missing, conflicting, or unavailable review evidence is a fixed-code HOLD. This additional check does not certify an Actions fixture result or promote a candidate.
+
 ## Required immutable files
 
 At the promoted exact source_sha, an authenticated Factory reader must fetch:
