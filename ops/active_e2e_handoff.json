@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-31T18:42:54.360Z",
+  "updated_at_utc": "2026-10-31T19:44:07.511Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -382,6 +382,21 @@
       "checker_pass": false,
       "remote_backlog_contract": "verified-msix-local-qa-* / 30-day retention",
       "capacity": "20 packages / 2 GiB; overflow HOLD_LOCAL_CAPACITY"
+    },
+    "local_pull_queue_preflight_guard": {
+      "draft_pr": 105,
+      "branch": "codex/e2e-local-pull-queue-preflight-20261101-0436",
+      "head_sha": "876cc0380209d65ac27b3822ea1ff203ed57e6e8",
+      "base_pr": 104,
+      "base_sha": "585cf0b717963088b82e8ead71f21c673bf92c8d",
+      "ci_run_id": 41235514375,
+      "ci_conclusion": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+      "scope": "REJECT_DUPLICATE_JSON_KEYS_NONFINITE_BOOLEAN_SCHEMA_OR_COUNT_DUPLICATE_REQUEST_OR_PACKAGE__VERIFY_ALL_ARTIFACT_ITEMS_BEFORE_FIRST_STAGE__PRESERVE_PER_ITEM_FACTORY_BUILD_HEAD",
+      "physical_local_pull": "NOT_PERFORMED",
+      "checker": "NOT_PERFORMED_ON_REAL_PRODUCT",
+      "real_msix": "NOT_OBSERVED",
+      "integration_status": "STACKED_DRAFT_NOT_MERGED",
+      "store_submission": "NOT_PERFORMED"
     }
   },
   "policy": {
@@ -868,7 +883,10 @@
     "post_identity_complete_request_binding_ci_pass": true,
     "three_d_local_pull_build_head_guard_code_committed": true,
     "three_d_local_pull_build_head_guard_ci_pass": true,
-    "three_d_local_pull_physical_pass": false
+    "three_d_local_pull_physical_pass": false,
+    "local_pull_queue_preflight_guard_code_committed": true,
+    "local_pull_queue_preflight_guard_ci_pass": true,
+    "local_pull_queue_preflight_physical_pass": false
   },
   "user_id_requests": {
     "schema_version": 1,
@@ -2459,11 +2477,11 @@
     "local_execution_this_run": "NOT_PERFORMED"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-31T18:42:54.360Z",
-    "scope": "GAME_3D_LOCAL_PULL_FACTORY_BUILD_HEAD_AND_EXACT_PACKAGE_PROVENANCE_PR104_WINDOWS_UBUNTU_CI_PASS__NO_REAL_MSIX_OR_LOCAL_EXECUTION__ACCOUNTING_4_HOLD",
+    "observed_at_utc": "2026-10-31T19:44:07.511Z",
+    "scope": "LOCAL_QA_ARTIFACT_QUEUE_STRICT_PARSE_AND_PRESTAGE_VALIDATION_PR105_WINDOWS_UBUNTU_CI_PASS__3D_BUILD_HEAD_PR104_PRESERVED__NO_REAL_MSIX_OR_LOCAL_EXECUTION__ACCOUNTING_4_HOLD",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
-    "canonical_previous_blob_sha": "ba1ff85aa67189c965664840a9d178dcb071c63b",
+    "canonical_previous_blob_sha": "78613e49977714edb53c39a41a1c70d564c696a8",
     "focus_return_commit_sha": "8a7139375524830bf823469526837259266172be",
     "focus_store_id": "9P6452C61N7B",
     "focus_source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
@@ -2480,14 +2498,14 @@
     "cas": "NO_NEW_CAS_THIS_EXECUTION",
     "package": "NO_NEW_REAL_SIGNED_MSIX__VERSION_ASSET_MARKET_FIT_HOLD",
     "github_backlog": "NO_NEW_REAL_MSIX",
-    "local_pull": "PR104_3D_BUILD_HEAD_AND_PFN_SID_LOCAL_HASH_OFFLINE_FIX_CI_PASS__PHYSICAL_WINDOWS_NOT_RUN",
-    "checker": "PR103_3D_CHECKER_ROUTE_OFFLINE_CI_PASS__PR104_LOCAL_PULL_PATH_CI_PASS__PHYSICAL_WINDOWS_CHECKER_NOT_RUN",
+    "local_pull": "PR105_QUEUE_DUPLICATE_JSON_BOOLEAN_SCHEMA_NONFINITE_DUPLICATE_JOB_AND_ATOMIC_PER_ARTIFACT_PREFLIGHT_CI_PASS__PR104_3D_BUILD_HEAD_PROVENANCE_PRESERVED__PHYSICAL_WINDOWS_NOT_RUN",
+    "checker": "PR103_GAME_3D_CHECKER_CI_PASS__PR104_3D_LOCAL_PULL_CI_PASS__PR105_QUEUE_PREFLIGHT_CI_PASS__NO_REAL_MSIX_CHECKER_EXECUTION",
     "gui_install_qa": "NOT_RUN",
     "store_submission": 0,
     "success_count_cloud_verified": 2,
     "remaining_app_identity_returns": 2,
     "next_resume_index": 3,
-    "next_action": "REVIEW_STACKED_PR104_EXACT_HEAD__PHYSICAL_WINDOWS_3D_LOCAL_PULL_AND_CHECKER_PENDING_REAL_APPROVED_MSIX__TEXT_IMAGE_IDENTITY_RETURN_PENDING__SIGNAL_GDK_CAS_APPROVAL_HOLD__ACCOUNTING_JP_US_MARKET_FIT_TAX_COMPLIANCE_HOLD",
+    "next_action": "REVIEW_STACKED_PR105_EXACT_HEAD__AWAIT_SIGNED_APPROVED_REAL_MSIX_AND_PHYSICAL_WINDOWS_PULL_CHECKER_GUI_QA__TEXT_IMAGE_IDENTITY_RETURN_PENDING__SIGNAL_GDK_CAS_APPROVAL_HOLD__ACCOUNTING_PRIMARY_SOURCE_REVIEW_REQUIRED",
     "post_identity_reconcile_pr": 49,
     "post_identity_reconcile_ci_run": 40851883814,
     "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU",
@@ -2540,7 +2558,7 @@
     "mixed_local_preflight_ci": "SUCCESS_AT_EXACT_HEAD",
     "mixed_local_preflight_capability": "FOCUS_POST_SKIP__THREE_PRE_EXACT_SOURCE_AND_EXE_VERIFICATION__SHARED_LOCK__NO_BROWSER_CAS",
     "mixed_local_preflight_execution": "NOT_RUN_ON_USER_WINDOWS",
-    "canonical_head_before_write": "1d3d90dba404a410b7da14b78698e3af24744351",
+    "canonical_head_before_write": "e854f4a38b3edb431f9db04c464c22356caedeb3",
     "latest_remote_recheck": {
       "verified_at_utc": "2026-10-31T17:39:59.683Z",
       "focus": "POST_IDENTITY_READY__SOURCE_COMPARE_AHEAD_1_ONLY_APPROVED_IDENTITY_FILE__STORE_9P6452C61N7B__VERSION_HOLD",
@@ -3197,6 +3215,27 @@
       ],
       "country_scope": "JP_JAPAN_ONLY__US_UNITED_STATES_ONLY__NOT_INDEPENDENTLY_STORE_VERIFIED",
       "package_gate": "MARKET_FIT_HOLD__TAX_ASSET_COMPLIANCE_HOLD__NO_PROMOTION_OR_MSIX"
+    },
+    "local_qa_queue_preflight": {
+      "draft_pr": 105,
+      "exact_head_sha": "876cc0380209d65ac27b3822ea1ff203ed57e6e8",
+      "ci_run_id": 41235514375,
+      "ci": "SUCCESS_WINDOWS_UBUNTU",
+      "tests": "DUPLICATE_ROOT_AND_NESTED_JSON_KEYS_NONFINITE_BOOLEAN_SCHEMA_AND_COUNT_DUPLICATE_PACKAGE_INVALID_SECOND_ITEM_NO_PARTIAL_STAGE",
+      "source_3d_build_head": "PER_ITEM_EXACT_HEAD_PRESERVED",
+      "physical_windows": "NOT_RUN",
+      "store_submission": "NOT_PERFORMED"
+    },
+    "accounting_primary_source_review": {
+      "observed_at_utc": "2026-10-31T19:44:07.511Z",
+      "jp_source": "https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/invoice-review/index.htm",
+      "jp_finding": "2026_REFORM_INVOICE_TRANSITION_70_PERCENT_FROM_OCTOBER_2026__IMPLEMENTATION_APPLICABILITY_NOT_VERIFIED",
+      "jp_recent_updates": "https://www.nta.go.jp/information/news/news.htm",
+      "us_source": "https://www.irs.gov/irb/2026-39_irb",
+      "us_finding": "2026_IRB_39_ACCOUNTING_METHOD_CHANGE_PROCEDURE_AND_FORM_3115_REVIEW_REQUIRED",
+      "us_reference": "https://www.irs.gov/forms-pubs/about-form-3115",
+      "status": "REVIEW_REQUIRED_NO_ACCOUNTING_PROMOTION",
+      "note": "Primary-source discovery only; no authenticated product fixture/tax profile alignment or current-law certification."
     }
   },
   "post_identity_pipeline": {
