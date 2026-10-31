@@ -142,6 +142,57 @@ class LocalPullTests(unittest.TestCase):
                 pull(self.root/"inbox")
 
 
+    def test_queue_rejects_ambiguous_json_before_staging(self):
+        # Both outer and nested duplicate keys must be rejected, as must NaN.
+        originals=json.dumps(self.q)
+        variants=[
+            originals.replace('"schema_version": 1',
+                              '"schema_version": 1, "schema_version": 1',1),
+            originals.replace('"submit_allowed": false',
+                              '"submit_allowed": false, "submit_allowed": false',1),
+            originals.replace('"intake_count": 1', '"intake_count": NaN',1),
+        ]
+        for raw in variants:
+            def fake(*args):
+                result=self.fake_gh(*args)
+                if args[0]=="run":
+                    (Path(args[-1])/"queue.json").write_text(raw,encoding="utf-8")
+                return result
+            with self.subTest(raw=raw[:80]):
+                with patch("scripts.local_handoff_pull.gh",side_effect=fake):
+                    with self.assertRaisesRegex(ValueError,"Duplicate|Non-finite"):
+                        pull(self.root/"inbox")
+                self.assertEqual(list((self.root/"inbox").iterdir()),[])
+
+    def test_queue_rejects_boolean_schema_and_count(self):
+        for field in ("schema_version","intake_count"):
+            original=self.q[field]
+            self.q[field]=True
+            with self.subTest(field=field):
+                with patch("scripts.local_handoff_pull.gh",side_effect=self.fake_gh):
+                    with self.assertRaisesRegex(ValueError,"Wrong queue schema|Invalid queue count"):
+                        pull(self.root/"inbox")
+                self.assertEqual(list((self.root/"inbox").iterdir()),[])
+            self.q[field]=original
+
+    def test_duplicate_package_and_request_rejected_before_staging(self):
+        self.q["intake_count"]=2
+        self.q["items"].append(dict(self.q["items"][0]))
+        with patch("scripts.local_handoff_pull.gh",side_effect=self.fake_gh):
+            with self.assertRaisesRegex(ValueError,"Duplicate local QA package"):
+                pull(self.root/"inbox")
+        self.assertEqual(list((self.root/"inbox").iterdir()),[])
+
+    def test_invalid_second_item_does_not_stage_first(self):
+        second=dict(self.q["items"][0])
+        second["slug"]="other-app"
+        self.q["items"].append(second)
+        self.q["intake_count"]=2
+        with patch("scripts.local_handoff_pull.gh",side_effect=self.fake_gh):
+            with self.assertRaisesRegex(ValueError,"Missing source package directory"):
+                pull(self.root/"inbox")
+        self.assertEqual(list((self.root/"inbox").iterdir()),[])
+
     def three_d_fixture(self):
         """A real byte-level 3D QA bundle with distinct source and build HEADs."""
         bundle=self.fixture/"factory-3d-qa"
