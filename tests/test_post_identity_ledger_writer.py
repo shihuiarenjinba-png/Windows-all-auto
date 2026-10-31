@@ -315,7 +315,7 @@ class CanonicalLedgerWriterTests(unittest.TestCase):
         # HEAD/blob alone pin the old ledger, not the authenticated proposal.
         # A changed Factory market-fit review could change proposal bytes
         # without changing the canonical source HEAD/blob.
-        original = json.dumps(ledger()) + "\\n"
+        original = json.dumps(ledger()) + "\n"
         proposal = writer.PreparedLedger(HEAD, BLOB, SLUG,
                                          "POST_IDENTITY_READY", original)
         digest = writer._proposal_sha256(original)
