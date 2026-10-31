@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-31T23:12:13.216Z",
+  "updated_at_utc": "2026-10-31T23:13:36.361Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -2501,7 +2501,7 @@
     "local_execution_this_run": "NOT_PERFORMED"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-31T23:12:13.216Z",
+    "observed_at_utc": "2026-10-31T23:13:36.361Z",
     "scope": "PR109_ACCOUNTING_BEGINNER_HUMAN_USABILITY_CONTRACT_EXACT_HEAD_WINDOWS_UBUNTU_CI_PASS__PR108_LOCAL_PULL_PREFLIGHT_CI_PASS__PHYSICAL_E2E_HOLD",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
@@ -3282,7 +3282,8 @@
     "accounting_human_usability_ci_run": 41251457383,
     "accounting_human_usability_ci": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
     "accounting_human_usability_physical": "NOT_PERFORMED",
-    "accounting_tax_primary_source_review": "NTA_2026_REFORM_AND_IRS_2025_PUB463_946_READ_ONLY__REVIEW_REQUIRED"
+    "accounting_tax_primary_source_review": "NTA_2026_REFORM_AND_IRS_2025_PUB463_946_READ_ONLY__REVIEW_REQUIRED",
+    "identity_return_file_recheck": "FOCUS_LEDGER_PRISM_PRESENT_REQUEST_SOURCE_MATCH__TEXT_IMAGE_SIGNAL_404__NO_NEW_CAS_OR_VERSION"
   },
   "post_identity_pipeline": {
     "schema_version": 1,
@@ -3977,6 +3978,20 @@
       "local_windows": "NOT_ACCESSED",
       "partner_center": "NOT_ACCESSED",
       "cas": "NOT_PERFORMED",
+      "store_submission": "NOT_PERFORMED"
+    },
+    "identity_return_file_recheck": {
+      "checked_at_utc": "2026-10-31T23:13:36.361Z",
+      "method": "AUTHENTICATED_GITHUB_CONTENTS_EXACT_SOURCE_BRANCH_READ_ONLY",
+      "focus_session_desk": "PRESENT_REQUEST_AND_SOURCE_MATCH__NO_VERSION",
+      "file_integrity_ledger": "PRESENT_REQUEST_AND_SOURCE_MATCH__NO_VERSION",
+      "offline_text_diff_desk": "404_NOT_RETURNED",
+      "offline_image_inventory_desk": "404_NOT_RETURNED",
+      "prism_route_3d": "PRESENT_REQUEST_AND_SOURCE_MATCH__NO_VERSION",
+      "signal_sprint": "404_NOT_RETURNED__USER_PROVIDED_IDENTITY_REFERENCE_ONLY",
+      "local_windows": "NOT_RUN",
+      "new_cas": "NOT_PERFORMED",
+      "real_msix": "NOT_OBSERVED",
       "store_submission": "NOT_PERFORMED"
     }
   },
