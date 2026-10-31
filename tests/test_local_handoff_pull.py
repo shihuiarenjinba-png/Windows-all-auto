@@ -193,6 +193,47 @@ class LocalPullTests(unittest.TestCase):
                 pull(self.root/"inbox")
         self.assertEqual(list((self.root/"inbox").iterdir()),[])
 
+    def fake_two_item_gh(self, *args):
+        """Two valid distinct packages in one authenticated artifact."""
+        result=self.fake_gh(*args)
+        if args[0]=="run":
+            root=Path(args[-1])
+            folder=root/"packages"/("sample-two-"+self.checksum[:12])
+            folder.mkdir()
+            for entry in (self.fixture/"factory-qa").iterdir():
+                shutil.copyfile(entry,folder/entry.name)
+            meta=json.loads((folder/"handoff.json").read_text())
+            meta["slug"]="sample-two"
+            (folder/"handoff.json").write_text(json.dumps(meta))
+            queue=json.loads((root/"queue.json").read_text())
+            queue["items"].append({**meta,"store_id":None,"submit_allowed":False})
+            queue["intake_count"]=2
+            (root/"queue.json").write_text(json.dumps(queue))
+        return result
+
+    def test_capacity_count_is_checked_for_entire_artifact_before_stage(self):
+        # With room for only one package, neither of two may be admitted.
+        with (patch("scripts.local_handoff_pull.gh",side_effect=self.fake_two_item_gh),
+              patch("scripts.local_handoff_pull.MAX_QUEUED",1)):
+            with self.assertRaisesRegex(ValueError,"inbox full"):
+                pull(self.root/"inbox")
+        self.assertEqual(list((self.root/"inbox").iterdir()),[])
+
+    def test_capacity_bytes_is_checked_for_entire_artifact_before_stage(self):
+        # Each item fits individually, but their sum exceeds the quota.
+        package_size=(self.fixture/"factory-qa"/"package.msix").stat().st_size
+        with (patch("scripts.local_handoff_pull.gh",side_effect=self.fake_two_item_gh),
+              patch("scripts.local_handoff_pull.MAX_QUEUED_BYTES",package_size+1)):
+            with self.assertRaisesRegex(ValueError,"exceed 2GiB"):
+                pull(self.root/"inbox")
+        self.assertEqual(list((self.root/"inbox").iterdir()),[])
+
+    def test_two_item_capacity_preflight_allows_exact_idempotent_replay(self):
+        with patch("scripts.local_handoff_pull.gh",side_effect=self.fake_two_item_gh):
+            self.assertEqual(pull(self.root/"inbox")["new_packages"],2)
+            self.assertEqual(pull(self.root/"inbox")["new_packages"],0)
+        self.assertEqual(len(list(self.root.joinpath("inbox").rglob("package.msix"))),2)
+
     def three_d_fixture(self):
         """A real byte-level 3D QA bundle with distinct source and build HEADs."""
         bundle=self.fixture/"factory-3d-qa"
