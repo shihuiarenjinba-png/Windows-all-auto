@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-31T21:39:21Z",
+  "updated_at_utc": "2026-10-31T21:40:02Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -3003,6 +3003,23 @@
         "offline_text_diff": "GITHUB_APPROVED_FILE_404",
         "offline_image_inventory": "GITHUB_APPROVED_FILE_404"
       }
+    },
+    "accounting_primary_source_review": {
+      "status": "REVIEW_REQUIRED_BEFORE_ACCOUNTING_PRE_IDENTITY_OR_PACKAGE__NO_CANDIDATE_PROMOTION",
+      "jp": {
+        "primary_source": "https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/invoice-review/index.htm",
+        "observed_rule": "2026-10-01 start taxable periods: transitional input-credit 70 percent for 2 years, then 50 percent, then 30 percent under published rules",
+        "impact": "REVIEW_JP_INVOICE_TRANSITION_FIXTURES_IF_PRODUCT_SUPPORTS_INVOICE_CREDIT__DO_NOT_HARDCODE_OLD_50_PERCENT",
+        "implementation_verified": false
+      },
+      "us": {
+        "primary_source": "https://www.irs.gov/newsroom/treasury-irs-issue-guidance-on-the-additional-first-year-depreciation-deduction-amended-as-part-of-the-one-big-beautiful-bill",
+        "published": "2026-01-14",
+        "observed_rule": "Notice 2026-11: eligible acquired-after-2025-01-19 property may qualify for 100 percent additional first-year depreciation",
+        "impact": "REVIEW_US_ASSET_PROFILE_AND_SPECIAL_RULE_REVIEW_REQUIRED__DO_NOT_ASSUME_ALL_ASSETS_ELIGIBLE",
+        "implementation_verified": false
+      },
+      "note": "Primary-source page review only; no exact Factory source parity or authenticated Actions fixture attestation; accounting 4 SKU PRE_IDENTITY/PACKAGE gates remain HOLD"
     }
   },
   "post_identity_pipeline": {
