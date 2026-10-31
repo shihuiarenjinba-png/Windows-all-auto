@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-31T18:42:36.038Z",
+  "updated_at_utc": "2026-10-31T18:42:54.360Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -2459,7 +2459,7 @@
     "local_execution_this_run": "NOT_PERFORMED"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-31T18:42:36.038Z",
+    "observed_at_utc": "2026-10-31T18:42:54.360Z",
     "scope": "GAME_3D_LOCAL_PULL_FACTORY_BUILD_HEAD_AND_EXACT_PACKAGE_PROVENANCE_PR104_WINDOWS_UBUNTU_CI_PASS__NO_REAL_MSIX_OR_LOCAL_EXECUTION__ACCOUNTING_4_HOLD",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
@@ -3163,6 +3163,40 @@
       "observation": "NTA_2026_INVOICE_TRANSITION_AND_OCT30_ETAX_2027_DRAFT_UPDATES_FOUND__IRS_2025_PUB334_AND_PUB538_REVIEWED__NO_EXACT_FACTORY_COMPLIANCE_DIFF_VERIFIED",
       "status": "REVIEW_REQUIRED__NO_ACCOUNTING_PACKAGE_GATE_PROMOTION",
       "products": "FOUR_ACCOUNTING_COUNTRY_SKUS_REMAIN_MARKET_FIT_AND_COMPLIANCE_HOLD"
+    },
+    "accounting_candidate_recheck_20261101": {
+      "checked_at_utc": "2026-10-31T18:42:54.360Z",
+      "source_repository": "shihuiarenjinba-png/AI-App-Factory",
+      "candidates": [
+        {
+          "sku": "jp-freelance-ledger",
+          "pr": 59,
+          "head_sha": "83954f32a91a5f442a74c0fe7af0b64b72907ce2",
+          "state": "DRAFT_NOT_PROMOTED"
+        },
+        {
+          "sku": "us-freelance-ledger",
+          "pr": 60,
+          "head_sha": "dc96e9b657084f723a03497ea386151eb7201c20",
+          "state": "DRAFT_NOT_PROMOTED"
+        },
+        {
+          "sku": "jp-bookkeeping-desk",
+          "pr": 61,
+          "head_sha": "b5ad50925f94e450d6e16c72aa5f4d2ffcf1fbdf",
+          "state": "DRAFT_NOT_PROMOTED",
+          "change": "AHEAD_4_FROM_PREVIOUS_LEDGER_HEAD__CORE_AND_RECONCILIATION_TESTS",
+          "ci": "TEST_BUILD_WINDOWS_CONTRACTS_SUCCESS__WINDOWS_EXE_SMOKE_SKIPPED"
+        },
+        {
+          "sku": "us-bookkeeping-desk",
+          "pr": 62,
+          "head_sha": "509acefe40dc42504ba062fb9d8d4192c1455164",
+          "state": "DRAFT_NOT_PROMOTED"
+        }
+      ],
+      "country_scope": "JP_JAPAN_ONLY__US_UNITED_STATES_ONLY__NOT_INDEPENDENTLY_STORE_VERIFIED",
+      "package_gate": "MARKET_FIT_HOLD__TAX_ASSET_COMPLIANCE_HOLD__NO_PROMOTION_OR_MSIX"
     }
   },
   "post_identity_pipeline": {
