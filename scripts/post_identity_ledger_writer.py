@@ -201,6 +201,17 @@ def _assert_only_target_records_changed(original: dict, after: dict,
             _require((field in old) == (field in new)
                      and old.get(field) == new.get(field), code)
 
+    def require_only_reviewed_changes(old: dict, new: dict,
+                                      allowed: frozenset[str]) -> None:
+        # The target is not a free-form mutation slot. A future adapter must
+        # not inject a new Store, package, QA or sales PASS field under a name
+        # that was not anticipated by the downstream blacklist.
+        for field in set(old) | set(new):
+            if field not in allowed:
+                _require((field in old) == (field in new)
+                         and old.get(field) == new.get(field),
+                         "HOLD_CANONICAL_UNREVIEWED_TARGET_FIELD_MUTATION")
+
     require_pinned_binding(job, current_jobs[index], (
         "product_type", "display_name", "slug", "request_id",
         "source_repository", "source_branch", "source_sha",
@@ -226,12 +237,19 @@ def _assert_only_target_records_changed(original: dict, after: dict,
              and current_jobs[index].get("package_version_gate") in (None, "HOLD")
              and current_jobs[index].get("identity_cas_allowed") is False,
              downstream_code)
+    require_only_reviewed_changes(job, current_jobs[index], frozenset({
+        "status", "identity_status", "identity_return_commit_sha",
+        "identity_store_id", "identity_pfn", "identity_cas_allowed",
+        "package_version_gate", "next_action", "market_fit_gate",
+        "market_fit_reason", "market_fit_evidence_verified",
+    }))
     restored = copy.deepcopy(after_cohorts)
     restored[collection][index] = copy.deepcopy(job)
     _require(restored == before_cohorts, code)
 
     def check_aux(section: str, list_key: str, identity_key: str,
-                  identity_value: str, pinned_fields: tuple[str, ...]) -> None:
+                  identity_value: str, pinned_fields: tuple[str, ...],
+                  allowed_changes: frozenset[str]) -> None:
         old = original.get(section)
         new = after.get(section)
         _require(isinstance(old, dict) and isinstance(new, dict), code)
@@ -249,6 +267,9 @@ def _assert_only_target_records_changed(original: dict, after: dict,
                  code)
         require_pinned_binding(old_items[old_positions[0]],
                                new_items[new_positions[0]], pinned_fields)
+        require_only_reviewed_changes(old_items[old_positions[0]],
+                                      new_items[new_positions[0]],
+                                      allowed_changes)
         candidate = copy.deepcopy(new)
         candidate[list_key][old_positions[0]] = copy.deepcopy(
             old_items[old_positions[0]]
@@ -263,12 +284,13 @@ def _assert_only_target_records_changed(original: dict, after: dict,
         "request_id", "product_name", "repo", "source_branch", "source_sha",
         "identity_return_target", "product_type", "slug",
         "registration_type", "partner_center_selection",
-    ))
+    ), frozenset({"status", "requested_fields", "next_gate",
+                  "allow_local_product_creation"}))
     check_aux("registration_router", "entries", "product", display_name, (
         "product", "repository", "request_id", "slug", "product_type",
         "source_branch", "source_sha", "identity_return_target",
         "registration_type", "partner_center_selection",
-    ))
+    ), frozenset({"identity_status", "next_action"}))
     check_aux("post_identity_pipeline", "products", "request_id", request_id, (
         "product", "lane", "request_id", "source_repository",
         "source_branch", "source_sha", "identity_return_target",
@@ -276,7 +298,11 @@ def _assert_only_target_records_changed(original: dict, after: dict,
         "github_backlog_receipt", "local_pull_receipt",
         "checker_receipt", "gui_install_qa_receipt",
         "store_submission", "submission_draft_opened",
-    ))
+    ), frozenset({
+        "state", "identity_status", "identity_return_commit_sha",
+        "identity_store_id", "identity_pfn", "market_fit_gate",
+        "market_fit_reason", "market_fit_evidence_verified", "next_action",
+    }))
 
 
 def prepare(slug: str) -> PreparedLedger:
