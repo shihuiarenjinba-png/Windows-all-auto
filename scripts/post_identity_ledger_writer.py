@@ -95,8 +95,26 @@ def _git_blob_sha(content: str) -> str:
 
 
 def _proposal_sha256(content: str) -> str:
-    """Bind explicit operator review to the exact proposed ledger bytes."""
-    return hashlib.sha256(content.encode("utf-8")).hexdigest()
+    """Pin all substantive proposal fields, excluding volatile audit time.
+
+    prepare() regenerates updated_at_utc on each invocation. Hashing raw JSON
+    would make a reviewed proposal impossible to apply in a later process.
+    Only that timestamp is excluded; any Identity, gate or routing change
+    invalidates the operator's reviewed digest.
+    """
+    try:
+        data = json.loads(content, object_pairs_hook=_unique_pairs,
+                          parse_constant=_reject_constant,
+                          parse_float=_finite_float)
+    except LedgerWriteHold:
+        raise
+    except (ValueError, TypeError) as exc:
+        raise LedgerWriteHold("HOLD_CANONICAL_PROPOSAL_INVALID") from exc
+    _require(isinstance(data, dict), "HOLD_CANONICAL_PROPOSAL_INVALID")
+    data.pop("updated_at_utc", None)
+    normalized = json.dumps(data, ensure_ascii=False, sort_keys=True,
+                            separators=(",", ":"), allow_nan=False)
+    return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
 
 
 def fetch_canonical_head() -> str:
