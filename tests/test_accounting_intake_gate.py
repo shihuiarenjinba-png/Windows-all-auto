@@ -175,9 +175,76 @@ class AccountingIntakeTests(unittest.TestCase):
             )
         self.assertFalse(self.queue.exists())
 
+    def test_accounting_request_id_cannot_be_relabelled_as_ordinary_app(self):
+        # A partial alias must not skip the accounting PACKAGE attestor.
+        self.meta["slug"] = "ordinary-app"
+        self.write()
+        with self.assertRaisesRegex(ValueError, "HOLD_ACCOUNTING_INTAKE_SKU_ALIAS"):
+            stage_bundle(self.source, self.queue, BUILD_SHA)
+        self.assertFalse(self.queue.exists())
+
+    def test_accounting_alias_rejected_from_return_target_branch_or_display(self):
+        for field, value in (
+            ("identity_return_target",
+             "products/jp-freelance-ledger/store/approved-identity.json"),
+            ("source_branch", "codex/app-jp-freelance-ledger-release"),
+            ("display_name", "JP Freelance Ledger"),
+        ):
+            with self.subTest(field=field):
+                self.meta["slug"] = "ordinary-app"
+                self.meta["request_id"] = "app-ordinary-app-" + SOURCE_SHA[:12]
+                self.meta["source_branch"] = "codex/ordinary-app"
+                self.meta["display_name"] = "Ordinary App"
+                self.meta.pop("identity_return_target", None)
+                self.meta[field] = value
+                self.write()
+                with self.assertRaisesRegex(ValueError, "HOLD_ACCOUNTING_INTAKE_SKU_ALIAS"):
+                    stage_bundle(self.source, self.queue, BUILD_SHA)
+                self.assertFalse(self.queue.exists())
+
+    def test_accounting_cross_lane_alias_rejected_before_queue(self):
+        self.meta["slug"] = "ordinary-game"
+        self.meta["request_id"] = "game-ordinary-game-" + SOURCE_SHA[:12]
+        self.meta["source_repository"] = (
+            "https://github.com/shihuiarenjinba-png/AI-Game-Factory"
+        )
+        self.meta["type"] = "game"
+        self.meta["product_type"] = "GAME"
+        self.meta["identity_return_target"] = (
+            "products/jp-freelance-ledger/store/approved-identity.json"
+        )
+        self.write()
+        with self.assertRaisesRegex(ValueError, "HOLD_ACCOUNTING_INTAKE_SKU_ALIAS"):
+            stage_bundle(self.source, self.queue, BUILD_SHA)
+        self.assertFalse(self.queue.exists())
+
+    def test_duplicate_handoff_json_keys_fail_closed(self):
+        raw = json.dumps(self.meta)
+        (self.source / "handoff.json").write_text(
+            raw[:-1] + ', "slug": "ordinary-app"}', encoding="utf-8"
+        )
+        with self.assertRaisesRegex(ValueError, "duplicate handoff JSON key"):
+            stage_bundle(self.source, self.queue, BUILD_SHA)
+        self.assertFalse(self.queue.exists())
+
+    def test_boolean_schema_version_and_nonfinite_json_fail_closed(self):
+        self.meta["schema_version"] = True
+        self.write()
+        with self.assertRaisesRegex(ValueError, "wrong schema"):
+            stage_bundle(self.source, self.queue, BUILD_SHA)
+        self.meta["schema_version"] = 1
+        raw = json.dumps(self.meta)
+        (self.source / "handoff.json").write_text(
+            raw[:-1] + ', "extra": NaN}', encoding="utf-8"
+        )
+        with self.assertRaisesRegex(ValueError, "non-finite handoff JSON value"):
+            stage_bundle(self.source, self.queue, BUILD_SHA)
+        self.assertFalse(self.queue.exists())
+
     def test_other_apps_keep_existing_qa_behavior(self):
         self.meta["slug"] = "ordinary-app"
         self.meta["request_id"] = "app-ordinary-app-" + SOURCE_SHA[:12]
+        self.meta["display_name"] = "Ordinary App"
         self.write()
         result = stage_bundle(self.source, self.queue, BUILD_SHA)
         self.assertEqual(result["slug"], "ordinary-app")

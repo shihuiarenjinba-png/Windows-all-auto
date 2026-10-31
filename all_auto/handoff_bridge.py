@@ -10,7 +10,8 @@ import sys
 import xml.etree.ElementTree as ET
 import zipfile
 from .lane_queue import validate_immutable, relative_package_path, check_request_conflict
-from .accounting_intake_gate import require_accounting_package_attestation
+from .accounting_intake_gate import (require_accounting_package_attestation,
+                                     reject_accounting_metadata_alias)
 
 OWNER="shihuiarenjinba-png"
 SLUG=re.compile(r"^[a-z][a-z0-9-]{3,39}$")
@@ -97,6 +98,20 @@ def inspect_msix(package:Path)->dict:
             "bytes":package.stat().st_size,
             "executable_sha256":executable_sha256}
 
+def _unique_handoff_pairs(pairs):
+    """Reject duplicate keys at every JSON depth, not just the outer object."""
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            fail("duplicate handoff JSON key")
+        result[key] = value
+    return result
+
+
+def _reject_nonfinite_handoff(_value):
+    fail("non-finite handoff JSON value")
+
+
 def validate_bundle(directory:Path,expected_run_sha:str|None=None)->dict:
     if directory.is_symlink():fail("bundle directory is a symlink")
     directory=directory.resolve()
@@ -106,8 +121,10 @@ def validate_bundle(directory:Path,expected_run_sha:str|None=None)->dict:
         fail("only handoff.json + package.msix permitted")
     meta_path=directory/"handoff.json"
     if meta_path.stat().st_size>32*1024: fail("oversized handoff metadata")
-    data=json.loads(meta_path.read_text(encoding="utf-8"))
-    if not isinstance(data,dict) or data.get("schema_version")!=1:
+    data=json.loads(meta_path.read_text(encoding="utf-8"),
+                    object_pairs_hook=_unique_handoff_pairs,
+                    parse_constant=_reject_nonfinite_handoff)
+    if type(data) is not dict or type(data.get("schema_version")) is not int or data["schema_version"]!=1:
         fail("wrong schema")
     repo=data.get("source_repository")
     kind=data.get("type")
@@ -119,6 +136,10 @@ def validate_bundle(directory:Path,expected_run_sha:str|None=None)->dict:
     slug=data.get("slug")
     if not isinstance(slug,str) or not SLUG.fullmatch(slug):
         fail("invalid slug")
+    # Check the untrusted *full* handoff before normalization discards fields.
+    # This also rejects cross-lane relabeling that preserves an accounting
+    # Identity-return target or a recognizable accounting Factory branch.
+    reject_accounting_metadata_alias(data)
     sha=data.get("source_sha")
     if not isinstance(sha,str) or not SHA40.fullmatch(sha):
         fail("invalid source commit")
