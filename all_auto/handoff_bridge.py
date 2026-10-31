@@ -179,6 +179,8 @@ def validate_bundle(directory:Path,expected_run_sha:str|None=None)->dict:
     details=inspect_msix(directory/"package.msix")
     if details["sha256"]!=file_hash or details["bytes"]!=data.get("package_bytes"):
         fail("MSIX bytes or hash mismatch")
+    if kind=="3d-game" and data.get("local_package_sha256")!=details["sha256"]:
+        fail("3D local package provenance / actual MSIX hash mismatch")
     if factory_head is not None and kind=="app" and details["executable_sha256"]!=data["prebuilt_exe_sha256"]:
         fail("APP pre-Identity EXE payload SHA mismatch")
     approved=data.get("identity")
@@ -227,7 +229,8 @@ def stage_bundle(source:Path,target:Path,expected_run_sha:str|None=None,*,accoun
         provenance_fields=(
             "source_repository", "source_sha", "slug", "type",
             "package_sha256", "package_bytes", "identity",
-            "factory_head_sha", "expected_head_sha", "request_id",
+            "factory_head_sha", "factory_build_head", "local_package_sha256",
+            "expected_head_sha", "request_id",
             "product_type", "source_factory", "source_branch", "display_name",
             "prebuilt_exe_sha256", "claimed_store_id",
             "claimed_package_family_name", "claimed_package_sid",
