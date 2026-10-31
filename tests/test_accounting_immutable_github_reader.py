@@ -132,5 +132,36 @@ class AccountingImmutableGithubReaderTests(unittest.TestCase):
             read_accounting_immutable_text(REPO, PATH, SHA)
 
 
+    @patch("scripts.accounting_immutable_github_reader.subprocess.run")
+    def test_authenticated_factory_wrapper_still_holds_without_actions(self, run):
+        from scripts.accounting_immutable_github_reader import (
+            check_accounting_e2e_with_authenticated_factory,
+        )
+        from scripts.accounting_e2e_gate import AccountingE2EHold
+
+        job = {
+            "slug": "jp-freelance-ledger", "product_type": "APP",
+            "source_repository": REPO, "source_branch": "codex/reviewed",
+            "source_sha": SHA, "request_id": "app-jp-freelance-ledger-aaaaaaaaaaaa",
+            "identity_return_target":
+                "products/jp-freelance-ledger/store/approved-identity.json",
+            "registration_type": "MSIX_OR_PWA_APP",
+            "partner_center_selection": "MSIX or PWA app",
+            "market_fit_gate": "MARKET_FIT_PASS",
+            "market_fit_evidence_verified": True,
+            "status": "PRE_IDENTITY_READY",
+        }
+        scope = json.dumps({
+            "store_markets": ["JP"], "store_language": "ja-JP",
+            "currency": "JPY", "country_profile": "Japan",
+            "cross_market_sale": False,
+        }).encode("utf-8")
+        run.return_value = response(raw=scope)
+        with self.assertRaisesRegex(AccountingE2EHold, "CI_NOT_VERIFIED"):
+            check_accounting_e2e_with_authenticated_factory(
+                job, phase="PRE_IDENTITY")
+        self.assertEqual(run.call_count, 2)
+
+
 if __name__ == "__main__":
     unittest.main()
