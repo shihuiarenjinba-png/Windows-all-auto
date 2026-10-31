@@ -28,19 +28,24 @@ def ledger():
 def bound_ledger():
     value = ledger()
     value["rotation_cohorts"]["app_jobs"] = [
-        {"slug": SLUG, "request_id": "request-focus", "display_name": "Focus Session Desk"},
+        {"slug": SLUG, "request_id": "request-focus", "display_name": "Focus Session Desk",
+         "source_sha": HEAD, "source_repository": "shihuiarenjinba-png/AI-App-Factory",
+         "identity_return_target": "products/focus-session-desk/store/approved-identity.json"},
         {"slug": "other-product", "request_id": "request-other", "display_name": "Other Product"},
     ]
     value["user_id_requests"]["items"] = [
-        {"request_id": "request-focus", "status": "WAITING_USER_IDENTITY"},
+        {"request_id": "request-focus", "status": "WAITING_USER_IDENTITY",
+         "source_sha": HEAD, "repo": "shihuiarenjinba-png/AI-App-Factory"},
         {"request_id": "request-other", "status": "WAITING_USER_IDENTITY"},
     ]
     value["registration_router"]["entries"] = [
-        {"product": "Focus Session Desk", "identity_status": "WAITING"},
+        {"product": "Focus Session Desk", "identity_status": "WAITING",
+         "registration_type": "MSIX_OR_PWA_APP"},
         {"product": "Other Product", "identity_status": "WAITING"},
     ]
     value["post_identity_pipeline"]["products"] = [
-        {"request_id": "request-focus", "state": "WAITING_IDENTITY_CAPTURE_AND_CAS"},
+        {"request_id": "request-focus", "state": "WAITING_IDENTITY_CAPTURE_AND_CAS",
+         "source_branch": "codex/focus"},
         {"request_id": "request-other", "state": "WAITING_IDENTITY_CAPTURE_AND_CAS"},
     ]
     return value
@@ -170,6 +175,45 @@ class CanonicalLedgerWriterTests(unittest.TestCase):
         with self.assertRaisesRegex(writer.LedgerWriteHold,
                                     "^HOLD_CANONICAL_GATE_ESCALATION$"):
             writer.prepare(SLUG)
+
+    @patch.object(writer, "propose_authenticated_post_identity")
+    @patch.object(writer, "fetch_canonical_ledger")
+    @patch.object(writer, "fetch_canonical_head", return_value=HEAD)
+    def test_prepare_rejects_target_provenance_rebinding(
+            self, head, fetch, propose):
+        cases = (
+            ("rotation_cohorts", "app_jobs", "source_sha", COMMIT),
+            ("user_id_requests", "items", "source_sha", COMMIT),
+            ("registration_router", "entries", "registration_type", "GDK_GAME"),
+            ("post_identity_pipeline", "products", "source_branch", "codex/other"),
+        )
+        for section, collection, field, replacement in cases:
+            with self.subTest(section=section):
+                before = bound_ledger()
+                fetch.return_value = (before, BLOB)
+                after = copy.deepcopy(before)
+                after[section][collection][0][field] = replacement
+                propose.return_value = (after, "POST_IDENTITY_READY")
+                with self.assertRaisesRegex(
+                        writer.LedgerWriteHold,
+                        "^HOLD_CANONICAL_CROSS_PRODUCT_MUTATION$"):
+                    writer.prepare(SLUG)
+
+        # Removing or injecting an immutable binding is also a conflict.
+        for mutation in ("delete", "inject"):
+            with self.subTest(mutation=mutation):
+                before = bound_ledger()
+                fetch.return_value = (before, BLOB)
+                after = copy.deepcopy(before)
+                if mutation == "delete":
+                    del after["rotation_cohorts"]["app_jobs"][0]["source_sha"]
+                else:
+                    after["registration_router"]["entries"][0]["source_sha"] = HEAD
+                propose.return_value = (after, "POST_IDENTITY_READY")
+                with self.assertRaisesRegex(
+                        writer.LedgerWriteHold,
+                        "^HOLD_CANONICAL_CROSS_PRODUCT_MUTATION$"):
+                    writer.prepare(SLUG)
 
     @patch.object(writer, "propose_authenticated_post_identity")
     @patch.object(writer, "fetch_canonical_ledger")
