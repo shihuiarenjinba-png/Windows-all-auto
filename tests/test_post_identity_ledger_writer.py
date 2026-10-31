@@ -30,7 +30,8 @@ def bound_ledger():
     value["rotation_cohorts"]["app_jobs"] = [
         {"slug": SLUG, "request_id": "request-focus", "display_name": "Focus Session Desk",
          "source_sha": HEAD, "source_repository": "shihuiarenjinba-png/AI-App-Factory",
-         "identity_return_target": "products/focus-session-desk/store/approved-identity.json"},
+         "identity_return_target": "products/focus-session-desk/store/approved-identity.json",
+         "identity_cas_allowed": False, "package_version_gate": "HOLD"},
         {"slug": "other-product", "request_id": "request-other", "display_name": "Other Product"},
     ]
     value["user_id_requests"]["items"] = [
@@ -214,6 +215,51 @@ class CanonicalLedgerWriterTests(unittest.TestCase):
                         writer.LedgerWriteHold,
                         "^HOLD_CANONICAL_CROSS_PRODUCT_MUTATION$"):
                     writer.prepare(SLUG)
+
+    @patch.object(writer, "propose_authenticated_post_identity")
+    @patch.object(writer, "fetch_canonical_ledger")
+    @patch.object(writer, "fetch_canonical_head", return_value=HEAD)
+    def test_prepare_rejects_downstream_package_qa_and_store_promotion(
+            self, head, fetch, propose):
+        # Identity reconciliation is not an MSIX, local QA, or Store writer.
+        # Even a bug in the authenticated adapter cannot advance those gates.
+        cases = (
+            ("rotation_cohorts", "app_jobs", "real_msix",
+             "REAL_MSIX_PASS", "DOWNSTREAM_GATE_MUTATION"),
+            ("rotation_cohorts", "app_jobs", "package_version_gate",
+             "APPROVED", "DOWNSTREAM_GATE_MUTATION"),
+            ("rotation_cohorts", "app_jobs", "identity_cas_allowed",
+             True, "DOWNSTREAM_GATE_MUTATION"),
+            ("post_identity_pipeline", "products", "gates",
+             {"real_msix_or_gdk": "PASS"}, "CROSS_PRODUCT_MUTATION"),
+            ("post_identity_pipeline", "products", "store_submission",
+             "PERFORMED", "CROSS_PRODUCT_MUTATION"),
+        )
+        for section, collection, field, value, code in cases:
+            with self.subTest(section=section, field=field):
+                before = bound_ledger()
+                before["post_identity_pipeline"]["products"][0]["gates"] = {
+                    "real_msix_or_gdk": "NOT_BUILT",
+                    "local_pull": "NOT_RUN",
+                    "gui_install_qa": "NOT_RUN",
+                }
+                fetch.return_value = (before, BLOB)
+                after = copy.deepcopy(before)
+                after[section][collection][0][field] = value
+                propose.return_value = (after, "POST_IDENTITY_READY")
+                with self.assertRaisesRegex(
+                        writer.LedgerWriteHold,
+                        "^HOLD_CANONICAL_" + code + "$"):
+                    writer.prepare(SLUG)
+
+        # A missing pre-Identity package gate may become HOLD, never PASS.
+        before = bound_ledger()
+        del before["rotation_cohorts"]["app_jobs"][0]["package_version_gate"]
+        fetch.return_value = (before, BLOB)
+        after = copy.deepcopy(before)
+        after["rotation_cohorts"]["app_jobs"][0]["package_version_gate"] = "HOLD"
+        propose.return_value = (after, "POST_IDENTITY_READY")
+        writer.prepare(SLUG)
 
     @patch.object(writer, "propose_authenticated_post_identity")
     @patch.object(writer, "fetch_canonical_ledger")
