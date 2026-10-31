@@ -37,6 +37,14 @@ An independently authenticated official IRS review must match exact request/sour
 
 PACKAGE phase additionally requires authenticated Partner Center Pricing and availability evidence of exactly one allowed country and all_markets_default=false. Screenshot or user-authored JSON does not prove this. This PR makes no Partner Center writes.
 
+## Reviewed GitHub Actions fixture adapter (Draft)
+
+The read-only `scripts/accounting_actions_fixture_reader.py` provides a concrete authenticated `gh api` reader for the previously abstract Actions fixture trust boundary. It requires a pinned positive `accounting_fixture_run_id` and an **independently reviewed** `reviewed_workflow_blob_sha` passed by the trusted caller (never copied from a queue job). It checks the exact Factory source SHA, branch, request ID, repository, run attempt 1, successful completed run, and the immutable `.github/workflows/accounting-e2e-fixtures.yml` blob SHA. It requires a complete, nonduplicated set of successful GitHub Actions jobs named `accounting-fixture/<slug>/<case>` for every exact required fixture; any missing/failed/extra/cross-product job, unreviewed workflow, changed SHA, or API failure is HOLD. Mocked metadata is **not** product evidence.
+
+**Current state:** the four Factory candidate branches have no reviewed `accounting-e2e-fixtures.yml` and no corresponding pinned per-fixture Actions runs; the independent trust anchor is not approved. Therefore all four accounting SKUs remain HOLD. The adapter does not run or create tests, approve market fit, attest IRS changes, verify Partner Center country selection, or authorize package creation. The APP Factory owner must implement and independently review the workflow and its actual calculation/inference assertions, run it on promoted exact source commits, and provide run IDs plus reviewed workflow blob SHA before this reader can return authenticated PASS. A generic 114/114 test run or skipped MSIX job does not satisfy this contract.
+
+The country gate also rejects numeric `0` as a substitute for JSON `false` in any JP/US market safety field; Python value equality alone would otherwise accept it.
+
 ## Official sources checked 2026-10-31
 
 - IRS Publication 583: https://www.irs.gov/publications/p583
