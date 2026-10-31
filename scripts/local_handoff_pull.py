@@ -101,13 +101,17 @@ def pull(target:Path)->dict:
                     raise ValueError("Missing queue source SHA")
                 # The queue is transport metadata, not an authority for package size,
                 # identity, or provenance. Verify the actual MSIX before quota checks.
-                verified=validate_bundle(source,item.get("factory_head_sha",item["source_sha"]))
+                expected_build_head = item.get("factory_build_head",
+                    item.get("factory_head_sha", item["source_sha"]))
+                verified=validate_bundle(source,expected_build_head)
                 for field in ("slug","type","source_repository","source_sha",
                               "package_sha256","package_bytes","identity"):
                     if item.get(field)!=verified[field]:
                         raise ValueError("Queue metadata mismatch: "+field)
                 for field in ("request_id","product_type","source_factory","source_branch",
-                              "expected_head_sha","factory_head_sha","prebuilt_exe_sha256",
+                              "expected_head_sha","factory_head_sha","factory_build_head",
+                              "local_package_sha256","claimed_package_family_name",
+                              "claimed_package_sid","prebuilt_exe_sha256",
                               "claimed_store_id","contract_status"):
                     if field=="contract_status" and field not in item and verified.get(field)=="LEGACY_HOLD":
                         continue  # old QA-only artifact; never an E2E pass
@@ -124,7 +128,7 @@ def pull(target:Path)->dict:
                         raise ValueError("Local QA inbox full; complete/archive existing QA first")
                     if total+size>MAX_QUEUED_BYTES:
                         raise ValueError("Local QA inbox would exceed 2GiB; HOLD")
-                result=stage_bundle(source,target,item.get("factory_head_sha",item["source_sha"]))
+                result=stage_bundle(source,target,expected_build_head)
                 if result["package_sha256"]!=checksum:
                     raise ValueError("Mismatch between queue and actual bytes")
                 if not prior:
