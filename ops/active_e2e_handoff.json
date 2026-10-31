@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-31T19:44:07.511Z",
+  "updated_at_utc": "2026-10-31T20:36:03Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -2477,8 +2477,8 @@
     "local_execution_this_run": "NOT_PERFORMED"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-31T19:44:07.511Z",
-    "scope": "LOCAL_QA_ARTIFACT_QUEUE_STRICT_PARSE_AND_PRESTAGE_VALIDATION_PR105_WINDOWS_UBUNTU_CI_PASS__3D_BUILD_HEAD_PR104_PRESERVED__NO_REAL_MSIX_OR_LOCAL_EXECUTION__ACCOUNTING_4_HOLD",
+    "observed_at_utc": "2026-10-31T20:36:03Z",
+    "scope": "LOCAL_QA_AGGREGATE_CAPACITY_PREFLIGHT_PR106_EXACT_HEAD_WINDOWS_UBUNTU_CI_PASS__PRESERVE_PR105_STRICT_QUEUE_AND_PR104_3D_BUILD_PROVENANCE__NO_PHYSICAL_WINDOWS_OR_REAL_SIGNED_MSIX",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
     "canonical_previous_blob_sha": "78613e49977714edb53c39a41a1c70d564c696a8",
@@ -2498,14 +2498,14 @@
     "cas": "NO_NEW_CAS_THIS_EXECUTION",
     "package": "NO_NEW_REAL_SIGNED_MSIX__VERSION_ASSET_MARKET_FIT_HOLD",
     "github_backlog": "NO_NEW_REAL_MSIX",
-    "local_pull": "PR105_QUEUE_DUPLICATE_JSON_BOOLEAN_SCHEMA_NONFINITE_DUPLICATE_JOB_AND_ATOMIC_PER_ARTIFACT_PREFLIGHT_CI_PASS__PR104_3D_BUILD_HEAD_PROVENANCE_PRESERVED__PHYSICAL_WINDOWS_NOT_RUN",
-    "checker": "PR103_GAME_3D_CHECKER_CI_PASS__PR104_3D_LOCAL_PULL_CI_PASS__PR105_QUEUE_PREFLIGHT_CI_PASS__NO_REAL_MSIX_CHECKER_EXECUTION",
+    "local_pull": "PR106_TWO_ITEM_ARTIFACT_AGGREGATE_COUNT_AND_BYTE_QUOTA_PREFLIGHT_CI_PASS__NO_PARTIAL_IMPORT_ON_CAPACITY_HOLD__PR105_QUEUE_STRICT_PARSE_PRESERVED__PHYSICAL_WINDOWS_NOT_RUN",
+    "checker": "PR103_GAME_3D_CHECKER_CI_PASS__PR104_3D_BUILD_HEAD_CI_PASS__PR105_QUEUE_PREFLIGHT_CI_PASS__PR106_AGGREGATE_CAPACITY_CI_PASS__NO_REAL_MSIX_CHECKER_EXECUTION",
     "gui_install_qa": "NOT_RUN",
     "store_submission": 0,
     "success_count_cloud_verified": 2,
     "remaining_app_identity_returns": 2,
     "next_resume_index": 3,
-    "next_action": "REVIEW_STACKED_PR105_EXACT_HEAD__AWAIT_SIGNED_APPROVED_REAL_MSIX_AND_PHYSICAL_WINDOWS_PULL_CHECKER_GUI_QA__TEXT_IMAGE_IDENTITY_RETURN_PENDING__SIGNAL_GDK_CAS_APPROVAL_HOLD__ACCOUNTING_PRIMARY_SOURCE_REVIEW_REQUIRED",
+    "next_action": "REVIEW_STACKED_PR106_EXACT_HEAD__RUN_REAL_SIGNED_MSIX_THROUGH_GITHUB_BACKLOG_AND_PHYSICAL_WINDOWS_LOCAL_PULL_CHECKER_GUI_INSTALL__TEXT_IMAGE_IDENTITY_RETURN_PENDING__SIGNAL_GDK_CAS_APPROVAL_HOLD__ACCOUNTING_PRIMARY_SOURCE_REVIEW_REQUIRED",
     "post_identity_reconcile_pr": 49,
     "post_identity_reconcile_ci_run": 40851883814,
     "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU",
@@ -3236,6 +3236,22 @@
       "us_reference": "https://www.irs.gov/forms-pubs/about-form-3115",
       "status": "REVIEW_REQUIRED_NO_ACCOUNTING_PROMOTION",
       "note": "Primary-source discovery only; no authenticated product fixture/tax profile alignment or current-law certification."
+    },
+    "local_pull_aggregate_capacity_fix": {
+      "draft_pr": 106,
+      "branch": "codex/e2e-local-pull-aggregate-capacity-20261101-0536",
+      "base_pr": 105,
+      "base_sha": "876cc0380209d65ac27b3822ea1ff203ed57e6e8",
+      "head_sha": "f1424986d379451690d5dd777ecb9f22bc34423d",
+      "offline_qa_run_id": 41239623345,
+      "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+      "fix": "WHOLE_ARTIFACT_COUNT_AND_BYTE_CAPACITY_PREFLIGHT_BEFORE_FIRST_STAGE__DUPLICATE_DESTINATION_REJECTION",
+      "tests": "TWO_ITEM_COUNT_OVERFLOW_BYTE_OVERFLOW_SUCCESS_AND_IDEMPOTENT_REPLAY",
+      "physical_windows_pull": "NOT_PERFORMED",
+      "signed_msix": "NOT_OBSERVED",
+      "checker_gui_install": "NOT_PERFORMED",
+      "store_submission": "NOT_PERFORMED",
+      "canonical_ledger_note": "RECORD_ONLY__NO_NEW_PRODUCT_PROMOTION"
     }
   },
   "post_identity_pipeline": {
