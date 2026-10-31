@@ -160,9 +160,32 @@ def check_request_conflict(target: Path, info: dict) -> None:
                 raise ValueError("HANDOFF_HOLD: corrupt existing QA receipt") from None
             if type(old) is not dict:
                 raise ValueError("HANDOFF_HOLD: corrupt existing QA receipt")
-            if old.get("request_id") == request_id and any(
-                old.get(key) != info.get(key) for key in immutable_keys
-            ):
-                raise ValueError(
-                    "HANDOFF_CONFLICT: request_id reused with different product provenance"
+            if old.get("request_id") == request_id:
+                # Version/build revisions may change, but the Store product
+                # and embedded package identity may not be rebound to another
+                # SKU under the same request. APP/GAME Store IDs live at the
+                # top level; GAME_3D Store IDs live in identity.
+                old_identity = old.get("identity")
+                new_identity = info.get("identity")
+                old_store = (
+                    old_identity.get("store_id")
+                    if old.get("type") == "3d-game"
+                    and type(old_identity) is dict
+                    else old.get("store_id")
                 )
+                identity_conflict = (
+                    type(old_identity) is not dict
+                    or type(new_identity) is not dict
+                    or any(
+                        old_identity.get(key) != new_identity.get(key)
+                        for key in ("name", "publisher",
+                                    "package_family_name", "package_sid")
+                    )
+                    or old_store != info.get("claimed_store_id")
+                )
+                if identity_conflict or any(
+                    old.get(key) != info.get(key) for key in immutable_keys
+                ):
+                    raise ValueError(
+                        "HANDOFF_CONFLICT: request_id reused with different product provenance"
+                    )
