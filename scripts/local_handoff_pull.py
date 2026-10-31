@@ -66,6 +66,51 @@ def recent_artifacts()->list[tuple[int,str]]:
         verified.append((run_id,a["name"]))
     return verified
 
+
+def _unique_queue_pairs(pairs):
+    """Reject ambiguous untrusted queue JSON at every nesting level."""
+    value = {}
+    for key, item in pairs:
+        if key in value:
+            raise ValueError("Duplicate local QA queue JSON key")
+        value[key] = item
+    return value
+
+
+def _reject_nonfinite_queue(_value):
+    raise ValueError("Non-finite local QA queue JSON value")
+
+
+def _read_queue(path: Path) -> dict:
+    if (path.is_symlink() or not path.is_file()
+            or not 0 < path.stat().st_size <= 1_000_000):
+        raise ValueError("Invalid local QA queue metadata file")
+    return json.loads(path.read_text(encoding="utf-8"),
+                      object_pairs_hook=_unique_queue_pairs,
+                      parse_constant=_reject_nonfinite_queue)
+
+
+def _preflight_queue_items(items: list[dict]) -> None:
+    """A duplicate request or package in one artifact is never two jobs."""
+    packages = set()
+    requests = set()
+    for item in items:
+        if type(item) is not dict or item.get("submit_allowed") is not False:
+            raise ValueError("No local QA artifact may authorize Store submission")
+        key = (item.get("product_type"), item.get("slug"),
+               item.get("package_sha256"))
+        if not all(value is None or isinstance(value, str) for value in key):
+            raise ValueError("Invalid local QA package key")
+        if key in packages:
+            raise ValueError("Duplicate local QA package in one artifact")
+        packages.add(key)
+        request = item.get("request_id")
+        if request is not None:
+            if not isinstance(request, str) or request in requests:
+                raise ValueError("Duplicate or invalid local QA request_id")
+            requests.add(request)
+
+
 def pull(target:Path)->dict:
     artifacts=recent_artifacts()
     if not artifacts:
@@ -78,13 +123,23 @@ def pull(target:Path)->dict:
         with tempfile.TemporaryDirectory(prefix="storeqa-") as work:
             download=Path(work)
             gh("run","download",str(run_id),"-R",REMOTE,"--name",name,"--dir",str(download))
-            queue=json.loads((download/"queue.json").read_text(encoding="utf-8"))
-            if queue.get("schema_version")!=1 or queue.get("mode")!="WINDOWS_LOCAL_QA_ONLY":
+            queue=_read_queue(download/"queue.json")
+            if (type(queue) is not dict or type(queue.get("schema_version")) is not int
+                    or queue["schema_version"]!=1
+                    or queue.get("mode")!="WINDOWS_LOCAL_QA_ONLY"):
                 raise ValueError("Wrong queue schema or permission state")
             items=queue.get("items")
-            if not isinstance(items,list) or not 0<=len(items)<=20 or queue.get("intake_count")!=len(items):
+            if (not isinstance(items,list) or not 0<=len(items)<=20
+                    or type(queue.get("intake_count")) is not int
+                    or queue["intake_count"]!=len(items)):
                 raise ValueError("Invalid queue count")
+            _preflight_queue_items(items)
             package_root=download/"packages"
+            if package_root.is_symlink():
+                raise ValueError("Linked local QA package root")
+            verified_items=[]
+            # Validate the entire downloaded artifact before staging its first
+            # package. A bad second item must not leave the first item admitted.
             for item in items:
                 if not isinstance(item,dict) or item.get("submit_allowed") is not False:
                     raise ValueError("No local QA artifact may authorize Store submission")
@@ -121,6 +176,8 @@ def pull(target:Path)->dict:
                     raise ValueError("Local QA queue must not assign a Store ID")
                 if item.get("security_confirmed") is True or item.get("price_approved") is True:
                     raise ValueError("Local QA queue must not assert Store approvals")
+                verified_items.append((folder,source,verified,checksum,expected_build_head))
+            for folder,source,verified,checksum,expected_build_head in verified_items:
                 size=verified["package_bytes"]
                 prior=(target/folder).is_dir()
                 if not prior:
@@ -133,7 +190,7 @@ def pull(target:Path)->dict:
                     raise ValueError("Mismatch between queue and actual bytes")
                 if not prior:
                     total+=size
-                    imported.append({"slug":slug,"sha256":checksum,
+                    imported.append({"slug":verified["slug"],"sha256":checksum,
                         "product_type":result.get("product_type"),
                         "request_id":result.get("request_id"),
                         "status":"DOWNLOADED_AWAITING_WINDOWS_QA"})
