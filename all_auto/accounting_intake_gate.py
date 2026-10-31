@@ -27,6 +27,37 @@ def _require(condition: bool, code: str) -> None:
         raise AccountingIntakeHold(code)
 
 
+def reject_accounting_metadata_alias(data: dict) -> None:
+    """Reject recognizable accounting lineage even if the claimed slug/lane changes.
+
+    This is a defensive preflight, NOT proof against wholesale forged metadata.
+    Exact authenticated Factory-job provenance is still required at PACKAGE.
+    """
+    _require(type(data) is dict, "HOLD_ACCOUNTING_INTAKE_INVALID")
+    if data.get("slug") in SPECS:
+        return
+    request_id = data.get("request_id")
+    target = data.get("identity_return_target")
+    branch = data.get("source_branch")
+    display_name = data.get("display_name")
+    for candidate in SPECS:
+        recognizable = (
+            type(request_id) is str
+            and request_id.startswith(f"app-{candidate}-")
+        ) or (
+            type(target) is str
+            and target == f"products/{candidate}/store/approved-identity.json"
+        ) or (
+            type(branch) is str
+            and re.search(r"(?<![a-z0-9])" + re.escape(candidate)
+                          + r"(?![a-z0-9])", branch.lower()) is not None
+        ) or (
+            type(display_name) is str
+            and display_name.strip().lower().replace(" ", "-") == candidate
+        )
+        _require(not recognizable, "HOLD_ACCOUNTING_INTAKE_SKU_ALIAS")
+
+
 def require_accounting_package_attestation(
     info: dict, *,
     attest: Callable[[dict], dict] | None = None,
@@ -46,13 +77,7 @@ def require_accounting_package_attestation(
     _require(type(info) is dict, "HOLD_ACCOUNTING_INTAKE_INVALID")
     slug = info.get("slug")
     if slug not in SPECS:
-        # A mislabeled handoff with an accounting request ID must not fall
-        # through the ordinary-app path. This only catches partial relabeling:
-        # fully forged metadata still needs independent GitHub job provenance.
-        request_id = info.get("request_id")
-        _require(not (type(request_id) is str and any(
-            request_id.startswith(f"app-{candidate}-") for candidate in SPECS
-        )), "HOLD_ACCOUNTING_INTAKE_SKU_ALIAS")
+        reject_accounting_metadata_alias(info)
         return
     market = SPECS[slug][0]
     source_sha = info.get("source_sha")
