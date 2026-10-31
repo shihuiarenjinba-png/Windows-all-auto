@@ -311,10 +311,9 @@ class CanonicalLedgerWriterTests(unittest.TestCase):
 
     @patch.object(writer.subprocess, "run")
     @patch.object(writer, "fetch_canonical_head", return_value=HEAD)
-    def test_apply_requires_review_of_exact_proposed_bytes(self, head, run):
+    def test_apply_requires_review_of_substantive_proposal(self, head, run):
         # HEAD/blob alone pin the old ledger, not the authenticated proposal.
-        # A changed Factory market-fit review could change proposal bytes
-        # without changing the canonical source HEAD/blob.
+        # Audit timestamps vary between read-only review and explicit apply.
         original = json.dumps(ledger()) + "\n"
         proposal = writer.PreparedLedger(HEAD, BLOB, SLUG,
                                          "POST_IDENTITY_READY", original)
@@ -325,8 +324,16 @@ class CanonicalLedgerWriterTests(unittest.TestCase):
                 "^HOLD_CANONICAL_PROPOSAL_REVIEW_MISMATCH$"):
             writer.apply(proposal, reviewed_head=HEAD, reviewed_blob=BLOB,
                          reviewed_proposal_sha256="0" * 64)
+        with_timestamp = copy.deepcopy(ledger())
+        with_timestamp["updated_at_utc"] = "2026-10-31T06:30:00Z"
+        next_timestamp = copy.deepcopy(with_timestamp)
+        next_timestamp["updated_at_utc"] = "2026-10-31T06:40:00Z"
+        self.assertEqual(writer._proposal_sha256(json.dumps(with_timestamp)),
+                         writer._proposal_sha256(json.dumps(next_timestamp)))
+        changed = copy.deepcopy(with_timestamp)
+        changed["rotation_cohorts"]["app_jobs"].append({"slug": "wrong-product"})
         mutated = writer.PreparedLedger(HEAD, BLOB, SLUG,
-                                        "POST_IDENTITY_READY", original + " ")
+                                        "POST_IDENTITY_READY", json.dumps(changed))
         with self.assertRaisesRegex(
                 writer.LedgerWriteHold,
                 "^HOLD_CANONICAL_PROPOSAL_REVIEW_MISMATCH$"):
