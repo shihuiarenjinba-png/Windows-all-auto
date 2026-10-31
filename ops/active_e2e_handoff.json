@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-31T14:42:51.791Z",
+  "updated_at_utc": "2026-10-31T15:33:20.320Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -2447,8 +2447,8 @@
     "local_execution_this_run": "NOT_PERFORMED"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-31T14:42:51.791Z",
-    "scope": "ACCOUNTING_MSIX_INTAKE_FAIL_CLOSED_PR100_CI_GREEN__FOUR_ACCOUNTING_FACTORY_DRAFTS_UNPROMOTED__NO_GATE_PROMOTION",
+    "observed_at_utc": "2026-10-31T15:33:20.320Z",
+    "scope": "ACCOUNTING_HANDOFF_ALIAS_LINEAGE_HARDENED_PR101_WINDOWS_UBUNTU_CI_GREEN__ACCOUNTING_FACTORY_TAX_ENGINE_P0_OPEN__NO_GATE_PROMOTION",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
     "canonical_previous_blob_sha": "b386620fabdfe489b3d3fd9f85a75e260e8ecefb",
@@ -3032,6 +3032,42 @@
       "offline_text_diff_desk": "GITHUB_APPROVED_IDENTITY_404",
       "offline_image_inventory_desk": "GITHUB_APPROVED_IDENTITY_404",
       "evidence_scope": "GITHUB_FILE_READ_ONLY__NO_LOCAL_PARTNER_CENTER_OR_CAS"
+    },
+    "accounting_alias_lineage_guard": {
+      "draft_pr": 101,
+      "branch": "codex/e2e-accounting-intake-provenance-20261101-0036",
+      "head_sha": "66b04bbfa558888db9e62d2aa17fe9ce4f5d077a",
+      "base_pr": 100,
+      "offline_qa_run_id": 41215352656,
+      "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+      "code_scope": "REJECT_ACCOUNTING_SKU_ALIAS_FROM_REQUEST_ID_IDENTITY_RETURN_TARGET_SOURCE_BRANCH_DISPLAY_NAME_BEFORE_NORMALIZATION__REJECT_CROSS_LANE_ALIAS__RECHECK_ON_REPLAY",
+      "tests": "NEGATIVE_ALIAS_TARGET_BRANCH_DISPLAY_AND_CROSS_LANE_FIXTURES__ORDINARY_APP_REGRESSION",
+      "limitation": "UNTRUSTED_METADATA_CAN_BE_WHOLESALE_FORGED__INDEPENDENT_AUTHENTICATED_GITHUB_FACTORY_JOB_PROVENANCE_AND_PRODUCTION_PACKAGE_ATTESTOR_STILL_REQUIRED",
+      "production_attestor": "NOT_WIRED__ACCOUNTING_INTAKE_FAIL_CLOSED",
+      "integration": "STACKED_DRAFT_UNMERGED",
+      "local_windows": "NOT_RUN",
+      "real_msix": "NOT_BUILT",
+      "store_submission": "NOT_PERFORMED"
+    },
+    "accounting_factory_tax_engine_audit": {
+      "factory_prs": {
+        "jp-freelance-ledger": 59,
+        "us-freelance-ledger": 60,
+        "jp-bookkeeping-desk": 61,
+        "us-bookkeeping-desk": 62
+      },
+      "factory_status": "FOUR_DRAFTS_NOT_PROMOTED",
+      "issue": 64,
+      "issue_url": "https://github.com/shihuiarenjinba-png/AI-App-Factory/issues/64",
+      "verified_us_tax_assets_defects": "IRS_URL_SUBSTRING_ACCEPTS_SPOOFED_HOST__CUSTOM_TAX_DEPRECIATION_MISSING_AGGREGATE_PERCENT_AND_BUSINESS_USE_BOUNDS__STRING_YEAR_KEY_LOOKUP_RISK",
+      "country_scope": "JP_AND_US_MARKET_SCOPE_JSON_PRESENT_ON_SAMPLE_PINNED_BRANCHES__NOT_SUFFICIENT_FOR_PARTNER_CENTER_AVAILABILITY_PASS",
+      "action": "00_APP_OWNER_FIX_IN_SEPARATE_DRAFT_WITH_EXACT_SHA_AND_FIXTURE_CI__36_REVERIFY_INDEPENDENTLY",
+      "market_fit": "HOLD",
+      "package_version": "HOLD",
+      "signed_msix": "NOT_BUILT",
+      "checker": "NOT_RUN",
+      "gui_install": "NOT_RUN",
+      "e2e_pass": false
     }
   },
   "post_identity_pipeline": {
