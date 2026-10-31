@@ -126,6 +126,14 @@ class AccountingCountryGateTests(unittest.TestCase):
                                           fetch_immutable_scope=reader(j["slug"]),
                                           other_jobs=[other])
 
+    def test_malformed_job_and_reader_errors_hold_with_fixed_codes(self):
+        with self.assertRaisesRegex(CountryMarketHold, "JOB_INVALID"):
+            check_accounting_country_gate({"slug": []}, phase="PRE_IDENTITY")
+        j = job("jp-freelance-ledger")
+        with self.assertRaisesRegex(CountryMarketHold, "SCOPE_READ_FAILED"):
+            check_accounting_country_gate(j, phase="PRE_IDENTITY",
+                                          fetch_immutable_scope=lambda *_: 1 / 0)
+
     def test_non_accounting_not_affected(self):
         self.assertEqual(check_accounting_country_gate(
             {"slug": "focus-session-desk"}, phase="PRE_IDENTITY"),
