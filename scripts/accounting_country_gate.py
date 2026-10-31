@@ -78,9 +78,10 @@ def check_accounting_country_gate(
     """
     _require(isinstance(job, dict), "HOLD_ACCOUNTING_JOB_INVALID")
     slug = job.get("slug")
+    _require(isinstance(slug, str), "HOLD_ACCOUNTING_JOB_INVALID")
     if slug not in SPECS:
         return "NOT_APPLICABLE", "NON_ACCOUNTING_SKU"
-    _require(phase in {"PRE_IDENTITY", "PACKAGE"},
+    _require(phase == "PRE_IDENTITY" or phase == "PACKAGE",
              "HOLD_ACCOUNTING_PHASE_INVALID")
     market, language, currency, country = SPECS[slug]
     _require(job.get("product_type") == "APP"
@@ -104,8 +105,13 @@ def check_accounting_country_gate(
              "HOLD_ACCOUNTING_NOT_PROMOTED")
     _require(callable(fetch_immutable_scope),
              "HOLD_ACCOUNTING_IMMUTABLE_SCOPE_READER_MISSING")
-    raw = fetch_immutable_scope(FACTORY, f"products/{slug}/market-scope.json",
-                                job["source_sha"])
+    try:
+        raw = fetch_immutable_scope(FACTORY, f"products/{slug}/market-scope.json",
+                                    job["source_sha"])
+    except CountryMarketHold:
+        raise
+    except Exception as exc:
+        raise CountryMarketHold("HOLD_ACCOUNTING_IMMUTABLE_SCOPE_READ_FAILED") from exc
     scope = _parse_scope(raw)
     _require(scope == {"store_markets": [market], "store_language": language,
                        "currency": currency, "country_profile": country,
@@ -132,7 +138,12 @@ def check_accounting_country_gate(
              "HOLD_ACCOUNTING_STORE_IDENTITY_NOT_RETURNED")
     _require(callable(fetch_verified_store_availability),
              "HOLD_ACCOUNTING_STORE_MARKETS_UNVERIFIED")
-    observed = fetch_verified_store_availability(job)
+    try:
+        observed = fetch_verified_store_availability(job)
+    except CountryMarketHold:
+        raise
+    except Exception as exc:
+        raise CountryMarketHold("HOLD_ACCOUNTING_STORE_MARKETS_READ_FAILED") from exc
     _require(isinstance(observed, dict)
              and observed.get("verification_method") == "AUTHENTICATED_PARTNER_CENTER_PRICING_AVAILABILITY"
              and observed.get("verified") is True
