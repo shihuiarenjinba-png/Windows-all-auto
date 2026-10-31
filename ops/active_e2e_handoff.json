@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-31T15:33:20.320Z",
+  "updated_at_utc": "2026-10-31T16:38:17.609Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -1393,7 +1393,7 @@
     "3d_waiting_identity": 0,
     "3d_conflicts": 0,
     "3d_artifact_mismatch": 0,
-    "metrics_basis": "2026_10_30_19_37Z_SIX_LIVE_FACTORY_COMPARE_RECHECK__FOCUS_LEDGER_PRISM_IDENTITY_ONLY_RETURN__TEXT_IMAGE_SIGNAL_ABSENT__NO_NEW_LOCAL_RECEIPTS",
+    "metrics_basis": "2026_10_31_16_37Z_SIX_LIVE_FACTORY_BRANCH_COMPARE_AND_APPROVED_IDENTITY_FILE_RECHECK__APP_2_POST_2_PRE__3D_1_POST__GAME_1_RECEIVED_NO_CAS__NO_NEW_LOCAL_RECEIPTS",
     "3d_source_branch_head_drift_observed": 1
   },
   "local_source_code_sync": {
@@ -2447,8 +2447,8 @@
     "local_execution_this_run": "NOT_PERFORMED"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-31T15:33:20.320Z",
-    "scope": "ACCOUNTING_HANDOFF_ALIAS_LINEAGE_HARDENED_PR101_WINDOWS_UBUNTU_CI_GREEN__ACCOUNTING_FACTORY_TAX_ENGINE_P0_OPEN__NO_GATE_PROMOTION",
+    "observed_at_utc": "2026-10-31T16:38:17.609Z",
+    "scope": "GLOBAL_REQUEST_ID_CROSS_LANE_QA_COLLISION_GUARD_PR102_WINDOWS_UBUNTU_CI_GREEN__ACCOUNTING_4_HOLD__NO_GATE_PROMOTION",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
     "canonical_previous_blob_sha": "b386620fabdfe489b3d3fd9f85a75e260e8ecefb",
@@ -2475,7 +2475,7 @@
     "success_count_cloud_verified": 2,
     "remaining_app_identity_returns": 2,
     "next_resume_index": 3,
-    "next_action": "REVIEW_PR100_EXACT_HEAD_AND_AUTHENTICATED_ATTESTOR_SEAM__KEEP_ACCOUNTING_4_DRAFT_UNPROMOTED__TEXT_IMAGE_IDENTITY_RETURN_PENDING__MARKET_FIT_VERSION_ASSETS_HOLD__NO_STORE_SUBMISSION",
+    "next_action": "REVIEW_PR102_EXACT_HEAD_AND_GLOBAL_REQUEST_ID_LOCKING_SCOPE__AUTHENTICATED_ACCOUNTING_PACKAGE_ATTESTOR_STILL_MISSING__FACTORY_ACCOUNTING_P0_AND_MARKET_FIT_HOLD__TEXT_IMAGE_IDENTITY_RETURN_PENDING__NO_STORE_SUBMISSION",
     "post_identity_reconcile_pr": 49,
     "post_identity_reconcile_ci_run": 40851883814,
     "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU",
@@ -2528,15 +2528,16 @@
     "mixed_local_preflight_ci": "SUCCESS_AT_EXACT_HEAD",
     "mixed_local_preflight_capability": "FOCUS_POST_SKIP__THREE_PRE_EXACT_SOURCE_AND_EXE_VERIFICATION__SHARED_LOCK__NO_BROWSER_CAS",
     "mixed_local_preflight_execution": "NOT_RUN_ON_USER_WINDOWS",
-    "canonical_head_before_write": "d8dc93e211d359dec3f2815da84a28c802e5c2de",
+    "canonical_head_before_write": "d534b3b9db23b5bcd49ed3e1010ffa022c303189",
     "latest_remote_recheck": {
-      "verified_at_utc": "2026-10-30T19:37:14.467Z",
-      "focus": "POST_IDENTITY_READY__SOURCE_COMPARE_AHEAD_1_SINGLE_IDENTITY_FILE_ADDED__APPROVED_FILE_PRESENT__VERSION_HOLD",
-      "ledger": "POST_IDENTITY_READY__SOURCE_COMPARE_AHEAD_1_SINGLE_IDENTITY_FILE_ADDED__APPROVED_FILE_PRESENT__VERSION_HOLD",
+      "verified_at_utc": "2026-10-31T16:38:17.609Z",
+      "focus": "POST_IDENTITY_READY__SOURCE_COMPARE_AHEAD_1_ONLY_APPROVED_IDENTITY_FILE__VERSION_HOLD",
+      "ledger": "POST_IDENTITY_READY__SOURCE_COMPARE_AHEAD_1_ONLY_APPROVED_IDENTITY_FILE__VERSION_HOLD",
       "text_diff": "PRE_IDENTITY_READY__SOURCE_COMPARE_IDENTICAL__APPROVED_FILE_404",
       "image_inventory": "PRE_IDENTITY_READY__SOURCE_COMPARE_IDENTICAL__APPROVED_FILE_404",
-      "prism": "POST_IDENTITY_READY__SOURCE_COMPARE_AHEAD_1_SINGLE_IDENTITY_FILE_ADDED__APPROVED_FILE_PRESENT__VERSION_HOLD",
+      "prism": "POST_IDENTITY_READY__SOURCE_COMPARE_AHEAD_1_ONLY_APPROVED_IDENTITY_FILE__VERSION_HOLD",
       "signal_sprint": "USER_IDENTITY_RECEIVED__SOURCE_COMPARE_IDENTICAL__APPROVED_FILE_404__CAS_NOT_APPLIED",
+      "factory_us_bookkeeping_pr66": "DRAFT__FACTORY_CORE_CI_41217402905_SUCCESS__NO_REAL_WINDOWS_EXE",
       "factory_artifact_metadata": "NOT_RECHECKED_THIS_RUN",
       "local_windows": "NOT_ACCESSED",
       "partner_center": "NOT_ACCESSED",
@@ -3068,6 +3069,30 @@
       "checker": "NOT_RUN",
       "gui_install": "NOT_RUN",
       "e2e_pass": false
+    },
+    "global_request_id_collision_guard": {
+      "draft_pr": 102,
+      "branch": "codex/e2e-global-request-collision-20261101-0136",
+      "head_sha": "0ca260bf3ad0839b8af6ce8ffee7cab615c51bda",
+      "base_pr": 101,
+      "base_head_sha": "66b04bbfa558888db9e62d2aa17fe9ce4f5d077a",
+      "offline_qa_run_id": 41220556115,
+      "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+      "change": "ALL_APP_GAME_GAME_3D_LANES_GLOBAL_REQUEST_ID_IMMUTABLE_PRODUCT_BINDING__PERSISTED_RECEIPT_DUPLICATE_NONFINITE_JSON_FAIL_CLOSED",
+      "tests": "FIVE_NEW_REPLAY_CROSS_LANE_SAME_SOURCE_SLUG_AND_RECEIPT_CORRUPTION_REGRESSIONS",
+      "integration_status": "STACKED_DRAFT_NOT_MERGED",
+      "local_physical_execution": "NOT_PERFORMED",
+      "accounting_authenticated_package_attestor": "NOT_IMPLEMENTED__DEFAULT_HOLD",
+      "store_submission": "NOT_PERFORMED"
+    },
+    "accounting_official_sources_review": {
+      "checked_at_utc": "2026-10-31T16:38:17.609Z",
+      "nta_source": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shohi/6102.htm",
+      "nta_observation": "2026_04_01_LAW_BASE_10_PERCENT_STANDARD_8_PERCENT_REDUCED__2027_04_01_TO_2029_03_31_FOOD_RATE_FUTURE_CHANGE_REQUIRES_YEAR_SCOPED_REVIEW",
+      "irs_source": "https://www.irs.gov/publications/p946",
+      "irs_observation": "2025_PUBLICATION_946_HAS_POST_2025_01_19_SPECIAL_DEPRECIATION_RULES__NOT_AN_ATTESTATION_OF_APP_CALCULATION",
+      "review_status": "PRIMARY_SOURCE_READ_ONLY__NO_ENGINE_FIXTURE_OR_COMPLIANCE_PASS",
+      "accounting_four_package_gate": "HOLD"
     }
   },
   "post_identity_pipeline": {
