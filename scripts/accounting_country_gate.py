@@ -138,6 +138,14 @@ def check_accounting_country_gate(
             "deductibility_determination": False,
             "compliance_claim": False,
         })
+    # JSON 0 == False in Python; do not accept integer stand-ins for safety
+    # booleans in the country/US compliance policy contract.
+    boolean_fields = {"cross_market_sale"}
+    if slug in _US_FEDERAL_SCOPES:
+        boolean_fields.update({"state_local_tax_automation", "tax_filing",
+                               "deductibility_determination", "compliance_claim"})
+    _require(all(type(scope[field]) is bool for field in boolean_fields),
+             "HOLD_ACCOUNTING_COUNTRY_SCOPE_BOOLEAN_INVALID")
     _require(scope == expected_scope,
              "HOLD_ACCOUNTING_COUNTRY_SCOPE_MISMATCH")
     for other in other_jobs:
