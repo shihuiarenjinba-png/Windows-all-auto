@@ -139,6 +139,72 @@ class PreparedLedger:
     content: str
 
 
+
+def _assert_only_target_records_changed(original: dict, after: dict,
+                                        slug: str) -> None:
+    """Reject collateral edits inside otherwise allowlisted ledger sections.
+
+    The authenticated reconciler may update one product and its three bound
+    auxiliary records, but may not mutate another job, reorder a queue, or
+    change cohort metrics/policy through an allowlisted top-level dictionary.
+    """
+    code = "HOLD_CANONICAL_CROSS_PRODUCT_MUTATION"
+    before_cohorts = original.get("rotation_cohorts")
+    after_cohorts = after.get("rotation_cohorts")
+    _require(isinstance(before_cohorts, dict) and isinstance(after_cohorts, dict),
+             code)
+    positions = []
+    for collection in ("app_jobs", "game_jobs", "three_d_jobs"):
+        jobs = before_cohorts.get(collection, [])
+        _require(isinstance(jobs, list), code)
+        for index, job in enumerate(jobs):
+            _require(isinstance(job, dict), code)
+            if job.get("slug") == slug:
+                positions.append((collection, index, job))
+    _require(len(positions) == 1, code)
+    collection, index, job = positions[0]
+    current_jobs = after_cohorts.get(collection)
+    _require(isinstance(current_jobs, list) and len(current_jobs) > index
+             and isinstance(current_jobs[index], dict)
+             and current_jobs[index].get("slug") == slug
+             and current_jobs[index].get("request_id") == job.get("request_id"),
+             code)
+    restored = copy.deepcopy(after_cohorts)
+    restored[collection][index] = copy.deepcopy(job)
+    _require(restored == before_cohorts, code)
+
+    def check_aux(section: str, list_key: str, identity_key: str,
+                  identity_value: str) -> None:
+        old = original.get(section)
+        new = after.get(section)
+        _require(isinstance(old, dict) and isinstance(new, dict), code)
+        old_items = old.get(list_key)
+        new_items = new.get(list_key)
+        _require(isinstance(old_items, list) and isinstance(new_items, list)
+                 and len(old_items) == len(new_items), code)
+        old_positions = [i for i, item in enumerate(old_items)
+                         if isinstance(item, dict)
+                         and item.get(identity_key) == identity_value]
+        new_positions = [i for i, item in enumerate(new_items)
+                         if isinstance(item, dict)
+                         and item.get(identity_key) == identity_value]
+        _require(len(old_positions) == 1 and new_positions == old_positions,
+                 code)
+        candidate = copy.deepcopy(new)
+        candidate[list_key][old_positions[0]] = copy.deepcopy(
+            old_items[old_positions[0]]
+        )
+        _require(candidate == old, code)
+
+    request_id = job.get("request_id")
+    display_name = job.get("display_name")
+    _require(isinstance(request_id, str) and bool(request_id)
+             and isinstance(display_name, str) and bool(display_name), code)
+    check_aux("user_id_requests", "items", "request_id", request_id)
+    check_aux("registration_router", "entries", "product", display_name)
+    check_aux("post_identity_pipeline", "products", "request_id", request_id)
+
+
 def prepare(slug: str) -> PreparedLedger:
     """Fetch exact canonical snapshot, then build an authenticated proposal."""
     _require(isinstance(slug, str)
@@ -162,6 +228,7 @@ def prepare(slug: str) -> PreparedLedger:
                if original.get(key) != after.get(key)}
     _require(changed <= _ALLOWED_CHANGED,
              "HOLD_CANONICAL_UNRELATED_MUTATION")
+    _assert_only_target_records_changed(original, after, slug)
     # Timestamp is metadata, never independent proof of a successful gate.
     after["updated_at_utc"] = datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
     content = json.dumps(after, ensure_ascii=False, indent=2, allow_nan=False) + "\n"
