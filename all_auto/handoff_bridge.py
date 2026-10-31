@@ -10,6 +10,7 @@ import sys
 import xml.etree.ElementTree as ET
 import zipfile
 from .lane_queue import validate_immutable, relative_package_path, check_request_conflict
+from .accounting_intake_gate import require_accounting_package_attestation
 
 OWNER="shihuiarenjinba-png"
 SLUG=re.compile(r"^[a-z][a-z0-9-]{3,39}$")
@@ -185,8 +186,11 @@ def validate_bundle(directory:Path,expected_run_sha:str|None=None)->dict:
     result.update(immutable)
     return result
 
-def stage_bundle(source:Path,target:Path,expected_run_sha:str|None=None)->dict:
+def stage_bundle(source:Path,target:Path,expected_run_sha:str|None=None,*,accounting_attestor=None)->dict:
     info=validate_bundle(source,expected_run_sha)
+    # Enforce on every attempt, including idempotent replay, before touching QA state.
+    # The normal bridge has no trusted accounting adapter and therefore HOLDS.
+    require_accounting_package_attestation(info,attest=accounting_attestor)
     # A symlinked queue must never be accepted, including the idempotent
     # fast path when a matching package already exists behind the link.
     if target.is_symlink():fail("unsafe destination")
