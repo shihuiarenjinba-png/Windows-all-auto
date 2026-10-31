@@ -169,12 +169,29 @@ def _assert_only_target_records_changed(original: dict, after: dict,
              and current_jobs[index].get("slug") == slug
              and current_jobs[index].get("request_id") == job.get("request_id"),
              code)
+    def require_pinned_binding(old: dict, new: dict,
+                               fields: tuple[str, ...]) -> None:
+        # Status/evidence may advance, but provenance must never be rewritten,
+        # deleted or injected by a reconciliation adapter.
+        _require(isinstance(old, dict) and isinstance(new, dict), code)
+        for field in fields:
+            _require((field in old) == (field in new)
+                     and old.get(field) == new.get(field), code)
+
+    require_pinned_binding(job, current_jobs[index], (
+        "product_type", "display_name", "slug", "request_id",
+        "source_repository", "source_branch", "source_sha",
+        "identity_return_target", "expected_exe_sha256",
+        "expected_exe_bytes", "packaging_family", "packaging_strategy",
+        "registration_type", "partner_center_selection",
+        "factory_build_head", "market_fit_review_commit_sha",
+    ))
     restored = copy.deepcopy(after_cohorts)
     restored[collection][index] = copy.deepcopy(job)
     _require(restored == before_cohorts, code)
 
     def check_aux(section: str, list_key: str, identity_key: str,
-                  identity_value: str) -> None:
+                  identity_value: str, pinned_fields: tuple[str, ...]) -> None:
         old = original.get(section)
         new = after.get(section)
         _require(isinstance(old, dict) and isinstance(new, dict), code)
@@ -190,6 +207,8 @@ def _assert_only_target_records_changed(original: dict, after: dict,
                          and item.get(identity_key) == identity_value]
         _require(len(old_positions) == 1 and new_positions == old_positions,
                  code)
+        require_pinned_binding(old_items[old_positions[0]],
+                               new_items[new_positions[0]], pinned_fields)
         candidate = copy.deepcopy(new)
         candidate[list_key][old_positions[0]] = copy.deepcopy(
             old_items[old_positions[0]]
@@ -200,9 +219,20 @@ def _assert_only_target_records_changed(original: dict, after: dict,
     display_name = job.get("display_name")
     _require(isinstance(request_id, str) and bool(request_id)
              and isinstance(display_name, str) and bool(display_name), code)
-    check_aux("user_id_requests", "items", "request_id", request_id)
-    check_aux("registration_router", "entries", "product", display_name)
-    check_aux("post_identity_pipeline", "products", "request_id", request_id)
+    check_aux("user_id_requests", "items", "request_id", request_id, (
+        "request_id", "product_name", "repo", "source_branch", "source_sha",
+        "identity_return_target", "product_type", "slug",
+        "registration_type", "partner_center_selection",
+    ))
+    check_aux("registration_router", "entries", "product", display_name, (
+        "product", "repository", "request_id", "slug", "product_type",
+        "source_branch", "source_sha", "identity_return_target",
+        "registration_type", "partner_center_selection",
+    ))
+    check_aux("post_identity_pipeline", "products", "request_id", request_id, (
+        "product", "lane", "request_id", "source_repository",
+        "source_branch", "source_sha", "identity_return_target",
+    ))
 
 
 def prepare(slug: str) -> PreparedLedger:
