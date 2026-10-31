@@ -79,7 +79,11 @@ def validate_immutable(data: dict, kind: str) -> dict:
         "expected_head_sha": data["source_sha"],
         head_field: head,
         "claimed_store_id": store_id,
-        **({"local_package_sha256": data["local_package_sha256"]} if kind == "3d-game" else {}),
+        **({
+            "local_package_sha256": data["local_package_sha256"],
+            "claimed_package_family_name": identity["package_family_name"],
+            "claimed_package_sid": identity["package_sid"],
+        } if kind == "3d-game" else {}),
     }
 
 
@@ -94,27 +98,106 @@ def relative_package_path(info: dict) -> Path:
     return Path(folder)
 
 
+def _unique_receipt_pairs(pairs):
+    """An existing QA receipt must not hide a second request or source key."""
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("HANDOFF_HOLD: duplicate existing QA receipt key")
+        result[key] = value
+    return result
+
+
+def _reject_nonfinite_receipt(_value):
+    raise ValueError("HANDOFF_HOLD: non-finite existing QA receipt")
+
+
 def check_request_conflict(target: Path, info: dict) -> None:
-    """Reject a changed source_sha for the same request_id before copying bytes."""
+    """Reject reuse of a request_id across ALL lanes or product bindings.
+
+    A matching source SHA is insufficient: the same request must never be
+    relabeled from APP to GAME, rebound to another slug/Factory/branch, or
+    hidden behind an ambiguous persisted receipt. Package revisions with the
+    same immutable product binding remain possible; byte/provenance replay
+    checks are enforced separately by stage_bundle.
+    """
     request_id = info.get("request_id")
     if request_id is None:
+        return  # Legacy QA-only bundles have no immutable request contract.
+    if target.is_symlink():
+        raise ValueError("HANDOFF_HOLD: linked local QA queue")
+    if not target.exists():
         return
-    lane = target / info["product_type"]
-    if lane.is_symlink():
-        raise ValueError("HANDOFF_HOLD: linked local QA lane")
-    if not lane.exists():
-        return
-    if not lane.is_dir():
-        raise ValueError("HANDOFF_HOLD: invalid local QA lane")
-    folders = list(lane.iterdir())
-    if len(folders) > 1000:
-        raise ValueError("HANDOFF_HOLD: local QA lane capacity exceeded")
-    for folder in folders:
-        if folder.is_symlink() or not folder.is_dir():
-            raise ValueError("HANDOFF_HOLD: unsafe existing local QA folder")
-        path = folder / "handoff.json"
-        if path.is_symlink() or not path.is_file() or path.stat().st_size > 32768:
-            raise ValueError("HANDOFF_HOLD: corrupt existing QA receipt")
-        old = json.loads(path.read_text(encoding="utf-8"))
-        if old.get("request_id") == request_id and old.get("source_sha") != info["source_sha"]:
-            raise ValueError("HANDOFF_CONFLICT: request_id reused with changed source_sha")
+    if not target.is_dir():
+        raise ValueError("HANDOFF_HOLD: invalid local QA queue")
+    immutable_keys = (
+        "request_id", "product_type", "source_factory", "source_repository",
+        "source_branch", "source_sha", "expected_head_sha", "slug", "type",
+    )
+    # A request_id is global to the transport, not unique only inside its
+    # claimed APP/GAME/GAME_3D directory. Bound each scan for local safety.
+    for lane_name in ("APP", "GAME", "GAME_3D"):
+        lane = target / lane_name
+        if lane.is_symlink():
+            raise ValueError("HANDOFF_HOLD: linked local QA lane")
+        if not lane.exists():
+            continue
+        if not lane.is_dir():
+            raise ValueError("HANDOFF_HOLD: invalid local QA lane")
+        folders = list(lane.iterdir())
+        if len(folders) > 1000:
+            raise ValueError("HANDOFF_HOLD: local QA lane capacity exceeded")
+        for folder in folders:
+            if folder.is_symlink() or not folder.is_dir():
+                raise ValueError("HANDOFF_HOLD: unsafe existing local QA folder")
+            path = folder / "handoff.json"
+            if (path.is_symlink() or not path.is_file()
+                    or not 0 < path.stat().st_size <= 32768):
+                raise ValueError("HANDOFF_HOLD: corrupt existing QA receipt")
+            try:
+                old = json.loads(
+                    path.read_text(encoding="utf-8"),
+                    object_pairs_hook=_unique_receipt_pairs,
+                    parse_constant=_reject_nonfinite_receipt,
+                )
+            except (ValueError, TypeError, UnicodeError, OSError):
+                raise ValueError("HANDOFF_HOLD: corrupt existing QA receipt") from None
+            if type(old) is not dict:
+                raise ValueError("HANDOFF_HOLD: corrupt existing QA receipt")
+            if old.get("request_id") == request_id:
+                # Version/build revisions may change, but the Store product
+                # and embedded package identity may not be rebound to another
+                # SKU under the same request. APP/GAME Store IDs live at the
+                # top level; GAME_3D Store IDs live in identity.
+                old_identity = old.get("identity")
+                new_identity = info.get("identity")
+                old_store = (
+                    old_identity.get("store_id")
+                    if old.get("type") == "3d-game"
+                    and type(old_identity) is dict
+                    else old.get("store_id")
+                )
+                identity_conflict = (
+                    type(old_identity) is not dict
+                    or type(new_identity) is not dict
+                    or any(
+                        old_identity.get(key) != new_identity.get(key)
+                        for key in ("name", "publisher")
+                    )
+                    or old_store != info.get("claimed_store_id")
+                    or (
+                        old.get("type") == "3d-game"
+                        and (
+                            old_identity.get("package_family_name")
+                            != info.get("claimed_package_family_name")
+                            or old_identity.get("package_sid")
+                            != info.get("claimed_package_sid")
+                        )
+                    )
+                )
+                if identity_conflict or any(
+                    old.get(key) != info.get(key) for key in immutable_keys
+                ):
+                    raise ValueError(
+                        "HANDOFF_CONFLICT: request_id reused with different product provenance"
+                    )
