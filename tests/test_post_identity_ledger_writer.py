@@ -87,6 +87,20 @@ class CanonicalLedgerWriterTests(unittest.TestCase):
         with self.assertRaisesRegex(writer.LedgerWriteHold, "CONTENT_INVALID"):
             writer.fetch_canonical_ledger(HEAD)
 
+    def test_reject_boolean_schema_and_overflowed_json_float(self):
+        # bool is an int subclass in Python; true must never be schema 1.
+        with self.assertRaisesRegex(writer.LedgerWriteHold,
+                                    "^HOLD_CANONICAL_SCHEMA_INVALID$"):
+            writer._json_load('{"schema_version":true}')
+        # JSON 1e999 is syntactically legal but float() becomes infinity.
+        with self.assertRaisesRegex(writer.LedgerWriteHold,
+                                    "^HOLD_CANONICAL_JSON_INVALID$"):
+            writer._json_load('{"schema_version":1,"metric":1e999}')
+        self.assertEqual(
+            writer._json_load('{"schema_version":1,"metric":0.75}')["metric"],
+            0.75,
+        )
+
     @patch.object(writer, "propose_authenticated_post_identity")
     @patch.object(writer, "fetch_canonical_ledger")
     @patch.object(writer, "fetch_canonical_head")

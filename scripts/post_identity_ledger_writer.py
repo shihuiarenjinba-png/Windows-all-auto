@@ -14,6 +14,7 @@ import hashlib
 from dataclasses import dataclass
 from datetime import datetime, timezone
 import json
+import math
 import re
 import subprocess
 
@@ -62,15 +63,25 @@ def _reject_constant(value):
     raise LedgerWriteHold("HOLD_CANONICAL_JSON_INVALID")
 
 
+def _finite_float(value: str) -> float:
+    # JSON permits 1e999 syntactically, but Python float() yields infinity.
+    # Treat numeric overflow as invalid canonical evidence, not a valid gate.
+    number = float(value)
+    _require(math.isfinite(number), "HOLD_CANONICAL_JSON_INVALID")
+    return number
+
+
 def _json_load(raw: str) -> dict:
     try:
         data = json.loads(raw, object_pairs_hook=_unique_pairs,
-                          parse_constant=_reject_constant)
+                          parse_constant=_reject_constant,
+                          parse_float=_finite_float)
     except LedgerWriteHold:
         raise
     except (ValueError, TypeError) as exc:
         raise LedgerWriteHold("HOLD_CANONICAL_JSON_INVALID") from exc
-    _require(isinstance(data, dict) and data.get("schema_version") == 1,
+    _require(isinstance(data, dict) and type(data.get("schema_version")) is int
+             and data["schema_version"] == 1,
              "HOLD_CANONICAL_SCHEMA_INVALID")
     return data
 
