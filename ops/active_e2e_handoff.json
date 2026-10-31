@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-31T23:13:36.361Z",
+  "updated_at_utc": "2026-10-31T23:36:11.647Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -405,7 +405,11 @@
       "ci_conclusion": "SUCCESS_WINDOWS_UBUNTU",
       "integration_status": "STACKED_DRAFT_NOT_MERGED",
       "physical_windows": "NOT_RUN",
-      "e2e_pass": false
+      "e2e_pass": false,
+      "local_byte_reader_pr": 110,
+      "local_byte_reader_head": "47f52b6605c4b7873ddbd24596017ee082e570f2",
+      "local_byte_reader_ci_run": 41253145395,
+      "local_byte_reader_ci": "SUCCESS_WINDOWS_UBUNTU"
     },
     "local_pull_existing_preflight_guard": {
       "draft_pr": 108,
@@ -2501,8 +2505,8 @@
     "local_execution_this_run": "NOT_PERFORMED"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-31T23:13:36.361Z",
-    "scope": "PR109_ACCOUNTING_BEGINNER_HUMAN_USABILITY_CONTRACT_EXACT_HEAD_WINDOWS_UBUNTU_CI_PASS__PR108_LOCAL_PULL_PREFLIGHT_CI_PASS__PHYSICAL_E2E_HOLD",
+    "observed_at_utc": "2026-10-31T23:36:11.647Z",
+    "scope": "PR110_ACCOUNTING_LOCAL_EVIDENCE_BYTE_READER_EXACT_HEAD_WINDOWS_UBUNTU_CI_PASS__PR109_HUMAN_QA_CONTRACT_CI_PASS__PHYSICAL_E2E_HOLD",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
     "canonical_previous_blob_sha": "78613e49977714edb53c39a41a1c70d564c696a8",
@@ -2520,16 +2524,16 @@
     "local_code_sync": "NOT_RUN_THIS_CLOUD_EXECUTION",
     "partner_center_cdp": "NOT_RUN_THIS_CLOUD_EXECUTION",
     "cas": "NO_NEW_CAS_THIS_EXECUTION",
-    "package": "ACCOUNTING_MARKET_FIT_TAX_FIXTURES_VERSION_ASSETS_HOLD__NO_SIGNED_REAL_MSIX",
-    "github_backlog": "NO_NEW_REAL_MSIX",
-    "local_pull": "PR108_CODE_WINDOWS_UBUNTU_CI_PASS__EXISTING_RECEIPT_AND_GLOBAL_CONFLICT_PREFLIGHT__PHYSICAL_LOCAL_PULL_NOT_RUN",
-    "checker": "PR103_TO_PR108_OFFLINE_CONTRACT_ONLY__NO_REAL_PRODUCT_CHECKER_EXECUTION",
-    "gui_install_qa": "ACCOUNTING_PR109_1024X768_FIVE_BEGINNER_SCENARIO_CONTRACT_CI_PASS__PHYSICAL_WINDOWS_GUI_INSTALL_NOT_RUN",
+    "package": "NO_SIGNED_REAL_MSIX__ACCOUNTING_MARKET_FIT_TAX_FIXTURE_VERSION_ASSET_HOLD",
+    "github_backlog": "NO_NEW_VERIFIED_REAL_MSIX_ARTIFACT",
+    "local_pull": "PR108_CODE_CI_PASS__NO_PHYSICAL_WINDOWS_PULL",
+    "checker": "NO_REAL_PRODUCT_CHECKER_RUN",
+    "gui_install_qa": "PR110_SCREENSHOT_BYTE_READER_MOCK_CI_PASS__NO_PHYSICAL_WINDOWS_GUI_INSTALL",
     "store_submission": 0,
     "success_count_cloud_verified": 2,
     "remaining_app_identity_returns": 2,
     "next_resume_index": 3,
-    "next_action": "REVIEW_PR109_STACKED_DRAFT__REQUIRE_ACTUAL_ACCOUNTING_FACTORY_MARKET_FIT_AND_CALCULATION_FIXTURES__OBTAIN_SIGNED_MSIX_BEFORE_LOCAL_CHECKER_GUI__INDEPENDENT_HUMAN_USABILITY_EVIDENCE_READER_NOT_YET_WIRED",
+    "next_action": "REVIEW_STACKED_DRAFT_PR110__REAL_SIGNED_MSIX_AND_CHECKER_REQUIRED_BEFORE_LOCAL_SCREENSHOT_READER__TEXT_DIFF_IMAGE_INVENTORY_APPROVED_IDENTITY_404__FOUR_ACCOUNTING_SKUS_CANDIDATE_ONLY_MARKET_FIT_TAX_ENGINE_HOLD",
     "post_identity_reconcile_pr": 49,
     "post_identity_reconcile_ci_run": 40851883814,
     "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU",
@@ -3283,7 +3287,20 @@
     "accounting_human_usability_ci": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
     "accounting_human_usability_physical": "NOT_PERFORMED",
     "accounting_tax_primary_source_review": "NTA_2026_REFORM_AND_IRS_2025_PUB463_946_READ_ONLY__REVIEW_REQUIRED",
-    "identity_return_file_recheck": "FOCUS_LEDGER_PRISM_PRESENT_REQUEST_SOURCE_MATCH__TEXT_IMAGE_SIGNAL_404__NO_NEW_CAS_OR_VERSION"
+    "identity_return_file_recheck": "FOCUS_LEDGER_PRISM_PRESENT_REQUEST_SOURCE_MATCH__TEXT_IMAGE_SIGNAL_404__NO_NEW_CAS_OR_VERSION",
+    "latest_code_pr": 110,
+    "latest_code_head": "47f52b6605c4b7873ddbd24596017ee082e570f2",
+    "latest_code_ci_run": 41253145395,
+    "latest_code_ci": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+    "latest_identity_file_recheck": {
+      "checked_at_utc": "2026-10-31T23:36:11.647Z",
+      "focus": "PRESENT",
+      "ledger": "PRESENT",
+      "prism": "PRESENT",
+      "text_diff": "GITHUB_404",
+      "image_inventory": "GITHUB_404",
+      "signal_sprint": "GITHUB_404__USER_PROVIDED_IDENTITY_ALREADY_RECEIVED"
+    }
   },
   "post_identity_pipeline": {
     "schema_version": 1,
@@ -3997,7 +4014,7 @@
   },
   "accounting_human_usability_qa": {
     "schema_version": 1,
-    "observed_at_utc": "2026-10-31T23:12:13.216Z",
+    "observed_at_utc": "2026-10-31T23:36:11.647Z",
     "product_slugs": [
       "jp-freelance-ledger",
       "jp-bookkeeping-desk",
@@ -4016,15 +4033,34 @@
     "documentation": "docs/ACCOUNTING_HUMAN_USABILITY_QA.md",
     "scope": "FOUR_COUNTRY_SKU_EXACT_SOURCE_REQUEST_BUILD_PACKAGE_CHECKER_MARKET_BINDING__FIVE_BEGINNER_WORKFLOWS__1024X768__JP_FIVE_BOOKS__OCR_CONFIRMATION__PARALLEL_BOOK_ISOLATION",
     "test_scope": "MOCKED_EVIDENCE_CONTRACT_ONLY__NO_REAL_WINDOWS",
-    "trusted_physical_windows_evidence_reader": "NOT_INTEGRATED",
-    "independent_screenshot_validation": "NOT_PERFORMED",
+    "trusted_physical_windows_evidence_reader": "LOCAL_BYTE_READER_CODE_CI_PASS__INDEPENDENT_PHYSICAL_REVIEW_NOT_WIRED",
+    "independent_screenshot_validation": "OFFLINE_MOCKED_BYTES_ONLY__NO_REAL_SCREENSHOT_VERIFICATION",
     "engine_parity_and_persistence": "NOT_PERFORMED",
     "physical_gui_install_qa": "NOT_PERFORMED",
     "human_usability_qa_pass": false,
     "accounting_e2e_pass": false,
     "store_submission": "NOT_PERFORMED",
-    "status": "CONTRACT_CI_PASS__PHYSICAL_EVIDENCE_HOLD__STACKED_DRAFT_NOT_MERGED",
-    "next_action": "00_APP_OWNER_PROMOTE_AND_REVIEW_ACCOUNTING_FIXTURES__36_E2E_INTEGRATE_TRUSTED_WINDOWS_EVIDENCE_READER_ONLY_AFTER_REAL_SIGNED_MSIX_AND_CHECKER__NO_PRE_IDENTITY_OR_PACKAGE_PROMOTION_WITHOUT_MARKET_FIT_AND_TAX_REVIEW"
+    "status": "CONTRACT_AND_LOCAL_BYTE_READER_CI_PASS__PHYSICAL_GUI_ENGINE_AND_SIGNED_MSIX_HOLD",
+    "next_action": "REVIEW_DRAFT_PR110__REAL_SIGNED_MSIX_AND_CHECKER_FIRST__PHYSICAL_WINDOWS_SCREENSHOT_AND_ENGINE_PERSISTENCE_REVIEW_THEN_INDEPENDENT_EVIDENCE_READER__NO_E2E_PROMOTION",
+    "local_evidence_byte_reader": {
+      "draft_pr": 110,
+      "branch": "codex/e2e-accounting-screenshot-evidence-20261101-0836",
+      "base_pr": 109,
+      "base_sha": "73fe725bab5dd66d95b3e1303a6e496f0bd2b45f",
+      "head_sha": "47f52b6605c4b7873ddbd24596017ee082e570f2",
+      "offline_qa_run_id": 41253145395,
+      "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+      "module": "scripts/accounting_human_evidence_reader.py",
+      "tests": "tests/test_accounting_human_evidence_reader.py",
+      "checks": "LOCAL_FIVE_DISTINCT_PNG_1024X768_CRC_SHA256__STREAMED_MSIX_AND_CHECKER_SHA256__DUPLICATE_JSON_SYMLINK_AND_MISMATCH_FAIL_CLOSED",
+      "physical_windows": "NOT_EXECUTED",
+      "real_screenshots": "NOT_OBSERVED",
+      "signed_msix": "NOT_OBSERVED",
+      "checker_real_execution": "NOT_OBSERVED",
+      "e2e_pass": false,
+      "store_submission": "NOT_PERFORMED",
+      "integration": "STACKED_DRAFT_NOT_MERGED__CALLBACK_AVAILABLE_NOT_PRODUCTION_WIRED"
+    }
   },
   "accounting_tax_primary_source_review": {
     "observed_at_utc": "2026-10-31T23:12:13.216Z",
@@ -4035,6 +4071,14 @@
     "observed_nta_policy": "2026_REFORM_2026_OCT_ONWARD_70_PERCENT_TRANSITIONAL_PURCHASE_CREDIT_FOR_QUALIFYING_PERIODS__2027_2028_SOLE_PROPRIETOR_30_PERCENT_SPECIAL_RULE_CONDITIONAL",
     "observed_irs_publications": "PUB463_2025_REVISION__PUB946_2025_REVISION",
     "status": "PRIMARY_SOURCE_READ_ONLY_CHECK__NOT_A_LEGAL_DETERMINATION__REVIEW_REQUIRED_BEFORE_TAX_ASSET_ENGINE_PACKAGE",
-    "package_gate": "HOLD"
+    "package_gate": "HOLD",
+    "latest_36_reference_check": {
+      "checked_at_utc": "2026-10-31T23:36:11.647Z",
+      "irs_2026_business_mileage": "72.5_CENTS_PER_MILE_EFFECTIVE_2026_01_01",
+      "irs_source": "https://www.irs.gov/newsroom/irs-sets-2026-business-standard-mileage-rate-at-725-cents-per-mile-up-25-cents",
+      "nta_2026_depreciation_source": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2106.htm",
+      "evidence_boundary": "PRIMARY_SOURCE_REFERENCE_RECHECK_ONLY__NO_FACTORY_CALCULATION_PARITY_OR_LEGAL_COMPLIANCE_PASS",
+      "action": "ACCOUNTING_FOUR_SKUS_REMAIN_HOLD_PENDING_EXACT_SOURCE_FIXTURES_AND_HUMAN_REVIEW"
+    }
   }
 }
