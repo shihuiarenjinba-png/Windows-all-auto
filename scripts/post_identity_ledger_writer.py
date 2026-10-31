@@ -110,7 +110,12 @@ def fetch_canonical_ledger(head: str) -> tuple[dict, str]:
         decoded = raw.decode("utf-8")
     except (ValueError, TypeError, UnicodeError, binascii.Error) as exc:
         raise LedgerWriteHold("HOLD_CANONICAL_CONTENT_INVALID") from exc
-    return _json_load(decoded), blob
+    parsed = _json_load(decoded)
+    # The contents endpoint must not silently bind a valid JSON payload to
+    # a different Git blob object. Check before using the blob as a review pin.
+    _require(blob == _git_blob_sha(decoded),
+             "HOLD_CANONICAL_BLOB_CONTENT_MISMATCH")
+    return parsed, blob
 
 
 @dataclass(frozen=True)
