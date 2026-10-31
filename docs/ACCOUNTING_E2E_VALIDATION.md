@@ -11,6 +11,8 @@
 
 No candidate can enter PRE_IDENTITY before immutable Factory promotion, exact request_id/source_sha, and independently verified MARKET_FIT_PASS.
 
+The country gate matches the actual immutable Factory `market-scope.json` shapes: JP SKUs require exactly five country fields; US SKUs additionally require exact SKU-specific `federal_scope`, and `state_local_tax_automation=false`, `tax_filing=false`, `deductibility_determination=false`, `compliance_claim=false`. US-only fields on JP products, missing fields, extra markets, or cross-SKU federal scopes HOLD. These are source-contract checks, not Partner Center market verification.
+
 The authenticated accounting wrapper also calls the existing reviewed-market-fit reader before any accounting Factory-file reads. It requires a separately pinned, single-file descendant `market_fit_review_commit_sha`, verifies the source/review ancestry and exact review file, and independently evaluates the reviewed evidence. A queue field `market_fit_gate=MARKET_FIT_PASS` or `market_fit_evidence_verified=true` is not sufficient. Missing, conflicting, or unavailable review evidence is a fixed-code HOLD. This additional check does not certify an Actions fixture result or promote a candidate.
 
 ## Required immutable files
