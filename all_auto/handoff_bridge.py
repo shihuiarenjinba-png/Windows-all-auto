@@ -10,7 +10,8 @@ import sys
 import xml.etree.ElementTree as ET
 import zipfile
 from .lane_queue import validate_immutable, relative_package_path, check_request_conflict
-from .accounting_intake_gate import require_accounting_package_attestation
+from .accounting_intake_gate import (require_accounting_package_attestation,
+                                     reject_accounting_metadata_alias)
 
 OWNER="shihuiarenjinba-png"
 SLUG=re.compile(r"^[a-z][a-z0-9-]{3,39}$")
@@ -135,6 +136,10 @@ def validate_bundle(directory:Path,expected_run_sha:str|None=None)->dict:
     slug=data.get("slug")
     if not isinstance(slug,str) or not SLUG.fullmatch(slug):
         fail("invalid slug")
+    # Check the untrusted *full* handoff before normalization discards fields.
+    # This also rejects cross-lane relabeling that preserves an accounting
+    # Identity-return target or a recognizable accounting Factory branch.
+    reject_accounting_metadata_alias(data)
     sha=data.get("source_sha")
     if not isinstance(sha,str) or not SHA40.fullmatch(sha):
         fail("invalid source commit")
