@@ -57,6 +57,14 @@ The country gate also rejects numeric `0` as a substitute for JSON `false` in an
 
 IRS cash/accrual method changes and special-rule deductions are fact-dependent. References in a document do not certify legal compliance or product readiness.
 
+## MSIX QA staging admission (new Draft, no live authorization)
+
+The actual `all_auto.handoff_bridge.stage_bundle` boundary now recognizes the four accounting SKUs and refuses to stage even a hash-valid MSIX into the local QA queue unless a **trusted, out-of-band** PACKAGE attestor supplies a complete exact-product binding. The binding includes request/source/build HEAD, MSIX SHA-256, Store ID, embedded Identity/Version, verified market-fit, and the single allowed JP/US Store market. A handoff.json field or a self-authored local PASS file is never an attestor.
+
+The default `bridge_poll` does **not** supply this attestor: accounting packages therefore HOLD before any QA copy. Future reviewed production integration must call the existing authenticated accounting PACKAGE gate, with independently reviewed Actions fixture workflow SHA, official IRS review for US, and authenticated Partner Center Pricing and availability. It must construct the exact attestation from those checks, never from Factory queue claims. Even an attested QA copy is **not** a signed MSIX, local install/Checker PASS, price approval, or Store submission.
+
+Offline tests exercise missing/mismatched/cross-market/boolean-spoofed evidence and idempotent replay with a mocked trusted callback. Such mocks are not product evidence.
+
 ## Release decision
 
 HOLD all four accounting SKUs. Factory Draft PRs #59–62 do not yet provide promoted immutable source/request, authenticated calculation fixture receipts, independent IRS review adapter, verified market fit, signed MSIX, or authenticated Partner Center single-country restriction. Next: APP owner implements and executes fixtures and manifests, then 36-minute E2E owner wires this pure gate to PRE_IDENTITY and PACKAGE boundaries. Windows/Ubuntu CI, real signed MSIX, local pull, Checker, and GUI/install QA remain separate gates. No CAS, Store upload, final submission, pricing changes, merge or main/release changes.
