@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import base64
 import binascii
+import copy
 import hashlib
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -148,14 +149,17 @@ def prepare(slug: str) -> PreparedLedger:
     _require(before.get("e2e_pass") is False
              and before.get("e2e_status") == "HOLD",
              "HOLD_CANONICAL_UNEXPECTED_E2E_STATE")
+    # An adapter may mutate the supplied ledger in place. Preserve the exact
+    # authenticated pre-proposal snapshot for all escalation/diff checks.
+    original = copy.deepcopy(before)
     after, transition = propose_authenticated_post_identity(before, slug)
     _require(isinstance(after, dict)
              and after.get("e2e_pass") is False
              and after.get("e2e_status") == "HOLD"
-             and after.get("new_product_allowed") == before.get("new_product_allowed"),
+             and after.get("new_product_allowed") == original.get("new_product_allowed"),
              "HOLD_CANONICAL_GATE_ESCALATION")
-    changed = {key for key in set(before) | set(after)
-               if before.get(key) != after.get(key)}
+    changed = {key for key in set(original) | set(after)
+               if original.get(key) != after.get(key)}
     _require(changed <= _ALLOWED_CHANGED,
              "HOLD_CANONICAL_UNRELATED_MUTATION")
     # Timestamp is metadata, never independent proof of a successful gate.
