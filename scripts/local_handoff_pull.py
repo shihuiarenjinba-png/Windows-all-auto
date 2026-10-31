@@ -176,8 +176,8 @@ def pull(target:Path)->dict:
                     raise ValueError("Local QA queue must not assign a Store ID")
                 if item.get("security_confirmed") is True or item.get("price_approved") is True:
                     raise ValueError("Local QA queue must not assert Store approvals")
-                verified_items.append((folder,source,verified,checksum))
-            for folder,source,verified,checksum in verified_items:
+                verified_items.append((folder,source,verified,checksum,expected_build_head))
+            for folder,source,verified,checksum,expected_build_head in verified_items:
                 size=verified["package_bytes"]
                 prior=(target/folder).is_dir()
                 if not prior:
