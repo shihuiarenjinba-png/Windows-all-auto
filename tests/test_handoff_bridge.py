@@ -42,7 +42,7 @@ class HandoffBridgeTests(unittest.TestCase):
           "type":"3d-game","request_id":"3d-demo-0001","product_type":"GAME_3D",
           "source_factory":"3d-game-factory","source_branch":"codex/3d-product-demo",
           "expected_head_sha":SHA,"factory_build_head":BUILD_HEAD,
-          "local_package_sha256":"e"*64,
+          "local_package_sha256":self.info["package_sha256"],
         })
         self.info["identity"].update({
           "store_id":"9PTEST3D0001",
@@ -147,7 +147,7 @@ class HandoffBridgeTests(unittest.TestCase):
         self.assertEqual(result["request_id"],"3d-demo-0001")
         self.assertEqual(result["product_type"],"GAME_3D")
         self.assertEqual(result["factory_build_head"],BUILD_HEAD)
-        self.assertEqual(result["local_package_sha256"],"e"*64)
+        self.assertEqual(result["local_package_sha256"],self.info["package_sha256"])
         self.assertFalse(result["submit_allowed"])
         self.assertEqual(len(list((self.root/"queue").iterdir())),1)
 

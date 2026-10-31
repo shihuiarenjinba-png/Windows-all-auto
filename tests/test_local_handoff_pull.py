@@ -8,6 +8,7 @@ from unittest.mock import patch
 import zipfile
 
 from scripts.local_handoff_pull import pull, recent_artifacts
+from all_auto.handoff_bridge import validate_bundle
 
 SOURCE_SHA="b"*40
 XML=b'<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"><Identity Name="Demo.App" Publisher="CN=ABC" Version="1.0.0.0"/></Package>'
@@ -139,5 +140,91 @@ class LocalPullTests(unittest.TestCase):
         with patch("scripts.local_handoff_pull.gh",side_effect=self.fake_gh):
             with self.assertRaisesRegex(ValueError,"must not assert Store approvals"):
                 pull(self.root/"inbox")
+
+
+    def three_d_fixture(self):
+        """A real byte-level 3D QA bundle with distinct source and build HEADs."""
+        bundle=self.fixture/"factory-3d-qa"
+        bundle.mkdir()
+        with zipfile.ZipFile(bundle/"package.msix","w") as z:
+            z.writestr("AppxManifest.xml",XML)
+            z.writestr("AppxBlockMap.xml",b"<BlockMap/>")
+            z.writestr("[Content_Types].xml",b"<Types/>")
+            z.writestr("main.exe",b"3d executable, QA only")
+        payload=(bundle/"package.msix").read_bytes()
+        checksum=hashlib.sha256(payload).hexdigest()
+        meta={
+            "schema_version":1,
+            "source_repository":"shihuiarenjinba-png/3d-game-factory",
+            "source_sha":SOURCE_SHA,
+            "type":"3d-game","slug":"sample-3d",
+            "package":"package.msix","status":"QA_UNSIGNED",
+            "package_bytes":len(payload),"package_sha256":checksum,
+            "local_package_sha256":checksum,
+            "request_id":"3d-sample-3d-"+SOURCE_SHA[:12],
+            "product_type":"GAME_3D","source_factory":"3d-game-factory",
+            "source_branch":"codex/3d-sample-20261101",
+            "expected_head_sha":SOURCE_SHA,
+            "factory_build_head":"c"*40,
+            "identity":{"name":"Demo.App","publisher":"CN=ABC",
+                        "version":"1.0.0.0","store_id":"9N12345678",
+                        "package_family_name":"Demo.App_abcdefghijklm",
+                        "package_sid":"S-1-15-2-1-2-3-4-5-6-7"},
+        }
+        (bundle/"handoff.json").write_text(json.dumps(meta),encoding="utf-8")
+        verified=validate_bundle(bundle,"c"*40)
+        queue={"schema_version":1,"mode":"WINDOWS_LOCAL_QA_ONLY",
+               "intake_count":1,"items":[{**verified,"submit_allowed":False}]}
+        return bundle,checksum,queue
+
+    def fake_3d_gh(self,bundle,checksum,queue):
+        def invoke(*args):
+            if args[0]=="api":
+                return self.fake_gh(*args)
+            if args[0]=="run":
+                folder=Path(args[-1])
+                dest=folder/"packages"/"GAME_3D"/("sample-3d-"+checksum[:12])
+                dest.mkdir(parents=True)
+                for entry in bundle.iterdir():
+                    shutil.copyfile(entry,dest/entry.name)
+                (folder/"queue.json").write_text(json.dumps(queue),encoding="utf-8")
+                return ""
+            raise RuntimeError("unexpected command")
+        return invoke
+
+    def test_3d_pull_uses_build_head_not_preidentity_source(self):
+        bundle,checksum,queue=self.three_d_fixture()
+        with patch("scripts.local_handoff_pull.gh",
+                   side_effect=self.fake_3d_gh(bundle,checksum,queue)):
+            result=pull(self.root/"inbox")
+            self.assertEqual(result["new_packages"],1)
+            self.assertEqual(result["products"][0]["product_type"],"GAME_3D")
+            self.assertEqual(result["products"][0]["sha256"],checksum)
+            self.assertEqual(pull(self.root/"inbox")["new_packages"],0)
+        self.assertTrue((self.root/"inbox"/"GAME_3D"/
+                         ("sample-3d-"+checksum[:12])/"package.msix").is_file())
+
+    def test_3d_pull_rejects_wrong_build_head_or_claimed_identity(self):
+        bundle,checksum,queue=self.three_d_fixture()
+        for field,value in (("factory_build_head",SOURCE_SHA),
+                            ("claimed_package_sid","S-1-15-2-9-9-9-9-9-9-9"),
+                            ("local_package_sha256","0"*64)):
+            altered=json.loads(json.dumps(queue))
+            altered["items"][0][field]=value
+            with self.subTest(field=field):
+                with patch("scripts.local_handoff_pull.gh",
+                           side_effect=self.fake_3d_gh(bundle,checksum,altered)):
+                    with self.assertRaisesRegex(ValueError,"mismatch|provenance"):
+                        pull(self.root/"inbox")
+                self.assertFalse((self.root/"inbox"/"GAME_3D").exists())
+
+    def test_3d_handoff_rejects_local_hash_claim_different_from_bytes(self):
+        bundle,_,_=self.three_d_fixture()
+        path=bundle/"handoff.json"
+        data=json.loads(path.read_text(encoding="utf-8"))
+        data["local_package_sha256"]="f"*64
+        path.write_text(json.dumps(data),encoding="utf-8")
+        with self.assertRaisesRegex(ValueError,"3D local package provenance"):
+            validate_bundle(bundle,"c"*40)
 
 if __name__=="__main__":unittest.main()
