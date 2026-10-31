@@ -289,4 +289,67 @@ class HandoffBridgeTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"Actions head SHA"):
             validate_bundle(self.source,"c"*40)
 
+    def test_immutable_request_id_replay_same_product_still_passes(self):
+        self.set_identity_return_bundle()
+        target = self.root / "queue"
+        first = stage_bundle(self.source, target, SHA)
+        replay = stage_bundle(self.source, target, SHA)
+        self.assertEqual(first, replay)
+        self.assertEqual(len(list((target / "APP").iterdir())), 1)
+
+    def test_request_id_cannot_be_reused_for_other_slug_same_source(self):
+        self.set_identity_return_bundle()
+        target = self.root / "queue"
+        stage_bundle(self.source, target, SHA)
+        self.info["slug"] = "another-app"
+        self.info["display_name"] = "Another App"
+        self.write_info()
+        with self.assertRaisesRegex(ValueError, "HANDOFF_CONFLICT"):
+            stage_bundle(self.source, target, SHA)
+        self.assertEqual(len(list((target / "APP").iterdir())), 1)
+
+    def test_request_id_cannot_cross_app_to_game_lane(self):
+        self.set_identity_return_bundle()
+        target = self.root / "queue"
+        stage_bundle(self.source, target, SHA)
+        self.info.update({
+            "source_repository":
+                "https://github.com/shihuiarenjinba-png/AI-Game-Factory",
+            "source_factory": "AI-Game-Factory",
+            "product_type": "GAME",
+            "type": "game",
+        })
+        self.write_info()
+        with self.assertRaisesRegex(ValueError, "HANDOFF_CONFLICT"):
+            stage_bundle(self.source, target, SHA)
+        self.assertFalse((target / "GAME").exists())
+        self.assertEqual(len(list((target / "APP").iterdir())), 1)
+
+    def test_existing_receipt_duplicate_keys_fail_closed_before_replay(self):
+        self.set_identity_return_bundle()
+        target = self.root / "queue"
+        stage_bundle(self.source, target, SHA)
+        receipt = next((target / "APP").iterdir()) / "handoff.json"
+        original = receipt.read_text(encoding="utf-8")
+        receipt.write_text(
+            original[:-1] + ', "request_id": "forged-other"}',
+            encoding="utf-8",
+        )
+        with self.assertRaisesRegex(ValueError, "corrupt existing QA receipt"):
+            stage_bundle(self.source, target, SHA)
+        self.assertFalse((target / "GAME").exists())
+
+    def test_existing_receipt_nonfinite_json_fails_closed(self):
+        self.set_identity_return_bundle()
+        target = self.root / "queue"
+        stage_bundle(self.source, target, SHA)
+        receipt = next((target / "APP").iterdir()) / "handoff.json"
+        original = receipt.read_text(encoding="utf-8")
+        receipt.write_text(
+            original[:-1] + ', "extra": NaN}', encoding="utf-8"
+        )
+        with self.assertRaisesRegex(ValueError, "corrupt existing QA receipt"):
+            stage_bundle(self.source, target, SHA)
+
+
 if __name__=="__main__":unittest.main()
