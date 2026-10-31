@@ -209,6 +209,23 @@ def _assert_only_target_records_changed(original: dict, after: dict,
         "registration_type", "partner_center_selection",
         "factory_build_head", "market_fit_review_commit_sha",
     ))
+    # This writer reconciles Identity and reviewed MARKET_FIT only. It cannot
+    # silently turn a pre-Identity EXE into a real package, local QA pass or
+    # Store submission, even if a future adapter starts returning those fields.
+    downstream_code = "HOLD_CANONICAL_DOWNSTREAM_GATE_MUTATION"
+    for field in (
+        "real_msix", "local_execution", "store_submission",
+        "real_msix_sha256", "signed_msix_sha256",
+        "github_backlog_receipt", "local_pull_receipt",
+        "checker_receipt", "gui_install_qa_receipt",
+    ):
+        _require((field in job) == (field in current_jobs[index])
+                 and job.get(field) == current_jobs[index].get(field),
+                 downstream_code)
+    _require(job.get("package_version_gate") in (None, "HOLD")
+             and current_jobs[index].get("package_version_gate") in (None, "HOLD")
+             and current_jobs[index].get("identity_cas_allowed") is False,
+             downstream_code)
     restored = copy.deepcopy(after_cohorts)
     restored[collection][index] = copy.deepcopy(job)
     _require(restored == before_cohorts, code)
@@ -255,6 +272,10 @@ def _assert_only_target_records_changed(original: dict, after: dict,
     check_aux("post_identity_pipeline", "products", "request_id", request_id, (
         "product", "lane", "request_id", "source_repository",
         "source_branch", "source_sha", "identity_return_target",
+        "gates", "package_version_gate", "real_msix_sha256",
+        "github_backlog_receipt", "local_pull_receipt",
+        "checker_receipt", "gui_install_qa_receipt",
+        "store_submission", "submission_draft_opened",
     ))
 
 
