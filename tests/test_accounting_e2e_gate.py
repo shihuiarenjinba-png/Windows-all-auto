@@ -37,9 +37,24 @@ def fixture(slug):
                                           "depreciation", "cogs", "taxes_licenses"],
               "state_local_tax_automation": False, "tax_filing": False,
               "compliance_claim": False, "deduction_auto_approval": False}
-    data = {f"products/{slug}/market-scope.json": json.dumps({
-                "store_markets": [market], "store_language": locale, "currency": currency,
-                "country_profile": country, "cross_market_sale": False}),
+    market_scope = {
+        "store_markets": [market], "store_language": locale,
+        "currency": currency, "country_profile": country,
+        "cross_market_sale": False,
+    }
+    if slug in US:
+        market_scope.update({
+            "federal_scope": (
+                "sole_proprietor_recordkeeping_and_schedule_c_preparation_support"
+                if slug == "us-freelance-ledger" else
+                "general_business_bookkeeping_records_not_tax_return_preparation"
+            ),
+            "state_local_tax_automation": False,
+            "tax_filing": False,
+            "deductibility_determination": False,
+            "compliance_claim": False,
+        })
+    data = {f"products/{slug}/market-scope.json": json.dumps(market_scope),
             f"products/{slug}/accounting-validation.json": json.dumps(contract),
             f"products/{slug}/US_COMPLIANCE_SCOPE.md": "Form 3115 cash accrual\n" + "\n".join(sorted(US_SOURCES)),
             f"products/{slug}/us-compliance-policy.json": json.dumps(policy),
