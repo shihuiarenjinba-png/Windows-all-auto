@@ -8,6 +8,7 @@ import zipfile
 from all_auto.handoff_bridge import validate_bundle, stage_bundle
 
 SHA="a"*40
+BUILD_HEAD="b"*40
 XML=b'<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"><Identity Name="OkinawaDesktopTools.TestApp" Publisher="CN=ABC" Version="1.0.1.0"/></Package>'
 
 class HandoffBridgeTests(unittest.TestCase):
@@ -34,6 +35,21 @@ class HandoffBridgeTests(unittest.TestCase):
 
     def write_info(self):
         (self.source/"handoff.json").write_text(json.dumps(self.info),encoding="utf-8")
+
+    def use_3d(self):
+        self.info.update({
+          "source_repository":"shihuiarenjinba-png/3d-game-factory",
+          "type":"3d-game","request_id":"3d-demo-0001","product_type":"GAME_3D",
+          "source_factory":"3d-game-factory","source_branch":"codex/3d-product-demo",
+          "expected_head_sha":SHA,"factory_build_head":BUILD_HEAD,
+          "local_package_sha256":"e"*64,
+        })
+        self.info["identity"].update({
+          "store_id":"9PTEST3D0001",
+          "package_family_name":"OkinawaDesktopTools.TestApp_abcdefghijklm",
+          "package_sid":"S-1-15-2-1-2-3-4-5-6-7",
+        })
+        self.write_info()
 
     def test_genuine_bytes_preserved(self):
         dest=self.root/"queue"
@@ -102,10 +118,8 @@ class HandoffBridgeTests(unittest.TestCase):
             validate_bundle(self.source,SHA)
 
     def test_3d_factory_requires_distinct_3d_game_type(self):
-        self.info["source_repository"]="https://github.com/shihuiarenjinba-png/3d-game-factory"
-        self.info["type"]="3d-game"
-        self.write_info()
-        result=validate_bundle(self.source,SHA)
+        self.use_3d()
+        result=validate_bundle(self.source,BUILD_HEAD)
         self.assertEqual(result["type"],"3d-game")
         self.assertEqual(result["local_action"],"WINDOWS_INSTALL_UI_QA_ONLY")
         self.assertFalse(result["submit_allowed"])
@@ -114,7 +128,7 @@ class HandoffBridgeTests(unittest.TestCase):
                 self.info["type"]=wrong
                 self.write_info()
                 with self.assertRaisesRegex(ValueError,"factory / product type"):
-                    validate_bundle(self.source,SHA)
+                    validate_bundle(self.source,BUILD_HEAD)
 
     def test_normal_game_factory_cannot_claim_3d_type(self):
         self.info["source_repository"]="https://github.com/shihuiarenjinba-png/AI-Game-Factory"
@@ -127,13 +141,24 @@ class HandoffBridgeTests(unittest.TestCase):
             validate_bundle(self.source,SHA)
 
     def test_3d_bundle_stages_with_separate_type(self):
-        self.info["source_repository"]="https://github.com/shihuiarenjinba-png/3d-game-factory"
-        self.info["type"]="3d-game"
-        self.write_info()
-        result=stage_bundle(self.source,self.root/"queue",SHA)
+        self.use_3d()
+        result=stage_bundle(self.source,self.root/"queue",BUILD_HEAD)
         self.assertEqual(result["type"],"3d-game")
+        self.assertEqual(result["request_id"],"3d-demo-0001")
+        self.assertEqual(result["product_type"],"GAME_3D")
+        self.assertEqual(result["factory_build_head"],BUILD_HEAD)
+        self.assertEqual(result["local_package_sha256"],"e"*64)
         self.assertFalse(result["submit_allowed"])
         self.assertEqual(len(list((self.root/"queue").iterdir())),1)
+
+    def test_3d_actions_head_and_request_are_strict(self):
+        self.use_3d()
+        with self.assertRaisesRegex(ValueError,"Actions head SHA"):
+            validate_bundle(self.source,"c"*40)
+        self.info.pop("request_id")
+        self.write_info()
+        with self.assertRaisesRegex(ValueError,"request_id"):
+            validate_bundle(self.source,BUILD_HEAD)
 
     def test_wrong_product_type_rejected(self):
         self.info["type"]="game"

@@ -84,7 +84,10 @@ def candidates(payload:dict,processed:set[int])->list[dict]:
 def verified_run(data:dict,expected_repo:str,artifact:dict)->str:
     if not isinstance(data,dict) or data.get("conclusion")!="success":
         raise ValueError("source run not successful")
-    if data.get("name")!="Factory MSIX export" or data.get("event") not in ("push","workflow_dispatch"):
+    expected_name=("3D Store MSIX candidate build"
+                   if expected_repo==OWNER+"/3d-game-factory"
+                   else "Factory MSIX export")
+    if data.get("name")!=expected_name or data.get("event") not in ("push","workflow_dispatch"):
         raise ValueError("source workflow or event is untrusted")
     # Workflow display names are not unique: a different workflow can use the
     # same name and upload a lookalike artifact. Bind provenance to the exact
