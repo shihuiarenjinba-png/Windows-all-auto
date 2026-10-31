@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-30T23:42:33.474Z",
+  "updated_at_utc": "2026-10-31T14:42:51.791Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -2447,8 +2447,8 @@
     "local_execution_this_run": "NOT_PERFORMED"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-30T23:42:33.474Z",
-    "scope": "PR84_AUTHENTICATED_POST_IDENTITY_READERS_WINDOWS_UBUNTU_CI_SUCCESS__PR83_CANONICAL_BRIDGE_CI_SUCCESS__FACTORY_IDENTITY_RECHECK__E2E_HOLD",
+    "observed_at_utc": "2026-10-31T14:42:51.791Z",
+    "scope": "ACCOUNTING_MSIX_INTAKE_FAIL_CLOSED_PR100_CI_GREEN__FOUR_ACCOUNTING_FACTORY_DRAFTS_UNPROMOTED__NO_GATE_PROMOTION",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
     "canonical_previous_blob_sha": "b386620fabdfe489b3d3fd9f85a75e260e8ecefb",
@@ -2475,7 +2475,7 @@
     "success_count_cloud_verified": 2,
     "remaining_app_identity_returns": 2,
     "next_resume_index": 3,
-    "next_action": "PR84_REVIEW__IMPLEMENT_EXPECTED_HEAD_SINGLE_WRITER_LEDGER_BOUNDARY__DO_NOT_PROMOTE_MARKET_FIT_OR_VERSION__TEXT_DIFF_IMAGE_IDENTITY_RETURN_PENDING__LOCAL_GUI_E2E_NOT_VERIFIED",
+    "next_action": "REVIEW_PR100_EXACT_HEAD_AND_AUTHENTICATED_ATTESTOR_SEAM__KEEP_ACCOUNTING_4_DRAFT_UNPROMOTED__TEXT_IMAGE_IDENTITY_RETURN_PENDING__MARKET_FIT_VERSION_ASSETS_HOLD__NO_STORE_SUBMISSION",
     "post_identity_reconcile_pr": 49,
     "post_identity_reconcile_ci_run": 40851883814,
     "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU",
@@ -3002,6 +3002,36 @@
       "previous_failed_head": "ce8a48db8603e8ed88f3643bdab8fcb6c1e65d40",
       "previous_failure_fix": "REGEX_ANCHORS_CORRECTED_AND_BOTH_PLATFORM_JOBS_GREEN",
       "review_status": "DRAFT_UNMERGED"
+    },
+    "accounting_intake_guard": {
+      "draft_pr": 100,
+      "branch": "codex/e2e-accounting-intake-guard-20261031-2336",
+      "head_sha": "d60eb335a190d40c1a7130742007f7fe5018af53",
+      "base_pr": 99,
+      "base_sha": "755c9253b95ea50facaa2507cfedefd5c88d23c9",
+      "exact_head_ci_run_id": 41211339731,
+      "ci_status": "SUCCESS_WINDOWS_UBUNTU",
+      "scope": "STAGE_BUNDLE_ACCOUNTING_PACKAGE_ATTESTATION_FAIL_CLOSED__DEFAULT_BRIDGE_HOLD",
+      "production_attestor": "NOT_WIRED",
+      "factory_accounting_prs": [
+        59,
+        60,
+        61,
+        62
+      ],
+      "factory_candidate_status": "DRAFT_NOT_PROMOTED",
+      "reviewed_accounting_fixture_workflow": "ABSENT_AT_ALL_FOUR_EXACT_FACTORY_PR_HEADS",
+      "package_version_gate": "HOLD",
+      "signed_msix": "NOT_BUILT",
+      "local_qa": "NOT_RUN",
+      "store_submission": "NOT_PERFORMED"
+    },
+    "fresh_approved_file_recheck_20261031": {
+      "focus_session_desk": "GITHUB_APPROVED_IDENTITY_PRESENT",
+      "file_integrity_ledger": "GITHUB_APPROVED_IDENTITY_PRESENT",
+      "offline_text_diff_desk": "GITHUB_APPROVED_IDENTITY_404",
+      "offline_image_inventory_desk": "GITHUB_APPROVED_IDENTITY_404",
+      "evidence_scope": "GITHUB_FILE_READ_ONLY__NO_LOCAL_PARTNER_CENTER_OR_CAS"
     }
   },
   "post_identity_pipeline": {
