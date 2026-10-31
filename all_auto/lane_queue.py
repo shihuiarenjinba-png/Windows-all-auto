@@ -79,7 +79,11 @@ def validate_immutable(data: dict, kind: str) -> dict:
         "expected_head_sha": data["source_sha"],
         head_field: head,
         "claimed_store_id": store_id,
-        **({"local_package_sha256": data["local_package_sha256"]} if kind == "3d-game" else {}),
+        **({
+            "local_package_sha256": data["local_package_sha256"],
+            "claimed_package_family_name": identity["package_family_name"],
+            "claimed_package_sid": identity["package_sid"],
+        } if kind == "3d-game" else {}),
     }
 
 
@@ -178,10 +182,18 @@ def check_request_conflict(target: Path, info: dict) -> None:
                     or type(new_identity) is not dict
                     or any(
                         old_identity.get(key) != new_identity.get(key)
-                        for key in ("name", "publisher",
-                                    "package_family_name", "package_sid")
+                        for key in ("name", "publisher")
                     )
                     or old_store != info.get("claimed_store_id")
+                    or (
+                        old.get("type") == "3d-game"
+                        and (
+                            old_identity.get("package_family_name")
+                            != info.get("claimed_package_family_name")
+                            or old_identity.get("package_sid")
+                            != info.get("claimed_package_sid")
+                        )
+                    )
                 )
                 if identity_conflict or any(
                     old.get(key) != info.get(key) for key in immutable_keys
