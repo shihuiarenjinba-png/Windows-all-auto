@@ -264,6 +264,82 @@ class CanonicalLedgerWriterTests(unittest.TestCase):
     @patch.object(writer, "propose_authenticated_post_identity")
     @patch.object(writer, "fetch_canonical_ledger")
     @patch.object(writer, "fetch_canonical_head", return_value=HEAD)
+    def test_prepare_rejects_unreviewed_target_evidence_injection(
+            self, head, fetch, propose):
+        # New field names are not permission to bypass the package/QA/Store
+        # immutability contract. The previous blacklist missed these aliases.
+        cases = (
+            ("rotation_cohorts", "app_jobs", "real_msix_pass", True),
+            ("rotation_cohorts", "app_jobs", "local_qa_pass", True),
+            ("rotation_cohorts", "app_jobs", "certification_submitted", True),
+            ("user_id_requests", "items", "store_approved", True),
+            ("registration_router", "entries", "package_ready", True),
+            ("post_identity_pipeline", "products", "checker_pass", True),
+            ("post_identity_pipeline", "products", "store_published", True),
+        )
+        for section, collection, field, value in cases:
+            with self.subTest(section=section, field=field):
+                before = bound_ledger()
+                fetch.return_value = (before, BLOB)
+                after = copy.deepcopy(before)
+                after[section][collection][0][field] = value
+                propose.return_value = (after, "POST_IDENTITY_READY")
+                with self.assertRaisesRegex(
+                        writer.LedgerWriteHold,
+                        "^HOLD_CANONICAL_UNREVIEWED_TARGET_FIELD_MUTATION$"):
+                    writer.prepare(SLUG)
+
+        # Existing unknown evidence is also immutable; deletion or overwrite
+        # is forbidden even when the adapter does not change other products.
+        for action in ("delete", "overwrite"):
+            with self.subTest(action=action):
+                before = bound_ledger()
+                before["rotation_cohorts"]["app_jobs"][0]["qa_attestation"] = "HOLD"
+                fetch.return_value = (before, BLOB)
+                after = copy.deepcopy(before)
+                if action == "delete":
+                    del after["rotation_cohorts"]["app_jobs"][0]["qa_attestation"]
+                else:
+                    after["rotation_cohorts"]["app_jobs"][0]["qa_attestation"] = "PASS"
+                propose.return_value = (after, "POST_IDENTITY_READY")
+                with self.assertRaisesRegex(
+                        writer.LedgerWriteHold,
+                        "^HOLD_CANONICAL_UNREVIEWED_TARGET_FIELD_MUTATION$"):
+                    writer.prepare(SLUG)
+
+    @patch.object(writer, "propose_authenticated_post_identity")
+    @patch.object(writer, "fetch_canonical_ledger")
+    @patch.object(writer, "fetch_canonical_head", return_value=HEAD)
+    def test_prepare_accepts_reviewed_identity_market_fit_changes(
+            self, head, fetch, propose):
+        before = bound_ledger()
+        fetch.return_value = (before, BLOB)
+        after = copy.deepcopy(before)
+        job = after["rotation_cohorts"]["app_jobs"][0]
+        job.update({
+            "status": "POST_IDENTITY_READY",
+            "identity_return_commit_sha": COMMIT,
+            "identity_store_id": "9P6452C61N7B",
+            "market_fit_gate": "MARKET_FIT_HOLD",
+            "market_fit_reason": "HOLD_REVIEW_MISSING",
+            "market_fit_evidence_verified": False,
+        })
+        after["user_id_requests"]["items"][0]["status"] = "USER_IDENTITY_RECEIVED"
+        after["registration_router"]["entries"][0]["identity_status"] = "RETURNED"
+        pipeline = after["post_identity_pipeline"]["products"][0]
+        pipeline.update({
+            "state": "POST_IDENTITY_READY",
+            "identity_store_id": "9P6452C61N7B",
+            "market_fit_gate": "MARKET_FIT_HOLD",
+        })
+        propose.return_value = (after, "POST_IDENTITY_READY")
+        result = writer.prepare(SLUG)
+        self.assertEqual(result.transition, "POST_IDENTITY_READY")
+        self.assertEqual(json.loads(result.content)["e2e_pass"], False)
+
+    @patch.object(writer, "propose_authenticated_post_identity")
+    @patch.object(writer, "fetch_canonical_ledger")
+    @patch.object(writer, "fetch_canonical_head", return_value=HEAD)
     def test_prepare_rejects_collateral_edits_inside_allowlisted_sections(
             self, head, fetch, propose):
         cases = (
