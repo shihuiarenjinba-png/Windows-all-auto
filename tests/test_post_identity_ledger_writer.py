@@ -122,6 +122,34 @@ class CanonicalLedgerWriterTests(unittest.TestCase):
 
     @patch.object(writer, "propose_authenticated_post_identity")
     @patch.object(writer, "fetch_canonical_ledger")
+    @patch.object(writer, "fetch_canonical_head", return_value=HEAD)
+    def test_prepare_rejects_in_place_adapter_mutation(self, head, fetch, propose):
+        # A future adapter might mutate the input and return that same dict.
+        # Comparing before/after aliases must never hide a policy mutation.
+        fetch.return_value = (ledger(), BLOB)
+
+        def change_policy(source, slug):
+            source["policy"]["store_submission"] = True
+            return source, "POST_IDENTITY_READY"
+
+        propose.side_effect = change_policy
+        with self.assertRaisesRegex(writer.LedgerWriteHold,
+                                    "^HOLD_CANONICAL_UNRELATED_MUTATION$"):
+            writer.prepare(SLUG)
+
+        fetch.return_value = (ledger(), BLOB)
+
+        def escalate_product_gate(source, slug):
+            source["new_product_allowed"] = True
+            return source, "POST_IDENTITY_READY"
+
+        propose.side_effect = escalate_product_gate
+        with self.assertRaisesRegex(writer.LedgerWriteHold,
+                                    "^HOLD_CANONICAL_GATE_ESCALATION$"):
+            writer.prepare(SLUG)
+
+    @patch.object(writer, "propose_authenticated_post_identity")
+    @patch.object(writer, "fetch_canonical_ledger")
     @patch.object(writer, "fetch_canonical_head")
     def test_prepare_rejects_escalation_and_drift(self, head, fetch, propose):
         head.return_value = HEAD
