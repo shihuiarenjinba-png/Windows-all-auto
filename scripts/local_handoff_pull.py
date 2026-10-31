@@ -177,14 +177,22 @@ def pull(target:Path)->dict:
                 if item.get("security_confirmed") is True or item.get("price_approved") is True:
                     raise ValueError("Local QA queue must not assert Store approvals")
                 verified_items.append((folder,source,verified,checksum,expected_build_head))
+            # Reserve capacity for the *whole verified artifact* before the
+            # first stage. Per-item quota checks could admit item 1 and then
+            # reject item 2, leaving a partially imported artifact on HOLD.
+            folders=[folder for folder,_,_,_,_ in verified_items]
+            if len(folders)!=len(set(folders)):
+                raise ValueError("Duplicate local QA destination in one artifact")
+            new_items=[verified for folder,_,verified,_,_ in verified_items
+                       if not (target/folder).is_dir()]
+            existing_count=sum(1 for p in target.rglob("package.msix") if p.is_file())
+            if existing_count+len(new_items)>MAX_QUEUED:
+                raise ValueError("Local QA inbox full; complete/archive existing QA first")
+            if total+sum(item["package_bytes"] for item in new_items)>MAX_QUEUED_BYTES:
+                raise ValueError("Local QA inbox would exceed 2GiB; HOLD")
             for folder,source,verified,checksum,expected_build_head in verified_items:
                 size=verified["package_bytes"]
                 prior=(target/folder).is_dir()
-                if not prior:
-                    if sum(1 for p in target.rglob("package.msix") if p.is_file())>=MAX_QUEUED:
-                        raise ValueError("Local QA inbox full; complete/archive existing QA first")
-                    if total+size>MAX_QUEUED_BYTES:
-                        raise ValueError("Local QA inbox would exceed 2GiB; HOLD")
                 result=stage_bundle(source,target,expected_build_head)
                 if result["package_sha256"]!=checksum:
                     raise ValueError("Mismatch between queue and actual bytes")
