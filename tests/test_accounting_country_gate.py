@@ -132,6 +132,24 @@ class AccountingCountryGateTests(unittest.TestCase):
                 fetch_immutable_scope=lambda *_: json.dumps(jp),
             )
 
+    def test_integer_zero_cannot_impersonate_false_market_flags(self):
+        for slug in SPECS:
+            valid = json.loads(scope(slug))
+            flags = ["cross_market_sale"]
+            if slug.startswith("us-"):
+                flags += ["state_local_tax_automation", "tax_filing",
+                          "deductibility_determination", "compliance_claim"]
+            for flag in flags:
+                with self.subTest(slug=slug, flag=flag):
+                    unsafe = dict(valid, **{flag: 0})
+                    with self.assertRaisesRegex(
+                        CountryMarketHold, "SCOPE_BOOLEAN_INVALID"
+                    ):
+                        check_accounting_country_gate(
+                            job(slug), phase="PRE_IDENTITY",
+                            fetch_immutable_scope=lambda *_: json.dumps(unsafe),
+                        )
+
     def test_package_requires_authenticated_exact_store_availability(self):
         slug = "us-bookkeeping-desk"
         j = job(slug)
