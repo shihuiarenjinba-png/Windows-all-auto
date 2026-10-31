@@ -1,5 +1,6 @@
 """Offline guards for canonical E2E ledger single-writer atomic commit."""
 import base64
+import copy
 import json
 import subprocess
 import unittest
@@ -22,6 +23,27 @@ def ledger():
         "post_identity_pipeline": {"products": []},
         "policy": {"store_submission": False},
     }
+
+
+def bound_ledger():
+    value = ledger()
+    value["rotation_cohorts"]["app_jobs"] = [
+        {"slug": SLUG, "request_id": "request-focus", "display_name": "Focus Session Desk"},
+        {"slug": "other-product", "request_id": "request-other", "display_name": "Other Product"},
+    ]
+    value["user_id_requests"]["items"] = [
+        {"request_id": "request-focus", "status": "WAITING_USER_IDENTITY"},
+        {"request_id": "request-other", "status": "WAITING_USER_IDENTITY"},
+    ]
+    value["registration_router"]["entries"] = [
+        {"product": "Focus Session Desk", "identity_status": "WAITING"},
+        {"product": "Other Product", "identity_status": "WAITING"},
+    ]
+    value["post_identity_pipeline"]["products"] = [
+        {"request_id": "request-focus", "state": "WAITING_IDENTITY_CAPTURE_AND_CAS"},
+        {"request_id": "request-other", "state": "WAITING_IDENTITY_CAPTURE_AND_CAS"},
+    ]
+    return value
 
 
 class CanonicalLedgerWriterTests(unittest.TestCase):
@@ -106,9 +128,10 @@ class CanonicalLedgerWriterTests(unittest.TestCase):
     @patch.object(writer, "fetch_canonical_head")
     def test_prepare_only_allowed_fields(self, head, fetch, propose):
         head.return_value = HEAD
-        fetch.return_value = (ledger(), BLOB)
-        after = ledger()
-        after["rotation_cohorts"]["app_jobs"].append({"slug": SLUG})
+        before = bound_ledger()
+        fetch.return_value = (before, BLOB)
+        after = copy.deepcopy(before)
+        after["rotation_cohorts"]["app_jobs"][0]["status"] = "POST_IDENTITY_READY"
         propose.return_value = (after, "POST_IDENTITY_READY")
         prepared = writer.prepare(SLUG)
         self.assertEqual(prepared.expected_head, HEAD)
@@ -150,11 +173,63 @@ class CanonicalLedgerWriterTests(unittest.TestCase):
 
     @patch.object(writer, "propose_authenticated_post_identity")
     @patch.object(writer, "fetch_canonical_ledger")
+    @patch.object(writer, "fetch_canonical_head", return_value=HEAD)
+    def test_prepare_rejects_collateral_edits_inside_allowlisted_sections(
+            self, head, fetch, propose):
+        cases = (
+            ("rotation_cohorts", "app_jobs", "status"),
+            ("user_id_requests", "items", "status"),
+            ("registration_router", "entries", "identity_status"),
+            ("post_identity_pipeline", "products", "state"),
+        )
+        for section, collection, field in cases:
+            with self.subTest(section=section):
+                fetch.return_value = (bound_ledger(), BLOB)
+
+                def collateral(source, slug):
+                    source[section][collection][1][field] = "CORRUPTED"
+                    return source, "POST_IDENTITY_READY"
+
+                propose.side_effect = collateral
+                with self.assertRaisesRegex(
+                    writer.LedgerWriteHold,
+                    "^HOLD_CANONICAL_CROSS_PRODUCT_MUTATION$",
+                ):
+                    writer.prepare(SLUG)
+
+        fetch.return_value = (bound_ledger(), BLOB)
+
+        def reorder(source, slug):
+            source["rotation_cohorts"]["app_jobs"].reverse()
+            return source, "POST_IDENTITY_READY"
+
+        propose.side_effect = reorder
+        with self.assertRaisesRegex(
+            writer.LedgerWriteHold,
+            "^HOLD_CANONICAL_CROSS_PRODUCT_MUTATION$",
+        ):
+            writer.prepare(SLUG)
+
+        fetch.return_value = (bound_ledger(), BLOB)
+
+        def mutate_metrics(source, slug):
+            source["rotation_cohorts"]["total_jobs"] = 999
+            return source, "POST_IDENTITY_READY"
+
+        propose.side_effect = mutate_metrics
+        with self.assertRaisesRegex(
+            writer.LedgerWriteHold,
+            "^HOLD_CANONICAL_CROSS_PRODUCT_MUTATION$",
+        ):
+            writer.prepare(SLUG)
+
+    @patch.object(writer, "propose_authenticated_post_identity")
+    @patch.object(writer, "fetch_canonical_ledger")
     @patch.object(writer, "fetch_canonical_head")
     def test_prepare_rejects_escalation_and_drift(self, head, fetch, propose):
         head.return_value = HEAD
-        fetch.return_value = (ledger(), BLOB)
-        after = ledger()
+        fetch.return_value = (bound_ledger(), BLOB)
+        after = bound_ledger()
         after["e2e_pass"] = True
         propose.return_value = (after, "POST_IDENTITY_READY")
         with self.assertRaisesRegex(writer.LedgerWriteHold, "GATE_ESCALATION"):
