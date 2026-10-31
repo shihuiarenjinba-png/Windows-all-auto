@@ -102,3 +102,26 @@ def read_accounting_immutable_text(repository: str, path: str, source_sha: str) 
         raise
     except (ValueError, TypeError, UnicodeError, binascii.Error) as exc:
         raise AccountingImmutableReadHold("HOLD_ACCOUNTING_GITHUB_CONTENT_INVALID") from exc
+
+
+def check_accounting_e2e_with_authenticated_factory(
+    job: dict, *, phase: str, fetch_verified_ci=None,
+    fetch_official_review=None, fetch_verified_store_availability=None,
+    other_jobs=(),
+) -> tuple[str, str]:
+    """Bind the pure accounting gate to a real immutable Factory file reader.
+
+    Other independent readers are deliberately not synthesized here. Missing
+    authenticated Actions, IRS, or Partner Center evidence stays HOLD. This
+    wrapper does not update the canonical ledger or authorize packaging.
+    """
+    from scripts.accounting_e2e_gate import check_accounting_e2e_gate
+
+    return check_accounting_e2e_gate(
+        job, phase=phase,
+        fetch_immutable_text=read_accounting_immutable_text,
+        fetch_verified_ci=fetch_verified_ci,
+        fetch_official_review=fetch_official_review,
+        fetch_verified_store_availability=fetch_verified_store_availability,
+        other_jobs=other_jobs,
+    )
