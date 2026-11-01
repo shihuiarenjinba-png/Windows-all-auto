@@ -51,6 +51,12 @@ def _msix(*, omit=None, bad_manifest=False, extra=None, stored_asset=False,
         parts.update(extra)
     if omit and omit != "AppxBlockMap.xml":
         del parts[omit]
+    method = blockmap_method or "http://www.w3.org/2001/04/xmlenc#sha256"
+    digest_algorithm = {
+        "http://www.w3.org/2001/04/xmlenc#sha256": hashlib.sha256,
+        "http://www.w3.org/2001/04/xmldsig-more#sha384": hashlib.sha384,
+        "http://www.w3.org/2001/04/xmlenc#sha512": hashlib.sha512,
+    }.get(method, hashlib.sha256)
     files = []
     for name, value in parts.items():
         if name == "[Content_Types].xml" or name == blockmap_omit:
@@ -58,7 +64,7 @@ def _msix(*, omit=None, bad_manifest=False, extra=None, stored_asset=False,
         raw = value.encode("utf-8") if isinstance(value, str) else value
         blocks = []
         for offset in range(0, len(raw), 65536):
-            digest = hashlib.sha256(raw[offset:offset + 65536]).digest()
+            digest = digest_algorithm(raw[offset:offset + 65536]).digest()
             encoded = base64.b64encode(digest).decode("ascii")
             if blockmap_bad_hash and name == "Assets/logo.png":
                 encoded = base64.b64encode(bytes(32)).decode("ascii")
@@ -73,7 +79,6 @@ def _msix(*, omit=None, bad_manifest=False, extra=None, stored_asset=False,
         )
     if blockmap_duplicate:
         files.append(files[0])
-    method = blockmap_method or "http://www.w3.org/2001/04/xmlenc#sha256"
     blockmap = (
         '<BlockMap xmlns="http://schemas.microsoft.com/appx/2010/blockmap" '
         f'HashMethod="{html.escape(method, quote=True)}">'
@@ -227,6 +232,15 @@ class LocalEvidenceTests(unittest.TestCase):
     def test_msix_blockmap_rejects_duplicate_file_node(self):
         self._replace_package(_msix(blockmap_duplicate=True))
         self._hold("MSIX_INVALID")
+
+    def test_msix_blockmap_sha384_and_sha512_are_verified(self):
+        for method in (
+            "http://www.w3.org/2001/04/xmldsig-more#sha384",
+            "http://www.w3.org/2001/04/xmlenc#sha512",
+        ):
+            with self.subTest(method=method):
+                self._replace_package(_msix(blockmap_method=method))
+                self.assertEqual(self._read()["slug"], self.job["slug"])
 
     def test_msix_blockmap_rejects_unsupported_hash_method(self):
         self._replace_package(_msix(blockmap_method="urn:unreviewed"))
