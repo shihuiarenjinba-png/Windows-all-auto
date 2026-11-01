@@ -59,7 +59,7 @@ def _zip_local_header_size(handle, info):
     """Read actual ZIP LFH length, not the central-directory extra length."""
     handle.seek(info.header_offset)
     header = handle.read(30)
-    if len(header) != 30 or header[:4] != b"PK\\x03\\x04":
+    if len(header) != 30 or header[:4] != b"PK\x03\x04":
         _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
     if struct.unpack_from("<H", header, 8)[0] != info.compress_type:
         _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
