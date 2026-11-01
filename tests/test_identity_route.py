@@ -9,8 +9,18 @@ from all_auto.identity_route import route_identity, main
 EXAMPLE={
  "schema_version":1,
  "type":"app",
+ "request_id":"app-request-0001",
+ "product_type":"APP",
+ "source_factory":"AI-App-Factory",
+ "source_repository":"shihuiarenjinba-png/AI-App-Factory",
+ "source_branch":"codex/factory-autoloop-20261026",
+ "source_sha":"a"*40,
  "slug":"useful-tool",
  "expected_head_sha":"a"*40,
+ "package_sha256":"b"*64,
+ "package_family_name":"OkinawaDesktopTools.UsefulTool_abcdefghijklm",
+ "package_sid":"S-1-15-2-1-2-3-4-5-6-7",
+ "signature_status":"NOTSIGNED",
  "operator_verified":True,
  "verified_by":"authorized-operator",
  "official_evidence_url":"https://partner.microsoft.com/en-us/dashboard/apps-and-games/overview",
@@ -19,6 +29,8 @@ EXAMPLE={
     "name":"OkinawaDesktopTools.UsefulTool",
     "publisher":"CN=verified-publisher-subject",
     "version":"1.0.0.0",
+    "package_family_name":"OkinawaDesktopTools.UsefulTool_abcdefghijklm",
+    "package_sid":"S-1-15-2-1-2-3-4-5-6-7",
  }
 }
 class IdentityRouteTests(unittest.TestCase):
@@ -32,6 +44,9 @@ class IdentityRouteTests(unittest.TestCase):
         self.assertFalse(result["store_submitted"])
     def test_game_routes_game_factory_not_app(self):
         self.record["type"]="game"
+        self.record["product_type"]="GAME"
+        self.record["source_factory"]="AI-Game-Factory"
+        self.record["source_repository"]="shihuiarenjinba-png/AI-Game-Factory"
         result=route_identity(self.record)
         self.assertEqual(result["repository"],"shihuiarenjinba-png/AI-Game-Factory")
     def test_no_default_id(self):
@@ -51,9 +66,13 @@ class IdentityRouteTests(unittest.TestCase):
         with self.assertRaises(ValueError):route_identity(self.record)
     def test_3d_kind_routes_only_3d_factory(self):
         self.record["type"]="3d-game"
+        self.record["product_type"]="GAME_3D"
+        self.record["source_factory"]="3d-game-factory"
+        self.record["source_repository"]="shihuiarenjinba-png/3d-game-factory"
+        self.record["source_branch"]="codex/3d-real-msix-build-path-20261027"
         result=route_identity(self.record)
         self.assertEqual(result["repository"],"shihuiarenjinba-png/3d-game-factory")
-        self.assertEqual(result["branch"],"codex/3d-provisioner-job-contract-20261027")
+        self.assertEqual(result["branch"],"codex/3d-real-msix-build-path-20261027")
         self.assertEqual(result["path"],"products/useful-tool/store/approved-identity.json")
         self.assertFalse(result["applied"])
     def test_wrong_kind_holds(self):
@@ -61,6 +80,17 @@ class IdentityRouteTests(unittest.TestCase):
         with self.assertRaises(ValueError):route_identity(self.record)
     def test_fake_publisher_holds_if_missing_subject(self):
         self.record["identity"]["publisher"]="not-a-publisher"
+        with self.assertRaises(ValueError):route_identity(self.record)
+    def test_source_branch_is_preserved_and_main_is_rejected(self):
+        self.record["source_branch"]="codex/product/useful-tool"
+        self.assertEqual(route_identity(self.record)["branch"],"codex/product/useful-tool")
+        self.record["source_branch"]="main"
+        with self.assertRaises(ValueError):route_identity(self.record)
+    def test_cross_lane_repository_is_rejected(self):
+        self.record["source_repository"]="shihuiarenjinba-png/AI-Game-Factory"
+        with self.assertRaises(ValueError):route_identity(self.record)
+    def test_package_sha_and_official_pfn_are_required(self):
+        self.record["package_sha256"]="UNKNOWN"
         with self.assertRaises(ValueError):route_identity(self.record)
     def test_dry_run_writes_instruction_only(self):
         with tempfile.TemporaryDirectory() as tmp:
