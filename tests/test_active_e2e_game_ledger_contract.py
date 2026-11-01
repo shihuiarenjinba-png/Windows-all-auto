@@ -95,5 +95,30 @@ class ActiveE2EGameLedgerContract(unittest.TestCase):
         self.assertFalse(data["e2e_pass"])
 
 
+    def test_image_review_head_and_post_identity_sync_projection_remain_distinct(self):
+        data = self.data
+        market = data["transport"]["market_fit_revision_contract"]
+        self.assertEqual(market["factory_new_review_candidate_head"], "03b780f4bcb3749a2ff525b9e86ef3b2f996416a")
+        self.assertEqual(market["source_sha"], "16b6a772952ca0988f2ae2f8b5f4db2e59ec5877")
+        self.assertEqual(market["factory_score"], 64)
+        self.assertIn("UNPROMOTED", market["factory_new_review_candidate_status"])
+        self.assertIn("MARKET_FIT_HOLD", market["factory_new_review_candidate_status"])
+        self.assertEqual(
+            {x["run_id"] for x in market["factory_new_review_candidate_exact_head_ci"]},
+            {41344807864, 41344807885},
+        )
+        self.assertFalse(data["quality_gates"]["market_fit_real_app_pass"])
+        self.assertFalse(data["quality_gates"]["real_msix_pass"])
+        sync = {p["product_name"]: p for p in data["local_source_code_sync"]["products"]}
+        for name in ("Focus Session Desk", "File Integrity Ledger"):
+            self.assertIn("POST_IDENTITY", sync[name]["identity_status"])
+            self.assertIn("PHYSICAL_UNVERIFIED", sync[name]["identity_status"])
+        self.assertIn("LOCAL_PARTNER_CENTER_OPERATOR_ACTIVE", sync["Offline Text Diff Desk"]["identity_status"])
+        self.assertIn("LOCAL_PARTNER_CENTER_OPERATOR_ACTIVE", sync["Offline Image Inventory Desk"]["identity_status"])
+        self.assertFalse(data["local_source_code_sync"]["local_receipt_verified"])
+        self.assertFalse(data["local_source_code_sync"]["local_task_scheduler_run_verified"])
+        self.assertFalse(data["e2e_pass"])
+
+
 if __name__ == "__main__":
     unittest.main()

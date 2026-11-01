@@ -614,8 +614,8 @@
       ],
       "next_action": "APP00_NEW_SOURCE_AND_REQUEST_AND_SEPARATE_REVIEW_SHA_REQUIRED__SCORE_80_PLUS_GO_AND_WINDOWS_EVIDENCE__NO_MSIX",
       "factory_new_review_candidate_pr": 76,
-      "factory_new_review_candidate_head": "a3fb28b683583710ebe3fbd2a344a6dd067b3c01",
-      "factory_new_review_candidate_status": "DRAFT_UNPROMOTED_REPORTED_64_OF_100_MARKET_FIT_HOLD__NO_NEW_REQUEST_OR_REVIEW_SHA",
+      "factory_new_review_candidate_head": "03b780f4bcb3749a2ff525b9e86ef3b2f996416a",
+      "factory_new_review_candidate_status": "DRAFT_REVIEW_ONLY_UNPROMOTED__BUYER_VALIDATION_EVIDENCE_AND_AUDIT_CODE_CI_SUCCESS__NO_VERIFIED_BUYER_RESPONSES__64_OF_100_MARKET_FIT_HOLD__NO_NEW_IMMUTABLE_REQUEST",
       "integration_provenance": "PR128_DIVERGED_AHEAD3_BEHIND1__THREE_EXACT_BLOBS_ON_9E1CFD7_CANONICAL__LEDGER_ONLY_FOLLOWUP_MAY_CREATE_BEHIND_COUNT__NO_OCR_PR124_MERGE",
       "current_observation": {
         "observed_at_utc": "2026-11-01T16:36:53.678Z",
@@ -628,7 +628,20 @@
         ],
         "merge_action": "NONE",
         "recompare_before_any_merge": true
-      }
+      },
+      "factory_new_review_candidate_exact_head_ci": [
+        {
+          "run_id": 41344807864,
+          "workflow": "Factory core CI",
+          "conclusion": "SUCCESS"
+        },
+        {
+          "run_id": 41344807885,
+          "workflow": "Image snapshot QA and unsigned Windows EXE",
+          "conclusion": "SUCCESS"
+        }
+      ],
+      "factory_new_review_candidate_source_separation": "REVIEW_HEAD_03B780_NOT_OWNER_PROMOTED__ORIGINAL_PRE_IDENTITY_SOURCE_16B6A772_UNCHANGED__NO_REVISION_IDENTITY_REUSE"
     }
   },
   "policy": {
@@ -1748,7 +1761,7 @@
         "repo": "shihuiarenjinba-png/AI-App-Factory",
         "source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
         "registration_type": "MSIX_OR_PWA_APP",
-        "identity_status": "LOCAL_PARTNER_CENTER_OPERATOR_ACTIVE",
+        "identity_status": "GITHUB_APPROVED_IDENTITY_RETURN_VERIFIED__POST_IDENTITY__LOCAL_SOURCE_SYNC_PHYSICAL_UNVERIFIED",
         "remote_branch_head_verified": true,
         "physical_local_snapshot_verified": false
       },
@@ -1757,7 +1770,7 @@
         "repo": "shihuiarenjinba-png/AI-App-Factory",
         "source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
         "registration_type": "MSIX_OR_PWA_APP",
-        "identity_status": "LOCAL_PARTNER_CENTER_OPERATOR_ACTIVE",
+        "identity_status": "GITHUB_APPROVED_IDENTITY_RETURN_VERIFIED__POST_IDENTITY__LOCAL_SOURCE_SYNC_PHYSICAL_UNVERIFIED",
         "remote_branch_head_verified": true,
         "physical_local_snapshot_verified": false
       },
