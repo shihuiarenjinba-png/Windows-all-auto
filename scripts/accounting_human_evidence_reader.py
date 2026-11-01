@@ -6,6 +6,8 @@ The independent human reviewer remains a separate required trust boundary.
 """
 from __future__ import annotations
 
+import base64
+import binascii
 import hashlib
 import json
 import os
@@ -34,6 +36,17 @@ MAX_MSIX_XML_BYTES = {
     "AppxBlockMap.xml": 8 * 1024 * 1024,
     "[Content_Types].xml": 1024 * 1024,
 }
+_BLOCKMAP_NS = "http://schemas.microsoft.com/appx/2010/blockmap"
+_BLOCKMAP_HASH_METHODS = {
+    "http://www.w3.org/2001/04/xmlenc#sha256": hashlib.sha256,
+    "http://www.w3.org/2001/04/xmldsig-more#sha384": hashlib.sha384,
+    "http://www.w3.org/2001/04/xmlenc#sha512": hashlib.sha512,
+}
+_BLOCK_BYTES = 65536
+# These package metadata/signature entries are not described by File nodes.
+_BLOCKMAP_EXCLUDED = {
+    "appxblockmap.xml", "[content_types].xml", "appxsignature.p7x",
+}
 _MSIX_VERSION = re.compile(r"(?:0|[1-9][0-9]{0,4})(?:\.(?:0|[1-9][0-9]{0,4})){3}\Z")
 _MANIFEST_NAMESPACES = (
     "http://schemas.microsoft.com/appx/manifest/foundation/windows10",
@@ -41,12 +54,69 @@ _MANIFEST_NAMESPACES = (
 )
 
 
+
+def _expected_blockmap_hashes(root, names):
+    """Bind each uncompressed 64-KiB package block to AppxBlockMap.xml.
+
+    ZIP CRC alone is not cryptographic content integrity. The map itself
+    remains unauthenticated until the separate package signature gate.
+    """
+    if root.tag != f"{{{_BLOCKMAP_NS}}}BlockMap":
+        _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
+    algorithm = _BLOCKMAP_HASH_METHODS.get(root.get("HashMethod"))
+    if algorithm is None or not list(root):
+        _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
+    expected = {}
+    for file_node in root:
+        if file_node.tag != f"{{{_BLOCKMAP_NS}}}File":
+            _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
+        name = file_node.get("Name")
+        size = file_node.get("Size")
+        if (not name or not size or re.fullmatch(r"[0-9]+", size) is None):
+            _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
+        key = name.replace("\\", "/").casefold()
+        info = names.get(key)
+        if (info is None or info.is_dir() or key in _BLOCKMAP_EXCLUDED
+                or key in expected or int(size) != info.file_size):
+            _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
+        blocks = []
+        for node in file_node:
+            if node.tag != f"{{{_BLOCKMAP_NS}}}Block" or len(node):
+                _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
+            encoded = node.get("Hash")
+            if not encoded or len(encoded) > 128:
+                _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
+            try:
+                digest = base64.b64decode(encoded, validate=True)
+            except (binascii.Error, ValueError):
+                _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
+            if len(digest) != algorithm().digest_size:
+                _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
+            compressed_size = node.get("Size")
+            if compressed_size is not None and (
+                re.fullmatch(r"[1-9][0-9]*", compressed_size) is None
+            ):
+                _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
+            blocks.append(digest)
+        if len(blocks) != (info.file_size + _BLOCK_BYTES - 1) // _BLOCK_BYTES:
+            _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
+        expected[key] = blocks
+    required = {
+        key for key, info in names.items()
+        if not info.is_dir() and key not in _BLOCKMAP_EXCLUDED
+    }
+    if set(expected) != required:
+        _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
+    return algorithm, expected
+
+
 def _verify_msix_container(handle) -> None:
     """Verify the hashed file is a plausible MSIX ZIP, not merely PK bytes.
 
-    Only structural metadata is read; this does NOT authenticate the package
-    signature, embedded Store Identity binding, executable or installed GUI.
-    Those remain separate required gates.
+    Stream ZIP CRCs and compare payloads against the untrusted block-map
+    hashes; this does NOT authenticate the block-map signature, embedded Store
+    Identity binding, executable provenance or installed GUI. Those remain
+    separate required gates.
     """
     try:
         handle.seek(0)
@@ -86,21 +156,35 @@ def _verify_msix_container(handle) -> None:
                 if len(raw) > limit or len(raw) != info.file_size:
                     _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
                 xml_roots[name] = ET.fromstring(raw)
-            # The ZIP directory and three XML files are insufficient: a
-            # damaged executable or asset could otherwise pass. Stream all
-            # entries through zipfile to verify their CRCs, without extracting.
+            algorithm, expected_blocks = _expected_blockmap_hashes(
+                xml_roots["AppxBlockMap.xml"], names
+            )
+            # Verify both the ZIP CRC and every mapped uncompressed 64-KiB
+            # cryptographic digest. Stream bounded chunks; never extract.
             for info in infos:
                 if info.is_dir():
                     continue
                 with archive.open(info) as stream:
                     observed = 0
-                    while True:
-                        block = stream.read(1024 * 1024)
-                        if not block:
-                            break
-                        observed += len(block)
-                        if observed > info.file_size:
+                    mapped = expected_blocks.get(info.filename.casefold())
+                    if mapped is not None:
+                        for digest in mapped:
+                            expected_size = min(_BLOCK_BYTES, info.file_size - observed)
+                            block = stream.read(expected_size)
+                            if (len(block) != expected_size
+                                    or algorithm(block).digest() != digest):
+                                _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
+                            observed += len(block)
+                        if stream.read(1):
                             _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
+                    else:
+                        while True:
+                            block = stream.read(1024 * 1024)
+                            if not block:
+                                break
+                            observed += len(block)
+                            if observed > info.file_size:
+                                _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
                     if observed != info.file_size:
                         _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
             manifest = xml_roots["AppxManifest.xml"]
@@ -120,9 +204,7 @@ def _verify_msix_container(handle) -> None:
                 int(v) > 65535 for v in version.split(".")
             ):
                 _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
-            if xml_roots["AppxBlockMap.xml"].tag != (
-                "{http://schemas.microsoft.com/appx/2010/blockmap}BlockMap"
-            ) or xml_roots["[Content_Types].xml"].tag != (
+            if xml_roots["[Content_Types].xml"].tag != (
                 "{http://schemas.openxmlformats.org/package/2006/content-types}Types"
             ):
                 _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")

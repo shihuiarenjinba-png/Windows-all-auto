@@ -1,5 +1,7 @@
 """Local byte-level evidence checks; fixtures do not prove physical Windows QA."""
+import base64
 import hashlib
+import html
 import io
 import json
 from pathlib import Path
@@ -28,7 +30,10 @@ def _png(color, width=1024, height=768):
             + _chunk(b"IDAT", zlib.compress(raw)) + _chunk(b"IEND", b""))
 
 
-def _msix(*, omit=None, bad_manifest=False, extra=None, stored_asset=False):
+def _msix(*, omit=None, bad_manifest=False, extra=None, stored_asset=False,
+          blockmap_omit=None, blockmap_bad_hash=False, blockmap_bad_base64=False,
+          blockmap_duplicate=False, blockmap_method=None,
+          tamper_asset_after_map=False):
     manifest = (
         '<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10">'
         '<Identity Name="OkinawaDesktopTools.Test" Publisher="CN=Test" Version="1.0.0.0"/>'
@@ -39,15 +44,51 @@ def _msix(*, omit=None, bad_manifest=False, extra=None, stored_asset=False):
     parts = {
         "[Content_Types].xml": (
             '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"/>'),
-        "AppxBlockMap.xml": (
-            '<BlockMap xmlns="http://schemas.microsoft.com/appx/2010/blockmap"/>'),
         "AppxManifest.xml": manifest,
         "Assets/logo.png": b"fixture",
     }
-    if omit:
-        del parts[omit]
     if extra:
         parts.update(extra)
+    if omit and omit != "AppxBlockMap.xml":
+        del parts[omit]
+    method = blockmap_method or "http://www.w3.org/2001/04/xmlenc#sha256"
+    digest_algorithm = {
+        "http://www.w3.org/2001/04/xmlenc#sha256": hashlib.sha256,
+        "http://www.w3.org/2001/04/xmldsig-more#sha384": hashlib.sha384,
+        "http://www.w3.org/2001/04/xmlenc#sha512": hashlib.sha512,
+    }.get(method, hashlib.sha256)
+    files = []
+    for name, value in parts.items():
+        if name == "[Content_Types].xml" or name == blockmap_omit:
+            continue
+        raw = value.encode("utf-8") if isinstance(value, str) else value
+        blocks = []
+        for offset in range(0, len(raw), 65536):
+            digest = digest_algorithm(raw[offset:offset + 65536]).digest()
+            encoded = base64.b64encode(digest).decode("ascii")
+            if blockmap_bad_hash and name == "Assets/logo.png":
+                encoded = base64.b64encode(bytes(32)).decode("ascii")
+            if blockmap_bad_base64 and name == "Assets/logo.png":
+                encoded = "not-base64!!"
+            blocks.append(f'<Block Hash="{encoded}"/>')
+        xml_name = html.escape(name.replace("/", chr(92)), quote=True)
+        files.append(
+            f'<File Name="{xml_name}" Size="{len(raw)}" '
+            f'LfhSize="{30 + len(name.encode("utf-8"))}">'
+            + "".join(blocks) + "</File>"
+        )
+    if blockmap_duplicate:
+        files.append(files[0])
+    blockmap = (
+        '<BlockMap xmlns="http://schemas.microsoft.com/appx/2010/blockmap" '
+        f'HashMethod="{html.escape(method, quote=True)}">'
+        + "".join(files) + "</BlockMap>"
+    )
+    if omit != "AppxBlockMap.xml":
+        parts["AppxBlockMap.xml"] = blockmap
+    if tamper_asset_after_map:
+        # A fresh ZIP CRC/overall package SHA cannot validate a stale block map.
+        parts["Assets/logo.png"] = b"ficture"
     output = io.BytesIO()
     with zipfile.ZipFile(output, "w", zipfile.ZIP_DEFLATED) as archive:
         for name, value in parts.items():
@@ -58,7 +99,6 @@ def _msix(*, omit=None, bad_manifest=False, extra=None, stored_asset=False):
             )
             archive.writestr(info, value)
     return output.getvalue()
-
 
 class LocalEvidenceTests(unittest.TestCase):
     def setUp(self):
@@ -176,6 +216,43 @@ class LocalEvidenceTests(unittest.TestCase):
         struct.pack_into("<I", data, position + 24, 0xffffffff)
         self._replace_package(bytes(data))
         self._hold("MSIX_INVALID")
+
+    def test_msix_blockmap_rejects_missing_asset_coverage(self):
+        self._replace_package(_msix(blockmap_omit="Assets/logo.png"))
+        self._hold("MSIX_INVALID")
+
+    def test_msix_blockmap_rejects_crc_valid_changed_asset(self):
+        self._replace_package(_msix(tamper_asset_after_map=True))
+        self._hold("MSIX_INVALID")
+
+    def test_msix_blockmap_rejects_wrong_sha256(self):
+        self._replace_package(_msix(blockmap_bad_hash=True))
+        self._hold("MSIX_INVALID")
+
+    def test_msix_blockmap_rejects_duplicate_file_node(self):
+        self._replace_package(_msix(blockmap_duplicate=True))
+        self._hold("MSIX_INVALID")
+
+    def test_msix_blockmap_sha384_and_sha512_are_verified(self):
+        for method in (
+            "http://www.w3.org/2001/04/xmldsig-more#sha384",
+            "http://www.w3.org/2001/04/xmlenc#sha512",
+        ):
+            with self.subTest(method=method):
+                self._replace_package(_msix(blockmap_method=method))
+                self.assertEqual(self._read()["slug"], self.job["slug"])
+
+    def test_msix_blockmap_rejects_unsupported_hash_method(self):
+        self._replace_package(_msix(blockmap_method="urn:unreviewed"))
+        self._hold("MSIX_INVALID")
+
+    def test_msix_blockmap_rejects_malformed_base64(self):
+        self._replace_package(_msix(blockmap_bad_base64=True))
+        self._hold("MSIX_INVALID")
+
+    def test_msix_blockmap_verifies_multiple_64k_blocks(self):
+        self._replace_package(_msix(extra={"Assets/large.bin": b"x" * 70000}))
+        self.assertEqual(self._read()["slug"], self.job["slug"])
 
     def test_valid_msix_container_is_not_signature_or_e2e_pass(self):
         self._replace_package(_msix())
