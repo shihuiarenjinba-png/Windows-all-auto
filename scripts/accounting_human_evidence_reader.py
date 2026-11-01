@@ -152,7 +152,8 @@ def _read_file(path: Path, limit: int) -> bytes:
         _hold("HOLD_ACCOUNTING_EVIDENCE_FILE_UNAVAILABLE")
 
 
-def _hash_file(path: Path, limit: int, *, verify_msix: bool = False) -> tuple[str, bytes]:
+def _hash_file(path: Path, limit: int, *, verify_msix: bool = False,
+               expected_sha256: str | None = None) -> tuple[str, bytes]:
     """Stream large MSIX/checker files; never buffer a 2 GiB package in RAM."""
     _check_no_symlink(path)
     flags = os.O_RDONLY | getattr(os, "O_BINARY", 0) | getattr(os, "O_NOFOLLOW", 0)
@@ -177,9 +178,12 @@ def _hash_file(path: Path, limit: int, *, verify_msix: bool = False) -> tuple[st
                 digest.update(block)
             if total != meta.st_size:
                 _hold("HOLD_ACCOUNTING_EVIDENCE_FILE_INVALID")
+            actual_sha256 = digest.hexdigest()
+            if expected_sha256 is not None and actual_sha256 != expected_sha256:
+                _hold("HOLD_ACCOUNTING_EVIDENCE_PACKAGE_MISMATCH")
             if verify_msix:
                 _verify_msix_container(handle)
-            return digest.hexdigest(), header
+            return actual_sha256, header
     except AccountingHumanQAHold:
         raise
     except (OSError, ValueError):
@@ -292,7 +296,8 @@ def read_local_accounting_human_evidence(
         _hold("HOLD_ACCOUNTING_EVIDENCE_SCHEMA")
     if type(job.get("package_sha256")) is not str or type(job.get("checker_report_sha256")) is not str:
         _hold("HOLD_ACCOUNTING_EVIDENCE_JOB_INVALID")
-    package_digest, package_header = _hash_file(Path(package_path), MAX_PACKAGE_BYTES, verify_msix=True)
+    package_digest, package_header = _hash_file(Path(package_path), MAX_PACKAGE_BYTES, verify_msix=True,
+                                               expected_sha256=job["package_sha256"])
     if package_header != bytes((80, 75, 3, 4)) or package_digest != job["package_sha256"]:
         _hold("HOLD_ACCOUNTING_EVIDENCE_PACKAGE_MISMATCH")
     checker_digest, _ = _hash_file(Path(checker_report_path), MAX_CHECKER_BYTES)
