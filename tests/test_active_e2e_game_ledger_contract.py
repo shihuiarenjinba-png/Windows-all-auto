@@ -120,5 +120,114 @@ class ActiveE2EGameLedgerContract(unittest.TestCase):
         self.assertFalse(data["e2e_pass"])
 
 
+    def test_review_head_is_not_promoted_image_source_or_market_fit(self):
+        data = self.data
+        review = data["revision_review_reconciliation"]
+        image = review["observations"]["offline-image-inventory-desk"]
+        old = next(p for p in data["rotation_cohorts"]["app_jobs"]
+                   if p["slug"] == "offline-image-inventory-desk")
+        pipeline = next(p for p in data["post_identity_pipeline"]["products"]
+                        if p["product"] == "Offline Image Inventory Desk")
+        self.assertEqual(review["writer"], "36_WINDOWS_E2E_ONLY")
+        self.assertEqual(image["current_review_head_sha"],
+                         "ad368842c31749f4261ecf5a0e9c878c1e500618")
+        self.assertNotEqual(image["current_review_head_sha"], old["source_sha"])
+        self.assertEqual(image["immutable_pre_identity_source_sha"], old["source_sha"])
+        self.assertEqual(image["immutable_pre_identity_request_id"], old["request_id"])
+        self.assertEqual(image["separately_reported_prior_promoted_source_sha"],
+                         "7cba0dac41401683d625eb63e82432c1fca4ce3d")
+        self.assertFalse(image["current_review_revision_promoted"])
+        self.assertIsNone(image["new_revision_source_sha"])
+        self.assertIsNone(image["new_revision_request_id"])
+        self.assertEqual(image["score"], 64)
+        self.assertGreater(image["required_score"], image["score"])
+        self.assertEqual(image["independent_buyers_completed"], 0)
+        self.assertEqual(image["independent_buyers_required"], 5)
+        self.assertFalse(image["why_pay_verified"])
+        self.assertEqual(image["market_fit_gate"], "MARKET_FIT_HOLD")
+        self.assertEqual(old["status"], "PRE_IDENTITY_READY")
+        self.assertEqual(pipeline["identity_status"], "PRE_IDENTITY_READY__NO_APPROVED_FILE")
+        self.assertIsNone(pipeline["identity_return_commit_sha"])
+        self.assertEqual(pipeline["gates"]["real_msix_or_gdk"], "NOT_BUILT")
+        self.assertEqual(data["last_36_execution"]["factory_image_current"]["observed_head"],
+                         image["current_review_head_sha"])
+
+    def test_jp_bookkeeping_review_head_does_not_create_source_or_tax_pass(self):
+        data = self.data
+        jp = data["revision_review_reconciliation"]["observations"]["jp-bookkeeping-desk"]
+        intake = next(p for p in data["accounting_candidate_intake"]["products"]
+                      if p["slug"] == "jp-bookkeeping-desk")
+        self.assertEqual(jp["current_review_head_sha"],
+                         "e3ab710b75c84b6e80e5e7d64b09800fd562bcfc")
+        self.assertEqual(intake["observed_factory_pr_head"], jp["current_review_head_sha"])
+        self.assertEqual(jp["previous_review_head_sha"],
+                         "f83eee5fec573b8cab2bb152bb0ebbdd6f054a45")
+        self.assertIsNone(intake["source_sha"])
+        self.assertIsNone(intake["request_id"])
+        self.assertIsNone(jp["immutable_promoted_source_sha"])
+        self.assertIsNone(jp["immutable_request_id"])
+        self.assertEqual(jp["promotion_status"], "CANDIDATE_ONLY")
+        self.assertEqual((jp["country"], jp["locale"], jp["currency"]),
+                         ("Japan", "ja-JP", "JPY"))
+        self.assertEqual(jp["pending_receipts_as_of_month_end"], None)
+        self.assertEqual(jp["identity_status"], "NOT_YET_REQUIRED")
+        self.assertEqual(jp["package_gate"], "HOLD")
+        self.assertEqual(data["accounting_candidate_intake"]["real_msix"], "NOT_BUILT")
+
+    def test_sentinel_new_source_does_not_reuse_historical_prism_cas(self):
+        data = self.data
+        sentinel = data["revision_review_reconciliation"]["observations"]["prism-route-3d-sentinel"]
+        historical = next(p for p in data["post_identity_pipeline"]["products"]
+                          if p["product"] == "Prism Route 3D")
+        self.assertEqual(sentinel["current_review_head_sha"],
+                         "3546dadf977b6202044940be9534420daf3ba3ce")
+        self.assertEqual(sentinel["immutable_sentinel_source_sha"],
+                         "e432d94ed0db22878f61f1a8af140d7d7de2288f")
+        self.assertEqual(sentinel["immutable_sentinel_request_id"],
+                         "3d-prism-route-3d-e432d94ed0db")
+        self.assertNotEqual(sentinel["immutable_sentinel_source_sha"],
+                            historical["source_sha"])
+        self.assertNotEqual(sentinel["immutable_sentinel_request_id"],
+                            historical["request_id"])
+        self.assertEqual(historical["identity_return_commit_sha"],
+                         "11417b75636ee18816028ffd5221884c4c9a9836")
+        self.assertEqual(sentinel["historical_identity_return_commit_sha"],
+                         historical["identity_return_commit_sha"])
+        self.assertEqual(sentinel["historical_store_id"], historical["identity_store_id"])
+        self.assertEqual(sentinel["new_sentinel_identity_cas_status"],
+                         "HOLD_NEW_REVISION_CAS_AUTHENTICATION_REQUIRED")
+        self.assertFalse(sentinel["new_sentinel_cas_applied"])
+        self.assertFalse(sentinel["approved_package_version"])
+        self.assertFalse(sentinel["qa_unsigned_fixture_is_product_msix"])
+        self.assertEqual(sentinel["real_signed_msix"], "NOT_BUILT")
+        self.assertEqual(historical["state"], "POST_IDENTITY_READY")
+        self.assertEqual(data["latest_provisioner_heads_observed"]["three_d_sentinel_review"]["head_sha"],
+                         sentinel["current_review_head_sha"])
+
+    def test_game_original_bytes_and_physical_local_gates_remain_hold(self):
+        data = self.data
+        game = data["revision_review_reconciliation"]["observations"]["signal-sprint"]
+        active = data["active_product"]
+        gates = data["revision_review_reconciliation"]["cross_lane_gates"]
+        self.assertEqual(game["current_review_head_sha"], CURRENT)
+        self.assertEqual(game["immutable_source_sha"], active["source_sha"])
+        self.assertEqual(game["immutable_request_id"], active["request_id"])
+        self.assertEqual(game["original_zip_status"], "EXPIRED_404__NOT_RECOVERED")
+        self.assertFalse(game["cas_applied"])
+        self.assertFalse(active["original_exe_artifact_audit"]["authority_reconciled"])
+        self.assertEqual(gates["app_batch_cloud_discovered"], 4)
+        self.assertEqual(gates["app_github_identity_returned"], 2)
+        self.assertEqual(gates["app_pre_identity_pending"], 2)
+        self.assertEqual(gates["app_local_processed"], 0)
+        for key in ("scheduled_trigger_proven", "physical_local_code_sync_receipt_verified",
+                    "local_task_scheduler_last_result_verified", "real_msix_pass",
+                    "github_real_product_backlog_pass", "local_pull_pass",
+                    "checker_pass", "gui_install_pass", "e2e_pass"):
+            self.assertFalse(gates[key], key)
+        self.assertFalse(data["quality_gates"]["local_source_code_sync_physical_pass"])
+        self.assertFalse(data["quality_gates"]["local_source_code_sync_scheduler_pass"])
+        self.assertFalse(data["e2e_pass"])
+
+
 if __name__ == "__main__":
     unittest.main()
