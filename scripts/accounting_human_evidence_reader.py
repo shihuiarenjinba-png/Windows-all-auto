@@ -61,14 +61,14 @@ def _expected_blockmap_hashes(root, names):
     ZIP CRC alone is not cryptographic content integrity. The map itself
     remains unauthenticated until the separate package signature gate.
     """
-    if root.tag != f"{{_BLOCKMAP_NS}}BlockMap":
+    if root.tag != f"{{{_BLOCKMAP_NS}}}BlockMap":
         _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
     algorithm = _BLOCKMAP_HASH_METHODS.get(root.get("HashMethod"))
     if algorithm is None or not list(root):
         _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
     expected = {}
     for file_node in root:
-        if file_node.tag != f"{{_BLOCKMAP_NS}}File":
+        if file_node.tag != f"{{{_BLOCKMAP_NS}}}File":
             _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
         name = file_node.get("Name")
         size = file_node.get("Size")
@@ -81,7 +81,7 @@ def _expected_blockmap_hashes(root, names):
             _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
         blocks = []
         for node in file_node:
-            if node.tag != f"{{_BLOCKMAP_NS}}Block" or len(node):
+            if node.tag != f"{{{_BLOCKMAP_NS}}}Block" or len(node):
                 _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
             encoded = node.get("Hash")
             if not encoded or len(encoded) > 128:
