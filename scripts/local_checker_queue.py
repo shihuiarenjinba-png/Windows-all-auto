@@ -170,6 +170,31 @@ def _preflight_existing_checker_receipts(checked: list, reports: Path) -> None:
 
 
 def check_local_queue(inbox: Path, checker: Path, reports: Path) -> dict:
+    """Single-flight the entire Checker preflight, subprocess and receipt write.
+
+    A scheduled and manually launched worker must not both validate a missing
+    receipt then race to replace it. The sibling directory is an atomic
+    create-only lock; a crash leaves a deliberate HOLD requiring operator
+    inspection, never an automatic stale-lock break.
+    """
+    if (reports.is_symlink() or reports.parent.is_symlink()
+            or not reports.parent.is_dir()):
+        raise ValueError("LOCAL_QA_HOLD: unsafe checker report parent")
+    lock = reports.with_name(reports.name + ".checker-run.lock")
+    try:
+        lock.mkdir()
+    except FileExistsError as exc:
+        raise ValueError("LOCAL_QA_HOLD: checker already active or stale lock") from exc
+    except OSError as exc:
+        raise ValueError("LOCAL_QA_HOLD: checker lock unavailable") from exc
+    try:
+        return _check_local_queue_unlocked(inbox, checker, reports)
+    finally:
+        # Never silently clear another worker's lock or ignore tampering.
+        lock.rmdir()
+
+
+def _check_local_queue_unlocked(inbox: Path, checker: Path, reports: Path) -> dict:
     if inbox.is_symlink() or not inbox.is_dir():
         raise ValueError("LOCAL_QA_HOLD: missing or linked inbox")
     if reports.is_symlink() or reports.resolve() == inbox.resolve() or inbox.resolve() in reports.resolve().parents:

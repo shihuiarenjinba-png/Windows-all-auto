@@ -336,6 +336,47 @@ class LocalCheckerQueueTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "existing checker receipt provenance conflict"):
             check_local_queue(self.inbox, self.checker, self.reports)
 
+    def test_checker_singleflight_rejects_reentrant_run(self):
+        self.bundle("APP", "sample-app")
+        original_run = __import__("subprocess").run
+        attempted = []
+
+        def reentrant(*args, **kwargs):
+            with self.assertRaisesRegex(ValueError, "checker already active"):
+                check_local_queue(self.inbox, self.checker, self.reports)
+            attempted.append(True)
+            return original_run(*args, **kwargs)
+
+        with patch("scripts.local_checker_queue.subprocess.run", side_effect=reentrant):
+            result = check_local_queue(self.inbox, self.checker, self.reports)
+        self.assertEqual(attempted, [True])
+        self.assertEqual(result["checked"], 1)
+        self.assertFalse(result["e2e_pass"])
+        self.assertFalse(self.reports.with_name(
+            self.reports.name + ".checker-run.lock").exists())
+
+    def test_checker_stale_lock_is_fail_closed_without_receipt_write(self):
+        self.bundle("GAME", "sample-game")
+        lock = self.reports.with_name(self.reports.name + ".checker-run.lock")
+        lock.mkdir()
+        with self.assertRaisesRegex(ValueError, "checker already active"):
+            check_local_queue(self.inbox, self.checker, self.reports)
+        self.assertFalse(self.reports.exists())
+        self.assertTrue(lock.is_dir())
+        lock.rmdir()
+
+    def test_checker_failure_releases_lock_for_safe_retry(self):
+        self.bundle("GAME_3D", "sample-3d")
+        with patch("scripts.local_checker_queue.subprocess.run",
+                   side_effect=OSError("unavailable")):
+            with self.assertRaisesRegex(ValueError, "Windows-checker unavailable"):
+                check_local_queue(self.inbox, self.checker, self.reports)
+        lock = self.reports.with_name(self.reports.name + ".checker-run.lock")
+        self.assertFalse(lock.exists())
+        result = check_local_queue(self.inbox, self.checker, self.reports)
+        self.assertEqual(result["checked"], 1)
+        self.assertFalse(result["e2e_pass"])
+
     def test_report_cannot_be_written_inside_package_queue(self):
         self.bundle("GAME", "sample-game")
         with self.assertRaisesRegex(ValueError, "outside package inbox"):
