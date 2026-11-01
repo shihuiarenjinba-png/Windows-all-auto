@@ -113,9 +113,10 @@ def _expected_blockmap_hashes(root, names):
 def _verify_msix_container(handle) -> None:
     """Verify the hashed file is a plausible MSIX ZIP, not merely PK bytes.
 
-    Only structural metadata is read; this does NOT authenticate the package
-    signature, embedded Store Identity binding, executable or installed GUI.
-    Those remain separate required gates.
+    Stream ZIP CRCs and compare payloads against the untrusted block-map
+    hashes; this does NOT authenticate the block-map signature, embedded Store
+    Identity binding, executable provenance or installed GUI. Those remain
+    separate required gates.
     """
     try:
         handle.seek(0)
