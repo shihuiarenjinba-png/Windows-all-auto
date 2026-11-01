@@ -336,6 +336,39 @@ class LocalCheckerQueueTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "existing checker receipt provenance conflict"):
             check_local_queue(self.inbox, self.checker, self.reports)
 
+    def test_rotated_slug_same_request_rejected_across_historical_receipts(self):
+        folder = self.bundle("APP", "first-app", request="app-shared-0001")
+        check_local_queue(self.inbox, self.checker, self.reports)
+        original = next(self.reports.glob("*.checker.json"))
+        original_bytes = original.read_bytes()
+        shutil.rmtree(folder)
+        self.bundle("APP", "second-app", request="app-shared-0001")
+        with self.assertRaisesRegex(ValueError, "historical request provenance conflict"):
+            check_local_queue(self.inbox, self.checker, self.reports)
+        self.assertEqual(original.read_bytes(), original_bytes)
+        self.assertEqual(len(list(self.reports.glob("*.checker.json"))), 1)
+
+    def test_rotated_lane_same_request_rejected_across_historical_receipts(self):
+        folder = self.bundle("APP", "first-app", request="shared-cross-lane-0001")
+        check_local_queue(self.inbox, self.checker, self.reports)
+        shutil.rmtree(folder)
+        self.bundle("GAME_3D", "second-game", request="shared-cross-lane-0001")
+        with self.assertRaisesRegex(ValueError, "historical request provenance conflict"):
+            check_local_queue(self.inbox, self.checker, self.reports)
+        self.assertEqual(len(list(self.reports.glob("*.checker.json"))), 1)
+
+    def test_rotated_unrelated_request_is_allowed_and_replay_still_works(self):
+        folder = self.bundle("APP", "first-app", request="app-first-0001")
+        check_local_queue(self.inbox, self.checker, self.reports)
+        shutil.rmtree(folder)
+        self.bundle("GAME", "second-game", request="game-second-0002")
+        result = check_local_queue(self.inbox, self.checker, self.reports)
+        replay = check_local_queue(self.inbox, self.checker, self.reports)
+        self.assertEqual(result["checked"], 1)
+        self.assertEqual(replay["checked"], 1)
+        self.assertEqual(len(list(self.reports.glob("*.checker.json"))), 2)
+        self.assertFalse(replay["e2e_pass"])
+
     def test_checker_singleflight_rejects_reentrant_run(self):
         self.bundle("APP", "sample-app")
         original_run = __import__("subprocess").run
