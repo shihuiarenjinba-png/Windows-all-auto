@@ -28,6 +28,7 @@ MAX_PACKAGE_BYTES = 2 * 1024 * 1024 * 1024
 PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
 
 
+MAX_MSIX_TOTAL_UNCOMPRESSED_BYTES = 4 * MAX_PACKAGE_BYTES
 MAX_MSIX_XML_BYTES = {
     "AppxManifest.xml": 1024 * 1024,
     "AppxBlockMap.xml": 8 * 1024 * 1024,
@@ -54,6 +55,7 @@ def _verify_msix_container(handle) -> None:
             if not 3 <= len(infos) <= 10000:
                 _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
             names = {}
+            total_uncompressed = 0
             for info in infos:
                 name = info.filename
                 parts = name.rstrip("/").split("/")
@@ -68,6 +70,12 @@ def _verify_msix_container(handle) -> None:
                 if folded in names:
                     _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
                 names[folded] = info
+                if (info.file_size < 0 or info.file_size > MAX_PACKAGE_BYTES
+                        or (info.is_dir() and info.file_size != 0)):
+                    _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
+                total_uncompressed += info.file_size
+                if total_uncompressed > MAX_MSIX_TOTAL_UNCOMPRESSED_BYTES:
+                    _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
             xml_roots = {}
             for name, limit in MAX_MSIX_XML_BYTES.items():
                 info = names.get(name.casefold())
@@ -78,6 +86,23 @@ def _verify_msix_container(handle) -> None:
                 if len(raw) > limit or len(raw) != info.file_size:
                     _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
                 xml_roots[name] = ET.fromstring(raw)
+            # The ZIP directory and three XML files are insufficient: a
+            # damaged executable or asset could otherwise pass. Stream all
+            # entries through zipfile to verify their CRCs, without extracting.
+            for info in infos:
+                if info.is_dir():
+                    continue
+                with archive.open(info) as stream:
+                    observed = 0
+                    while True:
+                        block = stream.read(1024 * 1024)
+                        if not block:
+                            break
+                        observed += len(block)
+                        if observed > info.file_size:
+                            _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
+                    if observed != info.file_size:
+                        _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
             manifest = xml_roots["AppxManifest.xml"]
             namespace = next(
                 (ns for ns in _MANIFEST_NAMESPACES if manifest.tag == f"{{{ns}}}Package"),
@@ -104,7 +129,8 @@ def _verify_msix_container(handle) -> None:
     except AccountingHumanQAHold:
         raise
     except (OSError, ValueError, RuntimeError, OverflowError,
-            zipfile.BadZipFile, ET.ParseError, NotImplementedError):
+            zipfile.BadZipFile, ET.ParseError, NotImplementedError,
+            EOFError, zlib.error):
         _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
 
 
