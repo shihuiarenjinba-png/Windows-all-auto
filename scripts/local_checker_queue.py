@@ -112,6 +112,70 @@ def _verify_post_checker_package(package: Path, info: dict) -> None:
 
 
 
+def _preflight_historical_request_ids(checked: list, reports: Path) -> None:
+    """Reject request-id reuse across *rotated* local Checker queues.
+
+    The active inbox may no longer contain an earlier package. Checking only
+    current destination filenames misses a reused request_id with a different
+    slug, lane, repository or source. Receipts are local provenance evidence,
+    not authenticated Store or GUI QA evidence.
+    """
+    if not reports.exists():
+        return
+    if reports.is_symlink() or not reports.is_dir():
+        raise ValueError("LOCAL_QA_HOLD: invalid historical receipt directory")
+
+    def binding(receipt: dict) -> tuple:
+        fields = ("request_id", "product_type", "source_factory",
+                  "source_repository", "source_branch", "source_sha", "slug")
+        if (type(receipt.get("schema_version")) is not int
+                or receipt["schema_version"] != 1
+                or receipt.get("status") != "HOLD"
+                or any(type(receipt.get(field)) is not str or not receipt[field]
+                       for field in fields)
+                or type(receipt.get("identity")) is not dict):
+            raise ValueError("LOCAL_QA_HOLD: invalid historical checker receipt")
+        return tuple(receipt[field] for field in fields) + (receipt["identity"],)
+
+    active = {}
+    for lane, _kind, _folder, info in checked:
+        current = {
+            "schema_version": 1, "status": "HOLD",
+            "request_id": info["request_id"], "product_type": lane,
+            "source_factory": info["source_factory"],
+            "source_repository": info["source_repository"],
+            "source_branch": info["source_branch"],
+            "source_sha": info["source_sha"], "slug": info["slug"],
+            "identity": info["identity"],
+        }
+        request_id = info["request_id"]
+        value = binding(current)
+        if request_id in active and active[request_id] != value:
+            raise ValueError("LOCAL_QA_HOLD: active request provenance conflict")
+        active[request_id] = value
+
+    historical = {}
+    for count, prior in enumerate(reports.iterdir(), start=1):
+        if count > 1024:
+            raise ValueError("LOCAL_QA_HOLD: too many historical checker receipts")
+        if not prior.name.endswith(".checker.json"):
+            continue
+        if prior.is_symlink():
+            raise ValueError("LOCAL_QA_HOLD: linked historical checker receipt")
+        old = _read_bounded_json(
+            prior, limit=MAX_CHECKER_REPORT_BYTES + MAX_HANDOFF_JSON_BYTES,
+            label="historical checker receipt")
+        receipt = old.get("receipt")
+        if type(receipt) is not dict or type(old.get("checker")) is not dict:
+            raise ValueError("LOCAL_QA_HOLD: invalid historical checker receipt")
+        value = binding(receipt)
+        request_id = receipt["request_id"]
+        if (request_id in historical and historical[request_id] != value
+                or request_id in active and active[request_id] != value):
+            raise ValueError("LOCAL_QA_HOLD: historical request provenance conflict")
+        historical[request_id] = value
+
+
 def _preflight_existing_checker_receipts(checked: list, reports: Path) -> None:
     """Never overwrite another request's Checker evidence on filename reuse.
 
@@ -249,6 +313,7 @@ def _check_local_queue_unlocked(inbox: Path, checker: Path, reports: Path) -> di
         if total_bytes > MAX_QUEUED_BYTES:
             raise ValueError("LOCAL_QA_HOLD: local package capacity exceeded")
         checked.append((lane, kind, folder, info))
+    _preflight_historical_request_ids(checked, reports)
     _preflight_existing_checker_receipts(checked, reports)
     reports.mkdir(parents=True, exist_ok=True)
     results = []
