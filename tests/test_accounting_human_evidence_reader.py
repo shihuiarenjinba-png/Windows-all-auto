@@ -51,7 +51,9 @@ def _msix(*, omit=None, bad_manifest=False, extra=None):
     output = io.BytesIO()
     with zipfile.ZipFile(output, "w", zipfile.ZIP_DEFLATED) as archive:
         for name, value in parts.items():
-            archive.writestr(name, value)
+            info = zipfile.ZipInfo(name, date_time=(2020, 1, 1, 0, 0, 0))
+            info.compress_type = zipfile.ZIP_DEFLATED
+            archive.writestr(info, value)
     return output.getvalue()
 
 
