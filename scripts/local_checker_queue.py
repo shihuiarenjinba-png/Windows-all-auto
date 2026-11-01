@@ -147,7 +147,7 @@ def check_local_queue(inbox: Path, checker: Path, reports: Path) -> dict:
                 )
             except (subprocess.TimeoutExpired, OSError) as exc:
                 raise ValueError("LOCAL_QA_HOLD: Windows-checker unavailable: " + type(exc).__name__) from exc
-            if proc.returncode not in VERDICTS:
+            if proc.returncode not in VERDICTS or not report.is_file():
                 raise ValueError("LOCAL_QA_HOLD: Windows-checker failed without valid report")
             parsed = _read_bounded_json(
                 report, limit=MAX_CHECKER_REPORT_BYTES, label="checker report")
