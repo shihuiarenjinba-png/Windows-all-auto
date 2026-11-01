@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-01T21:33:28Z",
+  "updated_at_utc": "2026-11-01T22:33:21Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -633,8 +633,8 @@
       ],
       "next_action": "APP00_NEW_SOURCE_AND_REQUEST_AND_SEPARATE_REVIEW_SHA_REQUIRED__SCORE_80_PLUS_GO_AND_WINDOWS_EVIDENCE__NO_MSIX",
       "factory_new_review_candidate_pr": 76,
-      "factory_new_review_candidate_head": "a3fb28b683583710ebe3fbd2a344a6dd067b3c01",
-      "factory_new_review_candidate_status": "DRAFT_UNPROMOTED_REPORTED_64_OF_100_MARKET_FIT_HOLD__NO_NEW_REQUEST_OR_REVIEW_SHA",
+      "factory_new_review_candidate_head": "ad368842c31749f4261ecf5a0e9c878c1e500618",
+      "factory_new_review_candidate_status": "DRAFT_REVIEW_ONLY__64_OF_100__ZERO_OF_FIVE_BUYERS__NO_NEW_PROMOTED_SOURCE_OR_REQUEST",
       "integration_provenance": "PR128_DIVERGED_AHEAD3_BEHIND1__THREE_EXACT_BLOBS_ON_9E1CFD7_CANONICAL__LEDGER_ONLY_FOLLOWUP_MAY_CREATE_BEHIND_COUNT__NO_OCR_PR124_MERGE",
       "current_observation": {
         "observed_at_utc": "2026-11-01T16:36:53.678Z",
@@ -1906,7 +1906,20 @@
       "ci_run_id": 40656677109,
       "ci_conclusion": "SUCCESS"
     },
-    "caution": "Historical pinned CAS/check-only commands and evidence in this ledger remain historical; do not silently substitute these newer SHAs without review and local validation."
+    "caution": "Historical pinned CAS/check-only commands and evidence in this ledger remain historical; do not silently substitute these newer SHAs without review and local validation.",
+    "three_d_sentinel_review": {
+      "repository": "shihuiarenjinba-png/Repository-Provisioner-3D",
+      "branch": "codex/prism-sentinel-qa-consumer-handoff-20261102",
+      "draft_pr": 9,
+      "head_sha": "3546dadf977b6202044940be9534420daf3ba3ce",
+      "previous_head_sha": "15666376e510d7e816063083d9d2e9527f852d43",
+      "ci_run_id": 41356755001,
+      "ci_conclusion": "SUCCESS_WINDOWS_UBUNTU",
+      "scope": "REVIEW_ONLY_SENTINEL_NEW_REVISION__NOT_HISTORICAL_APPROVED_IDENTITY_CAS",
+      "sentinel_source_sha": "e432d94ed0db22878f61f1a8af140d7d7de2288f",
+      "sentinel_request_id": "3d-prism-route-3d-e432d94ed0db",
+      "sentinel_cas": "HOLD_NEW_REVISION_CAS_AUTHENTICATION_REQUIRED"
+    }
   },
   "partner_center_local_operator": {
     "schema_version": 1,
@@ -2757,7 +2770,7 @@
     "local_execution_this_run": "NOT_PERFORMED"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-11-01T16:35:42.478Z",
+    "observed_at_utc": "2026-11-01T22:33:21Z",
     "scope": "PR129_NEW_CANONICAL_BASE_EXACT_BLOB_INTEGRATION_CI_WINDOWS_UBUNTU_SUCCESS__FOCUS_EXE_ARTIFACT_ZIP_SHA_PRESERVED__IMAGE64_HOLD__GAME_HEAD_DRIFT_REOBSERVED",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
@@ -3692,7 +3705,7 @@
     ],
     "accounting_market_scope": "FOUR_DRAFT_CANDIDATES_JP_US_SEPARATE__NO_PROMOTION_NO_SOURCE_REQUEST_NO_USER_ID_REQUEST",
     "accounting_tax_source_review": "NTA_2026_04_01_AND_IRS_P946_2025_REFERENCES_CHECKED__NOT_IMPLEMENTATION_COMPLIANCE_PASS",
-    "accounting_jp_bookkeeping_head_observed": "13d1a976757e86587fb11202ebb35fd5ac113cb8",
+    "accounting_jp_bookkeeping_head_observed": "e3ab710b75c84b6e80e5e7d64b09800fd562bcfc",
     "accounting_receipt_pdf_gate": "PR122_8_NEW_REGRESSIONS_PASS__467_TESTS_WINDOWS_UBUNTU__PHYSICAL_QA_HOLD",
     "accounting_receipt_pdf_pr": 122,
     "accounting_receipt_pdf_head": "8a5e5f01c0b2a5496da90ab6dab073523cd74e28",
@@ -3750,7 +3763,7 @@
       ]
     },
     "latest_factory_image_pr76": {
-      "head_sha": "482372e288213b937df993ee927424587b4afca1",
+      "head_sha": "ad368842c31749f4261ecf5a0e9c878c1e500618",
       "score": 64,
       "market_fit": "HOLD",
       "promotion": "NOT_OBSERVED",
@@ -3787,9 +3800,9 @@
     "factory_image_current": {
       "repo": "shihuiarenjinba-png/AI-App-Factory",
       "draft_pr": 76,
-      "observed_head": "a3fb28b683583710ebe3fbd2a344a6dd067b3c01",
-      "ci_core_run": 41324308648,
-      "ci_image_qa_run": 41324308661,
+      "observed_head": "ad368842c31749f4261ecf5a0e9c878c1e500618",
+      "ci_core_run": 41355330756,
+      "ci_image_qa_run": 41355330668,
       "ci_conclusion": "SUCCESS_AT_EXACT_HEAD",
       "market_fit_score_reported": 64,
       "why_pay_verified": false,
@@ -3799,9 +3812,12 @@
       "official_new_source_sha": "NOT_OBSERVED",
       "review_commit_sha": "NOT_OBSERVED",
       "commercial_msix": "PROHIBITED",
-      "previous_head": "482372e288213b937df993ee927424587b4afca1",
+      "previous_head": "a3fb28b683583710ebe3fbd2a344a6dd067b3c01",
       "old_request_id": "app-offline-image-inventory-desk-16b6a772952c",
-      "old_request_not_overwritten": true
+      "old_request_not_overwritten": true,
+      "independent_buyers_completed": 0,
+      "independent_buyers_required": 5,
+      "cloud_exact_uploaded_exe_replay": "SUCCESS__CLOUD_WINDOWS_NOT_LOCAL_OR_HUMAN"
     },
     "prism_sentinel_separate_observation": {
       "repo": "shihuiarenjinba-png/3d-game-factory",
@@ -3811,9 +3827,12 @@
       "commit_scope": "GAMEPLAY_UI_SMOKE_TEST_PRIORITY_AFTER_TRAPS",
       "immutable_old_identity_source_sha": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
       "old_identity_return_commit": "11417b75636ee18816028ffd5221884c4c9a9836",
-      "new_revision_identity_reuse": "PROHIBITED_WITHOUT_NEW_EXACT_BINDING",
+      "new_revision_identity_reuse": "CHECK_ONLY_HISTORICAL_ORACLE__NEW_SENTINEL_CAS_HOLD",
       "new_revision_request_status": "NOT_OBSERVED",
-      "package_version_gate": "HOLD"
+      "package_version_gate": "HOLD",
+      "current_provisioner_pr9_head": "3546dadf977b6202044940be9534420daf3ba3ce",
+      "provisioner_ci_run_id": 41356755001,
+      "new_revision_request_id": "3d-prism-route-3d-e432d94ed0db"
     },
     "focus_artifact_preservation": {
       "repo": "shihuiarenjinba-png/AI-App-Factory",
@@ -3832,7 +3851,9 @@
       "local_windows_gui": "NOT_VERIFIED",
       "commercial_market_fit": "HOLD",
       "store_submission": "NOT_PERFORMED"
-    }
+    },
+    "accounting_jp_bookkeeping_previous_head_observed": "13d1a976757e86587fb11202ebb35fd5ac113cb8",
+    "review_head_source_reconciliation": "PR76_ad368842_REVIEW_ONLY_MARKET64_BUYERS0_OF5__PR61_e3ab710_CANDIDATE_ONLY__3D_PR9_3546dad_SENTINEL_CAS_HOLD__GAME_PR10_36df224_ORIGINAL_BYTES_HOLD"
   },
   "post_identity_pipeline": {
     "schema_version": 1,
@@ -4796,8 +4817,12 @@
         "status": "NOT_YET_REQUIRED",
         "source_sha": null,
         "request_id": null,
-        "factory_head_observed": "13d1a976757e86587fb11202ebb35fd5ac113cb8",
-        "observed_factory_pr_head": "9495dde15b4c60fb9c7447fca0a94f15edcd0b4d"
+        "factory_head_observed": "e3ab710b75c84b6e80e5e7d64b09800fd562bcfc",
+        "observed_factory_pr_head": "e3ab710b75c84b6e80e5e7d64b09800fd562bcfc",
+        "historical_factory_head_observed": "13d1a976757e86587fb11202ebb35fd5ac113cb8",
+        "previous_observed_factory_pr_head": "9495dde15b4c60fb9c7447fca0a94f15edcd0b4d",
+        "receipt_queue_scope": "CURRENT_QUEUE_ALL_DATES_NOT_HISTORICAL_AS_OF",
+        "unprocessed_receipts_as_of_month_end": null
       },
       {
         "slug": "us-bookkeeping-desk",
@@ -4897,5 +4922,156 @@
       "integration": "STACKED_DRAFT_NOT_MERGED",
       "store_submission": "NOT_PERFORMED"
     }
+  },
+  "revision_review_reconciliation": {
+    "schema_version": 1,
+    "observed_at_utc": "2026-11-01T22:33:21Z",
+    "writer": "36_WINDOWS_E2E_ONLY",
+    "scope": "READ_ONLY_CURRENT_DRAFT_HEAD_VS_IMMUTABLE_SOURCE__NO_CAS_OR_MARKET_PROMOTION",
+    "policy": "PR_HEAD_IS_MUTABLE_REVIEW_CODE__SOURCE_SHA_AND_REQUEST_ID_ARE_IMMUTABLE_PRODUCT_BINDINGS__NO_AUTO_REBIND",
+    "observations": {
+      "offline-image-inventory-desk": {
+        "repository": "shihuiarenjinba-png/AI-App-Factory",
+        "draft_pr": 76,
+        "review_branch": "codex/app-image-snapshot-evidence-20261101",
+        "current_review_head_sha": "ad368842c31749f4261ecf5a0e9c878c1e500618",
+        "previous_review_head_sha": "70ed475c1621a9955dafe5cc39562915c6cfd424",
+        "review_head_compare": "AHEAD_6_BEHIND_0_FROM_PREVIOUS",
+        "exact_head_ci": [
+          {
+            "run_id": 41355330668,
+            "workflow": "Image snapshot QA and unsigned Windows EXE",
+            "conclusion": "SUCCESS"
+          },
+          {
+            "run_id": 41355330756,
+            "workflow": "Factory core CI",
+            "conclusion": "SUCCESS"
+          }
+        ],
+        "immutable_pre_identity_source_sha": "16b6a772952ca0988f2ae2f8b5f4db2e59ec5877",
+        "immutable_pre_identity_request_id": "app-offline-image-inventory-desk-16b6a772952c",
+        "separately_reported_prior_promoted_source_sha": "7cba0dac41401683d625eb63e82432c1fca4ce3d",
+        "current_review_revision_promoted": false,
+        "new_revision_source_sha": null,
+        "new_revision_request_id": null,
+        "score": 64,
+        "required_score": 80,
+        "independent_buyers_completed": 0,
+        "independent_buyers_required": 5,
+        "why_pay_verified": false,
+        "qa_evidence": "CLOUD_WINDOWS_EXACT_UPLOADED_UNSIGNED_EXE_REPLAY_AND_FIXTURES_ONLY__NOT_USER_LOCAL_GUI_OR_HUMAN_BUYERS",
+        "market_fit_gate": "MARKET_FIT_HOLD",
+        "identity_status": "PRE_IDENTITY_READY__HISTORICAL_REQUEST_ONLY__NO_APPROVED_FILE",
+        "package_gate": "HOLD_NO_NEW_PROMOTION_OR_MARKET_FIT_PASS",
+        "signed_msix": "NOT_BUILT",
+        "store_submission": "NOT_PERFORMED"
+      },
+      "jp-bookkeeping-desk": {
+        "repository": "shihuiarenjinba-png/AI-App-Factory",
+        "draft_pr": 61,
+        "review_branch": "codex/app-jp-bookkeeping-desk-20261031",
+        "current_review_head_sha": "e3ab710b75c84b6e80e5e7d64b09800fd562bcfc",
+        "previous_review_head_sha": "f83eee5fec573b8cab2bb152bb0ebbdd6f054a45",
+        "exact_head_ci": [
+          {
+            "run_id": 41354966658,
+            "workflow": "Factory core CI",
+            "conclusion": "SUCCESS"
+          }
+        ],
+        "immutable_promoted_source_sha": null,
+        "immutable_request_id": null,
+        "promotion_status": "CANDIDATE_ONLY",
+        "country": "Japan",
+        "locale": "ja-JP",
+        "currency": "JPY",
+        "review_scope": "MONTH_END_RECEIPT_QUEUE_CURRENT_ALL_DATES_NOT_HISTORICAL_AS_OF__FUTURE_DATED_FIXTURE",
+        "pending_receipts_as_of_month_end": null,
+        "tax_compliance": "NOT_VERIFIED__REVIEW_REQUIRED",
+        "market_fit_gate": "HOLD_NOT_PROMOTED",
+        "identity_status": "NOT_YET_REQUIRED",
+        "package_gate": "HOLD",
+        "store_submission": "NOT_PERFORMED"
+      },
+      "prism-route-3d-sentinel": {
+        "repository": "shihuiarenjinba-png/Repository-Provisioner-3D",
+        "draft_pr": 9,
+        "review_branch": "codex/prism-sentinel-qa-consumer-handoff-20261102",
+        "current_review_head_sha": "3546dadf977b6202044940be9534420daf3ba3ce",
+        "previous_review_head_sha": "15666376e510d7e816063083d9d2e9527f852d43",
+        "exact_head_ci": [
+          {
+            "run_id": 41356755001,
+            "workflow": "Package and Identity Provisioner CI",
+            "conclusion": "SUCCESS_WINDOWS_UBUNTU"
+          }
+        ],
+        "immutable_sentinel_source_sha": "e432d94ed0db22878f61f1a8af140d7d7de2288f",
+        "immutable_sentinel_request_id": "3d-prism-route-3d-e432d94ed0db",
+        "factory_run_id": 40901053437,
+        "factory_artifact_id": 12909162367,
+        "artifact_expires_at_utc": "2026-11-05T15:24:12Z",
+        "historical_real_zip_receipt": "handoffs/prism-sentinel-live-zip-check-only-20261102-0629-jst.json",
+        "historical_real_zip_sha256": "dc60f397e002bddf63a8f64ec263dd241a3eb8c4f7fd6e6595d115a9f273ae9c",
+        "historical_real_exe_sha256": "66b26ad96df7458ea917b632a73ac7c88bb058db24dbd11a457fd50435ab7b13",
+        "historical_real_pck_sha256": "3e92b7b6e336a0ab40419448b79f330cf00e0cba4d6bb9ec864ba70b89ecdb03",
+        "real_byte_receipt_basis": "24_LANE_REPORTED_REAL_FACTORY_ZIP_VERIFICATION__NOT_FRESHLY_REHASHED_BY_36",
+        "registration_type": "MSIX_OR_PWA_GAME",
+        "partner_center_selection": "MSIX or PWA game",
+        "historical_identity_source_sha": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
+        "historical_identity_return_commit_sha": "11417b75636ee18816028ffd5221884c4c9a9836",
+        "historical_store_id": "9N95J2T57B41",
+        "new_sentinel_identity_cas_status": "HOLD_NEW_REVISION_CAS_AUTHENTICATION_REQUIRED",
+        "read_only_identity_gate": "HOLD_OFFICIAL_IDENTITY_EVIDENCE_MISSING__SYNTHETIC_POSITIVE_STILL_HOLD",
+        "new_sentinel_cas_applied": false,
+        "approved_package_version": false,
+        "qa_unsigned_fixture_is_product_msix": false,
+        "real_signed_msix": "NOT_BUILT",
+        "local_gui": "NOT_VERIFIED",
+        "package_gate": "HOLD",
+        "store_submission": "NOT_PERFORMED"
+      },
+      "signal-sprint": {
+        "repository": "shihuiarenjinba-png/Repository-Provisioner-game",
+        "draft_pr": 10,
+        "current_review_head_sha": "36df224b584719f01d3ef5cdaeb9c6a7e89de0b1",
+        "exact_head_ci": [
+          {
+            "run_id": 41351247625,
+            "workflow": "Package and Identity Provisioner CI",
+            "conclusion": "SUCCESS"
+          }
+        ],
+        "immutable_source_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
+        "immutable_request_id": "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e",
+        "user_identity_status": "USER_IDENTITY_RECEIVED_NOT_LOCAL_VALIDATED",
+        "original_zip_status": "EXPIRED_404__NOT_RECOVERED",
+        "original_exe_sha_conflict": "HISTORICAL_E851_VS_FACTORY_9C31_UNRESOLVED",
+        "new_lineage_request_id": null,
+        "new_lineage_artifact_id": null,
+        "cas_applied": false,
+        "real_gdk_msixvc": "NOT_BUILT",
+        "package_gate": "HOLD_ARTIFACT_EXACT_BYTES",
+        "store_submission": "NOT_PERFORMED"
+      }
+    },
+    "cross_lane_gates": {
+      "app_batch_cloud_discovered": 4,
+      "app_github_identity_returned": 2,
+      "app_pre_identity_pending": 2,
+      "app_local_processed": 0,
+      "scheduled_trigger_proven": false,
+      "physical_local_code_sync_receipt_verified": false,
+      "local_code_sync_three_sha_reuse_cloud_only": true,
+      "local_task_scheduler_last_result_verified": false,
+      "real_msix_pass": false,
+      "github_real_product_backlog_pass": false,
+      "local_pull_pass": false,
+      "checker_pass": false,
+      "gui_install_pass": false,
+      "e2e_pass": false
+    },
+    "next_action": "00_APP_HUMAN_BUYER_5_OF_5_AND_NEW_IMMUTABLE_PROMOTION__24_3D_SENTINEL_AUTHENTICATED_READ_ONLY_RECHECK__12_GAME_ORIGINAL_BYTES_HOLD__36_LOCAL_CODE_SYNC_PHYSICAL_RECEIPT_WHEN_ACCESSIBLE"
   }
 }
