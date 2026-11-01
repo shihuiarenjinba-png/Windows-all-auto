@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-31T22:38:11.615Z",
+  "updated_at_utc": "2026-11-01T09:36:11Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -2450,8 +2450,8 @@
     "local_execution_this_run": "NOT_PERFORMED"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-31T22:38:11.615Z",
-    "scope": "PR108_EXISTING_LOCAL_QA_RECEIPT_PREFLIGHT_BEFORE_ARTIFACT_STAGE__EXACT_CODE_HEAD_WINDOWS_UBUNTU_CI_PASS__PHYSICAL_E2E_HOLD",
+    "observed_at_utc": "2026-11-01T09:36:11Z",
+    "scope": "PR120_CHECKER_SINGLEFLIGHT_LOCK_DRAFT__GITHUB_CI_PENDING__PHYSICAL_WINDOWS_AND_REAL_MSIX_HOLD",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
     "canonical_previous_blob_sha": "b386620fabdfe489b3d3fd9f85a75e260e8ecefb",
@@ -3042,6 +3042,21 @@
       "store_submission": "NOT_PERFORMED",
       "accounting_pre_identity": "HOLD_CANDIDATE_ONLY_MARKET_FIT_AND_COMPLIANCE_NOT_ATTESTED",
       "identity_status_change": "NONE"
+    },
+    "checker_singleflight_guard": {
+      "draft_pr": 120,
+      "branch": "codex/e2e-checker-singleflight-lock-20261101-1836",
+      "base_pr": 119,
+      "base_head_sha": "2a80b7755b0b9b6738fd2e1f9f5844ec332f1f65",
+      "implementation_head_sha": "7e78a2c447b2ff7c986d1e3bb7c627500918a9f9",
+      "scope": "ATOMIC_CREATE_ONLY_REPORT_SIBLING_LOCK_ACROSS_PREFLIGHT_SUBPROCESS_AND_RECEIPT_WRITE__STALE_LOCK_FAIL_CLOSED",
+      "tests": "REENTRANT_RUN__PREEXISTING_STALE_LOCK__FAILURE_RETRY",
+      "ci_status": "PENDING_AT_CODE_HEAD__LEDGER_ONLY_COMMIT_WILL_FOLLOW",
+      "integration_status": "STACKED_DRAFT_NOT_MERGED",
+      "physical_windows": "NOT_PERFORMED",
+      "checker_real_package": "NOT_PERFORMED",
+      "e2e_pass": false,
+      "store_submission": "NOT_PERFORMED"
     }
   },
   "post_identity_pipeline": {
@@ -3739,5 +3754,67 @@
       "cas": "NOT_PERFORMED",
       "store_submission": "NOT_PERFORMED"
     }
+  },
+  "accounting_candidate_intake": {
+    "schema_version": 1,
+    "observed_at_utc": "2026-11-01T09:36:11Z",
+    "writer": "36_WINDOWS_E2E_ONLY",
+    "status": "CANDIDATE_ONLY__NO_PROMOTION_SOURCE_SHA_REQUEST_ID_OR_MARKET_FIT_PASS_VERIFIED",
+    "products": [
+      {
+        "slug": "jp-freelance-ledger",
+        "market": "Japan",
+        "locale": "ja-JP",
+        "currency": "JPY",
+        "factory_draft_pr": 59,
+        "status": "NOT_YET_REQUIRED",
+        "source_sha": null,
+        "request_id": null
+      },
+      {
+        "slug": "us-freelance-ledger",
+        "market": "United States",
+        "locale": "en-US",
+        "currency": "USD",
+        "factory_draft_pr": 60,
+        "status": "NOT_YET_REQUIRED",
+        "source_sha": null,
+        "request_id": null
+      },
+      {
+        "slug": "jp-bookkeeping-desk",
+        "market": "Japan",
+        "locale": "ja-JP",
+        "currency": "JPY",
+        "factory_draft_pr": 61,
+        "status": "NOT_YET_REQUIRED",
+        "source_sha": null,
+        "request_id": null
+      },
+      {
+        "slug": "us-bookkeeping-desk",
+        "market": "United States",
+        "locale": "en-US",
+        "currency": "USD",
+        "factory_draft_pr": 62,
+        "status": "NOT_YET_REQUIRED",
+        "source_sha": null,
+        "request_id": null
+      }
+    ],
+    "identity_policy": "NO_USER_ID_REQUEST_UNTIL_FACTORY_PROMOTION_AND_EXACT_REQUEST_SOURCE__NO_CROSS_MARKET_REUSE",
+    "pre_msix_gate": "HOLD_MARKET_FIT__CALCULATION_FIXTURES__TAX_ASSET_FIXTURES__ENGINE_PARITY__BEGINNER_UI__COUNTRY_MARKET_SCOPE__VERSION_ASSETS",
+    "source_review": {
+      "nta_bookkeeping": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2080.htm",
+      "nta_consumption_ledger": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shohi/6621.htm",
+      "nta_etax_2026_change": "https://www.e-tax.nta.go.jp/topics/2026/topics_20260924_r8zeiseikaisei.htm",
+      "irs_small_business": "https://www.irs.gov/publications/p334",
+      "observation": "NTA_2026_04_01_REFERENCE_AND_2026_09_24_ETAX_NOTICE_FOUND__IRS_PUBLICATION_334_2025_CURRENT_LISTING__PRODUCT_FIXTURE_PARITY_NOT_VERIFIED",
+      "action": "TAX_OR_ASSET_AUTOMATION_REQUIRES_VERSION_SPECIFIC_SOURCE_MAPPING_AND_FIXTURE_REVIEW_BEFORE_PACKAGE_GATE"
+    },
+    "market_scope": "JP_ONLY_FOR_JP_SKUS__US_ONLY_FOR_US_SKUS__PRICING_AVAILABILITY_NOT_AUTOMATED",
+    "physical_windows_qa": "NOT_PERFORMED",
+    "real_msix": "NOT_BUILT",
+    "store_submission": "NOT_PERFORMED"
   }
 }
