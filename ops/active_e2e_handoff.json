@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-01T02:41:57.417Z",
+  "updated_at_utc": "2026-11-01T03:41:47.130Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -937,11 +937,14 @@
     "accounting_msix_zip_structure_ci_pass": true,
     "accounting_real_signed_msix_pass": false,
     "accounting_msix_payload_crc_code_committed": true,
-    "accounting_msix_payload_crc_ci_pass": true
+    "accounting_msix_payload_crc_ci_pass": true,
+    "accounting_msix_blockmap_code_committed": true,
+    "accounting_msix_blockmap_ci_pass": true,
+    "accounting_msix_blockmap_real_product_pass": false
   },
   "user_id_requests": {
     "schema_version": 1,
-    "generated_at_utc": "2026-11-01T02:40:48.078Z",
+    "generated_at_utc": "2026-11-01T03:41:47.130Z",
     "acquisition_owner": "LOCAL_PARTNER_CENTER_OPERATOR_PERMITTED_FROM_2026_10_28_17_44_JST",
     "storage_policy": "LOCAL_OPERATOR_RECEIPT_AND_PRIVATE_IDENTITY_ONLY__NO_AUTH_COOKIES_TOKENS_SESSIONS_IN_GITHUB",
     "items": [
@@ -1474,7 +1477,7 @@
     "3d_waiting_identity": 0,
     "3d_conflicts": 0,
     "3d_artifact_mismatch": 0,
-    "metrics_basis": "2026_10_31_17_40Z_SIX_LIVE_FACTORY_SOURCE_BRANCH_COMPARE_AND_APPROVED_IDENTITY_FILE_RECHECK__APP_2_POST_2_PRE__3D_1_POST__GAME_1_RECEIVED_NO_CAS__NO_NEW_LOCAL_RECEIPTS",
+    "metrics_basis": "2026_11_01_GITHUB_APPROVED_IDENTITY_FILE_AND_EXACT_REQUEST_SOURCE_JSON_RECHECK__APP_2_POST_2_PRE__3D_1_POST__GAME_USER_RECEIVED_NO_CAS__NO_NEW_LOCAL_RECEIPTS",
     "3d_source_branch_head_drift_observed": 1
   },
   "local_source_code_sync": {
@@ -2528,11 +2531,11 @@
     "local_execution_this_run": "NOT_PERFORMED"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-11-01T02:41:57.417Z",
-    "scope": "PR113_MSIX_ALL_PAYLOAD_CRC_BOUNDS_EXACT_HEAD_WINDOWS_UBUNTU_CI_PASS__SIX_IDENTITY_FILES_RECHECKED__FOUR_ACCOUNTING_SKU_HEADS_UPDATED__E2E_HOLD",
+    "observed_at_utc": "2026-11-01T03:41:47.130Z",
+    "scope": "PR114_ACCOUNTING_MSIX_APPXBLOCKMAP_UNCOMPRESSED_64K_HASH_AND_COVERAGE_GUARD__EXACT_HEAD_WINDOWS_UBUNTU_OFFLINE_CI_PASS__REAL_PRODUCT_E2E_HOLD",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
-    "canonical_previous_blob_sha": "0e79acb05ce4a6a63195b997abe20fd81b327839",
+    "canonical_previous_blob_sha": "2fc2875fde95313663c73d6ca21cd8bf1c7c8511",
     "focus_return_commit_sha": "8a7139375524830bf823469526837259266172be",
     "focus_store_id": "9P6452C61N7B",
     "focus_source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
@@ -2547,16 +2550,16 @@
     "local_code_sync": "NOT_RUN_THIS_CLOUD_EXECUTION",
     "partner_center_cdp": "NOT_RUN_THIS_CLOUD_EXECUTION",
     "cas": "NO_NEW_CAS_THIS_EXECUTION",
-    "package": "NO_REAL_SIGNED_MSIX__VERSION_MARKET_FIT_ASSET_TAX_COMPLIANCE_HOLD",
-    "github_backlog": "NO_NEW_VERIFIED_REAL_MSIX_ARTIFACT",
-    "local_pull": "NO_PHYSICAL_WINDOWS_PULL",
-    "checker": "NO_REAL_PRODUCT_CHECKER_RUN",
-    "gui_install_qa": "PR113_ALL_ZIP_ENTRY_CRC_BOUNDS_OFFLINE_CI_PASS__NO_PHYSICAL_WINDOWS_GUI_INSTALL",
+    "package": "NOT_BUILT",
+    "github_backlog": "NO_NEW_REAL_MSIX",
+    "local_pull": "NOT_RUN_THIS_EXECUTION",
+    "checker": "NOT_RUN_THIS_EXECUTION",
+    "gui_install_qa": "NOT_RUN_THIS_EXECUTION",
     "store_submission": 0,
     "success_count_cloud_verified": 2,
     "remaining_app_identity_returns": 2,
     "next_resume_index": 3,
-    "next_action": "REVIEW_DRAFT_PR113__SIGNED_MSIX_IDENTITY_CHECKER_LOCAL_PULL_AND_GUI_INSTALL_HOLD__TEXT_DIFF_IMAGE_INVENTORY_GITHUB_IDENTITY_404__FOUR_ACCOUNTING_SKUS_CANDIDATE_ONLY",
+    "next_action": "REVIEW_STACKED_DRAFT_PR114_EXACT_HEAD_AND_CI__DO_NOT_PROMOTE_UNAUTHENTICATED_BLOCKMAP_TO_SIGNED_MSIX__APP_FACTORY_ACCOUNTING_PROMOTION_MARKET_FIT_AND_ACTIONS_FIXTURES_PENDING__TEXT_DIFF_IMAGE_IDENTITY_RETURN_PENDING__PHYSICAL_LOCAL_PULL_CHECKER_GUI_HOLD",
     "post_identity_reconcile_pr": 49,
     "post_identity_reconcile_ci_run": 40851883814,
     "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU",
@@ -3234,38 +3237,21 @@
       "products": "FOUR_ACCOUNTING_COUNTRY_SKUS_REMAIN_MARKET_FIT_AND_COMPLIANCE_HOLD"
     },
     "accounting_candidate_recheck_20261101": {
-      "checked_at_utc": "2026-10-31T18:42:54.360Z",
-      "source_repository": "shihuiarenjinba-png/AI-App-Factory",
-      "candidates": [
-        {
-          "sku": "jp-freelance-ledger",
-          "pr": 59,
-          "head_sha": "83954f32a91a5f442a74c0fe7af0b64b72907ce2",
-          "state": "DRAFT_NOT_PROMOTED"
-        },
-        {
-          "sku": "us-freelance-ledger",
-          "pr": 60,
-          "head_sha": "dc96e9b657084f723a03497ea386151eb7201c20",
-          "state": "DRAFT_NOT_PROMOTED"
-        },
-        {
-          "sku": "jp-bookkeeping-desk",
-          "pr": 61,
-          "head_sha": "b5ad50925f94e450d6e16c72aa5f4d2ffcf1fbdf",
-          "state": "DRAFT_NOT_PROMOTED",
-          "change": "AHEAD_4_FROM_PREVIOUS_LEDGER_HEAD__CORE_AND_RECONCILIATION_TESTS",
-          "ci": "TEST_BUILD_WINDOWS_CONTRACTS_SUCCESS__WINDOWS_EXE_SMOKE_SKIPPED"
-        },
-        {
-          "sku": "us-bookkeeping-desk",
-          "pr": 62,
-          "head_sha": "509acefe40dc42504ba062fb9d8d4192c1455164",
-          "state": "DRAFT_NOT_PROMOTED"
-        }
+      "observed_at_utc": "2026-11-01T03:41:47.130Z",
+      "sku_count": 4,
+      "draft_prs": [
+        59,
+        60,
+        61,
+        62
       ],
-      "country_scope": "JP_JAPAN_ONLY__US_UNITED_STATES_ONLY__NOT_INDEPENDENTLY_STORE_VERIFIED",
-      "package_gate": "MARKET_FIT_HOLD__TAX_ASSET_COMPLIANCE_HOLD__NO_PROMOTION_OR_MSIX"
+      "draft_open": true,
+      "immutable_promotion": "NOT_VERIFIED",
+      "market_fit_pass": "NOT_VERIFIED",
+      "accounting_fixture_actions": "NOT_VERIFIED",
+      "signed_msix": "NOT_OBSERVED",
+      "identity_request": "NOT_YET_REQUIRED",
+      "pre_identity_dispatch": "HOLD"
     },
     "local_qa_queue_preflight": {
       "draft_pr": 105,
@@ -3311,10 +3297,10 @@
     "accounting_human_usability_physical": "NOT_PERFORMED",
     "accounting_tax_primary_source_review": "NTA_2026_REFORM_AND_IRS_2025_PUB463_946_READ_ONLY__REVIEW_REQUIRED",
     "identity_return_file_recheck": "FOCUS_LEDGER_PRISM_PRESENT_REQUEST_SOURCE_MATCH__TEXT_IMAGE_SIGNAL_404__NO_NEW_CAS_OR_VERSION",
-    "latest_code_pr": 113,
-    "latest_code_head": "47f52b6605c4b7873ddbd24596017ee082e570f2",
-    "latest_code_ci_run": 41266211200,
-    "latest_code_ci": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+    "latest_code_pr": 114,
+    "latest_code_head": "55aaeea8e399c159939329724656dccf76f02d4b",
+    "latest_code_ci_run": 41270127108,
+    "latest_code_ci": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD__OFFLINE_ONLY",
     "latest_identity_file_recheck": {
       "checked_at_utc": "2026-10-31T23:36:11.647Z",
       "focus": "PRESENT",
@@ -3337,7 +3323,7 @@
     "accounting_msix_zip_head": "22fee234f7c9830975c0e157362def24fb8ef17d",
     "accounting_msix_zip_ci_run": 41261889663,
     "accounting_msix_zip_ci": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
-    "latest_code_head_sha": "625944f440f7c78b9fb167c4cd3614992570a611",
+    "latest_code_head_sha": "55aaeea8e399c159939329724656dccf76f02d4b",
     "focus_identity_capture": "GITHUB_APPROVED_FILE_VERIFIED",
     "signal_identity_return": "APPROVED_FILE_404__USER_IDENTITY_RECEIVED_NO_CAS",
     "latest_code_initial_ci_failure": "TEST_FIXTURE_MAGIC_LITERAL_TYPO_CORRECTED",
@@ -3359,7 +3345,44 @@
         "head": "56f5b16288a569e0d2bf42cb3f5a63f81ef642e6"
       }
     },
-    "accounting_promotion_status": "FOUR_SKU_DRAFT_CANDIDATE_ONLY__NO_MARKET_FIT_PASS_SOURCE_REQUEST_PROMOTION__NO_PRE_IDENTITY"
+    "accounting_promotion_status": "FOUR_SKU_DRAFT_CANDIDATE_ONLY__NO_MARKET_FIT_PASS_SOURCE_REQUEST_PROMOTION__NO_PRE_IDENTITY",
+    "accounting_msix_blockmap": {
+      "draft_pr": 114,
+      "branch": "codex/e2e-accounting-msix-blockmap-20261101-1236",
+      "base_pr": 113,
+      "head_sha": "55aaeea8e399c159939329724656dccf76f02d4b",
+      "ci_run_id": 41270127108,
+      "ci_conclusion": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+      "scope": "READ_ONLY_APPXBLOCKMAP_SHA256_SHA384_SHA512_UNCOMPRESSED_64K_BLOCK_DIGESTS__COMPLETE_FILE_COVERAGE__ZIP_CRC",
+      "regressions": "MISSING_FILE__CRC_VALID_STALE_ASSET__WRONG_DIGEST__DUPLICATE_FILE__UNSUPPORTED_HASH_URI__MALFORMED_BASE64__VALID_70K_MULTI_BLOCK__VALID_SHA384_SHA512",
+      "trust_boundary": "BLOCKMAP_NOT_SIGNATURE_AUTHENTICATED__NO_STORE_IDENTITY_OR_SIGNED_MSIX_OR_INSTALL_CHECKER_GUI_PASS",
+      "physical_windows_execution": "NOT_PERFORMED",
+      "real_product_msix": "NOT_OBSERVED",
+      "store_submission": "NOT_PERFORMED"
+    },
+    "identity_return_file_recheck_20261101": {
+      "observed_at_utc": "2026-11-01T03:41:47.130Z",
+      "verification": "AUTHENTICATED_GITHUB_FILE_READ_AND_JSON_REQUEST_SOURCE_BINDING__NOT_LOCAL_CAS_RECEIPT",
+      "focus_session_desk": "APPROVED_PRESENT_REQUEST_SOURCE_MATCH__STORE_ID_9P6452C61N7B",
+      "file_integrity_ledger": "APPROVED_PRESENT_REQUEST_SOURCE_MATCH__STORE_ID_9PGZ445SR5GM",
+      "prism_route_3d": "APPROVED_PRESENT_REQUEST_SOURCE_MATCH__STORE_ID_9N95J2T57B41",
+      "offline_text_diff_desk": "APPROVED_FILE_404__PRE_IDENTITY",
+      "offline_image_inventory_desk": "APPROVED_FILE_404__PRE_IDENTITY",
+      "signal_sprint": "APPROVED_FILE_404__USER_IDENTITY_RECEIVED_NO_CAS",
+      "source_branch_ancestry": "NOT_RECHECKED_THIS_RUN",
+      "local_ui_receipts": "NOT_READ"
+    },
+    "accounting_primary_source_recheck_20261101": {
+      "observed_at_utc": "2026-11-01T03:41:47.130Z",
+      "irs_standard_mileage_2026": "JAN_JUN_72_5_CENTS__JUL_DEC_76_CENTS__OFFICIAL_IRS_RECONFIRMED",
+      "irs_url": "https://www.irs.gov/tax-professionals/standard-mileage-rates",
+      "nta_bookkeeping": "NO_2070_AND_NO_2080_PAGES_REVIEWED__2026_04_01_LEGAL_BASE__NOT_COMPLETE_LEGAL_REVIEW",
+      "nta_urls": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2070.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2080.htm"
+      ],
+      "compliance_gate": "HOLD__NO_FACTORY_FIXTURE_OR_INDEPENDENT_POLICY_REVIEW_PASS"
+    }
   },
   "post_identity_pipeline": {
     "schema_version": 1,
