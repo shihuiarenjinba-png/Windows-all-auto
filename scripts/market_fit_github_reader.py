@@ -45,20 +45,37 @@ def _valid_repo_sha(repository, sha):
             and isinstance(sha, str) and SHA.fullmatch(sha))
 
 
-def verify_review_ancestry(repository, source_sha, review_sha):
+def verify_review_ancestry(repository, source_sha, review_sha, slug):
     if (not _valid_repo_sha(repository, source_sha)
             or not _valid_repo_sha(repository, review_sha)
-            or source_sha == review_sha):
+            or source_sha == review_sha
+            or not isinstance(slug, str)
+            or not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", slug)):
         raise MarketFitReadHold("HOLD_MARKET_FIT_UNSAFE_SOURCE_REF")
     item = _gh_json(f"repos/{repository}/compare/{source_sha}...{review_sha}")
     if not isinstance(item, dict):
         raise MarketFitReadHold("HOLD_MARKET_FIT_REVIEW_ANCESTRY")
-    return (item.get("status") == "ahead"
+    if not (item.get("status") == "ahead"
             and type(item.get("behind_by")) is int and item["behind_by"] == 0
             and isinstance(item.get("base_commit"), dict)
             and item["base_commit"].get("sha") == source_sha
             and isinstance(item.get("head_commit"), dict)
-            and item["head_commit"].get("sha") == review_sha)
+            and item["head_commit"].get("sha") == review_sha):
+        return False
+    # Factory excludes approved Identity receipts, but forbids any change
+    # to the actual product bytes between baseline source and review commit.
+    # GitHub compare can truncate after 300 files: fail closed on that limit.
+    files = item.get("files")
+    if not isinstance(files, list) or len(files) >= 300:
+        return False
+    prefix = f"products/{slug}/"
+    for file in files:
+        if not isinstance(file, dict):
+            return False
+        for path in (file.get("filename"), file.get("previous_filename")):
+            if isinstance(path, str) and path.startswith(prefix) and not path.startswith(prefix + "store/"):
+                return False
+    return True
 
 
 def read_factory_market_fit(repository, path, review_sha):
