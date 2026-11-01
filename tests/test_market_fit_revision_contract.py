@@ -162,7 +162,7 @@ class MarketFitRevisionContractTests(unittest.TestCase):
             "status": "diverged", "behind_by": 2,
             "base_commit": {"sha": SOURCE}, "head_commit": {"sha": REVIEW},
         })
-        self.assertFalse(verify_review_ancestry(REPO, SOURCE, REVIEW))
+        self.assertFalse(verify_review_ancestry(REPO, SOURCE, REVIEW, JOB["slug"]))
 
     @patch("scripts.market_fit_github_reader.subprocess.run")
     def test_auth_failure_and_unsafe_refs_fail_closed(self, run):
