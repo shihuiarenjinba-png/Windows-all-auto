@@ -34,12 +34,17 @@ EVIDENCE = {
     "repo": REPO, "source_branch": JOB["source_branch"],
     "baseline_sha": SOURCE, "request_id": JOB["request_id"],
     "decision": "MARKET_FIT_PASS", "commercial_msix_allowed": True,
+    "feature_expansion_allowed": True,
     "review_status": "APPROVED",
     "scoring": {**{k: {"score": a, "max": b} for k, (a, b) in SCORE_PARTS.items()},
                 "total": 80, "max": 100},
     "why_pay_statement": "Saves verified manual Store listing review rework",
-    "free_alternatives": ["Free A", "Free B"],
-    "direct_competitors": [{"name": "Comp A"}],
+    "free_alternatives": ["Free A", "Free B", "Free C"],
+    "direct_competitors": [{"name": "Comp A"}, {"name": "Comp B"}, {"name": "Comp C"}],
+    "paid_price_range": "USD 10 to 50 one-time",
+    "buyer_persona": "Independent Microsoft Store developer",
+    "store_search_keywords": ["offline image", "store preflight"],
+    "price_hypothesis": {"one_time_jpy": 900},
     "common_review_complaints": [{"complaint": "Manual review errors"}],
     "free_alternative_differences": [
         {"alternative": "Free A", "difference": "Verified workflow difference A"},
@@ -60,7 +65,7 @@ def assess(data, job=None, ancestry=True):
     return assess_market_fit(
         JOB if job is None else job,
         lambda repo, path, sha: json.dumps(data),
-        lambda repo, source, review: ancestry,
+        lambda repo, source, review, slug: ancestry,
     )
 
 
@@ -148,8 +153,9 @@ class MarketFitRevisionContractTests(unittest.TestCase):
         run.return_value = gh_response({
             "status": "ahead", "behind_by": 0,
             "base_commit": {"sha": SOURCE}, "head_commit": {"sha": REVIEW},
+            "files": [{"filename": "docs/market/offline-image-inventory-desk.market-fit.json"}],
         })
-        self.assertTrue(verify_review_ancestry(REPO, SOURCE, REVIEW))
+        self.assertTrue(verify_review_ancestry(REPO, SOURCE, REVIEW, JOB["slug"]))
         self.assertEqual(run.call_args.args[0][-1],
                          f"repos/{REPO}/compare/{SOURCE}...{REVIEW}")
         run.return_value = gh_response({
@@ -165,7 +171,32 @@ class MarketFitRevisionContractTests(unittest.TestCase):
         with self.assertRaises(MarketFitReadHold):
             read_factory_market_fit(REPO, PATH, "main")
         with self.assertRaises(MarketFitReadHold):
-            verify_review_ancestry(REPO, SOURCE, SOURCE)
+            verify_review_ancestry(REPO, SOURCE, SOURCE, JOB["slug"])
+
+
+    @patch("scripts.market_fit_github_reader.subprocess.run")
+    def test_product_code_changed_after_review_holds(self, run):
+        run.return_value = gh_response({
+            "status": "ahead", "behind_by": 0,
+            "base_commit": {"sha": SOURCE}, "head_commit": {"sha": REVIEW},
+            "files": [{"filename": "products/offline-image-inventory-desk/main.py"}],
+        })
+        self.assertFalse(verify_review_ancestry(REPO, SOURCE, REVIEW, JOB["slug"]))
+        run.return_value = gh_response({
+            "status": "ahead", "behind_by": 0,
+            "base_commit": {"sha": SOURCE}, "head_commit": {"sha": REVIEW},
+            "files": [{"filename": "products/offline-image-inventory-desk/store/approved-identity.json"}],
+        })
+        self.assertTrue(verify_review_ancestry(REPO, SOURCE, REVIEW, JOB["slug"]))
+
+    def test_factory_rationale_minimums_hold(self):
+        for change in ({"feature_expansion_allowed": False},
+                       {"direct_competitors": [{"name": "A"}]},
+                       {"free_alternatives": ["A", "B"]},
+                       {"why_pay_statement": "NOT PROVEN as paid"},
+                       {"paid_price_range": ""}, {"buyer_persona": ""},
+                       {"store_search_keywords": []}, {"price_hypothesis": None}):
+            self.assertEqual(assess({**EVIDENCE, **change})[0], "MARKET_FIT_HOLD")
 
     def test_game_not_applicable(self):
         self.assertEqual(assess_market_fit({"product_type": "GAME"}), ("NOT_APPLICABLE", "NON_APP"))
