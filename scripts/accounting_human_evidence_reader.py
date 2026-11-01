@@ -10,8 +10,11 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import stat
 import struct
+import xml.etree.ElementTree as ET
+import zipfile
 import zlib
 
 from scripts.accounting_human_qa_gate import (
@@ -23,6 +26,87 @@ MAX_PNG_BYTES = 12 * 1024 * 1024
 MAX_CHECKER_BYTES = 16 * 1024 * 1024
 MAX_PACKAGE_BYTES = 2 * 1024 * 1024 * 1024
 PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
+
+
+MAX_MSIX_XML_BYTES = {
+    "AppxManifest.xml": 1024 * 1024,
+    "AppxBlockMap.xml": 8 * 1024 * 1024,
+    "[Content_Types].xml": 1024 * 1024,
+}
+_MSIX_VERSION = re.compile(r"(?:0|[1-9][0-9]{0,4})(?:\.(?:0|[1-9][0-9]{0,4})){3}\Z")
+_MANIFEST_NAMESPACES = (
+    "http://schemas.microsoft.com/appx/manifest/foundation/windows10",
+    "http://schemas.microsoft.com/appx/2010/manifest",
+)
+
+
+def _verify_msix_container(handle) -> None:
+    """Verify the hashed file is a plausible MSIX ZIP, not merely PK bytes.
+
+    Only structural metadata is read; this does NOT authenticate the package
+    signature, embedded Store Identity binding, executable or installed GUI.
+    Those remain separate required gates.
+    """
+    try:
+        handle.seek(0)
+        with zipfile.ZipFile(handle, "r") as archive:
+            infos = archive.infolist()
+            if not 3 <= len(infos) <= 10000:
+                _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
+            names = {}
+            for info in infos:
+                name = info.filename
+                parts = name.rstrip("/").split("/")
+                if (not name or name.startswith("/") or "\\" in name
+                        or ":" in name or "\x00" in name
+                        or any(part in ("", ".", "..") for part in parts)
+                        or info.flag_bits & 1
+                        or stat.S_IFMT(info.external_attr >> 16) == stat.S_IFLNK
+                        or info.compress_type not in (zipfile.ZIP_STORED, zipfile.ZIP_DEFLATED)):
+                    _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
+                folded = name.casefold()
+                if folded in names:
+                    _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
+                names[folded] = info
+            xml_roots = {}
+            for name, limit in MAX_MSIX_XML_BYTES.items():
+                info = names.get(name.casefold())
+                if info is None or info.filename != name or info.is_dir() or info.file_size > limit:
+                    _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
+                with archive.open(info) as stream:
+                    raw = stream.read(limit + 1)
+                if len(raw) > limit or len(raw) != info.file_size:
+                    _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
+                xml_roots[name] = ET.fromstring(raw)
+            manifest = xml_roots["AppxManifest.xml"]
+            namespace = next(
+                (ns for ns in _MANIFEST_NAMESPACES if manifest.tag == f"{{{ns}}}Package"),
+                None,
+            )
+            if namespace is None:
+                _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
+            identity = manifest.find(f"{{{namespace}}}Identity")
+            if identity is None or any(
+                not identity.get(k) for k in ("Name", "Publisher", "Version")
+            ):
+                _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
+            version = identity.get("Version")
+            if not _MSIX_VERSION.fullmatch(version) or any(
+                int(v) > 65535 for v in version.split(".")
+            ):
+                _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
+            if xml_roots["AppxBlockMap.xml"].tag != (
+                "{http://schemas.microsoft.com/appx/2010/blockmap}BlockMap"
+            ) or xml_roots["[Content_Types].xml"].tag != (
+                "{http://schemas.openxmlformats.org/package/2006/content-types}Types"
+            ):
+                _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
+    except AccountingHumanQAHold:
+        raise
+    except (OSError, ValueError, RuntimeError, OverflowError,
+            zipfile.BadZipFile, ET.ParseError, NotImplementedError):
+        _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
+
 
 
 def _hold(code: str):
@@ -68,7 +152,7 @@ def _read_file(path: Path, limit: int) -> bytes:
         _hold("HOLD_ACCOUNTING_EVIDENCE_FILE_UNAVAILABLE")
 
 
-def _hash_file(path: Path, limit: int) -> tuple[str, bytes]:
+def _hash_file(path: Path, limit: int, *, verify_msix: bool = False) -> tuple[str, bytes]:
     """Stream large MSIX/checker files; never buffer a 2 GiB package in RAM."""
     _check_no_symlink(path)
     flags = os.O_RDONLY | getattr(os, "O_BINARY", 0) | getattr(os, "O_NOFOLLOW", 0)
@@ -93,6 +177,8 @@ def _hash_file(path: Path, limit: int) -> tuple[str, bytes]:
                 digest.update(block)
             if total != meta.st_size:
                 _hold("HOLD_ACCOUNTING_EVIDENCE_FILE_INVALID")
+            if verify_msix:
+                _verify_msix_container(handle)
             return digest.hexdigest(), header
     except AccountingHumanQAHold:
         raise
@@ -206,7 +292,7 @@ def read_local_accounting_human_evidence(
         _hold("HOLD_ACCOUNTING_EVIDENCE_SCHEMA")
     if type(job.get("package_sha256")) is not str or type(job.get("checker_report_sha256")) is not str:
         _hold("HOLD_ACCOUNTING_EVIDENCE_JOB_INVALID")
-    package_digest, package_header = _hash_file(Path(package_path), MAX_PACKAGE_BYTES)
+    package_digest, package_header = _hash_file(Path(package_path), MAX_PACKAGE_BYTES, verify_msix=True)
     if package_header != bytes((80, 75, 3, 4)) or package_digest != job["package_sha256"]:
         _hold("HOLD_ACCOUNTING_EVIDENCE_PACKAGE_MISMATCH")
     checker_digest, _ = _hash_file(Path(checker_report_path), MAX_CHECKER_BYTES)
