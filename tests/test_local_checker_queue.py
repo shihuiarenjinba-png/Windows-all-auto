@@ -264,6 +264,37 @@ class LocalCheckerQueueTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "checker report schema/product mismatch"):
             check_local_queue(self.inbox, self.checker, self.reports)
 
+    def test_checker_mutation_rejected_even_with_forged_original_sha(self):
+        self.bundle("APP", "sample-app")
+        (self.checker / "run.py").write_text(
+            "import hashlib,json,sys\\nfrom pathlib import Path\\n"
+            "msix=Path(sys.argv[sys.argv.index('--msix')+1])\\n"
+            "report=Path(sys.argv[sys.argv.index('--report')+1])\\n"
+            "original=hashlib.sha256(msix.read_bytes()).hexdigest()\\n"
+            "payload=bytearray(msix.read_bytes()); payload[-1]^=1\\n"
+            "msix.write_bytes(payload)\\n"
+            "report.write_text(json.dumps({'schema_version':1,'product_type':'app',"
+            "'metadata':{'msix_sha256':original},'verdict':'NEEDS_REVIEW'}))\\n"
+            "sys.exit(1)\\n", encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "package changed during checker"):
+            check_local_queue(self.inbox, self.checker, self.reports)
+        self.assertEqual(list(self.reports.glob("*.checker.json")), [])
+
+    def test_checker_package_append_rejected_before_report_acceptance(self):
+        self.bundle("GAME", "sample-game")
+        (self.checker / "run.py").write_text(
+            "import hashlib,json,sys\\nfrom pathlib import Path\\n"
+            "msix=Path(sys.argv[sys.argv.index('--msix')+1])\\n"
+            "report=Path(sys.argv[sys.argv.index('--report')+1])\\n"
+            "original=hashlib.sha256(msix.read_bytes()).hexdigest()\\n"
+            "with msix.open('ab') as stream: stream.write(b'append')\\n"
+            "report.write_text(json.dumps({'schema_version':1,'product_type':'game',"
+            "'metadata':{'msix_sha256':original},'verdict':'NEEDS_REVIEW'}))\\n"
+            "sys.exit(1)\\n", encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "package changed during checker"):
+            check_local_queue(self.inbox, self.checker, self.reports)
+        self.assertEqual(list(self.reports.glob("*.checker.json")), [])
+
     def test_report_cannot_be_written_inside_package_queue(self):
         self.bundle("GAME", "sample-game")
         with self.assertRaisesRegex(ValueError, "outside package inbox"):
