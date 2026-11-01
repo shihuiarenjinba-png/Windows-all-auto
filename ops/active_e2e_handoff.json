@@ -2640,15 +2640,16 @@
       "image_inventory": "PRE_IDENTITY_READY__APPROVED_FILE_404",
       "prism": "POST_IDENTITY_READY__GITHUB_APPROVED_FILE_EXACT_REQUEST_SOURCE_VERIFIED__VERSION_HOLD",
       "signal_sprint": "USER_IDENTITY_RECEIVED__APPROVED_FILE_404__CAS_NOT_APPLIED",
-      "accounting_jp_freelance_pr59": "DRAFT_NOT_PROMOTED__HEAD_83954f32a91a5f442a74c0fe7af0b64b72907ce2",
-      "accounting_us_freelance_pr60": "DRAFT_NOT_PROMOTED__HEAD_dc96e9b657084f723a03497ea386151eb7201c20",
-      "accounting_jp_bookkeeping_pr61": "DRAFT_NOT_PROMOTED__HEAD_8cecba41b3fe4320ef2e33b48984194e15e5fe4e",
-      "accounting_us_bookkeeping_pr62": "DRAFT_NOT_PROMOTED__HEAD_509acefe40dc42504ba062fb9d8d4192c1455164",
+      "accounting_jp_freelance_pr59": "DRAFT_NOT_PROMOTED__HEAD_4eed12758aa9d9f6fa3a8c395d95df7d80644bd6",
+      "accounting_us_freelance_pr60": "DRAFT_NOT_PROMOTED__HEAD_08bdc4b9099b11c79b8fb836df58b801ae3e599e",
+      "accounting_jp_bookkeeping_pr61": "DRAFT_NOT_PROMOTED__HEAD_0c1fa00c70cc934b2c169d415ab5cb95cb3cebd6",
+      "accounting_us_bookkeeping_pr62": "DRAFT_NOT_PROMOTED__HEAD_56f5b16288a569e0d2bf42cb3f5a63f81ef642e6",
       "factory_artifact_metadata": "NOT_RECHECKED_THIS_RUN",
       "local_windows": "NOT_ACCESSED_THIS_RUN",
       "partner_center": "NOT_ACCESSED_THIS_RUN",
       "cas": "NOT_PERFORMED_THIS_RUN",
-      "store_submission": "NOT_PERFORMED_THIS_RUN"
+      "store_submission": "NOT_PERFORMED_THIS_RUN",
+      "accounting_factory_observation": "2026_11_01_FOUR_COUNTRY_SKUS_PR59_62_DRAFT_OPEN__NO_PROMOTED_SOURCE_REQUEST_MARKET_FIT_PASS_OBSERVED"
     },
     "mixed_artifact_expiry_guard": {
       "draft_pr": 54,
