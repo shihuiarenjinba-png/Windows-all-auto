@@ -66,5 +66,34 @@ class ActiveE2EGameLedgerContract(unittest.TestCase):
         self.assertFalse(self.data["quality_gates"]["local_source_code_sync_scheduler_pass"])
 
 
+    def test_current_identity_and_local_mode_are_not_confused_with_historical_wait(self):
+        data = self.data
+        active = data["active_product"]
+        worker = active["local_identity_return_worker"]
+        old_receipt = worker["local_check_only"]
+        self.assertEqual(data["local_availability"]["mode"], "LOCAL_MODE")
+        self.assertEqual(active["identity_registry_status"], "USER_IDENTITY_RECEIVED__REVIEWED_NON_SECRET_REFERENCE__NOT_LOCAL_VALIDATED")
+        self.assertEqual(active["local_execution_result"]["historical_next_stage"], "OBTAIN_AUTHENTICATED_OFFICIAL_IDENTITY")
+        self.assertEqual(active["local_execution_result"]["next_stage"], "HOLD_ARTIFACT_EXACT_BYTES__USER_IDENTITY_RECEIVED_NOT_LOCAL_VALIDATED")
+        self.assertTrue(active["local_execution_result"]["historical_record"])
+        self.assertEqual(worker["historical_status"], "CHECK_ONLY_WAITING_OFFICIAL_IDENTITY_LOCAL_WINDOWS_VERIFIED")
+        self.assertEqual(old_receipt["historical_state"], "WAITING_OFFICIAL_IDENTITY")
+        self.assertEqual(old_receipt["historical_hold_class"], "EXTERNAL_IDENTITY")
+        self.assertEqual(old_receipt["hold_class"], "ARTIFACT_EXACT_BYTES")
+        self.assertTrue(old_receipt["historical_receipt_only"])
+        self.assertIn("CURRENT_HEAD_LOCAL_CHECK_ONLY_NOT_OBSERVED", worker["status"])
+        self.assertIn("CURRENT_HEAD_LOCAL_CHECK_ONLY_NOT_OBSERVED", old_receipt["state"])
+        self.assertNotIn("DEFERRED_LOCAL_GATE", " | ".join(active["blocked_by"]))
+        self.assertIn("ARTIFACT_EXACT_BYTES_HOLD", active["blocked_by"][0])
+        cloud = data["multi_product_identity_scheduler"]["rotation_queue"]["live_cloud_check"]
+        self.assertEqual(cloud["historical_local_windows_qa"], "DEFERRED_LOCAL_GATE")
+        self.assertEqual(cloud["local_windows_qa"], "LOCAL_MODE__PHYSICAL_RECEIPT_NOT_OBSERVED")
+        self.assertFalse(data["quality_gates"]["local_source_code_sync_physical_pass"])
+        self.assertFalse(data["quality_gates"]["local_source_code_sync_scheduler_pass"])
+        self.assertFalse(active["original_exe_artifact_audit"]["ready_for_cas"])
+        self.assertFalse(active["cas_returned"])
+        self.assertFalse(data["e2e_pass"])
+
+
 if __name__ == "__main__":
     unittest.main()
