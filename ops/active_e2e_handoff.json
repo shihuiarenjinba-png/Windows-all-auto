@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-01T11:35:50.365Z",
+  "updated_at_utc": "2026-11-01T12:43:00Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -2614,8 +2614,8 @@
     "local_execution_this_run": "NOT_PERFORMED"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-11-01T11:35:50.365Z",
-    "scope": "PR122_RECEIPT_PDF_QA_CONTRACT_EXACT_HEAD_WINDOWS_UBUNTU_CI_PASS__NO_PHYSICAL_WINDOWS_OR_REAL_MSIX",
+    "observed_at_utc": "2026-11-01T12:43:00Z",
+    "scope": "PR123_OCR_HIGH_RISK_FIXTURE_DIGEST_REUSE_REJECTED__EXACT_HEAD_WINDOWS_UBUNTU_CI_PASS__NO_PHYSICAL_WINDOWS_OR_REAL_MSIX",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
     "canonical_previous_blob_sha": "3c963b44ffadd5f9e71b81690339d3d0ea91be39",
@@ -2642,7 +2642,7 @@
     "success_count_cloud_verified": 2,
     "remaining_app_identity_returns": 2,
     "next_resume_index": 3,
-    "next_action": "PR122_CI_AND_REVIEW__REAL_SIGNED_MSIX_CHECKER_GUI_RECEIPT_PDF_BYTES_PENDING__TEXT_DIFF_IMAGE_IDENTITY_RETURN_PENDING__NO_STORE_SUBMISSION",
+    "next_action": "PR123_REVIEW__PHYSICAL_WINDOWS_OCR_PDF_BYTES_AND_CHECKER_GUI_INSTALL_PENDING__TEXT_DIFF_IMAGE_IDENTITY_RETURN_PENDING__ACCOUNTING_FOUR_SKUS_CANDIDATE_ONLY",
     "post_identity_reconcile_pr": 49,
     "post_identity_reconcile_ci_run": 40851883814,
     "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU",
@@ -3553,7 +3553,12 @@
     "accounting_receipt_pdf_gate": "PR122_8_NEW_REGRESSIONS_PASS__467_TESTS_WINDOWS_UBUNTU__PHYSICAL_QA_HOLD",
     "accounting_receipt_pdf_pr": 122,
     "accounting_receipt_pdf_head": "8a5e5f01c0b2a5496da90ab6dab073523cd74e28",
-    "accounting_receipt_pdf_ci_run": 41302517551
+    "accounting_receipt_pdf_ci_run": 41302517551,
+    "ocr_fixture_independence_pr": 123,
+    "ocr_fixture_independence_head": "3142521a65a2a7b2dc55e1251230e7fea01939f6",
+    "ocr_fixture_independence_ci_run": 41307729869,
+    "ocr_fixture_independence_ci": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+    "remote_identity_recheck": "2026_11_01_2140_JST_FOCUS_LEDGER_APPROVED_IDENTITY_PRESENT__TEXT_IMAGE_404__NO_NEW_CAS"
   },
   "post_identity_pipeline": {
     "schema_version": 1,
@@ -4467,6 +4472,17 @@
       "scope": "SOURCE_RECHECK_ONLY__NO_CODE_PARITY_OR_COUNTRY_TAX_FIXTURE_VERIFICATION",
       "package_gate": "HOLD",
       "action": "RETAIN_FOUR_ACCOUNTING_SKUS_MARKET_FIT_AND_COMPLIANCE_HOLD__VERIFY_DATE_BOUND_METHOD_AND_SPECIAL_RULE_FIXTURES_BEFORE_PACKAGE"
+    },
+    "source_recheck_20261101_2136": {
+      "checked_at_utc": "2026-11-01T12:43:00Z",
+      "nta_invoice_url": "https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/invoice-review/index.htm",
+      "nta_ledger_retention_url": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shohi/6496.htm",
+      "irs_mileage_url": "https://www.irs.gov/tax-professionals/standard-mileage-rates",
+      "irs_depreciation_url": "https://www.irs.gov/publications/p946",
+      "observed": "NTA_2026_TAX_PERIOD_INVOICE_TRANSITION_AND_SEVEN_YEAR_BOOKKEEPING_EVIDENCE_RETENTION__IRS_2026_JAN_JUN_72_5_CENTS_AND_JUL_DEC_76_CENTS__PUB946_2025_CURRENT",
+      "package_gate": "HOLD",
+      "tax_engine_fixture_parity": "NOT_VERIFIED",
+      "regulatory_update_implemented": false
     }
   },
   "accounting_candidate_intake": {
@@ -4538,7 +4554,7 @@
   },
   "accounting_receipt_pdf_qa": {
     "schema_version": 1,
-    "observed_at_utc": "2026-11-01T11:35:50.365Z",
+    "observed_at_utc": "2026-11-01T12:43:00Z",
     "owner": "36_WINDOWS_E2E_ONLY",
     "repository": "shihuiarenjinba-png/Windows-all-auto",
     "draft_pr": 122,
@@ -4561,7 +4577,7 @@
     "e2e_pass": false,
     "store_submission": "NOT_PERFORMED",
     "integration": "STACKED_DRAFT_NOT_MERGED",
-    "next_action": "CI_AT_EXACT_HEAD__INDEPENDENT_LOCAL_BYTES_AND_WINDOWS_REVIEW__KEEP_ALL_FOUR_ACCOUNTING_PRODUCTS_CANDIDATE_ONLY",
+    "next_action": "PR123_CI_GREEN_REVIEW__INDEPENDENT_PHYSICAL_WINDOWS_BYTE_AND_GUI_REVIEW__KEEP_FOUR_ACCOUNTING_SKUS_CANDIDATE_ONLY",
     "ci_run_id": 41302517551,
     "ci_jobs": [
       "Offline preflight tests (windows-latest)",
@@ -4578,6 +4594,24 @@
       "observation": "NTA page cites 2026-04-01 law; IRS Pub946 is 2025 edition with What's New for 2026; no tax-year rates or automatic deductions adopted by this evidence gate",
       "regulation_update_implemented": false,
       "compliance_promotion": false
+    },
+    "ocr_fixture_independence": {
+      "draft_pr": 123,
+      "branch": "codex/e2e-ocr-fixture-independence-20261101-2136",
+      "base_pr": 122,
+      "base_head_sha": "8a5e5f01c0b2a5496da90ab6dab073523cd74e28",
+      "code_head_sha": "3142521a65a2a7b2dc55e1251230e7fea01939f6",
+      "ci_run_id": 41307729869,
+      "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+      "issue": "EIGHT_NAMED_OCR_HIGH_RISK_CASES_COULD_REUSE_IDENTICAL_IMAGE_SHA",
+      "fix": "REQUIRE_EIGHT_DISTINCT_CASE_IMAGE_SHA256_VALUES__FAIL_CLOSED_ON_REUSE",
+      "regression_tests_added": 2,
+      "physical_windows": "NOT_EXECUTED",
+      "actual_receipt_ocr_pdf_bytes": "NOT_OBSERVED",
+      "signed_msix": "NOT_OBSERVED",
+      "e2e_pass": false,
+      "integration": "STACKED_DRAFT_NOT_MERGED",
+      "store_submission": "NOT_PERFORMED"
     }
   }
 }
