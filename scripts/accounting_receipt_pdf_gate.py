@@ -103,10 +103,14 @@ def validate_accounting_receipt_pdf_gate(
         _need(set(cases) == set(_CASES), "HOLD_RECEIPT_PDF_OCR_CASES")
         for key in _CASES:
             case = cases[key]
-            _need(type(case) is dict and set(case) == {
+            required_case_keys = {
                 "status", "source_image_sha256", "confidence_recorded",
                 "original_image_linked", "manual_review_required", "no_auto_post",
-            } and case["status"] == "REVIEW_REQUIRED"
+            }
+            if key == "duplicate_image":
+                required_case_keys.add("duplicate_pair")
+            _need(type(case) is dict and set(case) == required_case_keys
+                and case["status"] == "REVIEW_REQUIRED"
                 and _hash(case["source_image_sha256"], 64)
                 and all(case[k] is True for k in (
                     "confidence_recorded", "original_image_linked",
@@ -118,6 +122,26 @@ def validate_accounting_receipt_pdf_gate(
         # that test; it must not borrow another case\'s entire fixture.
         _need(len({cases[key]["source_image_sha256"] for key in _CASES}) == len(_CASES),
               "HOLD_RECEIPT_PDF_OCR_FIXTURE_REUSED")
+        # A single relabeled image cannot prove duplicate detection. The
+        # duplicate scenario must show two distinct queue input IDs with the
+        # same image bytes and a second item held for human review.
+        pair = cases["duplicate_image"]["duplicate_pair"]
+        _need(type(pair) is dict and set(pair) == {
+            "first_input_id", "second_input_id", "first_sha256",
+            "second_sha256", "second_review_required", "second_auto_posted",
+        }, "HOLD_RECEIPT_PDF_OCR_DUPLICATE_UNPROVEN")
+        first_id, second_id = pair["first_input_id"], pair["second_input_id"]
+        _need(
+            all(type(value) is str and re.fullmatch(r"[A-Za-z0-9_-]{1,64}", value)
+                for value in (first_id, second_id))
+            and first_id != second_id
+            and pair["first_sha256"] == cases["duplicate_image"]["source_image_sha256"]
+            and pair["second_sha256"] == pair["first_sha256"]
+            and pair["second_review_required"] is True
+            and pair["second_auto_posted"] is False
+            and batch["duplicate_count"] >= 1,
+            "HOLD_RECEIPT_PDF_OCR_DUPLICATE_UNPROVEN",
+        )
     else:
         _need(not cases, "HOLD_RECEIPT_PDF_OCR_NOT_IMPLEMENTED")
     monthly = evidence["jp_month_end"]
