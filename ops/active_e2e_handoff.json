@@ -63,7 +63,7 @@
       "python -m scripts.pre_identity_queue --check-only  # from reviewed PR19; no CAS",
       "python -m scripts.pre_identity_queue --output \"$env:LOCALAPPDATA\\FactoryIdentityWorker\\secure\\pre-identity-jobs.json\"  # PowerShell, create-only; no overwrite",
       "throw 'ARTIFACT_EXACT_BYTES_HOLD: original Factory artifact 12706862577 expired/404; ZIP absent; EXE SHA authority conflict. Do not download a substitute or proceed to CAS.'",
-      "python -m scripts.local_identity_scheduler --jobs-file \"$env:LOCALAPPDATA\\FactoryIdentityWorker\\secure\\pre-identity-jobs.json\" --state-dir \"$env:LOCALAPPDATA\\FactoryIdentityWorker\\secure\\scheduler-state\"  # check-only, no --apply-request-id",
+      "python -m scripts.local_identity_scheduler --jobs-file \"$env:LOCALAPPDATA\\FactoryIdentityWorker\\secure\\pre-identity-jobs.json\" --state-dir \"$env:LOCALAPPDATA\\FactoryIdentityWorker\\secure\\scheduler-state\"  # check-only, CAS apply prohibited",
       "python -m scripts.local_identity_return --provisioner-root C:\\src\\Repository-Provisioner-game --provisioner-branch codex/game-gdk-identity-contract-20261028 --provisioner-sha 63d358fc8e6d2ad403e405421291155d8583f17a --source-branch codex/game-signal-sprint-undo-20261027 --source-sha c058cbf7fe38e02d929c67d047d717ff74bd522e --request-id game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e  # CHECK-ONLY ONLY after original ZIP authority conflict resolved; NO --apply"
     ],
     "expected_local_outputs": [
