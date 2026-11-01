@@ -27,10 +27,13 @@ class LocalCheckerQueueTests(unittest.TestCase):
         self.checker = self.root / "checker"
         self.checker.mkdir()
         (self.checker / "run.py").write_text(
-            "import json,sys\n"
+            "import hashlib,json,sys\n"
             "from pathlib import Path\n"
             "p=Path(sys.argv[sys.argv.index('--report')+1])\n"
-            "p.write_text(json.dumps({'verdict':'NEEDS_REVIEW'}))\n"
+            "msix=Path(sys.argv[sys.argv.index('--msix')+1])\n"
+            "kind=sys.argv[sys.argv.index('--type')+1]\n"
+            "digest=hashlib.sha256(msix.read_bytes()).hexdigest().upper()\n"
+            "p.write_text(json.dumps({'schema_version':1,'product_type':kind,'metadata':{'msix_sha256':digest},'verdict':'NEEDS_REVIEW'}))\n"
             "sys.exit(1)\n", encoding="utf-8")
 
     def _checker_output(self, raw, exit_code=1):
@@ -119,6 +122,7 @@ class LocalCheckerQueueTests(unittest.TestCase):
         self.assertEqual(receipt["source_sha"], SOURCE)
         self.assertEqual(receipt["factory_build_head"], "b" * 40)
         self.assertEqual(receipt["checker_verdict"], "NEEDS_REVIEW")
+        self.assertEqual(len(receipt["checker_report_package_sha256"]), 64)
         self.assertEqual(receipt["local_gui_qa"], "NOT_RUN")
         self.assertFalse(receipt["e2e_pass"])
         self.assertFalse(receipt["submitted_to_store"])
@@ -221,6 +225,43 @@ class LocalCheckerQueueTests(unittest.TestCase):
         path.write_text(raw.replace('"package_bytes":', '"risk":NaN, "package_bytes":', 1),
                         encoding="utf-8")
         with self.assertRaisesRegex(ValueError, "non-finite JSON"):
+            check_local_queue(self.inbox, self.checker, self.reports)
+
+    def test_checker_report_must_bind_exact_package_sha(self):
+        self.bundle("APP", "sample-app")
+        self._checker_output(json.dumps({
+            "schema_version": 1, "product_type": "app",
+            "metadata": {"msix_sha256": "0" * 64},
+            "verdict": "NEEDS_REVIEW",
+        }))
+        with self.assertRaisesRegex(ValueError, "checker report package SHA mismatch"):
+            check_local_queue(self.inbox, self.checker, self.reports)
+        self.assertEqual(list(self.reports.glob("*.checker.json")), [])
+
+    def test_checker_report_missing_package_hash_is_hold(self):
+        self.bundle("GAME_3D", "sample-3d")
+        self._checker_output(json.dumps({
+            "schema_version": 1, "product_type": "game",
+            "metadata": {}, "verdict": "NEEDS_REVIEW",
+        }))
+        with self.assertRaisesRegex(ValueError, "checker report package SHA mismatch"):
+            check_local_queue(self.inbox, self.checker, self.reports)
+
+    def test_checker_report_wrong_lane_and_boolean_schema_are_hold(self):
+        self.bundle("GAME", "sample-game")
+        self._checker_output(json.dumps({
+            "schema_version": 1, "product_type": "app",
+            "metadata": {"msix_sha256": "0" * 64},
+            "verdict": "NEEDS_REVIEW",
+        }))
+        with self.assertRaisesRegex(ValueError, "checker report schema/product mismatch"):
+            check_local_queue(self.inbox, self.checker, self.reports)
+        self._checker_output(json.dumps({
+            "schema_version": True, "product_type": "game",
+            "metadata": {"msix_sha256": "0" * 64},
+            "verdict": "NEEDS_REVIEW",
+        }))
+        with self.assertRaisesRegex(ValueError, "checker report schema/product mismatch"):
             check_local_queue(self.inbox, self.checker, self.reports)
 
     def test_report_cannot_be_written_inside_package_queue(self):

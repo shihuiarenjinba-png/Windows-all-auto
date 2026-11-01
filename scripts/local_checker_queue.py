@@ -142,8 +142,8 @@ def check_local_queue(inbox: Path, checker: Path, reports: Path) -> dict:
                 proc = subprocess.run(
                     [sys.executable, str(runner), "--cli", "--type", kind,
                      "--msix", str(folder / "package.msix"), "--report", str(report)],
-                    cwd=str(checker), capture_output=True, text=True,
-                    timeout=180, check=False,
+                    cwd=str(checker), stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL, timeout=180, check=False,
                 )
             except (subprocess.TimeoutExpired, OSError) as exc:
                 raise ValueError("LOCAL_QA_HOLD: Windows-checker unavailable: " + type(exc).__name__) from exc
@@ -153,9 +153,22 @@ def check_local_queue(inbox: Path, checker: Path, reports: Path) -> dict:
                 report, limit=MAX_CHECKER_REPORT_BYTES, label="checker report")
             if parsed.get("verdict") != VERDICTS[proc.returncode]:
                 raise ValueError("LOCAL_QA_HOLD: checker exit/report mismatch")
+            # The Checker subprocess must attest the same exact package bytes
+            # that passed immutable intake, not merely echo a plausible verdict.
+            # A package changed between preflight and Checker is HOLD.
+            if (type(parsed.get("schema_version")) is not int
+                    or parsed["schema_version"] != 1
+                    or parsed.get("product_type") != kind):
+                raise ValueError("LOCAL_QA_HOLD: checker report schema/product mismatch")
+            checker_metadata = parsed.get("metadata")
+            if (type(checker_metadata) is not dict
+                    or type(checker_metadata.get("msix_sha256")) is not str
+                    or checker_metadata["msix_sha256"].upper() != info["package_sha256"].upper()):
+                raise ValueError("LOCAL_QA_HOLD: checker report package SHA mismatch")
             receipt = {
                 "schema_version": 1, "status": "HOLD",
                 "checker_verdict": parsed["verdict"],
+                "checker_report_package_sha256": checker_metadata["msix_sha256"].lower(),
                 "request_id": info["request_id"], "product_type": lane,
                 "checker_cli_type": kind,
                 "factory_build_head": info.get("factory_build_head",
