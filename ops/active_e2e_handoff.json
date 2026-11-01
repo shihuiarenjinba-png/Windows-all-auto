@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-01T11:35:29.049Z",
+  "updated_at_utc": "2026-11-01T11:35:50.365Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -2614,11 +2614,11 @@
     "local_execution_this_run": "NOT_PERFORMED"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-11-01T11:35:29.049Z",
-    "scope": "PR122_ACCOUNTING_RECEIPT_PDF_QA_CONTRACT_DRAFT__CI_IN_PROGRESS__NO_PHYSICAL_WINDOWS_OR_REAL_MSIX",
+    "observed_at_utc": "2026-11-01T11:35:50.365Z",
+    "scope": "PR122_RECEIPT_PDF_QA_CONTRACT_EXACT_HEAD_WINDOWS_UBUNTU_CI_PASS__NO_PHYSICAL_WINDOWS_OR_REAL_MSIX",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
-    "canonical_previous_blob_sha": "ec4ff00190e641a14a89d68e16637adce24b09ed",
+    "canonical_previous_blob_sha": "3c963b44ffadd5f9e71b81690339d3d0ea91be39",
     "focus_return_commit_sha": "8a7139375524830bf823469526837259266172be",
     "focus_store_id": "9P6452C61N7B",
     "focus_source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
@@ -2695,7 +2695,7 @@
     "mixed_local_preflight_ci": "SUCCESS_AT_EXACT_HEAD",
     "mixed_local_preflight_capability": "FOCUS_POST_SKIP__THREE_PRE_EXACT_SOURCE_AND_EXE_VERIFICATION__SHARED_LOCK__NO_BROWSER_CAS",
     "mixed_local_preflight_execution": "NOT_RUN_ON_USER_WINDOWS",
-    "canonical_head_before_write": "1e30e2cc6fa5d4621b4020ce0eb1f07069b7e509",
+    "canonical_head_before_write": "9e83cb689c1aaf789f00ad6f64583976540a6ee7",
     "latest_remote_recheck": {
       "verified_at_utc": "2026-11-01T08:37:49.402Z",
       "focus": "POST_IDENTITY_READY__APPROVED_IDENTITY_PRESENT_REQUEST_SOURCE_MATCH__NO_VERSION",
@@ -3550,9 +3550,10 @@
     "accounting_market_scope": "FOUR_DRAFT_CANDIDATES_JP_US_SEPARATE__NO_PROMOTION_NO_SOURCE_REQUEST_NO_USER_ID_REQUEST",
     "accounting_tax_source_review": "NTA_2026_04_01_AND_IRS_P946_2025_REFERENCES_CHECKED__NOT_IMPLEMENTATION_COMPLIANCE_PASS",
     "accounting_jp_bookkeeping_head_observed": "13d1a976757e86587fb11202ebb35fd5ac113cb8",
-    "accounting_receipt_pdf_gate": "PR122_8_MOCK_CONTRACT_TESTS_LOCAL_PASS__GITHUB_CI_IN_PROGRESS__PHYSICAL_QA_HOLD",
+    "accounting_receipt_pdf_gate": "PR122_8_NEW_REGRESSIONS_PASS__467_TESTS_WINDOWS_UBUNTU__PHYSICAL_QA_HOLD",
     "accounting_receipt_pdf_pr": 122,
-    "accounting_receipt_pdf_head": "8a5e5f01c0b2a5496da90ab6dab073523cd74e28"
+    "accounting_receipt_pdf_head": "8a5e5f01c0b2a5496da90ab6dab073523cd74e28",
+    "accounting_receipt_pdf_ci_run": 41302517551
   },
   "post_identity_pipeline": {
     "schema_version": 1,
@@ -4537,7 +4538,7 @@
   },
   "accounting_receipt_pdf_qa": {
     "schema_version": 1,
-    "observed_at_utc": "2026-11-01T11:35:29.049Z",
+    "observed_at_utc": "2026-11-01T11:35:50.365Z",
     "owner": "36_WINDOWS_E2E_ONLY",
     "repository": "shihuiarenjinba-png/Windows-all-auto",
     "draft_pr": 122,
@@ -4550,7 +4551,7 @@
     "documentation": "docs/ACCOUNTING_RECEIPT_PDF_QA.md",
     "scope": "FOUR_SKU_EXACT_SOURCE_REQUEST_BUILD_PACKAGE_CHECKER_MARKET_BINDING__NO_UNCONFIRMED_POST__EIGHT_HIGH_RISK_OCR_REVIEW_FIXTURES__JP_MONTH_END_HTML_CSV_JSON_EDGE_PDF_A4_JAPANESE_AND_TOTALS",
     "local_targeted_test": "8_PASS_WITH_LOCAL_STUB_COUNTRY_SPECS__NOT_REPO_INTEGRATION",
-    "github_ci": "IN_PROGRESS_NOT_YET_GREEN",
+    "github_ci": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
     "physical_windows": "NOT_EXECUTED",
     "actual_receipt_ocr_pdf_bytes": "NOT_OBSERVED",
     "trusted_physical_reviewer": "NOT_WIRED",
@@ -4560,6 +4561,23 @@
     "e2e_pass": false,
     "store_submission": "NOT_PERFORMED",
     "integration": "STACKED_DRAFT_NOT_MERGED",
-    "next_action": "CI_AT_EXACT_HEAD__INDEPENDENT_LOCAL_BYTES_AND_WINDOWS_REVIEW__KEEP_ALL_FOUR_ACCOUNTING_PRODUCTS_CANDIDATE_ONLY"
+    "next_action": "CI_AT_EXACT_HEAD__INDEPENDENT_LOCAL_BYTES_AND_WINDOWS_REVIEW__KEEP_ALL_FOUR_ACCOUNTING_PRODUCTS_CANDIDATE_ONLY",
+    "ci_run_id": 41302517551,
+    "ci_jobs": [
+      "Offline preflight tests (windows-latest)",
+      "Offline preflight tests (ubuntu-latest)"
+    ],
+    "ci_test_count": 467,
+    "ci_new_regressions": 8,
+    "ci_windows_skipped_symlink_tests": 2,
+    "primary_sources_reviewed": {
+      "observed_at_utc": "2026-11-01T11:35:50.365Z",
+      "nta": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2106.htm",
+      "irs_depreciation": "https://www.irs.gov/publications/p946",
+      "irs_accounting_methods": "https://www.irs.gov/publications/p538",
+      "observation": "NTA page cites 2026-04-01 law; IRS Pub946 is 2025 edition with What's New for 2026; no tax-year rates or automatic deductions adopted by this evidence gate",
+      "regulation_update_implemented": false,
+      "compliance_promotion": false
+    }
   }
 }
