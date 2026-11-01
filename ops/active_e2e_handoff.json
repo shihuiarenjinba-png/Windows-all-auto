@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-01T18:41:28.483Z",
+  "updated_at_utc": "2026-11-01T19:34:12Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -46,7 +46,7 @@
     },
     "local_execution_result": {
       "status": "HOLD",
-      "next_stage": "OBTAIN_AUTHENTICATED_OFFICIAL_IDENTITY",
+      "next_stage": "HOLD_ARTIFACT_EXACT_BYTES__USER_IDENTITY_RECEIVED_NOT_LOCAL_VALIDATED",
       "package_kind": "exe",
       "package_status": "INSPECTED",
       "package_sha256": "e8517df8cd31a40e5ce72afdd4e6a4d63626fb99f7ff8a4fa3296ff8deef05f4",
@@ -54,7 +54,9 @@
       "signature_status": "NOTSIGNED",
       "github_return_status": "NOT_APPLIED",
       "windows_all_auto_record": null,
-      "finished_at_utc": "2026-10-27T05:03:20Z"
+      "finished_at_utc": "2026-10-27T05:03:20Z",
+      "historical_next_stage": "OBTAIN_AUTHENTICATED_OFFICIAL_IDENTITY",
+      "historical_record": true
     },
     "next_action": "HOLD_ARTIFACT_EXACT_BYTES: original ZIP unavailable and EXE SHA authority conflict (historical e851 vs original Factory job 9c31). PR10 HEAD check-only only after independent exact-byte recovery; no CAS or GDK SDK build.",
     "local_commands": [
@@ -79,7 +81,7 @@
       "Factory source branch HEAD equals pinned source_sha immediately before send; otherwise CONFLICT",
       "No same request_id with changed source_sha; otherwise CONFLICT",
       "GitHub Artifact metadata digest equals pinned ZIP digest; gh run download extracts ZIP so independently verify extracted EXE SHA against provenance.json; do not pretend the extracted directory has a ZIP hash",
-      "User independently obtains official Store Identity and places it at the designated private local path; never guess Identity, Version or assets",
+      "User-provided Signal Sprint Store Identity reference has been received; validate exact request/source and locally supplied official Identity before CAS, without re-requesting or inferring authentication",
       "Factory Identity return uses exact codex source branch CAS and returns a commit SHA",
       "Factory GAME MSIX safety gates must be integrated with active Signal Sprint branch before build",
       "Real MSIX SHA-256 and embedded Identity verified; unsigned EXE is not an MSIX",
@@ -160,7 +162,7 @@
       "draft_pr": 17,
       "ci_run_id": 40522159185,
       "ci_conclusion": "SUCCESS",
-      "status": "CHECK_ONLY_WAITING_OFFICIAL_IDENTITY_LOCAL_WINDOWS_VERIFIED",
+      "status": "HOLD_ARTIFACT_EXACT_BYTES__USER_IDENTITY_RECEIVED__CURRENT_HEAD_LOCAL_CHECK_ONLY_NOT_OBSERVED",
       "entrypoint": "python -m scripts.local_identity_return",
       "runbook": "docs/LOCAL_IDENTITY_CAS_WORKER.md",
       "mode": "LOCAL_ONLY_EXPLICIT_APPLY",
@@ -171,8 +173,8 @@
       "ci_url": "https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/40499482120",
       "local_check_only": {
         "status": "HOLD",
-        "state": "WAITING_OFFICIAL_IDENTITY",
-        "hold_class": "EXTERNAL_IDENTITY",
+        "state": "HOLD_ARTIFACT_EXACT_BYTES__CURRENT_HEAD_LOCAL_CHECK_ONLY_NOT_OBSERVED",
+        "hold_class": "ARTIFACT_EXACT_BYTES",
         "package_sha256": "e8517df8cd31a40e5ce72afdd4e6a4d63626fb99f7ff8a4fa3296ff8deef05f4",
         "package_bytes": 11387518,
         "signature_status": "NOTSIGNED",
@@ -181,15 +183,19 @@
         "factory_cas": "NOT_APPLIED",
         "e2e_pass": false,
         "verified_provisioner_sha": "5c1db9820bac68c59cc7eb6ca5921e22a5bb3913",
-        "evidence_basis": "PR17 local Windows check-only report; raw private receipt not uploaded"
+        "evidence_basis": "PR17 local Windows check-only report; raw private receipt not uploaded",
+        "historical_state": "WAITING_OFFICIAL_IDENTITY",
+        "historical_hold_class": "EXTERNAL_IDENTITY",
+        "historical_receipt_only": true
       },
       "previous_green_head": "f4800e771b60d46e044941d47a97e0e41469db39",
       "previous_green_ci_run_id": 40489660907,
-      "historical_required_provisioner_sha": "e9ae4669f6739d34cad63764767328a3c796a5f9"
+      "historical_required_provisioner_sha": "e9ae4669f6739d34cad63764767328a3c796a5f9",
+      "historical_status": "CHECK_ONLY_WAITING_OFFICIAL_IDENTITY_LOCAL_WINDOWS_VERIFIED"
     },
-    "last_completed_step": "PR17_REPORTED_LOCAL_WINDOWS_CHECK_ONLY_WAITING_OFFICIAL_IDENTITY__EXE_SHA_VERIFIED",
+    "last_completed_step": "PR10_CURRENT_HEAD_CI_PASS__ORIGINAL_ZIP_MISSING__EXE_SHA_AUTHORITY_CONFLICT__LOCAL_CHECK_ONLY_NOT_OBSERVED",
     "blocked_by": [
-      "DEFERRED_LOCAL_GATE: local check-only and EXE SHA validation await operator Windows availability",
+      "ARTIFACT_EXACT_BYTES_HOLD: original ZIP expired/unavailable and EXE SHA authority conflict (historical e851 vs original Factory 9c31); LOCAL_MODE available but current PR10 HEAD lacks exact-byte local receipt",
       "HUMAN_APPROVAL: request-specific CAS approval not recorded",
       "GDK_MSIXVC_AND_LOCAL_QA: approved version/build assets and real package not observed"
     ],
@@ -274,7 +280,10 @@
       "local_check_only_on_current_head": "NOT_OBSERVED",
       "store_submission": "NOT_PERFORMED",
       "next_action": "Recover independently preserved exact original ZIP and reconcile both EXE SHA authorities using original job evidence; no rebuild substitution."
-    }
+    },
+    "historical_last_completed_step": "PR17_REPORTED_LOCAL_WINDOWS_CHECK_ONLY_WAITING_OFFICIAL_IDENTITY__EXE_SHA_VERIFIED",
+    "historical_blocked_by_local_gate": "DEFERRED_LOCAL_GATE: local check-only and EXE SHA validation await operator Windows availability",
+    "historical_identity_hold_release_condition": "User independently obtains official Store Identity and places it at the designated private local path; never guess Identity, Version or assets"
   },
   "other_lanes": {
     "APP": {
@@ -740,7 +749,7 @@
       "previous_green_head": "f4800e771b60d46e044941d47a97e0e41469db39",
       "previous_green_ci_run_id": 40489660907,
       "latest_ci": "SUCCESS_ON_CURRENT_HEAD",
-      "local_check_only_state": "WAITING_OFFICIAL_IDENTITY_REPORTED",
+      "local_check_only_state": "HISTORICAL_PR17_REPORT_ONLY__CURRENT_PR10_HEAD_LOCAL_CHECK_ONLY_NOT_OBSERVED",
       "hold_class": "EXTERNAL_IDENTITY",
       "duplicate_resume_result_unchanged": true,
       "locally_exercised_provisioner_sha": "5c1db9820bac68c59cc7eb6ca5921e22a5bb3913",
@@ -748,7 +757,8 @@
       "raw_private_receipt_on_github": false,
       "ci_run_id": 40522159185,
       "ci_conclusion": "SUCCESS",
-      "central_ledger_only_writer": true
+      "central_ledger_only_writer": true,
+      "historical_local_check_only_state": "WAITING_OFFICIAL_IDENTITY_REPORTED"
     },
     "pr14_previous_ci": {
       "head_sha": "a4f99be6afdf3663e6195e6bc0e9ffa965d036ea",
@@ -920,7 +930,8 @@
         "three_d": "PRISM_ROUTE_3D_WAITING_USER_IDENTITY",
         "cas": "NOT_APPLIED",
         "identity_acquisition": "USER_ONLY",
-        "local_windows_qa": "DEFERRED_LOCAL_GATE"
+        "local_windows_qa": "LOCAL_MODE__PHYSICAL_RECEIPT_NOT_OBSERVED",
+        "historical_local_windows_qa": "DEFERRED_LOCAL_GATE"
       }
     }
   },
