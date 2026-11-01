@@ -33,6 +33,16 @@ class LocalCheckerQueueTests(unittest.TestCase):
             "p.write_text(json.dumps({'verdict':'NEEDS_REVIEW'}))\n"
             "sys.exit(1)\n", encoding="utf-8")
 
+    def _checker_output(self, raw, exit_code=1):
+        # A real subprocess writes this untrusted report; tests do not fake
+        # a successful Windows Checker or a physical GUI/install result.
+        (self.checker / "run.py").write_text(
+            "import sys\nfrom pathlib import Path\n"
+            + "Path(sys.argv[sys.argv.index('--report')+1]).write_text("
+            + repr(raw) + ", encoding='utf-8')\n"
+            + "sys.exit(" + str(exit_code) + ")\n",
+            encoding="utf-8")
+
     def bundle(self, lane, slug, source=SOURCE, request=None):
         kind = {"APP": "app", "GAME": "game", "GAME_3D": "3d-game"}[lane]
         folder = self.inbox / lane / slug
@@ -167,6 +177,50 @@ class LocalCheckerQueueTests(unittest.TestCase):
         self.bundle("APP", "sample-app")
         (self.checker / "run.py").write_text("import sys\nsys.exit(0)\n", encoding="utf-8")
         with self.assertRaisesRegex(ValueError, "without valid report"):
+            check_local_queue(self.inbox, self.checker, self.reports)
+
+    def test_checker_duplicate_verdict_is_not_accepted(self):
+        self.bundle("APP", "sample-app")
+        self._checker_output(
+            '{"verdict":"BLOCKED","verdict":"READY_CANDIDATE_NOT_CERTIFIED"}',
+            exit_code=0)
+        with self.assertRaisesRegex(ValueError, "duplicate JSON key"):
+            check_local_queue(self.inbox, self.checker, self.reports)
+
+    def test_checker_nested_duplicate_key_is_not_accepted(self):
+        self.bundle("GAME", "sample-game")
+        self._checker_output(
+            '{"verdict":"NEEDS_REVIEW","details":{"source":"one","source":"two"}}')
+        with self.assertRaisesRegex(ValueError, "duplicate JSON key"):
+            check_local_queue(self.inbox, self.checker, self.reports)
+
+    def test_checker_nan_and_non_object_are_rejected(self):
+        self.bundle("APP", "sample-app")
+        self._checker_output('{"verdict":"NEEDS_REVIEW","score":NaN}')
+        with self.assertRaisesRegex(ValueError, "non-finite JSON"):
+            check_local_queue(self.inbox, self.checker, self.reports)
+        self._checker_output('[]')
+        with self.assertRaisesRegex(ValueError, "invalid checker report object"):
+            check_local_queue(self.inbox, self.checker, self.reports)
+
+    def test_checker_oversize_report_is_rejected(self):
+        self.bundle("APP", "sample-app")
+        self._checker_output(
+            '{"verdict":"NEEDS_REVIEW","padding":"' + 'x' * 2_000_001 + '"}')
+        with self.assertRaisesRegex(ValueError, "invalid checker report size"):
+            check_local_queue(self.inbox, self.checker, self.reports)
+
+    def test_handoff_duplicate_key_and_nonfinite_are_rejected(self):
+        folder = self.bundle("GAME", "sample-game")
+        path = folder / "handoff.json"
+        raw = path.read_text(encoding="utf-8")
+        path.write_text(raw.replace('"source_sha":', '"source_sha":"spoof", "source_sha":', 1),
+                        encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "duplicate JSON key"):
+            check_local_queue(self.inbox, self.checker, self.reports)
+        path.write_text(raw.replace('"package_bytes":', '"risk":NaN, "package_bytes":', 1),
+                        encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "non-finite JSON"):
             check_local_queue(self.inbox, self.checker, self.reports)
 
     def test_report_cannot_be_written_inside_package_queue(self):

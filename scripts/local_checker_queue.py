@@ -12,6 +12,7 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
+import stat
 
 from all_auto.handoff_bridge import validate_bundle
 from all_auto.lane_queue import check_request_conflict
@@ -26,6 +27,53 @@ VERDICTS = {
 # product_type and receipts remain GAME_3D. Never silently skip this lane.
 LANES = {"APP": "app", "GAME": "game", "GAME_3D": "game"}
 MAX_QUEUED_BYTES = 2 * 1024 * 1024 * 1024
+MAX_HANDOFF_JSON_BYTES = 1_000_000
+MAX_CHECKER_REPORT_BYTES = 2_000_000
+
+
+def _strict_json_pairs(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("LOCAL_QA_HOLD: duplicate JSON key")
+        result[key] = value
+    return result
+
+
+def _reject_json_constant(_value):
+    raise ValueError("LOCAL_QA_HOLD: non-finite JSON number")
+
+
+def _read_bounded_json(path: Path, *, limit: int, label: str) -> dict:
+    """Read an untrusted receipt once, with no symlink, duplicate or NaN escape.
+
+    Both downloaded handoff.json and the Checker subprocess report cross a
+    trust boundary. The caller must not infer a successful GUI/install/E2E QA.
+    """
+    if path.is_symlink():
+        raise ValueError("LOCAL_QA_HOLD: linked " + label)
+    flags = os.O_RDONLY | getattr(os, "O_BINARY", 0) | getattr(os, "O_NOFOLLOW", 0)
+    try:
+        fd = os.open(path, flags)
+        with os.fdopen(fd, "rb") as handle:
+            metadata = os.fstat(handle.fileno())
+            if (not stat.S_ISREG(metadata.st_mode)
+                    or not 0 < metadata.st_size <= limit):
+                raise ValueError("LOCAL_QA_HOLD: invalid " + label + " size/type")
+            raw = handle.read(limit + 1)
+            if len(raw) != metadata.st_size:
+                raise ValueError("LOCAL_QA_HOLD: changed/oversize " + label)
+    except OSError as exc:
+        raise ValueError("LOCAL_QA_HOLD: unavailable " + label) from exc
+    try:
+        parsed = json.loads(raw.decode("utf-8"),
+                            object_pairs_hook=_strict_json_pairs,
+                            parse_constant=_reject_json_constant)
+    except (UnicodeError, json.JSONDecodeError) as exc:
+        raise ValueError("LOCAL_QA_HOLD: invalid " + label + " JSON") from exc
+    if type(parsed) is not dict:
+        raise ValueError("LOCAL_QA_HOLD: invalid " + label + " object")
+    return parsed
 
 
 def check_local_queue(inbox: Path, checker: Path, reports: Path) -> dict:
@@ -63,7 +111,9 @@ def check_local_queue(inbox: Path, checker: Path, reports: Path) -> dict:
     for lane, kind, folder in bundles:
         if (folder / "handoff.json").is_symlink() or (folder / "package.msix").is_symlink():
             raise ValueError("LOCAL_QA_HOLD: linked package")
-        meta = json.loads((folder / "handoff.json").read_text(encoding="utf-8"))
+        meta = _read_bounded_json(
+            folder / "handoff.json", limit=MAX_HANDOFF_JSON_BYTES,
+            label="handoff")
         # The 3D build HEAD may be a separate post-Identity commit. Never
         # substitute its immutable pre-Identity source_sha for the build HEAD.
         expected = meta.get("factory_build_head",
@@ -97,10 +147,11 @@ def check_local_queue(inbox: Path, checker: Path, reports: Path) -> dict:
                 )
             except (subprocess.TimeoutExpired, OSError) as exc:
                 raise ValueError("LOCAL_QA_HOLD: Windows-checker unavailable: " + type(exc).__name__) from exc
-            if proc.returncode not in VERDICTS or not report.is_file() or report.stat().st_size > 2_000_000:
+            if proc.returncode not in VERDICTS or not report.is_file():
                 raise ValueError("LOCAL_QA_HOLD: Windows-checker failed without valid report")
-            parsed = json.loads(report.read_text(encoding="utf-8"))
-            if not isinstance(parsed, dict) or parsed.get("verdict") != VERDICTS[proc.returncode]:
+            parsed = _read_bounded_json(
+                report, limit=MAX_CHECKER_REPORT_BYTES, label="checker report")
+            if parsed.get("verdict") != VERDICTS[proc.returncode]:
                 raise ValueError("LOCAL_QA_HOLD: checker exit/report mismatch")
             receipt = {
                 "schema_version": 1, "status": "HOLD",
