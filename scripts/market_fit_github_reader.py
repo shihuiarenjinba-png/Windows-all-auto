@@ -14,7 +14,7 @@ import subprocess
 from scripts.market_fit_gate import assess_market_fit
 
 REPO = re.compile(r"shihuiarenjinba-png/[A-Za-z0-9_.-]+\Z")
-PATH = re.compile(r"products/[a-z0-9]+(?:-[a-z0-9]+)*/market-fit\.json\Z")
+PATH = re.compile(r"docs/market/[a-z0-9]+(?:-[a-z0-9]+)*\.market-fit\.json\Z")
 SHA = re.compile(r"[0-9a-f]{40}\Z")
 MAX_BYTES = 65536
 
