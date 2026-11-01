@@ -33,7 +33,9 @@ def _png(color, width=1024, height=768):
 def _msix(*, omit=None, bad_manifest=False, extra=None, stored_asset=False,
           blockmap_omit=None, blockmap_bad_hash=False, blockmap_bad_base64=False,
           blockmap_duplicate=False, blockmap_method=None,
-          tamper_asset_after_map=False):
+          tamper_asset_after_map=False, blockmap_bad_lfh=False,
+          blockmap_omit_lfh=False, blockmap_missing_compressed_size=False,
+          blockmap_bad_compressed_total=False, blockmap_stored_size=False):
     manifest = (
         '<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10">'
         '<Identity Name="OkinawaDesktopTools.Test" Publisher="CN=Test" Version="1.0.0.0"/>'
@@ -62,19 +64,42 @@ def _msix(*, omit=None, bad_manifest=False, extra=None, stored_asset=False,
         if name == "[Content_Types].xml" or name == blockmap_omit:
             continue
         raw = value.encode("utf-8") if isinstance(value, str) else value
+        stored = stored_asset and name == "Assets/logo.png"
+        offsets = list(range(0, len(raw), 65536))
+        compressor = zlib.compressobj(wbits=-15)
+        compressed_size = len(compressor.compress(raw) + compressor.flush())
+        # These synthetic ZIP fixtures test aggregate compressed-byte metadata,
+        # not independently compressed MakeAppx block boundaries.
+        per_block = []
+        if offsets:
+            each = max(1, compressed_size // len(offsets))
+            per_block = [each] * (len(offsets) - 1)
+            per_block.append(compressed_size - sum(per_block))
         blocks = []
-        for offset in range(0, len(raw), 65536):
+        for index, offset in enumerate(offsets):
             digest = digest_algorithm(raw[offset:offset + 65536]).digest()
             encoded = base64.b64encode(digest).decode("ascii")
             if blockmap_bad_hash and name == "Assets/logo.png":
                 encoded = base64.b64encode(bytes(32)).decode("ascii")
             if blockmap_bad_base64 and name == "Assets/logo.png":
                 encoded = "not-base64!!"
-            blocks.append(f'<Block Hash="{encoded}"/>')
+            size_attr = ""
+            if stored:
+                if blockmap_stored_size and name == "Assets/logo.png":
+                    size_attr = f' Size="{len(raw)}"'
+            elif not (blockmap_missing_compressed_size and name == "Assets/logo.png"):
+                declared = per_block[index]
+                if blockmap_bad_compressed_total and name == "Assets/logo.png":
+                    declared += 1
+                size_attr = f' Size="{declared}"'
+            blocks.append(f'<Block Hash="{encoded}"{size_attr}/>')
         xml_name = html.escape(name.replace("/", chr(92)), quote=True)
+        lfh_size = 30 + len(name.encode("utf-8"))
+        lfh_attr = f' LfhSize="{lfh_size + (1 if blockmap_bad_lfh and name == "Assets/logo.png" else 0)}"'
+        if blockmap_omit_lfh and name == "Assets/logo.png":
+            lfh_attr = ""
         files.append(
-            f'<File Name="{xml_name}" Size="{len(raw)}" '
-            f'LfhSize="{30 + len(name.encode("utf-8"))}">'
+            f'<File Name="{xml_name}" Size="{len(raw)}"{lfh_attr}>'
             + "".join(blocks) + "</File>"
         )
     if blockmap_duplicate:
@@ -253,6 +278,28 @@ class LocalEvidenceTests(unittest.TestCase):
     def test_msix_blockmap_verifies_multiple_64k_blocks(self):
         self._replace_package(_msix(extra={"Assets/large.bin": b"x" * 70000}))
         self.assertEqual(self._read()["slug"], self.job["slug"])
+
+    def test_msix_blockmap_lfh_size_must_match_actual_local_header(self):
+        self._replace_package(_msix(blockmap_bad_lfh=True))
+        self._hold("MSIX_INVALID")
+
+    def test_msix_blockmap_lfh_size_is_required(self):
+        self._replace_package(_msix(blockmap_omit_lfh=True))
+        self._hold("MSIX_INVALID")
+
+    def test_msix_blockmap_compressed_block_size_required(self):
+        self._replace_package(_msix(blockmap_missing_compressed_size=True))
+        self._hold("MSIX_INVALID")
+
+    def test_msix_blockmap_compressed_size_sum_matches_zip(self):
+        self._replace_package(_msix(blockmap_bad_compressed_total=True))
+        self._hold("MSIX_INVALID")
+
+    def test_msix_blockmap_stored_file_has_no_compressed_size(self):
+        self._replace_package(_msix(stored_asset=True))
+        self.assertEqual(self._read()["slug"], self.job["slug"])
+        self._replace_package(_msix(stored_asset=True, blockmap_stored_size=True))
+        self._hold("MSIX_INVALID")
 
     def test_valid_msix_container_is_not_signature_or_e2e_pass(self):
         self._replace_package(_msix())
