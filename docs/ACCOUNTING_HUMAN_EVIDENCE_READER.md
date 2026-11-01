@@ -30,9 +30,14 @@ assert result["e2e_pass"] is False
 ```
 
 The reader checks actual MSIX ZIP header and streaming SHA-256, Checker
-report SHA-256, screenshot PNG integrity, exact image dimensions,
+report SHA-256, screenshot PNG chunk CRCs **and bounded zlib pixel-stream
+decoding** (expected scanline count and filter bytes), exact image dimensions,
 distinct screenshot digests, symlink avoidance, duplicate JSON keys,
-nonfinite JSON rejection and bounded file sizes. All exceptions are
+nonfinite JSON rejection and bounded file sizes. The reviewed screenshot
+format is non-interlaced 8-bit RGB or RGBA; unsupported PNG encodings fail
+closed rather than passing on chunk CRCs alone. Consecutive split IDAT
+chunks and standard ancillary metadata are supported. A decoded PNG is
+still not proof of an actual Windows screenshot or its visual contents. All exceptions are
 sanitized HOLD codes. The existing pure contract then checks exact
 request/source/build/product/market and five beginner workflow assertions.
 

@@ -117,5 +117,83 @@ class LocalEvidenceTests(unittest.TestCase):
         self._hold("SYMLINK")
 
 
+    def _replace_png(self, png, key="account_search_rent"):
+        (self.root / "screenshots" / (key + ".png")).write_bytes(png)
+        self.evidence["scenarios"][key]["screenshot_sha256"] = (
+            hashlib.sha256(png).hexdigest())
+        self._save()
+
+    def test_crc_valid_but_invalid_deflate_rejected(self):
+        ihdr = struct.pack(">IIBBBBB", 1024, 768, 8, 2, 0, 0, 0)
+        png = (b"\x89PNG\r\n\x1a\n" + _chunk(b"IHDR", ihdr)
+               + _chunk(b"IDAT", b"not-a-zlib-stream")
+               + _chunk(b"IEND", b""))
+        self._replace_png(png)
+        self._hold("PNG_INVALID")
+
+    def test_crc_valid_but_invalid_filter_rejected(self):
+        ihdr = struct.pack(">IIBBBBB", 1024, 768, 8, 2, 0, 0, 0)
+        raw = (b"\x05" + b"\x00" * (1024 * 3)) * 768
+        png = (b"\x89PNG\r\n\x1a\n" + _chunk(b"IHDR", ihdr)
+               + _chunk(b"IDAT", zlib.compress(raw))
+               + _chunk(b"IEND", b""))
+        self._replace_png(png)
+        self._hold("PNG_INVALID")
+
+    def test_crc_valid_decompression_overflow_rejected(self):
+        ihdr = struct.pack(">IIBBBBB", 1024, 768, 8, 2, 0, 0, 0)
+        raw = b"\x00" * ((1024 * 3 + 1) * 768 + 100)
+        png = (b"\x89PNG\r\n\x1a\n" + _chunk(b"IHDR", ihdr)
+               + _chunk(b"IDAT", zlib.compress(raw))
+               + _chunk(b"IEND", b""))
+        self._replace_png(png)
+        self._hold("PNG_INVALID")
+
+    def test_crc_valid_truncated_zlib_rejected(self):
+        ihdr = struct.pack(">IIBBBBB", 1024, 768, 8, 2, 0, 0, 0)
+        raw = (b"\x00" + b"\x00" * (1024 * 3)) * 768
+        compressed = zlib.compress(raw)[:-2]
+        png = (b"\x89PNG\r\n\x1a\n" + _chunk(b"IHDR", ihdr)
+               + _chunk(b"IDAT", compressed)
+               + _chunk(b"IEND", b""))
+        self._replace_png(png)
+        self._hold("PNG_INVALID")
+
+    def test_crc_valid_nonconsecutive_idat_rejected(self):
+        ihdr = struct.pack(">IIBBBBB", 1024, 768, 8, 2, 0, 0, 0)
+        raw = (b"\x00" + b"\x00" * (1024 * 3)) * 768
+        compressed = zlib.compress(raw)
+        split = len(compressed) // 2
+        png = (b"\x89PNG\r\n\x1a\n" + _chunk(b"IHDR", ihdr)
+               + _chunk(b"IDAT", compressed[:split])
+               + _chunk(b"tEXt", b"Note\x00safe")
+               + _chunk(b"IDAT", compressed[split:])
+               + _chunk(b"IEND", b""))
+        self._replace_png(png)
+        self._hold("PNG_INVALID")
+
+    def test_valid_consecutive_idat_and_ancillary_accepted(self):
+        ihdr = struct.pack(">IIBBBBB", 1024, 768, 8, 2, 0, 0, 0)
+        raw = (b"\x00" + b"\x02\x00\x00" * 1024) * 768
+        compressed = zlib.compress(raw)
+        split = len(compressed) // 2
+        png = (b"\x89PNG\r\n\x1a\n" + _chunk(b"IHDR", ihdr)
+               + _chunk(b"tEXt", b"Note\x00safe")
+               + _chunk(b"IDAT", compressed[:split])
+               + _chunk(b"IDAT", compressed[split:])
+               + _chunk(b"IEND", b""))
+        self._replace_png(png)
+        self.assertEqual(self._read()["slug"], self.job["slug"])
+
+    def test_crc_valid_unsupported_indexed_png_rejected(self):
+        ihdr = struct.pack(">IIBBBBB", 1024, 768, 8, 3, 0, 0, 0)
+        png = (b"\x89PNG\r\n\x1a\n" + _chunk(b"IHDR", ihdr)
+               + _chunk(b"PLTE", b"\x00\x00\x00")
+               + _chunk(b"IDAT", zlib.compress(b"\x00" * 1024))
+               + _chunk(b"IEND", b""))
+        self._replace_png(png)
+        self._hold("PNG_INVALID")
+
+
 if __name__ == "__main__":
     unittest.main()
