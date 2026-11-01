@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-01T06:43:08.696Z",
+  "updated_at_utc": "2026-11-01T07:40:57.983Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -982,7 +982,7 @@
   },
   "user_id_requests": {
     "schema_version": 1,
-    "generated_at_utc": "2026-11-01T06:43:08.696Z",
+    "generated_at_utc": "2026-11-01T07:40:57.983Z",
     "acquisition_owner": "LOCAL_PARTNER_CENTER_OPERATOR_PERMITTED_FROM_2026_10_28_17_44_JST",
     "storage_policy": "LOCAL_OPERATOR_RECEIPT_AND_PRIVATE_IDENTITY_ONLY__NO_AUTH_COOKIES_TOKENS_SESSIONS_IN_GITHUB",
     "items": [
@@ -1515,7 +1515,7 @@
     "3d_waiting_identity": 0,
     "3d_conflicts": 0,
     "3d_artifact_mismatch": 0,
-    "metrics_basis": "2026_11_01_GITHUB_APPROVED_IDENTITY_FILE_AND_EXACT_REQUEST_SOURCE_JSON_RECHECK__APP_2_POST_2_PRE__3D_1_POST__GAME_USER_RECEIVED_NO_CAS__NO_NEW_LOCAL_RECEIPTS",
+    "metrics_basis": "2026_11_01_CENTRAL_LEDGER_PRIOR_VERIFIED_GITHUB_RETURNS_UNCHANGED__NO_NEW_FACTORY_OR_LOCAL_RECEIPTS__PR118_OFFLINE_CI_ONLY",
     "3d_source_branch_head_drift_observed": 1
   },
   "local_source_code_sync": {
@@ -2569,8 +2569,8 @@
     "local_execution_this_run": "NOT_PERFORMED"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-11-01T06:43:08.696Z",
-    "scope": "PR117_CHECKER_REPORT_EXACT_MSIX_SHA_AND_PRODUCT_TYPE_BINDING__WINDOWS_UBUNTU_OFFLINE_CI_SUCCESS__REAL_PRODUCT_E2E_HOLD",
+    "observed_at_utc": "2026-11-01T07:40:57.983Z",
+    "scope": "PR118_POST_CHECKER_MSIX_REHASH_FAIL_CLOSED__WINDOWS_UBUNTU_OFFLINE_CI_PASS__PHYSICAL_SIGNED_MSIX_AND_E2E_HOLD",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
     "canonical_previous_blob_sha": "2fc2875fde95313663c73d6ca21cd8bf1c7c8511",
@@ -2591,13 +2591,13 @@
     "package": "NOT_BUILT",
     "github_backlog": "NO_NEW_REAL_MSIX",
     "local_pull": "NOT_RUN_THIS_EXECUTION",
-    "checker": "PR117_OFFLINE_BINDING_CI_PASS__NO_PHYSICAL_WINDOWS_CHECKER_RUN",
+    "checker": "PR118_POST_RUN_SAME_SIZE_AND_APPEND_TAMPER_REJECTED_OFFLINE_CI_PASS__NO_PHYSICAL_WINDOWS_CHECKER_RUN",
     "gui_install_qa": "NOT_RUN_THIS_EXECUTION",
     "store_submission": 0,
     "success_count_cloud_verified": 2,
     "remaining_app_identity_returns": 2,
     "next_resume_index": 3,
-    "next_action": "REVIEW_STACKED_DRAFT_PR117__PHYSICAL_SIGNED_MSIX_CHECKER_GUI_INSTALL_HOLD__TEXT_DIFF_IMAGE_INVENTORY_IDENTITY_RETURN_PENDING__ACCOUNTING_FOUR_SKUS_MARKET_FIT_COMPLIANCE_TAX_FIXTURE_HOLD",
+    "next_action": "REVIEW_STACKED_DRAFT_PR118__REAL_SIGNED_MSIX_AND_WINDOWS_CHECKER_GUI_INSTALL_PENDING__TEXT_DIFF_IMAGE_INVENTORY_IDENTITY_RETURN_PENDING__ACCOUNTING_MARKET_FIT_COMPLIANCE_TAX_ENGINE_HOLD",
     "post_identity_reconcile_pr": 49,
     "post_identity_reconcile_ci_run": 40851883814,
     "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU",
@@ -2909,9 +2909,9 @@
     "new_implementation_ci_run": 41015629935,
     "new_implementation_ci": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
     "new_implementation_scope": "EXACT_ONE_COMMIT_ONLY_APPROVED_IDENTITY_JSON_ADDED__SOURCE_ANCESTRY_AND_RETURN_TARGET_VERIFIED__REJECT_UNRELATED_FILE_OR_MULTICOMMIT",
-    "implementation_pr": 70,
-    "implementation_head_sha": "49c6883ba57a36c3012a2020dc4f44d4e3cda74e",
-    "implementation_ci_run_id": 41091661817,
+    "implementation_pr": 118,
+    "implementation_head_sha": "e17c1d224294a81acd472057f37d475d67087206",
+    "implementation_ci_run_id": 41285704717,
     "implementation_ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
     "prior_scope": "PR69_POST_IDENTITY_PIPELINE_EXACT_BINDING_GUARD_WINDOWS_UBUNTU_CI_PASS__FOCUS_LEDGER_PRISM_IDENTITY_ONLY_COMPARE_VERIFIED__TEXT_IMAGE_APPROVED_FILES_404__PHYSICAL_WINDOWS_HOLD",
     "immutable_head_read_guard": {
@@ -3487,7 +3487,11 @@
       "e2e_pass": false,
       "store_submission": "NOT_PERFORMED",
       "integration": "STACKED_DRAFT_NOT_MERGED"
-    }
+    },
+    "implementation_scope": "POST_CHECKER_READ_ONLY_MSIX_SHA256_SIZE_INODE_METADATA_REVALIDATION__FORGED_REPORT_TAMPER_REGRESSIONS__NO_REAL_PRODUCT_EVIDENCE",
+    "implementation_pr_url": "https://github.com/shihuiarenjinba-png/Windows-all-auto/pull/118",
+    "previous_failed_ci_run_id": 41285620037,
+    "previous_failed_ci_reason": "TWO_NEW_TEST_FIXTURES_EMITTED_LITERAL_BACKSLASH_N__CORRECTED_WITHOUT_PRODUCTION_GUARD_CHANGE"
   },
   "post_identity_pipeline": {
     "schema_version": 1,
@@ -4329,6 +4333,22 @@
       "physical_windows": "NOT_EXECUTED",
       "signed_msix": "NOT_OBSERVED",
       "e2e_pass": false
+    },
+    "local_checker_postrun_integrity_guard": {
+      "draft_pr": 118,
+      "base_pr": 117,
+      "branch": "codex/e2e-checker-post-run-msix-integrity-20261101-1636",
+      "head_sha": "e17c1d224294a81acd472057f37d475d67087206",
+      "offline_qa_run_id": 41285704717,
+      "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+      "scope": "REHASH_AND_RESTAT_PACKAGE_AFTER_CHECKER_SUBPROCESS__REJECT_FORGED_ORIGINAL_SHA_REPORT_IF_PACKAGE_CHANGED",
+      "regressions": "SAME_SIZE_BYTE_MUTATION_AND_APPEND_MUTATION_BOTH_HOLD",
+      "physical_windows": "NOT_EXECUTED",
+      "signed_msix": "NOT_OBSERVED",
+      "checker_real_execution": "NOT_OBSERVED",
+      "e2e_pass": false,
+      "store_submission": "NOT_PERFORMED",
+      "integration": "STACKED_DRAFT_NOT_MERGED"
     }
   },
   "accounting_tax_primary_source_review": {
@@ -4353,6 +4373,17 @@
       "action": "KEEP_JP_US_ACCOUNTING_PACKAGE_HOLD_UNTIL_DATE_SPLIT_AND_TAX_PERIOD_FIXTURES_INDEPENDENTLY_PASS",
       "nta_2026_invoice_transition": "2026_OCT_01_OR_LATER_STARTING_TAX_PERIOD_70_PERCENT_2_YEARS__2028_OCT_01_50_PERCENT_2_YEARS__2030_OCT_01_30_PERCENT_1_YEAR__2031_OCT_01_ZERO__ELIGIBILITY_AND_TAX_PERIOD_BOUND",
       "source_status": "2026_11_01_OFFICIAL_IRS_MILEAGE_2026_MIDYEAR_SPLIT_AND_NTA_INVOICE_TRANSITION_RECHECKED__NO_PACKAGE_COMPLIANCE_PASS"
+    },
+    "source_recheck_20261101": {
+      "checked_at_utc": "2026-11-01T07:40:57.983Z",
+      "nta_news_url": "https://www.nta.go.jp/information/news/news.htm",
+      "nta_refund_scheme_url": "https://www.nta.go.jp/publication/pamph/shohi/menzei/201805/format/002.htm",
+      "irs_small_business_guide_url": "https://www.irs.gov/publications/p334",
+      "irs_depreciation_guidance_url": "https://www.irs.gov/newsroom/treasury-irs-issue-guidance-on-the-additional-first-year-depreciation-deduction-amended-as-part-of-the-one-big-beautiful-bill",
+      "observed": "NTA_2026_11_01_TAX_FREE_SHOP_REFUND_SCHEME_LIVE__IRS_2026_SMALL_BUSINESS_GUIDE_AND_100_PERCENT_BONUS_DEPRECIATION_NOTICE_RECHECKED",
+      "scope": "TAX_FREE_SHOP_REFUND_SCHEME_NOT_ASSUMED_APPLICABLE_TO_FOUR_GENERIC_BOOKKEEPING_SKUS__NO_AUTOMATIC_TAX_LOGIC_CHANGE",
+      "package_gate": "HOLD",
+      "reason": "FOUR_SKU_TAX_ASSET_FIXTURES_MARKET_FIT_COUNTRY_SCOPE_AND_PHYSICAL_WINDOWS_ENGINE_PARITY_NOT_INDEPENDENTLY_PASSED"
     }
   }
 }
