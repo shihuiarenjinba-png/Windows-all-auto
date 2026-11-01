@@ -23,6 +23,12 @@ Every scenario must have independently reviewed physical-Windows steps, observed
 
 If OCR is implemented, the evidence must demonstrate confidence, original image reference, manual confirmation before posting, duplicate candidate detection and partial-batch failure preservation. If OCR is not implemented, the product must not claim that it exists. If parallel books are implemented, the primary book must remain unchanged. These are evidence requirements, **not proof** that an OCR engine or accounting backend is correct.
 
+## Read-only local byte checks (Draft PR #112)
+
+`read_local_accounting_human_evidence` hashes the actual package, Checker JSON and five distinct 1024×768 PNG files. It rejects symlink paths, duplicate JSON keys, corrupt/undecodable PNG data, wrong hashes and reused screenshots. The package check additionally opens the **same already-hashed file descriptor** as ZIP, rejects malformed central directories, unsafe or case-colliding entry paths, encrypted/symlink entries, and requires bounded parseable AppxManifest.xml, AppxBlockMap.xml and [Content_Types].xml with plausible manifest Identity fields. A matching SHA and a four-byte `PK` header alone do not establish a package.
+
+This is only a structural MSIX plausibility check. **A ZIP containing synthetic XML can pass it**; the result is not a Microsoft signature verification, an authenticated Store Identity/version match, a real Windows-checker result or evidence that the application starts. Independently validate signature trust, embedded Identity, actual Checker output and physical Windows GUI/install/engine correctness before any sale-ready decision. Offline test fixtures intentionally do not claim these properties.
+
 ## Trust and completion boundary
 
 The caller must supply an independently reviewed Windows evidence reader. It must inspect the actual application and bind screenshots and observed behavior to the exact package and Checker report. The current implementation only validates the **shape and correlation of its output**. It cannot independently authenticate a screenshot, physical Windows host, reviewer or calculations; the callback is a trust boundary. Mock callbacks in tests are not product evidence.
