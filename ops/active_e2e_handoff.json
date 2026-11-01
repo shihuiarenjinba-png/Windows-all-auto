@@ -3681,7 +3681,7 @@
       "recompare_before_integration": true,
       "canonical_ledger_only_followups_after_pr_creation": [
         "81c0511e49c00ad86ccbef46cac219739211fbbb",
-        "CURRENT_LEDGER_WRITE_PENDING_COMMIT_SHA"
+        "3af0a11acff8a57c655b8704d49b9cd2edb5d7cd"
       ]
     },
     "latest_factory_image_pr76": {
