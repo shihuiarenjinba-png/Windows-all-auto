@@ -112,6 +112,12 @@ def validate_accounting_receipt_pdf_gate(
                     "confidence_recorded", "original_image_linked",
                     "manual_review_required", "no_auto_post")),
                 "HOLD_RECEIPT_PDF_OCR_CASE_UNSAFE")
+        # Eight distinct high-risk observations are required. Reusing one
+        # screenshot/image digest for every named case is not an eight-case QA.
+        # The duplicate-image case itself must demonstrate duplicates inside
+        # that test; it must not borrow another case\'s entire fixture.
+        _need(len({cases[key]["source_image_sha256"] for key in _CASES}) == len(_CASES),
+              "HOLD_RECEIPT_PDF_OCR_FIXTURE_REUSED")
     else:
         _need(not cases, "HOLD_RECEIPT_PDF_OCR_NOT_IMPLEMENTED")
     monthly = evidence["jp_month_end"]
