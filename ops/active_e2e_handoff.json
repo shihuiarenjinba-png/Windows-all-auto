@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-01T04:36:39Z",
+  "updated_at_utc": "2026-11-01T05:37:14.847Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -959,7 +959,10 @@
     "accounting_msix_blockmap_real_product_pass": false,
     "accounting_msix_lfhsize_code_committed": true,
     "accounting_msix_lfhsize_ci_pass": true,
-    "accounting_msix_lfhsize_real_product_pass": false
+    "accounting_msix_lfhsize_real_product_pass": false,
+    "local_checker_strict_receipt_code_committed": true,
+    "local_checker_strict_receipt_ci_pass": true,
+    "local_checker_strict_receipt_physical_pass": false
   },
   "user_id_requests": {
     "schema_version": 1,
@@ -2550,8 +2553,8 @@
     "local_execution_this_run": "NOT_PERFORMED"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-11-01T04:36:39Z",
-    "scope": "PR115_ACCOUNTING_MSIX_BLOCKMAP_LFHSIZE_AND_COMPRESSED_BLOCK_LAYOUT_GUARD__EXACT_HEAD_WINDOWS_UBUNTU_OFFLINE_CI_PASS__REAL_PRODUCT_E2E_HOLD",
+    "observed_at_utc": "2026-11-01T05:37:14.847Z",
+    "scope": "PR116_LOCAL_CHECKER_HANDOFF_AND_REPORT_STRICT_JSON_RECEIPT_GUARD__EXACT_HEAD_WINDOWS_UBUNTU_OFFLINE_CI_PASS__PHYSICAL_E2E_HOLD",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
     "canonical_previous_blob_sha": "2fc2875fde95313663c73d6ca21cd8bf1c7c8511",
@@ -2578,7 +2581,7 @@
     "success_count_cloud_verified": 2,
     "remaining_app_identity_returns": 2,
     "next_resume_index": 3,
-    "next_action": "REVIEW_STACKED_DRAFT_PR115_EXACT_HEAD_AND_CI__DO_NOT_PROMOTE_UNAUTHENTICATED_BLOCKMAP_OR_SYNTHETIC_MSIX_TO_SIGNED_PACKAGE__APP_FACTORY_ACCOUNTING_MARKET_FIT_CALCULATION_AND_COUNTRY_FIXTURES_PENDING__TEXT_DIFF_IMAGE_IDENTITY_RETURN_PENDING__PHYSICAL_LOCAL_PULL_CHECKER_GUI_HOLD",
+    "next_action": "REVIEW_STACKED_DRAFT_PR116_AND_INTEGRATE_ONLY_AFTER_EXACT_HEAD_REVIEW__LOCAL_PHYSICAL_CHECKER_GUI_INSTALL_AND_SIGNED_MSIX_STILL_HOLD__FOUR_ACCOUNTING_COUNTRY_SKUS_NEED_MARKET_FIT_TAX_FIXTURES_AND_APPROVED_VERSION",
     "post_identity_reconcile_pr": 49,
     "post_identity_reconcile_ci_run": 40851883814,
     "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU",
@@ -3319,7 +3322,7 @@
     "identity_return_file_recheck": "FOCUS_LEDGER_PRISM_PRESENT_REQUEST_SOURCE_MATCH__TEXT_IMAGE_SIGNAL_404__NO_NEW_CAS_OR_VERSION",
     "latest_code_pr": 114,
     "latest_code_head": "55aaeea8e399c159939329724656dccf76f02d4b",
-    "latest_code_ci_run": 41270127108,
+    "latest_code_ci_run": 41277580767,
     "latest_code_ci": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD__OFFLINE_ONLY",
     "latest_identity_file_recheck": {
       "checked_at_utc": "2026-10-31T23:36:11.647Z",
@@ -3418,6 +3421,40 @@
       "e2e_pass": false,
       "store_submission": "NOT_PERFORMED",
       "integration": "STACKED_DRAFT_NOT_MERGED"
+    },
+    "local_checker_receipt_hardening": {
+      "draft_pr": 116,
+      "branch": "codex/e2e-local-checker-strict-receipts-20261101-1436",
+      "base_pr": 115,
+      "base_sha": "b876e556d8b887a849ad3c20f715d4422d0f1330",
+      "head_sha": "c19f978cba311279adf1ab065b48565350fffa03",
+      "ci_run_id": 41277580767,
+      "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+      "scope": "READ_ONLY_BOUNDED_SINGLE_OPEN_HANDOFF_AND_CHECKER_REPORT_JSON__REJECT_NESTED_DUPLICATE_KEYS_NONFINITE_TOPLEVEL_NONOBJECT_SYMLINK_AND_OVERSIZE__PRESERVE_EXIT_VERDICT_BINDING",
+      "tests": "FIVE_NEW_TARGETED_SUBPROCESS_AND_HANDOFF_REGRESSIONS__LEGACY_MISSING_REPORT_CONTRACT_PRESERVED",
+      "initial_failed_run_id": 41277535243,
+      "initial_failure": "LEGACY_MISSING_REPORT_ERROR_MESSAGE_ASSERTION__FIXED_AND_RERUN_GREEN",
+      "real_signed_msix": "NOT_OBSERVED",
+      "physical_windows_checker": "NOT_EXECUTED",
+      "gui_install_qa": "NOT_EXECUTED",
+      "e2e_pass": false,
+      "store_submission": "NOT_PERFORMED",
+      "integration": "STACKED_DRAFT_NOT_MERGED"
+    },
+    "latest_identity_file_recheck_20261101": {
+      "checked_at_utc": "2026-11-01T05:37:14.847Z",
+      "evidence": "FRESH_GITHUB_SOURCE_BRANCH_REF_AND_APPROVED_IDENTITY_FILE_LOOKUP__NO_NEW_LOCAL_RECEIPT_OR_COMPARE_IN_THIS_RUN",
+      "focus": "APPROVED_FILE_PRESENT__POST_IDENTITY_READY__VERSION_HOLD",
+      "file_integrity_ledger": "APPROVED_FILE_PRESENT__POST_IDENTITY_READY__VERSION_HOLD",
+      "prism_route_3d": "APPROVED_FILE_PRESENT__POST_IDENTITY_READY__VERSION_HOLD",
+      "offline_text_diff_desk": "APPROVED_FILE_404__SOURCE_HEAD_EQUALS_PINNED_SHA",
+      "offline_image_inventory_desk": "APPROVED_FILE_404__SOURCE_HEAD_EQUALS_PINNED_SHA",
+      "signal_sprint": "APPROVED_FILE_404__USER_IDENTITY_RECEIVED_BUT_CAS_NOT_APPLIED",
+      "accounting_four_skus": "CANDIDATE_DRAFTS__NO_PRE_IDENTITY_PROMOTION_OR_IDENTITY_REQUEST",
+      "local_windows": "NOT_ACCESSED",
+      "partner_center": "NOT_ACCESSED",
+      "cas": "NOT_PERFORMED",
+      "store_submission": "NOT_PERFORMED"
     }
   },
   "post_identity_pipeline": {
