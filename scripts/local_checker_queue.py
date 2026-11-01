@@ -6,6 +6,7 @@ Run after local_handoff_pull, with an independently checked-out Windows-checker.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -74,6 +75,40 @@ def _read_bounded_json(path: Path, *, limit: int, label: str) -> dict:
     if type(parsed) is not dict:
         raise ValueError("LOCAL_QA_HOLD: invalid " + label + " object")
     return parsed
+
+
+def _verify_post_checker_package(package: Path, info: dict) -> None:
+    """Fail closed if the Checker process modified or replaced the MSIX.
+
+    The intake hash and the subprocess-reported hash alone cannot prove that
+    the package on disk is still the same after the Checker exits.
+    """
+    if package.is_symlink():
+        raise ValueError("LOCAL_QA_HOLD: package changed during checker")
+    flags = os.O_RDONLY | getattr(os, "O_BINARY", 0) | getattr(os, "O_NOFOLLOW", 0)
+    try:
+        fd = os.open(package, flags)
+        with os.fdopen(fd, "rb") as handle:
+            before = os.fstat(handle.fileno())
+            if (not stat.S_ISREG(before.st_mode)
+                    or before.st_size != info["package_bytes"]):
+                raise ValueError("LOCAL_QA_HOLD: package changed during checker")
+            digest = hashlib.sha256()
+            while True:
+                chunk = handle.read(1024 * 1024)
+                if not chunk:
+                    break
+                digest.update(chunk)
+            after = os.fstat(handle.fileno())
+        current = os.stat(package, follow_symlinks=False)
+    except OSError as exc:
+        raise ValueError("LOCAL_QA_HOLD: package changed during checker") from exc
+    if (not stat.S_ISREG(current.st_mode)
+            or (before.st_size, before.st_mtime_ns, before.st_ctime_ns)
+               != (after.st_size, after.st_mtime_ns, after.st_ctime_ns)
+            or (after.st_dev, after.st_ino) != (current.st_dev, current.st_ino)
+            or digest.hexdigest().lower() != info["package_sha256"].lower()):
+        raise ValueError("LOCAL_QA_HOLD: package changed during checker")
 
 
 def check_local_queue(inbox: Path, checker: Path, reports: Path) -> dict:
@@ -147,6 +182,7 @@ def check_local_queue(inbox: Path, checker: Path, reports: Path) -> dict:
                 )
             except (subprocess.TimeoutExpired, OSError) as exc:
                 raise ValueError("LOCAL_QA_HOLD: Windows-checker unavailable: " + type(exc).__name__) from exc
+            _verify_post_checker_package(folder / "package.msix", info)
             if proc.returncode not in VERDICTS or not report.is_file():
                 raise ValueError("LOCAL_QA_HOLD: Windows-checker failed without valid report")
             parsed = _read_bounded_json(
