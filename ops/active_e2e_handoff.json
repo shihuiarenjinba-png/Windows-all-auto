@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-01T12:43:00Z",
+  "updated_at_utc": "2026-11-01T13:40:23.874Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -2614,8 +2614,8 @@
     "local_execution_this_run": "NOT_PERFORMED"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-11-01T12:43:00Z",
-    "scope": "PR123_OCR_HIGH_RISK_FIXTURE_DIGEST_REUSE_REJECTED__EXACT_HEAD_WINDOWS_UBUNTU_CI_PASS__NO_PHYSICAL_WINDOWS_OR_REAL_MSIX",
+    "observed_at_utc": "2026-11-01T13:40:23.874Z",
+    "scope": "PR124_OCR_DUPLICATE_PAIR_EVIDENCE_FAIL_CLOSED__EXACT_HEAD_WINDOWS_UBUNTU_CI_SUCCESS__FOUR_APP_ARTIFACT_METADATA_RECHECK__NO_PHYSICAL_WINDOWS",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
     "canonical_previous_blob_sha": "3c963b44ffadd5f9e71b81690339d3d0ea91be39",
@@ -2642,7 +2642,7 @@
     "success_count_cloud_verified": 2,
     "remaining_app_identity_returns": 2,
     "next_resume_index": 3,
-    "next_action": "PR123_REVIEW__PHYSICAL_WINDOWS_OCR_PDF_BYTES_AND_CHECKER_GUI_INSTALL_PENDING__TEXT_DIFF_IMAGE_IDENTITY_RETURN_PENDING__ACCOUNTING_FOUR_SKUS_CANDIDATE_ONLY",
+    "next_action": "REVIEW_PR124__LOCAL_WINDOWS_REAL_OCR_DUPLICATE_PAIR_AND_JP_PDF_BYTE_EVIDENCE__TEXT_DIFF_IMAGE_IDENTITY_RETURN_PENDING__MARKET_FIT_VERSION_HOLD",
     "post_identity_reconcile_pr": 49,
     "post_identity_reconcile_ci_run": 40851883814,
     "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU",
@@ -3558,7 +3558,28 @@
     "ocr_fixture_independence_head": "3142521a65a2a7b2dc55e1251230e7fea01939f6",
     "ocr_fixture_independence_ci_run": 41307729869,
     "ocr_fixture_independence_ci": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
-    "remote_identity_recheck": "2026_11_01_2140_JST_FOCUS_LEDGER_APPROVED_IDENTITY_PRESENT__TEXT_IMAGE_404__NO_NEW_CAS"
+    "remote_identity_recheck": "2026_11_01_2140_JST_FOCUS_LEDGER_APPROVED_IDENTITY_PRESENT__TEXT_IMAGE_404__NO_NEW_CAS",
+    "ocr_duplicate_pair_pr": 124,
+    "ocr_duplicate_pair_head": "a25eea28b1c4a094ee6a9867bfcb90efb901aafd",
+    "ocr_duplicate_pair_ci_run_id": 41312281124,
+    "ocr_duplicate_pair_ci": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD__MOCKED_CONTRACT_ONLY",
+    "ocr_duplicate_pair_fix": "TWO_DISTINCT_OPAQUE_QUEUE_INPUT_IDS_WITH_EQUAL_SHA256_AND_MANUAL_REVIEW_NO_AUTO_POST__BATCH_DUPLICATE_COUNT_AT_LEAST_ONE",
+    "ocr_duplicate_pair_physical_validation": "NOT_PERFORMED__NO_REAL_IMAGE_BYTES_OR_OCR_ENGINE_TESTED",
+    "app_identity_return_recheck_at_utc": "2026-11-01T13:40:23.874Z",
+    "app_identity_return_recheck": {
+      "focus": "PRESENT_EXACT_REQUEST_SOURCE",
+      "ledger": "PRESENT_EXACT_REQUEST_SOURCE",
+      "text_diff": "NOT_FOUND_404",
+      "image_inventory": "NOT_FOUND_404"
+    },
+    "app_artifact_metadata_recheck_at_utc": "2026-11-01T13:40:23.874Z",
+    "app_artifact_metadata_recheck": {
+      "verified_count": 4,
+      "expired_count": 0,
+      "digest_mismatch_count": 0,
+      "expiry_mismatch_count": 0,
+      "source": "FRESH_GITHUB_WORKFLOW_RUN_ARTIFACT_METADATA__NO_LOCAL_BYTES"
+    }
   },
   "post_identity_pipeline": {
     "schema_version": 1,
@@ -4487,7 +4508,7 @@
   },
   "accounting_candidate_intake": {
     "schema_version": 1,
-    "observed_at_utc": "2026-11-01T10:41:14.221Z",
+    "observed_at_utc": "2026-11-01T13:40:23.874Z",
     "writer": "36_WINDOWS_E2E_ONLY",
     "status": "CANDIDATE_ONLY__NO_PROMOTION_SOURCE_SHA_REQUEST_ID_OR_MARKET_FIT_PASS_VERIFIED",
     "products": [
@@ -4499,7 +4520,8 @@
         "factory_draft_pr": 59,
         "status": "NOT_YET_REQUIRED",
         "source_sha": null,
-        "request_id": null
+        "request_id": null,
+        "observed_factory_pr_head": "64e3258635b4fe098f84c38c98832f59f24f92b7"
       },
       {
         "slug": "us-freelance-ledger",
@@ -4509,7 +4531,8 @@
         "factory_draft_pr": 60,
         "status": "NOT_YET_REQUIRED",
         "source_sha": null,
-        "request_id": null
+        "request_id": null,
+        "observed_factory_pr_head": "be50bf8cd7eb78a2c32fb7040090a8d307a524fb"
       },
       {
         "slug": "jp-bookkeeping-desk",
@@ -4520,7 +4543,8 @@
         "status": "NOT_YET_REQUIRED",
         "source_sha": null,
         "request_id": null,
-        "factory_head_observed": "13d1a976757e86587fb11202ebb35fd5ac113cb8"
+        "factory_head_observed": "13d1a976757e86587fb11202ebb35fd5ac113cb8",
+        "observed_factory_pr_head": "9495dde15b4c60fb9c7447fca0a94f15edcd0b4d"
       },
       {
         "slug": "us-bookkeeping-desk",
@@ -4530,7 +4554,8 @@
         "factory_draft_pr": 62,
         "status": "NOT_YET_REQUIRED",
         "source_sha": null,
-        "request_id": null
+        "request_id": null,
+        "observed_factory_pr_head": "4390f1ed1a7310cfbfa6248777b12f70e27ac2f8"
       }
     ],
     "identity_policy": "NO_USER_ID_REQUEST_UNTIL_FACTORY_PROMOTION_AND_EXACT_REQUEST_SOURCE__NO_CROSS_MARKET_REUSE",
@@ -4545,7 +4570,13 @@
       "current_review_utc": "2026-11-01T10:41:14.221Z",
       "nta_depreciation_2026": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2106.htm",
       "irs_depreciation_2025": "https://www.irs.gov/publications/p946",
-      "review_result": "NTA_2026_04_01_LAW_REFERENCE_AND_IRS_2025_PUBLICATION_946_OBSERVED__NO_ENGINE_FIXTURE_PARITY_OR_POLICY_DELTA_PROVEN__HOLD"
+      "review_result": "NTA_2026_04_01_LAW_REFERENCE_AND_IRS_2025_PUBLICATION_946_OBSERVED__NO_ENGINE_FIXTURE_PARITY_OR_POLICY_DELTA_PROVEN__HOLD",
+      "fresh_check_at_utc": "2026-11-01T13:40:23.874Z",
+      "irs_mileage_revision": "2026_JAN_JUN_72_5_CENTS__JUL_DEC_76_CENTS__IRS_ANNOUNCEMENT_2026_11",
+      "irs_mileage_revision_url": "https://www.irs.gov/irb/2026-29_irb",
+      "nta_invoice_transition": "2026_10_ONWARD_70_PERCENT_FOR_ELIGIBLE_TAX_PERIODS__2028_10_50_PERCENT__2030_10_30_PERCENT__APPLICATION_REQUIRES_TAX_PERIOD_SCOPE",
+      "nta_invoice_transition_url": "https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/invoice-review/index.htm",
+      "product_fixture_parity": "NOT_VERIFIED__NO_ACCOUNTING_MSIX_PROMOTION"
     },
     "market_scope": "JP_ONLY_FOR_JP_SKUS__US_ONLY_FOR_US_SKUS__PRICING_AVAILABILITY_NOT_AUTOMATED",
     "physical_windows_qa": "NOT_PERFORMED",
