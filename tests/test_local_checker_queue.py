@@ -307,11 +307,21 @@ class LocalCheckerQueueTests(unittest.TestCase):
 
     def test_rotated_inbox_cannot_overwrite_prior_request_receipt(self):
         folder = self.bundle("APP", "sample-app", request="app-request-0001")
+        package_bytes = (folder / "package.msix").read_bytes()
         check_local_queue(self.inbox, self.checker, self.reports)
         prior = next(self.reports.glob("*.checker.json"))
         original = prior.read_bytes()
         shutil.rmtree(folder)
-        self.bundle("APP", "sample-app", request="app-request-0002")
+        rotated = self.bundle("APP", "sample-app", request="app-request-0002")
+        # ZipFile.writestr timestamps can differ across the second boundary
+        # (especially on Windows). Reuse the *exact* prior package bytes so
+        # this test deterministically exercises the report-name collision.
+        (rotated / "package.msix").write_bytes(package_bytes)
+        metadata_path = rotated / "handoff.json"
+        metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+        metadata["package_sha256"] = hashlib.sha256(package_bytes).hexdigest()
+        metadata["package_bytes"] = len(package_bytes)
+        metadata_path.write_text(json.dumps(metadata), encoding="utf-8")
         with self.assertRaisesRegex(ValueError, "existing checker receipt provenance conflict"):
             check_local_queue(self.inbox, self.checker, self.reports)
         self.assertEqual(prior.read_bytes(), original)
