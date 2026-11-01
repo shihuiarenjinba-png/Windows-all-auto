@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-01T08:37:49.402Z",
+  "updated_at_utc": "2026-11-01T10:40:49.167Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -491,6 +491,26 @@
       "e2e_pass": false,
       "store_submission": "NOT_PERFORMED",
       "integration": "STACKED_DRAFT_NOT_MERGED"
+    },
+    "local_checker_historical_request_guard": {
+      "draft_pr": 121,
+      "branch": "codex/e2e-checker-historical-request-20261101-1936",
+      "base_pr": 120,
+      "base_sha": "42d365d5ceada3f0fcd03603650795c1a47230ad",
+      "code_head_sha": "1ec0ff9754746a1cc5a4dfd56eca5f6a32202081",
+      "exact_head_ci_runs": [
+        41298482138,
+        41298486462
+      ],
+      "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_CODE_HEAD",
+      "scope": "BOUNDED_HISTORICAL_CHECKER_RECEIPT_SCAN__REJECT_ROTATED_SLUG_OR_LANE_REQUEST_ID_REUSE__PRESERVE_DISTINCT_REQUEST_AND_EXACT_REPLAY",
+      "regressions": 3,
+      "physical_windows_checker": "NOT_EXECUTED",
+      "signed_msix": "NOT_OBSERVED",
+      "gui_install": "NOT_EXECUTED",
+      "e2e_pass": false,
+      "integration": "STACKED_DRAFT_NOT_MERGED",
+      "store_submission": "NOT_PERFORMED"
     }
   },
   "policy": {
@@ -1000,7 +1020,10 @@
     "local_checker_strict_receipt_physical_pass": false,
     "local_checker_existing_receipt_code_committed": true,
     "local_checker_existing_receipt_ci_pass": true,
-    "local_checker_existing_receipt_physical_pass": false
+    "local_checker_existing_receipt_physical_pass": false,
+    "local_checker_historical_request_guard_code_committed": true,
+    "local_checker_historical_request_guard_exact_head_ci_pass": true,
+    "local_checker_historical_request_guard_physical_pass": false
   },
   "user_id_requests": {
     "schema_version": 1,
@@ -2591,11 +2614,11 @@
     "local_execution_this_run": "NOT_PERFORMED"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-11-01T08:37:49.402Z",
-    "scope": "PR119_CHECKER_RECEIPT_REPLAY_COLLISION_FAIL_CLOSED__WINDOWS_UBUNTU_OFFLINE_CI_PASS__PHYSICAL_SIGNED_MSIX_AND_E2E_HOLD",
+    "observed_at_utc": "2026-11-01T10:40:49.167Z",
+    "scope": "PR121_HISTORICAL_CHECKER_REQUEST_COLLISION_GUARD__EXACT_HEAD_WINDOWS_UBUNTU_CI_PASS__SIGNED_MSIX_LOCAL_GUI_E2E_HOLD",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
-    "canonical_previous_blob_sha": "2fc2875fde95313663c73d6ca21cd8bf1c7c8511",
+    "canonical_previous_blob_sha": "ff73cfce2c801356b28cfffd00607a664a39b5e6",
     "focus_return_commit_sha": "8a7139375524830bf823469526837259266172be",
     "focus_store_id": "9P6452C61N7B",
     "focus_source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
@@ -2613,13 +2636,13 @@
     "package": "NOT_BUILT",
     "github_backlog": "NO_NEW_REAL_MSIX",
     "local_pull": "NOT_RUN_THIS_EXECUTION",
-    "checker": "PR119_STALE_OR_CROSS_REQUEST_CHECKER_RECEIPT_PRECHECK_PASS_SYNTHETIC_WINDOWS_UBUNTU__NO_PHYSICAL_WINDOWS_CHECKER_RUN",
+    "checker": "PR121_ROTATED_HISTORICAL_REQUEST_ID_REUSE_FAIL_CLOSED__WINDOWS_UBUNTU_OFFLINE_CI_PASS__NO_PHYSICAL_WINDOWS_CHECKER",
     "gui_install_qa": "NOT_RUN_THIS_EXECUTION",
     "store_submission": 0,
     "success_count_cloud_verified": 2,
     "remaining_app_identity_returns": 2,
     "next_resume_index": 3,
-    "next_action": "REVIEW_STACKED_DRAFT_PR119__OFFLINE_TEXT_DIFF_AND_IMAGE_INVENTORY_IDENTITY_RETURN_PENDING__SIGNED_MSIX_AND_PHYSICAL_WINDOWS_CHECKER_GUI_INSTALL_HOLD__ACCOUNTING_MARKET_FIT_COUNTRY_TAX_ENGINE_HOLD",
+    "next_action": "PR121_REVIEW_AND_INTEGRATION_PLAN_WITH_CANONICAL_LEDGER_RECONCILIATION__FOCUS_LEDGER_PRISM_VERSION_MARKET_FIT_HOLD__TEXT_DIFF_IMAGE_IDENTITY_RETURN_PENDING__SIGNED_MSIX_BACKLOG_LOCAL_PULL_CHECKER_GUI_NOT_PROVEN",
     "post_identity_reconcile_pr": 49,
     "post_identity_reconcile_ci_run": 40851883814,
     "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU",
@@ -2925,11 +2948,11 @@
       "text_diff": "SOURCE_BRANCH_IDENTICAL_TO_PINNED_SHA__APPROVED_IDENTITY_404",
       "image_inventory": "SOURCE_BRANCH_IDENTICAL_TO_PINNED_SHA__APPROVED_IDENTITY_404"
     },
-    "new_implementation_pr": 68,
-    "new_implementation_branch": "codex/e2e-post-identity-cas-only-20261030-1536",
-    "new_implementation_head": "c4feaace0f6b0e8ff9363eda8953594340d30f10",
+    "new_implementation_pr": 121,
+    "new_implementation_branch": "codex/e2e-checker-historical-request-20261101-1936",
+    "new_implementation_head": "1ec0ff9754746a1cc5a4dfd56eca5f6a32202081",
     "new_implementation_ci_run": 41015629935,
-    "new_implementation_ci": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+    "new_implementation_ci": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_CODE_HEAD",
     "new_implementation_scope": "EXACT_ONE_COMMIT_ONLY_APPROVED_IDENTITY_JSON_ADDED__SOURCE_ANCESTRY_AND_RETURN_TARGET_VERIFIED__REJECT_UNRELATED_FILE_OR_MULTICOMMIT",
     "implementation_pr": 118,
     "implementation_head_sha": "e17c1d224294a81acd472057f37d475d67087206",
@@ -3519,7 +3542,11 @@
     "checker_receipt_guard_ci_run": 41289593333,
     "checker_receipt_guard_ci": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
     "checker_receipt_guard_initial_ci_run": 41289536253,
-    "checker_receipt_guard_initial_ci_failure": "WINDOWS_TEST_FIXTURE_ZIP_TIMESTAMP_NONDETERMINISM__FIXED_WITH_EXACT_BYTES"
+    "checker_receipt_guard_initial_ci_failure": "WINDOWS_TEST_FIXTURE_ZIP_TIMESTAMP_NONDETERMINISM__FIXED_WITH_EXACT_BYTES",
+    "new_implementation_ci_runs": [
+      41298482138,
+      41298486462
+    ]
   },
   "post_identity_pipeline": {
     "schema_version": 1,
