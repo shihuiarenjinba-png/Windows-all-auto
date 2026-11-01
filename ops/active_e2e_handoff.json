@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-01T05:37:14.847Z",
+  "updated_at_utc": "2026-11-01T06:43:08.696Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -456,6 +456,22 @@
       "scope": "PREFLIGHT_EXISTING_RECEIPTS_AND_GLOBAL_REQUEST_CONFLICTS_BEFORE_STAGING_ANY_PACKAGE",
       "physical_windows": "NOT_RUN",
       "e2e_pass": false
+    },
+    "local_checker_report_package_binding_guard": {
+      "draft_pr": 117,
+      "branch": "codex/e2e-checker-report-package-binding-20261101-1536",
+      "base_pr": 116,
+      "base_sha": "c19f978cba311279adf1ab065b48565350fffa03",
+      "head_sha": "853da9dabf971c633523dc6295b490d70bb19865",
+      "workflow_run_id": 41281876495,
+      "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+      "scope": "CHECKER_JSON_SCHEMA_VERSION_STRICT_INT__CLI_PRODUCT_TYPE_MATCH__MSIX_SHA256_MATCHES_INDEPENDENT_IMMUTABLE_PACKAGE__UNBOUNDED_SUBPROCESS_OUTPUT_DISCARDED",
+      "physical_windows_checker": "NOT_EXECUTED",
+      "signed_msix": "NOT_OBSERVED",
+      "gui_install": "NOT_EXECUTED",
+      "e2e_pass": false,
+      "store_submission": "NOT_PERFORMED",
+      "integration": "STACKED_DRAFT_NOT_MERGED"
     }
   },
   "policy": {
@@ -966,7 +982,7 @@
   },
   "user_id_requests": {
     "schema_version": 1,
-    "generated_at_utc": "2026-11-01T04:36:39Z",
+    "generated_at_utc": "2026-11-01T06:43:08.696Z",
     "acquisition_owner": "LOCAL_PARTNER_CENTER_OPERATOR_PERMITTED_FROM_2026_10_28_17_44_JST",
     "storage_policy": "LOCAL_OPERATOR_RECEIPT_AND_PRIVATE_IDENTITY_ONLY__NO_AUTH_COOKIES_TOKENS_SESSIONS_IN_GITHUB",
     "items": [
@@ -2553,8 +2569,8 @@
     "local_execution_this_run": "NOT_PERFORMED"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-11-01T05:37:14.847Z",
-    "scope": "PR116_LOCAL_CHECKER_HANDOFF_AND_REPORT_STRICT_JSON_RECEIPT_GUARD__EXACT_HEAD_WINDOWS_UBUNTU_OFFLINE_CI_PASS__PHYSICAL_E2E_HOLD",
+    "observed_at_utc": "2026-11-01T06:43:08.696Z",
+    "scope": "PR117_CHECKER_REPORT_EXACT_MSIX_SHA_AND_PRODUCT_TYPE_BINDING__WINDOWS_UBUNTU_OFFLINE_CI_SUCCESS__REAL_PRODUCT_E2E_HOLD",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
     "canonical_previous_blob_sha": "2fc2875fde95313663c73d6ca21cd8bf1c7c8511",
@@ -2575,13 +2591,13 @@
     "package": "NOT_BUILT",
     "github_backlog": "NO_NEW_REAL_MSIX",
     "local_pull": "NOT_RUN_THIS_EXECUTION",
-    "checker": "NOT_RUN_THIS_EXECUTION",
+    "checker": "PR117_OFFLINE_BINDING_CI_PASS__NO_PHYSICAL_WINDOWS_CHECKER_RUN",
     "gui_install_qa": "NOT_RUN_THIS_EXECUTION",
     "store_submission": 0,
     "success_count_cloud_verified": 2,
     "remaining_app_identity_returns": 2,
     "next_resume_index": 3,
-    "next_action": "REVIEW_STACKED_DRAFT_PR116_AND_INTEGRATE_ONLY_AFTER_EXACT_HEAD_REVIEW__LOCAL_PHYSICAL_CHECKER_GUI_INSTALL_AND_SIGNED_MSIX_STILL_HOLD__FOUR_ACCOUNTING_COUNTRY_SKUS_NEED_MARKET_FIT_TAX_FIXTURES_AND_APPROVED_VERSION",
+    "next_action": "REVIEW_STACKED_DRAFT_PR117__PHYSICAL_SIGNED_MSIX_CHECKER_GUI_INSTALL_HOLD__TEXT_DIFF_IMAGE_INVENTORY_IDENTITY_RETURN_PENDING__ACCOUNTING_FOUR_SKUS_MARKET_FIT_COMPLIANCE_TAX_FIXTURE_HOLD",
     "post_identity_reconcile_pr": 49,
     "post_identity_reconcile_ci_run": 40851883814,
     "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU",
@@ -2634,25 +2650,25 @@
     "mixed_local_preflight_ci": "SUCCESS_AT_EXACT_HEAD",
     "mixed_local_preflight_capability": "FOCUS_POST_SKIP__THREE_PRE_EXACT_SOURCE_AND_EXE_VERIFICATION__SHARED_LOCK__NO_BROWSER_CAS",
     "mixed_local_preflight_execution": "NOT_RUN_ON_USER_WINDOWS",
-    "canonical_head_before_write": "9427bc935e27ce5d67de15486eb9c612784f95c3",
+    "canonical_head_before_write": "9ea9f132eddf1f5c26004fa388139fd5140de241",
     "latest_remote_recheck": {
-      "verified_at_utc": "2026-11-01T04:36:39Z",
-      "focus": "POST_IDENTITY_READY__GITHUB_APPROVED_FILE_EXACT_REQUEST_SOURCE_VERIFIED__VERSION_HOLD",
-      "ledger": "POST_IDENTITY_READY__GITHUB_APPROVED_FILE_EXACT_REQUEST_SOURCE_VERIFIED__VERSION_HOLD",
+      "verified_at_utc": "2026-11-01T06:43:08.696Z",
+      "focus": "POST_IDENTITY_READY__GITHUB_APPROVED_FILE_REQUEST_SOURCE_MATCH__NO_VERSION",
+      "ledger": "POST_IDENTITY_READY__GITHUB_APPROVED_FILE_REQUEST_SOURCE_MATCH__NO_VERSION",
       "text_diff": "PRE_IDENTITY_READY__APPROVED_FILE_404",
       "image_inventory": "PRE_IDENTITY_READY__APPROVED_FILE_404",
-      "prism": "POST_IDENTITY_READY__GITHUB_APPROVED_FILE_EXACT_REQUEST_SOURCE_VERIFIED__VERSION_HOLD",
+      "prism": "POST_IDENTITY_READY__GITHUB_APPROVED_FILE_REQUEST_SOURCE_MATCH__NO_VERSION",
       "signal_sprint": "USER_IDENTITY_RECEIVED__APPROVED_FILE_404__CAS_NOT_APPLIED",
       "accounting_jp_freelance_pr59": "DRAFT_NOT_PROMOTED__HEAD_4eed12758aa9d9f6fa3a8c395d95df7d80644bd6",
       "accounting_us_freelance_pr60": "DRAFT_NOT_PROMOTED__HEAD_08bdc4b9099b11c79b8fb836df58b801ae3e599e",
       "accounting_jp_bookkeeping_pr61": "DRAFT_NOT_PROMOTED__HEAD_0c1fa00c70cc934b2c169d415ab5cb95cb3cebd6",
-      "accounting_us_bookkeeping_pr62": "DRAFT_NOT_PROMOTED__HEAD_56f5b16288a569e0d2bf42cb3f5a63f81ef642e6",
+      "accounting_us_bookkeeping_pr62": "DRAFT_NOT_PROMOTED__HEAD_4390f1ed1a7310cfbfa6248777b12f70e27ac2f8",
       "factory_artifact_metadata": "NOT_RECHECKED_THIS_RUN",
       "local_windows": "NOT_ACCESSED_THIS_RUN",
       "partner_center": "NOT_ACCESSED_THIS_RUN",
       "cas": "NOT_PERFORMED_THIS_RUN",
       "store_submission": "NOT_PERFORMED_THIS_RUN",
-      "accounting_factory_observation": "2026_11_01_FOUR_COUNTRY_SKUS_PR59_62_DRAFT_OPEN__NO_PROMOTED_SOURCE_REQUEST_MARKET_FIT_PASS_OBSERVED"
+      "accounting_factory_observation": "2026_11_01_PR59_62_STILL_DRAFT__PR62_HEAD_ADVANCED__NO_PROMOTED_IMMUTABLE_SOURCE_REQUEST_MARKET_FIT_PASS"
     },
     "mixed_artifact_expiry_guard": {
       "draft_pr": 54,
@@ -3455,6 +3471,22 @@
       "partner_center": "NOT_ACCESSED",
       "cas": "NOT_PERFORMED",
       "store_submission": "NOT_PERFORMED"
+    },
+    "checker_report_package_binding": {
+      "draft_pr": 117,
+      "branch": "codex/e2e-checker-report-package-binding-20261101-1536",
+      "base_pr": 116,
+      "base_sha": "c19f978cba311279adf1ab065b48565350fffa03",
+      "head_sha": "853da9dabf971c633523dc6295b490d70bb19865",
+      "workflow_run_id": 41281876495,
+      "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+      "scope": "CHECKER_JSON_SCHEMA_VERSION_STRICT_INT__CLI_PRODUCT_TYPE_MATCH__MSIX_SHA256_MATCHES_INDEPENDENT_IMMUTABLE_PACKAGE__UNBOUNDED_SUBPROCESS_OUTPUT_DISCARDED",
+      "physical_windows_checker": "NOT_EXECUTED",
+      "signed_msix": "NOT_OBSERVED",
+      "gui_install": "NOT_EXECUTED",
+      "e2e_pass": false,
+      "store_submission": "NOT_PERFORMED",
+      "integration": "STACKED_DRAFT_NOT_MERGED"
     }
   },
   "post_identity_pipeline": {
@@ -4288,6 +4320,15 @@
       "e2e_pass": false,
       "store_submission": "NOT_PERFORMED",
       "integration": "STACKED_DRAFT_NOT_MERGED"
+    },
+    "local_checker_report_package_binding_guard": {
+      "draft_pr": 117,
+      "head_sha": "853da9dabf971c633523dc6295b490d70bb19865",
+      "offline_qa_run_id": 41281876495,
+      "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+      "physical_windows": "NOT_EXECUTED",
+      "signed_msix": "NOT_OBSERVED",
+      "e2e_pass": false
     }
   },
   "accounting_tax_primary_source_review": {
@@ -4301,7 +4342,7 @@
     "status": "PRIMARY_SOURCE_MIDYEAR_RATE_CHANGE_IDENTIFIED__FACTORY_DATE_SPLIT_REVIEW_REQUIRED",
     "package_gate": "HOLD",
     "latest_36_reference_check": {
-      "checked_at_utc": "2026-11-01T04:36:39Z",
+      "checked_at_utc": "2026-11-01T06:43:08.696Z",
       "irs_2026_business_mileage": "2026_JAN_01_TO_JUN_30_72_5_CENTS_PER_MILE__JUL_01_TO_DEC_31_76_CENTS_PER_MILE",
       "irs_source": "https://www.irs.gov/tax-professionals/standard-mileage-rates",
       "irs_authority": "https://www.irs.gov/irb/2026-29_irb",
@@ -4311,7 +4352,7 @@
       "evidence_boundary": "SOURCE_RECHECK_ONLY__NO_TAX_FIXTURE_OR_COMPLIANCE_PASS",
       "action": "KEEP_JP_US_ACCOUNTING_PACKAGE_HOLD_UNTIL_DATE_SPLIT_AND_TAX_PERIOD_FIXTURES_INDEPENDENTLY_PASS",
       "nta_2026_invoice_transition": "2026_OCT_01_OR_LATER_STARTING_TAX_PERIOD_70_PERCENT_2_YEARS__2028_OCT_01_50_PERCENT_2_YEARS__2030_OCT_01_30_PERCENT_1_YEAR__2031_OCT_01_ZERO__ELIGIBILITY_AND_TAX_PERIOD_BOUND",
-      "source_status": "2026_11_01_IRS_NTA_PRIMARY_PAGES_RECHECKED__DATE_AND_TAX_PERIOD_GATES_STILL_HOLD"
+      "source_status": "2026_11_01_OFFICIAL_IRS_MILEAGE_2026_MIDYEAR_SPLIT_AND_NTA_INVOICE_TRANSITION_RECHECKED__NO_PACKAGE_COMPLIANCE_PASS"
     }
   }
 }
