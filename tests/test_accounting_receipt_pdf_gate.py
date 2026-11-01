@@ -24,11 +24,11 @@ def fixture(slug):
         "checker_report_sha256": job["checker_report_sha256"],
         "store_id": job["store_id"], "market": market, "locale": locale,
         "currency": currency, "ocr_present": True,
-        "ocr_cases": {k: {"status": "REVIEW_REQUIRED", "source_image_sha256": "e" * 64,
+        "ocr_cases": {k: {"status": "REVIEW_REQUIRED", "source_image_sha256": f"{index:064x}",
                           "confidence_recorded": True, "original_image_linked": True,
                           "manual_review_required": True, "no_auto_post": True}
-                      for k in ("low_resolution", "skewed", "mixed_tax_rates", "refund",
-                                "multi_item", "ambiguous_vendor", "personal_business_mixed", "duplicate_image")},
+                      for index, k in enumerate(("low_resolution", "skewed", "mixed_tax_rates", "refund",
+                                "multi_item", "ambiguous_vendor", "personal_business_mixed", "duplicate_image"), start=1)},
         "batch": {"input_count": 4, "accepted_count": 0, "review_count": 3,
                   "failed_count": 1, "duplicate_count": 1,
                   "unconfirmed_post_count": 0, "failed_item_isolated": True,
@@ -84,6 +84,19 @@ class ReceiptPDFGateTests(unittest.TestCase):
         self.check_hold(job, ev, "OCR_CASE_UNSAFE")
         del ev["ocr_cases"]["ambiguous_vendor"]
         self.check_hold(job, ev, "OCR_CASES")
+
+    def test_reused_image_digest_cannot_impersonate_eight_ocr_cases(self):
+        job, ev = fixture("jp-freelance-ledger")
+        ev["ocr_cases"]["skewed"]["source_image_sha256"] = (
+            ev["ocr_cases"]["low_resolution"]["source_image_sha256"]
+        )
+        self.check_hold(job, ev, "OCR_FIXTURE_REUSED")
+
+    def test_all_eight_identical_ocr_hashes_are_rejected(self):
+        job, ev = fixture("us-bookkeeping-desk")
+        for case in ev["ocr_cases"].values():
+            case["source_image_sha256"] = "e" * 64
+        self.check_hold(job, ev, "OCR_FIXTURE_REUSED")
 
     def test_no_ocr_feature_is_allowed_but_not_fake_cases(self):
         job, ev = fixture("us-freelance-ledger")
