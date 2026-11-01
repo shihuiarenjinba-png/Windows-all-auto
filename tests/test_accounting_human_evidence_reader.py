@@ -171,7 +171,7 @@ class LocalEvidenceTests(unittest.TestCase):
     def test_zip_claimed_huge_uncompressed_entry_rejected(self):
         # Tamper with central-directory uncompressed size, no large allocation.
         data = bytearray(_msix())
-        position = data.rfind(b"PK\\x01\\x02")
+        position = data.rfind(b"PK\x01\x02")
         self.assertGreater(position, 0)
         struct.pack_into("<I", data, position + 24, 0xffffffff)
         self._replace_package(bytes(data))
