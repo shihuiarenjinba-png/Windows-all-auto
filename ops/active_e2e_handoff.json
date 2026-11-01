@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-01T13:40:23.874Z",
+  "updated_at_utc": "2026-11-01T14:37:47.472Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -511,6 +511,35 @@
       "e2e_pass": false,
       "integration": "STACKED_DRAFT_NOT_MERGED",
       "store_submission": "NOT_PERFORMED"
+    },
+    "market_fit_revision_contract": {
+      "status": "DRAFT_INTEGRATION_CI_PENDING__NO_PACKAGE_PROMOTION",
+      "integration_pr": 125,
+      "integration_branch": "codex/e2e-market-fit-revision-contract-20261101-2336",
+      "integration_head_sha": "6563ba4e6136022f8c0447ecbfcf20ccc096a9ce",
+      "canonical_base_head_sha": "28aaa0fad2f125c902ce4edb436a856576efbc9b",
+      "upstream_ocr_pr": 124,
+      "upstream_ocr_head_sha": "a25eea28b1c4a094ee6a9867bfcb90efb901aafd",
+      "upstream_ocr_compare": "DIVERGED_AHEAD_153_BEHIND_35__OVERLAPPING_OCR_FILES__NO_BLIND_MERGE",
+      "factory_repository": "shihuiarenjinba-png/AI-App-Factory",
+      "factory_market_fit_pr": 43,
+      "factory_market_fit_review_head": "ec3b867e4c18ddf44a591ebbb9b1017ada1f53be",
+      "factory_market_fit_path": "docs/market/offline-image-inventory-desk.market-fit.json",
+      "factory_score": 64,
+      "factory_policy": "SCORE_LT_70_NO_STORE__70_TO_79_REDESIGN__80_PLUS_ALL_GO_FOR_CANDIDATE",
+      "central_prior_threshold": 70,
+      "central_proposed_threshold": 80,
+      "source_sha": "16b6a772952ca0988f2ae2f8b5f4db2e59ec5877",
+      "request_id": "app-offline-image-inventory-desk-16b6a772952c",
+      "factory_source_to_review_compare": "AHEAD_3_BEHIND_0",
+      "factory_document_has_request_id": false,
+      "factory_document_review_status": "MARKET_FIT_HOLD",
+      "new_revision_received": false,
+      "immutable_review_binding_status": "HOLD_REVIEWED_REQUEST_BOUND_PASS_EVIDENCE_NOT_AVAILABLE",
+      "read_only_contract": "REVIEW_SHA_SEPARATE_FROM_SOURCE_SHA__NO_IDENTITY_OR_PACKAGE_SIDE_EFFECTS",
+      "local_windows": "NOT_RUN",
+      "real_msix": "NOT_BUILT",
+      "e2e_pass": false
     }
   },
   "policy": {
@@ -1489,7 +1518,8 @@
         "next_action": "LOCAL_EXACT_SOURCE_SNAPSHOT__GITHUB_QUEUE_ORIGIN__AUTHENTICATED_PARTNER_CENTER_UI__APP_SINGLE_WRITER_RETURN",
         "market_fit_gate": "MARKET_FIT_HOLD",
         "market_fit_evidence_verified": false,
-        "market_fit_reason": "FACTORY_REVIEWED_EVIDENCE_NOT_VERIFIED_AT_PINNED_SOURCE_SHA"
+        "market_fit_reason": "FACTORY_REVIEWED_SCORE_64_BELOW_80__NEW_IMMUTABLE_REVISION_NOT_RECEIVED",
+        "package_version_gate": "HOLD"
       }
     ],
     "app_candidate_count": 5,
@@ -2614,8 +2644,8 @@
     "local_execution_this_run": "NOT_PERFORMED"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-11-01T13:40:23.874Z",
-    "scope": "PR124_OCR_DUPLICATE_PAIR_EVIDENCE_FAIL_CLOSED__EXACT_HEAD_WINDOWS_UBUNTU_CI_SUCCESS__FOUR_APP_ARTIFACT_METADATA_RECHECK__NO_PHYSICAL_WINDOWS",
+    "observed_at_utc": "2026-11-01T14:37:47.472Z",
+    "scope": "IMAGE_INVENTORY_MARKET_FIT_64_VS_FACTORY_80_AUDIT__PR125_IMMUTABLE_REVIEW_GATE_DRAFT__PR124_DIVERGENCE_PROVEN__NO_LOCAL_MSIX",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
     "canonical_previous_blob_sha": "3c963b44ffadd5f9e71b81690339d3d0ea91be39",
@@ -2642,7 +2672,7 @@
     "success_count_cloud_verified": 2,
     "remaining_app_identity_returns": 2,
     "next_resume_index": 3,
-    "next_action": "REVIEW_PR124__LOCAL_WINDOWS_REAL_OCR_DUPLICATE_PAIR_AND_JP_PDF_BYTE_EVIDENCE__TEXT_DIFF_IMAGE_IDENTITY_RETURN_PENDING__MARKET_FIT_VERSION_HOLD",
+    "next_action": "WAIT_APP00_NEW_IMAGE_REVISION_WITH_PINNED_SOURCE_REQUEST_AND_REVIEW_SHA__REVIEW_PR125_CI__NO_70_THRESHOLD_BYPASS__VERSION_AND_IDENTITY_SEPARATE",
     "post_identity_reconcile_pr": 49,
     "post_identity_reconcile_ci_run": 40851883814,
     "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU",
@@ -3704,7 +3734,7 @@
         },
         "market_fit_gate": "MARKET_FIT_HOLD",
         "market_fit_evidence_verified": false,
-        "market_fit_reason": "FACTORY_MARKET_FIT_PASS_EVIDENCE_NOT_VERIFIED"
+        "market_fit_reason": "FACTORY_REVIEWED_SCORE_64_BELOW_80__NEW_IMMUTABLE_REVISION_NOT_RECEIVED"
       },
       {
         "product": "Offline Notes Canary",
