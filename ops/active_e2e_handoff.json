@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-01T10:40:49.167Z",
+  "updated_at_utc": "2026-11-01T10:41:14.221Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -2614,7 +2614,7 @@
     "local_execution_this_run": "NOT_PERFORMED"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-11-01T10:40:49.167Z",
+    "observed_at_utc": "2026-11-01T10:41:14.221Z",
     "scope": "PR121_HISTORICAL_CHECKER_REQUEST_COLLISION_GUARD__EXACT_HEAD_WINDOWS_UBUNTU_CI_PASS__SIGNED_MSIX_LOCAL_GUI_E2E_HOLD",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
@@ -3546,7 +3546,10 @@
     "new_implementation_ci_runs": [
       41298482138,
       41298486462
-    ]
+    ],
+    "accounting_market_scope": "FOUR_DRAFT_CANDIDATES_JP_US_SEPARATE__NO_PROMOTION_NO_SOURCE_REQUEST_NO_USER_ID_REQUEST",
+    "accounting_tax_source_review": "NTA_2026_04_01_AND_IRS_P946_2025_REFERENCES_CHECKED__NOT_IMPLEMENTATION_COMPLIANCE_PASS",
+    "accounting_jp_bookkeeping_head_observed": "13d1a976757e86587fb11202ebb35fd5ac113cb8"
   },
   "post_identity_pipeline": {
     "schema_version": 1,
@@ -4461,5 +4464,72 @@
       "package_gate": "HOLD",
       "action": "RETAIN_FOUR_ACCOUNTING_SKUS_MARKET_FIT_AND_COMPLIANCE_HOLD__VERIFY_DATE_BOUND_METHOD_AND_SPECIAL_RULE_FIXTURES_BEFORE_PACKAGE"
     }
+  },
+  "accounting_candidate_intake": {
+    "schema_version": 1,
+    "observed_at_utc": "2026-11-01T10:41:14.221Z",
+    "writer": "36_WINDOWS_E2E_ONLY",
+    "status": "CANDIDATE_ONLY__NO_PROMOTION_SOURCE_SHA_REQUEST_ID_OR_MARKET_FIT_PASS_VERIFIED",
+    "products": [
+      {
+        "slug": "jp-freelance-ledger",
+        "market": "Japan",
+        "locale": "ja-JP",
+        "currency": "JPY",
+        "factory_draft_pr": 59,
+        "status": "NOT_YET_REQUIRED",
+        "source_sha": null,
+        "request_id": null
+      },
+      {
+        "slug": "us-freelance-ledger",
+        "market": "United States",
+        "locale": "en-US",
+        "currency": "USD",
+        "factory_draft_pr": 60,
+        "status": "NOT_YET_REQUIRED",
+        "source_sha": null,
+        "request_id": null
+      },
+      {
+        "slug": "jp-bookkeeping-desk",
+        "market": "Japan",
+        "locale": "ja-JP",
+        "currency": "JPY",
+        "factory_draft_pr": 61,
+        "status": "NOT_YET_REQUIRED",
+        "source_sha": null,
+        "request_id": null,
+        "factory_head_observed": "13d1a976757e86587fb11202ebb35fd5ac113cb8"
+      },
+      {
+        "slug": "us-bookkeeping-desk",
+        "market": "United States",
+        "locale": "en-US",
+        "currency": "USD",
+        "factory_draft_pr": 62,
+        "status": "NOT_YET_REQUIRED",
+        "source_sha": null,
+        "request_id": null
+      }
+    ],
+    "identity_policy": "NO_USER_ID_REQUEST_UNTIL_FACTORY_PROMOTION_AND_EXACT_REQUEST_SOURCE__NO_CROSS_MARKET_REUSE",
+    "pre_msix_gate": "HOLD_MARKET_FIT__CALCULATION_FIXTURES__TAX_ASSET_FIXTURES__ENGINE_PARITY__BEGINNER_UI__COUNTRY_MARKET_SCOPE__VERSION_ASSETS",
+    "source_review": {
+      "nta_bookkeeping": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2080.htm",
+      "nta_consumption_ledger": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shohi/6621.htm",
+      "nta_etax_2026_change": "https://www.e-tax.nta.go.jp/topics/2026/topics_20260924_r8zeiseikaisei.htm",
+      "irs_small_business": "https://www.irs.gov/publications/p334",
+      "observation": "NTA_2026_04_01_REFERENCE_AND_2026_09_24_ETAX_NOTICE_FOUND__IRS_PUBLICATION_334_2025_CURRENT_LISTING__PRODUCT_FIXTURE_PARITY_NOT_VERIFIED",
+      "action": "TAX_OR_ASSET_AUTOMATION_REQUIRES_VERSION_SPECIFIC_SOURCE_MAPPING_AND_FIXTURE_REVIEW_BEFORE_PACKAGE_GATE",
+      "current_review_utc": "2026-11-01T10:41:14.221Z",
+      "nta_depreciation_2026": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2106.htm",
+      "irs_depreciation_2025": "https://www.irs.gov/publications/p946",
+      "review_result": "NTA_2026_04_01_LAW_REFERENCE_AND_IRS_2025_PUBLICATION_946_OBSERVED__NO_ENGINE_FIXTURE_PARITY_OR_POLICY_DELTA_PROVEN__HOLD"
+    },
+    "market_scope": "JP_ONLY_FOR_JP_SKUS__US_ONLY_FOR_US_SKUS__PRICING_AVAILABILITY_NOT_AUTOMATED",
+    "physical_windows_qa": "NOT_PERFORMED",
+    "real_msix": "NOT_BUILT",
+    "store_submission": "NOT_PERFORMED"
   }
 }
