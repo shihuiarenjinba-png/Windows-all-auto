@@ -65,6 +65,30 @@ The default `bridge_poll` does **not** supply this attestor: accounting packages
 
 Offline tests exercise missing/mismatched/cross-market/boolean-spoofed evidence and idempotent replay with a mocked trusted callback. Such mocks are not product evidence.
 
+
+## Local MSIX AppxBlockMap consistency (stacked Draft, 2026-11-01)
+
+The read-only accounting Windows QA evidence reader now requires the
+AppxBlockMap.xml to cover every non-metadata payload exactly once, with
+matching uncompressed file sizes and cryptographic hashes for every
+64-KiB uncompressed block. The recognized hash URIs are SHA-256,
+SHA-384 and SHA-512. Missing/duplicate entries, stale block hashes,
+malformed base64 and unsupported methods HOLD even when the ZIP CRC
+and caller-provided overall MSIX SHA-256 are valid. This check streams
+the package without extracting or loading a 2-GiB MSIX into memory.
+
+This is **consistency with an untrusted block map**, not a trusted
+package signature. The current adapter does not validate the block
+map's signature, the compressed block-size metadata, embedded
+Partner Center Identity, Windows MakeAppx acceptance, installation,
+Checker, real screenshot provenance or GUI/E2E readiness. Synthetic
+offline tests cannot satisfy REAL_MSIX_PASS. Real products remain HOLD
+until separately authenticated signed-package and physical Windows QA.
+
+Specification references:
+- https://learn.microsoft.com/en-us/uwp/schemas/blockmapschema/element-block
+- https://learn.microsoft.com/en-us/uwp/schemas/blockmapschema/element-blockmap
+
 ## Release decision
 
 HOLD all four accounting SKUs. Factory Draft PRs #59–62 do not yet provide promoted immutable source/request, authenticated calculation fixture receipts, independent IRS review adapter, verified market fit, signed MSIX, or authenticated Partner Center single-country restriction. Next: APP owner implements and executes fixtures and manifests, then 36-minute E2E owner wires this pure gate to PRE_IDENTITY and PACKAGE boundaries. Windows/Ubuntu CI, real signed MSIX, local pull, Checker, and GUI/install QA remain separate gates. No CAS, Store upload, final submission, pricing changes, merge or main/release changes.
