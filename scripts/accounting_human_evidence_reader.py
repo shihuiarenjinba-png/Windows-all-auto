@@ -101,12 +101,22 @@ def _hash_file(path: Path, limit: int) -> tuple[str, bytes]:
 
 
 def _png_dimensions(data: bytes):
+    """Fail closed on corrupt PNG pixel streams, not just chunk CRCs.
+
+    The screenshot contract is exactly 1024x768. For that resolution accept
+    non-interlaced 8-bit RGB/RGBA, as emitted by standard Windows screenshot
+    capture. Indexed/interlaced/16-bit formats require a separately reviewed
+    decoder; accepting their CRCs alone would not validate their pixels.
+    """
     if not data.startswith(PNG_SIGNATURE):
         _hold("HOLD_ACCOUNTING_EVIDENCE_PNG_INVALID")
     offset = len(PNG_SIGNATURE)
-    first = True
     dimensions = None
+    channels = None
     seen_idat = False
+    idat_closed = False
+    seen_plte = False
+    idat_parts = []
     while offset + 12 <= len(data):
         length = struct.unpack_from(">I", data, offset)[0]
         end = offset + 12 + length
@@ -115,19 +125,54 @@ def _png_dimensions(data: bytes):
         chunk_type = data[offset + 4:offset + 8]
         payload = data[offset + 8:offset + 8 + length]
         crc = struct.unpack_from(">I", data, offset + 8 + length)[0]
-        if zlib.crc32(chunk_type + payload) & 0xffffffff != crc:
+        if (any(not (65 <= c <= 90 or 97 <= c <= 122) for c in chunk_type)
+                or not (65 <= chunk_type[2] <= 90)
+                or zlib.crc32(chunk_type + payload) & 0xffffffff != crc):
             _hold("HOLD_ACCOUNTING_EVIDENCE_PNG_INVALID")
-        if first:
+        if dimensions is None:
             if chunk_type != b"IHDR" or length != 13:
                 _hold("HOLD_ACCOUNTING_EVIDENCE_PNG_INVALID")
-            dimensions = struct.unpack_from(">II", payload)
-            first = False
-        if chunk_type == b"IDAT":
+            width, height, depth, color, compression, filtering, interlace = (
+                struct.unpack(">IIBBBBB", payload))
+            if (not width or not height or depth != 8 or color not in (2, 6)
+                    or compression != 0 or filtering != 0 or interlace != 0):
+                _hold("HOLD_ACCOUNTING_EVIDENCE_PNG_INVALID")
+            dimensions = (width, height)
+            channels = 3 if color == 2 else 4
+        elif chunk_type == b"IHDR":
+            _hold("HOLD_ACCOUNTING_EVIDENCE_PNG_INVALID")
+        elif chunk_type == b"PLTE":
+            if seen_plte or seen_idat or length == 0 or length % 3 or length > 768:
+                _hold("HOLD_ACCOUNTING_EVIDENCE_PNG_INVALID")
+            seen_plte = True
+        elif chunk_type == b"IDAT":
+            if idat_closed:
+                _hold("HOLD_ACCOUNTING_EVIDENCE_PNG_INVALID")
             seen_idat = True
-        if chunk_type == b"IEND":
+            idat_parts.append(payload)
+        elif chunk_type == b"IEND":
             if length != 0 or end != len(data) or not seen_idat:
                 _hold("HOLD_ACCOUNTING_EVIDENCE_PNG_INVALID")
+            if dimensions == (1024, 768):
+                row_bytes = dimensions[0] * channels
+                expected = dimensions[1] * (row_bytes + 1)
+                try:
+                    decoder = zlib.decompressobj()
+                    raw = decoder.decompress(b"".join(idat_parts), expected + 1)
+                    raw += decoder.flush(expected + 1 - len(raw))
+                except (zlib.error, ValueError):
+                    _hold("HOLD_ACCOUNTING_EVIDENCE_PNG_INVALID")
+                if (len(raw) != expected or not decoder.eof
+                        or decoder.unused_data or decoder.unconsumed_tail
+                        or any(raw[row * (row_bytes + 1)] > 4
+                               for row in range(dimensions[1]))):
+                    _hold("HOLD_ACCOUNTING_EVIDENCE_PNG_INVALID")
             return dimensions
+        else:
+            if not (chunk_type[0] & 0x20):
+                _hold("HOLD_ACCOUNTING_EVIDENCE_PNG_INVALID")
+        if seen_idat and chunk_type != b"IDAT":
+            idat_closed = True
         offset = end
     _hold("HOLD_ACCOUNTING_EVIDENCE_PNG_INVALID")
 
