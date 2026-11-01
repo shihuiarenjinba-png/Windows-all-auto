@@ -313,8 +313,8 @@ def _check_local_queue_unlocked(inbox: Path, checker: Path, reports: Path) -> di
         if total_bytes > MAX_QUEUED_BYTES:
             raise ValueError("LOCAL_QA_HOLD: local package capacity exceeded")
         checked.append((lane, kind, folder, info))
-    _preflight_historical_request_ids(checked, reports)
     _preflight_existing_checker_receipts(checked, reports)
+    _preflight_historical_request_ids(checked, reports)
     reports.mkdir(parents=True, exist_ok=True)
     results = []
     for lane, kind, folder, info in checked:
