@@ -1,11 +1,13 @@
 """Local byte-level evidence checks; fixtures do not prove physical Windows QA."""
 import hashlib
+import io
 import json
 from pathlib import Path
 import struct
 import tempfile
 import unittest
 import zlib
+import zipfile
 
 from scripts.accounting_human_evidence_reader import read_local_accounting_human_evidence
 from scripts.accounting_human_qa_gate import (
@@ -26,6 +28,33 @@ def _png(color, width=1024, height=768):
             + _chunk(b"IDAT", zlib.compress(raw)) + _chunk(b"IEND", b""))
 
 
+def _msix(*, omit=None, bad_manifest=False, extra=None):
+    manifest = (
+        '<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10">'
+        '<Identity Name="OkinawaDesktopTools.Test" Publisher="CN=Test" Version="1.0.0.0"/>'
+        '</Package>'
+    )
+    if bad_manifest:
+        manifest = "<Package><Identity/></Package>"
+    parts = {
+        "[Content_Types].xml": (
+            '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"/>'),
+        "AppxBlockMap.xml": (
+            '<BlockMap xmlns="http://schemas.microsoft.com/appx/2010/blockmap"/>'),
+        "AppxManifest.xml": manifest,
+        "Assets/logo.png": b"fixture",
+    }
+    if omit:
+        del parts[omit]
+    if extra:
+        parts.update(extra)
+    output = io.BytesIO()
+    with zipfile.ZipFile(output, "w", zipfile.ZIP_DEFLATED) as archive:
+        for name, value in parts.items():
+            archive.writestr(name, value)
+    return output.getvalue()
+
+
 class LocalEvidenceTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
@@ -35,7 +64,7 @@ class LocalEvidenceTests(unittest.TestCase):
         self.job, self.evidence = fixture("jp-bookkeeping-desk")
         self.package = self.root / "package.msix"
         self.checker = self.root / "checker.json"
-        self.package.write_bytes(b"PK\x03\x04mock-not-signed")
+        self.package.write_bytes(_msix())
         self.checker.write_bytes(b'{"status":"MOCK_ONLY"}')
         self.job["package_sha256"] = hashlib.sha256(self.package.read_bytes()).hexdigest()
         self.job["checker_report_sha256"] = hashlib.sha256(self.checker.read_bytes()).hexdigest()
@@ -96,9 +125,43 @@ class LocalEvidenceTests(unittest.TestCase):
     def test_package_and_checker_mismatch(self):
         self.package.write_bytes(b"PK\x03\x04changed")
         self._hold("PACKAGE_MISMATCH")
-        self.package.write_bytes(b"PK\x03\x04mock-not-signed")
+        self.package.write_bytes(_msix())
         self.checker.write_bytes(b"changed")
         self._hold("CHECKER_MISMATCH")
+
+
+    def _replace_package(self, data):
+        self.package.write_bytes(data)
+        self.job["package_sha256"] = hashlib.sha256(data).hexdigest()
+        self.evidence["package_sha256"] = self.job["package_sha256"]
+        self._save()
+
+    def test_pk_magic_without_zip_cannot_pass(self):
+        self._replace_package(b"PK\x03\x04mock-not-signed")
+        self._hold("MSIX_INVALID")
+
+    def test_zip_missing_appx_manifest_rejected(self):
+        self._replace_package(_msix(omit="AppxManifest.xml"))
+        self._hold("MSIX_INVALID")
+
+    def test_zip_invalid_manifest_identity_rejected(self):
+        self._replace_package(_msix(bad_manifest=True))
+        self._hold("MSIX_INVALID")
+
+    def test_zip_path_traversal_rejected(self):
+        self._replace_package(_msix(extra={"../outside.txt": b"bad"}))
+        self._hold("MSIX_INVALID")
+
+    def test_zip_case_insensitive_duplicate_rejected(self):
+        self._replace_package(_msix(extra={"appxmanifest.xml": b"duplicate"}))
+        self._hold("MSIX_INVALID")
+
+    def test_valid_msix_container_is_not_signature_or_e2e_pass(self):
+        self._replace_package(_msix())
+        evidence = self._read()
+        result = validate_accounting_human_qa(
+            self.job, fetch_reviewed_windows_evidence=lambda _: evidence)
+        self.assertFalse(result["e2e_pass"])
 
     def test_duplicate_json_key_fail_closed(self):
         raw = (self.root / "evidence.json").read_text(encoding="utf-8")
