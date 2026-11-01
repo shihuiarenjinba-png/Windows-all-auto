@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-01T07:40:57.983Z",
+  "updated_at_utc": "2026-11-01T08:37:49.402Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -466,6 +466,25 @@
       "workflow_run_id": 41281876495,
       "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
       "scope": "CHECKER_JSON_SCHEMA_VERSION_STRICT_INT__CLI_PRODUCT_TYPE_MATCH__MSIX_SHA256_MATCHES_INDEPENDENT_IMMUTABLE_PACKAGE__UNBOUNDED_SUBPROCESS_OUTPUT_DISCARDED",
+      "physical_windows_checker": "NOT_EXECUTED",
+      "signed_msix": "NOT_OBSERVED",
+      "gui_install": "NOT_EXECUTED",
+      "e2e_pass": false,
+      "store_submission": "NOT_PERFORMED",
+      "integration": "STACKED_DRAFT_NOT_MERGED"
+    },
+    "local_checker_existing_receipt_guard": {
+      "draft_pr": 119,
+      "branch": "codex/e2e-checker-receipt-replay-20261101-1736",
+      "base_pr": 118,
+      "base_sha": "e17c1d224294a81acd472057f37d475d67087206",
+      "head_sha": "2a80b7755b0b9b6738fd2e1f9f5844ec332f1f65",
+      "offline_qa_run_id": 41289593333,
+      "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+      "scope": "PREFLIGHT_ALL_EXISTING_CHECKER_RECEIPTS_BEFORE_SUBPROCESS__REJECT_ROTATED_INBOX_SAME_PACKAGE_DIFFERENT_REQUEST_SOURCE__REJECT_TAMPERED_RECEIPT_AND_FILENAME_COLLISION",
+      "regressions": "SAME_REQUEST_REPLAY__ROTATED_REQUEST_SAME_EXACT_PACKAGE_BYTES__TAMPERED_EXISTING_SOURCE_SHA",
+      "initial_failed_run_id": 41289536253,
+      "initial_failure": "WINDOWS_ONLY_NONDETERMINISTIC_ZIP_FIXTURE_TIMESTAMP_CHANGED_PACKAGE_HASH__TEST_FIXED_BY_REUSING_EXACT_BYTES",
       "physical_windows_checker": "NOT_EXECUTED",
       "signed_msix": "NOT_OBSERVED",
       "gui_install": "NOT_EXECUTED",
@@ -978,7 +997,10 @@
     "accounting_msix_lfhsize_real_product_pass": false,
     "local_checker_strict_receipt_code_committed": true,
     "local_checker_strict_receipt_ci_pass": true,
-    "local_checker_strict_receipt_physical_pass": false
+    "local_checker_strict_receipt_physical_pass": false,
+    "local_checker_existing_receipt_code_committed": true,
+    "local_checker_existing_receipt_ci_pass": true,
+    "local_checker_existing_receipt_physical_pass": false
   },
   "user_id_requests": {
     "schema_version": 1,
@@ -1515,7 +1537,7 @@
     "3d_waiting_identity": 0,
     "3d_conflicts": 0,
     "3d_artifact_mismatch": 0,
-    "metrics_basis": "2026_11_01_CENTRAL_LEDGER_PRIOR_VERIFIED_GITHUB_RETURNS_UNCHANGED__NO_NEW_FACTORY_OR_LOCAL_RECEIPTS__PR118_OFFLINE_CI_ONLY",
+    "metrics_basis": "2026_11_01_FOCUS_LEDGER_PRISM_GITHUB_IDENTITY_PRESENT__TEXT_IMAGE_SIGNAL_ABSENT__PR119_CHECKER_RECEIPT_REPLAY_WINDOWS_UBUNTU_OFFLINE_CI_ONLY",
     "3d_source_branch_head_drift_observed": 1
   },
   "local_source_code_sync": {
@@ -2569,8 +2591,8 @@
     "local_execution_this_run": "NOT_PERFORMED"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-11-01T07:40:57.983Z",
-    "scope": "PR118_POST_CHECKER_MSIX_REHASH_FAIL_CLOSED__WINDOWS_UBUNTU_OFFLINE_CI_PASS__PHYSICAL_SIGNED_MSIX_AND_E2E_HOLD",
+    "observed_at_utc": "2026-11-01T08:37:49.402Z",
+    "scope": "PR119_CHECKER_RECEIPT_REPLAY_COLLISION_FAIL_CLOSED__WINDOWS_UBUNTU_OFFLINE_CI_PASS__PHYSICAL_SIGNED_MSIX_AND_E2E_HOLD",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
     "canonical_previous_blob_sha": "2fc2875fde95313663c73d6ca21cd8bf1c7c8511",
@@ -2591,13 +2613,13 @@
     "package": "NOT_BUILT",
     "github_backlog": "NO_NEW_REAL_MSIX",
     "local_pull": "NOT_RUN_THIS_EXECUTION",
-    "checker": "PR118_POST_RUN_SAME_SIZE_AND_APPEND_TAMPER_REJECTED_OFFLINE_CI_PASS__NO_PHYSICAL_WINDOWS_CHECKER_RUN",
+    "checker": "PR119_STALE_OR_CROSS_REQUEST_CHECKER_RECEIPT_PRECHECK_PASS_SYNTHETIC_WINDOWS_UBUNTU__NO_PHYSICAL_WINDOWS_CHECKER_RUN",
     "gui_install_qa": "NOT_RUN_THIS_EXECUTION",
     "store_submission": 0,
     "success_count_cloud_verified": 2,
     "remaining_app_identity_returns": 2,
     "next_resume_index": 3,
-    "next_action": "REVIEW_STACKED_DRAFT_PR118__REAL_SIGNED_MSIX_AND_WINDOWS_CHECKER_GUI_INSTALL_PENDING__TEXT_DIFF_IMAGE_INVENTORY_IDENTITY_RETURN_PENDING__ACCOUNTING_MARKET_FIT_COMPLIANCE_TAX_ENGINE_HOLD",
+    "next_action": "REVIEW_STACKED_DRAFT_PR119__OFFLINE_TEXT_DIFF_AND_IMAGE_INVENTORY_IDENTITY_RETURN_PENDING__SIGNED_MSIX_AND_PHYSICAL_WINDOWS_CHECKER_GUI_INSTALL_HOLD__ACCOUNTING_MARKET_FIT_COUNTRY_TAX_ENGINE_HOLD",
     "post_identity_reconcile_pr": 49,
     "post_identity_reconcile_ci_run": 40851883814,
     "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU",
@@ -2652,15 +2674,15 @@
     "mixed_local_preflight_execution": "NOT_RUN_ON_USER_WINDOWS",
     "canonical_head_before_write": "9ea9f132eddf1f5c26004fa388139fd5140de241",
     "latest_remote_recheck": {
-      "verified_at_utc": "2026-11-01T06:43:08.696Z",
-      "focus": "POST_IDENTITY_READY__GITHUB_APPROVED_FILE_REQUEST_SOURCE_MATCH__NO_VERSION",
-      "ledger": "POST_IDENTITY_READY__GITHUB_APPROVED_FILE_REQUEST_SOURCE_MATCH__NO_VERSION",
+      "verified_at_utc": "2026-11-01T08:37:49.402Z",
+      "focus": "POST_IDENTITY_READY__APPROVED_IDENTITY_PRESENT_REQUEST_SOURCE_MATCH__NO_VERSION",
+      "ledger": "POST_IDENTITY_READY__APPROVED_IDENTITY_PRESENT_REQUEST_SOURCE_MATCH__NO_VERSION",
       "text_diff": "PRE_IDENTITY_READY__APPROVED_FILE_404",
       "image_inventory": "PRE_IDENTITY_READY__APPROVED_FILE_404",
-      "prism": "POST_IDENTITY_READY__GITHUB_APPROVED_FILE_REQUEST_SOURCE_MATCH__NO_VERSION",
+      "prism": "POST_IDENTITY_READY__APPROVED_IDENTITY_PRESENT_REQUEST_SOURCE_MATCH__NO_VERSION",
       "signal_sprint": "USER_IDENTITY_RECEIVED__APPROVED_FILE_404__CAS_NOT_APPLIED",
-      "accounting_jp_freelance_pr59": "DRAFT_NOT_PROMOTED__HEAD_4eed12758aa9d9f6fa3a8c395d95df7d80644bd6",
-      "accounting_us_freelance_pr60": "DRAFT_NOT_PROMOTED__HEAD_08bdc4b9099b11c79b8fb836df58b801ae3e599e",
+      "accounting_jp_freelance_pr59": "DRAFT_NOT_PROMOTED__HEAD_e76aa1b0b631a96a68a8e313e2bad7ae7d8480b8",
+      "accounting_us_freelance_pr60": "DRAFT_NOT_PROMOTED__HEAD_be50bf8cd7eb78a2c32fb7040090a8d307a524fb",
       "accounting_jp_bookkeeping_pr61": "DRAFT_NOT_PROMOTED__HEAD_0c1fa00c70cc934b2c169d415ab5cb95cb3cebd6",
       "accounting_us_bookkeeping_pr62": "DRAFT_NOT_PROMOTED__HEAD_4390f1ed1a7310cfbfa6248777b12f70e27ac2f8",
       "factory_artifact_metadata": "NOT_RECHECKED_THIS_RUN",
@@ -2668,7 +2690,7 @@
       "partner_center": "NOT_ACCESSED_THIS_RUN",
       "cas": "NOT_PERFORMED_THIS_RUN",
       "store_submission": "NOT_PERFORMED_THIS_RUN",
-      "accounting_factory_observation": "2026_11_01_PR59_62_STILL_DRAFT__PR62_HEAD_ADVANCED__NO_PROMOTED_IMMUTABLE_SOURCE_REQUEST_MARKET_FIT_PASS"
+      "accounting_factory_observation": "2026_11_01_PR59_PR60_HEAD_ADVANCED__PR59_TO_62_ALL_DRAFT_NOT_PROMOTED__NO_IMMUTABLE_REQUEST_OR_MARKET_FIT_PASS"
     },
     "mixed_artifact_expiry_guard": {
       "draft_pr": 54,
@@ -3491,7 +3513,13 @@
     "implementation_scope": "POST_CHECKER_READ_ONLY_MSIX_SHA256_SIZE_INODE_METADATA_REVALIDATION__FORGED_REPORT_TAMPER_REGRESSIONS__NO_REAL_PRODUCT_EVIDENCE",
     "implementation_pr_url": "https://github.com/shihuiarenjinba-png/Windows-all-auto/pull/118",
     "previous_failed_ci_run_id": 41285620037,
-    "previous_failed_ci_reason": "TWO_NEW_TEST_FIXTURES_EMITTED_LITERAL_BACKSLASH_N__CORRECTED_WITHOUT_PRODUCTION_GUARD_CHANGE"
+    "previous_failed_ci_reason": "TWO_NEW_TEST_FIXTURES_EMITTED_LITERAL_BACKSLASH_N__CORRECTED_WITHOUT_PRODUCTION_GUARD_CHANGE",
+    "checker_receipt_guard_pr": 119,
+    "checker_receipt_guard_head": "2a80b7755b0b9b6738fd2e1f9f5844ec332f1f65",
+    "checker_receipt_guard_ci_run": 41289593333,
+    "checker_receipt_guard_ci": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+    "checker_receipt_guard_initial_ci_run": 41289536253,
+    "checker_receipt_guard_initial_ci_failure": "WINDOWS_TEST_FIXTURE_ZIP_TIMESTAMP_NONDETERMINISM__FIXED_WITH_EXACT_BYTES"
   },
   "post_identity_pipeline": {
     "schema_version": 1,
@@ -4349,6 +4377,15 @@
       "e2e_pass": false,
       "store_submission": "NOT_PERFORMED",
       "integration": "STACKED_DRAFT_NOT_MERGED"
+    },
+    "local_checker_existing_receipt_guard": {
+      "draft_pr": 119,
+      "head_sha": "2a80b7755b0b9b6738fd2e1f9f5844ec332f1f65",
+      "offline_qa_run_id": 41289593333,
+      "ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+      "physical_windows": "NOT_EXECUTED",
+      "real_signed_msix": "NOT_OBSERVED",
+      "e2e_pass": false
     }
   },
   "accounting_tax_primary_source_review": {
@@ -4384,6 +4421,18 @@
       "scope": "TAX_FREE_SHOP_REFUND_SCHEME_NOT_ASSUMED_APPLICABLE_TO_FOUR_GENERIC_BOOKKEEPING_SKUS__NO_AUTOMATIC_TAX_LOGIC_CHANGE",
       "package_gate": "HOLD",
       "reason": "FOUR_SKU_TAX_ASSET_FIXTURES_MARKET_FIT_COUNTRY_SCOPE_AND_PHYSICAL_WINDOWS_ENGINE_PARITY_NOT_INDEPENDENTLY_PASSED"
+    },
+    "source_recheck_20261101_1736": {
+      "checked_at_utc": "2026-11-01T08:37:49.402Z",
+      "nta_depreciation_url": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2106.htm",
+      "nta_consumption_accounting_url": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shohi/6909.htm",
+      "nta_2026_invoice_reform_url": "https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/invoice-review/index.htm",
+      "irs_travel_meals_vehicle_url": "https://www.irs.gov/publications/p463",
+      "irs_depreciation_url": "https://www.irs.gov/publications/p946",
+      "observed": "NTA_2026_APR_01_EFFECTIVE_TEXT_ON_CONSUMPTION_ACCOUNTING_AND_DEPRECIATION__NTA_2026_REFORM_FUTURE_2027_2028_30_PERCENT_SPECIAL_RULE__IRS_PUB463_2025_AND_PUB946_2025_CURRENT_VISIBLE",
+      "scope": "SOURCE_RECHECK_ONLY__NO_CODE_PARITY_OR_COUNTRY_TAX_FIXTURE_VERIFICATION",
+      "package_gate": "HOLD",
+      "action": "RETAIN_FOUR_ACCOUNTING_SKUS_MARKET_FIT_AND_COMPLIANCE_HOLD__VERIFY_DATE_BOUND_METHOD_AND_SPECIAL_RULE_FIXTURES_BEFORE_PACKAGE"
     }
   }
 }
