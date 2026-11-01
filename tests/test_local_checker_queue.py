@@ -37,10 +37,10 @@ class LocalCheckerQueueTests(unittest.TestCase):
         # A real subprocess writes this untrusted report; tests do not fake
         # a successful Windows Checker or a physical GUI/install result.
         (self.checker / "run.py").write_text(
-            "import sys\\nfrom pathlib import Path\\n"
+            "import sys\nfrom pathlib import Path\n"
             + "Path(sys.argv[sys.argv.index('--report')+1]).write_text("
-            + repr(raw) + ", encoding='utf-8')\\n"
-            + "sys.exit(" + str(exit_code) + ")\\n",
+            + repr(raw) + ", encoding='utf-8')\n"
+            + "sys.exit(" + str(exit_code) + ")\n",
             encoding="utf-8")
 
     def bundle(self, lane, slug, source=SOURCE, request=None):
