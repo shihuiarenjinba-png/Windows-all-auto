@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-01T15:37:04.123Z",
+  "updated_at_utc": "2026-11-01T16:35:42.478Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -19,7 +19,7 @@
     "display_name": "Signal Sprint",
     "provisioner_repository": "shihuiarenjinba-png/Repository-Provisioner-game",
     "provisioner_branch": "codex/game-gdk-identity-contract-20261028",
-    "provisioner_head_observed": "44079c41062c8a98aa16553058e7f0b0df659500",
+    "provisioner_head_observed": "4bf0ebf436144bc5eda18c9429506a813e4d4384",
     "factory_exe_run_id": 40443340158,
     "factory_exe_artifact_id": 12706862577,
     "factory_exe_artifact_name": "game-signal-sprint-exe-c058cbf7fe38e02d929c67d047d717ff74bd522e",
@@ -228,7 +228,18 @@
     "user_identity_validated": false,
     "cas_returned": false,
     "registration_type": "GDK_GAME",
-    "partner_center_selection": "GDK game"
+    "partner_center_selection": "GDK game",
+    "provisioner_head_observation": {
+      "basis": "LIVE_GITHUB_PR10_HEAD_AND_EXACT_COMMIT_CI",
+      "observed_at_utc": "2026-11-01T16:35:42.478Z",
+      "sha": "4bf0ebf436144bc5eda18c9429506a813e4d4384",
+      "ci_run_id": 41325199962,
+      "ci_conclusion": "SUCCESS",
+      "historical_pinned_command_sha": "e9ae4669f6739d34cad63764767328a3c796a5f9",
+      "historical_commands_are_not_current_checkout_instructions": true,
+      "local_check_only_on_current_head": "NOT_OBSERVED",
+      "cas": "NOT_APPLIED"
+    }
   },
   "other_lanes": {
     "APP": {
@@ -1795,9 +1806,12 @@
     "game": {
       "repo": "shihuiarenjinba-png/Repository-Provisioner-game",
       "branch": "codex/game-gdk-identity-contract-20261028",
-      "sha": "44079c41062c8a98aa16553058e7f0b0df659500",
-      "ci_run_id": 41320091459,
-      "ci_conclusion": "SUCCESS_AT_EXACT_HEAD"
+      "sha": "4bf0ebf436144bc5eda18c9429506a813e4d4384",
+      "ci_run_id": 41325199962,
+      "ci_conclusion": "SUCCESS_AT_EXACT_HEAD",
+      "previous_observation_sha": "44079c41062c8a98aa16553058e7f0b0df659500",
+      "historical_pinned_sha": "e9ae4669f6739d34cad63764767328a3c796a5f9",
+      "local_windows": "NOT_REVALIDATED"
     },
     "app": {
       "repo": "shihuiarenjinba-png/Repository-Provisioner-app",
@@ -2666,8 +2680,8 @@
     "local_execution_this_run": "NOT_PERFORMED"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-11-01T15:37:04.123Z",
-    "scope": "PR128_CLEAN_CANONICAL_STACKED_INTEGRATION_MARKET_FIT_80_ALL_GO__WINDOWS_UBUNTU_CI_SUCCESS__PR127_CLOSED__APP64_HOLD__GAME_HEAD_DRIFT_CORRECTED",
+    "observed_at_utc": "2026-11-01T16:35:42.478Z",
+    "scope": "PR129_NEW_CANONICAL_BASE_EXACT_BLOB_INTEGRATION_CI_WINDOWS_UBUNTU_SUCCESS__FOCUS_EXE_ARTIFACT_ZIP_SHA_PRESERVED__IMAGE64_HOLD__GAME_HEAD_DRIFT_REOBSERVED",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
     "canonical_previous_blob_sha": "079a0927dd5c9e069bb0b4838999e292a3ad875c",
@@ -2694,7 +2708,7 @@
     "success_count_cloud_verified": 2,
     "remaining_app_identity_returns": 2,
     "next_resume_index": 3,
-    "next_action": "APP00_PROMOTE_NEW_IMAGE_SOURCE_REQUEST_AND_INDEPENDENT_REVIEW_SHA_AFTER_80_ALL_GO__PR128_REVIEW_ONLY__NO_PACKAGE_OR_STORE",
+    "next_action": "00_APP_MARKET_FIT_80_ALL_GO_WITH_NEW_PROMOTED_SOURCE_REQUEST_INDEPENDENT_REVIEW_SHA__RECOMPARE_PR129_AFTER_LEDGER_WRITE__NO_REAL_MSIX",
     "post_identity_reconcile_pr": 49,
     "post_identity_reconcile_ci_run": 40851883814,
     "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU",
@@ -2717,7 +2731,7 @@
       },
       {
         "slug": "offline-image-inventory-desk",
-        "status": "PRE_IDENTITY_READY"
+        "status": "PRE_IDENTITY_READY__OLD_REVISION_ONLY_NEW_PR76_UNPROMOTED"
       }
     ],
     "new_local_execution": "NOT_PERFORMED",
@@ -3633,24 +3647,26 @@
       "source": "FRESH_GITHUB_WORKFLOW_RUN_ARTIFACT_METADATA__NO_LOCAL_BYTES"
     },
     "market_fit_integration_current": {
-      "draft_pr": 128,
-      "head_sha": "5debab90705a9a8c1ce6cfc55957509d55a2ba45",
-      "canonical_base_sha": "80ea29d0e7f0a9f58c79a795af96fee1127492bd",
-      "compare_before": "AHEAD_3_BEHIND_0",
-      "source_pr": 126,
-      "source_head": "6080129e1460f49012c680410595e0249f9b182a",
+      "draft_pr": 129,
+      "head_sha": "59e58dee620a78c96071a961ba995946ded1cfd1",
+      "canonical_base_sha": "9e1cfd7ad77732c328165508e8e01e27cd33d976",
+      "source_pr": 128,
+      "source_head": "5debab90705a9a8c1ce6cfc55957509d55a2ba45",
+      "compare_before": "PR128_DIVERGED_AHEAD_3_BEHIND_1",
+      "compare_new_before_ledger_write": "AHEAD_3_BEHIND_0",
       "copied_blobs": [
         "05de67f97b5af0101b5a81c69b539595fbe0ca10",
         "b933c67dcf1f90a789ef057cac0e6cf744ed4cf3",
-        "fe74c0e9341037843db727f82b5df37f39"
+        "fe74c0e9341037843db727f82a3fe82b5df37f39"
       ],
-      "ci_run_id": 41322081560,
-      "ci_status": "SUCCESS_UBUNTU_WINDOWS",
+      "ci_run_id": 41326976687,
+      "ci_status": "SUCCESS_UBUNTU_WINDOWS_EXACT_HEAD",
       "status": "DRAFT_UNMERGED",
       "local_windows": "NOT_RUN",
       "real_msix": "NOT_BUILT",
       "store_submission": 0,
-      "followup_ledger_only_commit_may_make_pr_behind_one": true
+      "canonical_ledger_update_after_pr_creation": true,
+      "recompare_before_integration": true
     },
     "latest_factory_image_pr76": {
       "head_sha": "482372e288213b937df993ee927424587b4afca1",
@@ -3681,6 +3697,55 @@
       "sha256_verified_this_run": false,
       "status": "AVAILABLE_NOT_REDOWNLOADED",
       "next_action": "GH_RUN_DOWNLOAD_TO_ISOLATED_PATH__VERIFY_EXTRACTED_EXE_SHA_04b2d7e4eae215855217285f07f8835ffe3cf60dc5aab24ede141d28f563416d__DO_NOT_CONFUSE_ZIP_AND_EXE"
+    },
+    "factory_image_current": {
+      "repo": "shihuiarenjinba-png/AI-App-Factory",
+      "draft_pr": 76,
+      "observed_head": "a3fb28b683583710ebe3fbd2a344a6dd067b3c01",
+      "ci_core_run": 41324308648,
+      "ci_image_qa_run": 41324308661,
+      "ci_conclusion": "SUCCESS_AT_EXACT_HEAD",
+      "market_fit_score_reported": 64,
+      "why_pay_verified": false,
+      "market_fit_gate": "MARKET_FIT_HOLD",
+      "promotion": "NOT_OBSERVED",
+      "official_new_request_id": "NOT_OBSERVED",
+      "official_new_source_sha": "NOT_OBSERVED",
+      "review_commit_sha": "NOT_OBSERVED",
+      "commercial_msix": "PROHIBITED",
+      "previous_head": "482372e288213b937df993ee927424587b4afca1",
+      "old_request_id": "app-offline-image-inventory-desk-16b6a772952c",
+      "old_request_not_overwritten": true
+    },
+    "prism_sentinel_separate_observation": {
+      "repo": "shihuiarenjinba-png/3d-game-factory",
+      "observed_commit_sha": "e432d94ed0db22878f61f1a8af140d7d7de2288f",
+      "ci_run_id": 40901064240,
+      "ci_conclusion": "SUCCESS",
+      "commit_scope": "GAMEPLAY_UI_SMOKE_TEST_PRIORITY_AFTER_TRAPS",
+      "immutable_old_identity_source_sha": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
+      "old_identity_return_commit": "11417b75636ee18816028ffd5221884c4c9a9836",
+      "new_revision_identity_reuse": "PROHIBITED_WITHOUT_NEW_EXACT_BINDING",
+      "new_revision_request_status": "NOT_OBSERVED",
+      "package_version_gate": "HOLD"
+    },
+    "focus_artifact_preservation": {
+      "repo": "shihuiarenjinba-png/AI-App-Factory",
+      "artifact_id": 12807496604,
+      "artifact_expiry_utc": "2026-11-02T10:02:58Z",
+      "downloaded_and_crc_verified": true,
+      "zip_sha256": "06189361745a9cc175f1fe5bde27d758b71518ac1d2e955436939e3e7ed2a04d",
+      "zip_bytes": 11226545,
+      "exe_sha256": "04b2d7e4eae215855217285f07f8835ffe3cf60dc5aab24ede141d28f563416d",
+      "exe_bytes": 11475865,
+      "embedded_request_id": "app-focus-session-desk-8b00bc4e9082",
+      "embedded_source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+      "cross_document_binding": "PASS",
+      "storage_scope": "CONVERSATION_ARTIFACT_AND_VERIFICATION_RECEIPT__NOT_GITHUB_BACKLOG",
+      "signed_msix": false,
+      "local_windows_gui": "NOT_VERIFIED",
+      "commercial_market_fit": "HOLD",
+      "store_submission": "NOT_PERFORMED"
     }
   },
   "post_identity_pipeline": {
