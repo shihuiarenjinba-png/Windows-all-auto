@@ -4,9 +4,10 @@ from pathlib import Path
 import unittest
 
 LEDGER = Path(__file__).resolve().parents[1] / "ops" / "active_e2e_handoff.json"
-CURRENT = "63d358fc8e6d2ad403e405421291155d8583f17a"
+CURRENT = "36df224b584719f01d3ef5cdaeb9c6a7e89de0b1"
 HISTORICAL = "e9ae4669f6739d34cad63764767328a3c796a5f9"
-PREVIOUS = "4bf0ebf436144bc5eda18c9429506a813e4d4384"
+PREVIOUS = "63d358fc8e6d2ad403e405421291155d8583f17a"
+HISTORICAL_PREVIOUS = "4bf0ebf436144bc5eda18c9429506a813e4d4384"
 FACTORY_LOG_EXE = "9c31c3633de0d9e248cd1642f9003962f4f117bf6780cf4fab9f66d1d73485ad"
 HISTORICAL_EXE = "e8517df8cd31a40e5ce72afdd4e6a4d63626fb99f7ff8a4fa3296ff8deef05f4"
 
@@ -26,6 +27,7 @@ class ActiveE2EGameLedgerContract(unittest.TestCase):
             self.assertEqual(active[section]["head_sha"], CURRENT)
         self.assertEqual(active["local_identity_return_worker"]["required_provisioner_sha"], CURRENT)
         self.assertEqual(active["provisioner_head_observation"]["previous_observed_head"], PREVIOUS)
+        self.assertEqual(active["provisioner_head_observation"]["historical_previous_observed_head"], HISTORICAL_PREVIOUS)
         self.assertEqual(active["provisioner_game_gdk_pr"]["historical_head_sha"], HISTORICAL)
         self.assertEqual(active["historical_local_commands_20261027"][1].count(HISTORICAL), 1)
         commands = "\n".join(active["local_commands"])
@@ -33,6 +35,29 @@ class ActiveE2EGameLedgerContract(unittest.TestCase):
         self.assertIn("HOLD_PROVISIONER_HEAD_DRIFT", commands)
         self.assertIn("ARTIFACT_EXACT_BYTES_HOLD", commands)
         self.assertNotIn("--apply-request-id", commands)
+
+    def test_new_provisioner_head_check_only_does_not_promote_cas(self):
+        data = self.data
+        active = data["active_product"]
+        lineage = active["provisioner_game_gdk_pr"]["new_lineage_contract"]
+        self.assertEqual(lineage["current_head"], CURRENT)
+        self.assertEqual(lineage["workflow_run_id"], 41351247625)
+        self.assertEqual(lineage["compare_to_prior_head"], "AHEAD_14_BEHIND_0")
+        self.assertEqual(data["latest_provisioner_heads_observed"]["game"]["previous_observation_sha"], PREVIOUS)
+        self.assertEqual(data["last_36_execution"]["game_provisioner_pr10_current"]["head_sha"], CURRENT)
+        self.assertEqual(active["provisioner_package_safety"]["ci_run_id"], 41351247625)
+        self.assertIsNone(lineage["new_request_id"])
+        self.assertIsNone(lineage["new_build_artifact_id"])
+        for gate in ("reviewed_new_request_cas_contract", "physical_windows_check_only", "cas_applied", "gdk_msixvc_built", "package_version_approved"):
+            self.assertFalse(lineage[gate])
+        self.assertFalse(active["original_exe_artifact_audit"]["ready_for_cas"])
+        self.assertFalse(active["cas_returned"])
+        self.assertFalse(data["quality_gates"]["real_gdk_msixvc_pass"])
+        self.assertFalse(data["e2e_pass"])
+        commands = "\\n".join(active["local_commands"])
+        self.assertIn(CURRENT, commands)
+        self.assertNotIn(PREVIOUS, commands)
+        self.assertIn("ARTIFACT_EXACT_BYTES_HOLD", commands)
 
     def test_original_zip_missing_and_exe_authority_conflict_blocks_cas(self):
         data = self.data
