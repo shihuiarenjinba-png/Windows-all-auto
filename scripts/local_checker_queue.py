@@ -111,6 +111,64 @@ def _verify_post_checker_package(package: Path, info: dict) -> None:
         raise ValueError("LOCAL_QA_HOLD: package changed during checker")
 
 
+
+def _preflight_existing_checker_receipts(checked: list, reports: Path) -> None:
+    """Never overwrite another request's Checker evidence on filename reuse.
+
+    A report filename is derived from lane, slug and a short package hash,
+    not request_id or source SHA. The local inbox may have been rotated since
+    a previous run. Check *every* destination before starting any subprocess.
+    """
+    names = set()
+    for lane, kind, _folder, info in checked:
+        name = lane + "-" + info["slug"] + "-" + info["package_sha256"][:12]
+        if name in names:
+            raise ValueError("LOCAL_QA_HOLD: checker receipt filename collision")
+        names.add(name)
+        destination = reports / (name + ".checker.json")
+        if destination.is_symlink():
+            raise ValueError("LOCAL_QA_HOLD: linked existing checker receipt")
+        if not destination.exists():
+            continue
+        old = _read_bounded_json(
+            destination, limit=MAX_CHECKER_REPORT_BYTES + MAX_HANDOFF_JSON_BYTES,
+            label="existing checker receipt")
+        receipt = old.get("receipt")
+        checker_report = old.get("checker")
+        if type(receipt) is not dict or type(checker_report) is not dict:
+            raise ValueError("LOCAL_QA_HOLD: invalid existing checker receipt")
+        expected = {
+            "schema_version": 1, "status": "HOLD",
+            "request_id": info["request_id"], "product_type": lane,
+            "checker_cli_type": kind,
+            "factory_build_head": info.get(
+                "factory_build_head", info.get("factory_head_sha", info["source_sha"])),
+            "source_factory": info["source_factory"],
+            "source_repository": info["source_repository"],
+            "source_branch": info["source_branch"],
+            "source_sha": info["source_sha"], "slug": info["slug"],
+            "package_sha256": info["package_sha256"],
+            "checker_report_package_sha256": info["package_sha256"].lower(),
+            "identity": info["identity"], "local_gui_qa": "NOT_RUN",
+            "official_identity_provenance": "NOT_INDEPENDENTLY_VERIFIED",
+            "e2e_pass": False, "submitted_to_store": False,
+            "checker_report": destination.name,
+        }
+        if any(type(receipt.get(key)) is not type(value)
+               or receipt.get(key) != value for key, value in expected.items()):
+            raise ValueError("LOCAL_QA_HOLD: existing checker receipt provenance conflict")
+        metadata = checker_report.get("metadata")
+        if (type(checker_report.get("schema_version")) is not int
+                or checker_report["schema_version"] != 1
+                or checker_report.get("product_type") != kind
+                or type(metadata) is not dict
+                or type(metadata.get("msix_sha256")) is not str
+                or metadata["msix_sha256"].lower() != info["package_sha256"].lower()
+                or checker_report.get("verdict") != receipt.get("checker_verdict")
+                or receipt.get("checker_verdict") not in VERDICTS.values()):
+            raise ValueError("LOCAL_QA_HOLD: existing checker report mismatch")
+
+
 def check_local_queue(inbox: Path, checker: Path, reports: Path) -> dict:
     if inbox.is_symlink() or not inbox.is_dir():
         raise ValueError("LOCAL_QA_HOLD: missing or linked inbox")
@@ -166,6 +224,7 @@ def check_local_queue(inbox: Path, checker: Path, reports: Path) -> dict:
         if total_bytes > MAX_QUEUED_BYTES:
             raise ValueError("LOCAL_QA_HOLD: local package capacity exceeded")
         checked.append((lane, kind, folder, info))
+    _preflight_existing_checker_receipts(checked, reports)
     reports.mkdir(parents=True, exist_ok=True)
     results = []
     for lane, kind, folder, info in checked:
