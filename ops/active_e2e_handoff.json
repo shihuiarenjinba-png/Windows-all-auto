@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-01T16:35:42.478Z",
+  "updated_at_utc": "2026-11-01T16:36:53.678Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -524,11 +524,11 @@
       "store_submission": "NOT_PERFORMED"
     },
     "market_fit_revision_contract": {
-      "status": "DRAFT_PR128_REBASED_ON_RECONCILED_CANONICAL__WINDOWS_UBUNTU_CI_SUCCESS__NO_PACKAGE_PROMOTION",
-      "integration_pr": 128,
-      "integration_branch": "codex/e2e-market-fit-integrate-ledger-20261102-0036",
-      "integration_head_sha": "5debab90705a9a8c1ce6cfc55957509d55a2ba45",
-      "canonical_base_head_sha": "80ea29d0e7f0a9f58c79a795af96fee1127492bd",
+      "status": "DRAFT_PR129_LATEST_CANONICAL_9E1CFD7_EXACT_BLOBS__WINDOWS_UBUNTU_206_TESTS_SUCCESS__NO_PACKAGE_PROMOTION",
+      "integration_pr": 129,
+      "integration_branch": "codex/e2e-market-fit-reconcile-20261102-0136",
+      "integration_head_sha": "59e58dee620a78c96071a961ba995946ded1cfd1",
+      "canonical_base_head_sha": "9e1cfd7ad77732c328165508e8e01e27cd33d976",
       "upstream_ocr_pr": 124,
       "upstream_ocr_head_sha": "a25eea28b1c4a094ee6a9867bfcb90efb901aafd",
       "upstream_ocr_compare": "DIVERGED_AHEAD_153_BEHIND_35__OVERLAPPING_OCR_FILES__NO_BLIND_MERGE",
@@ -551,10 +551,10 @@
       "local_windows": "NOT_RUN",
       "real_msix": "NOT_BUILT",
       "e2e_pass": false,
-      "superseded_pr": 127,
-      "superseded_pr_status": "CLOSED_UNMERGED",
+      "superseded_pr": 128,
+      "superseded_pr_status": "DRAFT_OPEN__DO_NOT_MERGE_BLIND",
       "ci_push_run_id": 41317331165,
-      "ci_pr_run_id": 41322081560,
+      "ci_pr_run_id": 41326976687,
       "ci_conclusion": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
       "ci_test_count": 206,
       "factory_source_files_unchanged_between_source_and_review": true,
@@ -570,9 +570,21 @@
       ],
       "next_action": "APP00_NEW_SOURCE_AND_REQUEST_AND_SEPARATE_REVIEW_SHA_REQUIRED__SCORE_80_PLUS_GO_AND_WINDOWS_EVIDENCE__NO_MSIX",
       "factory_new_review_candidate_pr": 76,
-      "factory_new_review_candidate_head": "482372e288213b937df993ee927424587b4afca1",
-      "factory_new_review_candidate_status": "DRAFT_UNPROMOTED_64_OF_100_MARKET_FIT_HOLD__NO_NEW_REQUEST_OR_REVIEW_SHA",
-      "integration_provenance": "CANONICAL_ONLY_LEDGER_CHANGE_VS_PR126__THREE_MARKET_FIT_BLOBS_COPIED_EXACT__NO_OCR_PR124_MERGE"
+      "factory_new_review_candidate_head": "a3fb28b683583710ebe3fbd2a344a6dd067b3c01",
+      "factory_new_review_candidate_status": "DRAFT_UNPROMOTED_REPORTED_64_OF_100_MARKET_FIT_HOLD__NO_NEW_REQUEST_OR_REVIEW_SHA",
+      "integration_provenance": "PR128_DIVERGED_AHEAD3_BEHIND1__THREE_EXACT_BLOBS_ON_9E1CFD7_CANONICAL__LEDGER_ONLY_FOLLOWUP_MAY_CREATE_BEHIND_COUNT__NO_OCR_PR124_MERGE",
+      "current_observation": {
+        "observed_at_utc": "2026-11-01T16:36:53.678Z",
+        "pr129_head": "59e58dee620a78c96071a961ba995946ded1cfd1",
+        "ci_run_id": 41326976687,
+        "ci_ubuntu": "206_PASS",
+        "ci_windows": "206_RUN_2_SKIPPED",
+        "canonical_ledger_only_commits_after_pr_creation": [
+          "81c0511e49c00ad86ccbef46cac219739211fbbb"
+        ],
+        "merge_action": "NONE",
+        "recompare_before_any_merge": true
+      }
     }
   },
   "policy": {
@@ -3666,7 +3678,11 @@
       "real_msix": "NOT_BUILT",
       "store_submission": 0,
       "canonical_ledger_update_after_pr_creation": true,
-      "recompare_before_integration": true
+      "recompare_before_integration": true,
+      "canonical_ledger_only_followups_after_pr_creation": [
+        "81c0511e49c00ad86ccbef46cac219739211fbbb",
+        "CURRENT_LEDGER_WRITE_PENDING_COMMIT_SHA"
+      ]
     },
     "latest_factory_image_pr76": {
       "head_sha": "482372e288213b937df993ee927424587b4afca1",
