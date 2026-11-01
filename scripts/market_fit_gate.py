@@ -1,9 +1,10 @@
-"""Read-only Factory MARKET_FIT contract for an immutable APP source revision.
+"""Read-only, revision-aware Factory APP MARKET_FIT package gate.
 
-The Factory's Image Inventory policy is >=80 plus every GO condition; 70-79
-is redesign, not package approval. Identity, Version and Store gates remain
-independent. Evidence is committed AFTER the source commit and is pinned by a
-separate immutable review SHA to avoid a self-referential Git commit hash.
+Mirrors AI-App-Factory/tools/market_fit_gate.py (PR #45): reviewed
+docs/market/<slug>.market-fit.json, >=80, sum-checked component scores,
+all GO criteria and explicit commercial permission. Adds immutable
+request/source binding for the central E2E handoff. Never grants Version,
+Identity, MSIX, local QA or Store approval.
 """
 from __future__ import annotations
 
@@ -13,10 +14,16 @@ import re
 SHA40 = re.compile(r"[0-9a-f]{40}\Z")
 SLUG = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*\Z")
 MIN_CANDIDATE_SCORE = 80
+SCORE_MAX = {
+    "problem_severity": 20, "differentiation": 20,
+    "willingness_to_pay": 20, "usability": 15,
+    "trust_privacy": 10, "discoverability": 10,
+    "implementation_risk": 5,
+}
 GO_KEYS = (
     "one_sentence_why_pay", "two_distinctions_from_free_alternatives",
     "addresses_review_complaint", "feasible_windows_local",
-    "no_saas_dependency",
+    "no_saas_dependency", "minimum_score_70",
 )
 
 
@@ -34,11 +41,10 @@ def _unique_pairs(pairs):
 
 
 def assess_market_fit(job, fetch_factory_evidence=None, verify_source_ancestry=None):
-    """Return (MARKET_FIT_PASS|MARKET_FIT_HOLD|NOT_APPLICABLE, reason).
+    """Read-only classification; authenticated readers must pin review commit.
 
-    Both injected readers MUST use authenticated GitHub and immutable commit
-    SHAs. No local operator assertion, moving branch, or candidate-only file
-    can be used to pass this gate.
+    The review SHA is separate from source_sha: a file cannot contain its own
+    Git commit SHA. Ancestry must prove review commit descends from source.
     """
     if not isinstance(job, dict):
         return "MARKET_FIT_HOLD", "HOLD_MARKET_FIT_JOB_SCHEMA"
@@ -57,7 +63,7 @@ def assess_market_fit(job, fetch_factory_evidence=None, verify_source_ancestry=N
             return "MARKET_FIT_HOLD", "HOLD_MARKET_FIT_SOURCE_BINDING"
     if verify_source_ancestry(job["source_repository"], source, review) is not True:
         return "MARKET_FIT_HOLD", "HOLD_MARKET_FIT_REVIEW_ANCESTRY"
-    path = f"products/{slug}/market-fit.json"
+    path = f"docs/market/{slug}.market-fit.json"
     raw = fetch_factory_evidence(job["source_repository"], path, review)
     if raw is None:
         return "MARKET_FIT_HOLD", "HOLD_MARKET_FIT_FACTORY_EVIDENCE_MISSING"
@@ -70,35 +76,49 @@ def assess_market_fit(job, fetch_factory_evidence=None, verify_source_ancestry=N
         return "MARKET_FIT_HOLD", str(exc)
     except (ValueError, TypeError, UnicodeError):
         return "MARKET_FIT_HOLD", "HOLD_MARKET_FIT_JSON_INVALID"
-    if not isinstance(evidence, dict) or type(evidence.get("schema_version")) is not int or evidence["schema_version"] != 1:
+    if not isinstance(evidence, dict) or evidence.get("schema_version") != "app5-market-fit-v1":
         return "MARKET_FIT_HOLD", "HOLD_MARKET_FIT_SCHEMA"
-    for field in ("slug", "request_id", "source_repository", "source_branch", "source_sha"):
-        if evidence.get(field) != job.get(field):
-            return "MARKET_FIT_HOLD", "HOLD_MARKET_FIT_SOURCE_CONFLICT"
-    if (evidence.get("reviewed") is not True or evidence.get("review_status") != "APPROVED"
-            or evidence.get("status") != "MARKET_FIT_PASS"):
+    bindings = {
+        "slug": slug, "request_id": job["request_id"],
+        "repo": job["source_repository"], "source_branch": job["source_branch"],
+        "baseline_sha": source,
+    }
+    if any(evidence.get(field) != value for field, value in bindings.items()):
+        return "MARKET_FIT_HOLD", "HOLD_MARKET_FIT_SOURCE_CONFLICT"
+    if (evidence.get("decision") != "MARKET_FIT_PASS"
+            or evidence.get("commercial_msix_allowed") is not True
+            or evidence.get("review_status") != "APPROVED"):
         return "MARKET_FIT_HOLD", "HOLD_MARKET_FIT_REVIEW_NOT_APPROVED"
-    score = evidence.get("score")
-    if type(score) is not int or not 0 <= score <= 100 or score < MIN_CANDIDATE_SCORE:
-        return "MARKET_FIT_HOLD", "HOLD_MARKET_FIT_SCORE_BELOW_80_OR_INVALID"
-    why = evidence.get("why_pay")
+    scoring = evidence.get("scoring")
+    if not isinstance(scoring, dict) or set(scoring) != set(SCORE_MAX) | {"total", "max"}:
+        return "MARKET_FIT_HOLD", "HOLD_MARKET_FIT_SCORE_SCHEMA"
+    points = 0
+    for name, maximum in SCORE_MAX.items():
+        part = scoring.get(name)
+        if (not isinstance(part, dict) or type(part.get("score")) is not int
+                or type(part.get("max")) is not int or part["max"] != maximum
+                or not 0 <= part["score"] <= maximum):
+            return "MARKET_FIT_HOLD", "HOLD_MARKET_FIT_SCORE_SCHEMA"
+        points += part["score"]
+    if (type(scoring.get("total")) is not int or type(scoring.get("max")) is not int
+            or scoring["max"] != 100 or scoring["total"] != points):
+        return "MARKET_FIT_HOLD", "HOLD_MARKET_FIT_SCORE_SUM_MISMATCH"
+    if points < MIN_CANDIDATE_SCORE:
+        return "MARKET_FIT_HOLD", "HOLD_MARKET_FIT_SCORE_BELOW_80"
+    why = evidence.get("why_pay_statement")
     if not isinstance(why, str) or not why.strip():
         return "MARKET_FIT_HOLD", "HOLD_MARKET_FIT_WHY_PAY_UNCLEAR"
-    alternatives = evidence.get("free_alternative_differences")
-    if (not isinstance(alternatives, list) or len(alternatives) < 2
+    for field in ("direct_competitors", "free_alternatives", "common_review_complaints"):
+        if not isinstance(evidence.get(field), list) or not evidence[field]:
+            return "MARKET_FIT_HOLD", "HOLD_MARKET_FIT_RESEARCH_MISSING"
+    differences = evidence.get("free_alternative_differences")
+    if (not isinstance(differences, list) or len(differences) < 2
             or any(not isinstance(x, dict)
                    or not isinstance(x.get("alternative"), str) or not x["alternative"].strip()
                    or not isinstance(x.get("difference"), str) or not x["difference"].strip()
-                   for x in alternatives)
-            or len({x["alternative"].strip().casefold() for x in alternatives}) < 2):
+                   for x in differences)
+            or len({x["alternative"].strip().casefold() for x in differences}) < 2):
         return "MARKET_FIT_HOLD", "HOLD_MARKET_FIT_FREE_ALTERNATIVE_PROOF"
-    competitors = evidence.get("competitor_research")
-    if (not isinstance(competitors, list) or not competitors
-            or any(not isinstance(x, dict)
-                   or not isinstance(x.get("competitor"), str) or not x["competitor"].strip()
-                   or not isinstance(x.get("difference"), str) or not x["difference"].strip()
-                   for x in competitors)):
-        return "MARKET_FIT_HOLD", "HOLD_MARKET_FIT_COMPETITOR_RESEARCH_MISSING"
     go = evidence.get("go_criteria")
     if not isinstance(go, dict) or any(go.get(k) is not True for k in GO_KEYS):
         return "MARKET_FIT_HOLD", "HOLD_MARKET_FIT_GO_CRITERIA"
