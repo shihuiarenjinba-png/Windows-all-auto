@@ -37,6 +37,14 @@ def fixture(slug):
         "claims": {"measured_accuracy_claim": False, "tax_filing_guarantee": False},
         "jp_month_end": {},
     }
+    ev["ocr_cases"]["duplicate_image"]["duplicate_pair"] = {
+        "first_input_id": "duplicate-original",
+        "second_input_id": "duplicate-replay",
+        "first_sha256": ev["ocr_cases"]["duplicate_image"]["source_image_sha256"],
+        "second_sha256": ev["ocr_cases"]["duplicate_image"]["source_image_sha256"],
+        "second_review_required": True,
+        "second_auto_posted": False,
+    }
     if market == "JP":
         ev["jp_month_end"] = {
             "status": "REVIEWED", "edge_headless_pdf": True,
@@ -97,6 +105,29 @@ class ReceiptPDFGateTests(unittest.TestCase):
         for case in ev["ocr_cases"].values():
             case["source_image_sha256"] = "e" * 64
         self.check_hold(job, ev, "OCR_FIXTURE_REUSED")
+
+    def test_duplicate_case_requires_distinct_input_ids_and_same_bytes(self):
+        job, ev = fixture("jp-freelance-ledger")
+        pair = ev["ocr_cases"]["duplicate_image"]["duplicate_pair"]
+        pair["second_input_id"] = pair["first_input_id"]
+        self.check_hold(job, ev, "OCR_DUPLICATE_UNPROVEN")
+        pair["second_input_id"] = "duplicate-replay"
+        pair["second_sha256"] = "f" * 64
+        self.check_hold(job, ev, "OCR_DUPLICATE_UNPROVEN")
+
+    def test_duplicate_case_requires_review_and_observed_batch_duplicate(self):
+        job, ev = fixture("us-bookkeeping-desk")
+        pair = ev["ocr_cases"]["duplicate_image"]["duplicate_pair"]
+        pair["second_auto_posted"] = True
+        self.check_hold(job, ev, "OCR_DUPLICATE_UNPROVEN")
+        pair["second_auto_posted"] = False
+        ev["batch"]["duplicate_count"] = 0
+        self.check_hold(job, ev, "OCR_DUPLICATE_UNPROVEN")
+
+    def test_duplicate_case_missing_pair_is_hold(self):
+        job, ev = fixture("jp-bookkeeping-desk")
+        del ev["ocr_cases"]["duplicate_image"]["duplicate_pair"]
+        self.check_hold(job, ev, "OCR_CASE_UNSAFE")
 
     def test_no_ocr_feature_is_allowed_but_not_fake_cases(self):
         job, ev = fixture("us-freelance-ledger")
