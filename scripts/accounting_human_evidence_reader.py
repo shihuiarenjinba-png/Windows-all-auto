@@ -55,7 +55,22 @@ _MANIFEST_NAMESPACES = (
 
 
 
-def _expected_blockmap_hashes(root, names):
+def _zip_local_header_size(handle, info):
+    """Read actual ZIP LFH length, not the central-directory extra length."""
+    handle.seek(info.header_offset)
+    header = handle.read(30)
+    if len(header) != 30 or header[:4] != b"PK\x03\x04":
+        _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
+    if struct.unpack_from("<H", header, 8)[0] != info.compress_type:
+        _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
+    filename_length, extra_length = struct.unpack_from("<HH", header, 26)
+    size = 30 + filename_length + extra_length
+    if not 30 <= size <= 65536:
+        _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
+    return size
+
+
+def _expected_blockmap_hashes(root, names, handle):
     """Bind each uncompressed 64-KiB package block to AppxBlockMap.xml.
 
     ZIP CRC alone is not cryptographic content integrity. The map itself
@@ -79,7 +94,12 @@ def _expected_blockmap_hashes(root, names):
         if (info is None or info.is_dir() or key in _BLOCKMAP_EXCLUDED
                 or key in expected or int(size) != info.file_size):
             _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
+        lfh_size = file_node.get("LfhSize")
+        if (lfh_size is None or re.fullmatch(r"[0-9]+", lfh_size) is None
+                or int(lfh_size) != _zip_local_header_size(handle, info)):
+            _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
         blocks = []
+        compressed_total = 0
         for node in file_node:
             if node.tag != f"{{{_BLOCKMAP_NS}}}Block" or len(node):
                 _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
@@ -93,12 +113,18 @@ def _expected_blockmap_hashes(root, names):
             if len(digest) != algorithm().digest_size:
                 _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
             compressed_size = node.get("Size")
-            if compressed_size is not None and (
-                re.fullmatch(r"[1-9][0-9]*", compressed_size) is None
-            ):
+            if info.compress_type == zipfile.ZIP_DEFLATED:
+                if (compressed_size is None
+                        or re.fullmatch(r"[1-9][0-9]*", compressed_size) is None):
+                    _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
+                compressed_total += int(compressed_size)
+            elif compressed_size is not None:
                 _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
             blocks.append(digest)
         if len(blocks) != (info.file_size + _BLOCK_BYTES - 1) // _BLOCK_BYTES:
+            _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
+        if (info.compress_type == zipfile.ZIP_DEFLATED and blocks
+                and compressed_total != info.compress_size):
             _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
         expected[key] = blocks
     required = {
@@ -157,7 +183,7 @@ def _verify_msix_container(handle) -> None:
                     _hold("HOLD_ACCOUNTING_EVIDENCE_MSIX_INVALID")
                 xml_roots[name] = ET.fromstring(raw)
             algorithm, expected_blocks = _expected_blockmap_hashes(
-                xml_roots["AppxBlockMap.xml"], names
+                xml_roots["AppxBlockMap.xml"], names, handle
             )
             # Verify both the ZIP CRC and every mapped uncompressed 64-KiB
             # cryptographic digest. Stream bounded chunks; never extract.
