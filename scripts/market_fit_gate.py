@@ -61,7 +61,7 @@ def assess_market_fit(job, fetch_factory_evidence=None, verify_source_ancestry=N
     for field in ("request_id", "source_repository", "source_branch"):
         if not isinstance(job.get(field), str) or not job[field].strip():
             return "MARKET_FIT_HOLD", "HOLD_MARKET_FIT_SOURCE_BINDING"
-    if verify_source_ancestry(job["source_repository"], source, review) is not True:
+    if verify_source_ancestry(job["source_repository"], source, review, slug) is not True:
         return "MARKET_FIT_HOLD", "HOLD_MARKET_FIT_REVIEW_ANCESTRY"
     path = f"docs/market/{slug}.market-fit.json"
     raw = fetch_factory_evidence(job["source_repository"], path, review)
@@ -87,6 +87,7 @@ def assess_market_fit(job, fetch_factory_evidence=None, verify_source_ancestry=N
         return "MARKET_FIT_HOLD", "HOLD_MARKET_FIT_SOURCE_CONFLICT"
     if (evidence.get("decision") != "MARKET_FIT_PASS"
             or evidence.get("commercial_msix_allowed") is not True
+            or evidence.get("feature_expansion_allowed") is not True
             or evidence.get("review_status") != "APPROVED"):
         return "MARKET_FIT_HOLD", "HOLD_MARKET_FIT_REVIEW_NOT_APPROVED"
     scoring = evidence.get("scoring")
@@ -106,11 +107,20 @@ def assess_market_fit(job, fetch_factory_evidence=None, verify_source_ancestry=N
     if points < MIN_CANDIDATE_SCORE:
         return "MARKET_FIT_HOLD", "HOLD_MARKET_FIT_SCORE_BELOW_80"
     why = evidence.get("why_pay_statement")
-    if not isinstance(why, str) or not why.strip():
+    if (not isinstance(why, str) or len(why.strip()) < 10
+            or "NOT PROVEN" in why.upper()):
         return "MARKET_FIT_HOLD", "HOLD_MARKET_FIT_WHY_PAY_UNCLEAR"
-    for field in ("direct_competitors", "free_alternatives", "common_review_complaints"):
+    for field in ("direct_competitors", "free_alternatives"):
+        if not isinstance(evidence.get(field), list) or len(evidence[field]) < 3:
+            return "MARKET_FIT_HOLD", "HOLD_MARKET_FIT_RESEARCH_MISSING"
+    for field in ("common_review_complaints", "store_search_keywords"):
         if not isinstance(evidence.get(field), list) or not evidence[field]:
             return "MARKET_FIT_HOLD", "HOLD_MARKET_FIT_RESEARCH_MISSING"
+    for field in ("paid_price_range", "buyer_persona"):
+        if not isinstance(evidence.get(field), str) or len(evidence[field].strip()) < 10:
+            return "MARKET_FIT_HOLD", "HOLD_MARKET_FIT_RESEARCH_MISSING"
+    if not isinstance(evidence.get("price_hypothesis"), dict):
+        return "MARKET_FIT_HOLD", "HOLD_MARKET_FIT_RESEARCH_MISSING"
     differences = evidence.get("free_alternative_differences")
     if (not isinstance(differences, list) or len(differences) < 2
             or any(not isinstance(x, dict)
