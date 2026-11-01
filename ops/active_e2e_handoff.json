@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-01T14:37:47.472Z",
+  "updated_at_utc": "2026-11-01T14:40:50.260Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -513,11 +513,11 @@
       "store_submission": "NOT_PERFORMED"
     },
     "market_fit_revision_contract": {
-      "status": "DRAFT_INTEGRATION_CI_PENDING__NO_PACKAGE_PROMOTION",
-      "integration_pr": 125,
-      "integration_branch": "codex/e2e-market-fit-revision-contract-20261101-2336",
-      "integration_head_sha": "6563ba4e6136022f8c0447ecbfcf20ccc096a9ce",
-      "canonical_base_head_sha": "28aaa0fad2f125c902ce4edb436a856576efbc9b",
+      "status": "DRAFT_PR126_WINDOWS_UBUNTU_CI_SUCCESS__NO_PACKAGE_PROMOTION",
+      "integration_pr": 126,
+      "integration_branch": "codex/e2e-market-fit-revision-ledger-rebased-20261101-2340",
+      "integration_head_sha": "6080129e1460f49012c680410595e0249f9b182a",
+      "canonical_base_head_sha": "6c39ffee1566dae037c65817077240308f078c86",
       "upstream_ocr_pr": 124,
       "upstream_ocr_head_sha": "a25eea28b1c4a094ee6a9867bfcb90efb901aafd",
       "upstream_ocr_compare": "DIVERGED_AHEAD_153_BEHIND_35__OVERLAPPING_OCR_FILES__NO_BLIND_MERGE",
@@ -539,7 +539,25 @@
       "read_only_contract": "REVIEW_SHA_SEPARATE_FROM_SOURCE_SHA__NO_IDENTITY_OR_PACKAGE_SIDE_EFFECTS",
       "local_windows": "NOT_RUN",
       "real_msix": "NOT_BUILT",
-      "e2e_pass": false
+      "e2e_pass": false,
+      "superseded_pr": 125,
+      "superseded_pr_status": "CLOSED_UNMERGED",
+      "ci_push_run_id": 41317331165,
+      "ci_pr_run_id": 41317336063,
+      "ci_conclusion": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+      "ci_test_count": 206,
+      "factory_source_files_unchanged_between_source_and_review": true,
+      "factory_compare_files": [
+        "docs/market/offline-image-inventory-desk.market-fit.json",
+        "docs/market/offline-image-inventory-free-alternatives-20261031.json"
+      ],
+      "factory_extra_binding_required": [
+        "request_id",
+        "source_branch",
+        "review_status",
+        "free_alternative_differences"
+      ],
+      "next_action": "APP00_NEW_SOURCE_AND_REQUEST_AND_SEPARATE_REVIEW_SHA_REQUIRED__SCORE_80_PLUS_GO_AND_WINDOWS_EVIDENCE__NO_MSIX"
     }
   },
   "policy": {
@@ -2644,8 +2662,8 @@
     "local_execution_this_run": "NOT_PERFORMED"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-11-01T14:37:47.472Z",
-    "scope": "IMAGE_INVENTORY_MARKET_FIT_64_VS_FACTORY_80_AUDIT__PR125_IMMUTABLE_REVIEW_GATE_DRAFT__PR124_DIVERGENCE_PROVEN__NO_LOCAL_MSIX",
+    "observed_at_utc": "2026-11-01T14:40:50.260Z",
+    "scope": "IMAGE_INVENTORY_FACTORY_SCORE64_VS_80_POLICY_RECONCILED_IN_DRAFT_PR126__WINDOWS_UBUNTU_206_TESTS_SUCCESS__CANONICAL_LEDGER_DRIFT_RECORDED",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
     "canonical_previous_blob_sha": "3c963b44ffadd5f9e71b81690339d3d0ea91be39",
@@ -2672,7 +2690,7 @@
     "success_count_cloud_verified": 2,
     "remaining_app_identity_returns": 2,
     "next_resume_index": 3,
-    "next_action": "WAIT_APP00_NEW_IMAGE_REVISION_WITH_PINNED_SOURCE_REQUEST_AND_REVIEW_SHA__REVIEW_PR125_CI__NO_70_THRESHOLD_BYPASS__VERSION_AND_IDENTITY_SEPARATE",
+    "next_action": "REVIEW_DRAFT_PR126__WAIT_APP00_SOURCE_REQUEST_REVIEW_SHA__NO_MARKET_FIT_PASS_NO_VERSION_NO_REAL_MSIX",
     "post_identity_reconcile_pr": 49,
     "post_identity_reconcile_ci_run": 40851883814,
     "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU",
@@ -2984,9 +3002,9 @@
     "new_implementation_ci_run": 41015629935,
     "new_implementation_ci": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_CODE_HEAD",
     "new_implementation_scope": "EXACT_ONE_COMMIT_ONLY_APPROVED_IDENTITY_JSON_ADDED__SOURCE_ANCESTRY_AND_RETURN_TARGET_VERIFIED__REJECT_UNRELATED_FILE_OR_MULTICOMMIT",
-    "implementation_pr": 118,
-    "implementation_head_sha": "e17c1d224294a81acd472057f37d475d67087206",
-    "implementation_ci_run_id": 41285704717,
+    "implementation_pr": 126,
+    "implementation_head_sha": "6080129e1460f49012c680410595e0249f9b182a",
+    "implementation_ci_run_id": 41317336063,
     "implementation_ci_status": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
     "prior_scope": "PR69_POST_IDENTITY_PIPELINE_EXACT_BINDING_GUARD_WINDOWS_UBUNTU_CI_PASS__FOCUS_LEDGER_PRISM_IDENTITY_ONLY_COMPARE_VERIFIED__TEXT_IMAGE_APPROVED_FILES_404__PHYSICAL_WINDOWS_HOLD",
     "immutable_head_read_guard": {
