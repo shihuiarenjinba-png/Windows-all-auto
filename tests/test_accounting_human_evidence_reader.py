@@ -28,7 +28,7 @@ def _png(color, width=1024, height=768):
             + _chunk(b"IDAT", zlib.compress(raw)) + _chunk(b"IEND", b""))
 
 
-def _msix(*, omit=None, bad_manifest=False, extra=None):
+def _msix(*, omit=None, bad_manifest=False, extra=None, stored_asset=False):
     manifest = (
         '<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10">'
         '<Identity Name="OkinawaDesktopTools.Test" Publisher="CN=Test" Version="1.0.0.0"/>'
@@ -52,7 +52,10 @@ def _msix(*, omit=None, bad_manifest=False, extra=None):
     with zipfile.ZipFile(output, "w", zipfile.ZIP_DEFLATED) as archive:
         for name, value in parts.items():
             info = zipfile.ZipInfo(name, date_time=(2020, 1, 1, 0, 0, 0))
-            info.compress_type = zipfile.ZIP_DEFLATED
+            info.compress_type = (
+                zipfile.ZIP_STORED if stored_asset and name == "Assets/logo.png"
+                else zipfile.ZIP_DEFLATED
+            )
             archive.writestr(info, value)
     return output.getvalue()
 
@@ -156,6 +159,22 @@ class LocalEvidenceTests(unittest.TestCase):
 
     def test_zip_case_insensitive_duplicate_rejected(self):
         self._replace_package(_msix(extra={"appxmanifest.xml": b"duplicate"}))
+        self._hold("MSIX_INVALID")
+
+    def test_zip_corrupted_non_xml_asset_crc_rejected(self):
+        # A correct directory and valid XML cannot hide corrupt payload bytes.
+        data = _msix(stored_asset=True)
+        self.assertEqual(data.count(b"fixture"), 1)
+        self._replace_package(data.replace(b"fixture", b"ficture", 1))
+        self._hold("MSIX_INVALID")
+
+    def test_zip_claimed_huge_uncompressed_entry_rejected(self):
+        # Tamper with central-directory uncompressed size, no large allocation.
+        data = bytearray(_msix())
+        position = data.rfind(b"PK\\x01\\x02")
+        self.assertGreater(position, 0)
+        struct.pack_into("<I", data, position + 24, 0xffffffff)
+        self._replace_package(bytes(data))
         self._hold("MSIX_INVALID")
 
     def test_valid_msix_container_is_not_signature_or_e2e_pass(self):
