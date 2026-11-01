@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-31T23:36:11.647Z",
+  "updated_at_utc": "2026-11-01T00:42:25.389Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -2505,11 +2505,11 @@
     "local_execution_this_run": "NOT_PERFORMED"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-10-31T23:36:11.647Z",
-    "scope": "PR110_ACCOUNTING_LOCAL_EVIDENCE_BYTE_READER_EXACT_HEAD_WINDOWS_UBUNTU_CI_PASS__PR109_HUMAN_QA_CONTRACT_CI_PASS__PHYSICAL_E2E_HOLD",
+    "observed_at_utc": "2026-11-01T00:42:25.389Z",
+    "scope": "PR111_BOUNDED_PNG_DECODE_EXACT_HEAD_WINDOWS_UBUNTU_CI_PASS__IRS_2026_MILEAGE_MIDYEAR_CHANGE_RECONCILED__PHYSICAL_ACCOUNTING_E2E_HOLD",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
-    "canonical_previous_blob_sha": "78613e49977714edb53c39a41a1c70d564c696a8",
+    "canonical_previous_blob_sha": "0e79acb05ce4a6a63195b997abe20fd81b327839",
     "focus_return_commit_sha": "8a7139375524830bf823469526837259266172be",
     "focus_store_id": "9P6452C61N7B",
     "focus_source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
@@ -3300,7 +3300,16 @@
       "text_diff": "GITHUB_404",
       "image_inventory": "GITHUB_404",
       "signal_sprint": "GITHUB_404__USER_PROVIDED_IDENTITY_ALREADY_RECEIVED"
-    }
+    },
+    "accounting_png_decode_pr": 111,
+    "accounting_png_decode_head": "2f749117e7a1a4fd15b94bf65870b322fc9f33de",
+    "accounting_png_decode_ci_run_id": 41257859447,
+    "accounting_png_decode_ci": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD__MOCKED_TESTS_ONLY",
+    "accounting_png_decode_implementation": "CRC_VALID_UNDECODABLE_ZLIB_FILTER_OVERFLOW_TRUNCATION_NONCONTIGUOUS_IDAT_FAIL_CLOSED__VALID_SPLIT_IDAT_SUPPORTED",
+    "accounting_png_decode_physical_windows": "NOT_RUN__NO_REAL_SCREENSHOT_OR_GUI_INSTALL_EVIDENCE",
+    "irs_2026_business_mileage_correction": "2026_JAN_JUN_72_5_CENTS_PER_MILE__2026_JUL_DEC_76_CENTS_PER_MILE__REVIEW_FACTORY_DATE_SPLIT_BEFORE_PACKAGE",
+    "irs_2026_mileage_source": "https://www.irs.gov/tax-professionals/standard-mileage-rates",
+    "accounting_tax_policy_action": "HOLD_US_ACCOUNTING_PACKAGE_UNTIL_00_APP_FACTORY_CONFIRMS_EFFECTIVE_DATE_FIXTURES_AND_EXPLICIT_REVIEW"
   },
   "post_identity_pipeline": {
     "schema_version": 1,
@@ -4014,7 +4023,7 @@
   },
   "accounting_human_usability_qa": {
     "schema_version": 1,
-    "observed_at_utc": "2026-10-31T23:36:11.647Z",
+    "observed_at_utc": "2026-11-01T00:42:25.389Z",
     "product_slugs": [
       "jp-freelance-ledger",
       "jp-bookkeeping-desk",
@@ -4033,8 +4042,8 @@
     "documentation": "docs/ACCOUNTING_HUMAN_USABILITY_QA.md",
     "scope": "FOUR_COUNTRY_SKU_EXACT_SOURCE_REQUEST_BUILD_PACKAGE_CHECKER_MARKET_BINDING__FIVE_BEGINNER_WORKFLOWS__1024X768__JP_FIVE_BOOKS__OCR_CONFIRMATION__PARALLEL_BOOK_ISOLATION",
     "test_scope": "MOCKED_EVIDENCE_CONTRACT_ONLY__NO_REAL_WINDOWS",
-    "trusted_physical_windows_evidence_reader": "LOCAL_BYTE_READER_CODE_CI_PASS__INDEPENDENT_PHYSICAL_REVIEW_NOT_WIRED",
-    "independent_screenshot_validation": "OFFLINE_MOCKED_BYTES_ONLY__NO_REAL_SCREENSHOT_VERIFICATION",
+    "trusted_physical_windows_evidence_reader": "LOCAL_BYTE_READER_AND_BOUNDED_PNG_DECODE_CI_PASS__INDEPENDENT_PHYSICAL_REVIEW_NOT_WIRED",
+    "independent_screenshot_validation": "OFFLINE_MOCKED_PNG_BYTES_ONLY__NO_REAL_SCREENSHOT_PROVENANCE",
     "engine_parity_and_persistence": "NOT_PERFORMED",
     "physical_gui_install_qa": "NOT_PERFORMED",
     "human_usability_qa_pass": false,
@@ -4060,6 +4069,22 @@
       "e2e_pass": false,
       "store_submission": "NOT_PERFORMED",
       "integration": "STACKED_DRAFT_NOT_MERGED__CALLBACK_AVAILABLE_NOT_PRODUCTION_WIRED"
+    },
+    "png_decode_hardening": {
+      "draft_pr": 111,
+      "branch": "codex/e2e-accounting-png-decode-20261101-0936",
+      "head_sha": "2f749117e7a1a4fd15b94bf65870b322fc9f33de",
+      "base_pr": 110,
+      "base_sha": "47f52b6605c4b7873ddbd24596017ee082e570f2",
+      "ci_run_id": 41257859447,
+      "ci_conclusion": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
+      "code_entrypoint": "scripts/accounting_human_evidence_reader.py",
+      "tests": "tests/test_accounting_human_evidence_reader.py",
+      "validation": "BOUNDED_RGB_RGBA_ZLIB_SCANLINES_AND_FILTERS__PNG_CRC_ALONE_INSUFFICIENT",
+      "physical_windows_evidence": "NOT_OBSERVED",
+      "real_signed_msix": "NOT_OBSERVED",
+      "independent_gui_install_review": "NOT_OBSERVED",
+      "e2e_pass": false
     }
   },
   "accounting_tax_primary_source_review": {
@@ -4070,15 +4095,18 @@
     "irs_publication_946_url": "https://www.irs.gov/publications/p946",
     "observed_nta_policy": "2026_REFORM_2026_OCT_ONWARD_70_PERCENT_TRANSITIONAL_PURCHASE_CREDIT_FOR_QUALIFYING_PERIODS__2027_2028_SOLE_PROPRIETOR_30_PERCENT_SPECIAL_RULE_CONDITIONAL",
     "observed_irs_publications": "PUB463_2025_REVISION__PUB946_2025_REVISION",
-    "status": "PRIMARY_SOURCE_READ_ONLY_CHECK__NOT_A_LEGAL_DETERMINATION__REVIEW_REQUIRED_BEFORE_TAX_ASSET_ENGINE_PACKAGE",
+    "status": "PRIMARY_SOURCE_MIDYEAR_RATE_CHANGE_IDENTIFIED__FACTORY_DATE_SPLIT_REVIEW_REQUIRED",
     "package_gate": "HOLD",
     "latest_36_reference_check": {
-      "checked_at_utc": "2026-10-31T23:36:11.647Z",
-      "irs_2026_business_mileage": "72.5_CENTS_PER_MILE_EFFECTIVE_2026_01_01",
-      "irs_source": "https://www.irs.gov/newsroom/irs-sets-2026-business-standard-mileage-rate-at-725-cents-per-mile-up-25-cents",
-      "nta_2026_depreciation_source": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2106.htm",
-      "evidence_boundary": "PRIMARY_SOURCE_REFERENCE_RECHECK_ONLY__NO_FACTORY_CALCULATION_PARITY_OR_LEGAL_COMPLIANCE_PASS",
-      "action": "ACCOUNTING_FOUR_SKUS_REMAIN_HOLD_PENDING_EXACT_SOURCE_FIXTURES_AND_HUMAN_REVIEW"
+      "checked_at_utc": "2026-11-01T00:42:25.389Z",
+      "irs_2026_business_mileage": "2026_JAN_01_TO_JUN_30_72_5_CENTS_PER_MILE__JUL_01_TO_DEC_31_76_CENTS_PER_MILE",
+      "irs_source": "https://www.irs.gov/tax-professionals/standard-mileage-rates",
+      "irs_authority": "https://www.irs.gov/irb/2026-29_irb",
+      "irs_2026_depreciation_source": "https://www.irs.gov/publications/p946",
+      "nta_invoice_2026_source": "https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/invoice-review/index.htm",
+      "source_correction": "PRIOR_CHECK_RECORDED_72_5_FROM_JAN_1_BUT_OMITTED_JUL_1_MIDYEAR_76_CHANGE",
+      "evidence_boundary": "PRIMARY_SOURCE_REFERENCE_ONLY__NO_FACTORY_RATE_FIXTURE_OR_COMPLIANCE_PASS",
+      "action": "HOLD_US_ACCOUNTING_PACKAGE_UNTIL_EFFECTIVE_DATE_SPLIT_TESTS_AND_00_APP_REVIEW"
     }
   }
 }
