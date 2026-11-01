@@ -1,6 +1,7 @@
 """End-to-end offline bytes for local QA -> Windows-checker preflight adapter."""
 import hashlib
 import json
+import shutil
 from pathlib import Path
 import tempfile
 import unittest
@@ -294,6 +295,46 @@ class LocalCheckerQueueTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "package changed during checker"):
             check_local_queue(self.inbox, self.checker, self.reports)
         self.assertEqual(list(self.reports.glob("*.checker.json")), [])
+
+    def test_same_request_replay_keeps_exact_checker_receipt_binding(self):
+        self.bundle("APP", "sample-app", request="app-request-0001")
+        first = check_local_queue(self.inbox, self.checker, self.reports)
+        second = check_local_queue(self.inbox, self.checker, self.reports)
+        self.assertEqual(first["results"][0]["request_id"],
+                         second["results"][0]["request_id"])
+        self.assertEqual(len(list(self.reports.glob("*.checker.json"))), 1)
+        self.assertFalse(second["e2e_pass"])
+
+    def test_rotated_inbox_cannot_overwrite_prior_request_receipt(self):
+        folder = self.bundle("APP", "sample-app", request="app-request-0001")
+        package_bytes = (folder / "package.msix").read_bytes()
+        check_local_queue(self.inbox, self.checker, self.reports)
+        prior = next(self.reports.glob("*.checker.json"))
+        original = prior.read_bytes()
+        shutil.rmtree(folder)
+        rotated = self.bundle("APP", "sample-app", request="app-request-0002")
+        # ZipFile.writestr timestamps can differ across the second boundary
+        # (especially on Windows). Reuse the *exact* prior package bytes so
+        # this test deterministically exercises the report-name collision.
+        (rotated / "package.msix").write_bytes(package_bytes)
+        metadata_path = rotated / "handoff.json"
+        metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+        metadata["package_sha256"] = hashlib.sha256(package_bytes).hexdigest()
+        metadata["package_bytes"] = len(package_bytes)
+        metadata_path.write_text(json.dumps(metadata), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "existing checker receipt provenance conflict"):
+            check_local_queue(self.inbox, self.checker, self.reports)
+        self.assertEqual(prior.read_bytes(), original)
+
+    def test_tampered_existing_receipt_is_hold_before_checker(self):
+        self.bundle("GAME_3D", "sample-3d")
+        check_local_queue(self.inbox, self.checker, self.reports)
+        prior = next(self.reports.glob("*.checker.json"))
+        data = json.loads(prior.read_text(encoding="utf-8"))
+        data["receipt"]["source_sha"] = "f" * 40
+        prior.write_text(json.dumps(data), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "existing checker receipt provenance conflict"):
+            check_local_queue(self.inbox, self.checker, self.reports)
 
     def test_report_cannot_be_written_inside_package_queue(self):
         self.bundle("GAME", "sample-game")
