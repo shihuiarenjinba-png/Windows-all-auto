@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-01T15:36:00.372Z",
+  "updated_at_utc": "2026-11-01T15:37:04.123Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -513,11 +513,11 @@
       "store_submission": "NOT_PERFORMED"
     },
     "market_fit_revision_contract": {
-      "status": "DRAFT_PR127_CANONICAL_BASE_INTEGRATION_WINDOWS_UBUNTU_CI_SUCCESS__NO_PACKAGE_PROMOTION",
-      "integration_pr": 127,
-      "integration_branch": "codex/e2e-market-fit-integrate-canonical-20261102-0036",
-      "integration_head_sha": "df57bbf8898d4f16367a61c4db18e1889c85fbfe",
-      "canonical_base_head_sha": "c4a680cb7336bc23cd91cacc8373fa6d5cba661f",
+      "status": "DRAFT_PR128_REBASED_ON_RECONCILED_CANONICAL__WINDOWS_UBUNTU_CI_SUCCESS__NO_PACKAGE_PROMOTION",
+      "integration_pr": 128,
+      "integration_branch": "codex/e2e-market-fit-integrate-ledger-20261102-0036",
+      "integration_head_sha": "5debab90705a9a8c1ce6cfc55957509d55a2ba45",
+      "canonical_base_head_sha": "80ea29d0e7f0a9f58c79a795af96fee1127492bd",
       "upstream_ocr_pr": 124,
       "upstream_ocr_head_sha": "a25eea28b1c4a094ee6a9867bfcb90efb901aafd",
       "upstream_ocr_compare": "DIVERGED_AHEAD_153_BEHIND_35__OVERLAPPING_OCR_FILES__NO_BLIND_MERGE",
@@ -540,10 +540,10 @@
       "local_windows": "NOT_RUN",
       "real_msix": "NOT_BUILT",
       "e2e_pass": false,
-      "superseded_pr": 125,
+      "superseded_pr": 127,
       "superseded_pr_status": "CLOSED_UNMERGED",
       "ci_push_run_id": 41317331165,
-      "ci_pr_run_id": 41321960559,
+      "ci_pr_run_id": 41322081560,
       "ci_conclusion": "SUCCESS_WINDOWS_UBUNTU_AT_EXACT_HEAD",
       "ci_test_count": 206,
       "factory_source_files_unchanged_between_source_and_review": true,
@@ -2666,11 +2666,11 @@
     "local_execution_this_run": "NOT_PERFORMED"
   },
   "last_36_execution": {
-    "observed_at_utc": "2026-11-01T15:36:00.372Z",
-    "scope": "PR126_DIVERGED_AHEAD7_BEHIND1_COMPARE__PR127_CANONICAL_BASE_STACKED_INTEGRATION_3_EXACT_BLOBS__WINDOWS_UBUNTU_CI_SUCCESS__GAME_PROVISIONER_HEAD_DRIFT_RECONCILED__IMAGE_64_HOLD",
+    "observed_at_utc": "2026-11-01T15:37:04.123Z",
+    "scope": "PR128_CLEAN_CANONICAL_STACKED_INTEGRATION_MARKET_FIT_80_ALL_GO__WINDOWS_UBUNTU_CI_SUCCESS__PR127_CLOSED__APP64_HOLD__GAME_HEAD_DRIFT_CORRECTED",
     "implementation_repository": "shihuiarenjinba-png/Windows-all-auto",
     "canonical_branch": "codex/e2e-belt-connection-20261027",
-    "canonical_previous_blob_sha": "0c0a06bc4c2a9514ff36353cb55e74f0b7a5071e",
+    "canonical_previous_blob_sha": "079a0927dd5c9e069bb0b4838999e292a3ad875c",
     "focus_return_commit_sha": "8a7139375524830bf823469526837259266172be",
     "focus_store_id": "9P6452C61N7B",
     "focus_source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
@@ -2694,7 +2694,7 @@
     "success_count_cloud_verified": 2,
     "remaining_app_identity_returns": 2,
     "next_resume_index": 3,
-    "next_action": "REBASE_STACKED_INTEGRATION_ON_LATEST_CANONICAL_LEDGER__APP00_MARKET_FIT_80_ALL_GO_NEW_SOURCE_REQUEST_REVIEW_REQUIRED__NO_REAL_MSIX",
+    "next_action": "APP00_PROMOTE_NEW_IMAGE_SOURCE_REQUEST_AND_INDEPENDENT_REVIEW_SHA_AFTER_80_ALL_GO__PR128_REVIEW_ONLY__NO_PACKAGE_OR_STORE",
     "post_identity_reconcile_pr": 49,
     "post_identity_reconcile_ci_run": 40851883814,
     "post_identity_reconcile_ci": "SUCCESS_WINDOWS_UBUNTU",
@@ -3633,20 +3633,24 @@
       "source": "FRESH_GITHUB_WORKFLOW_RUN_ARTIFACT_METADATA__NO_LOCAL_BYTES"
     },
     "market_fit_integration_current": {
-      "draft_pr": 127,
-      "head_sha": "df57bbf8898d4f16367a61c4db18e1889c85fbfe",
-      "canonical_base_sha": "c4a680cb7336bc23cd91cacc8373fa6d5cba661f",
-      "compare_before": "PR126_DIVERGED_AHEAD_7_BEHIND_1",
+      "draft_pr": 128,
+      "head_sha": "5debab90705a9a8c1ce6cfc55957509d55a2ba45",
+      "canonical_base_sha": "80ea29d0e7f0a9f58c79a795af96fee1127492bd",
+      "compare_before": "AHEAD_3_BEHIND_0",
+      "source_pr": 126,
+      "source_head": "6080129e1460f49012c680410595e0249f9b182a",
       "copied_blobs": [
         "05de67f97b5af0101b5a81c69b539595fbe0ca10",
         "b933c67dcf1f90a789ef057cac0e6cf744ed4cf3",
         "fe74c0e9341037843db727f82b5df37f39"
       ],
-      "ci_run_id": 41321960559,
-      "ci_status": "SUCCESS_WINDOWS_UBUNTU",
+      "ci_run_id": 41322081560,
+      "ci_status": "SUCCESS_UBUNTU_WINDOWS",
+      "status": "DRAFT_UNMERGED",
       "local_windows": "NOT_RUN",
-      "package": "NOT_BUILT",
-      "status": "DRAFT_UNMERGED"
+      "real_msix": "NOT_BUILT",
+      "store_submission": 0,
+      "followup_ledger_only_commit_may_make_pr_behind_one": true
     },
     "latest_factory_image_pr76": {
       "head_sha": "482372e288213b937df993ee927424587b4afca1",
@@ -3665,6 +3669,18 @@
       "old_observed_head": "e9ae4669f6739d34cad63764767328a3c796a5f9",
       "local_check_only": "NOT_REVALIDATED",
       "cas": "NOT_APPLIED"
+    },
+    "focus_artifact_expiry_recheck": {
+      "artifact_id": 12807496604,
+      "workflow_run_id": 40668807091,
+      "name": "focus-session-desk-preidentity-8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+      "expires_at_utc": "2026-11-02T10:02:58Z",
+      "expired": false,
+      "size_in_bytes": 11226545,
+      "downloaded_this_run": false,
+      "sha256_verified_this_run": false,
+      "status": "AVAILABLE_NOT_REDOWNLOADED",
+      "next_action": "GH_RUN_DOWNLOAD_TO_ISOLATED_PATH__VERIFY_EXTRACTED_EXE_SHA_04b2d7e4eae215855217285f07f8835ffe3cf60dc5aab24ede141d28f563416d__DO_NOT_CONFUSE_ZIP_AND_EXE"
     }
   },
   "post_identity_pipeline": {
