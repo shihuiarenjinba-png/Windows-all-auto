@@ -6,7 +6,7 @@ The independent physical-Windows reviewer must bind each observation to exact so
 
 ## Receipt/OCR batch
 
-At least two inputs with consistent accepted/review/failed counts. No unconfirmed transaction may be posted. Source images survive, individual failures do not erase other queue items, and the queue survives restart. If OCR exists, eight high-risk fixtures are mandatory: low-resolution, skewed, mixed tax rates, refund, multi-item, ambiguous vendor (Amazon/retailers), mixed personal/business, and duplicate image. Each is REVIEW_REQUIRED with confidence, original-image link and no auto-post. If OCR is not implemented, case evidence must be empty and the UI must not claim it exists. Accuracy percentages without measured benchmarks are prohibited.
+At least two inputs with consistent accepted/review/failed counts. No unconfirmed transaction may be posted. Source images survive, individual failures do not erase other queue items, and the queue survives restart. If OCR exists, eight high-risk fixtures are mandatory: low-resolution, skewed, mixed tax rates, refund, multi-item, ambiguous vendor (Amazon/retailers), mixed personal/business, and duplicate image. Each is REVIEW_REQUIRED with confidence, original-image link and no auto-post. Each of the eight high-risk test cases must have a distinct original-image SHA-256; reusing the same image for every named case is rejected as `HOLD_RECEIPT_PDF_OCR_FIXTURE_REUSED`. The `duplicate_image` case must separately demonstrate its duplicate within that case's test evidence. If OCR is not implemented, case evidence must be empty and the UI must not claim it exists. Accuracy percentages without measured benchmarks are prohibited.
 
 ## JP month-end pack
 
