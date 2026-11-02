@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-02T02:35:22.830Z",
+  "updated_at_utc": "2026-11-02T02:36:09.031Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -1201,7 +1201,9 @@
     "local_checker_historical_request_guard_code_committed": true,
     "local_checker_historical_request_guard_exact_head_ci_pass": true,
     "local_checker_historical_request_guard_physical_pass": false,
-    "pre_identity_archive_library_preservation_3_of_3": true
+    "pre_identity_archive_library_preservation_3_of_3": true,
+    "sale_ready_windows_ux_pass": false,
+    "consumer_would_buy_at_current_price": "NO"
   },
   "user_id_requests": {
     "schema_version": 1,
@@ -4996,7 +4998,7 @@
   },
   "revision_review_reconciliation": {
     "schema_version": 1,
-    "observed_at_utc": "2026-11-02T02:35:22.830Z",
+    "observed_at_utc": "2026-11-02T02:36:09.031Z",
     "writer": "36_WINDOWS_E2E_ONLY",
     "scope": "LIVE_REVIEW_HEAD_RECONCILIATION_JP_3D_GAME__IMMUTABLE_SOURCE_RUN_HEAD_AND_REQUEST_UNCHANGED__NO_CAS_MSIX_OR_SALE_PROMOTION",
     "policy": "PR_HEAD_IS_MUTABLE_REVIEW_CODE__SOURCE_SHA_AND_REQUEST_ID_ARE_IMMUTABLE_PRODUCT_BINDINGS__NO_AUTO_REBIND",
