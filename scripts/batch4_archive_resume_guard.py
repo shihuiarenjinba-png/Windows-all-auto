@@ -94,7 +94,8 @@ def build_plan(ledger: dict, archive_dir: Path | None = None) -> dict:
     pipeline = {p["product"]: p for p in ledger["post_identity_pipeline"]["products"]}
     preserved = ledger["revision_review_reconciliation"][
         "artifact_byte_preservation_20261102"]
-    records = {r["artifact_id"]: r for r in preserved["records"]}
+    extra = ledger["revision_review_reconciliation"]["artifact_byte_preservation_image_20261102"]
+    records = {r["artifact_id"]: r for r in preserved["records"] + extra["records"]}
     if len(jobs) != 4 or len(batch["products"]) != 4:
         raise ContractHold("BATCH4_COUNT_MISMATCH")
     for field in ("request_id", "slug", "source_sha", "identity_return_target"):
