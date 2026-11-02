@@ -1,4 +1,4 @@
-"""QA12 is current review-only physical gate; QA11 independent bytes stay historical."""
+"""QA12 historical review-only physical gate; QA13 now current, no physical PASS."""
 import copy
 import json
 import unittest
@@ -14,7 +14,7 @@ GATE1 = "11417b75636ee18816028ffd5221884c4c9a9836"
 
 def validate(d):
     r = d["revision_review_reconciliation"]
-    c = r["current_four_lane_observation"]
+    c = r["historical_four_lane_observation_20261103_0236"]
     t = c["three_d"]
     historical = r["historical_four_lane_observation_20261103_0136"]["three_d"]
     current = r["observations"]["prism-route-3d-consumer-qa-pr12"]
@@ -45,7 +45,8 @@ def validate(d):
     assert proof["qa"]["artifact_id"] == 13156640316 and proof["qa"]["screenshot_count"] == 7
     assert baseline["historical_underlying_software_baseline"] and not baseline["is_current_review_head"]
     assert current["qa11_historical_independent_36_byte_proof"]
-    assert not current["qa12_independent_36_artifact_byte_rehash"]
+    assert current["historical_underlying_software_baseline"] and not current["is_current_review_head"]
+    assert current["qa12_independent_36_artifact_byte_rehash"]
     assert not t["qa12_independent_36_artifact_byte_rehash"]
     assert not gate["qa12_artifact_bytes_independently_rehashed_by_36"]
     assert t["qa12_physical_human_gate_ci_pass"]
@@ -84,25 +85,25 @@ class Qa12CurrentBoundary(unittest.TestCase):
             validate(bad)
 
     def test_reject_stale_qa11_current_head(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"].__setitem__("qa_head", QA11))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_20261103_0236"]["three_d"].__setitem__("qa_head", QA11))
 
     def test_reject_qa11_artifact_as_qa12(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"].__setitem__("qa12_runtime_artifact_id", 13156640316))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_20261103_0236"]["three_d"].__setitem__("qa12_runtime_artifact_id", 13156640316))
 
     def test_reject_old_factory_pck_as_current(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"].__setitem__("artifact_id", 13149467845))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_20261103_0236"]["three_d"].__setitem__("artifact_id", 13149467845))
 
     def test_reject_old_identity_new_cas(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"].__setitem__("new_cas", True))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_20261103_0236"]["three_d"].__setitem__("new_cas", True))
 
     def test_reject_false_physical_pass(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"].__setitem__("qa12_physical_windows_human_pass", True))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_20261103_0236"]["three_d"].__setitem__("qa12_physical_windows_human_pass", True))
 
     def test_reject_fake_physical_receipt(self):
         self.reject(lambda d: d["revision_review_reconciliation"]["observations"]["prism-route-3d-consumer-qa-pr12"].__setitem__("physical_operator_receipt_present", True))
 
     def test_reject_qa12_metadata_as_independent_byte_pass(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"].__setitem__("qa12_independent_36_artifact_byte_rehash", True))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_20261103_0236"]["three_d"].__setitem__("qa12_independent_36_artifact_byte_rehash", True))
 
     def test_reject_wrong_request(self):
         self.reject(lambda d: d["revision_review_reconciliation"]["observations"]["prism-route-3d-consumer-qa-pr12"].__setitem__("factory_pr21_request_id", "3d-prism-route-3d-f015db1762fb"))
