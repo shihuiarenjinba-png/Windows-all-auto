@@ -42,10 +42,10 @@ class ReviewHeadReconciliation(unittest.TestCase):
         sentinel = self.obs["prism-route-3d-sentinel"]
         qa = sentinel["independent_3d_qa_pr6"]
         proof = self.proof["three_d_qa"]
-        self.assertEqual(qa["review_head_sha"], "891dba6ebb769c9a5925e266b28425f7ec605777")
-        self.assertEqual((proof["ahead"], proof["behind"]), (4, 0))
-        self.assertEqual(qa["ci_run_id"], 41383754959)
-        self.assertEqual(qa["previous_head_sha"], "4b58f9d3c2ff75be9627f3e8a4dd20194460111d")
+        self.assertEqual(qa["review_head_sha"], "5438bb11516b8af8d9e68226ab2f82303b30391c")
+        self.assertEqual((proof["ahead"], proof["behind"]), (9, 0))
+        self.assertEqual(qa["ci_run_id"], 41394246951)
+        self.assertEqual(qa["previous_head_sha"], "891dba6ebb769c9a5925e266b28425f7ec605777")
         self.assertIn("NOT_FRESH_GITHUB_DOWNLOAD", qa["receipt_evidence_scope"])
         self.assertEqual(sentinel["immutable_sentinel_source_sha"],
                          "e432d94ed0db22878f61f1a8af140d7d7de2288f")
