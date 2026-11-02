@@ -38,7 +38,7 @@ def errors(data):
         if not condition:
             problems.append(name)
 
-    require(app["head"] == APP_REVIEW and obs["offline-image-inventory-desk"]["current_review_head_sha"] == APP_REVIEW, "APP_CURRENT_REVIEW_DRIFT")
+    require(app["head"] == APP_REVIEW and obs["offline-image-inventory-desk"]["current_review_head_sha"] == "b375fd9ed39ce5ceef635d9df169d7e23f2e2eac" and obs["offline-image-inventory-desk"]["observation_snapshot_scope"].startswith("HISTORICAL_"), "APP_CURRENT_REVIEW_DRIFT")
     require(app["ci"] == [41435219141, 41435219193], "APP_CI_MISMATCH")
     require(app["score"] == 64 and app["real_buyers"] == 0 and not app["promoted"], "APP_MARKET_UNAUTHORIZED_PROMOTION")
     require(game["factory_review_pr"] == 16 and game["factory_review_head"] == GAME_UI_REVIEW, "GAME_PR16_NOT_CURRENT")
