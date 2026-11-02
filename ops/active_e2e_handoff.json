@@ -256,7 +256,7 @@
         "previous_workflow_run_id": 41371345733,
         "intermediate_head_sha": "b550faba73b16d64d85f7ef56f0080429068f00a",
         "intermediate_compare": "AHEAD_7_BEHIND_0_FROM_4D5C03C3",
-        "latest_compare": "AHEAD_13_BEHIND_0_FROM_DA2068A4",
+        "latest_compare": "AHEAD_21_BEHIND_0_FROM_E69E9B9B",
         "latest_scope": "HOSTED_WINDOWS_REAL_EXE_SCREENSHOTS_OBSERVED__UIA_TEXT_NOT_EXPOSED__WINDOW_CLIPPING_RISK__NO_HUMAN_OR_USER_PC_QA",
         "assembly_plan_source": "docs/SIGNAL_SPRINT_NEW_LINEAGE_ASSEMBLY_PLAN.md",
         "assembly_plan_result": "CHECK_ONLY_EXIT_2__NOT_READY_FOR_SDK__CAS_NOT_APPLIED__NO_MSIXVC",
@@ -278,8 +278,11 @@
           "authenticated_cas": false,
           "approved_version": false,
           "approved_four_gdk_assets": false,
-          "real_msixvc": false
-        }
+          "real_msixvc": false,
+          "historical_at_review_head": true,
+          "not_current_live_head": true
+        },
+        "historical_latest_compare": "AHEAD_13_BEHIND_0_FROM_DA2068A4"
       }
     },
     "gdk_package_next_stage": "BUILD_GDK_MSIXVC_FROM_PINNED_EXE_AFTER_CAS_AND_VERSION_ASSET_APPROVAL",
