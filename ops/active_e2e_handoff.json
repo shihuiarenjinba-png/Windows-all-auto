@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-02T14:52:00Z",
+  "updated_at_utc": "2026-11-02T15:43:00Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -1275,7 +1275,10 @@
     "app_physical_local_processed_count": 0,
     "pre_identity_archive_library_preservation_4_of_4": true,
     "prism_pr19_factory_pck_independent_bytes_pass": true,
-    "prism_pr19_qa_receipt_crosscheck_pass": true
+    "prism_pr19_qa_receipt_crosscheck_pass": true,
+    "prism_pr20_factory_pck_independent_bytes_pass": true,
+    "prism_pr20_qa10_receipt_crosscheck_pass": true,
+    "prism_pr20_physical_gui_pass": false
   },
   "user_id_requests": {
     "schema_version": 1,
@@ -5215,9 +5218,9 @@
   },
   "revision_review_reconciliation": {
     "schema_version": 1,
-    "observed_at_utc": "2026-11-02T14:52:00Z",
+    "observed_at_utc": "2026-11-02T15:43:00Z",
     "writer": "36_WINDOWS_E2E_ONLY",
-    "scope": "LIVE_PR19_PR16_QA9_APP76_REVIEW_HEADS__FACTORY_RUN_ARTIFACT_SEPARATION__NO_LOCAL_CAS_MSIX_OR_STORE_PROMOTION",
+    "scope": "PR20_FACTORY_AND_QA10_INDEPENDENT_BYTES_VERIFIED__PR16_LATEST_REVIEW_CI__PR19_QA9_HISTORICAL__PHYSICAL_CAS_MSIX_HOLD",
     "policy": "PR_HEAD_IS_MUTABLE_REVIEW_CODE__SOURCE_SHA_AND_REQUEST_ID_ARE_IMMUTABLE_PRODUCT_BINDINGS__NO_AUTO_REBIND",
     "observations": {
       "offline-image-inventory-desk": {
@@ -5721,6 +5724,71 @@
         "real_factory_export_exe_sha256": "66b26ad96df7458ea917b632a73ac7c88bb058db24dbd11a457fd50435ab7b13",
         "real_factory_export_pck_sha256": "4036486c320c858b06a43ce632d063a6ab034f273b5f70e7861a5b663d1406fc",
         "real_factory_export_manifest_sha256": "5d06d46fc2a3a19325e77edc311f4dcb58d456c0dc9df5e872242b8c6098f11e"
+      },
+      "signal-sprint-ui-revision-pr16-latest": {
+        "repository": "shihuiarenjinba-png/AI-Game-Factory",
+        "draft_pr": 16,
+        "review_head_sha": "8e6a8c10a2678b76a2eddc897e5fea8cf7d5dc98",
+        "ci_runs": [
+          41470115915,
+          41470116296
+        ],
+        "hosted_gui_artifact_id": 13154872780,
+        "artifact_run_id": 41470116296,
+        "artifact_metadata_digest": "sha256:625d0ef59eb5d2a113a37262c962f56cce68aed0118a5e788cf0922d4a796b14",
+        "immutable_original_source_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
+        "immutable_original_request_id": "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e",
+        "artifact_run_head": "a1af3448cd2edeae5bd54cbaca486a53fd991944",
+        "review_head_is_original_source": false,
+        "physical_windows_gui": false,
+        "cas_applied": false,
+        "gdk_msixvc_built": false,
+        "historical_pr16_head_sha": "7f43da2b57b7e3ac3bf9ab22dbf43984c5ba6620",
+        "historical_hosted_gui_artifact_id": 13141335497
+      },
+      "prism-route-3d-consumer-pr20": {
+        "repository": "shihuiarenjinba-png/3d-game-factory",
+        "draft_pr": 20,
+        "source_sha": "f015db1762fb63696bcca304028871235142bf3d",
+        "request_id": "3d-prism-route-3d-f015db1762fb",
+        "review_head_sha": "f015db1762fb63696bcca304028871235142bf3d",
+        "quality_ci_run_id": 41463172000,
+        "quality_ci_artifact_count": 0,
+        "export_run_id": 41463172094,
+        "export_artifact_id": 13149467845,
+        "archive_sha256": "a04de188d2dd8c3bfbf454cffe77a4eb58fd99e0c5a7e247d95062523e2489c7",
+        "exe_sha256": "66b26ad96df7458ea917b632a73ac7c88bb058db24dbd11a457fd50435ab7b13",
+        "pck_sha256": "10acb61a586caa55b2da59ed0aae62f0952cfbaf7a69cac3cf219f3ae2a982c9",
+        "manifest_sha256": "34528d42e14378b6236dfb95428ee727a4c6304be0021c5d1325b8b433b8766b",
+        "independent_factory_byte_rehash_by_36": true,
+        "legacy_gate1_identity_return_commit": "11417b75636ee18816028ffd5221884c4c9a9836",
+        "legacy_identity_is_pr20_cas": false,
+        "new_revision_cas": false,
+        "approved_version": false,
+        "signed_msix": false,
+        "physical_windows_gui": false
+      },
+      "prism-route-3d-consumer-qa-pr10": {
+        "repository": "shihuiarenjinba-png/3d-build-qa",
+        "draft_pr": 10,
+        "review_head_sha": "e2f05d844d155b9a3a8bd5b493f8d96fef659de3",
+        "ci_runs": [
+          41463704723,
+          41463704874
+        ],
+        "factory_artifact_id": 13149467845,
+        "factory_run_id": 41463172094,
+        "hosted_qa_artifact_id": 13150622623,
+        "hosted_qa_run_id": 41463704874,
+        "hosted_qa_zip_sha256": "789ab8765a905e7e8e4a2500f2136590bbbcae212b6247c9e0f2c4b6814c83ea",
+        "receipt_source_sha": "f015db1762fb63696bcca304028871235142bf3d",
+        "receipt_request_id": "3d-prism-route-3d-f015db1762fb",
+        "receipt_pck_sha256": "10acb61a586caa55b2da59ed0aae62f0952cfbaf7a69cac3cf219f3ae2a982c9",
+        "screenshots_verified_by_36": 7,
+        "hosted_software_pck_runtime_reported_pass": true,
+        "physical_windows_gui_pass": false,
+        "independent_human_30s_90s": false,
+        "store_screenshot_quality_approved": false
       }
     },
     "cross_lane_gates": {
@@ -5750,9 +5818,12 @@
       "focus_user_pc_archive_verified": false,
       "prism_pr9_cloud_qa_ci_pass": true,
       "prism_pr9_physical_qa_pass": false,
-      "game_pr16_physical_gui_pass": false
+      "game_pr16_physical_gui_pass": false,
+      "prism_pr10_cloud_qa_ci_pass": true,
+      "prism_pr10_physical_qa_pass": false,
+      "prism_pr20_factory_independent_bytes_pass": true
     },
-    "next_action": "PR16_PR18_QA9_CLOUD_REVIEW_ONLY__FOCUS_EXPIRED_ACTIONS_NO_DOWNLOAD__LIBRARY_4_OF_4_PRESERVED_NOT_USER_PC__EXACT_3_SHA_REUSE_SCHEDULER_RECEIPT_PHYSICAL_HOLD__NO_CAS_VERSION_OR_STORE",
+    "next_action": "PR20_QA10_INDEPENDENT_BYTES_PASS__PHYSICAL_WINDOWS_HUMAN_DPI_CAS_VERSION_MSIX_BACKLOG_CHECKER_HOLD__GAME_PR16_HOSTED_ONLY__APP_IDENTITY_2_OF_4_LOCAL_0",
     "artifact_byte_preservation_20261102": {
       "observed_at_utc": "2026-11-02T01:38:13.216Z",
       "owner": "36_WINDOWS_E2E_ONLY",
@@ -6137,7 +6208,7 @@
       "historical_snapshot": true
     },
     "current_four_lane_observation": {
-      "observed_at_utc": "2026-11-02T14:52:00Z",
+      "observed_at_utc": "2026-11-02T15:43:00Z",
       "writer": "36_WINDOWS_E2E_ONLY",
       "game": {
         "pr": 10,
@@ -6151,44 +6222,46 @@
         "local_pass": false,
         "cas": false,
         "msixvc": false,
-        "factory_review_head": "7f43da2b57b7e3ac3bf9ab22dbf43984c5ba6620",
+        "factory_review_head": "8e6a8c10a2678b76a2eddc897e5fea8cf7d5dc98",
         "factory_artifact_run_head": "a1af3448cd2edeae5bd54cbaca486a53fd991944",
         "factory_review_pr": 16,
         "factory_review_ci": [
-          41443324856,
-          41443324988
+          41470115915,
+          41470116296
         ],
         "review_only_ui_revision": true,
-        "previous_factory_review_head": "8927cd072d18c95a0940b4e0d7bca26359de20e9",
-        "hosted_gui_artifact_id": 13141335497,
-        "hosted_gui_artifact_scope": "HOSTED_GUI_REVIEW_ONLY__NOT_USER_PC_OR_HUMAN_QA",
+        "previous_factory_review_head": "7f43da2b57b7e3ac3bf9ab22dbf43984c5ba6620",
+        "hosted_gui_artifact_id": 13154872780,
+        "hosted_gui_artifact_scope": "CURRENT_PR16_HOSTED_WINDOWS_GUI_ARTIFACT__CHECK_ONLY__NOT_PHYSICAL_PC__NOT_ORIGINAL_IMMUTABLE_SOURCE",
         "historical_gui_30_MOVES_failure_and_retry": "SUPERVISOR_REPORTED_30_MOVE_FAILURE_THEN_CHECK_ONLY_RETRY_PASS__NOT_INDEPENDENT_36_PHYSICAL_QA",
-        "physical_gui_pass": false
+        "physical_gui_pass": false,
+        "historical_hosted_gui_artifact_id": 13141335497,
+        "factory_review_ci_scope": "EXACT_PR16_REVIEW_HEAD_CI_SUCCESS__NO_LOCAL_GUI_OR_CAS"
       },
       "three_d": {
-        "factory_pr": 19,
-        "head": "0878f48c79073596e30fed37a5703e0826389862",
-        "new_request_id": "3d-prism-route-3d-0878f48c7907",
+        "factory_pr": 20,
+        "head": "f015db1762fb63696bcca304028871235142bf3d",
+        "new_request_id": "3d-prism-route-3d-f015db1762fb",
         "ci": [
-          41444886971
+          41463172000
         ],
         "legacy_identity_return_commit": "11417b75636ee18816028ffd5221884c4c9a9836",
         "new_cas": false,
         "physical_gui": false,
         "signed_msix": false,
         "legacy_identity_cas_is_new_revision": false,
-        "source_sha": "0878f48c79073596e30fed37a5703e0826389862",
+        "source_sha": "f015db1762fb63696bcca304028871235142bf3d",
         "review_head_is_approved_new_identity": false,
-        "artifact_id": 13142680551,
-        "artifact_run_id": 41444879105,
-        "artifact_metadata_digest": "sha256:447c18e789acc1b1ca12c08bdce8b3cda030baf0c7abc70a452bde7e0c748800",
+        "artifact_id": 13149467845,
+        "artifact_run_id": 41463172094,
+        "artifact_metadata_digest": "sha256:a04de188d2dd8c3bfbf454cffe77a4eb58fd99e0c5a7e247d95062523e2489c7",
         "artifact_metadata_expired": false,
-        "artifact_expires_at_utc": "2026-11-09T12:28:29Z",
-        "qa_pr": 9,
-        "qa_head": "1a16b2a69083ca5698f29388c0eb59875a612450",
+        "artifact_expires_at_utc": "2026-11-09T14:34:59Z",
+        "qa_pr": 10,
+        "qa_head": "e2f05d844d155b9a3a8bd5b493f8d96fef659de3",
         "qa_ci": [
-          41454758338,
-          41454758366
+          41463704723,
+          41463704874
         ],
         "historical_pr18_build": {
           "review_head_sha": "3c5a1e6837118a73609a0b9c9b7b54dfa4c14f0d",
@@ -6199,16 +6272,32 @@
           "scope": "IMMUTABLE_PR18_BUILD_ARTIFACT__NOT_PR19_CI_OR_NEW_PCK_PROOF"
         },
         "factory_quality_ci_artifact_count": 0,
-        "factory_quality_ci_artifact_status": "NO_ARTIFACT_IN_PR19_QUALITY_CI_RUN_41444886971",
+        "factory_quality_ci_artifact_status": "PR20_QUALITY_CI_RUN_41463172000_ARTIFACTS_0__EXPORT_SEPARATE_RUN",
         "qa9_referenced_factory_artifact_id": 13142680551,
-        "qa9_referenced_factory_artifact_scope": "QA9_PIN_AND_36_INDEPENDENT_FACTORY_ZIP_EXE_PCK_MANIFEST_REHASH__SEPARATE_FACTORY_EXPORT_RUN__NOT_PR19_QUALITY_CI_OR_PHYSICAL_WINDOWS",
+        "qa9_referenced_factory_artifact_scope": "HISTORICAL_PR19_ONLY__NOT_PR20",
         "qa9_runtime_artifact_id": 13145583388,
-        "qa9_runtime_artifact_scope": "HOSTED_SOFTWARE_RUNTIME_QA_ONLY__NOT_PHYSICAL_WINDOWS_OR_NEW_PR19_FACTORY_BUILD",
+        "qa9_runtime_artifact_scope": "HISTORICAL_PR19_QA9_ONLY",
         "pr19_new_pck_verified_by_36": true,
         "qa9_physical_receipt_verified": false,
         "factory_export_independent_zip_crc_pass": true,
         "qa9_receipt_independently_downloaded_by_36": true,
-        "qa9_receipt_source_request_pck_sha_match": true
+        "qa9_receipt_source_request_pck_sha_match": true,
+        "historical_pr19_byte_proof": {
+          "factory_pr": 19,
+          "source_sha": "0878f48c79073596e30fed37a5703e0826389862",
+          "factory_artifact_id": 13142680551,
+          "qa_pr": 9,
+          "qa_artifact_id": 13145583388,
+          "independent_36_bytes_verified": true,
+          "scope": "HISTORICAL_ONLY__NOT_PR20_PROVENANCE"
+        },
+        "qa10_referenced_factory_artifact_id": 13149467845,
+        "qa10_runtime_artifact_id": 13150622623,
+        "pr20_factory_bytes_independently_verified_by_36": true,
+        "pr20_qa10_receipt_bytes_independently_verified_by_36": true,
+        "pr20_factory_qa10_source_request_exe_pck_manifest_match": true,
+        "pr20_qa10_screenshots_verified": 7,
+        "qa10_physical_receipt_verified": false
       },
       "app": {
         "image_pr": 76,
@@ -6630,6 +6719,203 @@
         "github_backlog_real_product": false,
         "local_checker": false,
         "store_submission": false,
+        "sale_ready": false
+      }
+    },
+    "historical_four_lane_observation_20261102_2350": {
+      "observed_at_utc": "2026-11-02T14:52:00Z",
+      "writer": "36_WINDOWS_E2E_ONLY",
+      "game": {
+        "pr": 10,
+        "head": "b53f89fc0b59871ba8f5cc7c62703bfdcc20d53a",
+        "ci": 41412494345,
+        "original_source_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
+        "original_request_id": "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e",
+        "new_lineage_request_id": "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e-reissue-sprint-41361263698-41361263698",
+        "new_lineage_artifact_id": 13105352227,
+        "hosted_gui": "CURRENT_PR16_HOSTED_GUI_CI_SUCCESS__PRIOR_GEOMETRY_HOLD_HISTORICAL__PHYSICAL_WINDOWS_UNVERIFIED",
+        "local_pass": false,
+        "cas": false,
+        "msixvc": false,
+        "factory_review_head": "7f43da2b57b7e3ac3bf9ab22dbf43984c5ba6620",
+        "factory_artifact_run_head": "a1af3448cd2edeae5bd54cbaca486a53fd991944",
+        "factory_review_pr": 16,
+        "factory_review_ci": [
+          41443324856,
+          41443324988
+        ],
+        "review_only_ui_revision": true,
+        "previous_factory_review_head": "8927cd072d18c95a0940b4e0d7bca26359de20e9",
+        "hosted_gui_artifact_id": 13141335497,
+        "hosted_gui_artifact_scope": "HOSTED_GUI_REVIEW_ONLY__NOT_USER_PC_OR_HUMAN_QA",
+        "historical_gui_30_MOVES_failure_and_retry": "SUPERVISOR_REPORTED_30_MOVE_FAILURE_THEN_CHECK_ONLY_RETRY_PASS__NOT_INDEPENDENT_36_PHYSICAL_QA",
+        "physical_gui_pass": false
+      },
+      "three_d": {
+        "factory_pr": 19,
+        "head": "0878f48c79073596e30fed37a5703e0826389862",
+        "new_request_id": "3d-prism-route-3d-0878f48c7907",
+        "ci": [
+          41444886971
+        ],
+        "legacy_identity_return_commit": "11417b75636ee18816028ffd5221884c4c9a9836",
+        "new_cas": false,
+        "physical_gui": false,
+        "signed_msix": false,
+        "legacy_identity_cas_is_new_revision": false,
+        "source_sha": "0878f48c79073596e30fed37a5703e0826389862",
+        "review_head_is_approved_new_identity": false,
+        "artifact_id": 13142680551,
+        "artifact_run_id": 41444879105,
+        "artifact_metadata_digest": "sha256:447c18e789acc1b1ca12c08bdce8b3cda030baf0c7abc70a452bde7e0c748800",
+        "artifact_metadata_expired": false,
+        "artifact_expires_at_utc": "2026-11-09T12:28:29Z",
+        "qa_pr": 9,
+        "qa_head": "1a16b2a69083ca5698f29388c0eb59875a612450",
+        "qa_ci": [
+          41454758338,
+          41454758366
+        ],
+        "historical_pr18_build": {
+          "review_head_sha": "3c5a1e6837118a73609a0b9c9b7b54dfa4c14f0d",
+          "source_sha": "3c5a1e6837118a73609a0b9c9b7b54dfa4c14f0d",
+          "artifact_id": 13130487252,
+          "artifact_run_id": 41422372852,
+          "artifact_metadata_digest": "sha256:970288793436900405f9986f2da4c403345792fb7563398dfb21e9abaeaf3836",
+          "scope": "IMMUTABLE_PR18_BUILD_ARTIFACT__NOT_PR19_CI_OR_NEW_PCK_PROOF"
+        },
+        "factory_quality_ci_artifact_count": 0,
+        "factory_quality_ci_artifact_status": "NO_ARTIFACT_IN_PR19_QUALITY_CI_RUN_41444886971",
+        "qa9_referenced_factory_artifact_id": 13142680551,
+        "qa9_referenced_factory_artifact_scope": "QA9_PIN_AND_36_INDEPENDENT_FACTORY_ZIP_EXE_PCK_MANIFEST_REHASH__SEPARATE_FACTORY_EXPORT_RUN__NOT_PR19_QUALITY_CI_OR_PHYSICAL_WINDOWS",
+        "qa9_runtime_artifact_id": 13145583388,
+        "qa9_runtime_artifact_scope": "HOSTED_SOFTWARE_RUNTIME_QA_ONLY__NOT_PHYSICAL_WINDOWS_OR_NEW_PR19_FACTORY_BUILD",
+        "pr19_new_pck_verified_by_36": true,
+        "qa9_physical_receipt_verified": false,
+        "factory_export_independent_zip_crc_pass": true,
+        "qa9_receipt_independently_downloaded_by_36": true,
+        "qa9_receipt_source_request_pck_sha_match": true
+      },
+      "app": {
+        "image_pr": 76,
+        "head": "886b9214b9cc79b35403ca168ca09df7a2e12404",
+        "ci": [
+          41449337747,
+          41449337454
+        ],
+        "score": 64,
+        "real_buyers": 0,
+        "market_fit": "HOLD",
+        "promoted": false,
+        "previous_review_head": "7ee78dbdaa075afec3e972bee79d7bbb22101249",
+        "review_unsigned_exe_artifact_id": 13143283530,
+        "review_unsigned_exe_scope": "HOSTED_UNSIGNED_REVIEW_EXE_ARTIFACT__NOT_CLOUD_BUYER_TASK_ARTIFACT__NOT_APPROVED_SOURCE_OR_MSIX",
+        "old_immutable_request_id": "app-offline-image-inventory-desk-16b6a772952c",
+        "new_revision_promoted": false,
+        "cloud_buyer_task_artifact_id": 13144232281,
+        "cloud_buyer_task_is_human_qa": false,
+        "physical_os_dpi_pass": false
+      },
+      "windows_e2e": {
+        "base_pr": 145,
+        "base_head": "95097a5f312b7debd590def4f2ff591e56377850",
+        "batch_cloud_discovered": 4,
+        "batch_github_identity_returned": 2,
+        "batch_local_processed": 0,
+        "batch_local_discovered": 0,
+        "next_index_is_cloud_logical": true,
+        "archive_cloud_verified": 4,
+        "local_code_sync": "CLOUD_PASS_ONLY",
+        "physical_local_sync": false,
+        "task_scheduler_proof": false,
+        "real_msix": false,
+        "backlog": false,
+        "checker": false,
+        "gui_install": false,
+        "e2e_pass": false,
+        "focus_actions_artifact_currently_available": false,
+        "focus_library_archive_preserved": true,
+        "focus_user_pc_archive_rehash": false
+      },
+      "snapshot_type": "HISTORICAL_PR19_QA9_PR16_BEFORE_PR20_QA10"
+    },
+    "latest_20261103_0043_pr20_qa10_independent_byte_provenance": {
+      "observed_at_utc": "2026-11-02T15:43:00Z",
+      "writer": "36_WINDOWS_E2E_ONLY",
+      "basis": "GITHUB_ARTIFACT_INDEPENDENT_DOWNLOAD_ZIP_SHA256_CRC_MEMBER_SHA256_AND_QA10_RECEIPT_SCREENSHOT_CROSSCHECK",
+      "factory": {
+        "pr": 20,
+        "source_sha": "f015db1762fb63696bcca304028871235142bf3d",
+        "request_id": "3d-prism-route-3d-f015db1762fb",
+        "quality_ci_run_id": 41463172000,
+        "quality_ci_artifact_count": 0,
+        "export_run_id": 41463172094,
+        "artifact_id": 13149467845,
+        "archive_sha256": "a04de188d2dd8c3bfbf454cffe77a4eb58fd99e0c5a7e247d95062523e2489c7",
+        "archive_size_bytes": 37794197,
+        "crc_pass": true,
+        "exact_members": [
+          "candidate.exe",
+          "candidate.pck",
+          "export-evidence.json"
+        ],
+        "exe_sha256": "66b26ad96df7458ea917b632a73ac7c88bb058db24dbd11a457fd50435ab7b13",
+        "exe_bytes": 84214784,
+        "pck_sha256": "10acb61a586caa55b2da59ed0aae62f0952cfbaf7a69cac3cf219f3ae2a982c9",
+        "pck_bytes": 6982288,
+        "manifest_sha256": "34528d42e14378b6236dfb95428ee727a4c6304be0021c5d1325b8b433b8766b",
+        "manifest_source_sha": "f015db1762fb63696bcca304028871235142bf3d",
+        "manifest_request_id": "3d-prism-route-3d-f015db1762fb",
+        "manifest_build_head": "f015db1762fb63696bcca304028871235142bf3d",
+        "independent_36_bytes_verified": true
+      },
+      "qa": {
+        "pr": 10,
+        "head_sha": "e2f05d844d155b9a3a8bd5b493f8d96fef659de3",
+        "ci_runs": [
+          41463704723,
+          41463704874
+        ],
+        "artifact_id": 13150622623,
+        "run_id": 41463704874,
+        "archive_sha256": "789ab8765a905e7e8e4a2500f2136590bbbcae212b6247c9e0f2c4b6814c83ea",
+        "crc_pass": true,
+        "receipt_file": "pck-runtime-independent-receipt.json",
+        "receipt_source_sha": "f015db1762fb63696bcca304028871235142bf3d",
+        "receipt_request_id": "3d-prism-route-3d-f015db1762fb",
+        "receipt_factory_artifact_id": 13149467845,
+        "receipt_factory_run_id": 41463172094,
+        "receipt_zip_sha256": "a04de188d2dd8c3bfbf454cffe77a4eb58fd99e0c5a7e247d95062523e2489c7",
+        "receipt_exe_sha256": "66b26ad96df7458ea917b632a73ac7c88bb058db24dbd11a457fd50435ab7b13",
+        "receipt_pck_sha256": "10acb61a586caa55b2da59ed0aae62f0952cfbaf7a69cac3cf219f3ae2a982c9",
+        "receipt_manifest_sha256": "34528d42e14378b6236dfb95428ee727a4c6304be0021c5d1325b8b433b8766b",
+        "screenshot_count": 7,
+        "screenshot_dimensions": [
+          1024,
+          768
+        ],
+        "screenshot_sha_and_bytes_match": true,
+        "hosted_software_runtime_reported_pass": true,
+        "hosted_runtime_not_36_executed": true,
+        "physical_windows_gui_verified": false
+      },
+      "historical": {
+        "pr19_source_sha": "0878f48c79073596e30fed37a5703e0826389862",
+        "pr19_factory_artifact_id": 13142680551,
+        "pr19_qa_artifact_id": 13145583388,
+        "pr19_independent_36_pass": true,
+        "pr18_artifact_id": 13130487252,
+        "legacy_identity_commit": "11417b75636ee18816028ffd5221884c4c9a9836",
+        "legacy_identity_is_pr20_cas": false
+      },
+      "gates": {
+        "new_revision_cas": false,
+        "package_version_approved": false,
+        "signed_msix": false,
+        "physical_windows_ja_en_125_150": false,
+        "uncoached_human_30s": false,
+        "real_wall_clock_90s": false,
+        "store_screenshot_quality_approved": false,
         "sale_ready": false
       }
     }
