@@ -149,8 +149,11 @@ class ActiveE2EGameLedgerContract(unittest.TestCase):
         self.assertEqual(pipeline["identity_status"], "PRE_IDENTITY_READY__NO_APPROVED_FILE")
         self.assertIsNone(pipeline["identity_return_commit_sha"])
         self.assertEqual(pipeline["gates"]["real_msix_or_gdk"], "NOT_BUILT")
+        self.assertTrue(data["last_36_execution"]["factory_image_current"]["historical_snapshot"])
         self.assertEqual(data["last_36_execution"]["factory_image_current"]["observed_head"],
-                         image["current_review_head_sha"])
+                         "9407225df68db3fb9c4e49b6d49db431c2c9094a")
+        self.assertNotEqual(data["last_36_execution"]["factory_image_current"]["observed_head"],
+                            image["current_review_head_sha"])
 
     def test_jp_bookkeeping_review_head_does_not_create_source_or_tax_pass(self):
         data = self.data
