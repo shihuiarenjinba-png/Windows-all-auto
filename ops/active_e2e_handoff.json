@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-02T03:33:20Z",
+  "updated_at_utc": "2026-11-02T03:38:00Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -3790,7 +3790,7 @@
     ],
     "accounting_market_scope": "FOUR_DRAFT_CANDIDATES_JP_US_SEPARATE__NO_PROMOTION_NO_SOURCE_REQUEST_NO_USER_ID_REQUEST",
     "accounting_tax_source_review": "NTA_2026_04_01_AND_IRS_P946_2025_REFERENCES_CHECKED__NOT_IMPLEMENTATION_COMPLIANCE_PASS",
-    "accounting_jp_bookkeeping_head_observed": "32c5976971d1494e205156b8ad27c89598cb2f46",
+    "accounting_jp_bookkeeping_head_observed": "50d4a9c9e079b9e37f96944503e7f79aabd5c68b",
     "accounting_receipt_pdf_gate": "PR122_8_NEW_REGRESSIONS_PASS__467_TESTS_WINDOWS_UBUNTU__PHYSICAL_QA_HOLD",
     "accounting_receipt_pdf_pr": 122,
     "accounting_receipt_pdf_head": "8a5e5f01c0b2a5496da90ab6dab073523cd74e28",
@@ -3961,15 +3961,16 @@
     "three_d_qa_pr6_latest": {
       "repository": "shihuiarenjinba-png/3d-build-qa",
       "draft_pr": 6,
-      "review_head_sha": "4b58f9d3c2ff75be9627f3e8a4dd20194460111d",
-      "previous_head_sha": "6c50e83eee09158302a7a2dd70d1fd4767b23412",
-      "compare": "AHEAD_4_BEHIND_0",
-      "ci_run_id": 41377481988,
+      "review_head_sha": "891dba6ebb769c9a5925e266b28425f7ec605777",
+      "previous_head_sha": "4b58f9d3c2ff75be9627f3e8a4dd20194460111d",
+      "compare": "AHEAD_4_BEHIND_0_FROM_4B58F9D3",
+      "ci_run_id": 41383754959,
       "ci_conclusion": "SUCCESS",
-      "scope": "HISTORICAL_CUSTODY_CHECK_ONLY__NO_NEW_SENTINEL_IDENTITY_CAS",
+      "scope": "PCK_RESOURCE_INVENTORY_AND_SOURCE_RUNTIME_CI_ONLY__NO_NEW_SENTINEL_IDENTITY_CAS",
       "physical_windows": "NOT_EXECUTED",
       "new_sentinel_cas_applied": false,
-      "real_signed_msix": "NOT_BUILT"
+      "real_signed_msix": "NOT_BUILT",
+      "historical_previous_head_sha": "6c50e83eee09158302a7a2dd70d1fd4767b23412"
     }
   },
   "post_identity_pipeline": {
@@ -4947,10 +4948,10 @@
         "status": "NOT_YET_REQUIRED",
         "source_sha": null,
         "request_id": null,
-        "factory_head_observed": "32c5976971d1494e205156b8ad27c89598cb2f46",
-        "observed_factory_pr_head": "32c5976971d1494e205156b8ad27c89598cb2f46",
+        "factory_head_observed": "50d4a9c9e079b9e37f96944503e7f79aabd5c68b",
+        "observed_factory_pr_head": "50d4a9c9e079b9e37f96944503e7f79aabd5c68b",
         "historical_factory_head_observed": "13d1a976757e86587fb11202ebb35fd5ac113cb8",
-        "previous_observed_factory_pr_head": "9495dde15b4c60fb9c7447fca0a94f15edcd0b4d",
+        "previous_observed_factory_pr_head": "32c5976971d1494e205156b8ad27c89598cb2f46",
         "receipt_queue_scope": "CURRENT_QUEUE_ALL_DATES_NOT_HISTORICAL_AS_OF",
         "unprocessed_receipts_as_of_month_end": null
       },
@@ -5102,11 +5103,11 @@
         "repository": "shihuiarenjinba-png/AI-App-Factory",
         "draft_pr": 61,
         "review_branch": "codex/app-jp-bookkeeping-desk-20261031",
-        "current_review_head_sha": "32c5976971d1494e205156b8ad27c89598cb2f46",
-        "previous_review_head_sha": "24e8beade64177cafd0d545d84392304b53dfe51",
+        "current_review_head_sha": "50d4a9c9e079b9e37f96944503e7f79aabd5c68b",
+        "previous_review_head_sha": "32c5976971d1494e205156b8ad27c89598cb2f46",
         "exact_head_ci": [
           {
-            "run_id": 41375747240,
+            "run_id": 41381054547,
             "workflow": "Factory core CI",
             "conclusion": "SUCCESS"
           }
@@ -5117,17 +5118,18 @@
         "country": "Japan",
         "locale": "ja-JP",
         "currency": "JPY",
-        "review_scope": "MONTH_END_RECEIPT_QUEUE_AND_APPEND_ONLY_HISTORY__LOCAL_ORIGINAL_BYTES_CUSTODY__NOT_TAX_COMPLIANCE",
+        "review_scope": "JP_RECEIPT_BACKUP_AND_BOOK_SELECTION_CODE__CLOUD_TESTS_ONLY__NO_TAX_COMPLIANCE",
         "pending_receipts_as_of_month_end": null,
         "tax_compliance": "NOT_VERIFIED__REVIEW_REQUIRED",
         "market_fit_gate": "HOLD_NOT_PROMOTED",
         "identity_status": "NOT_YET_REQUIRED",
         "package_gate": "HOLD",
         "store_submission": "NOT_PERFORMED",
-        "review_head_compare": "AHEAD_14_BEHIND_0_FROM_24E8BE",
-        "current_review_scope": "RECEIPT_EVENT_HISTORY_INTEGRATED__ORIGINAL_BYTES_CUSTODY_AND_RESTART_HASH_CHECKS__CANDIDATE_ONLY__NO_MARKET_FIT_OR_TAX_COMPLIANCE",
+        "review_head_compare": "AHEAD_14_BEHIND_0_FROM_32C59769",
+        "current_review_scope": "BOOK_SELECTION_AND_RECEIPT_BACKUP_CODE_WITH_TESTS__CANDIDATE_ONLY__NOT_AUTHENTICATED_MARKET_FIT_OR_PHYSICAL_WINDOWS",
         "physical_windows_gui": "NOT_VERIFIED",
-        "original_receipt_bytes_review": "FACTORY_PR61_SOURCE_AND_TESTS_ONLY__NOT_36_PHYSICAL_WINDOWS_REHASH"
+        "original_receipt_bytes_review": "FACTORY_PR61_SOURCE_AND_TESTS_ONLY__NOT_36_PHYSICAL_WINDOWS_REHASH",
+        "historical_previous_review_head_sha": "24e8beade64177cafd0d545d84392304b53dfe51"
       },
       "prism-route-3d-sentinel": {
         "repository": "shihuiarenjinba-png/Repository-Provisioner-3D",
@@ -5190,18 +5192,19 @@
         "independent_3d_qa_pr6": {
           "repository": "shihuiarenjinba-png/3d-build-qa",
           "draft_pr": 6,
-          "review_head_sha": "4b58f9d3c2ff75be9627f3e8a4dd20194460111d",
-          "previous_head_sha": "653e652694b861f093fce73c5a3bf6115d3eb673",
-          "compare": "AHEAD_5_BEHIND_0_FROM_653E6526",
-          "ci_run_id": 41377481988,
+          "review_head_sha": "891dba6ebb769c9a5925e266b28425f7ec605777",
+          "previous_head_sha": "4b58f9d3c2ff75be9627f3e8a4dd20194460111d",
+          "compare": "AHEAD_4_BEHIND_0_FROM_4B58F9D3",
+          "ci_run_id": 41383754959,
           "ci_conclusion": "SUCCESS",
-          "scope": "HISTORICAL_SENTINEL_BYTE_CUSTODY_AND_FAIL_CLOSED_PRODUCT_GATE__NOT_NEW_REVISION_IDENTITY_CAS",
+          "scope": "SENTINEL_PCK_RESOURCE_INVENTORY_AND_90S_SOURCE_RUNTIME_CI_ONLY__NO_NEW_REVISION_CAS_OR_REAL_MSIX",
           "physical_windows": "NOT_EXECUTED",
           "new_sentinel_cas_applied": false,
           "real_signed_msix": "NOT_BUILT",
           "prescribed_receipt": "evidence/prism-sentinel-preserved-zip-recheck-20261102-1036jst.json",
           "receipt_evidence_scope": "24_LANE_PRESERVED_FACTORY_ZIP_INDEPENDENT_REHASH__NOT_FRESH_GITHUB_DOWNLOAD__NOT_36_REHASH",
-          "execution_result": "CI_SUCCESS__24_LANE_PHYSICAL_WINDOWS_GUI_NOT_RUN__NEW_SENTINEL_CAS_HOLD"
+          "execution_result": "CI_SUCCESS__PHYSICAL_WINDOWS_GUI_NOT_RUN__NEW_SENTINEL_CAS_HOLD",
+          "historical_previous_head_sha": "653e652694b861f093fce73c5a3bf6115d3eb673"
         }
       },
       "signal-sprint": {
@@ -5374,24 +5377,26 @@
       "store_submission": "NOT_PERFORMED"
     },
     "review_head_recheck": {
-      "observed_at_utc": "2026-11-02T02:33:48.102Z",
+      "observed_at_utc": "2026-11-02T03:38:00Z",
       "jp_bookkeeping": {
-        "previous_head": "24e8beade64177cafd0d545d84392304b53dfe51",
-        "current_head": "32c5976971d1494e205156b8ad27c89598cb2f46",
+        "previous_head": "32c5976971d1494e205156b8ad27c89598cb2f46",
+        "current_head": "50d4a9c9e079b9e37f96944503e7f79aabd5c68b",
         "ahead": 14,
         "behind": 0,
-        "ci_run_id": 41375747240,
+        "ci_run_id": 41381054547,
         "ci": "SUCCESS",
-        "promotion": "CANDIDATE_ONLY"
+        "promotion": "CANDIDATE_ONLY",
+        "historical_previous_head": "24e8beade64177cafd0d545d84392304b53dfe51"
       },
       "three_d_qa": {
-        "previous_head": "653e652694b861f093fce73c5a3bf6115d3eb673",
-        "current_head": "4b58f9d3c2ff75be9627f3e8a4dd20194460111d",
-        "ahead": 5,
+        "previous_head": "4b58f9d3c2ff75be9627f3e8a4dd20194460111d",
+        "current_head": "891dba6ebb769c9a5925e266b28425f7ec605777",
+        "ahead": 4,
         "behind": 0,
-        "ci_run_id": 41377481988,
+        "ci_run_id": 41383754959,
         "ci": "SUCCESS",
-        "new_revision_identity_cas": "HOLD"
+        "new_revision_identity_cas": "HOLD",
+        "historical_previous_head": "653e652694b861f093fce73c5a3bf6115d3eb673"
       },
       "game_factory": {
         "previous_head": "a1af3448cd2edeae5bd54cbaca486a53fd991944",
