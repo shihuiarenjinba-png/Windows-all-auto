@@ -12,7 +12,7 @@ QA = "1a16b2a69083ca5698f29388c0eb59875a612450"
 def validate(data):
     r = data["revision_review_reconciliation"]
     current = r["historical_four_lane_observation_20261102_2350"]
-    app = r["observations"]["offline-image-inventory-desk"]
+    app = r["historical_image_review_observation_886b9214"]
     qa = r["observations"]["prism-route-3d-consumer-qa-pr9"]
     latest = r["latest_20261102_2241_review_provenance"]
     assert latest["writer"] == "36_WINDOWS_E2E_ONLY"
@@ -61,10 +61,10 @@ class LatestReviewMetadataFailClosed(unittest.TestCase):
             validate(broken)
 
     def test_cloud_buyer_task_not_real_buyer(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["observations"]["offline-image-inventory-desk"].__setitem__("independent_real_buyer_responses_verified", True))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_image_review_observation_886b9214"].__setitem__("independent_real_buyer_responses_verified", True))
 
     def test_unsigned_review_exe_not_approved_source(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["observations"]["offline-image-inventory-desk"].__setitem__("current_review_revision_promoted", True))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_image_review_observation_886b9214"].__setitem__("current_review_revision_promoted", True))
 
     def test_qa_contract_not_physical_receipt(self):
         self.reject(lambda d: d["revision_review_reconciliation"]["observations"]["prism-route-3d-consumer-qa-pr9"].__setitem__("physical_capture_receipt_present", True))
