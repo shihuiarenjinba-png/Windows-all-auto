@@ -42,7 +42,7 @@ class ActiveE2EGameLedgerContract(unittest.TestCase):
         lineage = active["provisioner_game_gdk_pr"]["new_lineage_contract"]
         self.assertEqual(lineage["current_head"], CURRENT)
         self.assertEqual(lineage["workflow_run_id"], 41412494345)
-        self.assertEqual(lineage["compare_to_prior_head"], "AHEAD_21_BEHIND_0_FROM_E69E9B9B")
+        self.assertEqual(lineage["compare_to_prior_head"], "AHEAD_4_BEHIND_0_FROM_D77CF889")
         self.assertEqual(data["latest_provisioner_heads_observed"]["game"]["previous_observation_sha"], PREVIOUS)
         self.assertEqual(data["last_36_execution"]["game_provisioner_pr10_current"]["head_sha"], CURRENT)
         self.assertEqual(active["provisioner_package_safety"]["ci_run_id"], 41412494345)
