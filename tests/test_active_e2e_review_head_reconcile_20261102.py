@@ -56,7 +56,7 @@ class ReviewHeadReconciliation(unittest.TestCase):
     def test_game_review_head_distinct_from_artifact_run_and_source(self):
         game = self.obs["signal-sprint-new-lineage"]
         proof = self.proof["game_factory"]
-        self.assertEqual(game["current_review_head_sha"], "308749083173e9bc580d1b8eb8485e0077e7c68f")
+        self.assertEqual(game["current_review_head_sha"], "4ad61ccc48744e9f696d737c449fe6021cdd5b3f")
         self.assertEqual(game["run_head_sha"], "a1af3448cd2edeae5bd54cbaca486a53fd991944")
         self.assertEqual(game["immutable_source_sha"],
                          "c058cbf7fe38e02d929c67d047d717ff74bd522e")
