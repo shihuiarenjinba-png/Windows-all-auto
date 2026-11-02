@@ -11,7 +11,7 @@ QA = "1a16b2a69083ca5698f29388c0eb59875a612450"
 
 def validate(data):
     r = data["revision_review_reconciliation"]
-    current = r["current_four_lane_observation"]
+    current = r["historical_four_lane_observation_20261102_2350"]
     app = r["observations"]["offline-image-inventory-desk"]
     qa = r["observations"]["prism-route-3d-consumer-qa-pr9"]
     latest = r["latest_20261102_2241_review_provenance"]
@@ -73,13 +73,13 @@ class LatestReviewMetadataFailClosed(unittest.TestCase):
         self.reject(lambda d: d["revision_review_reconciliation"]["latest_20261102_2241_review_provenance"]["three_d_qa"].__setitem__("independent_pck_rehash_by_36", True))
 
     def test_pr18_pck_cannot_be_current_pr19_factory_artifact(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"].__setitem__("artifact_id", 13130487252))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_20261102_2350"]["three_d"].__setitem__("artifact_id", 13130487252))
 
     def test_app_artifact_types_not_interchangeable(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["app"].__setitem__("review_unsigned_exe_artifact_id", 13144232281))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_20261102_2350"]["app"].__setitem__("review_unsigned_exe_artifact_id", 13144232281))
 
     def test_cloud_not_local(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["windows_e2e"].__setitem__("batch_local_processed", 4))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_20261102_2350"]["windows_e2e"].__setitem__("batch_local_processed", 4))
 
 
 if __name__ == "__main__":
