@@ -33,15 +33,16 @@ class Batch4ArchiveResumeGuardTests(unittest.TestCase):
             "NO_WORK_POST_IDENTITY__NO_PRODUCT_CREATE_NO_CAS",
             "NO_WORK_POST_IDENTITY__NO_PRODUCT_CREATE_NO_CAS",
             "HOLD_LOCAL_ARCHIVE_BYTES_NOT_MOUNTED",
-            "HOLD_ARCHIVE_NOT_PRESERVED__NO_AUTO_DOWNLOAD",
+            "HOLD_LOCAL_ARCHIVE_BYTES_NOT_MOUNTED",
         ])
 
-    def _synthetic_text_archive(self, root, *, bad_request=False):
-        job = self.ledger["rotation_cohorts"]["app_jobs"][2]
-        batch = self.ledger["multi_product_partner_center_batch_4"]["products"][2]
-        record = next(r for r in self.ledger["revision_review_reconciliation"][
-            "artifact_byte_preservation_20261102"]["records"]
-            if r["artifact_id"] == batch["artifact_id"])
+    def _synthetic_text_archive(self, root, *, bad_request=False, index=2):
+        job = self.ledger["rotation_cohorts"]["app_jobs"][index]
+        batch = self.ledger["multi_product_partner_center_batch_4"]["products"][index]
+        rev = self.ledger["revision_review_reconciliation"]
+        records = (rev["artifact_byte_preservation_20261102"]["records"] +
+                   rev["artifact_byte_preservation_image_20261102"]["records"])
+        record = next(r for r in records if r["artifact_id"] == batch["artifact_id"])
         exe = b"synthetic-test-executable-not-real-binary"
         exe_sha = hashlib.sha256(exe).hexdigest()
         job["expected_exe_sha256"] = exe_sha
@@ -80,8 +81,26 @@ class Batch4ArchiveResumeGuardTests(unittest.TestCase):
             result = build_plan(self.ledger, root)
             self.assertEqual(result["results"][2]["action"],
                              "READ_ONLY_ARCHIVE_REUSE_VERIFIED__IDENTITY_RETURN_PENDING")
-            self.assertIn("HOLD_ARCHIVE_NOT_PRESERVED", result["results"][3]["action"])
+            self.assertEqual(result["results"][3]["action"],
+                             "HOLD_LOCAL_ARCHIVE_MISSING_OR_LINKED")
             self.assertEqual(result["physical_local_processed"], 0)
+
+    def test_image_archive_exact_reuse_requires_separate_bytes(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            self._synthetic_text_archive(root, index=3)
+            result = build_plan(self.ledger, root)
+            self.assertEqual(result["results"][3]["action"],
+                             "READ_ONLY_ARCHIVE_REUSE_VERIFIED__IDENTITY_RETURN_PENDING")
+            self.assertEqual(result["results"][2]["action"],
+                             "HOLD_LOCAL_ARCHIVE_MISSING_OR_LINKED")
+            self.assertFalse(result["physical_windows_pass"])
+
+    def test_image_archive_missing_never_triggers_download(self):
+        with tempfile.TemporaryDirectory() as td:
+            result = build_plan(self.ledger, Path(td))
+            self.assertEqual(result["results"][3]["action"],
+                             "HOLD_LOCAL_ARCHIVE_MISSING_OR_LINKED")
 
     def test_cross_product_request_in_archive_fails_closed(self):
         with tempfile.TemporaryDirectory() as td:
