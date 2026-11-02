@@ -50,17 +50,17 @@ def errors(data):
     require(obs["signal-sprint-ui-revision"]["old_artifact_sha_conflict"] == "HOLD_UNRESOLVED", "GAME_OLD_ARTIFACT_CONFLICT_LOST")
     require(not game["cas"] and not game["msixvc"] and not game["local_pass"], "GAME_UNVERIFIED_GATE_PROMOTED")
     require(prism["factory_pr"] == 19 and prism["head"] == PRISM_REVIEW and prism["qa_pr"] == 9 and prism["qa_head"] == PRISM_QA, "PRISM_CURRENT_PR18_QA9_MISMATCH")
-    require(prism["artifact_id"] is None and prism["artifact_run_id"] is None and prism["historical_pr18_build"]["artifact_id"] == 13130487252 and prism["historical_pr18_build"]["artifact_run_id"] == 41422372852, "PRISM_ARTIFACT_PROVENANCE_CHANGED")
-    require(prism["artifact_metadata_digest"] is None and prism["historical_pr18_build"]["artifact_metadata_digest"] == "sha256:970288793436900405f9986f2da4c403345792fb7563398dfb21e9abaeaf3836", "PRISM_METADATA_DIGEST_CHANGED")
+    require(prism["artifact_id"] == 13142680551 and prism["artifact_run_id"] == 41444879105 and prism["historical_pr18_build"]["artifact_id"] == 13130487252 and prism["historical_pr18_build"]["artifact_run_id"] == 41422372852, "PRISM_ARTIFACT_PROVENANCE_CHANGED")
+    require(prism["artifact_metadata_digest"] == "sha256:447c18e789acc1b1ca12c08bdce8b3cda030baf0c7abc70a452bde7e0c748800" and prism["historical_pr18_build"]["artifact_metadata_digest"] == "sha256:970288793436900405f9986f2da4c403345792fb7563398dfb21e9abaeaf3836", "PRISM_METADATA_DIGEST_CHANGED")
     require(obs["prism-route-3d-consumer-revision"]["historical_gate1_identity_return_commit"] == PRISM_OLD_GATE1, "PRISM_GATE1_HISTORY_CHANGED")
     require(obs["prism-route-3d-consumer-qa-pr9"]["current_review_head_sha"] == PRISM_QA and not obs["prism-route-3d-consumer-qa-pr9"]["prior_qa_pr6_is_current"] and prism["qa_ci"] == [41454758338, 41454758366], "OLD_PRISM_QA_MISLABELED_CURRENT")
     require(not prism["legacy_identity_cas_is_new_revision"] and not prism["new_cas"] and not prism["signed_msix"] and not prism["physical_gui"], "PRISM_OLD_IDENTITY_REUSED_OR_GATE_PROMOTED")
     require(not obs["prism-route-3d-consumer-revision"]["artifact_byte_sha256_rehashed_by_36"], "PRISM_METADATA_MISREPRESENTED_AS_BYTE_REHASH")
     require(prism["historical_pr18_build"]["review_head_sha"] == PRISM_PR18_BUILD and prism["historical_pr18_build"]["source_sha"] == PRISM_PR18_BUILD, "PRISM_PR18_IMMUTABLE_BUILD_PROVENANCE_CHANGED")
     require(prism["factory_quality_ci_artifact_count"] == 0 and prism["ci"] == [41444886971], "PRISM_PR19_CI_ARTIFACT_FALSE_PASS")
-    require(prism["qa9_referenced_factory_artifact_id"] == 13142680551 and not prism["pr19_new_pck_verified_by_36"], "PRISM_QA9_REFERENCE_MISLABELED_BYTE_PROOF")
+    require(prism["qa9_referenced_factory_artifact_id"] == 13142680551 and prism["pr19_new_pck_verified_by_36"] and prism["qa9_receipt_source_request_pck_sha_match"], "PRISM_QA9_REFERENCE_MISLABELED_BYTE_PROOF")
     require(not obs["prism-route-3d-first30s-pr19"]["pr18_artifact_is_pr19_build"] and not obs["prism-route-3d-first30s-pr19"]["legacy_gate1_identity_is_pr19_cas"], "PRISM_LEGACY_ARTIFACT_OR_CAS_PROMOTED")
-    require(not obs["prism-route-3d-first30s-pr19"]["qa9_factory_artifact_independently_rehashed_by_36"], "PRISM_QA9_UNVERIFIED_REHASH_PROMOTED")
+    require(obs["prism-route-3d-first30s-pr19"]["qa9_factory_artifact_independently_rehashed_by_36"], "PRISM_QA9_INDEPENDENT_REHASH_LOST")
     require(game["hosted_gui_artifact_id"] == 13141335497 and not game["physical_gui_pass"], "GAME_HOSTED_GUI_MISLABELED_PHYSICAL")
     require(app["review_unsigned_exe_artifact_id"] == 13143283530 and not app["new_revision_promoted"], "APP_REVIEW_EXE_MISLABELED_APPROVED_SOURCE")
     require(data["revision_review_reconciliation"]["current_review_evidence_fail_closed"]["physical_local_processed"] == 0, "CURRENT_REVIEW_FAKE_LOCAL_PROCESSING")
@@ -131,9 +131,9 @@ class CurrentFourLaneAndExpiredArtifactRegression(unittest.TestCase):
         broken["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"]["factory_quality_ci_artifact_count"] = 1
         self.assertIn("PRISM_PR19_CI_ARTIFACT_FALSE_PASS", errors(broken))
 
-    def test_qa9_referenced_artifact_cannot_be_claimed_rehashed(self):
+    def test_qa9_independent_rehash_cannot_be_erased(self):
         broken = copy.deepcopy(self.ledger)
-        broken["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"]["pr19_new_pck_verified_by_36"] = True
+        broken["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"]["pr19_new_pck_verified_by_36"] = False
         self.assertIn("PRISM_QA9_REFERENCE_MISLABELED_BYTE_PROOF", errors(broken))
 
     def test_game_hosted_gui_cannot_be_physical_pass(self):
