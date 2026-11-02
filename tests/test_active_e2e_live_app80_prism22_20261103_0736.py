@@ -115,6 +115,32 @@ def validate(data):
     assert not live["windows_e2e"]["real_msix"] and not live["windows_e2e"]["gdk_msixvc"]
     assert not live["windows_e2e"]["backlog"] and not live["windows_e2e"]["checker"]
     assert not live["windows_e2e"]["install_gui"] and not live["windows_e2e"]["e2e_pass"]
+    newer = r["post_handoff_newer_review_candidates_20261103_0736"]
+    a2, g2, p2 = newer["app"], newer["game"], newer["three_d"]
+    assert a2["pr80_product_baseline_sha"] == APP80
+    assert a2["pr82_product_review_head"] == "19f0bee05322d7e347513092e2e56d4d8a5a45d3"
+    assert a2["pr82_core_ci_run_id"] == 41535034535 and a2["pr82_core_ci_conclusion"] == "SUCCESS"
+    assert a2["qa83_review_head"] == "05c667da0b04610bde38beed7b9bd4a5b7848165"
+    assert a2["qa83_pinned_product_source_sha"] == "97beffedec6f5657a4c3a66439e90ce68637ba53"
+    assert not a2["qa83_pinned_source_is_current_pr82_head"]
+    assert not a2["qa83_is_current_pr82_exe_proof"]
+    assert not a2["physical_windows_125_150_human_pass"] and not a2["cas"]
+    assert g2["pr17_product_ui_head"] == GAME
+    assert g2["pr18_physical_protocol_review_head"] == "6ce4a9b47b55d865c33c7e0a50ffb18f5219c138"
+    assert g2["pr18_core_ci_run_id"] == 41536644003 and g2["pr18_gui_ci_run_id"] == 41536644056
+    assert g2["pr18_ci_success"] and g2["pr18_qa_only"]
+    assert not g2["pr18_is_new_gdk_package"] and not g2["pr18_is_physical_user_pc_pass"] and not g2["cas"]
+    assert p2["factory_pr22_source_sha"] == PR22
+    assert p2["qa15_head"] == "395ab342091c420e0ebdafd1b922dd9d3255539e"
+    assert p2["qa15_ci_runs"] == [41537438979, 41537439002, 41537438993]
+    assert p2["qa15_ci_success"] and p2["qa15_exact_pr22_software_pck_qa_reported_by_24"]
+    assert p2["qa15_artifact_id"] == 13185037028
+    assert p2["qa15_artifact_metadata_digest"] == "sha256:df4999581b280f0663e4f72a0ba80379849163a42efe54cf311ec138be7c0caf"
+    assert p2["qa15_reported_screenshots"] == 8
+    assert not p2["qa15_36_independent_artifact_byte_rehash"]
+    assert not p2["qa15_physical_windows_human_pass"] and not p2["legacy_identity_is_pr22_cas"]
+    assert not p2["signed_msix"] and p2["qa14_is_pr21_historical"]
+
     assert not data["e2e_pass"] and not data["sale_ready_windows_ux_gate"]["sale_ready"]
 
 
@@ -185,6 +211,18 @@ class Live0736FailClosed(unittest.TestCase):
 
     def test_reject_fake_scheduler(self):
         self.reject(lambda d: d["revision_review_reconciliation"]["latest_20261103_0736_live_four_lane_reconciliation"]["windows_e2e"].__setitem__("scheduler_receipt", True))
+
+    def test_reject_qa83_stale_source_as_current(self):
+        self.reject(lambda d: d["revision_review_reconciliation"]["post_handoff_newer_review_candidates_20261103_0736"]["app"].__setitem__("qa83_pinned_source_is_current_pr82_head", True))
+
+    def test_reject_game18_protocol_as_gdk_package(self):
+        self.reject(lambda d: d["revision_review_reconciliation"]["post_handoff_newer_review_candidates_20261103_0736"]["game"].__setitem__("pr18_is_new_gdk_package", True))
+
+    def test_reject_qa15_metadata_as_36_byte_rehash(self):
+        self.reject(lambda d: d["revision_review_reconciliation"]["post_handoff_newer_review_candidates_20261103_0736"]["three_d"].__setitem__("qa15_36_independent_artifact_byte_rehash", True))
+
+    def test_reject_qa15_software_as_physical(self):
+        self.reject(lambda d: d["revision_review_reconciliation"]["post_handoff_newer_review_candidates_20261103_0736"]["three_d"].__setitem__("qa15_physical_windows_human_pass", True))
 
     def test_reject_false_e2e(self):
         self.reject(lambda d: d.__setitem__("e2e_pass", True))
