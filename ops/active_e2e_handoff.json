@@ -9304,6 +9304,59 @@
       },
       "history_boundary": "PR79_AND_PR21_AND_QA14_AND_LAST_36_EXECUTION_AND_IDENTITY_PROJECTION_ARE_HISTORICAL_FOR_PR22_APP80",
       "artifact_metadata_is_not_independent_bytes": true
+    },
+    "post_handoff_newer_review_candidates_20261103_0736": {
+      "scope": "READ_ONLY_NEWER_BRANCHES_DISCOVERED_AFTER_0651_HANDOFF__DO_NOT_REBIND_APPROVED_SOURCE_OR_AUTO_PROMOTE_CAS",
+      "app": {
+        "pr80_product_baseline_sha": "ffbff04f642634093468cbf7267facd6a075ddb3",
+        "pr82_product_review_head": "19f0bee05322d7e347513092e2e56d4d8a5a45d3",
+        "pr82_core_ci_run_id": 41535034535,
+        "pr82_core_ci_conclusion": "SUCCESS",
+        "qa83_review_head": "05c667da0b04610bde38beed7b9bd4a5b7848165",
+        "qa83_ci_run_id": 41535544121,
+        "qa83_ci_conclusion": "SUCCESS",
+        "qa83_pinned_product_source_sha": "97beffedec6f5657a4c3a66439e90ce68637ba53",
+        "qa83_pinned_source_is_current_pr82_head": false,
+        "qa83_is_current_pr82_exe_proof": false,
+        "physical_windows_125_150_human_pass": false,
+        "market_fit": "HOLD",
+        "cas": false
+      },
+      "game": {
+        "pr17_product_ui_head": "15b666871eb6749133df671ca1b271d89ecdf3ae",
+        "pr18_physical_protocol_review_head": "6ce4a9b47b55d865c33c7e0a50ffb18f5219c138",
+        "pr18_core_ci_run_id": 41536644003,
+        "pr18_gui_ci_run_id": 41536644056,
+        "pr18_ci_success": true,
+        "pr18_qa_only": true,
+        "pr18_is_new_gdk_package": false,
+        "pr18_is_physical_user_pc_pass": false,
+        "original_source_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
+        "cas": false
+      },
+      "three_d": {
+        "factory_pr22_source_sha": "f4b458384243fdf379683ca793329614f61c9ead",
+        "qa15_head": "395ab342091c420e0ebdafd1b922dd9d3255539e",
+        "qa15_ci_runs": [
+          41537438979,
+          41537439002,
+          41537438993
+        ],
+        "qa15_ci_success": true,
+        "qa15_exact_pr22_software_pck_qa_reported_by_24": true,
+        "qa15_artifact_id": 13185037028,
+        "qa15_artifact_run_id": 41537439002,
+        "qa15_artifact_metadata_digest": "sha256:df4999581b280f0663e4f72a0ba80379849163a42efe54cf311ec138be7c0caf",
+        "qa15_artifact_expires_at_utc": "2026-11-09T22:27:53Z",
+        "qa15_reported_screenshots": 8,
+        "qa15_36_independent_artifact_byte_rehash": false,
+        "qa15_physical_windows_human_pass": false,
+        "qa14_is_pr21_historical": true,
+        "legacy_identity_is_pr22_cas": false,
+        "signed_msix": false
+      },
+      "reconciliation_boundary": "PR80_AND_PR17_ARE_PRODUCT_REVIEW_BASELINES__PR82_APP_AND_PR18_GAME_AND_QA15_3D_ARE_NEWER_SEPARATE_REVIEW_QA__NO_FALSE_PHYSICAL_OR_CAS_PASS",
+      "next_36_action": "RECHECK_LATEST_APP82_QA83_SOURCE_PIN_AND_QA15_PR22_INDEPENDENT_BYTES__NO_AUTO_PROMOTION"
     }
   },
   "sale_ready_windows_ux_gate": {
