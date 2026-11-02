@@ -23,7 +23,15 @@ def validate(d):
     c = r["current_four_lane_observation"]
     old = r["historical_four_lane_observation_20261103_0043"]
     f, q, h, g = p["factory"], p["qa"], p["historical"], p["gates"]
-    t = c["three_d"]
+    t = r["historical_four_lane_observation_20261103_0136"]["three_d"]
+    now = c["three_d"]
+    assert now["factory_pr"] == 21 and now["head"] == SOURCE
+    assert now["artifact_id"] == 13155398069
+    assert now["qa_pr"] == 12
+    assert now["qa_head"] == "235b002571013eb82c2a561d463ac677c3cf7742"
+    assert now["qa_ci"] == [41481268928, 41481268900]
+    assert not now["new_cas"] and not now["physical_gui"]
+    assert not now["qa12_physical_windows_human_pass"]
     assert p["writer"] == c["writer"] == "36_WINDOWS_E2E_ONLY"
     assert old["three_d"]["factory_pr"] == 20
     assert old["three_d"]["source_sha"] == h["pr20_factory_source_sha"]
