@@ -4,9 +4,9 @@ from pathlib import Path
 import unittest
 
 LEDGER = Path(__file__).resolve().parents[1] / "ops" / "active_e2e_handoff.json"
-CURRENT = "da2068a4a3c17b2742949966944fa1a39f22c626"
+CURRENT = "e69e9b9b96f10426b9a9e3eb7d540a85d49778d6"
 HISTORICAL = "e9ae4669f6739d34cad63764767328a3c796a5f9"
-PREVIOUS = "4d5c03c3aba4fccba786801e8e1b97e6fbbf3984"
+PREVIOUS = "da2068a4a3c17b2742949966944fa1a39f22c626"
 HISTORICAL_PREVIOUS = "4bf0ebf436144bc5eda18c9429506a813e4d4384"
 FACTORY_LOG_EXE = "9c31c3633de0d9e248cd1642f9003962f4f117bf6780cf4fab9f66d1d73485ad"
 HISTORICAL_EXE = "e8517df8cd31a40e5ce72afdd4e6a4d63626fb99f7ff8a4fa3296ff8deef05f4"
@@ -41,11 +41,11 @@ class ActiveE2EGameLedgerContract(unittest.TestCase):
         active = data["active_product"]
         lineage = active["provisioner_game_gdk_pr"]["new_lineage_contract"]
         self.assertEqual(lineage["current_head"], CURRENT)
-        self.assertEqual(lineage["workflow_run_id"], 41381739751)
-        self.assertEqual(lineage["compare_to_prior_head"], "AHEAD_11_BEHIND_0_FROM_4D5C03C3")
+        self.assertEqual(lineage["workflow_run_id"], 41392855055)
+        self.assertEqual(lineage["compare_to_prior_head"], "AHEAD_24_BEHIND_0_FROM_4D5C03C3")
         self.assertEqual(data["latest_provisioner_heads_observed"]["game"]["previous_observation_sha"], PREVIOUS)
         self.assertEqual(data["last_36_execution"]["game_provisioner_pr10_current"]["head_sha"], CURRENT)
-        self.assertEqual(active["provisioner_package_safety"]["ci_run_id"], 41381739751)
+        self.assertEqual(active["provisioner_package_safety"]["ci_run_id"], 41392855055)
         self.assertEqual(lineage["new_request_id"], "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e-reissue-sprint-41361263698-41361263698")
         self.assertEqual(lineage["new_build_artifact_id"], 13105352227)
         for gate in ("reviewed_new_request_cas_contract", "physical_windows_check_only", "cas_applied", "gdk_msixvc_built", "package_version_approved"):
@@ -130,7 +130,7 @@ class ActiveE2EGameLedgerContract(unittest.TestCase):
                         if p["product"] == "Offline Image Inventory Desk")
         self.assertEqual(review["writer"], "36_WINDOWS_E2E_ONLY")
         self.assertEqual(image["current_review_head_sha"],
-                         "9095cb77840fd86f0f73b5649ebbab829effd7da")
+                         "420e803a52918183a5b2bedc9243e1415d7c44de")
         self.assertNotEqual(image["current_review_head_sha"], old["source_sha"])
         self.assertEqual(image["immutable_pre_identity_source_sha"], old["source_sha"])
         self.assertEqual(image["immutable_pre_identity_request_id"], old["request_id"])
