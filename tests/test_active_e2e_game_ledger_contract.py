@@ -130,7 +130,7 @@ class ActiveE2EGameLedgerContract(unittest.TestCase):
                         if p["product"] == "Offline Image Inventory Desk")
         self.assertEqual(review["writer"], "36_WINDOWS_E2E_ONLY")
         self.assertEqual(image["current_review_head_sha"],
-                         "9407225df68db3fb9c4e49b6d49db431c2c9094a")
+                         "b375fd9ed39ce5ceef635d9df169d7e23f2e2eac")
         self.assertNotEqual(image["current_review_head_sha"], old["source_sha"])
         self.assertEqual(image["immutable_pre_identity_source_sha"], old["source_sha"])
         self.assertEqual(image["immutable_pre_identity_request_id"], old["request_id"])
@@ -149,8 +149,11 @@ class ActiveE2EGameLedgerContract(unittest.TestCase):
         self.assertEqual(pipeline["identity_status"], "PRE_IDENTITY_READY__NO_APPROVED_FILE")
         self.assertIsNone(pipeline["identity_return_commit_sha"])
         self.assertEqual(pipeline["gates"]["real_msix_or_gdk"], "NOT_BUILT")
+        self.assertTrue(data["last_36_execution"]["factory_image_current"]["historical_snapshot"])
         self.assertEqual(data["last_36_execution"]["factory_image_current"]["observed_head"],
-                         image["current_review_head_sha"])
+                         "9407225df68db3fb9c4e49b6d49db431c2c9094a")
+        self.assertNotEqual(data["last_36_execution"]["factory_image_current"]["observed_head"],
+                            image["current_review_head_sha"])
 
     def test_jp_bookkeeping_review_head_does_not_create_source_or_tax_pass(self):
         data = self.data

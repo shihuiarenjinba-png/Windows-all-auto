@@ -64,7 +64,7 @@ class NewLineageLedgerRegression(unittest.TestCase):
 
     def test_app_review_heads_never_rebind_immutable_sources(self):
         image = self.observations["offline-image-inventory-desk"]
-        self.assertEqual(image["current_review_head_sha"], "9407225df68db3fb9c4e49b6d49db431c2c9094a")
+        self.assertEqual(image["current_review_head_sha"], "b375fd9ed39ce5ceef635d9df169d7e23f2e2eac")
         self.assertEqual(image["immutable_pre_identity_source_sha"], "16b6a772952ca0988f2ae2f8b5f4db2e59ec5877")
         self.assertNotEqual(image["current_review_head_sha"], image["immutable_pre_identity_source_sha"])
         self.assertFalse(image["current_review_revision_promoted"])
