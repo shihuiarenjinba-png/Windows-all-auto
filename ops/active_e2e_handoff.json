@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-01T22:33:21Z",
+  "updated_at_utc": "2026-11-02T00:36:00Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -302,7 +302,22 @@
     },
     "historical_last_completed_step": "PR17_REPORTED_LOCAL_WINDOWS_CHECK_ONLY_WAITING_OFFICIAL_IDENTITY__EXE_SHA_VERIFIED",
     "historical_blocked_by_local_gate": "DEFERRED_LOCAL_GATE: local check-only and EXE SHA validation await operator Windows availability",
-    "historical_identity_hold_release_condition": "User independently obtains official Store Identity and places it at the designated private local path; never guess Identity, Version or assets"
+    "historical_identity_hold_release_condition": "User independently obtains official Store Identity and places it at the designated private local path; never guess Identity, Version or assets",
+    "new_lineage_artifact_observation": {
+      "run_id": 41361263698,
+      "artifact_id": 13105352227,
+      "artifact_wrapper_sha256": "843496682662e871fc6e1b5df83ace2c6b01ef314cfc466b5072290890b70a8f",
+      "build_head_sha": "a1af3448cd2edeae5bd54cbaca486a53fd991944",
+      "immutable_source_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
+      "artifact_status": "GITHUB_ARTIFACT_METADATA_VERIFIED__REAL_WINDOWS_EXE_BUILD_JOB_SUCCESS__NOT_CAS",
+      "original_artifact_hold_preserved": true,
+      "inner_zip_sha256_verified": false,
+      "exe_member_sha256_verified": false,
+      "provisioner_validator_status": "HOLD_TWO_PHASE_ARTIFACT_ID_AND_PR_EDITED_EVENT_CONTRACT_MISMATCH",
+      "cas": "NOT_APPLIED",
+      "msixvc": "NOT_BUILT",
+      "package_version": "HOLD"
+    }
   },
   "other_lanes": {
     "APP": {
@@ -409,7 +424,22 @@
         "approved_identity_return_file": "products/prism-route-3d/store/approved-identity.json",
         "local_automation_gate_1": "USER_REPORTED_PASS__GITHUB_RETURN_COMMIT_INDEPENDENTLY_VERIFIED",
         "local_capture_receipt_independently_verified": false,
-        "package_version_gate": "HOLD"
+        "package_version_gate": "HOLD",
+        "sentinel_revision_observation": {
+          "source_sha": "e432d94ed0db22878f61f1a8af140d7d7de2288f",
+          "request_id": "3d-prism-route-3d-e432d94ed0db",
+          "review_head_sha": "6b2afaf2adeb5ee4c7cc24d76bcfa1c24db72e1a",
+          "archive_sha256": "dc60f397e002bddf63a8f64ec263dd241a3eb8c4f7fd6e6595d115a9f273ae9c",
+          "exe_sha256": "66b26ad96df7458ea917b632a73ac7c88bb058db24dbd11a457fd50435ab7b13",
+          "pck_sha256": "3e92b7b6e336a0ab40419448b79f330cf00e0cba4d6bb9ec864ba70b89ecdb03",
+          "byte_custody_status": "INDEPENDENT_FACTORY_ZIP_EXE_PCK_BYTES_VERIFIED__NOT_OFFICIAL_IDENTITY_CAS",
+          "legacy_identity_return_commit": "11417b75636ee18816028ffd5221884c4c9a9836",
+          "legacy_identity_is_new_sentinel_cas": false,
+          "new_revision_cas": "HOLD",
+          "package_version": "HOLD",
+          "signed_store_msix": "NOT_BUILT",
+          "local_gui": "NOT_VERIFIED"
+        }
       }
     }
   },
@@ -4925,17 +4955,17 @@
   },
   "revision_review_reconciliation": {
     "schema_version": 1,
-    "observed_at_utc": "2026-11-01T22:33:21Z",
+    "observed_at_utc": "2026-11-02T00:36:00Z",
     "writer": "36_WINDOWS_E2E_ONLY",
-    "scope": "READ_ONLY_CURRENT_DRAFT_HEAD_VS_IMMUTABLE_SOURCE__NO_CAS_OR_MARKET_PROMOTION",
+    "scope": "READ_ONLY_LIVE_GITHUB_NEW_LINEAGE_ARTIFACT_AND_3D_BYTE_CUSTODY_RECONCILIATION__NO_CAS_OR_MARKET_PROMOTION",
     "policy": "PR_HEAD_IS_MUTABLE_REVIEW_CODE__SOURCE_SHA_AND_REQUEST_ID_ARE_IMMUTABLE_PRODUCT_BINDINGS__NO_AUTO_REBIND",
     "observations": {
       "offline-image-inventory-desk": {
         "repository": "shihuiarenjinba-png/AI-App-Factory",
         "draft_pr": 76,
         "review_branch": "codex/app-image-snapshot-evidence-20261101",
-        "current_review_head_sha": "ad368842c31749f4261ecf5a0e9c878c1e500618",
-        "previous_review_head_sha": "70ed475c1621a9955dafe5cc39562915c6cfd424",
+        "current_review_head_sha": "9095cb77840fd86f0f73b5649ebbab829effd7da",
+        "previous_review_head_sha": "ad368842c31749f4261ecf5a0e9c878c1e500618",
         "review_head_compare": "AHEAD_6_BEHIND_0_FROM_PREVIOUS",
         "exact_head_ci": [
           {
@@ -4965,14 +4995,15 @@
         "identity_status": "PRE_IDENTITY_READY__HISTORICAL_REQUEST_ONLY__NO_APPROVED_FILE",
         "package_gate": "HOLD_NO_NEW_PROMOTION_OR_MARKET_FIT_PASS",
         "signed_msix": "NOT_BUILT",
-        "store_submission": "NOT_PERFORMED"
+        "store_submission": "NOT_PERFORMED",
+        "current_review_head_source": "AI-App-Factory Draft PR76"
       },
       "jp-bookkeeping-desk": {
         "repository": "shihuiarenjinba-png/AI-App-Factory",
         "draft_pr": 61,
         "review_branch": "codex/app-jp-bookkeeping-desk-20261031",
-        "current_review_head_sha": "e3ab710b75c84b6e80e5e7d64b09800fd562bcfc",
-        "previous_review_head_sha": "f83eee5fec573b8cab2bb152bb0ebbdd6f054a45",
+        "current_review_head_sha": "24e8beade64177cafd0d545d84392304b53dfe51",
+        "previous_review_head_sha": "e3ab710b75c84b6e80e5e7d64b09800fd562bcfc",
         "exact_head_ci": [
           {
             "run_id": 41354966658,
@@ -4992,14 +5023,16 @@
         "market_fit_gate": "HOLD_NOT_PROMOTED",
         "identity_status": "NOT_YET_REQUIRED",
         "package_gate": "HOLD",
-        "store_submission": "NOT_PERFORMED"
+        "store_submission": "NOT_PERFORMED",
+        "review_head_compare": "AHEAD_4_BEHIND_0_FROM_FC6B3243",
+        "current_review_scope": "RECEIPT_EVENT_HISTORY_FOUNDATION__CANDIDATE_ONLY__NOT_MARKET_FIT_OR_PROMOTION"
       },
       "prism-route-3d-sentinel": {
         "repository": "shihuiarenjinba-png/Repository-Provisioner-3D",
         "draft_pr": 9,
         "review_branch": "codex/prism-sentinel-qa-consumer-handoff-20261102",
-        "current_review_head_sha": "3546dadf977b6202044940be9534420daf3ba3ce",
-        "previous_review_head_sha": "15666376e510d7e816063083d9d2e9527f852d43",
+        "current_review_head_sha": "6b2afaf2adeb5ee4c7cc24d76bcfa1c24db72e1a",
+        "previous_review_head_sha": "3546dadf977b6202044940be9534420daf3ba3ce",
         "exact_head_ci": [
           {
             "run_id": 41356755001,
@@ -5030,7 +5063,28 @@
         "real_signed_msix": "NOT_BUILT",
         "local_gui": "NOT_VERIFIED",
         "package_gate": "HOLD",
-        "store_submission": "NOT_PERFORMED"
+        "store_submission": "NOT_PERFORMED",
+        "review_head_compare": "AHEAD_1_BEHIND_0_FROM_3546dadf",
+        "byte_custody_receipt": "handoffs/prism-sentinel-factory-byte-custody-20261102-0828jst.json",
+        "byte_custody_receipt_head": "6b2afaf2adeb5ee4c7cc24d76bcfa1c24db72e1a",
+        "byte_custody_verified_at_utc": "2026-11-01T23:28:26Z",
+        "byte_custody_status": "INDEPENDENT_FACTORY_ZIP_EXE_PCK_BYTES_VERIFIED__NOT_OFFICIAL_IDENTITY_CAS",
+        "byte_custody_archive_bytes": 30880705,
+        "byte_custody_zip_sha256": "dc60f397e002bddf63a8f64ec263dd241a3eb8c4f7fd6e6595d115a9f273ae9c",
+        "byte_custody_exe_sha256": "66b26ad96df7458ea917b632a73ac7c88bb058db24dbd11a457fd50435ab7b13",
+        "byte_custody_pck_sha256": "3e92b7b6e336a0ab40419448b79f330cf00e0cba4d6bb9ec864ba70b89ecdb03",
+        "legacy_pck_matches_sentinel": false,
+        "byte_custody_checks": [
+          "archive_sha_and_size",
+          "archive_digest_matches_github_metadata",
+          "zip_crc",
+          "exact_three_members",
+          "member_sha_and_size",
+          "manifest_source_request_build_head",
+          "manifest_exe_pck",
+          "legacy_pck_mismatch_detected"
+        ],
+        "signed_product_msix": "NOT_BUILT"
       },
       "signal-sprint": {
         "repository": "shihuiarenjinba-png/Repository-Provisioner-game",
@@ -5054,6 +5108,43 @@
         "real_gdk_msixvc": "NOT_BUILT",
         "package_gate": "HOLD_ARTIFACT_EXACT_BYTES",
         "store_submission": "NOT_PERFORMED"
+      },
+      "signal-sprint-new-lineage": {
+        "repository": "shihuiarenjinba-png/AI-Game-Factory",
+        "draft_pr": 15,
+        "review_branch": "codex/game-signal-sprint-new-lineage-20261102",
+        "current_review_head_sha": "a1af3448cd2edeae5bd54cbaca486a53fd991944",
+        "immutable_source_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
+        "old_request_id": "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e",
+        "old_artifact_id": 12706862577,
+        "old_artifact_status": "EXPIRED_404__ORIGINAL_ZIP_EXE_SHA_CONFLICT_UNRESOLVED",
+        "new_workflow_run_id": 41361263698,
+        "new_artifact_id": 13105352227,
+        "new_artifact_name": "signal-sprint-new-lineage-41361263698",
+        "new_artifact_wrapper_sha256": "843496682662e871fc6e1b5df83ace2c6b01ef314cfc466b5072290890b70a8f",
+        "new_artifact_size_bytes": 11095443,
+        "new_artifact_created_at_utc": "2026-11-01T23:17:06Z",
+        "new_artifact_expires_at_utc": "2026-12-01T23:17:04Z",
+        "new_artifact_expired": false,
+        "run_head_sha": "a1af3448cd2edeae5bd54cbaca486a53fd991944",
+        "run_job": "windows-new-lineage",
+        "run_job_conclusion": "SUCCESS",
+        "new_lineage_artifact_status": "GITHUB_ARTIFACT_METADATA_VERIFIED__REAL_WINDOWS_EXE_BUILD_JOB_SUCCESS__NOT_CAS",
+        "exact_new_artifact_bytes_rehashed_by_36": false,
+        "inner_new_lineage_zip_sha256": null,
+        "contained_exe_sha256": null,
+        "new_request_id": "DERIVED_FROM_RUN_PROVENANCE__NOT_INDEPENDENTLY_VERIFIED_BY_36",
+        "new_lineage_source_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
+        "control_head_distinct_from_source": true,
+        "provisioner_validator_compatibility": "HOLD_TWO_PHASE_ARTIFACT_ID_AND_PR_EDITED_EVENT_CONTRACT_MISMATCH",
+        "provisioner_validator_evidence": "AI-Game-Factory PR15 docs/SIGNAL_SPRINT_NEW_LINEAGE_GDK.md",
+        "new_lineage_cas_applied": false,
+        "gdk_msixvc_built": false,
+        "approved_package_version": false,
+        "registration_type": "GDK_GAME",
+        "partner_center_selection": "GDK game",
+        "next_action": "Verify downloaded wrapper and inner ZIP/EXE SHA and exact new request, then adapt existing Provisioner-game PR10 validator for authenticated pull_request edited event and two-phase Artifact ID; no CAS until check-only and authorization.",
+        "store_submission": "NOT_PERFORMED"
       }
     },
     "cross_lane_gates": {
@@ -5070,8 +5161,14 @@
       "local_pull_pass": false,
       "checker_pass": false,
       "gui_install_pass": false,
-      "e2e_pass": false
+      "e2e_pass": false,
+      "game_new_lineage_github_artifact_present": true,
+      "game_new_lineage_exact_bytes_verified_by_36": false,
+      "game_new_lineage_cas_pass": false,
+      "game_gdk_msixvc_pass": false,
+      "three_d_sentinel_independent_byte_custody_receipt_verified": true,
+      "three_d_sentinel_new_revision_cas_pass": false
     },
-    "next_action": "00_APP_HUMAN_BUYER_5_OF_5_AND_NEW_IMMUTABLE_PROMOTION__24_3D_SENTINEL_AUTHENTICATED_READ_ONLY_RECHECK__12_GAME_ORIGINAL_BYTES_HOLD__36_LOCAL_CODE_SYNC_PHYSICAL_RECEIPT_WHEN_ACCESSIBLE"
+    "next_action": "12_GAME_INDEPENDENT_NEW_LINEAGE_EXACT_BYTES_AND_EXISTING_PROVISIONER_VALIDATOR_INTEROP__24_3D_SENTINEL_NEW_REVISION_AUTHENTICATED_CAS_HOLD__00_APP_IMAGE_BUYERS_0_OF_5_AND_MARKET_FIT_HOLD__36_LOCAL_CODE_SYNC_PHYSICAL_RECEIPT_WHEN_ACCESSIBLE"
   }
 }
