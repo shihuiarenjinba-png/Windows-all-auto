@@ -20,7 +20,7 @@ GAME_HEAD = "f882cac70a7c2294ce0799ea27ec3909596b6002"
 def validate(d):
     r = d["revision_review_reconciliation"]
     p = r["latest_20261103_0136_pr21_qa11_independent_byte_provenance"]
-    c = r["current_four_lane_observation"]
+    c = r["historical_four_lane_observation_20261103_0336"]
     old = r["historical_four_lane_observation_20261103_0043"]
     f, q, h, g = p["factory"], p["qa"], p["historical"], p["gates"]
     t = r["historical_four_lane_observation_20261103_0136"]["three_d"]
