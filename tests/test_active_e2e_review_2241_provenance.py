@@ -1,4 +1,4 @@
-"""Latest PR76 / QA9 evidence stays review-only; metadata is not physical QA."""
+"""22:41 review snapshot remains historical; later PR19 factory bytes are separate from physical QA."""
 import copy
 import json
 import unittest
@@ -32,13 +32,13 @@ def validate(data):
     assert current["three_d"]["qa_ci"] == [41454758338, 41454758366]
     assert qa["hosted_qa_artifact_id"] == current["three_d"]["qa9_runtime_artifact_id"] == 13145583388
     assert qa["factory_artifact_id_referenced_in_workflow"] == 13142680551
-    assert not qa["factory_artifact_independently_verified_by_36"]
+    assert qa["factory_artifact_independently_verified_by_36"]
     assert latest["three_d_qa"]["artifact_metadata_only"] and not latest["three_d_qa"]["independent_pck_rehash_by_36"]
     assert qa["physical_capture_contract_reviewed"] and not qa["physical_capture_receipt_present"]
     assert not qa["independent_user_pc_ja_en_125_150_qa"]
     assert not current["three_d"]["qa9_physical_receipt_verified"]
     assert current["three_d"]["factory_pr"] == 19 and current["three_d"]["factory_quality_ci_artifact_count"] == 0
-    assert current["three_d"]["artifact_id"] is None and not current["three_d"]["pr19_new_pck_verified_by_36"]
+    assert current["three_d"]["artifact_id"] == 13142680551 and current["three_d"]["pr19_new_pck_verified_by_36"]
     assert current["three_d"]["historical_pr18_build"]["artifact_id"] == 13130487252
     assert not current["three_d"]["legacy_identity_cas_is_new_revision"] and not current["three_d"]["new_cas"]
     assert not data["quality_gates"]["gui_qa_pass"] and not data["e2e_pass"]
