@@ -9,10 +9,10 @@ import unittest
 from pathlib import Path
 
 LEDGER = Path(__file__).resolve().parents[1] / "ops" / "active_e2e_handoff.json"
-GAME_HEAD = "e69e9b9b96f10426b9a9e3eb7d540a85d49778d6"
+GAME_HEAD = "d77cf88977db943d83cf898aae5bbf027e5aed90"
 OLD_GAME_HEAD = "da2068a4a3c17b2742949966944fa1a39f22c626"
-IMAGE_HEAD = "420e803a52918183a5b2bedc9243e1415d7c44de"
-QA_HEAD = "5438bb11516b8af8d9e68226ab2f82303b30391c"
+IMAGE_HEAD = "de514cd29d2c930ec7dcff1263070cc6bf83b2c0"
+QA_HEAD = "8aa8c20e1db0f2c30b91dd4e27cc141b1448d7d7"
 NEW_3D_SOURCE = "da6f7c129687922c58c43496da4667ecef903e17"
 
 
@@ -35,7 +35,7 @@ def validate_live_review_evidence(data):
     assert game["current_review_head_sha"] == GAME_HEAD
     assert active["provisioner_game_gdk_pr"]["head_sha"] == GAME_HEAD
     assert lineage["current_head"] == GAME_HEAD
-    assert staging["review_head_sha"] == GAME_HEAD
+    assert staging["review_head_sha"] == "e69e9b9b96f10426b9a9e3eb7d540a85d49778d6"\n    assert staging["historical_at_review_head"] is True\n    assert staging["not_current_live_head"] is True
     assert staging["ci_run_id"] == 41392855055
     assert staging["status"] == "NEW_LINEAGE_STAGING_DRY_RUN_HOLD"
     assert staging["artifact_id"] == 13105352227
@@ -49,7 +49,7 @@ def validate_live_review_evidence(data):
     assert lineage["gdk_msixvc_built"] is False
     assert active["cas_returned"] is False
     assert active["original_exe_artifact_audit"]["ready_for_cas"] is False
-    assert latest["previous_observation_sha"] == OLD_GAME_HEAD
+    assert latest["previous_observation_sha"] == "e69e9b9b96f10426b9a9e3eb7d540a85d49778d6"
     commands = "\n".join(active["local_commands"])
     assert GAME_HEAD in commands
     assert OLD_GAME_HEAD not in commands
@@ -67,7 +67,7 @@ def validate_live_review_evidence(data):
     assert image["current_review_head_sha"] != app_jobs["offline-image-inventory-desk"]["source_sha"]
 
     assert qa["review_head_sha"] == QA_HEAD
-    assert qa["ci_run_id"] == 41394246951
+    assert qa["ci_run_id"] == 41400432166
     assert consumer["independent_qa_pr6_head"] == QA_HEAD
     assert consumer["source_sha"] == NEW_3D_SOURCE
     assert consumer["request_id"] == "3d-prism-route-3d-da6f7c129687"
