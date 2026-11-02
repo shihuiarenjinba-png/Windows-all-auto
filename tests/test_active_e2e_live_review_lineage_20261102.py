@@ -35,7 +35,9 @@ def validate_live_review_evidence(data):
     assert game["current_review_head_sha"] == GAME_HEAD
     assert active["provisioner_game_gdk_pr"]["head_sha"] == GAME_HEAD
     assert lineage["current_head"] == GAME_HEAD
-    assert staging["review_head_sha"] == "e69e9b9b96f10426b9a9e3eb7d540a85d49778d6"\n    assert staging["historical_at_review_head"] is True\n    assert staging["not_current_live_head"] is True
+    assert staging["review_head_sha"] == "e69e9b9b96f10426b9a9e3eb7d540a85d49778d6"
+    assert staging["historical_at_review_head"] is True
+    assert staging["not_current_live_head"] is True
     assert staging["ci_run_id"] == 41392855055
     assert staging["status"] == "NEW_LINEAGE_STAGING_DRY_RUN_HOLD"
     assert staging["artifact_id"] == 13105352227
