@@ -24,7 +24,7 @@ def errors(data):
     """Validate current evidence without promoting any gate from cloud metadata."""
     problems = []
     r = data["revision_review_reconciliation"]
-    current = r["current_four_lane_observation"]
+    current = r["historical_four_lane_observation_20261102_2350"]
     obs = r["observations"]
     game = current["game"]
     prism = current["three_d"]
@@ -102,48 +102,48 @@ class CurrentFourLaneAndExpiredArtifactRegression(unittest.TestCase):
 
     def test_old_3d_qa_head_cannot_replace_pr9(self):
         broken = copy.deepcopy(self.ledger)
-        broken["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"]["qa_head"] = "8aa8c20e1db0f2c30b91dd4e27cc141b1448d7d7"
+        broken["revision_review_reconciliation"]["historical_four_lane_observation_20261102_2350"]["three_d"]["qa_head"] = "8aa8c20e1db0f2c30b91dd4e27cc141b1448d7d7"
         self.assertIn("PRISM_CURRENT_PR18_QA9_MISMATCH", errors(broken))
 
     def test_game_review_cannot_replace_immutable_source(self):
         broken = copy.deepcopy(self.ledger)
-        broken["revision_review_reconciliation"]["current_four_lane_observation"]["game"]["original_source_sha"] = GAME_UI_REVIEW
+        broken["revision_review_reconciliation"]["historical_four_lane_observation_20261102_2350"]["game"]["original_source_sha"] = GAME_UI_REVIEW
         self.assertIn("GAME_IMMUTABLE_SOURCE_CHANGED", errors(broken))
 
     def test_cloud_batch_cannot_be_promoted_to_physical(self):
         broken = copy.deepcopy(self.ledger)
-        broken["revision_review_reconciliation"]["current_four_lane_observation"]["windows_e2e"]["batch_local_processed"] = 4
+        broken["revision_review_reconciliation"]["historical_four_lane_observation_20261102_2350"]["windows_e2e"]["batch_local_processed"] = 4
         self.assertIn("CLOUD_BATCH_AS_LOCAL_SUCCESS", errors(broken))
 
     def test_old_prism_identity_cannot_be_new_cas(self):
         broken = copy.deepcopy(self.ledger)
-        broken["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"]["new_cas"] = True
+        broken["revision_review_reconciliation"]["historical_four_lane_observation_20261102_2350"]["three_d"]["new_cas"] = True
         self.assertIn("PRISM_OLD_IDENTITY_REUSED_OR_GATE_PROMOTED", errors(broken))
 
 
     def test_pr18_artifact_cannot_be_current_pr19_build(self):
         broken = copy.deepcopy(self.ledger)
-        broken["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"]["artifact_id"] = 13130487252
+        broken["revision_review_reconciliation"]["historical_four_lane_observation_20261102_2350"]["three_d"]["artifact_id"] = 13130487252
         self.assertIn("PRISM_ARTIFACT_PROVENANCE_CHANGED", errors(broken))
 
     def test_pr19_quality_ci_without_artifact_cannot_be_pck_pass(self):
         broken = copy.deepcopy(self.ledger)
-        broken["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"]["factory_quality_ci_artifact_count"] = 1
+        broken["revision_review_reconciliation"]["historical_four_lane_observation_20261102_2350"]["three_d"]["factory_quality_ci_artifact_count"] = 1
         self.assertIn("PRISM_PR19_CI_ARTIFACT_FALSE_PASS", errors(broken))
 
     def test_qa9_independent_rehash_cannot_be_erased(self):
         broken = copy.deepcopy(self.ledger)
-        broken["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"]["pr19_new_pck_verified_by_36"] = False
+        broken["revision_review_reconciliation"]["historical_four_lane_observation_20261102_2350"]["three_d"]["pr19_new_pck_verified_by_36"] = False
         self.assertIn("PRISM_QA9_REFERENCE_MISLABELED_BYTE_PROOF", errors(broken))
 
     def test_game_hosted_gui_cannot_be_physical_pass(self):
         broken = copy.deepcopy(self.ledger)
-        broken["revision_review_reconciliation"]["current_four_lane_observation"]["game"]["physical_gui_pass"] = True
+        broken["revision_review_reconciliation"]["historical_four_lane_observation_20261102_2350"]["game"]["physical_gui_pass"] = True
         self.assertIn("GAME_HOSTED_GUI_MISLABELED_PHYSICAL", errors(broken))
 
     def test_app_unsigned_review_exe_cannot_be_promoted(self):
         broken = copy.deepcopy(self.ledger)
-        broken["revision_review_reconciliation"]["current_four_lane_observation"]["app"]["new_revision_promoted"] = True
+        broken["revision_review_reconciliation"]["historical_four_lane_observation_20261102_2350"]["app"]["new_revision_promoted"] = True
         self.assertIn("APP_REVIEW_EXE_MISLABELED_APPROVED_SOURCE", errors(broken))
 
     def test_legacy_prism_gate1_cannot_be_pr19_cas(self):
