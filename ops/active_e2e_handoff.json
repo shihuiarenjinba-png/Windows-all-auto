@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-02T06:38:44.900Z",
+  "updated_at_utc": "2026-11-02T06:41:24.453Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -1249,7 +1249,8 @@
     "app_local_operator_return_pending_count": 2,
     "app_github_identity_return_count": 2,
     "app_waiting_user_identity_count": 0,
-    "app_physical_local_processed_count": 0
+    "app_physical_local_processed_count": 0,
+    "pre_identity_archive_library_preservation_4_of_4": true
   },
   "user_id_requests": {
     "schema_version": 1,
@@ -4069,12 +4070,21 @@
     "batch4_artifact_archive_resume_contract": {
       "branch": "codex/e2e-batch4-archive-resume-20261102-1536",
       "observed_at_utc": "2026-11-02T06:38:44.900Z",
-      "archive_readback": "3_OF_3_ZIP_SHA256_CRC_PASS_MODEL_CONTAINER_NOT_USER_PC",
-      "cloud_plan": "POST_NO_WORK_2__TEXT_LOCAL_ARCHIVE_REQUIRED__IMAGE_UNPRESERVED_HOLD",
+      "archive_readback": "4_OF_4_ZIP_SHA256_CRC_PASS_MODEL_CONTAINER_NOT_USER_PC",
+      "cloud_plan": "POST_NO_WORK_2__TEXT_IMAGE_LOCAL_ARCHIVE_REQUIRED",
       "physical_local": "NOT_EXECUTED",
       "scheduler": "NOT_PROVEN",
       "real_msix": "NOT_BUILT",
       "ci": "PENDING"
+    },
+    "artifact_library_preservation_image_20261102": {
+      "observed_at_utc": "2026-11-02T06:41:24.453Z",
+      "status": "LIBRARY_UPLOAD_READBACK_SHA256_PASS_1_OF_1",
+      "artifact_id": 12817339804,
+      "archive_sha256": "3b5776497126a6e5db8ea23ff7c7c4103d0bdccdbfe16cc24116beb44dd371ca",
+      "receipt_library_path": "/Windows-all-auto/Evidence/2026-11-02/PreIdentityArtifacts/image_inventory_archive_preservation_receipt_20261102.json",
+      "physical_windows": "NOT_EXECUTED",
+      "store_submission": "NOT_PERFORMED"
     }
   },
   "post_identity_pipeline": {
@@ -5593,23 +5603,25 @@
     },
     "batch4_artifact_archive_resume_contract": {
       "schema_version": 1,
-      "observed_at_utc": "2026-11-02T06:38:44.900Z",
+      "observed_at_utc": "2026-11-02T06:41:24.453Z",
       "writer": "36_WINDOWS_E2E_ONLY",
       "implementation_branch": "codex/e2e-batch4-archive-resume-20261102-1536",
       "implementation_file": "scripts/batch4_archive_resume_guard.py",
       "regression_file": "tests/test_batch4_archive_resume_guard.py",
       "mode": "READ_ONLY_NO_NETWORK_NO_BROWSER_NO_CAS_NO_STORE",
-      "artifact_preservation": "CHATGPT_LIBRARY_3_OF_3_INDEPENDENT_ARCHIVE_SHA256_AND_ZIP_CRC_READBACK",
+      "artifact_preservation": "CHATGPT_LIBRARY_4_OF_4_INDEPENDENT_ARCHIVE_SHA256_AND_ZIP_CRC_READBACK",
       "readback_scope": "MODEL_CONTAINER_MATERIALIZED_LIBRARY_FILES_NOT_USER_WINDOWS",
       "archived_zip_ids": [
         12807496604,
         12815845218,
-        12826068537
+        12826068537,
+        12817339804
       ],
       "archive_zip_readback_sha256": {
         "12807496604": "06189361745a9cc175f1fe5bde27d758b71518ac1d2e955436939e3e7ed2a04d",
         "12815845218": "cfbbb12690915b2ac0d8be0bfa690ea347e6912f7737bf64473140f125ed937b",
-        "12826068537": "c4c1f299318cf182d3d04773284990e55e270c25de28f4b8eb3baf7895548b88"
+        "12826068537": "c4c1f299318cf182d3d04773284990e55e270c25de28f4b8eb3baf7895548b88",
+        "12817339804": "3b5776497126a6e5db8ea23ff7c7c4103d0bdccdbfe16cc24116beb44dd371ca"
       },
       "app_post_identity_count": 2,
       "all_lane_post_identity_count": 3,
@@ -5701,10 +5713,10 @@
           "artifact_expires_at_utc": "2026-11-02T13:05:55Z",
           "expected_zip_sha256": "3b5776497126a6e5db8ea23ff7c7c4103d0bdccdbfe16cc24116beb44dd371ca",
           "expected_exe_sha256": "0e023bcd74f6035a2a3e1cf4cd785f83033c69785723a5c01f7f69d2c5d7b980",
-          "library_preservation": "NOT_PRESERVED_IN_LIBRARY",
-          "library_path": null,
+          "library_preservation": "PRESERVED_SHA256_READBACK_VERIFIED",
+          "library_path": "/Windows-all-auto/Evidence/2026-11-02/PreIdentityArtifacts/artifact-12817339804.zip",
           "identity_state": "PRE_IDENTITY_READY",
-          "cloud_action": "HOLD_ARCHIVE_NOT_PRESERVED__NO_AUTO_DOWNLOAD",
+          "cloud_action": "HOLD_LOCAL_ARCHIVE_BYTES_NOT_MOUNTED__READ_ONLY_REUSE_AFTER_LOCAL_SHA_BINDING",
           "physical_local_action": "NOT_EXECUTED",
           "identity_return_commit_sha": null
         }
@@ -5713,12 +5725,48 @@
         "POST_IDENTITY_ALWAYS_NO_WORK_NO_RECREATE_NO_CAS",
         "PRE_REUSE_ONLY_WITH_LOCAL_EXACT_ZIP_SHA_EXE_SHA_EMBEDDED_SOURCE_REQUEST_REGISTRATION",
         "HISTORICAL_TTL_NOT_AUTHORIZATION_TO_REDOWNLOAD",
-        "UNPRESERVED_IMAGE_ARCHIVE_HOLD_NO_AUTO_DOWNLOAD",
+        "IMAGE_ARCHIVE_NOW_PRESERVED__LOCAL_EXACT_BYTES_STILL_REQUIRED__NO_AUTO_DOWNLOAD",
         "IDENTITY_RETURN_TARGET_UNIQUE_PER_PRODUCT",
         "APP_POST_2_DISTINCT_FROM_ALL_LANE_POST_3",
         "NO_PHYSICAL_WINDOWS_OR_SCHEDULER_PASS_FROM_CLOUD_CI"
       ],
-      "next_action": "Run read-only planner on Windows with locally supplied preserved ZIPs and independently verify current GitHub identity returns; do not run Partner Center, CAS, package or Store operations. Image archive lacks verified Library preservation, so HOLD until exact independent bytes are available."
+      "next_action": "Read-only local preflight: materialize both Text Diff and Image preserved ZIPs from Library to a controlled local directory, rehash exact ZIP/EXE and embedded request/source/registration before any Identity operator resume. Focus/Ledger NO_WORK; physical local 0/4; no automatic downloads or CAS."
+    },
+    "artifact_byte_preservation_image_20261102": {
+      "observed_at_utc": "2026-11-02T06:41:24.453Z",
+      "owner": "36_WINDOWS_E2E_ONLY",
+      "scope": "IMAGE_PRE_IDENTITY_UNSIGNED_EXE_NOT_MSIX__MODEL_CONTAINER_NOT_USER_PC",
+      "source_repository": "shihuiarenjinba-png/AI-App-Factory",
+      "source_branch": "codex/app-cohort-image-inventory-20261028",
+      "immutable_source_sha": "16b6a772952ca0988f2ae2f8b5f4db2e59ec5877",
+      "immutable_request_id": "app-offline-image-inventory-desk-16b6a772952c",
+      "registration_type": "MSIX_OR_PWA_APP",
+      "storage": "PERSISTENT_CHATGPT_LIBRARY_NOT_GITHUB_QA_BACKLOG",
+      "receipt_library_path": "/Windows-all-auto/Evidence/2026-11-02/PreIdentityArtifacts/image_inventory_archive_preservation_receipt_20261102.json",
+      "zip_archives_preserved": 1,
+      "zip_archives_sha256_readback_verified": 1,
+      "zip_crc_pass": 1,
+      "embedded_exe_receipt_sha256_pass": 1,
+      "records": [
+        {
+          "artifact_id": 12817339804,
+          "slug": "offline-image-inventory-desk",
+          "archive_sha256": "3b5776497126a6e5db8ea23ff7c7c4103d0bdccdbfe16cc24116beb44dd371ca",
+          "exe_sha256": "0e023bcd74f6035a2a3e1cf4cd785f83033c69785723a5c01f7f69d2c5d7b980",
+          "archive_bytes": 11141294,
+          "github_expiry_utc": "2026-11-02T13:05:55Z",
+          "library_path": "/Windows-all-auto/Evidence/2026-11-02/PreIdentityArtifacts/artifact-12817339804.zip",
+          "archive_download_verified": true,
+          "library_upload_succeeded": true,
+          "library_readback_sha256_verified": true,
+          "package_kind": "PRE_IDENTITY_UNSIGNED_EXE_NOT_MSIX"
+        }
+      ],
+      "physical_windows": false,
+      "real_msix": false,
+      "github_backlog": false,
+      "local_checker_gui": false,
+      "store_submission": "NOT_PERFORMED"
     }
   },
   "sale_ready_windows_ux_gate": {
