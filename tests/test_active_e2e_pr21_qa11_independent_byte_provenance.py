@@ -1,4 +1,4 @@
-"""PR21/QA11 current provenance: real downloaded bytes, historical PR20 and physical HOLD."""
+"""PR21/QA11 historical byte provenance; QA12 snapshot and QA13 current remain separate."""
 import copy
 import json
 import unittest
@@ -24,7 +24,7 @@ def validate(d):
     old = r["historical_four_lane_observation_20261103_0043"]
     f, q, h, g = p["factory"], p["qa"], p["historical"], p["gates"]
     t = r["historical_four_lane_observation_20261103_0136"]["three_d"]
-    now = c["three_d"]
+    now = r["historical_four_lane_observation_20261103_0236"]["three_d"]
     assert now["factory_pr"] == 21 and now["head"] == SOURCE
     assert now["artifact_id"] == 13155398069
     assert now["qa_pr"] == 12
@@ -116,13 +116,13 @@ class CurrentPr21FailClosed(unittest.TestCase):
             validate(bad)
 
     def test_reject_stale_pr20_current_source(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"].__setitem__("head", "f015db1762fb63696bcca304028871235142bf3d"))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_20261103_0236"]["three_d"].__setitem__("head", "f015db1762fb63696bcca304028871235142bf3d"))
 
     def test_reject_stale_qa10_current_head(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"].__setitem__("qa_head", "e2f05d844d155b9a3a8bd5b493f8d96fef659de3"))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_20261103_0236"]["three_d"].__setitem__("qa_head", "e2f05d844d155b9a3a8bd5b493f8d96fef659de3"))
 
     def test_reject_pr20_factory_artifact_as_pr21(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"].__setitem__("artifact_id", 13149467845))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_20261103_0236"]["three_d"].__setitem__("artifact_id", 13149467845))
 
     def test_reject_pr20_pck_as_pr21(self):
         self.reject(lambda d: d["revision_review_reconciliation"]["latest_20261103_0136_pr21_qa11_independent_byte_provenance"]["factory"].__setitem__("pck_sha256", "10acb61a586caa55b2da59ed0aae62f0952cfbaf7a69cac3cf219f3ae2a982c9"))
@@ -134,7 +134,7 @@ class CurrentPr21FailClosed(unittest.TestCase):
         self.reject(lambda d: d["revision_review_reconciliation"]["latest_20261103_0136_pr21_qa11_independent_byte_provenance"]["qa"]["screenshots"]["ja"].__setitem__("height", 720))
 
     def test_reject_old_gate1_identity_as_new_cas(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"].__setitem__("new_cas", True))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_20261103_0236"]["three_d"].__setitem__("new_cas", True))
 
     def test_reject_hosted_runtime_as_physical_windows(self):
         self.reject(lambda d: d["revision_review_reconciliation"]["latest_20261103_0136_pr21_qa11_independent_byte_provenance"]["qa"].__setitem__("physical_windows_gui_verified", True))
