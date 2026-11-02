@@ -21,7 +21,7 @@ def validate(data):
     assert (proof["app_pr76"]["current_review_head"], proof["game_factory_pr15"]["current_review_head"]) == (APP_HEAD, GAME_HEAD)
     assert (proof["app_pr76"]["ahead"], proof["app_pr76"]["behind"]) == (8, 0)
     assert (proof["game_factory_pr15"]["ahead"], proof["game_factory_pr15"]["behind"]) == (6, 0)
-    assert image["current_review_head_sha"] == "7ee78dbdaa075afec3e972bee79d7bbb22101249"
+    assert image["current_review_head_sha"] == "886b9214b9cc79b35403ca168ca09df7a2e12404"
     assert image["historical_current_review_head_sha"] == APP_HEAD
     assert image["immutable_pre_identity_source_sha"] == APP_SOURCE
     assert image["new_revision_source_sha"] is None and image["new_revision_request_id"] is None
