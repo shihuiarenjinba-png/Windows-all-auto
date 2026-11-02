@@ -1,4 +1,4 @@
-"""07:36 LIVE review evidence is distinct from PR79/PR21/QA14 historical receipts."""
+"""Historical 07:36 snapshot; newer 08:36 live evidence has separate tests."""
 import copy
 import json
 import unittest
@@ -18,20 +18,20 @@ GAME_SOURCE = "c058cbf7fe38e02d929c67d047d717ff74bd522e"
 
 def validate(data):
     r = data["revision_review_reconciliation"]
-    c = r["current_four_lane_observation"]
+    c = r["historical_four_lane_observation_before_20261103_0836"]
     live = r["latest_20261103_0736_live_four_lane_reconciliation"]
     prev = r["historical_four_lane_observation_before_20261103_0736"]
     old_live = r["historical_latest_live_four_lane_before_20261103_0736"]
     app = c["app"]
     app_obs = r["observations"]["us-freelance-ledger-pr80"]
     prism = c["three_d"]
-    prism_obs = r["observations"]["prism-route-3d-factory-pr22"]
+    prism_obs = r["historical_pr22_observation_before_20261103_0836"]
     qa14 = r["observations"]["prism-route-3d-consumer-qa-pr14"]
     game = c["game"]
-    gates = r["cross_lane_gates"]
+    gates = r["historical_cross_lane_gates_before_20261103_0836"]
 
     assert r["writer"] == c["writer"] == live["writer"] == "36_WINDOWS_E2E_ONLY"
-    assert data["updated_at_utc"] == r["observed_at_utc"] == c["observed_at_utc"] == live["observed_at_utc"]
+    assert data["updated_at_utc"] == r["observed_at_utc"] > c["observed_at_utc"] == live["observed_at_utc"]
     assert prev["observed_at_utc"] == old_live["observed_at_utc"] < live["observed_at_utc"]
     assert prev["app"]["us_freelance_ledger_pr"] == old_live["app"]["us_ledger_pr"] == 79
     assert prev["app"]["us_freelance_ledger_head"] == APP79
@@ -115,7 +115,7 @@ def validate(data):
     assert not live["windows_e2e"]["real_msix"] and not live["windows_e2e"]["gdk_msixvc"]
     assert not live["windows_e2e"]["backlog"] and not live["windows_e2e"]["checker"]
     assert not live["windows_e2e"]["install_gui"] and not live["windows_e2e"]["e2e_pass"]
-    newer = r["post_handoff_newer_review_candidates_20261103_0736"]
+    newer = r["historical_post_handoff_candidates_before_20261103_0836"]
     a2, g2, p2 = newer["app"], newer["game"], newer["three_d"]
     assert a2["pr80_product_baseline_sha"] == APP80
     assert a2["pr82_product_review_head"] == "19f0bee05322d7e347513092e2e56d4d8a5a45d3"
@@ -159,49 +159,49 @@ class Live0736FailClosed(unittest.TestCase):
             validate(changed)
 
     def test_reject_pr79_as_live(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["app"].__setitem__("us_freelance_ledger_head", APP79))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_before_20261103_0836"]["app"].__setitem__("us_freelance_ledger_head", APP79))
 
     def test_reject_pr79_observation_as_pr80(self):
         self.reject(lambda d: d["revision_review_reconciliation"]["observations"]["us-freelance-ledger-pr80"].__setitem__("draft_pr", 79))
 
     def test_reject_app_fake_exe(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["app"].__setitem__("us_freelance_ledger_artifact_count", 1))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_before_20261103_0836"]["app"].__setitem__("us_freelance_ledger_artifact_count", 1))
 
     def test_reject_app_false_promotion(self):
         self.reject(lambda d: d["revision_review_reconciliation"]["observations"]["us-freelance-ledger-pr80"].__setitem__("source_promoted", True))
 
     def test_reject_pr21_as_live(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"].__setitem__("source_sha", PR21))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_before_20261103_0836"]["three_d"].__setitem__("source_sha", PR21))
 
     def test_reject_cross_revision_request(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"].__setitem__("new_request_id", "3d-prism-route-3d-066d9f51d58c"))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_before_20261103_0836"]["three_d"].__setitem__("new_request_id", "3d-prism-route-3d-066d9f51d58c"))
 
     def test_reject_old_pr21_artifact_as_new(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"].__setitem__("artifact_id", 13155398069))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_before_20261103_0836"]["three_d"].__setitem__("artifact_id", 13155398069))
 
     def test_reject_qa14_as_new_pr22_qa(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"].__setitem__("qa14_is_current_factory_pck_qa", True))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_before_20261103_0836"]["three_d"].__setitem__("qa14_is_current_factory_pck_qa", True))
 
     def test_reject_false_pr22_byte_pass(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"].__setitem__("pr22_export_artifact_independently_rehashed_by_36", True))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_before_20261103_0836"]["three_d"].__setitem__("pr22_export_artifact_independently_rehashed_by_36", True))
 
     def test_reject_false_pr22_qa_pass(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["observations"]["prism-route-3d-factory-pr22"].__setitem__("independent_pr22_qa_pass", True))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_pr22_observation_before_20261103_0836"].__setitem__("independent_pr22_qa_pass", True))
 
     def test_reject_wrong_artifact_digest(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"].__setitem__("artifact_metadata_digest", "sha256:1a19000c225b5165a1280ec36b4dcf5eaec4287e39d50f86512b8e9f5ad4dd44"))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_before_20261103_0836"]["three_d"].__setitem__("artifact_metadata_digest", "sha256:1a19000c225b5165a1280ec36b4dcf5eaec4287e39d50f86512b8e9f5ad4dd44"))
 
     def test_reject_quality_ci_falsely_claiming_export_artifact(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["observations"]["prism-route-3d-factory-pr22"]["exact_head_ci"][0].__setitem__("artifact_count", 3))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_pr22_observation_before_20261103_0836"]["exact_head_ci"][0].__setitem__("artifact_count", 3))
 
     def test_reject_legacy_identity_new_cas(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["observations"]["prism-route-3d-factory-pr22"].__setitem__("legacy_identity_is_pr22_cas", True))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_pr22_observation_before_20261103_0836"].__setitem__("legacy_identity_is_pr22_cas", True))
 
     def test_reject_false_physical_pass(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["observations"]["prism-route-3d-factory-pr22"].__setitem__("physical_windows_human_pass", True))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_pr22_observation_before_20261103_0836"].__setitem__("physical_windows_human_pass", True))
 
     def test_reject_false_gdk(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["game"].__setitem__("msixvc", True))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_before_20261103_0836"]["game"].__setitem__("msixvc", True))
 
     def test_reject_app4_library_as_actions(self):
         self.reject(lambda d: d["revision_review_reconciliation"]["latest_20261103_0736_live_four_lane_reconciliation"]["windows_e2e"].__setitem__("app4_actions_artifacts_live", 4))
@@ -213,16 +213,16 @@ class Live0736FailClosed(unittest.TestCase):
         self.reject(lambda d: d["revision_review_reconciliation"]["latest_20261103_0736_live_four_lane_reconciliation"]["windows_e2e"].__setitem__("scheduler_receipt", True))
 
     def test_reject_qa83_stale_source_as_current(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["post_handoff_newer_review_candidates_20261103_0736"]["app"].__setitem__("qa83_pinned_source_is_current_pr82_head", True))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_post_handoff_candidates_before_20261103_0836"]["app"].__setitem__("qa83_pinned_source_is_current_pr82_head", True))
 
     def test_reject_game18_protocol_as_gdk_package(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["post_handoff_newer_review_candidates_20261103_0736"]["game"].__setitem__("pr18_is_new_gdk_package", True))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_post_handoff_candidates_before_20261103_0836"]["game"].__setitem__("pr18_is_new_gdk_package", True))
 
     def test_reject_qa15_metadata_as_36_byte_rehash(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["post_handoff_newer_review_candidates_20261103_0736"]["three_d"].__setitem__("qa15_36_independent_artifact_byte_rehash", True))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_post_handoff_candidates_before_20261103_0836"]["three_d"].__setitem__("qa15_36_independent_artifact_byte_rehash", True))
 
     def test_reject_qa15_software_as_physical(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["post_handoff_newer_review_candidates_20261103_0736"]["three_d"].__setitem__("qa15_physical_windows_human_pass", True))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_post_handoff_candidates_before_20261103_0836"]["three_d"].__setitem__("qa15_physical_windows_human_pass", True))
 
     def test_reject_false_e2e(self):
         self.reject(lambda d: d.__setitem__("e2e_pass", True))
