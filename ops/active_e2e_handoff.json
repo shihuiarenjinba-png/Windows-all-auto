@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-02T06:41:24.453Z",
+  "updated_at_utc": "2026-11-02T07:36:50Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -19,7 +19,7 @@
     "display_name": "Signal Sprint",
     "provisioner_repository": "shihuiarenjinba-png/Repository-Provisioner-game",
     "provisioner_branch": "codex/game-gdk-identity-contract-20261028",
-    "provisioner_head_observed": "e69e9b9b96f10426b9a9e3eb7d540a85d49778d6",
+    "provisioner_head_observed": "d77cf88977db943d83cf898aae5bbf027e5aed90",
     "factory_exe_run_id": 40443340158,
     "factory_exe_artifact_id": 12706862577,
     "factory_exe_artifact_name": "game-signal-sprint-exe-c058cbf7fe38e02d929c67d047d717ff74bd522e",
@@ -58,15 +58,16 @@
       "historical_next_stage": "OBTAIN_AUTHENTICATED_OFFICIAL_IDENTITY",
       "historical_record": true
     },
-    "next_action": "HOLD_ARTIFACT_EXACT_BYTES: original ZIP unavailable and EXE SHA authority conflict (historical e851 vs original Factory job 9c31). PR10 HEAD check-only only after independent exact-byte recovery; no CAS or GDK SDK build.",
+    "next_action": "Review exact PR10 HEAD d77cf88977db943d83cf898aae5bbf027e5aed90 (CI 41405677954) read-only. Hosted real EXE screenshot shows one move but Tk UIA text unavailable and taskbar occlusion at 1024x768; no user-PC QA, CAS, GDK SDK, approved version/assets or MSIXVC. Old artifact SHA conflict HOLD.",
     "local_commands": [
       "gh api repos/shihuiarenjinba-png/Windows-all-auto/git/ref/heads/codex/e2e-belt-connection-20261027 --jq .object.sha  # confirm exact current ledger HEAD",
-      "$pHead = gh api repos/shihuiarenjinba-png/Repository-Provisioner-game/git/ref/heads/codex/game-gdk-identity-contract-20261028 --jq .object.sha; if ($LASTEXITCODE -ne 0 -or $pHead -ne 'e69e9b9b96f10426b9a9e3eb7d540a85d49778d6') { throw 'HOLD_PROVISIONER_HEAD_DRIFT: review PR #10 and re-pin before any local check-only' }",
+      "$pHead = gh api repos/shihuiarenjinba-png/Repository-Provisioner-game/git/ref/heads/codex/game-gdk-identity-contract-20261028 --jq .object.sha; if ($LASTEXITCODE -ne 0 -or $pHead -ne 'd77cf88977db943d83cf898aae5bbf027e5aed90') { throw 'HOLD_PROVISIONER_HEAD_DRIFT: review PR #10 and re-pin before any local check-only' }",
       "python -m scripts.pre_identity_queue --check-only  # from reviewed PR19; no CAS",
       "python -m scripts.pre_identity_queue --output \"$env:LOCALAPPDATA\\FactoryIdentityWorker\\secure\\pre-identity-jobs.json\"  # PowerShell, create-only; no overwrite",
       "throw 'ARTIFACT_EXACT_BYTES_HOLD: original Factory artifact 12706862577 expired/404; ZIP absent; EXE SHA authority conflict. Do not download a substitute or proceed to CAS.'",
       "python -m scripts.local_identity_scheduler --jobs-file \"$env:LOCALAPPDATA\\FactoryIdentityWorker\\secure\\pre-identity-jobs.json\" --state-dir \"$env:LOCALAPPDATA\\FactoryIdentityWorker\\secure\\scheduler-state\"  # check-only, CAS apply prohibited",
-      "throw 'ARTIFACT_EXACT_BYTES_HOLD: old artifact #12706862577 has unresolved EXE SHA conflict; new lineage #13105352227 is separate. No local_identity_return/CAS/SDK without independently authorized new request, version and assets. Review PR10 current HEAD e69e9b9b96f10426b9a9e3eb7d540a85d49778d6; check-only only.'"
+      "throw 'ARTIFACT_EXACT_BYTES_HOLD: old artifact #12706862577 has unresolved EXE SHA conflict; new lineage #13105352227 is separate. No local_identity_return/CAS/SDK without independently authorized new request, version and assets. Review PR10 current HEAD d77cf88977db943d83cf898aae5bbf027e5aed90; check-only only.'",
+      "throw 'HOLD_USER_PC_AND_NEW_REQUEST_CAS: hosted Windows screenshot evidence is check-only; UIA text HOLD, 1024x768 taskbar occlusion and untranslated JP status. Do not --apply, SDK package or Store upload.'"
     ],
     "expected_local_outputs": [
       "dry-run-result.json status=DRY_RUN, no side effects (completed)",
@@ -139,11 +140,11 @@
     "provisioner_package_safety": {
       "repository": "shihuiarenjinba-png/Repository-Provisioner-game",
       "branch": "codex/game-gdk-identity-contract-20261028",
-      "head_sha": "e69e9b9b96f10426b9a9e3eb7d540a85d49778d6",
+      "head_sha": "d77cf88977db943d83cf898aae5bbf027e5aed90",
       "draft_pr": 10,
       "base_branch": "codex/game-msix-package-safety-20261027-1510",
       "base_sha": "c50a71bab689004f8234b95bfb79f4f064d958d2",
-      "ci_run_id": 41392855055,
+      "ci_run_id": 41405677954,
       "ci_conclusion": "SUCCESS",
       "status": "PR10_LIVE_HEAD_CI_PASS__NEW_LINEAGE_STAGING_DRY_RUN_HOLD__STUBBED_RECONCILE__NO_AUTHORIZED_CAS_VERSION_ASSETS_SDK_OR_MSIXVC",
       "changes": [
@@ -154,7 +155,7 @@
         "tests/test_gdk_factory_lineage_adapter.py"
       ],
       "next_action": "PR10 live HEAD CI success with new-lineage assembly-plan check-only. No physical Windows check-only, authenticated new-request CAS, approved version/assets, SDK or MSIXVC. Old expired artifact SHA conflict unchanged.",
-      "current_branch_head": "e69e9b9b96f10426b9a9e3eb7d540a85d49778d6",
+      "current_branch_head": "d77cf88977db943d83cf898aae5bbf027e5aed90",
       "historical_pinned_head_sha": "e9ae4669f6739d34cad63764767328a3c796a5f9",
       "historical_base_sha": "c217652c7887626de94e8b37ca3f1f7a57f9064d"
     },
@@ -171,7 +172,7 @@
       "mode": "LOCAL_ONLY_EXPLICIT_APPLY",
       "evidence_path": "C:\\qa\\signal-sprint\\official-identity-private.json",
       "receipt_path": "C:\\qa\\signal-sprint\\identity-return\\identity-return-receipt.json",
-      "required_provisioner_sha": "e69e9b9b96f10426b9a9e3eb7d540a85d49778d6",
+      "required_provisioner_sha": "d77cf88977db943d83cf898aae5bbf027e5aed90",
       "next_action": "Original artifact exact bytes conflict HOLD; new-lineage real EXE stage was transient/stubbed reconcile and remains HOLD. No CAS or --apply. Re-pin PR10 at live HEAD before read-only checks.",
       "ci_url": "https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/40499482120",
       "local_check_only": {
@@ -210,17 +211,17 @@
     "provisioner_identity_resume": {
       "repository": "shihuiarenjinba-png/Repository-Provisioner-game",
       "branch": "codex/game-gdk-identity-contract-20261028",
-      "head_sha": "e69e9b9b96f10426b9a9e3eb7d540a85d49778d6",
+      "head_sha": "d77cf88977db943d83cf898aae5bbf027e5aed90",
       "draft_pr": 10,
       "base_safety_pr": 8,
       "base_safety_head": "c217652c7887626de94e8b37ca3f1f7a57f9064d",
-      "ci_run_id": 41392855055,
+      "ci_run_id": 41405677954,
       "ci_conclusion": "SUCCESS",
       "resume_result_path_example": "C:\\qa\\signal-sprint\\result.json",
       "resume_result_verified_on_local_windows": false,
       "package_sha256": "e8517df8cd31a40e5ce72afdd4e6a4d63626fb99f7ff8a4fa3296ff8deef05f4",
       "status": "OLD_ARTIFACT_EXACT_BYTES_HOLD__NEW_LINEAGE_STAGING_CHECK_ONLY__PHYSICAL_LOCAL_NOT_OBSERVED",
-      "current_branch_head": "e69e9b9b96f10426b9a9e3eb7d540a85d49778d6",
+      "current_branch_head": "d77cf88977db943d83cf898aae5bbf027e5aed90",
       "historical_local_check_only_sha": "5c1db9820bac68c59cc7eb6ca5921e22a5bb3913",
       "note": "Historical package_sha256 e851... conflicts with original Factory run job EXE 9c31...; no verified original ZIP, no CAS.",
       "historical_head_sha": "e9ae4669f6739d34cad63764767328a3c796a5f9"
@@ -230,16 +231,16 @@
     "provisioner_game_gdk_pr": {
       "draft_pr": 10,
       "branch": "codex/game-gdk-identity-contract-20261028",
-      "head_sha": "e69e9b9b96f10426b9a9e3eb7d540a85d49778d6",
-      "ci_run_id": 41392855055,
+      "head_sha": "d77cf88977db943d83cf898aae5bbf027e5aed90",
+      "ci_run_id": 41405677954,
       "ci_conclusion": "SUCCESS",
       "local_windows_check_only": "NOT_OBSERVED__ORIGINAL_ARTIFACT_EXACT_BYTES_HOLD__NEW_LINEAGE_CODE_ONLY",
       "cas": "NOT_APPLIED",
       "historical_head_sha": "e9ae4669f6739d34cad63764767328a3c796a5f9",
       "new_lineage_contract": {
-        "current_head": "e69e9b9b96f10426b9a9e3eb7d540a85d49778d6",
-        "workflow_run_id": 41392855055,
-        "compare_to_prior_head": "AHEAD_24_BEHIND_0_FROM_4D5C03C3",
+        "current_head": "d77cf88977db943d83cf898aae5bbf027e5aed90",
+        "workflow_run_id": 41405677954,
+        "compare_to_prior_head": "AHEAD_21_BEHIND_0_FROM_E69E9B9B",
         "scope": "SEPARATE_NEW_IMMUTABLE_BUILD_LINEAGE_CHECK_ONLY__GITHUB_EVIDENCE_AND_CAS_PRECHECK",
         "original_artifact_status": "EXPECTED_DIGEST_AUTHORITY_CONFLICT__ARTIFACT_EXACT_BYTES_HOLD",
         "new_request_id": "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e-reissue-sprint-41361263698-41361263698",
@@ -256,7 +257,7 @@
         "intermediate_head_sha": "b550faba73b16d64d85f7ef56f0080429068f00a",
         "intermediate_compare": "AHEAD_7_BEHIND_0_FROM_4D5C03C3",
         "latest_compare": "AHEAD_13_BEHIND_0_FROM_DA2068A4",
-        "latest_scope": "STAGING_DRY_RUN_ACTUAL_EXE_BYTES_WITH_STUBBED_RECONCILE__HOLD__NO_AUTHENTICATED_CAS_OR_APPROVED_ASSETS_VERSION",
+        "latest_scope": "HOSTED_WINDOWS_REAL_EXE_SCREENSHOTS_OBSERVED__UIA_TEXT_NOT_EXPOSED__WINDOW_CLIPPING_RISK__NO_HUMAN_OR_USER_PC_QA",
         "assembly_plan_source": "docs/SIGNAL_SPRINT_NEW_LINEAGE_ASSEMBLY_PLAN.md",
         "assembly_plan_result": "CHECK_ONLY_EXIT_2__NOT_READY_FOR_SDK__CAS_NOT_APPLIED__NO_MSIXVC",
         "review_authenticity_verified": false,
@@ -288,22 +289,22 @@
     "partner_center_selection": "GDK game",
     "provisioner_head_observation": {
       "basis": "LIVE_GITHUB_PR10_HEAD_AND_EXACT_COMMIT_CI",
-      "observed_at_utc": "2026-11-02T05:35:09Z",
-      "sha": "e69e9b9b96f10426b9a9e3eb7d540a85d49778d6",
-      "ci_run_id": 41392855055,
+      "observed_at_utc": "2026-11-02T07:36:50Z",
+      "sha": "d77cf88977db943d83cf898aae5bbf027e5aed90",
+      "ci_run_id": 41405677954,
       "ci_conclusion": "SUCCESS",
-      "previous_observed_head": "da2068a4a3c17b2742949966944fa1a39f22c626",
+      "previous_observed_head": "e69e9b9b96f10426b9a9e3eb7d540a85d49778d6",
       "historical_pinned_command_sha": "e9ae4669f6739d34cad63764767328a3c796a5f9",
       "historical_commands_are_not_current_checkout_instructions": true,
       "local_check_only_on_current_head": "NOT_OBSERVED_USER_PC",
       "cas": "NOT_APPLIED",
       "historical_previous_observed_head": "4bf0ebf436144bc5eda18c9429506a813e4d4384",
-      "compare_from_previous": "AHEAD_13_BEHIND_0_FROM_DA2068A4__STAGING_DRY_RUN_HOLD",
-      "current_ci_run_id": 41392855055,
+      "compare_from_previous": "AHEAD_21_BEHIND_0_FROM_E69E9B9B",
+      "current_ci_run_id": 41405677954,
       "intermediate_head_sha": "b550faba73b16d64d85f7ef56f0080429068f00a",
       "intermediate_compare": "AHEAD_7_BEHIND_0",
-      "latest_compare": "AHEAD_13_BEHIND_0_FROM_DA2068A4",
-      "live_head_ci_url": "https://github.com/shihuiarenjinba-png/Repository-Provisioner-game/actions/runs/41392855055",
+      "latest_compare": "AHEAD_21_BEHIND_0_FROM_E69E9B9B",
+      "live_head_ci_url": "https://github.com/shihuiarenjinba-png/Repository-Provisioner-game/actions/runs/41405677954",
       "prior_20261102_1236_head": "da2068a4a3c17b2742949966944fa1a39f22c626"
     },
     "historical_local_commands_20261027": [
@@ -366,6 +367,15 @@
       "throw 'ARTIFACT_EXACT_BYTES_HOLD: original Factory artifact 12706862577 expired/404; ZIP absent; EXE SHA authority conflict. Do not download a substitute or proceed to CAS.'",
       "python -m scripts.local_identity_scheduler --jobs-file \"$env:LOCALAPPDATA\\FactoryIdentityWorker\\secure\\pre-identity-jobs.json\" --state-dir \"$env:LOCALAPPDATA\\FactoryIdentityWorker\\secure\\scheduler-state\"  # check-only, CAS apply prohibited",
       "python -m scripts.local_identity_return --provisioner-root C:\\src\\Repository-Provisioner-game --provisioner-branch codex/game-gdk-identity-contract-20261028 --provisioner-sha da2068a4a3c17b2742949966944fa1a39f22c626 --source-branch codex/game-signal-sprint-undo-20261027 --source-sha c058cbf7fe38e02d929c67d047d717ff74bd522e --request-id game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e  # CHECK-ONLY ONLY after original ZIP authority conflict resolved; NO --apply"
+    ],
+    "historical_local_commands_20261102_1636": [
+      "gh api repos/shihuiarenjinba-png/Windows-all-auto/git/ref/heads/codex/e2e-belt-connection-20261027 --jq .object.sha  # confirm exact current ledger HEAD",
+      "$pHead = gh api repos/shihuiarenjinba-png/Repository-Provisioner-game/git/ref/heads/codex/game-gdk-identity-contract-20261028 --jq .object.sha; if ($LASTEXITCODE -ne 0 -or $pHead -ne 'e69e9b9b96f10426b9a9e3eb7d540a85d49778d6') { throw 'HOLD_PROVISIONER_HEAD_DRIFT: review PR #10 and re-pin before any local check-only' }",
+      "python -m scripts.pre_identity_queue --check-only  # from reviewed PR19; no CAS",
+      "python -m scripts.pre_identity_queue --output \"$env:LOCALAPPDATA\\FactoryIdentityWorker\\secure\\pre-identity-jobs.json\"  # PowerShell, create-only; no overwrite",
+      "throw 'ARTIFACT_EXACT_BYTES_HOLD: original Factory artifact 12706862577 expired/404; ZIP absent; EXE SHA authority conflict. Do not download a substitute or proceed to CAS.'",
+      "python -m scripts.local_identity_scheduler --jobs-file \"$env:LOCALAPPDATA\\FactoryIdentityWorker\\secure\\pre-identity-jobs.json\" --state-dir \"$env:LOCALAPPDATA\\FactoryIdentityWorker\\secure\\scheduler-state\"  # check-only, CAS apply prohibited",
+      "throw 'ARTIFACT_EXACT_BYTES_HOLD: old artifact #12706862577 has unresolved EXE SHA conflict; new lineage #13105352227 is separate. No local_identity_return/CAS/SDK without independently authorized new request, version and assets. Review PR10 current HEAD e69e9b9b96f10426b9a9e3eb7d540a85d49778d6; check-only only.'"
     ]
   },
   "other_lanes": {
@@ -712,8 +722,8 @@
       ],
       "next_action": "APP00_NEW_SOURCE_AND_REQUEST_AND_SEPARATE_REVIEW_SHA_REQUIRED__SCORE_80_PLUS_GO_AND_WINDOWS_EVIDENCE__NO_MSIX",
       "factory_new_review_candidate_pr": 76,
-      "factory_new_review_candidate_head": "420e803a52918183a5b2bedc9243e1415d7c44de",
-      "factory_new_review_candidate_status": "DRAFT_REVIEW_ONLY__64_OF_100__ZERO_OF_FIVE_BUYERS__NO_NEW_PROMOTED_SOURCE_OR_REQUEST",
+      "factory_new_review_candidate_head": "de514cd29d2c930ec7dcff1263070cc6bf83b2c0",
+      "factory_new_review_candidate_status": "DRAFT_REVIEW_ONLY__64_OF_100__ZERO_OF_FIVE_BUYERS__SYNTHETIC_KIT_NOT_BUYER_VALIDATION__NO_NEW_PROMOTED_SOURCE_OR_REQUEST",
       "integration_provenance": "PR128_DIVERGED_AHEAD3_BEHIND1__THREE_EXACT_BLOBS_ON_9E1CFD7_CANONICAL__LEDGER_ONLY_FOLLOWUP_MAY_CREATE_BEHIND_COUNT__NO_OCR_PR124_MERGE",
       "current_observation": {
         "observed_at_utc": "2026-11-01T16:36:53.678Z",
@@ -969,7 +979,7 @@
       "new_tests": 10,
       "immutable_game_source_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
       "expected_exe_sha256": "e8517df8cd31a40e5ce72afdd4e6a4d63626fb99f7ff8a4fa3296ff8deef05f4",
-      "provisioner_head_observed": "e69e9b9b96f10426b9a9e3eb7d540a85d49778d6",
+      "provisioner_head_observed": "d77cf88977db943d83cf898aae5bbf027e5aed90",
       "local_package_path": "OPERATOR_MUST_SUPPLY_AFTER_SHA256_CHECK",
       "user_identity": "USER_IDENTITY_RECEIVED__LOCAL_CHECK_ONLY_PENDING",
       "app": "NOT_YET_REQUIRED",
@@ -1812,7 +1822,7 @@
   "local_source_code_sync": {
     "schema_version": 1,
     "scope": "FACTORY_PRODUCT_SOURCE_ONLY__NO_PACKAGE_INSTALL_OR_CAS",
-    "status": "CLOUD_PRIOR_SHA_SMOKE_PASS__PRISM_BRANCH_ADVANCED__PHYSICAL_SOURCE_SYNC_HOLD",
+    "status": "CLOUD_PASS_ONLY__USER_PC_EXACT_THREE_SHA_REUSE_SCHEDULER_RECEIPT_NOT_OBSERVED",
     "worker": {
       "repository": "shihuiarenjinba-png/Windows-all-auto",
       "base_draft_pr": 22,
@@ -2029,14 +2039,14 @@
     "game": {
       "repo": "shihuiarenjinba-png/Repository-Provisioner-game",
       "branch": "codex/game-gdk-identity-contract-20261028",
-      "sha": "e69e9b9b96f10426b9a9e3eb7d540a85d49778d6",
-      "ci_run_id": 41392855055,
+      "sha": "d77cf88977db943d83cf898aae5bbf027e5aed90",
+      "ci_run_id": 41405677954,
       "ci_conclusion": "SUCCESS_AT_EXACT_HEAD",
-      "previous_observation_sha": "da2068a4a3c17b2742949966944fa1a39f22c626",
+      "previous_observation_sha": "e69e9b9b96f10426b9a9e3eb7d540a85d49778d6",
       "historical_pinned_sha": "e9ae4669f6739d34cad63764767328a3c796a5f9",
-      "local_windows": "NOT_REVALIDATED_USER_PC__NEW_LINEAGE_STUBBED_STAGING_ONLY__NO_CAS",
+      "local_windows": "HOSTED_WINDOWS_SCREENSHOT_CHECK_ONLY_HOLD__NO_USER_PC_RECEIPT_OR_HUMAN_QA__NO_CAS",
       "intermediate_head_sha": "b550faba73b16d64d85f7ef56f0080429068f00a",
-      "compare_from_prior": "AHEAD_13_BEHIND_0_FROM_DA2068A4"
+      "compare_from_prior": "AHEAD_21_BEHIND_0_FROM_E69E9B9B"
     },
     "app": {
       "repo": "shihuiarenjinba-png/Repository-Provisioner-app",
@@ -3954,18 +3964,18 @@
     },
     "game_provisioner_pr10_current": {
       "observed_at_utc": "2026-11-02T03:33:20Z",
-      "head_sha": "e69e9b9b96f10426b9a9e3eb7d540a85d49778d6",
-      "ci_run_id": 41392855055,
+      "head_sha": "d77cf88977db943d83cf898aae5bbf027e5aed90",
+      "ci_run_id": 41405677954,
       "ci_conclusion": "SUCCESS",
       "historical_head_sha": "e9ae4669f6739d34cad63764767328a3c796a5f9",
       "previous_observed_head": "4d5c03c3aba4fccba786801e8e1b97e6fbbf3984",
       "original_zip": "EXPIRED_404",
       "exe_sha_authority": "CONFLICT",
       "cas": "NOT_APPLIED",
-      "local_windows": "NOT_OBSERVED",
+      "local_windows": "USER_PC_NOT_OBSERVED__HOSTED_WINDOWS_SCREENSHOT_CHECK_ONLY_HOLD",
       "new_lineage": "PR10_LIVE_HEAD_CI_PASS__NEW_LINEAGE_ASSEMBLY_PLAN_CHECK_ONLY__PHYSICAL_WINDOWS_AND_CAS_HOLD",
       "intermediate_head_sha": "b550faba73b16d64d85f7ef56f0080429068f00a",
-      "compare": "AHEAD_11_BEHIND_0_FROM_4D5C03C3"
+      "compare": "AHEAD_21_BEHIND_0_FROM_E69E9B9B"
     },
     "focus_artifact_expiry_recheck": {
       "artifact_id": 12807496604,
@@ -3982,9 +3992,9 @@
     "factory_image_current": {
       "repo": "shihuiarenjinba-png/AI-App-Factory",
       "draft_pr": 76,
-      "observed_head": "420e803a52918183a5b2bedc9243e1415d7c44de",
-      "ci_core_run": 41355330756,
-      "ci_image_qa_run": 41355330668,
+      "observed_head": "de514cd29d2c930ec7dcff1263070cc6bf83b2c0",
+      "ci_core_run": 41403592566,
+      "ci_image_qa_run": 41403592501,
       "ci_conclusion": "SUCCESS_AT_EXACT_HEAD",
       "market_fit_score_reported": 64,
       "why_pay_verified": false,
@@ -3994,7 +4004,7 @@
       "official_new_source_sha": "NOT_OBSERVED",
       "review_commit_sha": "NOT_OBSERVED",
       "commercial_msix": "PROHIBITED",
-      "previous_head": "a3fb28b683583710ebe3fbd2a344a6dd067b3c01",
+      "previous_head": "420e803a52918183a5b2bedc9243e1415d7c44de",
       "old_request_id": "app-offline-image-inventory-desk-16b6a772952c",
       "old_request_not_overwritten": true,
       "independent_buyers_completed": 0,
@@ -4056,12 +4066,12 @@
     "three_d_qa_pr6_latest": {
       "repository": "shihuiarenjinba-png/3d-build-qa",
       "draft_pr": 6,
-      "review_head_sha": "5438bb11516b8af8d9e68226ab2f82303b30391c",
-      "previous_head_sha": "4b58f9d3c2ff75be9627f3e8a4dd20194460111d",
-      "compare": "AHEAD_4_BEHIND_0_FROM_4B58F9D3",
-      "ci_run_id": 41394246951,
+      "review_head_sha": "8aa8c20e1db0f2c30b91dd4e27cc141b1448d7d7",
+      "previous_head_sha": "5438bb11516b8af8d9e68226ab2f82303b30391c",
+      "compare": "AHEAD_9_BEHIND_0_FROM_5438BB11",
+      "ci_run_id": 41400432166,
       "ci_conclusion": "SUCCESS",
-      "scope": "PCK_RESOURCE_INVENTORY_AND_SOURCE_RUNTIME_CI_ONLY__NO_NEW_SENTINEL_IDENTITY_CAS",
+      "scope": "EXPORTED_REAL_CONSUMER_PCK_GODOT_LINUX_SOFTWARE_RUNTIME__JAPANESE_MISSING_GLYPHS_HOLD__NOT_PHYSICAL_WINDOWS",
       "physical_windows": "NOT_EXECUTED",
       "new_sentinel_cas_applied": false,
       "real_signed_msix": "NOT_BUILT",
@@ -5188,17 +5198,17 @@
         "repository": "shihuiarenjinba-png/AI-App-Factory",
         "draft_pr": 76,
         "review_branch": "codex/app-image-snapshot-evidence-20261101",
-        "current_review_head_sha": "420e803a52918183a5b2bedc9243e1415d7c44de",
-        "previous_review_head_sha": "9095cb77840fd86f0f73b5649ebbab829effd7da",
-        "review_head_compare": "AHEAD_16_BEHIND_0_FROM_9095CB77",
+        "current_review_head_sha": "de514cd29d2c930ec7dcff1263070cc6bf83b2c0",
+        "previous_review_head_sha": "420e803a52918183a5b2bedc9243e1415d7c44de",
+        "review_head_compare": "AHEAD_4_BEHIND_0_FROM_420E803A",
         "exact_head_ci": [
           {
-            "run_id": 41392271418,
+            "run_id": 41403592501,
             "workflow": "Image snapshot QA and unsigned Windows EXE",
             "conclusion": "SUCCESS"
           },
           {
-            "run_id": 41392271412,
+            "run_id": 41403592566,
             "workflow": "Factory core CI",
             "conclusion": "SUCCESS"
           }
@@ -5214,14 +5224,14 @@
         "independent_buyers_completed": 0,
         "independent_buyers_required": 5,
         "why_pay_verified": false,
-        "qa_evidence": "CLOUD_WINDOWS_EXACT_UPLOADED_UNSIGNED_EXE_REPLAY_AND_FIXTURES_ONLY__NOT_USER_LOCAL_GUI_OR_HUMAN_BUYERS",
+        "qa_evidence": "SYNTHETIC_BUYER_TEST_KIT_AND_HOSTED_WINDOWS_GUI__ZERO_REAL_BUYER_RESPONSES__NO_LOCAL_HUMAN_QA",
         "market_fit_gate": "MARKET_FIT_HOLD",
         "identity_status": "PRE_IDENTITY_READY__HISTORICAL_REQUEST_ONLY__NO_APPROVED_FILE",
         "package_gate": "HOLD_NO_NEW_PROMOTION_OR_MARKET_FIT_PASS",
         "signed_msix": "NOT_BUILT",
         "store_submission": "NOT_PERFORMED",
         "current_review_head_source": "AI-App-Factory Draft PR76",
-        "review_scope": "HTML_DELIVERY_IMPLEMENTED_REVIEW_ONLY__FREE_ALTERNATIVES_DOCUMENTED__NO_5_REAL_BUYERS_OR_PROMOTION"
+        "review_scope": "BUYER_VALIDATION_EVIDENCE_KIT_AND_GUI_WORKFLOW_REVIEW_ONLY__FIVE_INDEPENDENT_RESPONSES_NOT_RUN__NO_PROMOTION"
       },
       "jp-bookkeeping-desk": {
         "repository": "shihuiarenjinba-png/AI-App-Factory",
@@ -5316,19 +5326,30 @@
         "independent_3d_qa_pr6": {
           "repository": "shihuiarenjinba-png/3d-build-qa",
           "draft_pr": 6,
-          "review_head_sha": "5438bb11516b8af8d9e68226ab2f82303b30391c",
-          "previous_head_sha": "891dba6ebb769c9a5925e266b28425f7ec605777",
-          "compare": "AHEAD_9_BEHIND_0_FROM_891DBA6E",
-          "ci_run_id": 41394246951,
+          "review_head_sha": "8aa8c20e1db0f2c30b91dd4e27cc141b1448d7d7",
+          "previous_head_sha": "5438bb11516b8af8d9e68226ab2f82303b30391c",
+          "compare": "AHEAD_9_BEHIND_0_FROM_5438BB11",
+          "ci_run_id": 41400432166,
           "ci_conclusion": "SUCCESS",
-          "scope": "NEW_CONSUMER_REVISION_FACTORY_ZIP_EXE_PCK_INDEPENDENT_BYTE_CUSTODY__NO_CAS_MSIX_OR_PHYSICAL_WINDOWS",
+          "scope": "EXPORTED_REAL_CONSUMER_PCK_GODOT_LINUX_SOFTWARE_RUNTIME__JAPANESE_MISSING_GLYPHS_HOLD__NOT_PHYSICAL_WINDOWS",
           "physical_windows": "NOT_EXECUTED",
           "new_sentinel_cas_applied": false,
           "real_signed_msix": "NOT_BUILT",
           "prescribed_receipt": "evidence/prism-sentinel-preserved-zip-recheck-20261102-1036jst.json",
           "receipt_evidence_scope": "24_LANE_PRESERVED_FACTORY_ZIP_INDEPENDENT_REHASH__NOT_FRESH_GITHUB_DOWNLOAD__NOT_36_REHASH",
           "execution_result": "CI_SUCCESS__PHYSICAL_WINDOWS_GUI_NOT_RUN__NEW_SENTINEL_CAS_HOLD",
-          "historical_previous_head_sha": "653e652694b861f093fce73c5a3bf6115d3eb673"
+          "historical_previous_head_sha": "653e652694b861f093fce73c5a3bf6115d3eb673",
+          "japanese_visual_quality": "HOLD_MISSING_JAPANESE_GLYPHS_IN_SOFTWARE_RENDER",
+          "real_pck_software_runtime": {
+            "run_id": 41400284402,
+            "artifact_id": 13121142145,
+            "zip_sha256": "8e7610217874136197f7cf9157bcc239444c1ae74097b51a3b461c3d0d0c6390",
+            "pck_sha256": "6e04300b176f923c9dda5777c5115af4e7670dad1d2c677fb271ba9e395fef57",
+            "screenshots": 5,
+            "renderer": "MESA_LLVMPIPE_XVFB",
+            "physical_windows": false,
+            "consumer_blocker": "UNREADABLE_JAPANESE_HUD_IN_RENDERED_PCK"
+          }
         },
         "new_consumer_revision": {
           "source_repository": "shihuiarenjinba-png/3d-game-factory",
@@ -5338,8 +5359,8 @@
           "factory_run_id": 41394020607,
           "factory_artifact_id": 13118228531,
           "content_audit_artifact_id": 13118238477,
-          "independent_qa_pr6_head": "5438bb11516b8af8d9e68226ab2f82303b30391c",
-          "independent_qa_ci_run_id": 41394246951,
+          "independent_qa_pr6_head": "8aa8c20e1db0f2c30b91dd4e27cc141b1448d7d7",
+          "independent_qa_ci_run_id": 41400432166,
           "byte_receipt": "3d-build-qa/evidence/prism-sentinel-consumer-new-revision-independent-byte-custody-20261102.json",
           "zip_sha256": "8e7610217874136197f7cf9157bcc239444c1ae74097b51a3b461c3d0d0c6390",
           "exe_sha256": "66b26ad96df7458ea917b632a73ac7c88bb058db24dbd11a457fd50435ab7b13",
@@ -5358,10 +5379,10 @@
       "signal-sprint": {
         "repository": "shihuiarenjinba-png/Repository-Provisioner-game",
         "draft_pr": 10,
-        "current_review_head_sha": "e69e9b9b96f10426b9a9e3eb7d540a85d49778d6",
+        "current_review_head_sha": "d77cf88977db943d83cf898aae5bbf027e5aed90",
         "exact_head_ci": [
           {
-            "run_id": 41392855055,
+            "run_id": 41405677954,
             "workflow": "Package and Identity Provisioner CI",
             "conclusion": "SUCCESS"
           }
@@ -5377,11 +5398,27 @@
         "real_gdk_msixvc": "NOT_BUILT",
         "package_gate": "HOLD_OLD_ARTIFACT_CONFLICT__NEW_LINEAGE_CAS_VERSION_ASSET_LOCAL_PENDING",
         "store_submission": "NOT_PERFORMED",
-        "previous_review_head_sha": "da2068a4a3c17b2742949966944fa1a39f22c626",
-        "current_provisioner_head_compare": "AHEAD_13_BEHIND_0_FROM_DA2068A4",
+        "previous_review_head_sha": "e69e9b9b96f10426b9a9e3eb7d540a85d49778d6",
+        "current_provisioner_head_compare": "AHEAD_21_BEHIND_0_FROM_E69E9B9B",
         "intermediate_head_sha": "b550faba73b16d64d85f7ef56f0080429068f00a",
         "new_lineage_assembly_plan": "CHECK_ONLY_CODE_AND_CI__NO_AUTHORIZED_CAS_OR_SDK",
-        "staging_dry_run_status": "NEW_LINEAGE_STAGING_DRY_RUN_HOLD__STUBBED_RECONCILE__NO_AUTHORIZED_CAS"
+        "staging_dry_run_status": "NEW_LINEAGE_STAGING_DRY_RUN_HOLD__STUBBED_RECONCILE__NO_AUTHORIZED_CAS",
+        "hosted_windows_gui_evidence": {
+          "run_id": 41398642854,
+          "artifact_id": 13120481943,
+          "exe_sha256": "beb683b61b4fa4b2ec90fe1d413363c8a535bd4cb72b41b54b03a9685f516ee0",
+          "status": "WINDOWS_GUI_CHECK_ONLY_HOLD",
+          "basis": "ACTUAL_HOSTED_WINDOWS_EXE_SCREENSHOT_ONE_RIGHT_MOVE_30_TO_29__UIA_TK_TEXT_UNAVAILABLE",
+          "consumer_defects": [
+            "1024x768_TASKBAR_OCCLUDES_BOTTOM_WINDOW",
+            "JP_TOGGLE_BUT_GAME_STATUS_REMAINS_ENGLISH"
+          ],
+          "user_pc": false,
+          "human_qa": false,
+          "dpi_125_150": false,
+          "loss_retry_verified": false,
+          "sale_ready": false
+        }
       },
       "signal-sprint-new-lineage": {
         "repository": "shihuiarenjinba-png/AI-Game-Factory",
@@ -5555,11 +5592,11 @@
         "historical_previous_head": "24e8beade64177cafd0d545d84392304b53dfe51"
       },
       "three_d_qa": {
-        "previous_head": "891dba6ebb769c9a5925e266b28425f7ec605777",
-        "current_head": "5438bb11516b8af8d9e68226ab2f82303b30391c",
+        "previous_head": "5438bb11516b8af8d9e68226ab2f82303b30391c",
+        "current_head": "8aa8c20e1db0f2c30b91dd4e27cc141b1448d7d7",
         "ahead": 9,
         "behind": 0,
-        "ci_run_id": 41394246951,
+        "ci_run_id": 41400432166,
         "ci": "SUCCESS",
         "new_revision_identity_cas": "HOLD",
         "historical_previous_head": "653e652694b861f093fce73c5a3bf6115d3eb673"
@@ -5767,6 +5804,88 @@
       "github_backlog": false,
       "local_checker_gui": false,
       "store_submission": "NOT_PERFORMED"
+    },
+    "live_head_ci_qa_reconciliation_20261102": {
+      "observed_at_utc": "2026-11-02T07:36:50Z",
+      "writer": "36_WINDOWS_E2E_ONLY",
+      "stack_base_pr": 142,
+      "observations": {
+        "game_provisioner_pr10": {
+          "previous_head": "e69e9b9b96f10426b9a9e3eb7d540a85d49778d6",
+          "head": "d77cf88977db943d83cf898aae5bbf027e5aed90",
+          "ahead": 21,
+          "behind": 0,
+          "ci_run_id": 41405677954,
+          "hosted_gui_run_id": 41398642854,
+          "hosted_gui_status": "WINDOWS_GUI_CHECK_ONLY_HOLD",
+          "user_pc": "NOT_OBSERVED",
+          "cas": false,
+          "gdk_msixvc": false
+        },
+        "three_d_qa_pr6": {
+          "previous_head": "5438bb11516b8af8d9e68226ab2f82303b30391c",
+          "head": "8aa8c20e1db0f2c30b91dd4e27cc141b1448d7d7",
+          "ahead": 9,
+          "behind": 0,
+          "ci_run_ids": [
+            41400432085,
+            41400432166
+          ],
+          "runtime_run_id": 41400284402,
+          "japanese_glyphs": "HOLD_MISSING_JAPANESE_GLYPHS_IN_SOFTWARE_RENDER",
+          "physical_windows": false,
+          "new_revision_cas": false,
+          "signed_msix": false
+        },
+        "image_factory_pr76": {
+          "previous_head": "420e803a52918183a5b2bedc9243e1415d7c44de",
+          "head": "de514cd29d2c930ec7dcff1263070cc6bf83b2c0",
+          "ahead": 4,
+          "behind": 0,
+          "ci_run_ids": [
+            41403592566,
+            41403592501
+          ],
+          "score": 64,
+          "buyers": 0,
+          "required_buyers": 5,
+          "review_only": true,
+          "new_promotion": false,
+          "market_fit": "HOLD"
+        }
+      },
+      "batch4": {
+        "cloud_discovered": 4,
+        "github_identity_returns": 2,
+        "physical_processed": 0,
+        "physical_discovered": 0,
+        "cloud_next_index": 3,
+        "local_scheduler_proven": false,
+        "archive_zip_sha_crc_preserved": 4,
+        "archive_location": "CHATGPT_LIBRARY_NOT_USER_PC"
+      },
+      "local_code_sync": {
+        "cloud_pass": true,
+        "user_pc_exact_3_sha_verified": false,
+        "user_pc_idempotent_reuse_verified": false,
+        "task_scheduler_receipt_verified": false
+      },
+      "sale_ready": {
+        "real_msix": false,
+        "gdk_msixvc": false,
+        "backlog": false,
+        "local_pull": false,
+        "checker": false,
+        "user_pc_gui": false,
+        "human_qa": false,
+        "consumer_would_buy": "NO",
+        "blocking_ux": [
+          "SIGNAL_SPRINT_HOSTED_1024X768_TASKBAR_OCCLUSION_AND_ENGLISH_JP_STATUS",
+          "PRISM_EXPORTED_PCK_JAPANESE_GLYPHS_MISSING"
+        ],
+        "no_unapproved_cas_or_store": true
+      },
+      "history_policy": "OLD_HEADS_AND_COMMANDS_RETAINED_AS_HISTORICAL__NO_AUTOMATIC_CAS_OR_VERSION_INFERENCE"
     }
   },
   "sale_ready_windows_ux_gate": {
@@ -5862,14 +5981,14 @@
         "product": "Prism Route 3D",
         "physical_windows_gui": "NOT_OBSERVED",
         "consumer_would_buy_at_current_price": "NO",
-        "reason": "REAL_WINDOWS_TASK_TO_OUTPUT_RESTART_RECOVERY_NOT_VERIFIED__PRICE_NOT_APPROVED",
+        "reason": "REAL_EXPORTED_PCK_LINUX_SOFTWARE_RENDER_SHOWS_MISSING_JAPANESE_GLYPHS__NO_PHYSICAL_WINDOWS_DPI_HUMAN_QA",
         "sale_ready": false
       },
       {
         "product": "Signal Sprint",
         "physical_windows_gui": "NOT_OBSERVED",
         "consumer_would_buy_at_current_price": "NO",
-        "reason": "REAL_WINDOWS_TASK_TO_OUTPUT_RESTART_RECOVERY_NOT_VERIFIED__PRICE_NOT_APPROVED",
+        "reason": "HOSTED_REAL_WINDOWS_EXE_SCREENSHOT_PROVES_ONE_MOVE_BUT_1024X768_TASKBAR_OCCLUSION_AND_JP_STATUS_ENGLISH__NO_USER_PC_DPI_HUMAN_QA",
         "sale_ready": false
       },
       {
@@ -5880,7 +5999,7 @@
         "sale_ready": false
       }
     ],
-    "next_action": "ON_REAL_WINDOWS_CAPTURE_PER_PRODUCT_JOURNEY_AND_NEGATIVE_CASE_RECEIPTS_AT_1024x768_125_150_DPI__RETURN_SPECIFIC_UI_FUNCTION_BLOCKERS_TO_00_12_24__DO_NOT_PROMOTE_WITHOUT_PROOF",
+    "next_action": "24_3D_FIX_LICENSED_JP_FONT_IN_NEW_PCK_REVISION__12_GAME_FIX_1024X768_TASKBAR_CLIP_AND_JP_MESSAGES_IN_NEW_REVISION__36_USER_PC_QA_AND_EXACT_SHA_SYNC_PENDING",
     "store_submission": "NOT_PERFORMED",
     "market_fit_min_score_for_formal_package": 80,
     "market_fit_score_90_alone_sufficient": false,
