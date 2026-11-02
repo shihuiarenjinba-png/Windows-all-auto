@@ -5222,17 +5222,17 @@
         "repository": "shihuiarenjinba-png/AI-App-Factory",
         "draft_pr": 76,
         "review_branch": "codex/app-image-snapshot-evidence-20261101",
-        "current_review_head_sha": "766480975ecbe5826bfb2c73060a662d30c708b1",
-        "previous_review_head_sha": "b375fd9ed39ce5ceef635d9df169d7e23f2e2eac",
-        "review_head_compare": "AHEAD_6_BEHIND_0_FROM_B375FD9E",
+        "current_review_head_sha": "b375fd9ed39ce5ceef635d9df169d7e23f2e2eac",
+        "previous_review_head_sha": "9407225df68db3fb9c4e49b6d49db431c2c9094a",
+        "review_head_compare": "AHEAD_8_BEHIND_0_FROM_9407225D",
         "exact_head_ci": [
           {
-            "run_id": 41435219141,
+            "run_id": 41427272964,
             "workflow": "Factory core CI",
             "conclusion": "SUCCESS"
           },
           {
-            "run_id": 41435219193,
+            "run_id": 41427272854,
             "workflow": "Image snapshot QA and unsigned Windows EXE",
             "conclusion": "SUCCESS"
           }
@@ -5255,8 +5255,9 @@
         "signed_msix": "NOT_BUILT",
         "store_submission": "NOT_PERFORMED",
         "current_review_head_source": "AI-App-Factory Draft PR76",
-        "review_scope": "NEW_EXACT_REPLAY_AND_WORK_AREA_TESTS__REVIEW_ONLY__NO_MARKET_FIT_OR_PHYSICAL_USER_PC_PROMOTION",
-        "historical_review_head_before_20261102_2037": "b375fd9ed39ce5ceef635d9df169d7e23f2e2eac"
+        "review_scope": "READ_ONLY_IMAGE_SNAPSHOT_AND_PERSISTED_JA_EN_UI_REVIEW_ONLY__CLOUD_CI_SUCCESS__NO_INDEPENDENT_BUYERS_OR_PHYSICAL_WINDOWS_QA",
+        "historical_review_head_before_20261102_2037": "b375fd9ed39ce5ceef635d9df169d7e23f2e2eac",
+        "observation_snapshot_scope": "HISTORICAL_PR76_B375FD9E__CURRENT_PR76_76648097_IS_IN_CURRENT_FOUR_LANE_OBSERVATION"
       },
       "jp-bookkeeping-desk": {
         "repository": "shihuiarenjinba-png/AI-App-Factory",
