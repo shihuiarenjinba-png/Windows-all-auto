@@ -4005,7 +4005,7 @@
     "factory_image_current": {
       "repo": "shihuiarenjinba-png/AI-App-Factory",
       "draft_pr": 76,
-      "observed_head": "de514cd29d2c930ec7dcff1263070cc6bf83b2c0",
+      "observed_head": "9407225df68db3fb9c4e49b6d49db431c2c9094a",
       "ci_core_run": 41403592566,
       "ci_image_qa_run": 41403592501,
       "ci_conclusion": "SUCCESS_AT_EXACT_HEAD",
@@ -4022,7 +4022,13 @@
       "old_request_not_overwritten": true,
       "independent_buyers_completed": 0,
       "independent_buyers_required": 5,
-      "cloud_exact_uploaded_exe_replay": "SUCCESS__CLOUD_WINDOWS_NOT_LOCAL_OR_HUMAN"
+      "cloud_exact_uploaded_exe_replay": "SUCCESS__CLOUD_WINDOWS_NOT_LOCAL_OR_HUMAN",
+      "previous_observed_head": "de514cd29d2c930ec7dcff1263070cc6bf83b2c0",
+      "current_head_ci_run_ids": [
+        41417469015,
+        41417469052
+      ],
+      "current_review_only": true
     },
     "prism_sentinel_separate_observation": {
       "repo": "shihuiarenjinba-png/3d-game-factory",
@@ -6011,7 +6017,8 @@
         "legacy_identity_return_commit": "11417b75636ee18816028ffd5221884c4c9a9836",
         "new_cas": false,
         "physical_gui": false,
-        "signed_msix": false
+        "signed_msix": false,
+        "legacy_identity_cas_is_new_revision": false
       },
       "app": {
         "image_pr": 76,
