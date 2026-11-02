@@ -25,7 +25,7 @@ def validate(d):
     q = proof["qa"]
     h = proof["historical"]
     g = proof["gates"]
-    current = r["current_four_lane_observation"]["three_d"]
+    current = r["historical_four_lane_observation_20261102_2350"]["three_d"]
     first = r["observations"]["prism-route-3d-first30s-pr19"]
     qa = r["observations"]["prism-route-3d-consumer-qa-pr9"]
     old_snapshot = r["latest_20261102_2241_review_provenance"]["three_d_qa"]
@@ -97,10 +97,10 @@ class PrismIndependentFactoryBytes(unittest.TestCase):
             validate(bad)
 
     def test_reject_old_pr18_artifact_as_new_factory_export(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"].__setitem__("artifact_id", 13130487252))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_20261102_2350"]["three_d"].__setitem__("artifact_id", 13130487252))
 
     def test_reject_old_prism_identity_as_new_cas(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"].__setitem__("new_cas", True))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_20261102_2350"]["three_d"].__setitem__("new_cas", True))
 
     def test_reject_factory_quality_ci_as_artifact_run(self):
         self.reject(lambda d: d["revision_review_reconciliation"]["latest_20261102_2350_pr19_byte_provenance"]["factory"].__setitem__("export_run_id", 41444886971))
