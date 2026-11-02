@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-02T12:39:45Z",
+  "updated_at_utc": "2026-11-02T13:41:21Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -5213,7 +5213,7 @@
   },
   "revision_review_reconciliation": {
     "schema_version": 1,
-    "observed_at_utc": "2026-11-02T12:39:45Z",
+    "observed_at_utc": "2026-11-02T13:41:21Z",
     "writer": "36_WINDOWS_E2E_ONLY",
     "scope": "LIVE_PR19_PR16_QA9_APP76_REVIEW_HEADS__FACTORY_RUN_ARTIFACT_SEPARATION__NO_LOCAL_CAS_MSIX_OR_STORE_PROMOTION",
     "policy": "PR_HEAD_IS_MUTABLE_REVIEW_CODE__SOURCE_SHA_AND_REQUEST_ID_ARE_IMMUTABLE_PRODUCT_BINDINGS__NO_AUTO_REBIND",
@@ -5222,17 +5222,17 @@
         "repository": "shihuiarenjinba-png/AI-App-Factory",
         "draft_pr": 76,
         "review_branch": "codex/app-image-snapshot-evidence-20261101",
-        "current_review_head_sha": "7ee78dbdaa075afec3e972bee79d7bbb22101249",
-        "previous_review_head_sha": "9407225df68db3fb9c4e49b6d49db431c2c9094a",
-        "review_head_compare": "AHEAD_8_BEHIND_0_FROM_9407225D",
+        "current_review_head_sha": "886b9214b9cc79b35403ca168ca09df7a2e12404",
+        "previous_review_head_sha": "7ee78dbdaa075afec3e972bee79d7bbb22101249",
+        "review_head_compare": "AHEAD_3_BEHIND_0_FROM_7EE78DBD",
         "exact_head_ci": [
           {
-            "run_id": 41441166840,
+            "run_id": 41449337747,
             "workflow": "Factory core CI",
             "conclusion": "SUCCESS"
           },
           {
-            "run_id": 41441166884,
+            "run_id": 41449337454,
             "workflow": "Image snapshot QA and unsigned Windows EXE",
             "conclusion": "SUCCESS"
           }
@@ -5255,12 +5255,18 @@
         "signed_msix": "NOT_BUILT",
         "store_submission": "NOT_PERFORMED",
         "current_review_head_source": "AI-App-Factory Draft PR76",
-        "review_scope": "READ_ONLY_IMAGE_SNAPSHOT_AND_PERSISTED_JA_EN_UI_REVIEW_ONLY__CLOUD_CI_SUCCESS__NO_INDEPENDENT_BUYERS_OR_PHYSICAL_WINDOWS_QA",
+        "review_scope": "OS_DPI_RECEIPT_MERGE_AND_CLOUD_BUYER_TASK_QA__NO_REAL_BUYER_OR_PHYSICAL_QA",
         "historical_review_head_before_20261102_2037": "b375fd9ed39ce5ceef635d9df169d7e23f2e2eac",
-        "observation_snapshot_scope": "CURRENT_PR76_7EE78DBD_REVIEW_ONLY__OLDER_IMMUTABLE_PRE_IDENTITY_REQUEST_UNCHANGED",
+        "observation_snapshot_scope": "CURRENT_PR76_886B9214_REVIEW_ONLY__OLD_IMMUTABLE_PRE_IDENTITY_REQUEST_UNCHANGED",
         "historical_current_review_head_sha": "b375fd9ed39ce5ceef635d9df169d7e23f2e2eac",
-        "review_unsigned_exe_artifact_id": 13140456543,
-        "review_unsigned_exe_is_approved_source": false
+        "review_unsigned_exe_artifact_id": 13143283530,
+        "review_unsigned_exe_is_approved_source": false,
+        "review_unsigned_exe_artifact_metadata_digest": "sha256:5926835801cf8de490409958392fdceefb241f65adce6a6191443765f0d9e5b7",
+        "cloud_buyer_task_artifact_id": 13144232281,
+        "cloud_buyer_task_artifact_scope": "EXACT_EXE_CLOUD_TASK_CHECK_ONLY__NOT_USER_PC_NOT_HUMAN_NOT_REAL_BUYER",
+        "cloud_buyer_task_artifact_digest": "sha256:9a18c7840f7b1eb402e5c4dfd427994a34767033abbbba7c31064f78e720825d",
+        "physical_os_dpi_receipt_verified": false,
+        "independent_real_buyer_responses_verified": false
       },
       "jp-bookkeeping-desk": {
         "repository": "shihuiarenjinba-png/AI-App-Factory",
@@ -5655,10 +5661,10 @@
         "repository": "shihuiarenjinba-png/3d-build-qa",
         "draft_pr": 9,
         "review_branch": "codex/prism-first30s-real-pck-qa-20261102",
-        "current_review_head_sha": "0678dee31c895921c00b1e6f06f059eadb8877c1",
+        "current_review_head_sha": "1a16b2a69083ca5698f29388c0eb59875a612450",
         "ci_run_ids": [
-          41445320530,
-          41445320532
+          41454758338,
+          41454758366
         ],
         "prior_qa_pr6_head_sha": "8aa8c20e1db0f2c30b91dd4e27cc141b1448d7d7",
         "prior_qa_pr6_is_current": false,
@@ -5669,7 +5675,14 @@
         "historical_current_review_head_sha": "87e174d59e99b1f3a6172e324ef35053a5ea6607",
         "factory_artifact_id_referenced_in_workflow": 13142680551,
         "factory_artifact_independently_verified_by_36": false,
-        "hosted_qa_artifact_id": 13141104891
+        "hosted_qa_artifact_id": 13145583388,
+        "previous_review_head_sha": "0678dee31c895921c00b1e6f06f059eadb8877c1",
+        "hosted_qa_artifact_metadata_digest": "sha256:53173d2ec94a411bb24d34ec6ff3a3d8f4dcb6eb7eb8034ef83f56e382b247d4",
+        "hosted_qa_artifact_scope": "SOFTWARE_RUNTIME_EXPORTED_PCK_QA_ONLY__NOT_36_INDEPENDENT_BYTES_OR_USER_PC",
+        "physical_capture_contract_reviewed": true,
+        "physical_capture_receipt_present": false,
+        "independent_user_pc_ja_en_125_150_qa": false,
+        "qa_review_head_compare": "AHEAD_3_BEHIND_0_FROM_0678DEE3"
       },
       "prism-route-3d-first30s-pr19": {
         "repository": "shihuiarenjinba-png/3d-game-factory",
@@ -6108,7 +6121,7 @@
       "historical_snapshot": true
     },
     "current_four_lane_observation": {
-      "observed_at_utc": "2026-11-02T12:39:45Z",
+      "observed_at_utc": "2026-11-02T13:41:21Z",
       "writer": "36_WINDOWS_E2E_ONLY",
       "game": {
         "pr": 10,
@@ -6156,10 +6169,10 @@
         "artifact_metadata_expired": null,
         "artifact_expires_at_utc": null,
         "qa_pr": 9,
-        "qa_head": "0678dee31c895921c00b1e6f06f059eadb8877c1",
+        "qa_head": "1a16b2a69083ca5698f29388c0eb59875a612450",
         "qa_ci": [
-          41445320530,
-          41445320532
+          41454758338,
+          41454758366
         ],
         "historical_pr18_build": {
           "review_head_sha": "3c5a1e6837118a73609a0b9c9b7b54dfa4c14f0d",
@@ -6173,26 +6186,30 @@
         "factory_quality_ci_artifact_status": "NO_ARTIFACT_IN_PR19_QUALITY_CI_RUN_41444886971",
         "qa9_referenced_factory_artifact_id": 13142680551,
         "qa9_referenced_factory_artifact_scope": "QA9_WORKFLOW_PIN_ONLY__NOT_IN_PR19_QUALITY_RUN__NOT_INDEPENDENTLY_DOWNLOADED_BY_36",
-        "qa9_runtime_artifact_id": 13141104891,
-        "qa9_runtime_artifact_scope": "HOSTED_SOFTWARE_RUNTIME_QA_ONLY__NOT_PHYSICAL_WINDOWS",
-        "pr19_new_pck_verified_by_36": false
+        "qa9_runtime_artifact_id": 13145583388,
+        "qa9_runtime_artifact_scope": "HOSTED_SOFTWARE_RUNTIME_QA_ONLY__NOT_PHYSICAL_WINDOWS_OR_NEW_PR19_FACTORY_BUILD",
+        "pr19_new_pck_verified_by_36": false,
+        "qa9_physical_receipt_verified": false
       },
       "app": {
         "image_pr": 76,
-        "head": "7ee78dbdaa075afec3e972bee79d7bbb22101249",
+        "head": "886b9214b9cc79b35403ca168ca09df7a2e12404",
         "ci": [
-          41441166840,
-          41441166884
+          41449337747,
+          41449337454
         ],
         "score": 64,
         "real_buyers": 0,
         "market_fit": "HOLD",
         "promoted": false,
-        "previous_review_head": "766480975ecbe5826bfb2c73060a662d30c708b1",
-        "review_unsigned_exe_artifact_id": 13140456543,
-        "review_unsigned_exe_scope": "HOSTED_UNSIGNED_REVIEW_EXE__NOT_OLD_IMMUTABLE_IDENTITY_REQUEST__NOT_MSIX_OR_PHYSICAL_QA",
+        "previous_review_head": "7ee78dbdaa075afec3e972bee79d7bbb22101249",
+        "review_unsigned_exe_artifact_id": 13143283530,
+        "review_unsigned_exe_scope": "HOSTED_UNSIGNED_REVIEW_EXE_ARTIFACT__NOT_CLOUD_BUYER_TASK_ARTIFACT__NOT_APPROVED_SOURCE_OR_MSIX",
         "old_immutable_request_id": "app-offline-image-inventory-desk-16b6a772952c",
-        "new_revision_promoted": false
+        "new_revision_promoted": false,
+        "cloud_buyer_task_artifact_id": 13144232281,
+        "cloud_buyer_task_is_human_qa": false,
+        "physical_os_dpi_pass": false
       },
       "windows_e2e": {
         "base_pr": 145,
@@ -6455,6 +6472,67 @@
       "task_scheduler_receipt": false,
       "real_package": false,
       "store_submission": false
+    },
+    "latest_20261102_2241_review_provenance": {
+      "observed_at_utc": "2026-11-02T13:41:21Z",
+      "writer": "36_WINDOWS_E2E_ONLY",
+      "scope": "LIVE_PR76_AND_QA9_REVIEW_DRIFT_ONLY__NO_PRODUCT_SOURCE_OR_IDENTITY_REBIND",
+      "app": {
+        "pr": 76,
+        "previous_head": "7ee78dbdaa075afec3e972bee79d7bbb22101249",
+        "current_head": "886b9214b9cc79b35403ca168ca09df7a2e12404",
+        "ahead": 3,
+        "behind": 0,
+        "ci": [
+          41449337747,
+          41449337454
+        ],
+        "unsigned_review_exe_artifact_id": 13143283530,
+        "cloud_buyer_task_artifact_id": 13144232281,
+        "artifact_metadata_only": true,
+        "independent_byte_rehash_by_36": false,
+        "real_buyers": 0,
+        "score": 64,
+        "source_promoted": false,
+        "physical_windows": false
+      },
+      "three_d_qa": {
+        "pr": 9,
+        "previous_head": "0678dee31c895921c00b1e6f06f059eadb8877c1",
+        "current_head": "1a16b2a69083ca5698f29388c0eb59875a612450",
+        "ahead": 3,
+        "behind": 0,
+        "ci": [
+          41454758338,
+          41454758366
+        ],
+        "hosted_software_runtime_artifact_id": 13145583388,
+        "headless_fixture_artifact_id": 13146402165,
+        "unsigned_makeappx_fixture_artifact_id": 13145578102,
+        "artifact_metadata_only": true,
+        "independent_pck_rehash_by_36": false,
+        "physical_capture_contract_only": true,
+        "physical_user_pc_receipt": false,
+        "legacy_prism_identity_is_current_cas": false
+      },
+      "unchanged_boundaries": {
+        "prism_factory_pr19_review_head": "0878f48c79073596e30fed37a5703e0826389862",
+        "prism_pr18_built_artifact_id": 13130487252,
+        "prism_pr19_quality_ci_artifacts": 0,
+        "game_immutable_source": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
+        "app_identity_return_count": 2,
+        "app_operator_pending_count": 2,
+        "app_local_processed": 0,
+        "cloud_archived_zip_count": 4,
+        "local_code_sync": "CLOUD_PASS_ONLY",
+        "scheduler_receipt": false,
+        "real_msix": false,
+        "real_gdk_msixvc": false,
+        "backlog": false,
+        "checker": false,
+        "physical_gui": false,
+        "sale_ready": false
+      }
     }
   },
   "sale_ready_windows_ux_gate": {
