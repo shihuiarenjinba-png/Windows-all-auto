@@ -1,4 +1,4 @@
-"""QA13 exact read-only binary handoff is byte-verified, never physical Windows or Store approval."""
+"""QA13 historical read-only binary handoff is byte-verified, never physical Windows or Store approval."""
 import copy
 import json
 import unittest
@@ -17,7 +17,7 @@ GATE1 = "11417b75636ee18816028ffd5221884c4c9a9836"
 
 def validate(d):
     r = d["revision_review_reconciliation"]
-    c = r["current_four_lane_observation"]
+    c = r["historical_four_lane_observation_before_20261103_0636"]
     t = c["three_d"]
     current = r["observations"]["prism-route-3d-consumer-qa-pr13"]
     historical = r["historical_four_lane_observation_20261103_0236"]["three_d"]
@@ -94,7 +94,7 @@ class Qa13ReadOnlyHandoffBoundary(unittest.TestCase):
             validate(bad)
 
     def test_reject_stale_qa12_as_current(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"].__setitem__("qa_head", QA12))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_before_20261103_0636"]["three_d"].__setitem__("qa_head", QA12))
 
     def test_reject_qa12_artifact_as_current_handoff(self):
         self.reject(lambda d: d["revision_review_reconciliation"]["observations"]["prism-route-3d-consumer-qa-pr13"].__setitem__("handoff_artifact_id", 13158359758))
@@ -118,7 +118,7 @@ class Qa13ReadOnlyHandoffBoundary(unittest.TestCase):
         self.reject(lambda d: d["revision_review_reconciliation"]["observations"]["prism-route-3d-consumer-qa-pr13"].__setitem__("code_integrity_status", "ALLOWED_BY_EXISTING_POLICY"))
 
     def test_reject_old_identity_as_new_cas(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"].__setitem__("new_cas", True))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_before_20261103_0636"]["three_d"].__setitem__("new_cas", True))
 
     def test_reject_unsigned_msix_as_signed(self):
         self.reject(lambda d: d["revision_review_reconciliation"]["observations"]["prism-route-3d-consumer-qa-pr13"].__setitem__("signed_msix", True))

@@ -1,4 +1,4 @@
-"""Signal Sprint PR17 live review artifacts are not immutable source, GDK, CAS or physical QA."""
+"""Signal Sprint PR17 historical 495d5dc review artifacts are not immutable source, GDK, CAS or physical QA."""
 import copy
 import json
 import unittest
@@ -16,9 +16,9 @@ GUI_DIGEST = "sha256:652e5a6da8004eaa76147dfd7cb3ddaaa0e82e675dbb7b1e0a469b73c46
 
 def validate(d):
     r = d["revision_review_reconciliation"]
-    c = r["current_four_lane_observation"]["game"]
+    c = r["historical_four_lane_observation_before_20261103_0636"]["game"]
     old = r["historical_four_lane_observation_20261103_0336"]["game"]
-    o = r["observations"]["signal-sprint-physical-qa-pr17"]
+    o = r["historical_signal_sprint_pr17_observation_495d5dc"]
     gates = r["cross_lane_gates"]
     assert r["writer"] == "36_WINDOWS_E2E_ONLY"
     assert c["factory_review_pr"] == o["draft_pr"] == 17
@@ -77,43 +77,43 @@ class GamePr17CurrentReviewBoundary(unittest.TestCase):
             validate(bad)
 
     def test_reject_stale_pr16_as_current(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["game"].__setitem__("factory_review_head", PR16))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_before_20261103_0636"]["game"].__setitem__("factory_review_head", PR16))
 
     def test_reject_old_pr17_run_as_live_head(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["observations"]["signal-sprint-physical-qa-pr17"].__setitem__("current_run_head_sha", INITIAL_PR17))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_signal_sprint_pr17_observation_495d5dc"].__setitem__("current_run_head_sha", INITIAL_PR17))
 
     def test_reject_old_pr16_gui_artifact_substitution(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["game"].__setitem__("hosted_gui_artifact_id", 13159475933))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_before_20261103_0636"]["game"].__setitem__("hosted_gui_artifact_id", 13159475933))
 
     def test_reject_initial_pr17_exe_as_latest(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["observations"]["signal-sprint-physical-qa-pr17"].__setitem__("current_exe_artifact_id", 13167801977))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_signal_sprint_pr17_observation_495d5dc"].__setitem__("current_exe_artifact_id", 13167801977))
 
     def test_reject_exe_gui_artifact_swapping(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["game"].__setitem__("physical_qa_exe_artifact_id", 13171178413))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_before_20261103_0636"]["game"].__setitem__("physical_qa_exe_artifact_id", 13171178413))
 
     def test_reject_wrong_digest(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["observations"]["signal-sprint-physical-qa-pr17"].__setitem__("current_exe_artifact_digest", GUI_DIGEST))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_signal_sprint_pr17_observation_495d5dc"].__setitem__("current_exe_artifact_digest", GUI_DIGEST))
 
     def test_reject_mutated_original_source(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["observations"]["signal-sprint-physical-qa-pr17"].__setitem__("immutable_original_source_sha", PR17))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_signal_sprint_pr17_observation_495d5dc"].__setitem__("immutable_original_source_sha", PR17))
 
     def test_reject_exe_claimed_as_gdk_msixvc(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["game"].__setitem__("physical_qa_artifact_is_gdk_msixvc", True))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_before_20261103_0636"]["game"].__setitem__("physical_qa_artifact_is_gdk_msixvc", True))
 
     def test_reject_exe_claimed_approved_gdk_staging(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["observations"]["signal-sprint-physical-qa-pr17"].__setitem__("approved_gdk_staging_exe", True))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_signal_sprint_pr17_observation_495d5dc"].__setitem__("approved_gdk_staging_exe", True))
 
     def test_reject_false_physical_pass(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["observations"]["signal-sprint-physical-qa-pr17"].__setitem__("physical_user_pc", True))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_signal_sprint_pr17_observation_495d5dc"].__setitem__("physical_user_pc", True))
 
     def test_reject_fake_local_receipt(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["game"].__setitem__("physical_qa_operator_receipt_present", True))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_before_20261103_0636"]["game"].__setitem__("physical_qa_operator_receipt_present", True))
 
     def test_reject_unverified_byte_claim(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["observations"]["signal-sprint-physical-qa-pr17"].__setitem__("artifact_independent_download_and_rehash_by_36", True))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_signal_sprint_pr17_observation_495d5dc"].__setitem__("artifact_independent_download_and_rehash_by_36", True))
 
     def test_reject_cas_claim(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["observations"]["signal-sprint-physical-qa-pr17"].__setitem__("new_cas_applied", True))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_signal_sprint_pr17_observation_495d5dc"].__setitem__("new_cas_applied", True))
 
     def test_reject_cloud_cursor_as_physical(self):
         self.reject(lambda d: d["multi_product_partner_center_batch_4"].__setitem__("processed_count", 4))
