@@ -1,4 +1,4 @@
-"""Live four-lane evidence is exact-HEAD metadata, never an inferred physical/CAS pass."""
+"""Historical 06:36 snapshot remains immutable; the 07:36 live snapshot has separate tests."""
 import copy
 import json
 import unittest
@@ -21,7 +21,7 @@ QA_BINARY_DIGEST = "sha256:d1bc15ae028ec1ed8f2d9ecb4dd77d162a8233c3d8aadc7d0e530
 
 def validate(d):
     r = d["revision_review_reconciliation"]
-    c = r["current_four_lane_observation"]
+    c = r["historical_four_lane_observation_before_20261103_0736"]
     latest = r["latest_20261103_0636_live_four_lane_reconciliation"]
     old = r["historical_four_lane_observation_before_20261103_0636"]
     game = c["game"]
@@ -35,8 +35,9 @@ def validate(d):
     app4 = r["current_app4_actions_artifact_availability"]
 
     assert r["writer"] == c["writer"] == latest["writer"] == "36_WINDOWS_E2E_ONLY"
-    assert r["observed_at_utc"] == c["observed_at_utc"] == latest["observed_at_utc"]
-    assert d["updated_at_utc"] == latest["observed_at_utc"]
+    assert c["observed_at_utc"] == latest["observed_at_utc"]
+    assert r["observed_at_utc"] > latest["observed_at_utc"]
+    assert d["updated_at_utc"] == r["observed_at_utc"]
     assert latest["source"] == "GITHUB_EXACT_PR_HEAD_CI_AND_RUN_ARTIFACT_METADATA"
     assert latest["artifact_metadata_is_not_independent_bytes"]
     assert latest["history_boundary"].startswith("last_36_execution_AND_current_identity_projection_ARE_HISTORICAL")
@@ -148,58 +149,58 @@ class LiveFourLaneBoundary(unittest.TestCase):
             validate(altered)
 
     def test_reject_old_game_head_as_current(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["game"].__setitem__("factory_review_head", GAME_PREV))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_before_20261103_0736"]["game"].__setitem__("factory_review_head", GAME_PREV))
 
     def test_reject_old_game_exe_as_current(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["game"].__setitem__("physical_qa_exe_artifact_id", 13175054438))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_before_20261103_0736"]["game"].__setitem__("physical_qa_exe_artifact_id", 13175054438))
 
     def test_reject_old_game_gui_as_current(self):
         self.reject(lambda d: d["revision_review_reconciliation"]["observations"]["signal-sprint-physical-qa-pr17"].__setitem__("current_gui_artifact_id", 13175454592))
 
     def test_reject_swapped_game_exe_gui(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["game"].__setitem__("hosted_gui_artifact_id", 13180405918))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_before_20261103_0736"]["game"].__setitem__("hosted_gui_artifact_id", 13180405918))
 
     def test_reject_wrong_game_run_head(self):
         self.reject(lambda d: d["revision_review_reconciliation"]["observations"]["signal-sprint-physical-qa-pr17"].__setitem__("current_run_head_sha", GAME_PREV))
 
     def test_reject_wrong_game_digest(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["game"].__setitem__("physical_qa_exe_artifact_digest", GAME_GUI_DIGEST))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_before_20261103_0736"]["game"].__setitem__("physical_qa_exe_artifact_digest", GAME_GUI_DIGEST))
 
     def test_reject_review_head_rebinding_immutable_source(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["game"].__setitem__("original_source_sha", GAME))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_before_20261103_0736"]["game"].__setitem__("original_source_sha", GAME))
 
     def test_reject_exe_claimed_as_gdk(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["game"].__setitem__("physical_qa_artifact_is_gdk_msixvc", True))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_before_20261103_0736"]["game"].__setitem__("physical_qa_artifact_is_gdk_msixvc", True))
 
     def test_reject_unverified_game_byte_pass(self):
         self.reject(lambda d: d["revision_review_reconciliation"]["observations"]["signal-sprint-physical-qa-pr17"].__setitem__("artifact_independent_download_and_rehash_by_36", True))
 
     def test_reject_old_qa13_as_current(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"].__setitem__("qa_head", QA13))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_before_20261103_0736"]["three_d"].__setitem__("qa_head", QA13))
 
     def test_reject_qa13_binary_as_qa14(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"].__setitem__("qa14_binary_handoff_artifact_id", 13168745891))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_before_20261103_0736"]["three_d"].__setitem__("qa14_binary_handoff_artifact_id", 13168745891))
 
     def test_reject_qa14_claimed_new_factory_pck(self):
         self.reject(lambda d: d["revision_review_reconciliation"]["observations"]["prism-route-3d-consumer-qa-pr14"].__setitem__("new_factory_pck_produced_by_qa14", True))
 
     def test_reject_qa14_metadata_claimed_byte_verified(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"].__setitem__("qa14_independent_36_byte_rehash", True))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_before_20261103_0736"]["three_d"].__setitem__("qa14_independent_36_byte_rehash", True))
 
     def test_reject_qa14_false_physical_pass(self):
         self.reject(lambda d: d["revision_review_reconciliation"]["observations"]["prism-route-3d-consumer-qa-pr14"].__setitem__("physical_windows_human_pass", True))
 
     def test_reject_old_identity_as_new_cas(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"].__setitem__("new_cas", True))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_before_20261103_0736"]["three_d"].__setitem__("new_cas", True))
 
     def test_reject_us_ledger_wrong_head(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["app"].__setitem__("us_freelance_ledger_head", IMAGE76))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_before_20261103_0736"]["app"].__setitem__("us_freelance_ledger_head", IMAGE76))
 
     def test_reject_us_ledger_fabricated_artifact(self):
         self.reject(lambda d: d["revision_review_reconciliation"]["observations"]["us-freelance-ledger-pr79"].__setitem__("workflow_artifact_count", 1))
 
     def test_reject_image_false_market_fit(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["app"].__setitem__("score", 90))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_before_20261103_0736"]["app"].__setitem__("score", 90))
 
     def test_reject_library_zip_as_live_actions_artifact(self):
         self.reject(lambda d: d["revision_review_reconciliation"]["current_app4_actions_artifact_availability"].__setitem__("github_actions_available_count", 4))
