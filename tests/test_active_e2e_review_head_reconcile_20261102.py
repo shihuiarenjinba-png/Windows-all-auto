@@ -83,5 +83,31 @@ class ReviewHeadReconciliation(unittest.TestCase):
         self.assertFalse(self.ledger["e2e_pass"])
 
 
+    def test_sale_ready_windows_ux_requires_physical_consumer_journey(self):
+        ux = self.ledger["sale_ready_windows_ux_gate"]
+        self.assertEqual(ux["gate"], "HOLD_PHYSICAL_WINDOWS_CONSUMER_QA_NOT_OBSERVED")
+        self.assertFalse(ux["sale_ready"])
+        self.assertEqual(ux["verdict"], "NO")
+        self.assertEqual(ux["required_physical_environment"]["min_resolution"], "1024x768")
+        self.assertEqual(ux["required_physical_environment"]["dpi_percent"], [125, 150])
+        self.assertEqual(ux["required_physical_environment"]["languages"], ["ja-JP", "en-US"])
+        for required in ("first_launch", "complete_primary_task", "verify_output_and_location",
+                         "restart_and_persistence", "error_recovery_and_retry"):
+            self.assertIn(required, ux["required_journey"])
+        for required in ("empty_data", "large_data", "read_permission_denied",
+                         "corrupt_input", "save_failure"):
+            self.assertIn(required, ux["required_negative_inputs"])
+        for key in ("physical_windows_receipt_verified", "gui_screenshots_verified",
+                    "install_uninstall_verified", "price_approved",
+                    "store_listing_image_match_verified"):
+            self.assertFalse(ux[key], key)
+        self.assertTrue(ux["product_verdicts"])
+        for product in ux["product_verdicts"]:
+            self.assertEqual(product["consumer_would_buy_at_current_price"], "NO")
+            self.assertEqual(product["physical_windows_gui"], "NOT_OBSERVED")
+            self.assertFalse(product["sale_ready"])
+        self.assertFalse(self.ledger["e2e_pass"])
+
+
 if __name__ == "__main__":
     unittest.main()
