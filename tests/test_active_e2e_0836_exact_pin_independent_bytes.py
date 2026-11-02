@@ -66,6 +66,7 @@ def validate(d):
     assert app["us_freelance_ledger_pr80_is_historical_product_review_baseline"]
     assert app["us_freelance_ledger_product_review_head"] == APP82
     assert app["us_freelance_ledger_qa_product_source_pin"] == APP82
+    assert app["us_freelance_ledger_qa_artifact_id"] == ao["artifact_id"] == 13183372299
     assert app["us_freelance_ledger_qa_exe_sha256"] == APP_EXE
     assert app["us_freelance_ledger_qa_base_diverged"]
     assert not app["us_freelance_ledger_qa_physical_human_pass"]
