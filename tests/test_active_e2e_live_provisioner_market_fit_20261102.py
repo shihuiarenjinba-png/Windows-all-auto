@@ -5,13 +5,13 @@ from pathlib import Path
 import unittest
 
 LEDGER = Path(__file__).resolve().parents[1] / "ops" / "active_e2e_handoff.json"
-LIVE_HEAD = "d77cf88977db943d83cf898aae5bbf027e5aed90"
-PRIOR_HEAD = "e69e9b9b96f10426b9a9e3eb7d540a85d49778d6"
+LIVE_HEAD = "b53f89fc0b59871ba8f5cc7c62703bfdcc20d53a"
+PRIOR_HEAD = "d77cf88977db943d83cf898aae5bbf027e5aed90"
 INTERMEDIATE_HEAD = "b550faba73b16d64d85f7ef56f0080429068f00a"
 SOURCE = "c058cbf7fe38e02d929c67d047d717ff74bd522e"
 ORIGINAL_REQUEST = "game-signal-sprint-" + SOURCE
 NEW_REQUEST = ORIGINAL_REQUEST + "-reissue-sprint-41361263698-41361263698"
-CI_RUN = 41405677954
+CI_RUN = 41412494345
 
 
 def classify_market(score, *, physical_windows=False, human_qa=False):
@@ -68,7 +68,7 @@ class CurrentLiveProvisionerAndMarketPolicy(unittest.TestCase):
         active = data["active_product"]
         self.assertEqual(active["provisioner_head_observation"]["previous_observed_head"], PRIOR_HEAD)
         self.assertEqual(active["provisioner_game_gdk_pr"]["new_lineage_contract"]["intermediate_head_sha"], INTERMEDIATE_HEAD)
-        self.assertEqual(active["provisioner_game_gdk_pr"]["new_lineage_contract"]["latest_compare"], "AHEAD_21_BEHIND_0_FROM_E69E9B9B")
+        self.assertEqual(active["provisioner_game_gdk_pr"]["new_lineage_contract"]["latest_compare"], "AHEAD_4_BEHIND_0_FROM_D77CF889")
         self.assertEqual(active["provisioner_game_gdk_pr"]["new_lineage_contract"]["compare_to_prior_head"], "AHEAD_21_BEHIND_0_FROM_E69E9B9B")
         self.assertEqual(active["provisioner_game_gdk_pr"]["new_lineage_contract"]["assembly_plan_result"], "CHECK_ONLY_EXIT_2__NOT_READY_FOR_SDK__CAS_NOT_APPLIED__NO_MSIXVC")
         self.assertEqual(active["provisioner_game_gdk_pr"]["ci_run_id"], CI_RUN)
