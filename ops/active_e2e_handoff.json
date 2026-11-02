@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-02T00:36:00Z",
+  "updated_at_utc": "2026-11-02T01:38:13.216Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -19,7 +19,7 @@
     "display_name": "Signal Sprint",
     "provisioner_repository": "shihuiarenjinba-png/Repository-Provisioner-game",
     "provisioner_branch": "codex/game-gdk-identity-contract-20261028",
-    "provisioner_head_observed": "36df224b584719f01d3ef5cdaeb9c6a7e89de0b1",
+    "provisioner_head_observed": "4d5c03c3aba4fccba786801e8e1b97e6fbbf3984",
     "factory_exe_run_id": 40443340158,
     "factory_exe_artifact_id": 12706862577,
     "factory_exe_artifact_name": "game-signal-sprint-exe-c058cbf7fe38e02d929c67d047d717ff74bd522e",
@@ -61,12 +61,12 @@
     "next_action": "HOLD_ARTIFACT_EXACT_BYTES: original ZIP unavailable and EXE SHA authority conflict (historical e851 vs original Factory job 9c31). PR10 HEAD check-only only after independent exact-byte recovery; no CAS or GDK SDK build.",
     "local_commands": [
       "gh api repos/shihuiarenjinba-png/Windows-all-auto/git/ref/heads/codex/e2e-belt-connection-20261027 --jq .object.sha  # confirm exact current ledger HEAD",
-      "$pHead = gh api repos/shihuiarenjinba-png/Repository-Provisioner-game/git/ref/heads/codex/game-gdk-identity-contract-20261028 --jq .object.sha; if ($LASTEXITCODE -ne 0 -or $pHead -ne '36df224b584719f01d3ef5cdaeb9c6a7e89de0b1') { throw 'HOLD_PROVISIONER_HEAD_DRIFT: review PR #10 and re-pin before any local check-only' }",
+      "$pHead = gh api repos/shihuiarenjinba-png/Repository-Provisioner-game/git/ref/heads/codex/game-gdk-identity-contract-20261028 --jq .object.sha; if ($LASTEXITCODE -ne 0 -or $pHead -ne '4d5c03c3aba4fccba786801e8e1b97e6fbbf3984') { throw 'HOLD_PROVISIONER_HEAD_DRIFT: review PR #10 and re-pin before any local check-only' }",
       "python -m scripts.pre_identity_queue --check-only  # from reviewed PR19; no CAS",
       "python -m scripts.pre_identity_queue --output \"$env:LOCALAPPDATA\\FactoryIdentityWorker\\secure\\pre-identity-jobs.json\"  # PowerShell, create-only; no overwrite",
       "throw 'ARTIFACT_EXACT_BYTES_HOLD: original Factory artifact 12706862577 expired/404; ZIP absent; EXE SHA authority conflict. Do not download a substitute or proceed to CAS.'",
       "python -m scripts.local_identity_scheduler --jobs-file \"$env:LOCALAPPDATA\\FactoryIdentityWorker\\secure\\pre-identity-jobs.json\" --state-dir \"$env:LOCALAPPDATA\\FactoryIdentityWorker\\secure\\scheduler-state\"  # check-only, CAS apply prohibited",
-      "python -m scripts.local_identity_return --provisioner-root C:\\src\\Repository-Provisioner-game --provisioner-branch codex/game-gdk-identity-contract-20261028 --provisioner-sha 36df224b584719f01d3ef5cdaeb9c6a7e89de0b1 --source-branch codex/game-signal-sprint-undo-20261027 --source-sha c058cbf7fe38e02d929c67d047d717ff74bd522e --request-id game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e  # CHECK-ONLY ONLY after original ZIP authority conflict resolved; NO --apply"
+      "python -m scripts.local_identity_return --provisioner-root C:\\src\\Repository-Provisioner-game --provisioner-branch codex/game-gdk-identity-contract-20261028 --provisioner-sha 4d5c03c3aba4fccba786801e8e1b97e6fbbf3984 --source-branch codex/game-signal-sprint-undo-20261027 --source-sha c058cbf7fe38e02d929c67d047d717ff74bd522e --request-id game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e  # CHECK-ONLY ONLY after original ZIP authority conflict resolved; NO --apply"
     ],
     "expected_local_outputs": [
       "dry-run-result.json status=DRY_RUN, no side effects (completed)",
@@ -139,20 +139,22 @@
     "provisioner_package_safety": {
       "repository": "shihuiarenjinba-png/Repository-Provisioner-game",
       "branch": "codex/game-gdk-identity-contract-20261028",
-      "head_sha": "36df224b584719f01d3ef5cdaeb9c6a7e89de0b1",
+      "head_sha": "4d5c03c3aba4fccba786801e8e1b97e6fbbf3984",
       "draft_pr": 10,
       "base_branch": "codex/game-msix-package-safety-20261027-1510",
       "base_sha": "c50a71bab689004f8234b95bfb79f4f064d958d2",
-      "ci_run_id": 41351247625,
+      "ci_run_id": 41371345733,
       "ci_conclusion": "SUCCESS",
-      "status": "PR10_CURRENT_HEAD_CI_PASS__NEW_LINEAGE_CHECK_ONLY__ORIGINAL_ARTIFACT_EXACT_BYTES_HOLD",
+      "status": "PR10_ADAPTER_CI_PASS__GITHUB_LIVE_CHECK_ONLY_PASS__ORIGINAL_ARTIFACT_CONFLICT_HOLD__CAS_NOT_APPLIED",
       "changes": [
         "package_identity_provisioner.py",
         "tests/test_package_identity_pipeline.py",
-        "tests/test_existing_identity_commit_sha.py"
+        "tests/test_existing_identity_commit_sha.py",
+        "gdk_factory_lineage_adapter.py",
+        "tests/test_gdk_factory_lineage_adapter.py"
       ],
-      "next_action": "Check exact PR10 HEAD before checkout; original ZIP/EXE digest authority HOLD blocks local check-only and CAS.",
-      "current_branch_head": "36df224b584719f01d3ef5cdaeb9c6a7e89de0b1",
+      "next_action": "Current PR10 reviewed adapter handles real Factory-v1 nested ZIP; GitHub live check-only observed, but local Windows check-only and authenticated new-request CAS approval are still HOLD. Original expired ZIP SHA conflict remains.",
+      "current_branch_head": "4d5c03c3aba4fccba786801e8e1b97e6fbbf3984",
       "historical_pinned_head_sha": "e9ae4669f6739d34cad63764767328a3c796a5f9",
       "historical_base_sha": "c217652c7887626de94e8b37ca3f1f7a57f9064d"
     },
@@ -169,7 +171,7 @@
       "mode": "LOCAL_ONLY_EXPLICIT_APPLY",
       "evidence_path": "C:\\qa\\signal-sprint\\official-identity-private.json",
       "receipt_path": "C:\\qa\\signal-sprint\\identity-return\\identity-return-receipt.json",
-      "required_provisioner_sha": "36df224b584719f01d3ef5cdaeb9c6a7e89de0b1",
+      "required_provisioner_sha": "4d5c03c3aba4fccba786801e8e1b97e6fbbf3984",
       "next_action": "Do not execute: original ZIP expired and EXE SHA authority conflict; after exact-byte recovery, review PR10 HEAD and run check-only only, no --apply.",
       "ci_url": "https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/40499482120",
       "local_check_only": {
@@ -208,17 +210,17 @@
     "provisioner_identity_resume": {
       "repository": "shihuiarenjinba-png/Repository-Provisioner-game",
       "branch": "codex/game-gdk-identity-contract-20261028",
-      "head_sha": "36df224b584719f01d3ef5cdaeb9c6a7e89de0b1",
+      "head_sha": "4d5c03c3aba4fccba786801e8e1b97e6fbbf3984",
       "draft_pr": 10,
       "base_safety_pr": 8,
       "base_safety_head": "c217652c7887626de94e8b37ca3f1f7a57f9064d",
-      "ci_run_id": 41351247625,
+      "ci_run_id": 41371345733,
       "ci_conclusion": "SUCCESS",
       "resume_result_path_example": "C:\\qa\\signal-sprint\\result.json",
       "resume_result_verified_on_local_windows": false,
       "package_sha256": "e8517df8cd31a40e5ce72afdd4e6a4d63626fb99f7ff8a4fa3296ff8deef05f4",
       "status": "ORIGINAL_ARTIFACT_EXACT_BYTES_HOLD__NEW_LINEAGE_SEPARATE_CHECK_ONLY__LOCAL_NOT_OBSERVED",
-      "current_branch_head": "36df224b584719f01d3ef5cdaeb9c6a7e89de0b1",
+      "current_branch_head": "4d5c03c3aba4fccba786801e8e1b97e6fbbf3984",
       "historical_local_check_only_sha": "5c1db9820bac68c59cc7eb6ca5921e22a5bb3913",
       "note": "Historical package_sha256 e851... conflicts with original Factory run job EXE 9c31...; no verified original ZIP, no CAS.",
       "historical_head_sha": "e9ae4669f6739d34cad63764767328a3c796a5f9"
@@ -228,27 +230,28 @@
     "provisioner_game_gdk_pr": {
       "draft_pr": 10,
       "branch": "codex/game-gdk-identity-contract-20261028",
-      "head_sha": "36df224b584719f01d3ef5cdaeb9c6a7e89de0b1",
-      "ci_run_id": 41351247625,
+      "head_sha": "4d5c03c3aba4fccba786801e8e1b97e6fbbf3984",
+      "ci_run_id": 41371345733,
       "ci_conclusion": "SUCCESS",
       "local_windows_check_only": "NOT_OBSERVED__ORIGINAL_ARTIFACT_EXACT_BYTES_HOLD__NEW_LINEAGE_CODE_ONLY",
       "cas": "NOT_APPLIED",
       "historical_head_sha": "e9ae4669f6739d34cad63764767328a3c796a5f9",
       "new_lineage_contract": {
-        "current_head": "36df224b584719f01d3ef5cdaeb9c6a7e89de0b1",
-        "workflow_run_id": 41351247625,
-        "compare_to_prior_head": "AHEAD_14_BEHIND_0",
+        "current_head": "4d5c03c3aba4fccba786801e8e1b97e6fbbf3984",
+        "workflow_run_id": 41371345733,
+        "compare_to_prior_head": "AHEAD_6_BEHIND_0_FROM_E5A56F63",
         "scope": "SEPARATE_NEW_IMMUTABLE_BUILD_LINEAGE_CHECK_ONLY__GITHUB_EVIDENCE_AND_CAS_PRECHECK",
         "original_artifact_status": "EXPECTED_DIGEST_AUTHORITY_CONFLICT__ARTIFACT_EXACT_BYTES_HOLD",
-        "new_request_id": null,
-        "new_build_artifact_id": null,
+        "new_request_id": "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e-reissue-sprint-41361263698-41361263698",
+        "new_build_artifact_id": 13105352227,
         "reviewed_new_request_cas_contract": false,
         "physical_windows_check_only": false,
         "cas_applied": false,
         "gdk_msixvc_built": false,
         "package_version_approved": false,
         "source": "docs/SIGNAL_SPRINT_GDK_NEW_LINEAGE_CHECK_ONLY.md",
-        "next_action": "Independently reviewed new request/run/artifact ZIP and authenticated new-request CAS contract required; synthetic check-only exit 2 never means approval."
+        "next_action": "Independent byte custody and GitHub live adapter check-only PASS; require authenticated new-request CAS approval, physical Windows local check-only, GDK SDK/version/assets before MSIXVC.",
+        "github_live_check_only": "PASS_GITHUB_ACTIONS_RUN_41371299063__NOT_PHYSICAL_WINDOWS_OR_CAS"
       }
     },
     "gdk_package_next_stage": "BUILD_GDK_MSIXVC_FROM_PINNED_EXE_AFTER_CAS_AND_VERSION_ASSET_APPROVAL",
@@ -259,16 +262,17 @@
     "provisioner_head_observation": {
       "basis": "LIVE_GITHUB_PR10_HEAD_AND_EXACT_COMMIT_CI",
       "observed_at_utc": "2026-11-01T21:33:28Z",
-      "sha": "36df224b584719f01d3ef5cdaeb9c6a7e89de0b1",
+      "sha": "4d5c03c3aba4fccba786801e8e1b97e6fbbf3984",
       "ci_run_id": 41351247625,
       "ci_conclusion": "SUCCESS",
-      "previous_observed_head": "63d358fc8e6d2ad403e405421291155d8583f17a",
+      "previous_observed_head": "36df224b584719f01d3ef5cdaeb9c6a7e89de0b1",
       "historical_pinned_command_sha": "e9ae4669f6739d34cad63764767328a3c796a5f9",
       "historical_commands_are_not_current_checkout_instructions": true,
       "local_check_only_on_current_head": "NOT_OBSERVED",
       "cas": "NOT_APPLIED",
       "historical_previous_observed_head": "4bf0ebf436144bc5eda18c9429506a813e4d4384",
-      "compare_from_previous": "AHEAD_14_BEHIND_0__NEW_LINEAGE_CHECK_ONLY_NOT_APPLIED"
+      "compare_from_previous": "AHEAD_14_BEHIND_0__NEW_LINEAGE_CHECK_ONLY_NOT_APPLIED",
+      "current_ci_run_id": 41371345733
     },
     "historical_local_commands_20261027": [
       "gh api repos/shihuiarenjinba-png/Windows-all-auto/git/ref/heads/codex/e2e-belt-connection-20261027 --jq .object.sha  # confirm exact current ledger HEAD",
@@ -309,14 +313,18 @@
       "artifact_wrapper_sha256": "843496682662e871fc6e1b5df83ace2c6b01ef314cfc466b5072290890b70a8f",
       "build_head_sha": "a1af3448cd2edeae5bd54cbaca486a53fd991944",
       "immutable_source_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
-      "artifact_status": "GITHUB_ARTIFACT_METADATA_VERIFIED__REAL_WINDOWS_EXE_BUILD_JOB_SUCCESS__NOT_CAS",
+      "artifact_status": "INDEPENDENT_36_OUTER_INNER_EXE_SHA_VERIFIED__NOT_CAS_OR_MSIXVC",
       "original_artifact_hold_preserved": true,
-      "inner_zip_sha256_verified": false,
-      "exe_member_sha256_verified": false,
-      "provisioner_validator_status": "HOLD_TWO_PHASE_ARTIFACT_ID_AND_PR_EDITED_EVENT_CONTRACT_MISMATCH",
+      "inner_zip_sha256_verified": true,
+      "exe_member_sha256_verified": true,
+      "provisioner_validator_status": "ADAPTER_CI_GREEN__GITHUB_LIVE_CHECK_ONLY_PASS__LOCAL_AND_CAS_HOLD",
       "cas": "NOT_APPLIED",
       "msixvc": "NOT_BUILT",
-      "package_version": "HOLD"
+      "package_version": "HOLD",
+      "inner_zip_sha256": "46aff1ee7570459235c9e7ca7fb1faf6f494dc8100e62b6e132c6d07a6291b71",
+      "exe_member_sha256": "beb683b61b4fa4b2ec90fe1d413363c8a535bd4cb72b41b54b03a9685f516ee0",
+      "github_live_check_only_run_id": 41371299063,
+      "byte_receipt_library_path": "/Windows-all-auto/Evidence/2026-11-02/SignalSprintNewLineage/signal_sprint_new_lineage_byte_receipt_2026-11-02.json"
     }
   },
   "other_lanes": {
@@ -920,7 +928,7 @@
       "new_tests": 10,
       "immutable_game_source_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
       "expected_exe_sha256": "e8517df8cd31a40e5ce72afdd4e6a4d63626fb99f7ff8a4fa3296ff8deef05f4",
-      "provisioner_head_observed": "36df224b584719f01d3ef5cdaeb9c6a7e89de0b1",
+      "provisioner_head_observed": "4d5c03c3aba4fccba786801e8e1b97e6fbbf3984",
       "local_package_path": "OPERATOR_MUST_SUPPLY_AFTER_SHA256_CHECK",
       "user_identity": "USER_IDENTITY_RECEIVED__LOCAL_CHECK_ONLY_PENDING",
       "app": "NOT_YET_REQUIRED",
@@ -1192,7 +1200,8 @@
     "local_checker_existing_receipt_physical_pass": false,
     "local_checker_historical_request_guard_code_committed": true,
     "local_checker_historical_request_guard_exact_head_ci_pass": true,
-    "local_checker_historical_request_guard_physical_pass": false
+    "local_checker_historical_request_guard_physical_pass": false,
+    "pre_identity_archive_library_preservation_3_of_3": true
   },
   "user_id_requests": {
     "schema_version": 1,
@@ -1913,10 +1922,10 @@
     "game": {
       "repo": "shihuiarenjinba-png/Repository-Provisioner-game",
       "branch": "codex/game-gdk-identity-contract-20261028",
-      "sha": "36df224b584719f01d3ef5cdaeb9c6a7e89de0b1",
-      "ci_run_id": 41351247625,
+      "sha": "4d5c03c3aba4fccba786801e8e1b97e6fbbf3984",
+      "ci_run_id": 41371345733,
       "ci_conclusion": "SUCCESS_AT_EXACT_HEAD",
-      "previous_observation_sha": "63d358fc8e6d2ad403e405421291155d8583f17a",
+      "previous_observation_sha": "36df224b584719f01d3ef5cdaeb9c6a7e89de0b1",
       "historical_pinned_sha": "e9ae4669f6739d34cad63764767328a3c796a5f9",
       "local_windows": "NOT_REVALIDATED__ORIGINAL_ARTIFACT_EXACT_BYTES_HOLD__NEW_LINEAGE_NOT_APPLIED"
     },
@@ -2797,7 +2806,9 @@
     "remaining_pre_identity_count": 2,
     "github_verified_return_count": 2,
     "github_pending_pre_identity_count": 2,
-    "local_execution_this_run": "NOT_PERFORMED"
+    "local_execution_this_run": "NOT_PERFORMED",
+    "next_resume_index_semantics": "LOGICAL_CLOUD_RECONCILIATION_CURSOR_AFTER_FOCUS_LEDGER_GITHUB_RETURNS__NOT_LOCAL_PROCESSED_COUNT",
+    "physical_batch_execution": "ZERO_OF_FOUR__NO_LOCAL_SCHEDULER_RECEIPT"
   },
   "last_36_execution": {
     "observed_at_utc": "2026-11-01T22:33:21Z",
@@ -3803,17 +3814,17 @@
       "real_msix": "NOT_BUILT"
     },
     "game_provisioner_pr10_current": {
-      "observed_at_utc": "2026-11-01T21:33:28Z",
-      "head_sha": "36df224b584719f01d3ef5cdaeb9c6a7e89de0b1",
-      "ci_run_id": 41351247625,
+      "observed_at_utc": "2026-11-02T01:38:13.216Z",
+      "head_sha": "4d5c03c3aba4fccba786801e8e1b97e6fbbf3984",
+      "ci_run_id": 41371345733,
       "ci_conclusion": "SUCCESS",
       "historical_head_sha": "e9ae4669f6739d34cad63764767328a3c796a5f9",
-      "previous_observed_head": "63d358fc8e6d2ad403e405421291155d8583f17a",
+      "previous_observed_head": "36df224b584719f01d3ef5cdaeb9c6a7e89de0b1",
       "original_zip": "EXPIRED_404",
       "exe_sha_authority": "CONFLICT",
       "cas": "NOT_APPLIED",
       "local_windows": "NOT_OBSERVED",
-      "new_lineage": "CHECK_ONLY_CODE__NO_NEW_AUTHENTICATED_ARTIFACT_OR_CAS"
+      "new_lineage": "ADAPTER_CI_GREEN__GITHUB_LIVE_CHECK_ONLY_PASS__LOCAL_WINDOWS_NOT_OBSERVED__CAS_HOLD"
     },
     "focus_artifact_expiry_recheck": {
       "artifact_id": 12807496604,
@@ -3883,7 +3894,37 @@
       "store_submission": "NOT_PERFORMED"
     },
     "accounting_jp_bookkeeping_previous_head_observed": "13d1a976757e86587fb11202ebb35fd5ac113cb8",
-    "review_head_source_reconciliation": "PR76_ad368842_REVIEW_ONLY_MARKET64_BUYERS0_OF5__PR61_e3ab710_CANDIDATE_ONLY__3D_PR9_3546dad_SENTINEL_CAS_HOLD__GAME_PR10_36df224_ORIGINAL_BYTES_HOLD"
+    "review_head_source_reconciliation": "PR76_ad368842_REVIEW_ONLY_MARKET64_BUYERS0_OF5__PR61_e3ab710_CANDIDATE_ONLY__3D_PR9_3546dad_SENTINEL_CAS_HOLD__GAME_PR10_36df224_ORIGINAL_BYTES_HOLD",
+    "artifact_library_preservation_20261102": {
+      "status": "LIBRARY_UPLOAD_READBACK_SHA256_PASS_3_OF_3",
+      "receipt_library_path": "/Windows-all-auto/Evidence/2026-11-02/PreIdentityArtifacts/preidentity_artifact_preservation_receipt_2026-11-02.json",
+      "physical_windows": "NOT_EXECUTED",
+      "store_submission": "NOT_PERFORMED"
+    },
+    "game_new_lineage_independent_byte_custody": {
+      "artifact_id": 13105352227,
+      "outer_sha256": "843496682662e871fc6e1b5df83ace2c6b01ef314cfc466b5072290890b70a8f",
+      "inner_sha256": "46aff1ee7570459235c9e7ca7fb1faf6f494dc8100e62b6e132c6d07a6291b71",
+      "exe_sha256": "beb683b61b4fa4b2ec90fe1d413363c8a535bd4cb72b41b54b03a9685f516ee0",
+      "library_readback": "PASS",
+      "github_live_adapter_check_only": "PASS_RUN_41371299063",
+      "physical_windows_check_only": "NOT_OBSERVED",
+      "cas": "NOT_APPLIED",
+      "gdk_msixvc": "NOT_BUILT"
+    },
+    "three_d_qa_pr6_latest": {
+      "repository": "shihuiarenjinba-png/3d-build-qa",
+      "draft_pr": 6,
+      "review_head_sha": "653e652694b861f093fce73c5a3bf6115d3eb673",
+      "previous_head_sha": "6c50e83eee09158302a7a2dd70d1fd4767b23412",
+      "compare": "AHEAD_4_BEHIND_0",
+      "ci_run_id": 41373021468,
+      "ci_conclusion": "SUCCESS",
+      "scope": "HISTORICAL_CUSTODY_CHECK_ONLY__NO_NEW_SENTINEL_IDENTITY_CAS",
+      "physical_windows": "NOT_EXECUTED",
+      "new_sentinel_cas_applied": false,
+      "real_signed_msix": "NOT_BUILT"
+    }
   },
   "post_identity_pipeline": {
     "schema_version": 1,
@@ -4955,7 +4996,7 @@
   },
   "revision_review_reconciliation": {
     "schema_version": 1,
-    "observed_at_utc": "2026-11-02T00:36:00Z",
+    "observed_at_utc": "2026-11-02T01:38:13.216Z",
     "writer": "36_WINDOWS_E2E_ONLY",
     "scope": "READ_ONLY_LIVE_GITHUB_NEW_LINEAGE_ARTIFACT_AND_3D_BYTE_CUSTODY_RECONCILIATION__NO_CAS_OR_MARKET_PROMOTION",
     "policy": "PR_HEAD_IS_MUTABLE_REVIEW_CODE__SOURCE_SHA_AND_REQUEST_ID_ARE_IMMUTABLE_PRODUCT_BINDINGS__NO_AUTO_REBIND",
@@ -5084,12 +5125,25 @@
           "manifest_exe_pck",
           "legacy_pck_mismatch_detected"
         ],
-        "signed_product_msix": "NOT_BUILT"
+        "signed_product_msix": "NOT_BUILT",
+        "independent_3d_qa_pr6": {
+          "repository": "shihuiarenjinba-png/3d-build-qa",
+          "draft_pr": 6,
+          "review_head_sha": "653e652694b861f093fce73c5a3bf6115d3eb673",
+          "previous_head_sha": "6c50e83eee09158302a7a2dd70d1fd4767b23412",
+          "compare": "AHEAD_4_BEHIND_0",
+          "ci_run_id": 41373021468,
+          "ci_conclusion": "SUCCESS",
+          "scope": "HISTORICAL_CUSTODY_CHECK_ONLY__NO_NEW_SENTINEL_IDENTITY_CAS",
+          "physical_windows": "NOT_EXECUTED",
+          "new_sentinel_cas_applied": false,
+          "real_signed_msix": "NOT_BUILT"
+        }
       },
       "signal-sprint": {
         "repository": "shihuiarenjinba-png/Repository-Provisioner-game",
         "draft_pr": 10,
-        "current_review_head_sha": "36df224b584719f01d3ef5cdaeb9c6a7e89de0b1",
+        "current_review_head_sha": "4d5c03c3aba4fccba786801e8e1b97e6fbbf3984",
         "exact_head_ci": [
           {
             "run_id": 41351247625,
@@ -5129,22 +5183,25 @@
         "run_head_sha": "a1af3448cd2edeae5bd54cbaca486a53fd991944",
         "run_job": "windows-new-lineage",
         "run_job_conclusion": "SUCCESS",
-        "new_lineage_artifact_status": "GITHUB_ARTIFACT_METADATA_VERIFIED__REAL_WINDOWS_EXE_BUILD_JOB_SUCCESS__NOT_CAS",
-        "exact_new_artifact_bytes_rehashed_by_36": false,
-        "inner_new_lineage_zip_sha256": null,
-        "contained_exe_sha256": null,
-        "new_request_id": "DERIVED_FROM_RUN_PROVENANCE__NOT_INDEPENDENTLY_VERIFIED_BY_36",
+        "new_lineage_artifact_status": "INDEPENDENT_36_OUTER_INNER_EXE_BYTES_VERIFIED__GITHUB_LIVE_CHECK_ONLY_PASS__NOT_CAS",
+        "exact_new_artifact_bytes_rehashed_by_36": true,
+        "inner_new_lineage_zip_sha256": "46aff1ee7570459235c9e7ca7fb1faf6f494dc8100e62b6e132c6d07a6291b71",
+        "contained_exe_sha256": "beb683b61b4fa4b2ec90fe1d413363c8a535bd4cb72b41b54b03a9685f516ee0",
+        "new_request_id": "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e-reissue-sprint-41361263698-41361263698",
         "new_lineage_source_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
         "control_head_distinct_from_source": true,
-        "provisioner_validator_compatibility": "HOLD_TWO_PHASE_ARTIFACT_ID_AND_PR_EDITED_EVENT_CONTRACT_MISMATCH",
-        "provisioner_validator_evidence": "AI-Game-Factory PR15 docs/SIGNAL_SPRINT_NEW_LINEAGE_GDK.md",
+        "provisioner_validator_compatibility": "ADAPTER_CODE_CI_PASS__GITHUB_LIVE_CHECK_ONLY_PASS__LOCAL_WINDOWS_AND_CAS_HOLD",
+        "provisioner_validator_evidence": "Repository-Provisioner-game PR10 HEAD 4d5c03c3aba4fccba786801e8e1b97e6fbbf3984 docs/SIGNAL_SPRINT_NEW_LINEAGE_LIVE_CHECK_ONLY_20261102.json",
         "new_lineage_cas_applied": false,
         "gdk_msixvc_built": false,
         "approved_package_version": false,
         "registration_type": "GDK_GAME",
         "partner_center_selection": "GDK game",
-        "next_action": "Verify downloaded wrapper and inner ZIP/EXE SHA and exact new request, then adapt existing Provisioner-game PR10 validator for authenticated pull_request edited event and two-phase Artifact ID; no CAS until check-only and authorization.",
-        "store_submission": "NOT_PERFORMED"
+        "next_action": "GITHUB_LIVE_CHECK_ONLY_PASS_AND_36_INDEPENDENT_BYTE_HASH_PASS; physical local check-only, authenticated new request CAS authorization, approved GDK assets/version and real MSIXVC remain HOLD. Old expired artifact conflict stays separate.",
+        "store_submission": "NOT_PERFORMED",
+        "provisioner_validator_ci_run_id": 41371345733,
+        "provisioner_live_check_only_run_id": 41371299063,
+        "new_lineage_byte_receipt_library_path": "/Windows-all-auto/Evidence/2026-11-02/SignalSprintNewLineage/signal_sprint_new_lineage_byte_receipt_2026-11-02.json"
       }
     },
     "cross_lane_gates": {
@@ -5163,12 +5220,71 @@
       "gui_install_pass": false,
       "e2e_pass": false,
       "game_new_lineage_github_artifact_present": true,
-      "game_new_lineage_exact_bytes_verified_by_36": false,
+      "game_new_lineage_exact_bytes_verified_by_36": true,
       "game_new_lineage_cas_pass": false,
       "game_gdk_msixvc_pass": false,
       "three_d_sentinel_independent_byte_custody_receipt_verified": true,
-      "three_d_sentinel_new_revision_cas_pass": false
+      "three_d_sentinel_new_revision_cas_pass": false,
+      "pre_identity_archive_library_preservation_pass": true
     },
-    "next_action": "12_GAME_INDEPENDENT_NEW_LINEAGE_EXACT_BYTES_AND_EXISTING_PROVISIONER_VALIDATOR_INTEROP__24_3D_SENTINEL_NEW_REVISION_AUTHENTICATED_CAS_HOLD__00_APP_IMAGE_BUYERS_0_OF_5_AND_MARKET_FIT_HOLD__36_LOCAL_CODE_SYNC_PHYSICAL_RECEIPT_WHEN_ACCESSIBLE"
+    "next_action": "36_PRESERVED_3_PREIDENTITY_ZIPS_IN_LIBRARY_AND_INDEPENDENTLY_REHASHED_GAME_NEW_LINEAGE__NEXT_LOCAL_CODE_SYNC_PHYSICAL_RECEIPT__NO_CAS_OR_MSIX_PROMOTION",
+    "artifact_byte_preservation_20261102": {
+      "observed_at_utc": "2026-11-02T01:38:13.216Z",
+      "owner": "36_WINDOWS_E2E_ONLY",
+      "source_repository": "shihuiarenjinba-png/AI-App-Factory",
+      "storage": "PERSISTENT_CHATGPT_LIBRARY_NOT_GITHUB_QA_BACKLOG",
+      "receipt_library_path": "/Windows-all-auto/Evidence/2026-11-02/PreIdentityArtifacts/preidentity_artifact_preservation_receipt_2026-11-02.json",
+      "zip_archives_preserved": 3,
+      "zip_archives_sha256_readback_verified": 3,
+      "zip_crc_pass": 3,
+      "embedded_exe_receipt_sha256_pass": 3,
+      "records": [
+        {
+          "artifact_id": 12807496604,
+          "slug": "focus-session-desk",
+          "archive_sha256": "06189361745a9cc175f1fe5bde27d758b71518ac1d2e955436939e3e7ed2a04d",
+          "exe_sha256": "04b2d7e4eae215855217285f07f8835ffe3cf60dc5aab24ede141d28f563416d",
+          "archive_bytes": 11226545,
+          "github_expiry_utc": "2026-11-02T10:02:58Z",
+          "library_path": "/Windows-all-auto/Evidence/2026-11-02/PreIdentityArtifacts/artifact-12807496604.zip",
+          "archive_download_verified": true,
+          "library_upload_succeeded": true,
+          "library_readback_sha256_verified": true,
+          "package_kind": "PRE_IDENTITY_UNSIGNED_EXE_NOT_MSIX"
+        },
+        {
+          "artifact_id": 12815845218,
+          "slug": "offline-text-diff-desk",
+          "archive_sha256": "cfbbb12690915b2ac0d8be0bfa690ea347e6912f7737bf64473140f125ed937b",
+          "exe_sha256": "1a0e4f61dfab52e2cac7317bc28bb4ff34b6aa477974e0430ff360d7e2b4381e",
+          "archive_bytes": 11173881,
+          "github_expiry_utc": "2026-11-02T12:15:44Z",
+          "library_path": "/Windows-all-auto/Evidence/2026-11-02/PreIdentityArtifacts/artifact-12815845218.zip",
+          "archive_download_verified": true,
+          "library_upload_succeeded": true,
+          "library_readback_sha256_verified": true,
+          "package_kind": "PRE_IDENTITY_UNSIGNED_EXE_NOT_MSIX"
+        },
+        {
+          "artifact_id": 12826068537,
+          "slug": "file-integrity-ledger",
+          "archive_sha256": "c4c1f299318cf182d3d04773284990e55e270c25de28f4b8eb3baf7895548b88",
+          "exe_sha256": "9100bbcfba20ed2768e5d2dffcb39c987466377d26a34af1e03cc166071e02ca",
+          "archive_bytes": 11143488,
+          "github_expiry_utc": "2026-11-02T15:04:16Z",
+          "library_path": "/Windows-all-auto/Evidence/2026-11-02/PreIdentityArtifacts/artifact-12826068537.zip",
+          "archive_download_verified": true,
+          "library_upload_succeeded": true,
+          "library_readback_sha256_verified": true,
+          "package_kind": "PRE_IDENTITY_UNSIGNED_EXE_NOT_MSIX"
+        }
+      ],
+      "real_msix_pass": false,
+      "github_qa_backlog_pass": false,
+      "local_pull_pass": false,
+      "checker_pass": false,
+      "gui_qa_pass": false,
+      "store_submission": "NOT_PERFORMED"
+    }
   }
 }
