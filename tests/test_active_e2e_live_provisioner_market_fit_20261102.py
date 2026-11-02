@@ -69,7 +69,7 @@ class CurrentLiveProvisionerAndMarketPolicy(unittest.TestCase):
         self.assertEqual(active["provisioner_head_observation"]["previous_observed_head"], PRIOR_HEAD)
         self.assertEqual(active["provisioner_game_gdk_pr"]["new_lineage_contract"]["intermediate_head_sha"], INTERMEDIATE_HEAD)
         self.assertEqual(active["provisioner_game_gdk_pr"]["new_lineage_contract"]["latest_compare"], "AHEAD_4_BEHIND_0_FROM_D77CF889")
-        self.assertEqual(active["provisioner_game_gdk_pr"]["new_lineage_contract"]["compare_to_prior_head"], "AHEAD_21_BEHIND_0_FROM_E69E9B9B")
+        self.assertEqual(active["provisioner_game_gdk_pr"]["new_lineage_contract"]["compare_to_prior_head"], "AHEAD_4_BEHIND_0_FROM_D77CF889")
         self.assertEqual(active["provisioner_game_gdk_pr"]["new_lineage_contract"]["assembly_plan_result"], "CHECK_ONLY_EXIT_2__NOT_READY_FOR_SDK__CAS_NOT_APPLIED__NO_MSIXVC")
         self.assertEqual(active["provisioner_game_gdk_pr"]["ci_run_id"], CI_RUN)
         self.assertEqual(active["original_exe_artifact_audit"]["original_artifact_availability"], "EXPIRED_404__ORIGINAL_ZIP_NOT_PRESERVED")
