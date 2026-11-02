@@ -11,7 +11,7 @@ from pathlib import Path
 LEDGER = Path(__file__).resolve().parents[1] / "ops" / "active_e2e_handoff.json"
 GAME_HEAD = "b53f89fc0b59871ba8f5cc7c62703bfdcc20d53a"
 OLD_GAME_HEAD = "da2068a4a3c17b2742949966944fa1a39f22c626"
-IMAGE_HEAD = "7ee78dbdaa075afec3e972bee79d7bbb22101249"
+IMAGE_HEAD = "886b9214b9cc79b35403ca168ca09df7a2e12404"
 QA_HEAD = "8aa8c20e1db0f2c30b91dd4e27cc141b1448d7d7"
 NEW_3D_SOURCE = "da6f7c129687922c58c43496da4667ecef903e17"
 
