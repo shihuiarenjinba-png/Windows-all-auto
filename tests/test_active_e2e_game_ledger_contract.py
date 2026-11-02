@@ -158,10 +158,10 @@ class ActiveE2EGameLedgerContract(unittest.TestCase):
         intake = next(p for p in data["accounting_candidate_intake"]["products"]
                       if p["slug"] == "jp-bookkeeping-desk")
         self.assertEqual(jp["current_review_head_sha"],
-                         "24e8beade64177cafd0d545d84392304b53dfe51")
+                         "32c5976971d1494e205156b8ad27c89598cb2f46")
         self.assertEqual(intake["observed_factory_pr_head"], jp["current_review_head_sha"])
         self.assertEqual(jp["previous_review_head_sha"],
-                         "e3ab710b75c84b6e80e5e7d64b09800fd562bcfc")
+                         "24e8beade64177cafd0d545d84392304b53dfe51")
         self.assertIsNone(intake["source_sha"])
         self.assertIsNone(intake["request_id"])
         self.assertIsNone(jp["immutable_promoted_source_sha"])
