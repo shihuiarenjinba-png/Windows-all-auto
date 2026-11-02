@@ -20,7 +20,7 @@ GAME_HEAD = "f882cac70a7c2294ce0799ea27ec3909596b6002"
 def validate(d):
     r = d["revision_review_reconciliation"]
     p = r["latest_20261103_0136_pr21_qa11_independent_byte_provenance"]
-    c = r["current_four_lane_observation"]
+    c = r["historical_four_lane_observation_20261103_0336"]
     old = r["historical_four_lane_observation_20261103_0043"]
     f, q, h, g = p["factory"], p["qa"], p["historical"], p["gates"]
     t = r["historical_four_lane_observation_20261103_0136"]["three_d"]
@@ -140,10 +140,10 @@ class CurrentPr21FailClosed(unittest.TestCase):
         self.reject(lambda d: d["revision_review_reconciliation"]["latest_20261103_0136_pr21_qa11_independent_byte_provenance"]["qa"].__setitem__("physical_windows_gui_verified", True))
 
     def test_reject_game_review_as_immutable_source(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["game"].__setitem__("original_source_sha", GAME_HEAD))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_20261103_0336"]["game"].__setitem__("original_source_sha", GAME_HEAD))
 
     def test_reject_app_market_promotion(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["app"].__setitem__("promoted", True))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_20261103_0336"]["app"].__setitem__("promoted", True))
 
     def test_reject_cloud_cursor_as_local_processing(self):
         self.reject(lambda d: d["multi_product_partner_center_batch_4"].__setitem__("processed_count", 4))
