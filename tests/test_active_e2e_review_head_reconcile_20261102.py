@@ -88,6 +88,8 @@ class ReviewHeadReconciliation(unittest.TestCase):
         self.assertEqual(ux["gate"], "HOLD_PHYSICAL_WINDOWS_CONSUMER_QA_NOT_OBSERVED")
         self.assertFalse(ux["sale_ready"])
         self.assertEqual(ux["verdict"], "NO")
+        self.assertFalse(self.ledger["quality_gates"]["sale_ready_windows_ux_pass"])
+        self.assertEqual(self.ledger["quality_gates"]["consumer_would_buy_at_current_price"], "NO")
         self.assertEqual(ux["required_physical_environment"]["min_resolution"], "1024x768")
         self.assertEqual(ux["required_physical_environment"]["dpi_percent"], [125, 150])
         self.assertEqual(ux["required_physical_environment"]["languages"], ["ja-JP", "en-US"])
