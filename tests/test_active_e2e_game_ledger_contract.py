@@ -130,7 +130,7 @@ class ActiveE2EGameLedgerContract(unittest.TestCase):
                         if p["product"] == "Offline Image Inventory Desk")
         self.assertEqual(review["writer"], "36_WINDOWS_E2E_ONLY")
         self.assertEqual(image["current_review_head_sha"],
-                         "886b9214b9cc79b35403ca168ca09df7a2e12404")
+                         "25a93052dad41e1844c31fe84384714764a5ac4f")
         self.assertNotEqual(image["current_review_head_sha"], old["source_sha"])
         self.assertEqual(image["immutable_pre_identity_source_sha"], old["source_sha"])
         self.assertEqual(image["immutable_pre_identity_request_id"], old["request_id"])
