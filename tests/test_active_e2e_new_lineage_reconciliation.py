@@ -72,7 +72,7 @@ class NewLineageLedgerRegression(unittest.TestCase):
         self.assertEqual(image["independent_buyers_completed"], 0)
         self.assertEqual(image["market_fit_gate"], "MARKET_FIT_HOLD")
         jp = self.observations["jp-bookkeeping-desk"]
-        self.assertEqual(jp["current_review_head_sha"], "24e8beade64177cafd0d545d84392304b53dfe51")
+        self.assertEqual(jp["current_review_head_sha"], "32c5976971d1494e205156b8ad27c89598cb2f46")
         self.assertEqual(jp["promotion_status"], "CANDIDATE_ONLY")
         self.assertIsNone(jp["immutable_promoted_source_sha"])
         self.assertIsNone(jp["immutable_request_id"])
