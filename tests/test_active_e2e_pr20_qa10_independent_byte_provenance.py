@@ -1,4 +1,4 @@
-"""Prism PR20 Factory + QA10 actual bytes; PR19 remains historical, no sale promotion."""
+"""Historical PR20 Factory + QA10 actual bytes; PR21 is current, no sale promotion."""
 import copy
 import json
 import unittest
@@ -19,7 +19,7 @@ OLD_IDENTITY = "11417b75636ee18816028ffd5221884c4c9a9836"
 
 def validate(d):
     r = d["revision_review_reconciliation"]
-    c = r["current_four_lane_observation"]
+    c = r["historical_four_lane_observation_20261103_0043"]
     old = r["historical_four_lane_observation_20261102_2350"]
     p = r["latest_20261103_0043_pr20_qa10_independent_byte_provenance"]
     f, q, h, gates = p["factory"], p["qa"], p["historical"], p["gates"]
@@ -99,7 +99,7 @@ class CurrentPr20Provenance(unittest.TestCase):
             validate(bad)
 
     def test_old_pr19_artifact_cannot_replace_pr20(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"].__setitem__("artifact_id", 13142680551))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_20261103_0043"]["three_d"].__setitem__("artifact_id", 13142680551))
 
     def test_pr20_quality_ci_cannot_claim_export_artifact(self):
         self.reject(lambda d: d["revision_review_reconciliation"]["latest_20261103_0043_pr20_qa10_independent_byte_provenance"]["factory"].__setitem__("export_run_id", 41463172000))
@@ -114,10 +114,10 @@ class CurrentPr20Provenance(unittest.TestCase):
         self.reject(lambda d: d["revision_review_reconciliation"]["latest_20261103_0043_pr20_qa10_independent_byte_provenance"]["qa"].__setitem__("screenshot_count", 6))
 
     def test_old_gate1_identity_cannot_be_new_cas(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"].__setitem__("new_cas", True))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_20261103_0043"]["three_d"].__setitem__("new_cas", True))
 
     def test_review_game_head_cannot_be_original_source(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["game"].__setitem__("original_source_sha", GAME))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_20261103_0043"]["game"].__setitem__("original_source_sha", GAME))
 
     def test_cloud_runtime_cannot_be_physical(self):
         self.reject(lambda d: d["revision_review_reconciliation"]["latest_20261103_0043_pr20_qa10_independent_byte_provenance"]["qa"].__setitem__("physical_windows_gui_verified", True))

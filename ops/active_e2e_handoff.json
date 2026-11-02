@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-02T15:43:00Z",
+  "updated_at_utc": "2026-11-02T16:35:00Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -1278,7 +1278,10 @@
     "prism_pr19_qa_receipt_crosscheck_pass": true,
     "prism_pr20_factory_pck_independent_bytes_pass": true,
     "prism_pr20_qa10_receipt_crosscheck_pass": true,
-    "prism_pr20_physical_gui_pass": false
+    "prism_pr20_physical_gui_pass": false,
+    "prism_pr21_factory_pck_independent_bytes_pass": true,
+    "prism_pr21_qa11_receipt_crosscheck_pass": true,
+    "prism_pr21_physical_gui_pass": false
   },
   "user_id_requests": {
     "schema_version": 1,
@@ -5218,9 +5221,9 @@
   },
   "revision_review_reconciliation": {
     "schema_version": 1,
-    "observed_at_utc": "2026-11-02T15:43:00Z",
+    "observed_at_utc": "2026-11-02T16:35:00Z",
     "writer": "36_WINDOWS_E2E_ONLY",
-    "scope": "PR20_FACTORY_AND_QA10_INDEPENDENT_BYTES_VERIFIED__PR16_LATEST_REVIEW_CI__PR19_QA9_HISTORICAL__PHYSICAL_CAS_MSIX_HOLD",
+    "scope": "PR21_FACTORY_QA11_INDEPENDENT_BYTES__PR20_QA10_HISTORICAL__PR16_AND_PR76_REVIEW_ONLY__NO_PHYSICAL_CAS_MSIX_STORE",
     "policy": "PR_HEAD_IS_MUTABLE_REVIEW_CODE__SOURCE_SHA_AND_REQUEST_ID_ARE_IMMUTABLE_PRODUCT_BINDINGS__NO_AUTO_REBIND",
     "observations": {
       "offline-image-inventory-desk": {
@@ -5789,6 +5792,34 @@
         "physical_windows_gui_pass": false,
         "independent_human_30s_90s": false,
         "store_screenshot_quality_approved": false
+      },
+      "prism-route-3d-consumer-pr21": {
+        "source_sha": "066d9f51d58cfecb994665d5c31adb1156c38942",
+        "request_id": "3d-prism-route-3d-066d9f51d58c",
+        "review_head_sha": "066d9f51d58cfecb994665d5c31adb1156c38942",
+        "factory_artifact_id": 13155398069,
+        "factory_archive_sha256": "1a19000c225b5165a1280ec36b4dcf5eaec4287e39d50f86512b8e9f5ad4dd44",
+        "exe_sha256": "66b26ad96df7458ea917b632a73ac7c88bb058db24dbd11a457fd50435ab7b13",
+        "pck_sha256": "a27c198ff4bdaa961780b4e42d5fb429c328c5bad0b5cb816e399c06e3fd8cb9",
+        "manifest_sha256": "03c04fc0958383ffcffa6e0bed35706b813f517526c793278e662ac2413f8ed9",
+        "independent_36_bytes_verified": true,
+        "old_pr20_artifact_not_current": true,
+        "old_gate1_identity_not_new_cas": true,
+        "physical_windows": false,
+        "sale_ready": false
+      },
+      "prism-route-3d-consumer-qa-pr11": {
+        "review_head_sha": "09597432adbe1b03be66252224c969ed9dc35c57",
+        "ci_run_id": 41472861586,
+        "qa_artifact_id": 13156640316,
+        "qa_archive_sha256": "1f6622373de0a4626e5480dc28465af7b90eb753d4801eb6d354c04581e5999a",
+        "receipt_source_sha": "066d9f51d58cfecb994665d5c31adb1156c38942",
+        "receipt_request_id": "3d-prism-route-3d-066d9f51d58c",
+        "receipt_pck_sha256": "a27c198ff4bdaa961780b4e42d5fb429c328c5bad0b5cb816e399c06e3fd8cb9",
+        "screenshots_verified": 7,
+        "hosted_software_runtime_pass_reported": true,
+        "physical_windows": false,
+        "sale_ready": false
       }
     },
     "cross_lane_gates": {
@@ -5823,7 +5854,7 @@
       "prism_pr10_physical_qa_pass": false,
       "prism_pr20_factory_independent_bytes_pass": true
     },
-    "next_action": "PR20_QA10_INDEPENDENT_BYTES_PASS__PHYSICAL_WINDOWS_HUMAN_DPI_CAS_VERSION_MSIX_BACKLOG_CHECKER_HOLD__GAME_PR16_HOSTED_ONLY__APP_IDENTITY_2_OF_4_LOCAL_0",
+    "next_action": "PHYSICAL_USER_PC_EXACT_THREE_SHA_IDEMPOTENT_REUSE_TASK_SCHEDULER_RECEIPT__HOLD_IF_UNAVAILABLE__APP_IDENTITY_2_OF_4",
     "artifact_byte_preservation_20261102": {
       "observed_at_utc": "2026-11-02T01:38:13.216Z",
       "owner": "36_WINDOWS_E2E_ONLY",
@@ -6208,7 +6239,7 @@
       "historical_snapshot": true
     },
     "current_four_lane_observation": {
-      "observed_at_utc": "2026-11-02T15:43:00Z",
+      "observed_at_utc": "2026-11-02T16:35:00Z",
       "writer": "36_WINDOWS_E2E_ONLY",
       "game": {
         "pr": 10,
@@ -6222,46 +6253,45 @@
         "local_pass": false,
         "cas": false,
         "msixvc": false,
-        "factory_review_head": "8e6a8c10a2678b76a2eddc897e5fea8cf7d5dc98",
+        "factory_review_head": "f882cac70a7c2294ce0799ea27ec3909596b6002",
         "factory_artifact_run_head": "a1af3448cd2edeae5bd54cbaca486a53fd991944",
         "factory_review_pr": 16,
         "factory_review_ci": [
-          41470115915,
-          41470116296
+          41479105394,
+          41479105190
         ],
         "review_only_ui_revision": true,
-        "previous_factory_review_head": "7f43da2b57b7e3ac3bf9ab22dbf43984c5ba6620",
-        "hosted_gui_artifact_id": 13154872780,
-        "hosted_gui_artifact_scope": "CURRENT_PR16_HOSTED_WINDOWS_GUI_ARTIFACT__CHECK_ONLY__NOT_PHYSICAL_PC__NOT_ORIGINAL_IMMUTABLE_SOURCE",
+        "previous_factory_review_head": "8e6a8c10a2678b76a2eddc897e5fea8cf7d5dc98",
+        "hosted_gui_artifact_id": 13159475933,
+        "hosted_gui_artifact_scope": "PR16_CURRENT_HOSTED_GUI_CHECK_ONLY__NOT_USER_PC__NOT_ORIGINAL_SOURCE",
         "historical_gui_30_MOVES_failure_and_retry": "SUPERVISOR_REPORTED_30_MOVE_FAILURE_THEN_CHECK_ONLY_RETRY_PASS__NOT_INDEPENDENT_36_PHYSICAL_QA",
         "physical_gui_pass": false,
         "historical_hosted_gui_artifact_id": 13141335497,
         "factory_review_ci_scope": "EXACT_PR16_REVIEW_HEAD_CI_SUCCESS__NO_LOCAL_GUI_OR_CAS"
       },
       "three_d": {
-        "factory_pr": 20,
-        "head": "f015db1762fb63696bcca304028871235142bf3d",
-        "new_request_id": "3d-prism-route-3d-f015db1762fb",
+        "factory_pr": 21,
+        "head": "066d9f51d58cfecb994665d5c31adb1156c38942",
+        "new_request_id": "3d-prism-route-3d-066d9f51d58c",
         "ci": [
-          41463172000
+          41472458097
         ],
         "legacy_identity_return_commit": "11417b75636ee18816028ffd5221884c4c9a9836",
         "new_cas": false,
         "physical_gui": false,
         "signed_msix": false,
         "legacy_identity_cas_is_new_revision": false,
-        "source_sha": "f015db1762fb63696bcca304028871235142bf3d",
+        "source_sha": "066d9f51d58cfecb994665d5c31adb1156c38942",
         "review_head_is_approved_new_identity": false,
-        "artifact_id": 13149467845,
-        "artifact_run_id": 41463172094,
-        "artifact_metadata_digest": "sha256:a04de188d2dd8c3bfbf454cffe77a4eb58fd99e0c5a7e247d95062523e2489c7",
+        "artifact_id": 13155398069,
+        "artifact_run_id": 41472458097,
+        "artifact_metadata_digest": "sha256:1a19000c225b5165a1280ec36b4dcf5eaec4287e39d50f86512b8e9f5ad4dd44",
         "artifact_metadata_expired": false,
-        "artifact_expires_at_utc": "2026-11-09T14:34:59Z",
-        "qa_pr": 10,
-        "qa_head": "e2f05d844d155b9a3a8bd5b493f8d96fef659de3",
+        "artifact_expires_at_utc": "2026-11-09T15:32:35Z",
+        "qa_pr": 11,
+        "qa_head": "09597432adbe1b03be66252224c969ed9dc35c57",
         "qa_ci": [
-          41463704723,
-          41463704874
+          41472861586
         ],
         "historical_pr18_build": {
           "review_head_sha": "3c5a1e6837118a73609a0b9c9b7b54dfa4c14f0d",
@@ -6297,25 +6327,37 @@
         "pr20_qa10_receipt_bytes_independently_verified_by_36": true,
         "pr20_factory_qa10_source_request_exe_pck_manifest_match": true,
         "pr20_qa10_screenshots_verified": 7,
-        "qa10_physical_receipt_verified": false
+        "qa10_physical_receipt_verified": false,
+        "qa11_referenced_factory_artifact_id": 13155398069,
+        "qa11_runtime_artifact_id": 13156640316,
+        "pr21_factory_bytes_independently_verified_by_36": true,
+        "pr21_qa11_receipt_bytes_independently_verified_by_36": true,
+        "pr21_qa11_source_request_exe_pck_manifest_match": true,
+        "pr21_qa11_screenshots_verified": 7,
+        "qa11_physical_receipt_verified": false,
+        "pr20_historical_independent_byte_pass": true,
+        "pr20_historical_artifact_id": 13149467845,
+        "pr20_historical_qa_artifact_id": 13150622623,
+        "factory_ci_artifact_count": 3,
+        "factory_ci_artifact_scope": "PR21_EXPORT_CI_HAS_REAL_ARTIFACT__PR20_QUALITY_CI_ARTIFACT_0_IS_HISTORICAL"
       },
       "app": {
         "image_pr": 76,
-        "head": "886b9214b9cc79b35403ca168ca09df7a2e12404",
+        "head": "25a93052dad41e1844c31fe84384714764a5ac4f",
         "ci": [
-          41449337747,
-          41449337454
+          41477415558,
+          41477415526
         ],
         "score": 64,
         "real_buyers": 0,
         "market_fit": "HOLD",
         "promoted": false,
-        "previous_review_head": "7ee78dbdaa075afec3e972bee79d7bbb22101249",
-        "review_unsigned_exe_artifact_id": 13143283530,
-        "review_unsigned_exe_scope": "HOSTED_UNSIGNED_REVIEW_EXE_ARTIFACT__NOT_CLOUD_BUYER_TASK_ARTIFACT__NOT_APPROVED_SOURCE_OR_MSIX",
+        "previous_review_head": "886b9214b9cc79b35403ca168ca09df7a2e12404",
+        "review_unsigned_exe_artifact_id": 13157399441,
+        "review_unsigned_exe_scope": "PR76_CURRENT_UNSIGNED_REVIEW_EXE__NOT_APPROVED_SOURCE_NOT_MSIX",
         "old_immutable_request_id": "app-offline-image-inventory-desk-16b6a772952c",
         "new_revision_promoted": false,
-        "cloud_buyer_task_artifact_id": 13144232281,
+        "cloud_buyer_task_artifact_id": 13156859876,
         "cloud_buyer_task_is_human_qa": false,
         "physical_os_dpi_pass": false
       },
@@ -6918,6 +6960,291 @@
         "store_screenshot_quality_approved": false,
         "sale_ready": false
       }
+    },
+    "historical_four_lane_observation_20261103_0043": {
+      "observed_at_utc": "2026-11-02T15:43:00Z",
+      "writer": "36_WINDOWS_E2E_ONLY",
+      "game": {
+        "pr": 10,
+        "head": "b53f89fc0b59871ba8f5cc7c62703bfdcc20d53a",
+        "ci": 41412494345,
+        "original_source_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
+        "original_request_id": "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e",
+        "new_lineage_request_id": "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e-reissue-sprint-41361263698-41361263698",
+        "new_lineage_artifact_id": 13105352227,
+        "hosted_gui": "CURRENT_PR16_HOSTED_GUI_CI_SUCCESS__PRIOR_GEOMETRY_HOLD_HISTORICAL__PHYSICAL_WINDOWS_UNVERIFIED",
+        "local_pass": false,
+        "cas": false,
+        "msixvc": false,
+        "factory_review_head": "8e6a8c10a2678b76a2eddc897e5fea8cf7d5dc98",
+        "factory_artifact_run_head": "a1af3448cd2edeae5bd54cbaca486a53fd991944",
+        "factory_review_pr": 16,
+        "factory_review_ci": [
+          41470115915,
+          41470116296
+        ],
+        "review_only_ui_revision": true,
+        "previous_factory_review_head": "7f43da2b57b7e3ac3bf9ab22dbf43984c5ba6620",
+        "hosted_gui_artifact_id": 13154872780,
+        "hosted_gui_artifact_scope": "CURRENT_PR16_HOSTED_WINDOWS_GUI_ARTIFACT__CHECK_ONLY__NOT_PHYSICAL_PC__NOT_ORIGINAL_IMMUTABLE_SOURCE",
+        "historical_gui_30_MOVES_failure_and_retry": "SUPERVISOR_REPORTED_30_MOVE_FAILURE_THEN_CHECK_ONLY_RETRY_PASS__NOT_INDEPENDENT_36_PHYSICAL_QA",
+        "physical_gui_pass": false,
+        "historical_hosted_gui_artifact_id": 13141335497,
+        "factory_review_ci_scope": "EXACT_PR16_REVIEW_HEAD_CI_SUCCESS__NO_LOCAL_GUI_OR_CAS"
+      },
+      "three_d": {
+        "factory_pr": 20,
+        "head": "f015db1762fb63696bcca304028871235142bf3d",
+        "new_request_id": "3d-prism-route-3d-f015db1762fb",
+        "ci": [
+          41463172000
+        ],
+        "legacy_identity_return_commit": "11417b75636ee18816028ffd5221884c4c9a9836",
+        "new_cas": false,
+        "physical_gui": false,
+        "signed_msix": false,
+        "legacy_identity_cas_is_new_revision": false,
+        "source_sha": "f015db1762fb63696bcca304028871235142bf3d",
+        "review_head_is_approved_new_identity": false,
+        "artifact_id": 13149467845,
+        "artifact_run_id": 41463172094,
+        "artifact_metadata_digest": "sha256:a04de188d2dd8c3bfbf454cffe77a4eb58fd99e0c5a7e247d95062523e2489c7",
+        "artifact_metadata_expired": false,
+        "artifact_expires_at_utc": "2026-11-09T14:34:59Z",
+        "qa_pr": 10,
+        "qa_head": "e2f05d844d155b9a3a8bd5b493f8d96fef659de3",
+        "qa_ci": [
+          41463704723,
+          41463704874
+        ],
+        "historical_pr18_build": {
+          "review_head_sha": "3c5a1e6837118a73609a0b9c9b7b54dfa4c14f0d",
+          "source_sha": "3c5a1e6837118a73609a0b9c9b7b54dfa4c14f0d",
+          "artifact_id": 13130487252,
+          "artifact_run_id": 41422372852,
+          "artifact_metadata_digest": "sha256:970288793436900405f9986f2da4c403345792fb7563398dfb21e9abaeaf3836",
+          "scope": "IMMUTABLE_PR18_BUILD_ARTIFACT__NOT_PR19_CI_OR_NEW_PCK_PROOF"
+        },
+        "factory_quality_ci_artifact_count": 0,
+        "factory_quality_ci_artifact_status": "PR20_QUALITY_CI_RUN_41463172000_ARTIFACTS_0__EXPORT_SEPARATE_RUN",
+        "qa9_referenced_factory_artifact_id": 13142680551,
+        "qa9_referenced_factory_artifact_scope": "HISTORICAL_PR19_ONLY__NOT_PR20",
+        "qa9_runtime_artifact_id": 13145583388,
+        "qa9_runtime_artifact_scope": "HISTORICAL_PR19_QA9_ONLY",
+        "pr19_new_pck_verified_by_36": true,
+        "qa9_physical_receipt_verified": false,
+        "factory_export_independent_zip_crc_pass": true,
+        "qa9_receipt_independently_downloaded_by_36": true,
+        "qa9_receipt_source_request_pck_sha_match": true,
+        "historical_pr19_byte_proof": {
+          "factory_pr": 19,
+          "source_sha": "0878f48c79073596e30fed37a5703e0826389862",
+          "factory_artifact_id": 13142680551,
+          "qa_pr": 9,
+          "qa_artifact_id": 13145583388,
+          "independent_36_bytes_verified": true,
+          "scope": "HISTORICAL_ONLY__NOT_PR20_PROVENANCE"
+        },
+        "qa10_referenced_factory_artifact_id": 13149467845,
+        "qa10_runtime_artifact_id": 13150622623,
+        "pr20_factory_bytes_independently_verified_by_36": true,
+        "pr20_qa10_receipt_bytes_independently_verified_by_36": true,
+        "pr20_factory_qa10_source_request_exe_pck_manifest_match": true,
+        "pr20_qa10_screenshots_verified": 7,
+        "qa10_physical_receipt_verified": false
+      },
+      "app": {
+        "image_pr": 76,
+        "head": "886b9214b9cc79b35403ca168ca09df7a2e12404",
+        "ci": [
+          41449337747,
+          41449337454
+        ],
+        "score": 64,
+        "real_buyers": 0,
+        "market_fit": "HOLD",
+        "promoted": false,
+        "previous_review_head": "7ee78dbdaa075afec3e972bee79d7bbb22101249",
+        "review_unsigned_exe_artifact_id": 13143283530,
+        "review_unsigned_exe_scope": "HOSTED_UNSIGNED_REVIEW_EXE_ARTIFACT__NOT_CLOUD_BUYER_TASK_ARTIFACT__NOT_APPROVED_SOURCE_OR_MSIX",
+        "old_immutable_request_id": "app-offline-image-inventory-desk-16b6a772952c",
+        "new_revision_promoted": false,
+        "cloud_buyer_task_artifact_id": 13144232281,
+        "cloud_buyer_task_is_human_qa": false,
+        "physical_os_dpi_pass": false
+      },
+      "windows_e2e": {
+        "base_pr": 145,
+        "base_head": "95097a5f312b7debd590def4f2ff591e56377850",
+        "batch_cloud_discovered": 4,
+        "batch_github_identity_returned": 2,
+        "batch_local_processed": 0,
+        "batch_local_discovered": 0,
+        "next_index_is_cloud_logical": true,
+        "archive_cloud_verified": 4,
+        "local_code_sync": "CLOUD_PASS_ONLY",
+        "physical_local_sync": false,
+        "task_scheduler_proof": false,
+        "real_msix": false,
+        "backlog": false,
+        "checker": false,
+        "gui_install": false,
+        "e2e_pass": false,
+        "focus_actions_artifact_currently_available": false,
+        "focus_library_archive_preserved": true,
+        "focus_user_pc_archive_rehash": false
+      }
+    },
+    "latest_20261103_0136_pr21_qa11_independent_byte_provenance": {
+      "writer": "36_WINDOWS_E2E_ONLY",
+      "observed_at_utc": "2026-11-02T16:35:00Z",
+      "scope": "INDEPENDENT_36_DOWNLOADED_FACTORY_AND_QA_ZIPS__ZIP_SHA_CRC_EXE_PCK_MANIFEST_7_PNG_VERIFIED__HOSTED_RUNTIME_REPORT_READ_ONLY__NO_PHYSICAL_OR_CAS",
+      "factory": {
+        "pr": 21,
+        "head_sha": "066d9f51d58cfecb994665d5c31adb1156c38942",
+        "source_sha": "066d9f51d58cfecb994665d5c31adb1156c38942",
+        "request_id": "3d-prism-route-3d-066d9f51d58c",
+        "branch": "codex/prism-bottom-hint-wrap-20261103",
+        "export_run_id": 41472458097,
+        "export_ci_conclusion": "SUCCESS",
+        "artifact_id": 13155398069,
+        "artifact_name": "godot-3d-factory-export-evidence",
+        "archive_sha256": "1a19000c225b5165a1280ec36b4dcf5eaec4287e39d50f86512b8e9f5ad4dd44",
+        "archive_size_bytes": 37794175,
+        "crc_pass": true,
+        "exact_members": [
+          "candidate.exe",
+          "candidate.pck",
+          "export-evidence.json"
+        ],
+        "exe_sha256": "66b26ad96df7458ea917b632a73ac7c88bb058db24dbd11a457fd50435ab7b13",
+        "exe_size_bytes": 84214784,
+        "pck_sha256": "a27c198ff4bdaa961780b4e42d5fb429c328c5bad0b5cb816e399c06e3fd8cb9",
+        "pck_size_bytes": 6982208,
+        "manifest_sha256": "03c04fc0958383ffcffa6e0bed35706b813f517526c793278e662ac2413f8ed9",
+        "manifest_source_sha": "066d9f51d58cfecb994665d5c31adb1156c38942",
+        "manifest_request_id": "3d-prism-route-3d-066d9f51d58c",
+        "manifest_build_head": "066d9f51d58cfecb994665d5c31adb1156c38942",
+        "independent_36_bytes_verified": true,
+        "artifact_expires_at_utc": "2026-11-09T15:32:35Z"
+      },
+      "qa": {
+        "pr": 11,
+        "head_sha": "09597432adbe1b03be66252224c969ed9dc35c57",
+        "ci_run_id": 41472861586,
+        "ci_conclusion": "SUCCESS",
+        "artifact_id": 13156640316,
+        "archive_sha256": "1f6622373de0a4626e5480dc28465af7b90eb753d4801eb6d354c04581e5999a",
+        "archive_size_bytes": 441656,
+        "crc_pass": true,
+        "receipt_source_sha": "066d9f51d58cfecb994665d5c31adb1156c38942",
+        "receipt_request_id": "3d-prism-route-3d-066d9f51d58c",
+        "receipt_factory_artifact_id": 13155398069,
+        "receipt_factory_run_id": 41472458097,
+        "receipt_zip_sha256": "1a19000c225b5165a1280ec36b4dcf5eaec4287e39d50f86512b8e9f5ad4dd44",
+        "receipt_exe_sha256": "66b26ad96df7458ea917b632a73ac7c88bb058db24dbd11a457fd50435ab7b13",
+        "receipt_pck_sha256": "a27c198ff4bdaa961780b4e42d5fb429c328c5bad0b5cb816e399c06e3fd8cb9",
+        "receipt_manifest_sha256": "03c04fc0958383ffcffa6e0bed35706b813f517526c793278e662ac2413f8ed9",
+        "screenshot_count": 7,
+        "screenshot_dimensions": [
+          1024,
+          768
+        ],
+        "screenshot_sha_and_bytes_match": true,
+        "screenshots": {
+          "guide_en": {
+            "sha256": "8f14084db64a5f4c1bfccc9515a279f8d92314a6aecc483afa664117fd55be53",
+            "bytes": 79850,
+            "width": 1024,
+            "height": 768
+          },
+          "guide_ja": {
+            "sha256": "35f4cbc735c89d44c8f51bb0967b3f30dddd4ce218ea052fe676552ddd8debc4",
+            "bytes": 94296,
+            "width": 1024,
+            "height": 768
+          },
+          "initial": {
+            "sha256": "9330b9b466ab3e96e8b076fcd27048b4a9924dd6b7a0317244ff67bffda19cff",
+            "bytes": 57769,
+            "width": 1024,
+            "height": 768
+          },
+          "ja": {
+            "sha256": "35358c54059c144b032be33a2d1258c193e447699ecd09773a527081888abb66",
+            "bytes": 67236,
+            "width": 1024,
+            "height": 768
+          },
+          "scan": {
+            "sha256": "7d13be9836a496490484c669e1c0f077b7ec99ed5464686f31778ba446ab4ee6",
+            "bytes": 53835,
+            "width": 1024,
+            "height": 768
+          },
+          "trap": {
+            "sha256": "a5fb0fa717c38a2608c90119537fc921da6bcf6f96d88821e1855b7a0b33bd5c",
+            "bytes": 54417,
+            "width": 1024,
+            "height": 768
+          },
+          "win": {
+            "sha256": "344800fca5cadf64c8f0e0fbbfbfc39032a36b511baa1f19c5e2304e0ba568aa",
+            "bytes": 52855,
+            "width": 1024,
+            "height": 768
+          }
+        },
+        "independent_36_receipt_bytes_verified": true,
+        "hosted_software_runtime_reported_pass": true,
+        "hosted_runtime_not_36_executed": true,
+        "physical_windows_gui_verified": false,
+        "human_first_30s_verified": false,
+        "human_real_time_90s_verified": false,
+        "dpi_125_150_verified": false
+      },
+      "historical": {
+        "pr20_factory_source_sha": "f015db1762fb63696bcca304028871235142bf3d",
+        "pr20_factory_artifact_id": 13149467845,
+        "pr20_qa10_artifact_id": 13150622623,
+        "pr20_independent_36_byte_pass": true,
+        "pr19_factory_artifact_id": 13142680551,
+        "gate1_identity_return_commit": "11417b75636ee18816028ffd5221884c4c9a9836",
+        "old_identity_is_new_pr21_cas": false,
+        "old_artifacts_are_current_pr21": false
+      },
+      "review_only": {
+        "app_pr76_head": "25a93052dad41e1844c31fe84384714764a5ac4f",
+        "app_ci_runs": [
+          41477415558,
+          41477415526
+        ],
+        "app_unsigned_exe_artifact_id": 13157399441,
+        "app_market_fit_score": 64,
+        "app_real_buyers": 0,
+        "game_pr16_head": "f882cac70a7c2294ce0799ea27ec3909596b6002",
+        "game_ci_runs": [
+          41479105394,
+          41479105190
+        ],
+        "game_gui_artifact_id": 13159475933,
+        "game_original_immutable_source": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
+        "new_review_head_does_not_rebind_original_source": true
+      },
+      "gates": {
+        "new_revision_cas": false,
+        "package_version_approved": false,
+        "signed_msix": false,
+        "real_gdk_msixvc": false,
+        "physical_windows_ja_en_125_150": false,
+        "uncoached_human_30s": false,
+        "real_wall_clock_90s": false,
+        "local_exact_3_sha": false,
+        "task_scheduler_receipt": false,
+        "app_batch4_github_identity_returned": 2,
+        "app_batch4_local_processed": 0,
+        "sale_ready": false
+      }
     }
   },
   "sale_ready_windows_ux_gate": {
@@ -7013,7 +7340,7 @@
         "product": "Prism Route 3D",
         "physical_windows_gui": "NOT_OBSERVED",
         "consumer_would_buy_at_current_price": "NO",
-        "reason": "PR19_EXPORTED_PCK_AND_HOSTED_JA_GLYPHS_VERIFIED__THIN_LOW_CONTRAST_HUD_AND_REAL_WINDOWS_125_150_DPI_HUMAN_FIRST30S_WALLCLOCK90S_RESTART_RECOVERY_UNVERIFIED__PRICE_NOT_APPROVED",
+        "reason": "PR21_EXACT_FACTORY_PCK_QA11_HOSTED_SOFTWARE_RENDER_BYTE_VERIFIED__REAL_WINDOWS_125_150_DPI_HUMAN_FIRST30S_WALLCLOCK90S_RESTART_RECOVERY_UNVERIFIED__PRICE_NOT_APPROVED",
         "sale_ready": false
       },
       {
