@@ -5,12 +5,12 @@ from pathlib import Path
 import unittest
 
 LEDGER = Path(__file__).resolve().parents[1] / "ops" / "active_e2e_handoff.json"
-GAME = "d77cf88977db943d83cf898aae5bbf027e5aed90"
-GAME_PRIOR = "e69e9b9b96f10426b9a9e3eb7d540a85d49778d6"
+GAME = "b53f89fc0b59871ba8f5cc7c62703bfdcc20d53a"
+GAME_PRIOR = "d77cf88977db943d83cf898aae5bbf027e5aed90"
 QA = "8aa8c20e1db0f2c30b91dd4e27cc141b1448d7d7"
 QA_PRIOR = "5438bb11516b8af8d9e68226ab2f82303b30391c"
-IMAGE = "de514cd29d2c930ec7dcff1263070cc6bf83b2c0"
-IMAGE_PRIOR = "420e803a52918183a5b2bedc9243e1415d7c44de"
+IMAGE = "9407225df68db3fb9c4e49b6d49db431c2c9094a"
+IMAGE_PRIOR = "de514cd29d2c930ec7dcff1263070cc6bf83b2c0"
 SOURCE_GAME = "c058cbf7fe38e02d929c67d047d717ff74bd522e"
 SOURCE_IMAGE = "16b6a772952ca0988f2ae2f8b5f4db2e59ec5877"
 
@@ -28,8 +28,8 @@ def validate_current_evidence(data):
     assert data["latest_provisioner_heads_observed"]["game"]["sha"] == GAME
     assert obs["signal-sprint"]["current_review_head_sha"] == GAME
     assert obs["signal-sprint"]["previous_review_head_sha"] == GAME_PRIOR
-    assert snap["observations"]["game_provisioner_pr10"]["ci_run_id"] == 41405677954
-    assert snap["observations"]["game_provisioner_pr10"]["ahead"] == 21
+    assert snap["observations"]["game_provisioner_pr10"]["ci_run_id"] == 41412494345
+    assert snap["observations"]["game_provisioner_pr10"]["ahead"] == 4
     assert not snap["observations"]["game_provisioner_pr10"]["cas"]
     assert not snap["observations"]["game_provisioner_pr10"]["gdk_msixvc"]
     assert "HOLD" in obs["signal-sprint"]["hosted_windows_gui_evidence"]["status"]
@@ -78,7 +78,7 @@ def validate_current_evidence(data):
         assert post[name]["identity_return_commit_sha"] is None
     assert not active["cas_returned"]
     assert active["original_exe_artifact_audit"]["ready_for_cas"] is False
-    assert GAME_PRIOR in "\n".join(active["historical_local_commands_20261102_1636"])
+    assert "e69e9b9b96f10426b9a9e3eb7d540a85d49778d6" in "\n".join(active["historical_local_commands_20261102_1636"])
     assert GAME_PRIOR not in "\n".join(active["local_commands"])
     assert GAME in "\n".join(active["local_commands"])
     assert "--apply-request-id" not in "\n".join(active["local_commands"])
