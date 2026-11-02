@@ -76,8 +76,8 @@ class ArtifactPreservationLedgerRegression(unittest.TestCase):
     def test_three_d_qa_new_head_and_batch_cursor_remain_separate(self):
         three_d = self.revision["observations"]["prism-route-3d-sentinel"]
         qa = three_d["independent_3d_qa_pr6"]
-        self.assertEqual(qa["review_head_sha"], "653e652694b861f093fce73c5a3bf6115d3eb673")
-        self.assertEqual(qa["ci_run_id"], 41373021468)
+        self.assertEqual(qa["review_head_sha"], "4b58f9d3c2ff75be9627f3e8a4dd20194460111d")
+        self.assertEqual(qa["ci_run_id"], 41377481988)
         self.assertFalse(qa["new_sentinel_cas_applied"])
         self.assertEqual(qa["real_signed_msix"], "NOT_BUILT")
         batch = self.data["multi_product_partner_center_batch_4"]

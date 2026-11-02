@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-02T01:38:13.216Z",
+  "updated_at_utc": "2026-11-02T02:36:09.031Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -1201,7 +1201,9 @@
     "local_checker_historical_request_guard_code_committed": true,
     "local_checker_historical_request_guard_exact_head_ci_pass": true,
     "local_checker_historical_request_guard_physical_pass": false,
-    "pre_identity_archive_library_preservation_3_of_3": true
+    "pre_identity_archive_library_preservation_3_of_3": true,
+    "sale_ready_windows_ux_pass": false,
+    "consumer_would_buy_at_current_price": "NO"
   },
   "user_id_requests": {
     "schema_version": 1,
@@ -3746,7 +3748,7 @@
     ],
     "accounting_market_scope": "FOUR_DRAFT_CANDIDATES_JP_US_SEPARATE__NO_PROMOTION_NO_SOURCE_REQUEST_NO_USER_ID_REQUEST",
     "accounting_tax_source_review": "NTA_2026_04_01_AND_IRS_P946_2025_REFERENCES_CHECKED__NOT_IMPLEMENTATION_COMPLIANCE_PASS",
-    "accounting_jp_bookkeeping_head_observed": "24e8beade64177cafd0d545d84392304b53dfe51",
+    "accounting_jp_bookkeeping_head_observed": "32c5976971d1494e205156b8ad27c89598cb2f46",
     "accounting_receipt_pdf_gate": "PR122_8_NEW_REGRESSIONS_PASS__467_TESTS_WINDOWS_UBUNTU__PHYSICAL_QA_HOLD",
     "accounting_receipt_pdf_pr": 122,
     "accounting_receipt_pdf_head": "8a5e5f01c0b2a5496da90ab6dab073523cd74e28",
@@ -3915,10 +3917,10 @@
     "three_d_qa_pr6_latest": {
       "repository": "shihuiarenjinba-png/3d-build-qa",
       "draft_pr": 6,
-      "review_head_sha": "653e652694b861f093fce73c5a3bf6115d3eb673",
+      "review_head_sha": "4b58f9d3c2ff75be9627f3e8a4dd20194460111d",
       "previous_head_sha": "6c50e83eee09158302a7a2dd70d1fd4767b23412",
       "compare": "AHEAD_4_BEHIND_0",
-      "ci_run_id": 41373021468,
+      "ci_run_id": 41377481988,
       "ci_conclusion": "SUCCESS",
       "scope": "HISTORICAL_CUSTODY_CHECK_ONLY__NO_NEW_SENTINEL_IDENTITY_CAS",
       "physical_windows": "NOT_EXECUTED",
@@ -4888,8 +4890,8 @@
         "status": "NOT_YET_REQUIRED",
         "source_sha": null,
         "request_id": null,
-        "factory_head_observed": "24e8beade64177cafd0d545d84392304b53dfe51",
-        "observed_factory_pr_head": "24e8beade64177cafd0d545d84392304b53dfe51",
+        "factory_head_observed": "32c5976971d1494e205156b8ad27c89598cb2f46",
+        "observed_factory_pr_head": "32c5976971d1494e205156b8ad27c89598cb2f46",
         "historical_factory_head_observed": "13d1a976757e86587fb11202ebb35fd5ac113cb8",
         "previous_observed_factory_pr_head": "9495dde15b4c60fb9c7447fca0a94f15edcd0b4d",
         "receipt_queue_scope": "CURRENT_QUEUE_ALL_DATES_NOT_HISTORICAL_AS_OF",
@@ -4996,9 +4998,9 @@
   },
   "revision_review_reconciliation": {
     "schema_version": 1,
-    "observed_at_utc": "2026-11-02T01:38:13.216Z",
+    "observed_at_utc": "2026-11-02T02:36:09.031Z",
     "writer": "36_WINDOWS_E2E_ONLY",
-    "scope": "READ_ONLY_LIVE_GITHUB_NEW_LINEAGE_ARTIFACT_AND_3D_BYTE_CUSTODY_RECONCILIATION__NO_CAS_OR_MARKET_PROMOTION",
+    "scope": "LIVE_REVIEW_HEAD_RECONCILIATION_JP_3D_GAME__IMMUTABLE_SOURCE_RUN_HEAD_AND_REQUEST_UNCHANGED__NO_CAS_MSIX_OR_SALE_PROMOTION",
     "policy": "PR_HEAD_IS_MUTABLE_REVIEW_CODE__SOURCE_SHA_AND_REQUEST_ID_ARE_IMMUTABLE_PRODUCT_BINDINGS__NO_AUTO_REBIND",
     "observations": {
       "offline-image-inventory-desk": {
@@ -5043,11 +5045,11 @@
         "repository": "shihuiarenjinba-png/AI-App-Factory",
         "draft_pr": 61,
         "review_branch": "codex/app-jp-bookkeeping-desk-20261031",
-        "current_review_head_sha": "24e8beade64177cafd0d545d84392304b53dfe51",
-        "previous_review_head_sha": "e3ab710b75c84b6e80e5e7d64b09800fd562bcfc",
+        "current_review_head_sha": "32c5976971d1494e205156b8ad27c89598cb2f46",
+        "previous_review_head_sha": "24e8beade64177cafd0d545d84392304b53dfe51",
         "exact_head_ci": [
           {
-            "run_id": 41354966658,
+            "run_id": 41375747240,
             "workflow": "Factory core CI",
             "conclusion": "SUCCESS"
           }
@@ -5058,15 +5060,17 @@
         "country": "Japan",
         "locale": "ja-JP",
         "currency": "JPY",
-        "review_scope": "MONTH_END_RECEIPT_QUEUE_CURRENT_ALL_DATES_NOT_HISTORICAL_AS_OF__FUTURE_DATED_FIXTURE",
+        "review_scope": "MONTH_END_RECEIPT_QUEUE_AND_APPEND_ONLY_HISTORY__LOCAL_ORIGINAL_BYTES_CUSTODY__NOT_TAX_COMPLIANCE",
         "pending_receipts_as_of_month_end": null,
         "tax_compliance": "NOT_VERIFIED__REVIEW_REQUIRED",
         "market_fit_gate": "HOLD_NOT_PROMOTED",
         "identity_status": "NOT_YET_REQUIRED",
         "package_gate": "HOLD",
         "store_submission": "NOT_PERFORMED",
-        "review_head_compare": "AHEAD_4_BEHIND_0_FROM_FC6B3243",
-        "current_review_scope": "RECEIPT_EVENT_HISTORY_FOUNDATION__CANDIDATE_ONLY__NOT_MARKET_FIT_OR_PROMOTION"
+        "review_head_compare": "AHEAD_14_BEHIND_0_FROM_24E8BE",
+        "current_review_scope": "RECEIPT_EVENT_HISTORY_INTEGRATED__ORIGINAL_BYTES_CUSTODY_AND_RESTART_HASH_CHECKS__CANDIDATE_ONLY__NO_MARKET_FIT_OR_TAX_COMPLIANCE",
+        "physical_windows_gui": "NOT_VERIFIED",
+        "original_receipt_bytes_review": "FACTORY_PR61_SOURCE_AND_TESTS_ONLY__NOT_36_PHYSICAL_WINDOWS_REHASH"
       },
       "prism-route-3d-sentinel": {
         "repository": "shihuiarenjinba-png/Repository-Provisioner-3D",
@@ -5129,15 +5133,18 @@
         "independent_3d_qa_pr6": {
           "repository": "shihuiarenjinba-png/3d-build-qa",
           "draft_pr": 6,
-          "review_head_sha": "653e652694b861f093fce73c5a3bf6115d3eb673",
-          "previous_head_sha": "6c50e83eee09158302a7a2dd70d1fd4767b23412",
-          "compare": "AHEAD_4_BEHIND_0",
-          "ci_run_id": 41373021468,
+          "review_head_sha": "4b58f9d3c2ff75be9627f3e8a4dd20194460111d",
+          "previous_head_sha": "653e652694b861f093fce73c5a3bf6115d3eb673",
+          "compare": "AHEAD_5_BEHIND_0_FROM_653E6526",
+          "ci_run_id": 41377481988,
           "ci_conclusion": "SUCCESS",
-          "scope": "HISTORICAL_CUSTODY_CHECK_ONLY__NO_NEW_SENTINEL_IDENTITY_CAS",
+          "scope": "HISTORICAL_SENTINEL_BYTE_CUSTODY_AND_FAIL_CLOSED_PRODUCT_GATE__NOT_NEW_REVISION_IDENTITY_CAS",
           "physical_windows": "NOT_EXECUTED",
           "new_sentinel_cas_applied": false,
-          "real_signed_msix": "NOT_BUILT"
+          "real_signed_msix": "NOT_BUILT",
+          "prescribed_receipt": "evidence/prism-sentinel-preserved-zip-recheck-20261102-1036jst.json",
+          "receipt_evidence_scope": "24_LANE_PRESERVED_FACTORY_ZIP_INDEPENDENT_REHASH__NOT_FRESH_GITHUB_DOWNLOAD__NOT_36_REHASH",
+          "execution_result": "CI_SUCCESS__24_LANE_PHYSICAL_WINDOWS_GUI_NOT_RUN__NEW_SENTINEL_CAS_HOLD"
         }
       },
       "signal-sprint": {
@@ -5167,7 +5174,7 @@
         "repository": "shihuiarenjinba-png/AI-Game-Factory",
         "draft_pr": 15,
         "review_branch": "codex/game-signal-sprint-new-lineage-20261102",
-        "current_review_head_sha": "a1af3448cd2edeae5bd54cbaca486a53fd991944",
+        "current_review_head_sha": "308749083173e9bc580d1b8eb8485e0077e7c68f",
         "immutable_source_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
         "old_request_id": "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e",
         "old_artifact_id": 12706862577,
@@ -5201,7 +5208,23 @@
         "store_submission": "NOT_PERFORMED",
         "provisioner_validator_ci_run_id": 41371345733,
         "provisioner_live_check_only_run_id": 41371299063,
-        "new_lineage_byte_receipt_library_path": "/Windows-all-auto/Evidence/2026-11-02/SignalSprintNewLineage/signal_sprint_new_lineage_byte_receipt_2026-11-02.json"
+        "new_lineage_byte_receipt_library_path": "/Windows-all-auto/Evidence/2026-11-02/SignalSprintNewLineage/signal_sprint_new_lineage_byte_receipt_2026-11-02.json",
+        "previous_review_head_sha": "a1af3448cd2edeae5bd54cbaca486a53fd991944",
+        "review_head_compare": "AHEAD_3_BEHIND_0_FROM_A1AF3448",
+        "current_review_head_ci": [
+          {
+            "run_id": 41371299063,
+            "workflow": "Signal Sprint immutable NEW build lineage (not CAS)",
+            "conclusion": "SUCCESS"
+          },
+          {
+            "run_id": 41371293921,
+            "workflow": "Factory core CI",
+            "conclusion": "SUCCESS"
+          }
+        ],
+        "run_head_is_immutable_artifact_provenance": true,
+        "current_review_head_is_run_head": false
       }
     },
     "cross_lane_gates": {
@@ -5285,6 +5308,169 @@
       "checker_pass": false,
       "gui_qa_pass": false,
       "store_submission": "NOT_PERFORMED"
+    },
+    "review_head_recheck": {
+      "observed_at_utc": "2026-11-02T02:33:48.102Z",
+      "jp_bookkeeping": {
+        "previous_head": "24e8beade64177cafd0d545d84392304b53dfe51",
+        "current_head": "32c5976971d1494e205156b8ad27c89598cb2f46",
+        "ahead": 14,
+        "behind": 0,
+        "ci_run_id": 41375747240,
+        "ci": "SUCCESS",
+        "promotion": "CANDIDATE_ONLY"
+      },
+      "three_d_qa": {
+        "previous_head": "653e652694b861f093fce73c5a3bf6115d3eb673",
+        "current_head": "4b58f9d3c2ff75be9627f3e8a4dd20194460111d",
+        "ahead": 5,
+        "behind": 0,
+        "ci_run_id": 41377481988,
+        "ci": "SUCCESS",
+        "new_revision_identity_cas": "HOLD"
+      },
+      "game_factory": {
+        "previous_head": "a1af3448cd2edeae5bd54cbaca486a53fd991944",
+        "current_head": "308749083173e9bc580d1b8eb8485e0077e7c68f",
+        "ahead": 3,
+        "behind": 0,
+        "run_head_sha": "a1af3448cd2edeae5bd54cbaca486a53fd991944",
+        "immutable_source_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
+        "live_check_only_run_id": 41371299063,
+        "cas": "NOT_APPLIED"
+      },
+      "batch4": {
+        "github_identity_returns": 2,
+        "pre_identity_pending": 2,
+        "physical_local_processed": 0,
+        "scheduled_trigger_proven": false
+      },
+      "local_code_sync": {
+        "cloud_pass": true,
+        "physical_three_sha_reuse_scheduler_receipt": false
+      },
+      "sales": {
+        "real_msix": false,
+        "backlog": false,
+        "local_pull": false,
+        "checker": false,
+        "gui_qa": false,
+        "e2e": false
+      }
     }
+  },
+  "sale_ready_windows_ux_gate": {
+    "schema_version": 1,
+    "owner": "36_WINDOWS_E2E_ONLY",
+    "gate": "HOLD_PHYSICAL_WINDOWS_CONSUMER_QA_NOT_OBSERVED",
+    "sale_ready": false,
+    "verdict": "NO",
+    "verdict_basis": "NO_VERIFIED_PHYSICAL_WINDOWS_END_TO_END_UX_AND_NO_APPROVED_PRICE__NOT_A_HANDS_ON_PRODUCT_QUALITY_JUDGMENT",
+    "required_physical_environment": {
+      "os": "REAL_WINDOWS",
+      "min_resolution": "1024x768",
+      "dpi_percent": [
+        125,
+        150
+      ],
+      "languages": [
+        "ja-JP",
+        "en-US"
+      ],
+      "store_images_match_real_ui": true
+    },
+    "required_journey": [
+      "first_launch",
+      "discover_primary_task",
+      "complete_primary_task",
+      "verify_output_and_location",
+      "restart_and_persistence",
+      "error_recovery_and_retry"
+    ],
+    "required_negative_inputs": [
+      "empty_data",
+      "large_data",
+      "read_permission_denied",
+      "corrupt_input",
+      "save_failure",
+      "long_ja_text",
+      "long_en_text"
+    ],
+    "hold_if": [
+      "primary_task_not_discoverable",
+      "internal_or_debug_button_copy",
+      "ambiguous_success_or_failure",
+      "output_location_unclear",
+      "no_back_or_retry",
+      "clipped_or_unscrollable_window",
+      "novice_requires_expert_knowledge",
+      "unsafe_operation_without_confirmation",
+      "store_listing_images_differ_from_actual_ui"
+    ],
+    "physical_windows_receipt_verified": false,
+    "gui_screenshots_verified": false,
+    "install_uninstall_verified": false,
+    "price_approved": false,
+    "store_listing_image_match_verified": false,
+    "product_verdicts": [
+      {
+        "product": "Focus Session Desk",
+        "physical_windows_gui": "NOT_OBSERVED",
+        "consumer_would_buy_at_current_price": "NO",
+        "reason": "REAL_WINDOWS_TASK_TO_OUTPUT_RESTART_RECOVERY_NOT_VERIFIED__PRICE_NOT_APPROVED",
+        "sale_ready": false
+      },
+      {
+        "product": "File Integrity Ledger",
+        "physical_windows_gui": "NOT_OBSERVED",
+        "consumer_would_buy_at_current_price": "NO",
+        "reason": "REAL_WINDOWS_TASK_TO_OUTPUT_RESTART_RECOVERY_NOT_VERIFIED__PRICE_NOT_APPROVED",
+        "sale_ready": false
+      },
+      {
+        "product": "Offline Text Diff Desk",
+        "physical_windows_gui": "NOT_OBSERVED",
+        "consumer_would_buy_at_current_price": "NO",
+        "reason": "REAL_WINDOWS_TASK_TO_OUTPUT_RESTART_RECOVERY_NOT_VERIFIED__PRICE_NOT_APPROVED",
+        "sale_ready": false
+      },
+      {
+        "product": "Offline Image Inventory Desk",
+        "physical_windows_gui": "NOT_OBSERVED",
+        "consumer_would_buy_at_current_price": "NO",
+        "reason": "REAL_WINDOWS_TASK_TO_OUTPUT_RESTART_RECOVERY_NOT_VERIFIED__PRICE_NOT_APPROVED",
+        "sale_ready": false
+      },
+      {
+        "product": "Offline Notes Canary",
+        "physical_windows_gui": "NOT_OBSERVED",
+        "consumer_would_buy_at_current_price": "NO",
+        "reason": "REAL_WINDOWS_TASK_TO_OUTPUT_RESTART_RECOVERY_NOT_VERIFIED__PRICE_NOT_APPROVED",
+        "sale_ready": false
+      },
+      {
+        "product": "Prism Route 3D",
+        "physical_windows_gui": "NOT_OBSERVED",
+        "consumer_would_buy_at_current_price": "NO",
+        "reason": "REAL_WINDOWS_TASK_TO_OUTPUT_RESTART_RECOVERY_NOT_VERIFIED__PRICE_NOT_APPROVED",
+        "sale_ready": false
+      },
+      {
+        "product": "Signal Sprint",
+        "physical_windows_gui": "NOT_OBSERVED",
+        "consumer_would_buy_at_current_price": "NO",
+        "reason": "REAL_WINDOWS_TASK_TO_OUTPUT_RESTART_RECOVERY_NOT_VERIFIED__PRICE_NOT_APPROVED",
+        "sale_ready": false
+      },
+      {
+        "product": "JP Bookkeeping Desk",
+        "physical_windows_gui": "NOT_OBSERVED",
+        "consumer_would_buy_at_current_price": "NO",
+        "reason": "REAL_WINDOWS_TASK_TO_OUTPUT_RESTART_RECOVERY_NOT_VERIFIED__PRICE_NOT_APPROVED",
+        "sale_ready": false
+      }
+    ],
+    "next_action": "ON_REAL_WINDOWS_CAPTURE_PER_PRODUCT_JOURNEY_AND_NEGATIVE_CASE_RECEIPTS_AT_1024x768_125_150_DPI__RETURN_SPECIFIC_UI_FUNCTION_BLOCKERS_TO_00_12_24__DO_NOT_PROMOTE_WITHOUT_PROOF",
+    "store_submission": "NOT_PERFORMED"
   }
 }
