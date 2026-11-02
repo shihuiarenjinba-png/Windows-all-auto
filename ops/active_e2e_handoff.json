@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-02T10:33:13Z",
+  "updated_at_utc": "2026-11-02T11:37:35Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -1626,7 +1626,11 @@
         "market_fit_gate": "MARKET_FIT_HOLD",
         "market_fit_evidence_verified": false,
         "market_fit_reason": "FACTORY_REVIEWED_EVIDENCE_NOT_VERIFIED_AT_PINNED_SOURCE_SHA",
-        "local_operator_return_status": "GITHUB_RETURN_VERIFIED__NO_LOCAL_RECEIPT"
+        "local_operator_return_status": "GITHUB_RETURN_VERIFIED__NO_LOCAL_RECEIPT",
+        "current_actions_artifact_available": false,
+        "current_actions_artifact_download_allowed": false,
+        "library_archive_preserved": true,
+        "physical_local_archive_readback_verified": false
       },
       {
         "product_type": "APP",
@@ -5209,26 +5213,26 @@
   },
   "revision_review_reconciliation": {
     "schema_version": 1,
-    "observed_at_utc": "2026-11-02T10:33:13Z",
+    "observed_at_utc": "2026-11-02T11:37:35Z",
     "writer": "36_WINDOWS_E2E_ONLY",
-    "scope": "LIVE_REVIEW_HEADS_GAME_PR10_3D_QA_PR6_IMAGE_PR76__NEW_3D_CONSUMER_LINEAGE_SEPARATE__NO_CAS_PACKAGE_OR_SALE_PROMOTION",
+    "scope": "CURRENT_PR16_PR18_QA9_APP76_REVIEW_AND_ARTIFACT_EXPIRY__IMMUTABLE_LINEAGES_SEPARATE__NO_LOCAL_CAS_MSIX_OR_STORE_PROMOTION",
     "policy": "PR_HEAD_IS_MUTABLE_REVIEW_CODE__SOURCE_SHA_AND_REQUEST_ID_ARE_IMMUTABLE_PRODUCT_BINDINGS__NO_AUTO_REBIND",
     "observations": {
       "offline-image-inventory-desk": {
         "repository": "shihuiarenjinba-png/AI-App-Factory",
         "draft_pr": 76,
         "review_branch": "codex/app-image-snapshot-evidence-20261101",
-        "current_review_head_sha": "b375fd9ed39ce5ceef635d9df169d7e23f2e2eac",
-        "previous_review_head_sha": "9407225df68db3fb9c4e49b6d49db431c2c9094a",
-        "review_head_compare": "AHEAD_8_BEHIND_0_FROM_9407225D",
+        "current_review_head_sha": "766480975ecbe5826bfb2c73060a662d30c708b1",
+        "previous_review_head_sha": "b375fd9ed39ce5ceef635d9df169d7e23f2e2eac",
+        "review_head_compare": "AHEAD_6_BEHIND_0_FROM_B375FD9E",
         "exact_head_ci": [
           {
-            "run_id": 41427272964,
+            "run_id": 41435219141,
             "workflow": "Factory core CI",
             "conclusion": "SUCCESS"
           },
           {
-            "run_id": 41427272854,
+            "run_id": 41435219193,
             "workflow": "Image snapshot QA and unsigned Windows EXE",
             "conclusion": "SUCCESS"
           }
@@ -5251,7 +5255,8 @@
         "signed_msix": "NOT_BUILT",
         "store_submission": "NOT_PERFORMED",
         "current_review_head_source": "AI-App-Factory Draft PR76",
-        "review_scope": "READ_ONLY_IMAGE_SNAPSHOT_AND_PERSISTED_JA_EN_UI_REVIEW_ONLY__CLOUD_CI_SUCCESS__NO_INDEPENDENT_BUYERS_OR_PHYSICAL_WINDOWS_QA"
+        "review_scope": "NEW_EXACT_REPLAY_AND_WORK_AREA_TESTS__REVIEW_ONLY__NO_MARKET_FIT_OR_PHYSICAL_USER_PC_PROMOTION",
+        "historical_review_head_before_20261102_2037": "b375fd9ed39ce5ceef635d9df169d7e23f2e2eac"
       },
       "jp-bookkeeping-desk": {
         "repository": "shihuiarenjinba-png/AI-App-Factory",
@@ -5580,6 +5585,77 @@
           "approved_four_gdk_assets": false,
           "real_msixvc": false
         }
+      },
+      "signal-sprint-ui-revision": {
+        "repository": "shihuiarenjinba-png/AI-Game-Factory",
+        "draft_pr": 16,
+        "review_branch": "codex/game-signal-sprint-ui-revision-20261102",
+        "current_review_head_sha": "8927cd072d18c95a0940b4e0d7bca26359de20e9",
+        "ci_run_ids": [
+          41435749204,
+          41435749281
+        ],
+        "immutable_original_source_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
+        "historical_new_lineage_artifact_id": 13105352227,
+        "historical_artifact_run_head": "a1af3448cd2edeae5bd54cbaca486a53fd991944",
+        "old_artifact_id": 12706862577,
+        "old_artifact_sha_conflict": "HOLD_UNRESOLVED",
+        "prior_hosted_gui_issue": "1040x788_WINDOW_EXCEEDS_1024x720_WORKAREA",
+        "new_ui_revision_physical_user_pc_gui": "NOT_VERIFIED",
+        "review_head_is_immutable_source": false,
+        "review_head_is_artifact_run_head": false,
+        "cas_applied": false,
+        "gdk_msixvc_built": false,
+        "store_submission": "NOT_PERFORMED"
+      },
+      "prism-route-3d-consumer-revision": {
+        "repository": "shihuiarenjinba-png/3d-game-factory",
+        "draft_pr": 18,
+        "review_branch": "codex/prism-first30s-onboarding-20261102",
+        "current_review_head_sha": "3c5a1e6837118a73609a0b9c9b7b54dfa4c14f0d",
+        "previous_revision_head_sha": "9a73d0d56427b70fc0e0eba705a6be3e71c59390",
+        "historical_gate1_source_sha": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
+        "historical_gate1_identity_return_commit": "11417b75636ee18816028ffd5221884c4c9a9836",
+        "previous_revision_request_id": "3d-prism-route-3d-9a73d0d56427",
+        "new_revision_request_id": "NOT_VERIFIED__DO_NOT_INFER_FROM_REVIEW_HEAD",
+        "artifact_id": 13130487252,
+        "artifact_run_id": 41422372852,
+        "artifact_metadata_digest": "sha256:970288793436900405f9986f2da4c403345792fb7563398dfb21e9abaeaf3836",
+        "artifact_metadata_expires_at_utc": "2026-11-09T09:39:45Z",
+        "artifact_metadata_expired": false,
+        "artifact_byte_sha256_rehashed_by_36": false,
+        "factory_ci_run_ids": [
+          41422372903,
+          41422372852
+        ],
+        "qa_draft_pr": 9,
+        "qa_review_head_sha": "87e174d59e99b1f3a6172e324ef35053a5ea6607",
+        "qa_ci_run_ids": [
+          41429325656,
+          41429325519
+        ],
+        "qa_scope": "REAL_EXPORTED_PCK_CLOUD_RUNTIME_CONTRACT__NOT_PHYSICAL_WINDOWS",
+        "old_identity_reused_for_new_revision": false,
+        "new_revision_cas": false,
+        "real_signed_msix": false,
+        "physical_windows_gui": false,
+        "store_submission": "NOT_PERFORMED"
+      },
+      "prism-route-3d-consumer-qa-pr9": {
+        "repository": "shihuiarenjinba-png/3d-build-qa",
+        "draft_pr": 9,
+        "review_branch": "codex/prism-first30s-real-pck-qa-20261102",
+        "current_review_head_sha": "87e174d59e99b1f3a6172e324ef35053a5ea6607",
+        "ci_run_ids": [
+          41429325656,
+          41429325519
+        ],
+        "prior_qa_pr6_head_sha": "8aa8c20e1db0f2c30b91dd4e27cc141b1448d7d7",
+        "prior_qa_pr6_is_current": false,
+        "cloud_real_pck_qa_ci_pass": true,
+        "physical_user_pc_gui_pass": false,
+        "new_revision_cas_pass": false,
+        "real_msix_pass": false
       }
     },
     "cross_lane_gates": {
@@ -5603,9 +5679,15 @@
       "game_gdk_msixvc_pass": false,
       "three_d_sentinel_independent_byte_custody_receipt_verified": true,
       "three_d_sentinel_new_revision_cas_pass": false,
-      "pre_identity_archive_library_preservation_pass": true
+      "pre_identity_archive_library_preservation_pass": true,
+      "focus_expired_actions_artifact_downloadable": false,
+      "focus_library_zip_preserved": true,
+      "focus_user_pc_archive_verified": false,
+      "prism_pr9_cloud_qa_ci_pass": true,
+      "prism_pr9_physical_qa_pass": false,
+      "game_pr16_physical_gui_pass": false
     },
-    "next_action": "CURRENT_4_LANE_REVIEW_HEADS_RECONCILED__NEXT_USER_PC_EXACT_3_SHA_REUSE_TASK_SCHEDULER_RECEIPT__NO_CAS_MSIX_STORE",
+    "next_action": "PR16_PR18_QA9_CLOUD_REVIEW_ONLY__FOCUS_EXPIRED_ACTIONS_NO_DOWNLOAD__LIBRARY_4_OF_4_PRESERVED_NOT_USER_PC__EXACT_3_SHA_REUSE_SCHEDULER_RECEIPT_PHYSICAL_HOLD__NO_CAS_VERSION_OR_STORE",
     "artifact_byte_preservation_20261102": {
       "observed_at_utc": "2026-11-02T01:38:13.216Z",
       "owner": "36_WINDOWS_E2E_ONLY",
@@ -5777,7 +5859,9 @@
           "identity_state": "POST_IDENTITY_READY",
           "cloud_action": "NO_WORK_POST_IDENTITY__NO_PRODUCT_CREATE_NO_CAS",
           "physical_local_action": "NOT_EXECUTED",
-          "identity_return_commit_sha": "8a7139375524830bf823469526837259266172be"
+          "identity_return_commit_sha": "8a7139375524830bf823469526837259266172be",
+          "github_artifact_download_allowed": false,
+          "github_artifact_current_status": "EXPIRED__NOT_LISTED_IN_RUN"
         },
         {
           "batch_index": 2,
@@ -5988,6 +6072,151 @@
       "historical_snapshot": true
     },
     "current_four_lane_observation": {
+      "observed_at_utc": "2026-11-02T11:37:35Z",
+      "writer": "36_WINDOWS_E2E_ONLY",
+      "game": {
+        "pr": 10,
+        "head": "b53f89fc0b59871ba8f5cc7c62703bfdcc20d53a",
+        "ci": 41412494345,
+        "original_source_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
+        "original_request_id": "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e",
+        "new_lineage_request_id": "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e-reissue-sprint-41361263698-41361263698",
+        "new_lineage_artifact_id": 13105352227,
+        "hosted_gui": "PRIOR_1040x788_WINDOW_OUTSIDE_1024x720_WORKAREA__LATEST_PR16_PHYSICAL_RECHECK_PENDING",
+        "local_pass": false,
+        "cas": false,
+        "msixvc": false,
+        "factory_review_head": "8927cd072d18c95a0940b4e0d7bca26359de20e9",
+        "factory_artifact_run_head": "a1af3448cd2edeae5bd54cbaca486a53fd991944",
+        "factory_review_pr": 16,
+        "factory_review_ci": [
+          41435749204,
+          41435749281
+        ],
+        "review_only_ui_revision": true
+      },
+      "three_d": {
+        "factory_pr": 18,
+        "head": "3c5a1e6837118a73609a0b9c9b7b54dfa4c14f0d",
+        "new_request_id": null,
+        "ci": [
+          41414473000,
+          41414473002
+        ],
+        "legacy_identity_return_commit": "11417b75636ee18816028ffd5221884c4c9a9836",
+        "new_cas": false,
+        "physical_gui": false,
+        "signed_msix": false,
+        "legacy_identity_cas_is_new_revision": false,
+        "source_sha": "3c5a1e6837118a73609a0b9c9b7b54dfa4c14f0d",
+        "review_head_is_approved_new_identity": false,
+        "artifact_id": 13130487252,
+        "artifact_run_id": 41422372852,
+        "artifact_metadata_digest": "sha256:970288793436900405f9986f2da4c403345792fb7563398dfb21e9abaeaf3836",
+        "artifact_metadata_expired": false,
+        "artifact_expires_at_utc": "2026-11-09T09:39:45Z",
+        "qa_pr": 9,
+        "qa_head": "87e174d59e99b1f3a6172e324ef35053a5ea6607",
+        "qa_ci": [
+          41429325656,
+          41429325519
+        ]
+      },
+      "app": {
+        "image_pr": 76,
+        "head": "766480975ecbe5826bfb2c73060a662d30c708b1",
+        "ci": [
+          41435219141,
+          41435219193
+        ],
+        "score": 64,
+        "real_buyers": 0,
+        "market_fit": "HOLD",
+        "promoted": false
+      },
+      "windows_e2e": {
+        "base_pr": 145,
+        "base_head": "95097a5f312b7debd590def4f2ff591e56377850",
+        "batch_cloud_discovered": 4,
+        "batch_github_identity_returned": 2,
+        "batch_local_processed": 0,
+        "batch_local_discovered": 0,
+        "next_index_is_cloud_logical": true,
+        "archive_cloud_verified": 4,
+        "local_code_sync": "CLOUD_PASS_ONLY",
+        "physical_local_sync": false,
+        "task_scheduler_proof": false,
+        "real_msix": false,
+        "backlog": false,
+        "checker": false,
+        "gui_install": false,
+        "e2e_pass": false,
+        "focus_actions_artifact_currently_available": false,
+        "focus_library_archive_preserved": true,
+        "focus_user_pc_archive_rehash": false
+      }
+    },
+    "review_head_recheck_snapshot_type": "HISTORICAL_EARLIER_OBSERVATION__NOT_CURRENT_FACTORY_PR15_HEAD",
+    "latest_incremental_review_head_recheck": {
+      "observed_at_utc": "2026-11-02T10:33:13Z",
+      "writer": "36_WINDOWS_E2E_ONLY",
+      "base_pr": 144,
+      "base_head_sha": "b5b54bbdeb9b84ee09d823031f857ccf93748098",
+      "app_pr76": {
+        "previous_review_head": "9407225df68db3fb9c4e49b6d49db431c2c9094a",
+        "current_review_head": "b375fd9ed39ce5ceef635d9df169d7e23f2e2eac",
+        "ahead": 8,
+        "behind": 0,
+        "changed_scope": "JA_EN_LANGUAGE_PERSISTENCE_AND_GUI_SMOKE__REVIEW_ONLY",
+        "ci_runs": [
+          41427272964,
+          41427272854
+        ],
+        "market_fit_score": 64,
+        "independent_real_buyers": 0,
+        "required_score": 80,
+        "promoted": false,
+        "new_source_sha": null,
+        "new_request_id": null,
+        "physical_windows_gui": false,
+        "market_fit": "HOLD"
+      },
+      "game_factory_pr15": {
+        "previous_review_head": "308749083173e9bc580d1b8eb8485e0077e7c68f",
+        "current_review_head": "4ad61ccc48744e9f696d737c449fe6021cdd5b3f",
+        "ahead": 6,
+        "behind": 0,
+        "changed_scope": "NEW_LINEAGE_WORKFLOW_READ_ONLY_VALIDATION",
+        "ci_run": 41412652053,
+        "immutable_source_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
+        "immutable_artifact_run_head": "a1af3448cd2edeae5bd54cbaca486a53fd991944",
+        "artifact_id": 13105352227,
+        "old_artifact_sha_conflict": "HOLD",
+        "new_request_id": "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e-reissue-sprint-41361263698-41361263698",
+        "cas_applied": false,
+        "gdk_msixvc": false,
+        "physical_windows_gui": false
+      },
+      "app_batch4": {
+        "cloud_discovered": 4,
+        "github_identity_returned": 2,
+        "physical_local_processed": 0,
+        "cloud_next_index": 3,
+        "local_scheduler_proven": false,
+        "archived_zip_count": 4
+      },
+      "local_code_sync": {
+        "cloud_pass": true,
+        "physical_exact_sha_reuse_scheduler_pass": false
+      },
+      "sale_ready": false,
+      "real_msix": false,
+      "github_backlog": false,
+      "checker": false,
+      "store_submission": "NOT_PERFORMED",
+      "history_policy": "HISTORICAL_OBSERVATIONS_AND_PINNED_COMMANDS_UNCHANGED__CURRENT_REVIEW_HEAD_NOT_IMMUTABLE_SOURCE_OR_ARTIFACT_RUN_HEAD"
+    },
+    "historical_four_lane_observation_before_20261102_2037": {
       "observed_at_utc": "2026-11-02T09:35:43Z",
       "writer": "36_WINDOWS_E2E_ONLY",
       "game": {
@@ -6050,65 +6279,23 @@
         "e2e_pass": false
       }
     },
-    "review_head_recheck_snapshot_type": "HISTORICAL_EARLIER_OBSERVATION__NOT_CURRENT_FACTORY_PR15_HEAD",
-    "latest_incremental_review_head_recheck": {
-      "observed_at_utc": "2026-11-02T10:33:13Z",
-      "writer": "36_WINDOWS_E2E_ONLY",
-      "base_pr": 144,
-      "base_head_sha": "b5b54bbdeb9b84ee09d823031f857ccf93748098",
-      "app_pr76": {
-        "previous_review_head": "9407225df68db3fb9c4e49b6d49db431c2c9094a",
-        "current_review_head": "b375fd9ed39ce5ceef635d9df169d7e23f2e2eac",
-        "ahead": 8,
-        "behind": 0,
-        "changed_scope": "JA_EN_LANGUAGE_PERSISTENCE_AND_GUI_SMOKE__REVIEW_ONLY",
-        "ci_runs": [
-          41427272964,
-          41427272854
-        ],
-        "market_fit_score": 64,
-        "independent_real_buyers": 0,
-        "required_score": 80,
-        "promoted": false,
-        "new_source_sha": null,
-        "new_request_id": null,
-        "physical_windows_gui": false,
-        "market_fit": "HOLD"
-      },
-      "game_factory_pr15": {
-        "previous_review_head": "308749083173e9bc580d1b8eb8485e0077e7c68f",
-        "current_review_head": "4ad61ccc48744e9f696d737c449fe6021cdd5b3f",
-        "ahead": 6,
-        "behind": 0,
-        "changed_scope": "NEW_LINEAGE_WORKFLOW_READ_ONLY_VALIDATION",
-        "ci_run": 41412652053,
-        "immutable_source_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
-        "immutable_artifact_run_head": "a1af3448cd2edeae5bd54cbaca486a53fd991944",
-        "artifact_id": 13105352227,
-        "old_artifact_sha_conflict": "HOLD",
-        "new_request_id": "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e-reissue-sprint-41361263698-41361263698",
-        "cas_applied": false,
-        "gdk_msixvc": false,
-        "physical_windows_gui": false
-      },
-      "app_batch4": {
-        "cloud_discovered": 4,
-        "github_identity_returned": 2,
-        "physical_local_processed": 0,
-        "cloud_next_index": 3,
-        "local_scheduler_proven": false,
-        "archived_zip_count": 4
-      },
-      "local_code_sync": {
-        "cloud_pass": true,
-        "physical_exact_sha_reuse_scheduler_pass": false
-      },
-      "sale_ready": false,
-      "real_msix": false,
-      "github_backlog": false,
-      "checker": false,
-      "store_submission": "NOT_PERFORMED",
-      "history_policy": "HISTORICAL_OBSERVATIONS_AND_PINNED_COMMANDS_UNCHANGED__CURRENT_REVIEW_HEAD_NOT_IMMUTABLE_SOURCE_OR_ARTIFACT_RUN_HEAD"
+    "focus_artifact_expiry_current": {
+      "artifact_id": 12807496604,
+      "factory_run_id": 40668807091,
+      "github_expires_at_utc": "2026-11-02T10:02:58Z",
+      "github_current_artifacts_count": 0,
+      "github_current_artifact_available": false,
+      "github_download_allowed": false,
+      "github_status": "EXPIRED__RUN_ARTIFACT_LIST_EMPTY",
+      "library_archive_preserved": true,
+      "library_archive_sha256": "06189361745a9cc175f1fe5bde27d758b71518ac1d2e955436939e3e7ed2a04d",
+      "library_archive_readback_scope": "MODEL_CONTAINER_PREVIOUSLY_VERIFIED__NOT_REHASHED_THIS_RUN",
+      "user_pc_archive_rehash_verified": false,
+      "identity_status": "POST_IDENTITY_READY",
+      "identity_return_commit_sha": "8a7139375524830bf823469526837259266172be",
+      "no_product_recreate_or_cas": true,
+      "source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+      "request_id": "app-focus-session-desk-8b00bc4e9082"
     }
   },
   "sale_ready_windows_ux_gate": {
