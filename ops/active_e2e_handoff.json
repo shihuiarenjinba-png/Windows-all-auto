@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-02T02:33:48.102Z",
+  "updated_at_utc": "2026-11-02T02:35:22.830Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -4996,7 +4996,7 @@
   },
   "revision_review_reconciliation": {
     "schema_version": 1,
-    "observed_at_utc": "2026-11-02T02:33:48.102Z",
+    "observed_at_utc": "2026-11-02T02:35:22.830Z",
     "writer": "36_WINDOWS_E2E_ONLY",
     "scope": "LIVE_REVIEW_HEAD_RECONCILIATION_JP_3D_GAME__IMMUTABLE_SOURCE_RUN_HEAD_AND_REQUEST_UNCHANGED__NO_CAS_MSIX_OR_SALE_PROMOTION",
     "policy": "PR_HEAD_IS_MUTABLE_REVIEW_CODE__SOURCE_SHA_AND_REQUEST_ID_ARE_IMMUTABLE_PRODUCT_BINDINGS__NO_AUTO_REBIND",
@@ -5356,5 +5356,119 @@
         "e2e": false
       }
     }
+  },
+  "sale_ready_windows_ux_gate": {
+    "schema_version": 1,
+    "owner": "36_WINDOWS_E2E_ONLY",
+    "gate": "HOLD_PHYSICAL_WINDOWS_CONSUMER_QA_NOT_OBSERVED",
+    "sale_ready": false,
+    "verdict": "NO",
+    "verdict_basis": "NO_VERIFIED_PHYSICAL_WINDOWS_END_TO_END_UX_AND_NO_APPROVED_PRICE__NOT_A_HANDS_ON_PRODUCT_QUALITY_JUDGMENT",
+    "required_physical_environment": {
+      "os": "REAL_WINDOWS",
+      "min_resolution": "1024x768",
+      "dpi_percent": [
+        125,
+        150
+      ],
+      "languages": [
+        "ja-JP",
+        "en-US"
+      ],
+      "store_images_match_real_ui": true
+    },
+    "required_journey": [
+      "first_launch",
+      "discover_primary_task",
+      "complete_primary_task",
+      "verify_output_and_location",
+      "restart_and_persistence",
+      "error_recovery_and_retry"
+    ],
+    "required_negative_inputs": [
+      "empty_data",
+      "large_data",
+      "read_permission_denied",
+      "corrupt_input",
+      "save_failure",
+      "long_ja_text",
+      "long_en_text"
+    ],
+    "hold_if": [
+      "primary_task_not_discoverable",
+      "internal_or_debug_button_copy",
+      "ambiguous_success_or_failure",
+      "output_location_unclear",
+      "no_back_or_retry",
+      "clipped_or_unscrollable_window",
+      "novice_requires_expert_knowledge",
+      "unsafe_operation_without_confirmation",
+      "store_listing_images_differ_from_actual_ui"
+    ],
+    "physical_windows_receipt_verified": false,
+    "gui_screenshots_verified": false,
+    "install_uninstall_verified": false,
+    "price_approved": false,
+    "store_listing_image_match_verified": false,
+    "product_verdicts": [
+      {
+        "product": "Focus Session Desk",
+        "physical_windows_gui": "NOT_OBSERVED",
+        "consumer_would_buy_at_current_price": "NO",
+        "reason": "REAL_WINDOWS_TASK_TO_OUTPUT_RESTART_RECOVERY_NOT_VERIFIED__PRICE_NOT_APPROVED",
+        "sale_ready": false
+      },
+      {
+        "product": "File Integrity Ledger",
+        "physical_windows_gui": "NOT_OBSERVED",
+        "consumer_would_buy_at_current_price": "NO",
+        "reason": "REAL_WINDOWS_TASK_TO_OUTPUT_RESTART_RECOVERY_NOT_VERIFIED__PRICE_NOT_APPROVED",
+        "sale_ready": false
+      },
+      {
+        "product": "Offline Text Diff Desk",
+        "physical_windows_gui": "NOT_OBSERVED",
+        "consumer_would_buy_at_current_price": "NO",
+        "reason": "REAL_WINDOWS_TASK_TO_OUTPUT_RESTART_RECOVERY_NOT_VERIFIED__PRICE_NOT_APPROVED",
+        "sale_ready": false
+      },
+      {
+        "product": "Offline Image Inventory Desk",
+        "physical_windows_gui": "NOT_OBSERVED",
+        "consumer_would_buy_at_current_price": "NO",
+        "reason": "REAL_WINDOWS_TASK_TO_OUTPUT_RESTART_RECOVERY_NOT_VERIFIED__PRICE_NOT_APPROVED",
+        "sale_ready": false
+      },
+      {
+        "product": "Offline Notes Canary",
+        "physical_windows_gui": "NOT_OBSERVED",
+        "consumer_would_buy_at_current_price": "NO",
+        "reason": "REAL_WINDOWS_TASK_TO_OUTPUT_RESTART_RECOVERY_NOT_VERIFIED__PRICE_NOT_APPROVED",
+        "sale_ready": false
+      },
+      {
+        "product": "Prism Route 3D",
+        "physical_windows_gui": "NOT_OBSERVED",
+        "consumer_would_buy_at_current_price": "NO",
+        "reason": "REAL_WINDOWS_TASK_TO_OUTPUT_RESTART_RECOVERY_NOT_VERIFIED__PRICE_NOT_APPROVED",
+        "sale_ready": false
+      },
+      {
+        "product": "Signal Sprint",
+        "physical_windows_gui": "NOT_OBSERVED",
+        "consumer_would_buy_at_current_price": "NO",
+        "reason": "REAL_WINDOWS_TASK_TO_OUTPUT_RESTART_RECOVERY_NOT_VERIFIED__PRICE_NOT_APPROVED",
+        "sale_ready": false
+      },
+      {
+        "product": "JP Bookkeeping Desk",
+        "physical_windows_gui": "NOT_OBSERVED",
+        "consumer_would_buy_at_current_price": "NO",
+        "reason": "REAL_WINDOWS_TASK_TO_OUTPUT_RESTART_RECOVERY_NOT_VERIFIED__PRICE_NOT_APPROVED",
+        "sale_ready": false
+      }
+    ],
+    "next_action": "ON_REAL_WINDOWS_CAPTURE_PER_PRODUCT_JOURNEY_AND_NEGATIVE_CASE_RECEIPTS_AT_1024x768_125_150_DPI__RETURN_SPECIFIC_UI_FUNCTION_BLOCKERS_TO_00_12_24__DO_NOT_PROMOTE_WITHOUT_PROOF",
+    "store_submission": "NOT_PERFORMED"
   }
 }
