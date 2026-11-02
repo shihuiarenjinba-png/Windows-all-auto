@@ -130,7 +130,7 @@ class ActiveE2EGameLedgerContract(unittest.TestCase):
                         if p["product"] == "Offline Image Inventory Desk")
         self.assertEqual(review["writer"], "36_WINDOWS_E2E_ONLY")
         self.assertEqual(image["current_review_head_sha"],
-                         "ad368842c31749f4261ecf5a0e9c878c1e500618")
+                         "9095cb77840fd86f0f73b5649ebbab829effd7da")
         self.assertNotEqual(image["current_review_head_sha"], old["source_sha"])
         self.assertEqual(image["immutable_pre_identity_source_sha"], old["source_sha"])
         self.assertEqual(image["immutable_pre_identity_request_id"], old["request_id"])
@@ -158,10 +158,10 @@ class ActiveE2EGameLedgerContract(unittest.TestCase):
         intake = next(p for p in data["accounting_candidate_intake"]["products"]
                       if p["slug"] == "jp-bookkeeping-desk")
         self.assertEqual(jp["current_review_head_sha"],
-                         "e3ab710b75c84b6e80e5e7d64b09800fd562bcfc")
+                         "24e8beade64177cafd0d545d84392304b53dfe51")
         self.assertEqual(intake["observed_factory_pr_head"], jp["current_review_head_sha"])
         self.assertEqual(jp["previous_review_head_sha"],
-                         "f83eee5fec573b8cab2bb152bb0ebbdd6f054a45")
+                         "e3ab710b75c84b6e80e5e7d64b09800fd562bcfc")
         self.assertIsNone(intake["source_sha"])
         self.assertIsNone(intake["request_id"])
         self.assertIsNone(jp["immutable_promoted_source_sha"])
@@ -180,7 +180,7 @@ class ActiveE2EGameLedgerContract(unittest.TestCase):
         historical = next(p for p in data["post_identity_pipeline"]["products"]
                           if p["product"] == "Prism Route 3D")
         self.assertEqual(sentinel["current_review_head_sha"],
-                         "3546dadf977b6202044940be9534420daf3ba3ce")
+                         "6b2afaf2adeb5ee4c7cc24d76bcfa1c24db72e1a")
         self.assertEqual(sentinel["immutable_sentinel_source_sha"],
                          "e432d94ed0db22878f61f1a8af140d7d7de2288f")
         self.assertEqual(sentinel["immutable_sentinel_request_id"],
