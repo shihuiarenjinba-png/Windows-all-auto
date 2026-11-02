@@ -9,12 +9,13 @@ import unittest
 from pathlib import Path
 
 LEDGER = Path(__file__).resolve().parents[1] / "ops" / "active_e2e_handoff.json"
-APP_REVIEW = "766480975ecbe5826bfb2c73060a662d30c708b1"
-GAME_UI_REVIEW = "8927cd072d18c95a0940b4e0d7bca26359de20e9"
+APP_REVIEW = "7ee78dbdaa075afec3e972bee79d7bbb22101249"
+GAME_UI_REVIEW = "7f43da2b57b7e3ac3bf9ab22dbf43984c5ba6620"
 GAME_SOURCE = "c058cbf7fe38e02d929c67d047d717ff74bd522e"
 GAME_RUN_HEAD = "a1af3448cd2edeae5bd54cbaca486a53fd991944"
-PRISM_REVIEW = "3c5a1e6837118a73609a0b9c9b7b54dfa4c14f0d"
-PRISM_QA = "87e174d59e99b1f3a6172e324ef35053a5ea6607"
+PRISM_REVIEW = "0878f48c79073596e30fed37a5703e0826389862"
+PRISM_PR18_BUILD = "3c5a1e6837118a73609a0b9c9b7b54dfa4c14f0d"
+PRISM_QA = "0678dee31c895921c00b1e6f06f059eadb8877c1"
 PRISM_OLD_GATE1 = "11417b75636ee18816028ffd5221884c4c9a9836"
 FOCUS_ZIP = "06189361745a9cc175f1fe5bde27d758b71518ac1d2e955436939e3e7ed2a04d"
 
@@ -38,23 +39,31 @@ def errors(data):
         if not condition:
             problems.append(name)
 
-    require(app["head"] == APP_REVIEW and obs["offline-image-inventory-desk"]["current_review_head_sha"] == "b375fd9ed39ce5ceef635d9df169d7e23f2e2eac" and obs["offline-image-inventory-desk"]["observation_snapshot_scope"].startswith("HISTORICAL_"), "APP_CURRENT_REVIEW_DRIFT")
-    require(app["ci"] == [41435219141, 41435219193], "APP_CI_MISMATCH")
+    require(app["head"] == APP_REVIEW and obs["offline-image-inventory-desk"]["current_review_head_sha"] == APP_REVIEW and obs["offline-image-inventory-desk"]["observation_snapshot_scope"].startswith("CURRENT_"), "APP_CURRENT_REVIEW_DRIFT")
+    require(app["ci"] == [41441166840, 41441166884], "APP_CI_MISMATCH")
     require(app["score"] == 64 and app["real_buyers"] == 0 and not app["promoted"], "APP_MARKET_UNAUTHORIZED_PROMOTION")
     require(game["factory_review_pr"] == 16 and game["factory_review_head"] == GAME_UI_REVIEW, "GAME_PR16_NOT_CURRENT")
-    require(game["factory_review_ci"] == [41435749204, 41435749281], "GAME_PR16_CI_MISMATCH")
+    require(game["factory_review_ci"] == [41443324856, 41443324988], "GAME_PR16_CI_MISMATCH")
     require(game["original_source_sha"] == GAME_SOURCE and data["active_product"]["source_sha"] == GAME_SOURCE, "GAME_IMMUTABLE_SOURCE_CHANGED")
     require(game["factory_artifact_run_head"] == GAME_RUN_HEAD and GAME_UI_REVIEW != GAME_RUN_HEAD, "GAME_REVIEW_SUBSTITUTED_FOR_ARTIFACT")
     require(obs["signal-sprint-ui-revision"]["current_review_head_sha"] == GAME_UI_REVIEW, "GAME_UI_OBSERVATION_STALE")
     require(obs["signal-sprint-ui-revision"]["old_artifact_sha_conflict"] == "HOLD_UNRESOLVED", "GAME_OLD_ARTIFACT_CONFLICT_LOST")
     require(not game["cas"] and not game["msixvc"] and not game["local_pass"], "GAME_UNVERIFIED_GATE_PROMOTED")
-    require(prism["factory_pr"] == 18 and prism["head"] == PRISM_REVIEW and prism["qa_pr"] == 9 and prism["qa_head"] == PRISM_QA, "PRISM_CURRENT_PR18_QA9_MISMATCH")
-    require(prism["artifact_id"] == 13130487252 and prism["artifact_run_id"] == 41422372852, "PRISM_ARTIFACT_PROVENANCE_CHANGED")
-    require(prism["artifact_metadata_digest"] == "sha256:970288793436900405f9986f2da4c403345792fb7563398dfb21e9abaeaf3836", "PRISM_METADATA_DIGEST_CHANGED")
+    require(prism["factory_pr"] == 19 and prism["head"] == PRISM_REVIEW and prism["qa_pr"] == 9 and prism["qa_head"] == PRISM_QA, "PRISM_CURRENT_PR18_QA9_MISMATCH")
+    require(prism["artifact_id"] is None and prism["artifact_run_id"] is None and prism["historical_pr18_build"]["artifact_id"] == 13130487252 and prism["historical_pr18_build"]["artifact_run_id"] == 41422372852, "PRISM_ARTIFACT_PROVENANCE_CHANGED")
+    require(prism["artifact_metadata_digest"] is None and prism["historical_pr18_build"]["artifact_metadata_digest"] == "sha256:970288793436900405f9986f2da4c403345792fb7563398dfb21e9abaeaf3836", "PRISM_METADATA_DIGEST_CHANGED")
     require(obs["prism-route-3d-consumer-revision"]["historical_gate1_identity_return_commit"] == PRISM_OLD_GATE1, "PRISM_GATE1_HISTORY_CHANGED")
-    require(obs["prism-route-3d-consumer-qa-pr9"]["current_review_head_sha"] == PRISM_QA and not obs["prism-route-3d-consumer-qa-pr9"]["prior_qa_pr6_is_current"], "OLD_PRISM_QA_MISLABELED_CURRENT")
+    require(obs["prism-route-3d-consumer-qa-pr9"]["current_review_head_sha"] == PRISM_QA and not obs["prism-route-3d-consumer-qa-pr9"]["prior_qa_pr6_is_current"] and prism["qa_ci"] == [41445320530, 41445320532], "OLD_PRISM_QA_MISLABELED_CURRENT")
     require(not prism["legacy_identity_cas_is_new_revision"] and not prism["new_cas"] and not prism["signed_msix"] and not prism["physical_gui"], "PRISM_OLD_IDENTITY_REUSED_OR_GATE_PROMOTED")
     require(not obs["prism-route-3d-consumer-revision"]["artifact_byte_sha256_rehashed_by_36"], "PRISM_METADATA_MISREPRESENTED_AS_BYTE_REHASH")
+    require(prism["historical_pr18_build"]["review_head_sha"] == PRISM_PR18_BUILD and prism["historical_pr18_build"]["source_sha"] == PRISM_PR18_BUILD, "PRISM_PR18_IMMUTABLE_BUILD_PROVENANCE_CHANGED")
+    require(prism["factory_quality_ci_artifact_count"] == 0 and prism["ci"] == [41444886971], "PRISM_PR19_CI_ARTIFACT_FALSE_PASS")
+    require(prism["qa9_referenced_factory_artifact_id"] == 13142680551 and not prism["pr19_new_pck_verified_by_36"], "PRISM_QA9_REFERENCE_MISLABELED_BYTE_PROOF")
+    require(not obs["prism-route-3d-first30s-pr19"]["pr18_artifact_is_pr19_build"] and not obs["prism-route-3d-first30s-pr19"]["legacy_gate1_identity_is_pr19_cas"], "PRISM_LEGACY_ARTIFACT_OR_CAS_PROMOTED")
+    require(not obs["prism-route-3d-first30s-pr19"]["qa9_factory_artifact_independently_rehashed_by_36"], "PRISM_QA9_UNVERIFIED_REHASH_PROMOTED")
+    require(game["hosted_gui_artifact_id"] == 13141335497 and not game["physical_gui_pass"], "GAME_HOSTED_GUI_MISLABELED_PHYSICAL")
+    require(app["review_unsigned_exe_artifact_id"] == 13140456543 and not app["new_revision_promoted"], "APP_REVIEW_EXE_MISLABELED_APPROVED_SOURCE")
+    require(data["revision_review_reconciliation"]["current_review_evidence_fail_closed"]["physical_local_processed"] == 0, "CURRENT_REVIEW_FAKE_LOCAL_PROCESSING")
     require(focus["artifact_id"] == 12807496604 and focus["github_current_artifacts_count"] == 0, "FOCUS_EXPIRED_ARTIFACT_INVENTORY_CHANGED")
     require(not focus["github_current_artifact_available"] and not focus["github_download_allowed"] and focus["github_status"].startswith("EXPIRED"), "EXPIRED_ACTIONS_ARTIFACT_MISLABELED_DOWNLOADABLE")
     require(focus["library_archive_preserved"] and focus["library_archive_sha256"] == FOCUS_ZIP, "FOCUS_LIBRARY_ARCHIVE_LOST")
@@ -110,6 +119,37 @@ class CurrentFourLaneAndExpiredArtifactRegression(unittest.TestCase):
         broken = copy.deepcopy(self.ledger)
         broken["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"]["new_cas"] = True
         self.assertIn("PRISM_OLD_IDENTITY_REUSED_OR_GATE_PROMOTED", errors(broken))
+
+
+    def test_pr18_artifact_cannot_be_current_pr19_build(self):
+        broken = copy.deepcopy(self.ledger)
+        broken["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"]["artifact_id"] = 13130487252
+        self.assertIn("PRISM_ARTIFACT_PROVENANCE_CHANGED", errors(broken))
+
+    def test_pr19_quality_ci_without_artifact_cannot_be_pck_pass(self):
+        broken = copy.deepcopy(self.ledger)
+        broken["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"]["factory_quality_ci_artifact_count"] = 1
+        self.assertIn("PRISM_PR19_CI_ARTIFACT_FALSE_PASS", errors(broken))
+
+    def test_qa9_referenced_artifact_cannot_be_claimed_rehashed(self):
+        broken = copy.deepcopy(self.ledger)
+        broken["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"]["pr19_new_pck_verified_by_36"] = True
+        self.assertIn("PRISM_QA9_REFERENCE_MISLABELED_BYTE_PROOF", errors(broken))
+
+    def test_game_hosted_gui_cannot_be_physical_pass(self):
+        broken = copy.deepcopy(self.ledger)
+        broken["revision_review_reconciliation"]["current_four_lane_observation"]["game"]["physical_gui_pass"] = True
+        self.assertIn("GAME_HOSTED_GUI_MISLABELED_PHYSICAL", errors(broken))
+
+    def test_app_unsigned_review_exe_cannot_be_promoted(self):
+        broken = copy.deepcopy(self.ledger)
+        broken["revision_review_reconciliation"]["current_four_lane_observation"]["app"]["new_revision_promoted"] = True
+        self.assertIn("APP_REVIEW_EXE_MISLABELED_APPROVED_SOURCE", errors(broken))
+
+    def test_legacy_prism_gate1_cannot_be_pr19_cas(self):
+        broken = copy.deepcopy(self.ledger)
+        broken["revision_review_reconciliation"]["observations"]["prism-route-3d-first30s-pr19"]["legacy_gate1_identity_is_pr19_cas"] = True
+        self.assertIn("PRISM_LEGACY_ARTIFACT_OR_CAS_PROMOTED", errors(broken))
 
 
 if __name__ == "__main__":
