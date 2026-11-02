@@ -21,10 +21,11 @@ class ReviewHeadReconciliation(unittest.TestCase):
     def test_jp_candidate_latest_head_does_not_promote(self):
         jp = self.obs["jp-bookkeeping-desk"]
         proof = self.proof["jp_bookkeeping"]
-        self.assertEqual(jp["current_review_head_sha"], "32c5976971d1494e205156b8ad27c89598cb2f46")
-        self.assertEqual(jp["previous_review_head_sha"], "24e8beade64177cafd0d545d84392304b53dfe51")
+        self.assertEqual(jp["current_review_head_sha"], "50d4a9c9e079b9e37f96944503e7f79aabd5c68b")
+        self.assertEqual(jp["previous_review_head_sha"], "32c5976971d1494e205156b8ad27c89598cb2f46")
+        self.assertEqual(jp["historical_previous_review_head_sha"], "24e8beade64177cafd0d545d84392304b53dfe51")
         self.assertEqual((proof["ahead"], proof["behind"]), (14, 0))
-        self.assertEqual(proof["ci_run_id"], 41375747240)
+        self.assertEqual(proof["ci_run_id"], 41381054547)
         self.assertEqual(jp["promotion_status"], "CANDIDATE_ONLY")
         self.assertIsNone(jp["immutable_promoted_source_sha"])
         self.assertIsNone(jp["immutable_request_id"])
@@ -41,9 +42,10 @@ class ReviewHeadReconciliation(unittest.TestCase):
         sentinel = self.obs["prism-route-3d-sentinel"]
         qa = sentinel["independent_3d_qa_pr6"]
         proof = self.proof["three_d_qa"]
-        self.assertEqual(qa["review_head_sha"], "4b58f9d3c2ff75be9627f3e8a4dd20194460111d")
-        self.assertEqual((proof["ahead"], proof["behind"]), (5, 0))
-        self.assertEqual(qa["ci_run_id"], 41377481988)
+        self.assertEqual(qa["review_head_sha"], "891dba6ebb769c9a5925e266b28425f7ec605777")
+        self.assertEqual((proof["ahead"], proof["behind"]), (4, 0))
+        self.assertEqual(qa["ci_run_id"], 41383754959)
+        self.assertEqual(qa["previous_head_sha"], "4b58f9d3c2ff75be9627f3e8a4dd20194460111d")
         self.assertIn("NOT_FRESH_GITHUB_DOWNLOAD", qa["receipt_evidence_scope"])
         self.assertEqual(sentinel["immutable_sentinel_source_sha"],
                          "e432d94ed0db22878f61f1a8af140d7d7de2288f")
