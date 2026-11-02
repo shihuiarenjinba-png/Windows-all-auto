@@ -7,7 +7,7 @@ from pathlib import Path
 LEDGER = Path(__file__).resolve().parents[1] / "ops" / "active_e2e_handoff.json"
 GAME = "b53f89fc0b59871ba8f5cc7c62703bfdcc20d53a"
 GAME_PRIOR = "d77cf88977db943d83cf898aae5bbf027e5aed90"
-IMAGE = "7ee78dbdaa075afec3e972bee79d7bbb22101249"
+IMAGE = "886b9214b9cc79b35403ca168ca09df7a2e12404"
 PRISM = "9a73d0d56427b70fc0e0eba705a6be3e71c59390"
 LEGACY_PRISM_SOURCE = "15fdcb52e46e35e6de8e87c55af99719c21e09b9"
 
