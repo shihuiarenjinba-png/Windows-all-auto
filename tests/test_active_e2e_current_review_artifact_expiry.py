@@ -9,13 +9,13 @@ import unittest
 from pathlib import Path
 
 LEDGER = Path(__file__).resolve().parents[1] / "ops" / "active_e2e_handoff.json"
-APP_REVIEW = "7ee78dbdaa075afec3e972bee79d7bbb22101249"
+APP_REVIEW = "886b9214b9cc79b35403ca168ca09df7a2e12404"
 GAME_UI_REVIEW = "7f43da2b57b7e3ac3bf9ab22dbf43984c5ba6620"
 GAME_SOURCE = "c058cbf7fe38e02d929c67d047d717ff74bd522e"
 GAME_RUN_HEAD = "a1af3448cd2edeae5bd54cbaca486a53fd991944"
 PRISM_REVIEW = "0878f48c79073596e30fed37a5703e0826389862"
 PRISM_PR18_BUILD = "3c5a1e6837118a73609a0b9c9b7b54dfa4c14f0d"
-PRISM_QA = "0678dee31c895921c00b1e6f06f059eadb8877c1"
+PRISM_QA = "1a16b2a69083ca5698f29388c0eb59875a612450"
 PRISM_OLD_GATE1 = "11417b75636ee18816028ffd5221884c4c9a9836"
 FOCUS_ZIP = "06189361745a9cc175f1fe5bde27d758b71518ac1d2e955436939e3e7ed2a04d"
 
@@ -40,7 +40,7 @@ def errors(data):
             problems.append(name)
 
     require(app["head"] == APP_REVIEW and obs["offline-image-inventory-desk"]["current_review_head_sha"] == APP_REVIEW and obs["offline-image-inventory-desk"]["observation_snapshot_scope"].startswith("CURRENT_"), "APP_CURRENT_REVIEW_DRIFT")
-    require(app["ci"] == [41441166840, 41441166884], "APP_CI_MISMATCH")
+    require(app["ci"] == [41449337747, 41449337454], "APP_CI_MISMATCH")
     require(app["score"] == 64 and app["real_buyers"] == 0 and not app["promoted"], "APP_MARKET_UNAUTHORIZED_PROMOTION")
     require(game["factory_review_pr"] == 16 and game["factory_review_head"] == GAME_UI_REVIEW, "GAME_PR16_NOT_CURRENT")
     require(game["factory_review_ci"] == [41443324856, 41443324988], "GAME_PR16_CI_MISMATCH")
@@ -53,7 +53,7 @@ def errors(data):
     require(prism["artifact_id"] is None and prism["artifact_run_id"] is None and prism["historical_pr18_build"]["artifact_id"] == 13130487252 and prism["historical_pr18_build"]["artifact_run_id"] == 41422372852, "PRISM_ARTIFACT_PROVENANCE_CHANGED")
     require(prism["artifact_metadata_digest"] is None and prism["historical_pr18_build"]["artifact_metadata_digest"] == "sha256:970288793436900405f9986f2da4c403345792fb7563398dfb21e9abaeaf3836", "PRISM_METADATA_DIGEST_CHANGED")
     require(obs["prism-route-3d-consumer-revision"]["historical_gate1_identity_return_commit"] == PRISM_OLD_GATE1, "PRISM_GATE1_HISTORY_CHANGED")
-    require(obs["prism-route-3d-consumer-qa-pr9"]["current_review_head_sha"] == PRISM_QA and not obs["prism-route-3d-consumer-qa-pr9"]["prior_qa_pr6_is_current"] and prism["qa_ci"] == [41445320530, 41445320532], "OLD_PRISM_QA_MISLABELED_CURRENT")
+    require(obs["prism-route-3d-consumer-qa-pr9"]["current_review_head_sha"] == PRISM_QA and not obs["prism-route-3d-consumer-qa-pr9"]["prior_qa_pr6_is_current"] and prism["qa_ci"] == [41454758338, 41454758366], "OLD_PRISM_QA_MISLABELED_CURRENT")
     require(not prism["legacy_identity_cas_is_new_revision"] and not prism["new_cas"] and not prism["signed_msix"] and not prism["physical_gui"], "PRISM_OLD_IDENTITY_REUSED_OR_GATE_PROMOTED")
     require(not obs["prism-route-3d-consumer-revision"]["artifact_byte_sha256_rehashed_by_36"], "PRISM_METADATA_MISREPRESENTED_AS_BYTE_REHASH")
     require(prism["historical_pr18_build"]["review_head_sha"] == PRISM_PR18_BUILD and prism["historical_pr18_build"]["source_sha"] == PRISM_PR18_BUILD, "PRISM_PR18_IMMUTABLE_BUILD_PROVENANCE_CHANGED")
@@ -62,7 +62,7 @@ def errors(data):
     require(not obs["prism-route-3d-first30s-pr19"]["pr18_artifact_is_pr19_build"] and not obs["prism-route-3d-first30s-pr19"]["legacy_gate1_identity_is_pr19_cas"], "PRISM_LEGACY_ARTIFACT_OR_CAS_PROMOTED")
     require(not obs["prism-route-3d-first30s-pr19"]["qa9_factory_artifact_independently_rehashed_by_36"], "PRISM_QA9_UNVERIFIED_REHASH_PROMOTED")
     require(game["hosted_gui_artifact_id"] == 13141335497 and not game["physical_gui_pass"], "GAME_HOSTED_GUI_MISLABELED_PHYSICAL")
-    require(app["review_unsigned_exe_artifact_id"] == 13140456543 and not app["new_revision_promoted"], "APP_REVIEW_EXE_MISLABELED_APPROVED_SOURCE")
+    require(app["review_unsigned_exe_artifact_id"] == 13143283530 and not app["new_revision_promoted"], "APP_REVIEW_EXE_MISLABELED_APPROVED_SOURCE")
     require(data["revision_review_reconciliation"]["current_review_evidence_fail_closed"]["physical_local_processed"] == 0, "CURRENT_REVIEW_FAKE_LOCAL_PROCESSING")
     require(focus["artifact_id"] == 12807496604 and focus["github_current_artifacts_count"] == 0, "FOCUS_EXPIRED_ARTIFACT_INVENTORY_CHANGED")
     require(not focus["github_current_artifact_available"] and not focus["github_download_allowed"] and focus["github_status"].startswith("EXPIRED"), "EXPIRED_ACTIONS_ARTIFACT_MISLABELED_DOWNLOADABLE")
