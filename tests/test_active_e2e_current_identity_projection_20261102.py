@@ -93,7 +93,7 @@ def validate_current_projection(data):
         assert s["historical_identity_status"] == "LOCAL_PARTNER_CENTER_OPERATOR_ACTIVE"
         assert pi["identity_status"] == "PRE_IDENTITY_READY__NO_APPROVED_FILE"
         assert pi["local_operator_return_status"] == result["local_operator_return_status"] == "LOCAL_OPERATOR_RETURN_PENDING"
-        assert j["identity_return_commit_sha"] if "identity_return_commit_sha" in j else True
+        assert j.get("identity_return_commit_sha") is None
         assert pi["identity_return_commit_sha"] is None
         assert result["identity_return_commit_sha"] is None
         assert result["github_return_status"] == "NOT_RUN"
