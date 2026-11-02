@@ -64,7 +64,9 @@ class ArtifactPreservationLedgerRegression(unittest.TestCase):
         self.assertEqual(game["contained_exe_sha256"],
                          "beb683b61b4fa4b2ec90fe1d413363c8a535bd4cb72b41b54b03a9685f516ee0")
         self.assertTrue(game["exact_new_artifact_bytes_rehashed_by_36"])
-        self.assertEqual(game["provisioner_validator_ci_run_id"], 41371345733)
+        self.assertEqual(game["provisioner_validator_ci_run_id"], 41381739751)
+        self.assertIn("4d5c03c3aba4fccba786801e8e1b97e6fbbf3984",
+                      game["historical_provisioner_validator_evidence"])
         self.assertEqual(game["provisioner_live_check_only_run_id"], 41371299063)
         self.assertIn("LIVE_CHECK_ONLY_PASS", game["provisioner_validator_compatibility"])
         self.assertIn("CAS_HOLD", game["provisioner_validator_compatibility"])
@@ -76,8 +78,8 @@ class ArtifactPreservationLedgerRegression(unittest.TestCase):
     def test_three_d_qa_new_head_and_batch_cursor_remain_separate(self):
         three_d = self.revision["observations"]["prism-route-3d-sentinel"]
         qa = three_d["independent_3d_qa_pr6"]
-        self.assertEqual(qa["review_head_sha"], "4b58f9d3c2ff75be9627f3e8a4dd20194460111d")
-        self.assertEqual(qa["ci_run_id"], 41377481988)
+        self.assertEqual(qa["review_head_sha"], "891dba6ebb769c9a5925e266b28425f7ec605777")
+        self.assertEqual(qa["ci_run_id"], 41383754959)
         self.assertFalse(qa["new_sentinel_cas_applied"])
         self.assertEqual(qa["real_signed_msix"], "NOT_BUILT")
         batch = self.data["multi_product_partner_center_batch_4"]
