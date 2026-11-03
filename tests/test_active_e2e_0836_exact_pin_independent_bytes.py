@@ -158,7 +158,7 @@ class ExactPinAndByteCustody(unittest.TestCase):
         self.reject(lambda d: d["revision_review_reconciliation"]["post_handoff_newer_review_candidates_20261103_0736"]["app"].__setitem__("qa83_exe_artifact_run_head", QA83))
 
     def test_reject_qa83_wrong_exe_artifact(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["app"].__setitem__("us_freelance_ledger_qa_artifact_id", 13180405918))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_before_20261103_1036"]["app"].__setitem__("us_freelance_ledger_qa_artifact_id", 13180405918))
 
     def test_reject_qa83_false_identity_cas(self):
         self.reject(lambda d: d["revision_review_reconciliation"]["observations"]["us-freelance-ledger-pr82-qa83"].__setitem__("identity_cas", True))
@@ -167,13 +167,13 @@ class ExactPinAndByteCustody(unittest.TestCase):
         self.reject(lambda d: d["revision_review_reconciliation"]["post_handoff_newer_review_candidates_20261103_0736"]["app"].__setitem__("qa83_physical_windows_125_150_human_pass", True))
 
     def test_reject_game_old_pr17_as_live(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["game"].__setitem__("factory_review_head", "15b666871eb6749133df671ca1b271d89ecdf3ae"))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_before_20261103_1036"]["game"].__setitem__("factory_review_head", "15b666871eb6749133df671ca1b271d89ecdf3ae"))
 
     def test_reject_game_exe_gui_swap(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["game"].__setitem__("physical_qa_exe_artifact_id", 13185220900))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_before_20261103_1036"]["game"].__setitem__("physical_qa_exe_artifact_id", 13185220900))
 
     def test_reject_game_review_as_immutable_source(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["game"].__setitem__("original_source_sha", GAME18))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_before_20261103_1036"]["game"].__setitem__("original_source_sha", GAME18))
 
     def test_reject_game_exe_as_gdk_package(self):
         self.reject(lambda d: d["revision_review_reconciliation"]["observations"]["signal-sprint-current-artifact-pr18"].__setitem__("msixvc2", True))
@@ -182,19 +182,19 @@ class ExactPinAndByteCustody(unittest.TestCase):
         self.reject(lambda d: d["revision_review_reconciliation"]["observations"]["signal-sprint-current-artifact-pr18"].__setitem__("physical_user_pc_pass", True))
 
     def test_reject_pr21_pck_as_pr22(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"].__setitem__("pr22_factory_pck_sha256", "a27c198ff4bdaa961780b4e42d5fb429c328c5bad0b5cb816e399c06e3fd8cb9"))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_before_20261103_1036"]["three_d"].__setitem__("pr22_factory_pck_sha256", "a27c198ff4bdaa961780b4e42d5fb429c328c5bad0b5cb816e399c06e3fd8cb9"))
 
     def test_reject_qa14_as_current_pr22(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"].__setitem__("qa_head", "b56ef88f82f99626168bc487d4952d0285859ed7"))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_before_20261103_1036"]["three_d"].__setitem__("qa_head", "b56ef88f82f99626168bc487d4952d0285859ed7"))
 
     def test_reject_wrong_pr22_request(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"].__setitem__("new_request_id", "3d-prism-route-3d-066d9f51d58c"))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_before_20261103_1036"]["three_d"].__setitem__("new_request_id", "3d-prism-route-3d-066d9f51d58c"))
 
     def test_reject_false_eight_screenshot_proof(self):
         self.reject(lambda d: d["revision_review_reconciliation"]["post_handoff_newer_review_candidates_20261103_0736"]["three_d"].__setitem__("qa15_screenshots_independent_36_sha_size_verified", 7))
 
     def test_reject_old_identity_new_pr22_cas(self):
-        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"]["three_d"].__setitem__("legacy_identity_cas_is_new_revision", True))
+        self.reject(lambda d: d["revision_review_reconciliation"]["historical_four_lane_observation_before_20261103_1036"]["three_d"].__setitem__("legacy_identity_cas_is_new_revision", True))
 
     def test_reject_qa15_software_as_physical(self):
         self.reject(lambda d: d["revision_review_reconciliation"]["observations"]["prism-route-3d-consumer-qa-pr15"].__setitem__("physical_windows_human_pass", True))
