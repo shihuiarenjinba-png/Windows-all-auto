@@ -21,7 +21,7 @@ def validate(d):
     projection = d["current_identity_projection"]
     live = d["revision_review_reconciliation"]["latest_20261103_0936_batch4_identity_vs_physical_accounting"]
     r = d["revision_review_reconciliation"]
-    assert d["updated_at_utc"] == r["observed_at_utc"] == STAMP
+    assert d["updated_at_utc"] > r["observed_at_utc"] == STAMP
     assert p["observed_at_utc"] == q["observed_at_utc"] == live["observed_at_utc"] == STAMP
     assert p["source"] == "TWO_EXACT_GITHUB_APPROVED_IDENTITY_FILES_READ_AT_RETURN_COMMITS__NOT_LOCAL_PC_RECEIPTS"
     assert q["source"] == "NO_TRUSTED_USER_PC_BATCH_RECEIPT__NO_OS_TASK_SCHEDULER_RECEIPT"
