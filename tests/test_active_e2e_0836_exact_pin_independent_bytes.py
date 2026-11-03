@@ -28,9 +28,11 @@ def validate(d):
     prior_qa = r["historical_post_handoff_candidates_before_20261103_0836"]
     candidates = r["post_handoff_newer_review_candidates_20261103_0736"]
     gates = r["cross_lane_gates"]
-    app = c["app"]
-    game = c["game"]
-    prism = c["three_d"]
+    # Historical 08:36 byte custody must not be overwritten by newer review revisions.
+    archived = r["historical_four_lane_observation_before_20261103_1036"]
+    app = archived["app"]
+    game = archived["game"]
+    prism = archived["three_d"]
     ao = r["observations"]["us-freelance-ledger-pr82-qa83"]
     go = r["observations"]["signal-sprint-current-artifact-pr18"]
     po = r["observations"]["prism-route-3d-consumer-qa-pr15"]
@@ -63,7 +65,7 @@ def validate(d):
     assert ao["qa_workflow_source_pin"] == ao["qa_script_source_pin"] == ao["product_head_sha"] == APP82
     assert ao["qa_base_sha"] == QA83_BASE and ao["qa_base_diverged_from_product_head"]
     assert ao["hosted_gui_qa_pass"] and live["app"]["hosted_gui_pass"]
-    assert app["us_freelance_ledger_pr80_is_historical_product_review_baseline"]
+    assert c["app"]["us_freelance_ledger_pr80_is_historical_product_review_baseline"]
     assert app["us_freelance_ledger_product_review_head"] == APP82
     assert app["us_freelance_ledger_qa_product_source_pin"] == APP82
     assert app["us_freelance_ledger_qa_artifact_id"] == ao["artifact_id"] == 13183372299
