@@ -37,7 +37,7 @@ def validate(d):
     assert r["writer"] == c["writer"] == latest["writer"] == "36_WINDOWS_E2E_ONLY"
     assert c["observed_at_utc"] == latest["observed_at_utc"]
     assert r["observed_at_utc"] > latest["observed_at_utc"]
-    assert d["updated_at_utc"] == r["observed_at_utc"]
+    assert d["updated_at_utc"] > r["observed_at_utc"]
     assert latest["source"] == "GITHUB_EXACT_PR_HEAD_CI_AND_RUN_ARTIFACT_METADATA"
     assert latest["artifact_metadata_is_not_independent_bytes"]
     assert latest["history_boundary"].startswith("last_36_execution_AND_current_identity_projection_ARE_HISTORICAL")

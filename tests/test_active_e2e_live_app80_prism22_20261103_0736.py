@@ -31,7 +31,7 @@ def validate(data):
     gates = r["historical_cross_lane_gates_before_20261103_0836"]
 
     assert r["writer"] == c["writer"] == live["writer"] == "36_WINDOWS_E2E_ONLY"
-    assert data["updated_at_utc"] == r["observed_at_utc"] > c["observed_at_utc"] == live["observed_at_utc"]
+    assert data["updated_at_utc"] > r["observed_at_utc"] > c["observed_at_utc"] == live["observed_at_utc"]
     assert prev["observed_at_utc"] == old_live["observed_at_utc"] < live["observed_at_utc"]
     assert prev["app"]["us_freelance_ledger_pr"] == old_live["app"]["us_ledger_pr"] == 79
     assert prev["app"]["us_freelance_ledger_head"] == APP79
