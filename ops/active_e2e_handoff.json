@@ -3036,7 +3036,7 @@
     "github_verified_return_count": 2,
     "github_pending_pre_identity_count": 2,
     "local_execution_this_run": "NOT_PERFORMED",
-    "next_resume_index_semantics": "CLOUD_LOGICAL_CURSOR_AFTER_TWO_GITHUB_RETURNS__NOT_LOCAL_PROCESSING_OR_SCHEDULED_EXECUTION",
+    "next_resume_index_semantics": "CLOUD_LOGICAL_CURSOR_AFTER_TWO_GITHUB_RETURNS__NOT_LOCAL_PROCESSED_COUNT__NOT_LOCAL_PROCESSING_OR_SCHEDULED_EXECUTION",
     "physical_batch_execution": "ZERO_OF_FOUR__NO_LOCAL_SCHEDULER_RECEIPT",
     "current_projection": {
       "basis": "2026_11_02_EXACT_GITHUB_APPROVED_IDENTITY_FILE_RECHECK",
