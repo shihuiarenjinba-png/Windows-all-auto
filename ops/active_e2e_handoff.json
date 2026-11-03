@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-02T23:36:52Z",
+  "updated_at_utc": "2026-11-03T00:37:35Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -3036,7 +3036,7 @@
     "github_verified_return_count": 2,
     "github_pending_pre_identity_count": 2,
     "local_execution_this_run": "NOT_PERFORMED",
-    "next_resume_index_semantics": "LOGICAL_CLOUD_RECONCILIATION_CURSOR_AFTER_FOCUS_LEDGER_GITHUB_RETURNS__NOT_LOCAL_PROCESSED_COUNT",
+    "next_resume_index_semantics": "CLOUD_LOGICAL_CURSOR_AFTER_TWO_GITHUB_RETURNS__NOT_LOCAL_PROCESSING_OR_SCHEDULED_EXECUTION",
     "physical_batch_execution": "ZERO_OF_FOUR__NO_LOCAL_SCHEDULER_RECEIPT",
     "current_projection": {
       "basis": "2026_11_02_EXACT_GITHUB_APPROVED_IDENTITY_FILE_RECHECK",
@@ -3101,6 +3101,99 @@
           "expires_at": "2026-11-02T13:05:55Z"
         }
       ]
+    },
+    "github_identity_returned_count": 2,
+    "github_identity_return_pending_count": 2,
+    "physical_operator_processed_count": 0,
+    "physical_operator_success_count": 0,
+    "legacy_processed_count_scope": "PHYSICAL_LOCAL_OPERATOR_EXECUTION_ONLY__NOT_GITHUB_IDENTITY_RETURN",
+    "legacy_success_count_scope": "PHYSICAL_LOCAL_OPERATOR_SUCCESS_RECEIPTS_ONLY__NOT_GITHUB_IDENTITY_RETURN",
+    "identity_return_accounting": {
+      "observed_at_utc": "2026-11-03T00:37:35Z",
+      "source": "TWO_EXACT_GITHUB_APPROVED_IDENTITY_FILES_READ_AT_RETURN_COMMITS__NOT_LOCAL_PC_RECEIPTS",
+      "github_identity_returned_count": 2,
+      "github_return_pending_count": 2,
+      "verified_return_receipts": [
+        {
+          "slug": "focus-session-desk",
+          "request_id": "app-focus-session-desk-8b00bc4e9082",
+          "source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+          "registration_type": "MSIX_OR_PWA_APP",
+          "identity_file_path": "products/focus-session-desk/store/approved-identity.json",
+          "github_return_commit_sha": "8a7139375524830bf823469526837259266172be",
+          "identity_file_blob_sha": "00c56e85ec7590783284e372ba100a3127614971",
+          "verified_at_utc": "2026-11-03T00:37:35Z",
+          "verification_basis": "EXACT_GITHUB_APPROVED_IDENTITY_FILE_AT_PINNED_RETURN_COMMIT__REQUEST_SOURCE_PACKAGE_SHA_MATCH",
+          "github_identity_return_verified": true,
+          "physical_local_receipt_verified": false,
+          "cas_applied_by_36": false
+        },
+        {
+          "slug": "file-integrity-ledger",
+          "request_id": "app-file-integrity-ledger-d1108d12f7d1",
+          "source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
+          "registration_type": "MSIX_OR_PWA_APP",
+          "identity_file_path": "products/file-integrity-ledger/store/approved-identity.json",
+          "github_return_commit_sha": "db9a57af822788af4c8384499a6e343ec7b0353d",
+          "identity_file_blob_sha": "78034cf62be3479f9ed752a2585ab31bb24c49ff",
+          "verified_at_utc": "2026-11-03T00:37:35Z",
+          "verification_basis": "EXACT_GITHUB_APPROVED_IDENTITY_FILE_AT_PINNED_RETURN_COMMIT__REQUEST_SOURCE_PACKAGE_SHA_MATCH",
+          "github_identity_return_verified": true,
+          "physical_local_receipt_verified": false,
+          "cas_applied_by_36": false
+        }
+      ],
+      "pending_identity_returns": [
+        {
+          "slug": "offline-text-diff-desk",
+          "request_id": "app-offline-text-diff-desk-a7d372800898",
+          "source_sha": "a7d37280089893a9ea4b9ac3336020a920e73e0c",
+          "registration_type": "MSIX_OR_PWA_APP",
+          "identity_file_path": "products/offline-text-diff-desk/store/approved-identity.json",
+          "github_return_commit_sha": null,
+          "github_identity_return_verified": false,
+          "status": "PRE_IDENTITY_READY__LOCAL_OPERATOR_RETURN_PENDING__NO_APPROVED_FILE_AT_PINNED_SOURCE",
+          "physical_local_receipt_verified": false
+        },
+        {
+          "slug": "offline-image-inventory-desk",
+          "request_id": "app-offline-image-inventory-desk-16b6a772952c",
+          "source_sha": "16b6a772952ca0988f2ae2f8b5f4db2e59ec5877",
+          "registration_type": "MSIX_OR_PWA_APP",
+          "identity_file_path": "products/offline-image-inventory-desk/store/approved-identity.json",
+          "github_return_commit_sha": null,
+          "github_identity_return_verified": false,
+          "status": "PRE_IDENTITY_READY__LOCAL_OPERATOR_RETURN_PENDING__NO_APPROVED_FILE_AT_PINNED_SOURCE",
+          "physical_local_receipt_verified": false
+        }
+      ],
+      "post_identity_ready_count": 2,
+      "pre_identity_ready_count": 2,
+      "no_duplicate_identity_request": true,
+      "no_identity_cas_authorized": true,
+      "no_new_product_creation_authorized": true,
+      "distinct_from_physical_operator_processed_count": true
+    },
+    "physical_operator_accounting": {
+      "observed_at_utc": "2026-11-03T00:37:35Z",
+      "source": "NO_TRUSTED_USER_PC_BATCH_RECEIPT__NO_OS_TASK_SCHEDULER_RECEIPT",
+      "cloud_preflight_discovered_count": 4,
+      "local_batch_discovered_count": 0,
+      "physical_operator_processed_count": 0,
+      "physical_operator_success_count": 0,
+      "legacy_processed_count": 0,
+      "legacy_success_count": 0,
+      "physical_local_archive_readback_count": 0,
+      "github_actions_live_artifacts_available_count": 0,
+      "library_zip_archives_preserved_count": 4,
+      "task_scheduler_receipt_verified": false,
+      "scheduled_trigger_proven": false,
+      "local_code_sync": "CLOUD_PASS_ONLY",
+      "real_signed_msix_or_gdk_pass": false,
+      "backlog_pass": false,
+      "checker_pass": false,
+      "install_gui_pass": false,
+      "no_store_upload_or_submission": true
     }
   },
   "last_36_execution": {
@@ -5432,7 +5525,7 @@
   },
   "revision_review_reconciliation": {
     "schema_version": 1,
-    "observed_at_utc": "2026-11-02T23:36:52Z",
+    "observed_at_utc": "2026-11-03T00:37:35Z",
     "writer": "36_WINDOWS_E2E_ONLY",
     "scope": "LIVE_20261103_0836_APP82_QA83_EXACT_PIN_PR18_EXE_GUI_PRISM22_QA15_BYTES__HOSTED_ONLY__PHYSICAL_CAS_STORE_HOLD",
     "policy": "PR_HEAD_IS_MUTABLE_REVIEW_CODE__SOURCE_SHA_AND_REQUEST_ID_ARE_IMMUTABLE_PRODUCT_BINDINGS__NO_AUTO_REBIND",
@@ -6864,7 +6957,7 @@
       "historical_snapshot": true
     },
     "current_four_lane_observation": {
-      "observed_at_utc": "2026-11-02T23:36:52Z",
+      "observed_at_utc": "2026-11-03T00:37:35Z",
       "writer": "36_WINDOWS_E2E_ONLY",
       "game": {
         "pr": 10,
@@ -7099,7 +7192,8 @@
         "focus_actions_artifact_currently_available": false,
         "focus_library_archive_preserved": true,
         "focus_user_pc_archive_rehash": false
-      }
+      },
+      "prior_evidence_observed_at_utc": "2026-11-02T23:36:52Z"
     },
     "review_head_recheck_snapshot_type": "HISTORICAL_EARLIER_OBSERVATION__NOT_CURRENT_FACTORY_PR15_HEAD",
     "latest_incremental_review_head_recheck": {
@@ -9887,7 +9981,7 @@
       "correction": "QA83 base 97beff is NOT its workflow product source pin; workflow and QA script pin PR82 19f0bee"
     },
     "latest_20261103_0836_review_qa_byte_reconciliation": {
-      "observed_at_utc": "2026-11-02T23:36:52Z",
+      "observed_at_utc": "2026-11-03T00:37:35Z",
       "writer": "36_WINDOWS_E2E_ONLY",
       "scope": "APP82_QA83_PIN_CORRECTION__GAME18_ARTIFACT_BYTE_VERIFIED__PRISM22_QA15_BYTE_VERIFIED__NO_CAS_OR_PHYSICAL",
       "app": {
@@ -9972,6 +10066,43 @@
         "e2e_pass": false
       },
       "sale_ready": false,
+      "e2e_pass": false,
+      "prior_evidence_observed_at_utc": "2026-11-02T23:36:52Z"
+    },
+    "prior_evidence_observed_at_utc": "2026-11-02T23:36:52Z",
+    "latest_20261103_0936_batch4_identity_vs_physical_accounting": {
+      "observed_at_utc": "2026-11-03T00:37:35Z",
+      "writer": "36_WINDOWS_E2E_ONLY",
+      "github_returned": 2,
+      "github_pending": 2,
+      "cloud_discovered": 4,
+      "local_discovered": 0,
+      "physical_processed": 0,
+      "actions_artifacts_live": 0,
+      "library_archives_preserved": 4,
+      "user_pc_readback": 0,
+      "physical_scheduler_receipt": false,
+      "local_code_sync": "CLOUD_PASS_ONLY",
+      "immutable_game_source_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
+      "immutable_game_request_id": "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e",
+      "prism_current_review_source_sha": "f4b458384243fdf379683ca793329614f61c9ead",
+      "prism_current_review_request_id": "3d-prism-route-3d-f4b458384243",
+      "registration_types": [
+        "MSIX_OR_PWA_APP",
+        "EXE_OR_MSI_APP",
+        "GDK_GAME",
+        "MSIX_OR_PWA_GAME"
+      ],
+      "app4_registration_type": "MSIX_OR_PWA_APP",
+      "game_registration_type": "GDK_GAME",
+      "prism_registration_type": "MSIX_OR_PWA_GAME",
+      "old_evidence_time_preserved": "2026-11-02T23:36:52Z",
+      "real_msix": false,
+      "gdk_msixvc": false,
+      "identity_cas": false,
+      "store_upload": false,
+      "store_submit": false,
+      "physical_gui": false,
       "e2e_pass": false
     }
   },
@@ -10120,6 +10251,19 @@
     "local_pull_pass": false,
     "checker_pass": false,
     "gui_qa_pass": false,
-    "e2e_pass": false
+    "e2e_pass": false,
+    "latest_batch4_accounting": {
+      "observed_at_utc": "2026-11-03T00:37:35Z",
+      "github_identity_returned": 2,
+      "operator_pending": 2,
+      "physical_operator_processed": 0,
+      "local_batch_discovered": 0,
+      "cloud_preflight_discovered": 4,
+      "identity_evidence_source": "EXACT_GITHUB_RETURN_COMMIT_AND_APPROVED_FILE",
+      "physical_evidence_source": "NO_TRUSTED_USER_PC_RECEIPT",
+      "accounting_path": "multi_product_partner_center_batch_4.identity_return_accounting + physical_operator_accounting",
+      "historical_projection_observed_at_utc": "2026-11-02T04:38:57Z",
+      "no_local_pass": true
+    }
   }
 }
