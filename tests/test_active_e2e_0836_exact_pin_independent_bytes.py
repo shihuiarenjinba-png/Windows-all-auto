@@ -35,7 +35,7 @@ def validate(d):
     go = r["observations"]["signal-sprint-current-artifact-pr18"]
     po = r["observations"]["prism-route-3d-consumer-qa-pr15"]
 
-    assert d["updated_at_utc"] == r["observed_at_utc"] == c["observed_at_utc"] == live["observed_at_utc"]
+    assert d["updated_at_utc"] == c["observed_at_utc"] > r["observed_at_utc"] == live["observed_at_utc"]
     assert prior["observed_at_utc"] < live["observed_at_utc"]
     assert r["writer"] == c["writer"] == live["writer"] == "36_WINDOWS_E2E_ONLY"
     assert prior_qa["app"]["qa83_pinned_product_source_sha"] == QA83_BASE
