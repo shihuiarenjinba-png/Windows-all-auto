@@ -10566,5 +10566,52 @@
       "historical_projection_observed_at_utc": "2026-11-02T04:38:57Z",
       "no_local_pass": true
     }
+  },
+  "identity_state_summary_20261105": {
+    "schema_version": "1.0",
+    "policy": "EXACT_THREE_STATE_ID_CLASSIFICATION",
+    "generated_from_head": "376169875440f0a7876e4de9603dd25360e34371",
+    "states": {
+      "POST_IDENTITY_UPGRADE": [
+        {
+          "product": "Focus Session Desk",
+          "reason": "official Identity return verified; advance Package Version -> exact Identity binding -> real MSIX -> backlog -> local QA"
+        },
+        {
+          "product": "File Integrity Ledger",
+          "reason": "official Identity return verified; advance Package Version -> exact Identity binding -> real MSIX -> backlog -> local QA"
+        },
+        {
+          "product": "Signal Sprint",
+          "reason": "official GDK Identity received; advance exact GDK Identity binding -> Version/SDK assets -> MSIXVC package -> local QA"
+        },
+        {
+          "product": "Prism Route 3D",
+          "reason": "official Identity returned historically; current revision must rebind safely after real Godot export/QA -> Package Version -> real MSIX"
+        }
+      ],
+      "PRE_IDENTITY_FIX_REQUIRED": [
+        {
+          "product": "Offline Text Diff Desk",
+          "reason": "Identity not yet returned and market-fit evidence remains HOLD 46/100; product/value/Windows proof must improve before pure ID wait"
+        },
+        {
+          "product": "Offline Image Inventory Desk",
+          "reason": "Identity not yet returned and market-fit evidence remains HOLD 64/100; why-pay and real Windows/human proof unresolved"
+        },
+        {
+          "product": "Offline Notes Canary",
+          "reason": "Identity reference exists but current source/request binding is incomplete and market-fit evidence remains HOLD 45/100; promote/build/bind preparation required"
+        }
+      ],
+      "WAITING_USER_IDENTITY": []
+    },
+    "invariants": [
+      "Products with official Identity must never regress to WAITING_USER_IDENTITY.",
+      "WAITING_USER_IDENTITY is allowed only when Identity is the sole remaining PRE blocker.",
+      "Do not infer or overwrite Identity fields or Version.",
+      "Store upload/final submit/publish/pricing remain prohibited.",
+      "Sale-quality gate remains separate: products below 80/100 do not enter sale workflow."
+    ]
   }
 }
