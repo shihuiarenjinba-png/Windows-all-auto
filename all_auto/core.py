@@ -27,6 +27,12 @@ SECURITY_KEYS = (
 )
 CHECKER_READY = "READY_CANDIDATE_NOT_CERTIFIED"
 NEVER_STORE_CERTIFIED = "READY_FOR_WINDOWS_QA"
+SUBMISSION_ROUTE_TYPES = {
+    "msix_pwa_app": ("app", {"msix", "msixupload", "msixbundle", "appx", "appxupload", "appxbundle", "pwa"}),
+    "exe_msi_app": ("app", {"exe", "msi"}),
+    "gdk_game": ("game", {"msixvc", "msixvc2"}),
+    "msix_pwa_game": ("game", {"msix", "msixupload", "msixbundle", "appx", "appxupload", "appxbundle", "pwa"}),
+}
 
 
 def sha256_file(path: Path) -> str:
@@ -170,6 +176,13 @@ def check_product(item: Any, base: Path) -> dict[str, Any]:
         blocked.append("INVALID_PRODUCT_ID")
     if item.get("type") not in ("app", "game"):
         blocked.append("TYPE_MUST_BE_APP_OR_GAME")
+    submission_route = item.get("submission_route")
+    package_type = item.get("package_type")
+    route_contract = SUBMISSION_ROUTE_TYPES.get(submission_route)
+    if route_contract is None:
+        hold.append("SUBMISSION_ROUTE_UNCONFIRMED")
+    elif route_contract[0] != item.get("type") or not isinstance(package_type, str) or package_type.lower().lstrip(".") not in route_contract[1]:
+        blocked.append("SUBMISSION_ROUTE_PACKAGE_MISMATCH")
     if item.get("submission_kind") not in ("new", "update"):
         hold.append("SUBMISSION_KIND_UNCONFIRMED")
     repo = item.get("repository")
@@ -310,7 +323,7 @@ def check_product(item: Any, base: Path) -> dict[str, Any]:
 
     status = "BLOCKED" if blocked else "HOLD" if hold else NEVER_STORE_CERTIFIED
     return {
-        "id": name, "type": item.get("type"), "status": status,
+        "id": name, "type": item.get("type"), "submission_route": submission_route, "package_type": package_type, "status": status,
         "findings": sorted(set(blocked + hold)),
         "package_sha256": actual_sha,
         "meaning": "Offline evidence preflight only; no Store operation performed.",
