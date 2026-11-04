@@ -8,6 +8,7 @@ WindowsアプリやゲームをMicrosoft Storeへ登録するときの **GitHub 
 - **自動テスト75件 / Windows・Ubuntuの両方でPASS**（オフライン検査のみ）。CI: https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/40284671809
 - Windows-data / Windows-checker / Windows-Automator の読取専用JSON契約アダプタを追加済み。未知schema/statusはfail-closedで停止し、Windows-Automatorの `DONE` は引き続き `DRY_RUN_DONE` として扱います。
 - Windows-Automator live v2 の `DRAFT_SAVED` は、execution_mode、Save後の再読込、package validation/section completion、全必須section、証拠、Store ID / package SHA / source SHA / Identity / Versionの期待値一致をすべて確認した場合だけ受理します。Submit/Certified/Publishedのclaimは拒否します。
+- Windows-Automator結果の `restricted_capability`、説明のconfirmed/saved、`certification_gate` を中央表示用に正規化します。Capability重複や、未確認なのに保存済みという矛盾はfail-closedです。
 - **未完成/未検証**: 3ツールのsubprocess実行アダプタ、実MSIXのPartner Center upload、Microsoft validation DOM、Save成功DOM、Windows実機GUI QA。contract追加はStore登録の実機完了を意味しません。
 - 全てのオンライン/高影響操作は未実装・停止状態。Submit for certification、公開、名前予約、Store商品ID/Identity推測は禁止。
 

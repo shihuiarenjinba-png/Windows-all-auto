@@ -163,6 +163,32 @@ class UpstreamContractTests(unittest.TestCase):
         self.assertFalse(result["draft_saved"])
         self.assertFalse(result["submitted"])
 
+    def test_08b_automator_returns_restricted_capability_dashboard_fields(self):
+        obj=copy.deepcopy(self.automator)
+        item=obj["results"][0]
+        item.update({
+            "restricted_capability":["runFullTrust"],
+            "restricted_capability_explanation_confirmed":True,
+            "restricted_capability_explanation_saved":False,
+            "certification_gate":"HOLD_JP_START_FLOW_UNRESOLVED",
+        })
+        result=parse_windows_automator(obj,product_name="Example")
+        self.assertEqual(result["restricted_capability"],["runFullTrust"])
+        self.assertTrue(result["restricted_capability_explanation_confirmed"])
+        self.assertFalse(result["restricted_capability_explanation_saved"])
+        self.assertEqual(result["certification_gate"],"HOLD_JP_START_FLOW_UNRESOLVED")
+
+    def test_08c_automator_rejects_invalid_restricted_capability_state(self):
+        for update in (
+            {"restricted_capability":["runFullTrust","runFullTrust"]},
+            {"restricted_capability":["runFullTrust"],"restricted_capability_explanation_confirmed":False,"restricted_capability_explanation_saved":True},
+            {"certification_gate":""},
+        ):
+            obj=copy.deepcopy(self.automator)
+            obj["results"][0].update(update)
+            with self.subTest(update=update),self.assertRaises(ContractError):
+                parse_windows_automator(obj,product_name="Example")
+
     def test_09_automator_draft_saved_claim_is_rejected_until_live_contract_exists(self):
         obj = copy.deepcopy(self.automator)
         obj["results"][0]["status"] = "DRAFT_SAVED"

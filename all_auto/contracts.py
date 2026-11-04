@@ -219,6 +219,21 @@ def parse_windows_automator(
         if submission_route != expected_submission_route:
             raise ContractError("windows-automator submission_route does not match immutable handoff")
 
+    restricted_capability=item.get("restricted_capability",[])
+    if not isinstance(restricted_capability,list) or any(not isinstance(value,str) or not value.strip() for value in restricted_capability):
+        raise ContractError("windows-automator restricted_capability must be a list of non-empty strings")
+    if len(restricted_capability)!=len(set(restricted_capability)):
+        raise ContractError("windows-automator restricted_capability must not contain duplicates")
+    explanation_confirmed=item.get("restricted_capability_explanation_confirmed",not restricted_capability)
+    explanation_saved=item.get("restricted_capability_explanation_saved",not restricted_capability)
+    if not isinstance(explanation_confirmed,bool) or not isinstance(explanation_saved,bool):
+        raise ContractError("windows-automator restricted capability explanation states must be booleans")
+    if explanation_saved and not explanation_confirmed:
+        raise ContractError("saved restricted capability explanation must also be confirmed")
+    certification_gate=item.get("certification_gate","HOLD")
+    if not isinstance(certification_gate,str) or not certification_gate.strip():
+        raise ContractError("windows-automator certification_gate must be a non-empty string")
+
     execution_mode = item.get("execution_mode", "dry_run")
     if execution_mode not in {"dry_run", "live"}:
         raise ContractError("windows-automator execution_mode must be dry_run or live")
@@ -273,6 +288,8 @@ def parse_windows_automator(
         for key in ("submitted", "certified", "published"):
             if item.get(key) is not False:
                 raise ContractError(f"DRAFT_SAVED requires {key}=false")
+        if restricted_capability and (not explanation_confirmed or not explanation_saved):
+            raise ContractError("DRAFT_SAVED requires each restricted capability explanation to be confirmed and saved")
         draft_id = _text(item.get("draft_id"), "windows-automator draft_id")
         draft_url = _text(item.get("current_draft_url"), "windows-automator current_draft_url")
         parsed = urlparse(draft_url)
@@ -316,6 +333,10 @@ def parse_windows_automator(
             "submitted": False,
             "certified": False,
             "published": False,
+            "restricted_capability":list(restricted_capability),
+            "restricted_capability_explanation_confirmed":explanation_confirmed,
+            "restricted_capability_explanation_saved":explanation_saved,
+            "certification_gate":certification_gate,
         }
 
     normalized_status = "DRY_RUN_DONE" if status == "DONE" else status
@@ -328,6 +349,10 @@ def parse_windows_automator(
         "submitted": False,
         "certified": False,
         "published": False,
+        "restricted_capability":list(restricted_capability),
+        "restricted_capability_explanation_confirmed":explanation_confirmed,
+        "restricted_capability_explanation_saved":explanation_saved,
+        "certification_gate":certification_gate,
     }
     if submission_route is not None:
         normalized["submission_route"] = submission_route
