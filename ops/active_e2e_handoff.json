@@ -10602,6 +10602,22 @@
         {
           "product": "Offline Notes Canary",
           "reason": "Identity reference exists but current source/request binding is incomplete and market-fit evidence remains HOLD 45/100; promote/build/bind preparation required"
+        },
+        {
+          "product": "Freelance Ledger JP",
+          "reason": "No official Identity observed; country-specific product remains pre-Identity and must complete product/Windows/compliance evidence before pure ID wait."
+        },
+        {
+          "product": "US Freelance Ledger",
+          "reason": "No official Identity observed; current PR86 remains SALE HOLD 62/100 with packaged-EXE/DPI/human QA gaps, so not pure ID wait."
+        },
+        {
+          "product": "Double-Entry Bookkeeping Desk JP",
+          "reason": "No official Identity observed; pre-Identity product/compliance/Windows evidence remains incomplete."
+        },
+        {
+          "product": "Double-Entry Bookkeeping Desk US",
+          "reason": "No official Identity observed; COMPLIANCE_HOLD / MARKET_FIT_HOLD and GUI/package proof incomplete, so not pure ID wait."
         }
       ],
       "WAITING_USER_IDENTITY": []
@@ -10612,6 +10628,7 @@
       "Do not infer or overwrite Identity fields or Version.",
       "Store upload/final submit/publish/pricing remain prohibited.",
       "Sale-quality gate remains separate: products below 80/100 do not enter sale workflow."
-    ]
+    ],
+    "accounting_scope": "Approved accounting candidates are classified explicitly; legacy/superseded PR numbers are evidence only, not Identity."
   }
 }
