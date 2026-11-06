@@ -10429,7 +10429,52 @@
       "real_msix": "NOT_BUILT",
       "local_pc_receipt": "NOT_OBSERVED",
       "promotion_allowed": false,
-      "required_next_action": "3D owner repair strict branch allowlist without disabling audit; re-run exact-head PCK audit and publish exact EXE/PCK/request evidence; 36 rehash and reconcile before any CAS."
+      "required_next_action": "3D owner repair strict branch allowlist without disabling audit; re-run exact-head PCK audit and publish exact EXE/PCK/request evidence; 36 rehash and reconcile before any CAS.",
+      "historical_only": true
+    },
+    "prism_current_revision_20261107_package_evidence": {
+      "evidence_type": "CURRENT_REVISION_METADATA_RECONCILIATION_NOT_INDEPENDENT_BINARY_QA",
+      "repository": "shihuiarenjinba-png/3d-game-factory",
+      "pr": 25,
+      "source_branch": "codex/prism-tower1-hud-clearance-fix-20261103",
+      "current_revision_sha": "f8d2bd2a57e2bfd604eb20199a693d8487040df8",
+      "godot_export_run_id": 42216823778,
+      "godot_export_conclusion": "SUCCESS_REPORTED_BY_48_HANDOFF",
+      "quality_run_id": 42216829708,
+      "quality_conclusion": "SUCCESS_REPORTED_BY_48_HANDOFF",
+      "artifact_metadata_verified_from_github": true,
+      "artifacts": [
+        {
+          "id": 13501257720,
+          "name": "godot-3d-factory-export-evidence",
+          "zip_digest": "sha256:c8790fdd805bee20dd9152350cf35233e53f0e91e2bf40ebe802e4b3cb473644",
+          "expired": false
+        },
+        {
+          "id": 13500774679,
+          "name": "prism-consumer-pck-current-run-resource-audit",
+          "zip_digest": "sha256:be6baa28abab9d88662d94fd411785146a6830fe5dc7175310e1be1366420912",
+          "expired": false
+        },
+        {
+          "id": 13500634829,
+          "name": "prism-route-3d-revision-identity-reuse",
+          "zip_digest": "sha256:959375f52bf4f41d4599c7eadc53b9539e6e04138f5e25c1901763de84b2afc0",
+          "expired": false
+        }
+      ],
+      "artifact_expires_at_utc": "2026-11-13T12:20:31Z or later (per artifact)",
+      "exact_exe_pck_bytes_independently_rehashed_by_36": false,
+      "request_id_exact_verified_by_36": false,
+      "official_identity_provenance": "PRESERVE_EXISTING_GATE1_SEPARATE_FROM_NEW_REVISION",
+      "historical_failed_revision": "9463ee4d65169bf5082f4846c5ff029a17607121",
+      "historical_failure_not_current": true,
+      "package_version": "NOT_APPROVED",
+      "identity_cas": "NOT_APPLIED",
+      "real_msix": "NOT_BUILT",
+      "local_pc_receipt": "NOT_OBSERVED",
+      "promotion_allowed": false,
+      "next_gate": "DOWNLOAD_AND_INDEPENDENTLY_VERIFY_EXACT_EXE_PCK_REQUEST_AND_RECEIPTS_THEN_PACKAGE_VERSION_GATE; NO_AUTOMATIC_REPIN_OR_CAS"
     }
   },
   "sale_ready_windows_ux_gate": {
