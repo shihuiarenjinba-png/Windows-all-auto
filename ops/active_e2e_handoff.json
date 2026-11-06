@@ -10700,5 +10700,20 @@
       "Sale-quality gate remains separate: products below 80/100 do not enter sale workflow."
     ],
     "accounting_scope": "Approved accounting candidates are classified explicitly; legacy/superseded PR numbers are evidence only, not Identity."
+  },
+  "prism_pr25_latest_revision_candidate_20261107": {
+    "source": "GITHUB_PR25_HEAD_READ_ONLY",
+    "pr_url": "https://github.com/shihuiarenjinba-png/3d-game-factory/pull/25",
+    "head": "90c43080235ac26d003612e0a3e64e6c84d9a321",
+    "historical_export_head": "f8d2bd2a57e2bfd604eb20199a693d8487040df8",
+    "historical_export_artifact_id": 13501257720,
+    "latest_head_export_verified": false,
+    "latest_head_exe_pck_sha_verified": false,
+    "latest_head_request_verified": false,
+    "identity_provenance": "UNCHANGED_HISTORICAL_GATE1",
+    "package_version": "NOT_APPROVED",
+    "cas": "NOT_APPLIED",
+    "promotion_allowed": false,
+    "next_action": "24_3D_REAL_EXPORT_INDEPENDENT_QA_EXACT_CURRENT_HEAD_THEN_36_EVIDENCE_RECONCILIATION"
   }
 }
