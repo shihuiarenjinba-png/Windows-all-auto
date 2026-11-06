@@ -10405,6 +10405,31 @@
         "independent_new_artifact_byte_rehash_by_36": false
       },
       "note": "New review HEAD prefixes and artifact IDs supplied in supervisor handoff; compare ancestry verified independently via GitHub. Exact new artifact content/CI not independently verified in this run. Historical source/request/Identity unchanged."
+    },
+    "prism_pr25_20261106_pck_audit_handoff": {
+      "evidence_type": "RECONCILIATION_ONLY_NOT_PACKAGE_PROMOTION",
+      "source": "2026-11-06 3D handoff and previously inspected Actions run; exact artifact bytes not independently rehashed by 36",
+      "repository": "shihuiarenjinba-png/3d-game-factory",
+      "pr": 25,
+      "observed_revision_sha": "9463ee4d65169bf5082f4846c5ff029a17607121",
+      "request_id_reported": "3d-prism-route-3d-9463ee4d6516",
+      "quality_gate_run_id": 42163278604,
+      "quality_gate_reported": "SUCCESS",
+      "godot_export_run_id": 42163274082,
+      "exported_exe_pck_reported": true,
+      "consumer_pck_audit": "FAILURE",
+      "consumer_pck_audit_reason_reported": "unexpected consumer revision branch",
+      "identity_binding_receipt": "NOT_PUBLISHED",
+      "factory_export_evidence": "NOT_PUBLISHED",
+      "artifact_sha256_exact_verified": false,
+      "official_identity_provenance": "PRESERVE_EXISTING_GATE1_DO_NOT_REBIND",
+      "historical_pr23_package_evidence": "NOT_VALID_FOR_PR25",
+      "package_version": "NOT_APPROVED",
+      "cas": "NOT_APPLIED",
+      "real_msix": "NOT_BUILT",
+      "local_pc_receipt": "NOT_OBSERVED",
+      "promotion_allowed": false,
+      "required_next_action": "3D owner repair strict branch allowlist without disabling audit; re-run exact-head PCK audit and publish exact EXE/PCK/request evidence; 36 rehash and reconcile before any CAS."
     }
   },
   "sale_ready_windows_ux_gate": {
