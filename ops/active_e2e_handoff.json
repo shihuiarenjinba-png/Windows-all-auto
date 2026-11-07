@@ -10714,6 +10714,15 @@
     "package_version": "NOT_APPROVED",
     "cas": "NOT_APPLIED",
     "promotion_allowed": false,
-    "next_action": "24_3D_REAL_EXPORT_INDEPENDENT_QA_EXACT_CURRENT_HEAD_THEN_36_EVIDENCE_RECONCILIATION"
+    "next_action": "36_INDEPENDENT_ARTIFACT_BYTES_AND_REQUEST_VERIFICATION_THEN_PACKAGE_VERSION_GATE",
+    "latest_head_export_workflow_observed": true,
+    "latest_head_export_run_id": 42279868400,
+    "latest_head_export_run_url": "https://github.com/shihuiarenjinba-png/3d-game-factory/actions/runs/42279868400",
+    "latest_head_export_artifact_id": 13535385425,
+    "latest_head_export_artifact_digest": "sha256:44e7746c8af3abdf267d7be24c3fc4f1ba973eb9389eadf3a4f05725bc9c7222",
+    "latest_head_pck_audit_artifact_id": 13533589843,
+    "latest_head_identity_reuse_artifact_id": 13535570075,
+    "latest_head_artifacts_expire_utc": "2026-11-13T19:28:43Z",
+    "evidence_boundary": "GITHUB_ARTIFACT_METADATA_EXACT_HEAD_ONLY__NO_INDEPENDENT_ZIP_EXE_PCK_REHASH__NO_REQUEST_BINDING"
   }
 }
