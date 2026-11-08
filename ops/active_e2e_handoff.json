@@ -10865,5 +10865,42 @@
     "real_msix_verified": false,
     "physical_local_e2e_pass": false,
     "next_action": "INDEPENDENTLY_DOWNLOAD_REHASH_3_ARTIFACTS_AND_MATCH_EXE_PCK_REQUEST_BEFORE_IDENTITY_VERSION_PACKAGE_GATE; NO_AUTO_REPIN"
+  },
+  "prism_pr25_e8c77192_independent_artifact_verification_20261109": {
+    "status": "PASS_EXACT_BYTES_EXPORT_QA_ONLY__NO_IDENTITY_BINDING_NO_CAS_NO_MSIX",
+    "source_repo": "shihuiarenjinba-png/3d-game-factory",
+    "draft_pr": 25,
+    "source_head": "e8c77192a06527b005168359433f2868ff86708e",
+    "source_branch": "codex/prism-tower1-hud-clearance-fix-20261103",
+    "request_id": "3d-prism-route-3d-e8c77192a065",
+    "artifact_outer_zip_sha256": {
+      "13614249496": "dea496bfd9352b8aceeb4b0ff9e01aa4784307569d04fa08da2c2bbfd55448c1",
+      "13614728443": "7a451d882c27af7a366d3a456aad0679cce100bf4ac02e5d3e73f44030a19d8c",
+      "13615017338": "5da7d2ff2ec1bb2eb070c2afa965de1f14b892605bc377b7985689099f7a4d03"
+    },
+    "export_inner_files": {
+      "exe": {
+        "name": "candidate.exe",
+        "size": 84214784,
+        "sha256": "66b26ad96df7458ea917b632a73ac7c88bb058db24dbd11a457fd50435ab7b13"
+      },
+      "pck": {
+        "name": "candidate.pck",
+        "size": 6987536,
+        "sha256": "c4f36ed505dc447a5977d9cd5e1ed68d78d089d8b502184647acf44370261630"
+      }
+    },
+    "verification": "Downloaded 3 exact-run ZIP artifacts; independently SHA256 hashed outer ZIPs and inner EXE/PCK; checked export-evidence.json, revision-identity-reuse.json, consumer-pck-audit.json source SHA, request ID, sizes, hashes and PCK audit. Metadata-only prior observation preserved.",
+    "identity_reuse_review": {
+      "store_id": "9N95J2T57B41",
+      "old_identity_provenance_sha": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
+      "binding": "PENDING_INDEPENDENT_VERIFICATION",
+      "approved_package_version": null
+    },
+    "historical_source_unchanged": true,
+    "cas": "NOT_APPLIED",
+    "real_msix": "NOT_GENERATED",
+    "local_windows_gui": "NOT_OBSERVED",
+    "e2e": "HOLD"
   }
 }
