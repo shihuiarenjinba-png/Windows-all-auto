@@ -10736,5 +10736,57 @@
     "latest_head_identity_reuse_provenance_sha": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
     "independent_verification_scope": "DOWNLOADED_THREE_ZIPS_SHA256_MATCH_GITHUB_DIGEST; EXE_PCK_BYTES_SHA256_MATCH_EXPORT_EVIDENCE_AND_PCK_AUDIT; REQUEST_SOURCE_MATCH_THREE_JSON_RECEIPTS",
     "identity_binding_verified": false
+  },
+  "prism_pr25_new_export_observation_20261108": {
+    "observation_scope": "GITHUB_ACTIONS_METADATA_READ_ONLY__NO_INDEPENDENT_ZIP_EXE_PCK_REHASH__NO_CAS_OR_PACKAGE_PROMOTION",
+    "source_repository": "shihuiarenjinba-png/3d-game-factory",
+    "draft_pr": 25,
+    "observed_export_head": "6a673fe96574be8262d23f34bcc9f500bdc9421b",
+    "prior_ledger_revision_head": "90c43080235ac26d003612e0a3e64e6c84d9a321",
+    "historical_pinned_source_unchanged": true,
+    "official_identity_gate1_provenance_unchanged": true,
+    "exact_head_workflows": [
+      {
+        "run_id": 42454432267,
+        "name": "3D factory quality gates",
+        "conclusion": "SUCCESS"
+      },
+      {
+        "run_id": 42454432282,
+        "name": "Prism Route 3D real Godot export",
+        "conclusion": "SUCCESS"
+      }
+    ],
+    "artifacts": [
+      {
+        "id": 13606343537,
+        "role": "EXPORT_EVIDENCE",
+        "digest": "sha256:51003ab670b3ae5fd887cb144c78e6dd20ffaa23caf3a69cc046b5d5d0608d87",
+        "expires_at_utc": "2026-11-15T06:22:33Z"
+      },
+      {
+        "id": 13606697347,
+        "role": "IDENTITY_REUSE_REVIEW_ONLY",
+        "digest": "sha256:f9286cf26142c745f3ea9e58617ae9380f54a0111d0f15432e842df910827811",
+        "expires_at_utc": "2026-11-15T06:22:32Z"
+      },
+      {
+        "id": 13607201124,
+        "role": "PCK_RESOURCE_AUDIT",
+        "digest": "sha256:464e57285ea8151f330db600f11f12162bc8d1abf515fb19d23c35f864566523",
+        "expires_at_utc": "2026-11-15T06:22:31Z"
+      }
+    ],
+    "metadata_artifacts_not_expired_at_observation": true,
+    "artifact_bytes_independently_rehashed": false,
+    "exe_pck_sha256_independently_verified": false,
+    "current_head_request_id_independently_verified": false,
+    "identity_manifest_exact_binding_verified": false,
+    "package_version_approved": false,
+    "cas_applied": false,
+    "real_msix_or_msixvc_verified": false,
+    "physical_local_e2e_pass": false,
+    "next_action": "DOWNLOAD_ALL_THREE_EXACT_HEAD_ARTIFACTS_BEFORE_EXPIRY_AND_VERIFY_ZIP_DIGEST_EXE_PCK_REQUEST; KEEP HISTORICAL IDENTITY SEPARATE; NO REPIN_OR_PROMOTE_WITHOUT_VERIFICATION",
+    "status": "HOLD"
   }
 }
