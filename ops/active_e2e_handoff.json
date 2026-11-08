@@ -10788,5 +10788,41 @@
     "physical_local_e2e_pass": false,
     "next_action": "DOWNLOAD_ALL_THREE_EXACT_HEAD_ARTIFACTS_BEFORE_EXPIRY_AND_VERIFY_ZIP_DIGEST_EXE_PCK_REQUEST; KEEP HISTORICAL IDENTITY SEPARATE; NO REPIN_OR_PROMOTE_WITHOUT_VERIFICATION",
     "status": "HOLD"
+  },
+  "prism_pr25_independent_artifact_verification_20261108": {
+    "status": "PASS_EXACT_BYTES_EXPORT_QA_ONLY__NO_IDENTITY_BINDING_NO_CAS_NO_MSIX",
+    "verified_at_utc": "2026-11-08T13:38:00Z",
+    "source_head": "6a673fe96574be8262d23f34bcc9f500bdc9421b",
+    "request_id": "3d-prism-route-3d-6a673fe96574",
+    "artifact_outer_zip_sha256": {
+      "13606343537": "51003ab670b3ae5fd887cb144c78e6dd20ffaa23caf3a69cc046b5d5d0608d87",
+      "13606697347": "f9286cf26142c745f3ea9e58617ae9380f54a0111d0f15432e842df910827811",
+      "13607201124": "464e57285ea8151f330db600f11f12162bc8d1abf515fb19d23c35f864566523"
+    },
+    "export_inner_files": {
+      "exe": {
+        "name": "candidate.exe",
+        "size": 84214784,
+        "sha256": "66b26ad96df7458ea917b632a73ac7c88bb058db24dbd11a457fd50435ab7b13"
+      },
+      "pck": {
+        "name": "candidate.pck",
+        "size": 6987552,
+        "sha256": "ab49d96f189c3158bc23ea6a6ef36763909bd5398eaa46406c28d60fa4b6dc35"
+      }
+    },
+    "verification": "Downloaded all 3 artifact ZIPs and independently calculated SHA256 for ZIPs and streamed EXE/PCK; matched export-evidence.json and consumer-pck-audit.json source/request/size/hash",
+    "identity_reuse_review": {
+      "store_id": "9N95J2T57B41",
+      "old_identity_provenance_sha": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
+      "binding": "PENDING_INDEPENDENT_VERIFICATION",
+      "approved_package_version": null
+    },
+    "pck_audit": "PCK_CONTENT_CLEAN_QA_ONLY",
+    "historical_source_unchanged": true,
+    "cas": "NOT_APPLIED",
+    "real_msix": "NOT_GENERATED",
+    "local_windows_gui": "NOT_OBSERVED",
+    "e2e": "HOLD"
   }
 }
