@@ -10824,5 +10824,46 @@
     "real_msix": "NOT_GENERATED",
     "local_windows_gui": "NOT_OBSERVED",
     "e2e": "HOLD"
+  },
+  "prism_pr25_e8c77192_actions_metadata_20261109": {
+    "status": "HOLD_METADATA_ONLY_NO_INDEPENDENT_BYTES",
+    "observed_at_jst": "2026-11-09",
+    "source_repo": "shihuiarenjinba-png/3d-game-factory",
+    "pr": 25,
+    "head": "e8c77192a06527b005168359433f2868ff86708e",
+    "prior_verified_head": "6a673fe96574be8262d23f34bcc9f500bdc9421b",
+    "export_run": 42475405044,
+    "export_conclusion": "success",
+    "quality_run": 42475404599,
+    "quality_conclusion": "success",
+    "artifacts": [
+      {
+        "id": 13614249496,
+        "role": "EXPORT_EVIDENCE",
+        "digest": "sha256:dea496bfd9352b8aceeb4b0ff9e01aa4784307569d04fa08da2c2bbfd55448c1",
+        "expires_at_utc": "2026-11-15T11:22:29Z"
+      },
+      {
+        "id": 13614728443,
+        "role": "IDENTITY_REUSE_REVIEW_ONLY",
+        "digest": "sha256:7a451d882c27af7a366d3a456aad0679cce100bf4ac02e5d3e73f44030a19d8c",
+        "expires_at_utc": "2026-11-15T11:22:28Z"
+      },
+      {
+        "id": 13615017338,
+        "role": "PCK_RESOURCE_AUDIT",
+        "digest": "sha256:5da7d2ff2ec1bb2eb070c2afa965de1f14b892605bc377b7985689099f7a4d03",
+        "expires_at_utc": "2026-11-15T11:22:26Z"
+      }
+    ],
+    "independent_zip_sha256_verified": false,
+    "exe_pck_request_exact_verified": false,
+    "historical_pinned_source_unchanged": true,
+    "official_identity_provenance_unchanged": true,
+    "package_version_approved": false,
+    "cas_applied": false,
+    "real_msix_verified": false,
+    "physical_local_e2e_pass": false,
+    "next_action": "INDEPENDENTLY_DOWNLOAD_REHASH_3_ARTIFACTS_AND_MATCH_EXE_PCK_REQUEST_BEFORE_IDENTITY_VERSION_PACKAGE_GATE; NO_AUTO_REPIN"
   }
 }
