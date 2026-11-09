@@ -11114,14 +11114,16 @@
       "reported_run_id": 42617114312,
       "reported_software_artifact_id": 13672673982,
       "reported_physical_handoff_artifact_id": 13672633086,
-      "latest_head_receipt_independently_rehashed_by_36": false,
+      "latest_head_receipt_independently_rehashed_by_36": true,
       "prior_e255fee_verified_receipt_preserved": true,
-      "software_runtime_qa": "PASS_PRIOR_EXACT_BYTES; NEW_HEAD_REPORTED_SUCCESS_NOT_INDEPENDENTLY_REHASHED",
+      "software_runtime_qa": "PASS_LATEST_QA_HEAD_RECEIPT_ZIP_SHA256_AND_7_RECEIPT_LISTED_SCREENSHOTS_REHASHED; FACTORY_EXE_PCK_SHA_MATCH_RECEIPT_AND_PRIOR_INDEPENDENT_VERIFICATION",
       "physical_windows_human_qa": "HOLD",
       "package_version_approved": false,
       "identity_exact_binding": false,
       "cas_applied": false,
-      "real_msix_verified": false
+      "real_msix_verified": false,
+      "latest_artifact_zip_sha256": "365e56c08b7458e89cfdabfd9113ac2fd00b91725ecaea214bb888a48432fc46",
+      "rehash_scope": "Downloaded GitHub artifact 13672673982 ZIP; independently SHA256 verified ZIP vs GitHub digest and seven receipt-listed screenshot bytes vs receipt; receipt source/request/EXE/PCK/manifest match existing independently verified Factory lineage; no new Factory EXE/PCK bytes downloaded; physical GUI and package remain HOLD"
     }
   }
 }
