@@ -10999,7 +10999,7 @@
     "current_export_artifact_digest": "sha256:ea0f218078783866c44f946060df3422493fe73d45aec54789eb91cabe644d44",
     "independent_qa_repo": "shihuiarenjinba-png/3d-build-qa",
     "independent_qa_draft_pr": 19,
-    "independent_qa_head_observed": "e255fee29ed263a0e32351b6bf5c457cef30d710",
+    "independent_qa_head_observed": "79c74212150487c0ee758d465641e5afb37998ee",
     "independent_qa_handoff_comment": 6732938681,
     "qa_workflow_run": 42572837483,
     "qa_workflow_reported_jobs": [
@@ -11029,7 +11029,7 @@
     "next_action_owner": "36 lane: independently download/rehash current QA receipt and compare exact Factory source/request/EXE/PCK, then verify approved Package Version and official Identity exact binding; 24 lane owns QA implementation",
     "current_factory_export_artifact": 13642354096,
     "independent_qa_pr": 19,
-    "independent_qa_head": "e255fee29ed263a0e32351b6bf5c457cef30d710",
+    "independent_qa_head": "79c74212150487c0ee758d465641e5afb37998ee",
     "exact_head_workflow_runs": [
       {
         "id": 42572837681,
@@ -11106,6 +11106,22 @@
       "cas_applied": false,
       "real_msix_generated": false,
       "next_action": "Operator-approved four-part Package Version must be obtained/verified; then run helper with current verified EXE/PCK/evidence and old official Identity, independently inspect output; do not auto-CAS or claim MSIX."
+    },
+    "historical_qa_head_e255fee": "e255fee29ed263a0e32351b6bf5c457cef30d710",
+    "latest_qa_head_observation": {
+      "basis": "GitHub live Draft PR19 head 2026-11-10 JST",
+      "head": "79c74212150487c0ee758d465641e5afb37998ee",
+      "reported_run_id": 42617114312,
+      "reported_software_artifact_id": 13672673982,
+      "reported_physical_handoff_artifact_id": 13672633086,
+      "latest_head_receipt_independently_rehashed_by_36": false,
+      "prior_e255fee_verified_receipt_preserved": true,
+      "software_runtime_qa": "PASS_PRIOR_EXACT_BYTES; NEW_HEAD_REPORTED_SUCCESS_NOT_INDEPENDENTLY_REHASHED",
+      "physical_windows_human_qa": "HOLD",
+      "package_version_approved": false,
+      "identity_exact_binding": false,
+      "cas_applied": false,
+      "real_msix_verified": false
     }
   }
 }
