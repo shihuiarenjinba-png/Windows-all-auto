@@ -10939,5 +10939,53 @@
     "real_msix": "NOT_GENERATED",
     "physical_windows_e2e": "HOLD",
     "next_action": "Verify new HEAD export artifact exact bytes and provenance independently; obtain explicitly approved Package Version and compare all official Identity fields with manifest before any CAS or packaging. Do not repin historical source."
+  },
+  "prism_pr25_4c22875c_current_artifact_metadata_20261109": {
+    "status": "CURRENT_HEAD_ARTIFACT_METADATA_VERIFIED__EXE_PCK_INDEPENDENT_BYTES_PENDING__PACKAGE_HOLD",
+    "observed_at_jst": "2026-11-09 15:39",
+    "source_repository": "shihuiarenjinba-png/3d-game-factory",
+    "draft_pr": 25,
+    "source_branch": "codex/prism-tower1-hud-clearance-fix-20261103",
+    "source_head_sha": "4c22875c5ed79d393516c6a7a95361b9e9ed1950",
+    "request_id": "NOT_INDEPENDENTLY_VERIFIED_FROM_CURRENT_ARTIFACT",
+    "export_run_id": 42545579783,
+    "artifacts": [
+      {
+        "id": 13642354096,
+        "role": "GODOT_EXPORT_EVIDENCE",
+        "metadata_digest": "sha256:ea0f218078783866c44f946060df3422493fe73d45aec54789eb91cabe644d44",
+        "size_bytes": 37795943,
+        "expires_at_utc": "2026-11-16T01:27:14Z"
+      },
+      {
+        "id": 13642623582,
+        "role": "PCK_RESOURCE_AUDIT",
+        "metadata_digest": "sha256:26f0ca58fdd388d70b70e2eacf8e732d6f1dac70a763cac3fe84ec8920503a16",
+        "size_bytes": 975,
+        "expires_at_utc": "2026-11-16T01:27:12Z"
+      },
+      {
+        "id": 13642768170,
+        "role": "IDENTITY_REUSE_REVIEW_ONLY",
+        "metadata_digest": "sha256:60716c59932991b6028628e43d6dd663b73ebf9ebd43462866eb6b0e8a7fe1aa",
+        "size_bytes": 517,
+        "expires_at_utc": "2026-11-16T01:27:13Z"
+      }
+    ],
+    "old_independently_verified_revision_sha": "e8c77192a06527b005168359433f2868ff86708e",
+    "old_exe_pck_evidence_is_current": false,
+    "historical_identity_provenance_source_sha": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
+    "identity_state": "POST_IDENTITY_UPGRADE",
+    "current_exe_sha256": null,
+    "current_pck_sha256": null,
+    "independent_current_request_exe_pck_byte_verification": false,
+    "identity_exact_binding": false,
+    "approved_package_version": null,
+    "cas_applied": false,
+    "real_msix_verified": false,
+    "backlog_receipt": null,
+    "local_qa_receipt": null,
+    "physical_windows_e2e_pass": false,
+    "next_action": "Await 24-lane current-artifact exact EXE/PCK/request byte receipt, independently cross-check then update package gate; do not CAS or promote from metadata."
   }
 }
