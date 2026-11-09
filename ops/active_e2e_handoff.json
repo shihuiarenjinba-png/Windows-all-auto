@@ -10989,7 +10989,7 @@
     "next_action": "Await 24-lane current-artifact exact EXE/PCK/request byte receipt, independently cross-check then update package gate; do not CAS or promote from metadata."
   },
   "prism_pr25_4c22875c_independent_qa_gate_reconciliation_20261109": {
-    "status": "CURRENT_HEAD_INDEPENDENT_QA_NOT_PROVEN__FAIL_CLOSED",
+    "status": "CURRENT_HEAD_SOFTWARE_INDEPENDENT_QA_CI_SUCCESS__PHYSICAL_AND_PACKAGE_HOLD",
     "observed_at_jst": "2026-11-09 16:37",
     "factory_repo": "shihuiarenjinba-png/3d-game-factory",
     "factory_pr": 25,
@@ -11025,6 +11025,38 @@
     "backlog_receipt": null,
     "local_qa_receipt": null,
     "physical_windows_e2e_pass": false,
-    "next_action_owner": "24 lane: independently download and hash current artifact ZIP/EXE/PCK/request, update independent QA pins and run exact-head tests; 36 lane: ingest verified receipt and update central package gate without repinning historical source"
+    "next_action_owner": "24 lane: independently download and hash current artifact ZIP/EXE/PCK/request, update independent QA pins and run exact-head tests; 36 lane: ingest verified receipt and update central package gate without repinning historical source",
+    "current_factory_export_artifact": 13642354096,
+    "independent_qa_pr": 19,
+    "independent_qa_head": "e255fee29ed263a0e32351b6bf5c457cef30d710",
+    "exact_head_workflow_runs": [
+      {
+        "id": 42572837681,
+        "conclusion": "success",
+        "scope": "independent exported PCK EXE/PCK/manifest download verification, software runtime 7+2 frames, physical handoff template; not physical QA"
+      },
+      {
+        "id": 42572837504,
+        "conclusion": "success",
+        "scope": "Sentinel source-only headless QA, unit tests, unsigned MakeAppx fixture; not Prism signed package or physical QA"
+      }
+    ],
+    "qa_artifacts": [
+      {
+        "id": 13657370284,
+        "digest": "sha256:1cfbb3b4f7411a5e2567a90d6e5baf06ae74bc94655aa907dce5ba3af2a608d6",
+        "scope": "physical QA handoff only, no physical execution"
+      },
+      {
+        "id": 13656608354,
+        "digest": "sha256:80eb1498745e1c9facfe7377f938b866f181efaab78f7c157d8ca6d197aa7126",
+        "scope": "software PCK QA frames"
+      }
+    ],
+    "evidence_boundary": "GITHUB_EXACT_HEAD_JOBS_AND_ARTIFACT_METADATA_VERIFIED_BY_36; QA_JOB_REPORTS_INDEPENDENT_EXE_PCK_MANIFEST_HASH_MATCH; QA_RECEIPT_CONTENT_NOT_INDEPENDENTLY_REHASHED_BY_36; NO_PHYSICAL_WINDOWS_E2E",
+    "historical_e8c77192_evidence_preserved": true,
+    "current_36_receipt_independently_rehashed": false,
+    "post_identity_package_gate": "HOLD_PACKAGE_VERSION_IDENTITY_EXACT_BINDING_CAS_REAL_MSIX_BACKLOG_CHECKER_LOCAL_GUI",
+    "next_action": "36 independently inspect QA receipt and current export EXE/PCK/request SHA, then gate Package Version and exact official Identity binding; do not promote CI PASS to E2E PASS"
   }
 }
