@@ -47,6 +47,22 @@ def validate_prism_package_gate(record, approved_version=None, package_receipt=N
     return "PACKAGE_RECEIPT_CONTRACT_VALIDATED_NOT_LOCAL_E2E"
 
 
+def validate_backlog_handoff(package_receipt, backlog_receipt, local_receipt=None):
+    """Software-only handoff contract; never infer physical installation or E2E."""
+    if not package_receipt or not package_receipt.get("package_sha256"):
+        return "HOLD_REAL_PACKAGE_RECEIPT"
+    if not backlog_receipt:
+        return "HOLD_BACKLOG_RECEIPT"
+    fields = ("source_sha", "request_id", "version", "identity_store_id", "package_sha256")
+    if any(not backlog_receipt.get(k) or backlog_receipt[k] != package_receipt.get(k) for k in fields):
+        return "HOLD_BACKLOG_PACKAGE_MISMATCH"
+    if not local_receipt:
+        return "HOLD_LOCAL_PULL_RECEIPT"
+    if any(local_receipt.get(k) != backlog_receipt[k] for k in fields):
+        return "HOLD_LOCAL_PACKAGE_MISMATCH"
+    return "HANDOFF_CONTRACT_VALIDATED_NOT_INSTALL_OR_GUI_E2E"
+
+
 class PrismPackageGateTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -87,6 +103,19 @@ class PrismPackageGateTests(unittest.TestCase):
                          "HOLD_PACKAGE_PROVENANCE_MISMATCH")
         self.assertEqual(validate_prism_package_gate(self.record, "1.0", receipt),
                          "HOLD_INVALID_VERSION")
+
+    def test_backlog_and_local_receipts_fail_closed(self):
+        package = {"source_sha": CURRENT, "request_id": REQUEST, "version": "1.0.0.0",
+                   "identity_store_id": "TEST_ONLY", "package_sha256": "a" * 64}
+        self.assertEqual(validate_backlog_handoff(None, None), "HOLD_REAL_PACKAGE_RECEIPT")
+        self.assertEqual(validate_backlog_handoff(package, None), "HOLD_BACKLOG_RECEIPT")
+        mismatch = dict(package, package_sha256="b" * 64)
+        self.assertEqual(validate_backlog_handoff(package, mismatch), "HOLD_BACKLOG_PACKAGE_MISMATCH")
+        self.assertEqual(validate_backlog_handoff(package, package), "HOLD_LOCAL_PULL_RECEIPT")
+        self.assertEqual(validate_backlog_handoff(package, package, mismatch), "HOLD_LOCAL_PACKAGE_MISMATCH")
+        self.assertEqual(validate_backlog_handoff(package, package, package),
+                         "HANDOFF_CONTRACT_VALIDATED_NOT_INSTALL_OR_GUI_E2E")
+        self.assertFalse(self.record["physical_windows_e2e_pass"])
 
 
 if __name__ == "__main__":
