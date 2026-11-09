@@ -11081,6 +11081,31 @@
       "software_runtime_qa": "PASS",
       "physical_windows_human_qa": "HOLD",
       "package_binding": "HOLD"
+    },
+    "official_identity_readonly_preflight_20261109": {
+      "status": "OFFICIAL_IDENTITY_FIELDS_READ_ONLY_VERIFIED__CURRENT_REVISION_PACKAGE_BINDING_NOT_APPROVED",
+      "identity_file": "products/prism-route-3d/store/approved-identity.json",
+      "identity_blob_sha": "9b38b20527b81c85fd03b5373d4a8f8245047115",
+      "identity_source_sha": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
+      "identity_request_id": "3d-prism-route-3d-15fdcb52e46e",
+      "identity_store_id": "9N95J2T57B41",
+      "identity_name": "OkinawaDesktopTools.PrismRoute3D",
+      "identity_publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+      "identity_package_family_name": "OkinawaDesktopTools.PrismRoute3D_j8yefg9jgfh58",
+      "identity_package_sid": "S-1-15-2-3208955418-98022013-46623760-1876997759-863416391-822502142-2643662492",
+      "reviewed": true,
+      "source": "partner_center",
+      "package_version_gate": "HOLD",
+      "current_factory_head": "4c22875c5ed79d393516c6a7a95361b9e9ed1950",
+      "current_request_id": "3d-prism-route-3d-4c22875c5ed7",
+      "binding_helper": "tools/prism_revision_package_binding.py",
+      "binding_helper_blob_sha": "d7daaf63f999bdb62fdf2b253595d5b589bd98cb",
+      "helper_requires_operator_approved_four_part_version": true,
+      "approved_version": null,
+      "binding_candidate_generated": false,
+      "cas_applied": false,
+      "real_msix_generated": false,
+      "next_action": "Operator-approved four-part Package Version must be obtained/verified; then run helper with current verified EXE/PCK/evidence and old official Identity, independently inspect output; do not auto-CAS or claim MSIX."
     }
   }
 }
