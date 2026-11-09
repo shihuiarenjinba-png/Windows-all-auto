@@ -10989,8 +10989,8 @@
     "next_action": "Await 24-lane current-artifact exact EXE/PCK/request byte receipt, independently cross-check then update package gate; do not CAS or promote from metadata."
   },
   "prism_pr25_4c22875c_independent_qa_gate_reconciliation_20261109": {
-    "status": "CURRENT_HEAD_SOFTWARE_INDEPENDENT_QA_CI_SUCCESS__PHYSICAL_AND_PACKAGE_HOLD",
-    "observed_at_jst": "2026-11-09 16:37",
+    "status": "CURRENT_HEAD_INDEPENDENT_SOFTWARE_QA_SUCCESS__RECEIPT_REHASH_AND_PACKAGE_HOLD",
+    "observed_at_jst": "2026-11-09 19:38",
     "factory_repo": "shihuiarenjinba-png/3d-game-factory",
     "factory_pr": 25,
     "current_factory_head": "4c22875c5ed79d393516c6a7a95361b9e9ed1950",
@@ -11013,7 +11013,8 @@
       "qa_pinned_export_run": 42475405044,
       "qa_pinned_pck_sha256": "c4f36ed505dc447a5977d9cd5e1ed68d78d089d8b502184647acf44370261630",
       "current_factory_source": "4c22875c5ed79d393516c6a7a95361b9e9ed1950",
-      "finding": "QA success for historical pinned source cannot validate current Factory export"
+      "finding": "QA success for historical pinned source cannot validate current Factory export",
+      "disposition": "HISTORICAL_ONLY_SUPERSEDED_BY_QA_PR19_e255fee_EXACT_HEAD_RUNS; retained as regression history, not current blocker"
     },
     "historical_pinned_source_unchanged": true,
     "official_identity_provenance_unchanged": true,
@@ -11025,7 +11026,7 @@
     "backlog_receipt": null,
     "local_qa_receipt": null,
     "physical_windows_e2e_pass": false,
-    "next_action_owner": "24 lane: independently download and hash current artifact ZIP/EXE/PCK/request, update independent QA pins and run exact-head tests; 36 lane: ingest verified receipt and update central package gate without repinning historical source",
+    "next_action_owner": "36 lane: independently download/rehash current QA receipt and compare exact Factory source/request/EXE/PCK, then verify approved Package Version and official Identity exact binding; 24 lane owns QA implementation",
     "current_factory_export_artifact": 13642354096,
     "independent_qa_pr": 19,
     "independent_qa_head": "e255fee29ed263a0e32351b6bf5c457cef30d710",
@@ -11057,6 +11058,15 @@
     "historical_e8c77192_evidence_preserved": true,
     "current_36_receipt_independently_rehashed": false,
     "post_identity_package_gate": "HOLD_PACKAGE_VERSION_IDENTITY_EXACT_BINDING_CAS_REAL_MSIX_BACKLOG_CHECKER_LOCAL_GUI",
-    "next_action": "36 independently inspect QA receipt and current export EXE/PCK/request SHA, then gate Package Version and exact official Identity binding; do not promote CI PASS to E2E PASS"
+    "next_action": "Receipt-byte verification before package gate; do not reclassify physical QA, CAS, MSIX, backlog, checker or E2E",
+    "current_qa_pin_reconciliation": "EXACT_HEAD_CI_SUCCESS_AND_ARTIFACT_METADATA_VERIFIED; QA workflow reports exact current Factory ZIP/EXE/PCK/manifest verification; 36 independent receipt-byte rehash still pending",
+    "current_qa_artifact_expiry_utc": "2026-11-16T07:34:58Z",
+    "current_qa_receipt_artifact_id": 13656608354,
+    "central_previous_commit_ci": {
+      "commit": "5165fe01eebcdc5e0151ca4c0cd38d13d13f4557",
+      "run_id": 42591935505,
+      "conclusion": "success",
+      "scope": "Offline QA CI only, not physical E2E"
+    }
   }
 }
