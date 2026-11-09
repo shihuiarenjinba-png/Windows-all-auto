@@ -10987,5 +10987,44 @@
     "local_qa_receipt": null,
     "physical_windows_e2e_pass": false,
     "next_action": "Await 24-lane current-artifact exact EXE/PCK/request byte receipt, independently cross-check then update package gate; do not CAS or promote from metadata."
+  },
+  "prism_pr25_4c22875c_independent_qa_gate_reconciliation_20261109": {
+    "status": "CURRENT_HEAD_INDEPENDENT_QA_NOT_PROVEN__FAIL_CLOSED",
+    "observed_at_jst": "2026-11-09 16:37",
+    "factory_repo": "shihuiarenjinba-png/3d-game-factory",
+    "factory_pr": 25,
+    "current_factory_head": "4c22875c5ed79d393516c6a7a95361b9e9ed1950",
+    "current_export_run": 42545579783,
+    "current_export_artifact": 13642354096,
+    "current_export_artifact_digest": "sha256:ea0f218078783866c44f946060df3422493fe73d45aec54789eb91cabe644d44",
+    "independent_qa_repo": "shihuiarenjinba-png/3d-build-qa",
+    "independent_qa_draft_pr": 19,
+    "independent_qa_head_observed": "e255fee29ed263a0e32351b6bf5c457cef30d710",
+    "independent_qa_handoff_comment": 6732938681,
+    "qa_workflow_run": 42572837483,
+    "qa_workflow_reported_jobs": [
+      "pr23-real-pck-modal-layout-ubuntu: SUCCESS",
+      "pr23-negative-contract-windows: SUCCESS"
+    ],
+    "qa_current_head_exact_bytes_verified": false,
+    "qa_pin_mismatch": {
+      "qa_pinned_factory_source": "e8c77192a06527b005168359433f2868ff86708e",
+      "qa_pinned_export_artifact": 13614249496,
+      "qa_pinned_export_run": 42475405044,
+      "qa_pinned_pck_sha256": "c4f36ed505dc447a5977d9cd5e1ed68d78d089d8b502184647acf44370261630",
+      "current_factory_source": "4c22875c5ed79d393516c6a7a95361b9e9ed1950",
+      "finding": "QA success for historical pinned source cannot validate current Factory export"
+    },
+    "historical_pinned_source_unchanged": true,
+    "official_identity_provenance_unchanged": true,
+    "identity_state": "POST_IDENTITY_UPGRADE",
+    "package_version_approved": false,
+    "identity_exact_binding": false,
+    "cas_applied": false,
+    "real_msix_verified": false,
+    "backlog_receipt": null,
+    "local_qa_receipt": null,
+    "physical_windows_e2e_pass": false,
+    "next_action_owner": "24 lane: independently download and hash current artifact ZIP/EXE/PCK/request, update independent QA pins and run exact-head tests; 36 lane: ingest verified receipt and update central package gate without repinning historical source"
   }
 }
