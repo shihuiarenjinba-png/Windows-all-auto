@@ -10989,7 +10989,7 @@
     "next_action": "Await 24-lane current-artifact exact EXE/PCK/request byte receipt, independently cross-check then update package gate; do not CAS or promote from metadata."
   },
   "prism_pr25_4c22875c_independent_qa_gate_reconciliation_20261109": {
-    "status": "CURRENT_HEAD_INDEPENDENT_SOFTWARE_QA_SUCCESS__RECEIPT_REHASH_AND_PACKAGE_HOLD",
+    "status": "CURRENT_HEAD_INDEPENDENT_SOFTWARE_QA_BYTES_VERIFIED__PACKAGE_BINDING_HOLD",
     "observed_at_jst": "2026-11-09 19:38",
     "factory_repo": "shihuiarenjinba-png/3d-game-factory",
     "factory_pr": 25,
@@ -11006,7 +11006,7 @@
       "pr23-real-pck-modal-layout-ubuntu: SUCCESS",
       "pr23-negative-contract-windows: SUCCESS"
     ],
-    "qa_current_head_exact_bytes_verified": false,
+    "qa_current_head_exact_bytes_verified": true,
     "qa_pin_mismatch": {
       "qa_pinned_factory_source": "e8c77192a06527b005168359433f2868ff86708e",
       "qa_pinned_export_artifact": 13614249496,
@@ -11054,12 +11054,12 @@
         "scope": "software PCK QA frames"
       }
     ],
-    "evidence_boundary": "GITHUB_EXACT_HEAD_JOBS_AND_ARTIFACT_METADATA_VERIFIED_BY_36; QA_JOB_REPORTS_INDEPENDENT_EXE_PCK_MANIFEST_HASH_MATCH; QA_RECEIPT_CONTENT_NOT_INDEPENDENTLY_REHASHED_BY_36; NO_PHYSICAL_WINDOWS_E2E",
+    "evidence_boundary": "36 downloaded Factory artifact 13642354096 and QA artifact 13656608354; independently SHA256-hashed candidate.exe 66b26ad96df7458ea917b632a73ac7c88bb058db24dbd11a457fd50435ab7b13, candidate.pck 189c020a545e269ac639f9982e41c45dbc180a069ed9b51000927951448b19c9, export-evidence.json 131256dac2eaa837cd5a447914dbe10c34b2f91db376adbc42f2659c75e019a7 and QA screenshot hashes; all match QA receipt. ZIP digest is GitHub artifact metadata, not local rehash of nested original ZIP. No physical Windows E2E.",
     "historical_e8c77192_evidence_preserved": true,
-    "current_36_receipt_independently_rehashed": false,
+    "current_36_receipt_independently_rehashed": true,
     "post_identity_package_gate": "HOLD_PACKAGE_VERSION_IDENTITY_EXACT_BINDING_CAS_REAL_MSIX_BACKLOG_CHECKER_LOCAL_GUI",
-    "next_action": "Receipt-byte verification before package gate; do not reclassify physical QA, CAS, MSIX, backlog, checker or E2E",
-    "current_qa_pin_reconciliation": "EXACT_HEAD_CI_SUCCESS_AND_ARTIFACT_METADATA_VERIFIED; QA workflow reports exact current Factory ZIP/EXE/PCK/manifest verification; 36 independent receipt-byte rehash still pending",
+    "next_action": "Verify official Identity exact fields and approved Package Version against current source/request before any CAS, real MSIX, backlog or local checker; no physical QA inference",
+    "current_qa_pin_reconciliation": "CURRENT_FACTORY_EXE_PCK_MANIFEST_BYTES_REHASHED_BY_36_MATCH_INDEPENDENT_QA_RECEIPT; historical e8c77192 retained separately",
     "current_qa_artifact_expiry_utc": "2026-11-16T07:34:58Z",
     "current_qa_receipt_artifact_id": 13656608354,
     "central_previous_commit_ci": {
@@ -11067,6 +11067,20 @@
       "run_id": 42591935505,
       "conclusion": "success",
       "scope": "Offline QA CI only, not physical E2E"
+    },
+    "current_36_receipt_verification": {
+      "verified_at_jst": "2026-11-09 20:36",
+      "factory_artifact_id": 13642354096,
+      "qa_artifact_id": 13656608354,
+      "exe_sha256": "66b26ad96df7458ea917b632a73ac7c88bb058db24dbd11a457fd50435ab7b13",
+      "pck_sha256": "189c020a545e269ac639f9982e41c45dbc180a069ed9b51000927951448b19c9",
+      "manifest_sha256": "131256dac2eaa837cd5a447914dbe10c34b2f91db376adbc42f2659c75e019a7",
+      "qa_screenshot_hashes_match": true,
+      "source_sha": "4c22875c5ed79d393516c6a7a95361b9e9ed1950",
+      "request_id": "3d-prism-route-3d-4c22875c5ed7",
+      "software_runtime_qa": "PASS",
+      "physical_windows_human_qa": "HOLD",
+      "package_binding": "HOLD"
     }
   }
 }
