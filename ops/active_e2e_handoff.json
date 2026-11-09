@@ -10902,5 +10902,42 @@
     "real_msix": "NOT_GENERATED",
     "local_windows_gui": "NOT_OBSERVED",
     "e2e": "HOLD"
+  },
+  "prism_pr25_package_binding_tool_revision_20261109": {
+    "status": "TOOL_ONLY_REVISION_OBSERVED__NO_PACKAGE_PROMOTION",
+    "repository": "shihuiarenjinba-png/3d-game-factory",
+    "draft_pr": 25,
+    "tool_revision_head_sha": "4c22875c5ed79d393516c6a7a95361b9e9ed1950",
+    "prior_independently_verified_export_revision_sha": "e8c77192a06527b005168359433f2868ff86708e",
+    "compare": {
+      "ahead_by": 1,
+      "behind_by": 0,
+      "changed_files": [
+        {
+          "path": "tools/prism_revision_package_binding.py",
+          "status": "added",
+          "additions": 80,
+          "deletions": 0
+        }
+      ],
+      "product_source_changed_in_this_compare": false
+    },
+    "tool_scope": "QA-only revision/package-binding helper; not an authorized Identity CAS, manifest rewrite, or approved package",
+    "quality_ci": {
+      "run_id": 42545579841,
+      "conclusion": "SUCCESS"
+    },
+    "godot_export_ci": {
+      "run_id": 42545579783,
+      "conclusion": "SUCCESS"
+    },
+    "historical_identity_provenance": "PRESERVED_UNMODIFIED",
+    "approved_package_version": null,
+    "exact_identity_manifest_binding": "PENDING_INDEPENDENT_VERIFICATION",
+    "new_head_artifact_exact_bytes": "NOT_INDEPENDENTLY_VERIFIED",
+    "cas": "NOT_APPLIED",
+    "real_msix": "NOT_GENERATED",
+    "physical_windows_e2e": "HOLD",
+    "next_action": "Verify new HEAD export artifact exact bytes and provenance independently; obtain explicitly approved Package Version and compare all official Identity fields with manifest before any CAS or packaging. Do not repin historical source."
   }
 }
