@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/shihuiarenjinba-png/Windows-all-auto/schemas/local-qa-evidence-v1.schema.json",
+  "title": "Windows local QA evidence manifest",
+  "type": "object",
+  "required": [
+    "schema_version", "run_id", "request_id", "product_type",
+    "source_repository", "source_branch", "source_sha", "artifact_sha256",
+    "test_suite_version", "status", "collection", "collection_complete",
+    "local_persistence_verified", "github_return", "e2e_pass",
+    "store_submission_allowed"
+  ],
+  "properties": {
+    "schema_version": { "const": "local-qa-evidence-v1" },
+    "request_id": { "type": "string", "minLength": 4, "maxLength": 128 },
+    "product_type": { "enum": ["APP", "GAME", "GAME_3D"] },
+    "source_repository": { "type": "string", "pattern": "^(https://github\\.com/)?[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$" },
+    "source_sha": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "artifact_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "status": { "enum": ["TEST_PASS", "TEST_FAIL", "INTERRUPTED_RESTART"] },
+    "collection_complete": { "type": "boolean" },
+    "local_persistence_verified": { "type": "boolean" },
+    "e2e_pass": { "type": "boolean" },
+    "store_submission_allowed": { "const": false },
+    "github_return": {
+      "type": "object",
+      "required": ["status", "readback_verified"],
+      "properties": {
+        "status": { "type": "string" },
+        "readback_verified": { "type": "boolean" },
+        "payload_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "e2e_pass": { "const": true } } },
+      "then": {
+        "properties": {
+          "status": { "const": "TEST_PASS" },
+          "collection_complete": { "const": true },
+          "local_persistence_verified": { "const": true },
+          "github_return": {
+            "properties": {
+              "status": { "const": "GITHUB_READBACK_VERIFIED" },
+              "readback_verified": { "const": true }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

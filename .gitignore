@@ -11,3 +11,4 @@ reports/
 *.msixbundle
 .env
 secrets.json
+.test-tmp/
