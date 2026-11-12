@@ -5,7 +5,7 @@ import base64
 from dataclasses import dataclass
 import json
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 import urllib.error
 import urllib.request
 

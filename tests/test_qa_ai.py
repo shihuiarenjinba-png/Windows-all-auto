@@ -77,7 +77,7 @@ class AnalysisSafetyTests(unittest.TestCase):
         self.assertEqual(outcome.status, "RULE_ANALYSIS_VALID")
         self.assertEqual(outcome.analysis["recommended_owner"], "Windows-E2E")
 
-    def test_model_missing_timeout_and_empty_response_are_non_authoritative(self):
+    def test_model_missing_and_timeout_are_non_authoritative(self):
         for error in (AnalysisUnavailable("model missing"), TimeoutError("late")):
             with self.subTest(error=type(error).__name__):
                 outcome = AnalysisEngine(client=StaticClient(error=error)).analyze(
@@ -85,6 +85,12 @@ class AnalysisSafetyTests(unittest.TestCase):
                 self.assertEqual(outcome.status, "AI_ANALYSIS_UNAVAILABLE")
                 self.assertIsNone(outcome.analysis)
                 self.assertFalse(outcome.as_dict()["authoritative_test_result_changed"])
+
+    def test_empty_model_response_is_rejected(self):
+        outcome = AnalysisEngine(client=StaticClient("")).analyze(
+            context=CONTEXT, evidence="ambiguous crash", force_model=True)
+        self.assertEqual(outcome.status, "AI_ANALYSIS_UNAVAILABLE")
+        self.assertIsNone(outcome.analysis)
 
     def test_malformed_json_schema_violation_and_hallucination_are_rejected(self):
         malformed = AnalysisEngine(client=StaticClient("not-json"), model="test")
@@ -231,6 +237,21 @@ class EvidenceIntegrationTests(unittest.TestCase):
         manifest = json.loads((result.run_directory / "manifest.json").read_text())
         self.assertEqual(manifest["status"], "TEST_PASS")
         self.assertFalse(manifest["e2e_pass"])
+
+    def test_ai_receives_redacted_envelope_not_secret_raw_log(self):
+        secret = "github_pat_abcdefghijklmnopqrstuvwxyz123456"
+        command = [os.fspath(Path(os.sys.executable)), "-c",
+                   "print('Authorization: Bearer " + secret + "')"]
+        result = self.store.execute(self.job, command, cwd=self.root,
+                                    timeout_seconds=5,
+                                    event_log_collector=self.events)
+        client = StaticClient(json.dumps(valid_analysis("")))
+        outcome = analyze_run(self.store, result.run_directory,
+                              engine=AnalysisEngine(client=client))
+        self.assertEqual(outcome.status, "AI_ANALYSIS_VALID")
+        self.assertIn(secret, (result.run_directory / "stdout.log").read_text())
+        self.assertNotIn(secret, client.prompt)
+        self.assertIn("[REDACTED]", client.prompt)
 
     def test_retry_worker_recovers_hash_after_interrupted_attachment(self):
         result = self.execute_run()

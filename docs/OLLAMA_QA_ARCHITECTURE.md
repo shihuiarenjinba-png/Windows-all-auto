@@ -83,6 +83,12 @@ changes require a new `index_name`; mixing vectors in an existing index is
 rejected. Retrieved history is labeled non-authoritative and can support only a
 hypothesis, never an observed fact.
 
+An integration probe using the installed `nomic-embed-text:latest` inserted one
+synthetic regression-verified repair, retrieved it for the same repository and
+product type, and returned zero records for a different repository/product.
+This proves the local embedding/search path, but not the quality of retrieval
+over a production repair corpus.
+
 ## Resource and privacy controls
 
 - one Ollama model is invoked at a time and each request uses `keep_alive: 0`;

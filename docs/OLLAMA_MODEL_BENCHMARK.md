@@ -38,11 +38,19 @@ supplied APP/GAME/GAME_3D owner. Raw v1 output was retained for comparison.
 ## Resource observations
 
 The host has an RTX 5070 Ti with 16,303 MiB VRAM. `qwen3:14b` is a 9.3 GB
-Q4_K_M model and was observed fully GPU-loaded; the dedicated model reuses
-those weights and adds only small configuration layers. The DeepSeek and
+Q4_K_M model. During a dedicated v2 resource probe, `ollama ps` reported a
+10 GB loaded model, 100% GPU placement and context 8192. `nvidia-smi` reported
+10,317 / 16,303 MiB GPU memory and 96% GPU utilization. System RAM was
+32,221 MiB total and 15,694 MiB free during the sample; this is a whole-system
+snapshot, not model-exclusive RAM. The dedicated model reuses the Qwen weights
+and adds only small configuration layers. The DeepSeek and
 library candidates are approximately 10 GB each. `qwen3.5:9b-q4_K_M` occupies
 approximately 6.5 GB across downloaded layers. No models were run concurrently,
 and every benchmark request unloaded its model afterward.
+
+Per-model peak system RAM and VRAM were not captured for the non-default
+candidates and are explicitly unmeasured; their listed sizes must not be
+misrepresented as peak-RAM measurements.
 
 Batch latency is recorded for relative comparison, not as an SLA. Real
 production analysis sends a single bounded failure rather than 24 cases. A
@@ -62,3 +70,20 @@ separate operational review of latency and VRAM contention.
 
 This benchmark does not make AI authoritative and does not establish a product
 E2E pass or Store readiness.
+
+## Installed-model disposition
+
+| Model | Disposition | Reason |
+| --- | --- | --- |
+| `windows-qa-analyst:latest` | DEFAULT | bounded prompt, strict-schema integration, best 24-case result |
+| `qwen3:14b` | KEEP | baseline and dedicated-model base; strong classification |
+| `qwen3.5:9b-q4_K_M` | CANDIDATE | smaller, but empty response twice under the common protocol |
+| `deepseek-coder-v2:16b-lite-instruct-q4_K_M` | CANDIDATE | useful code model, but strict bare JSON failed |
+| `library-coder:latest` | CANDIDATE | fast, but strict JSON failed and its system prompt is workspace-specific |
+| `qwen3:0.6b` | KEEP | possible future Level 1 classifier; not trusted for root-cause analysis |
+| `nomic-embed-text:latest` | KEEP | phase-1 embedding baseline |
+| `llama3.1:8b` | KEEP | installed comparison asset; not selected as QA default |
+| `glm-4.7-flash:q4_K_M` | KEEP | installed comparison asset; excluded from phase-1 default testing |
+| `qwen3.6:35b-a3b-q4_K_M` | KEEP | installed large model; excluded from routine 16 GB VRAM use |
+
+No model is a `RETIRE_CANDIDATE` in this phase, and no model was deleted.
