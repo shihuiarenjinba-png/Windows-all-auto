@@ -1,0 +1,11 @@
+{
+  "protocol": "24 synthetic cases, one batch invocation per model, keep_alive=0",
+  "runs": {
+    "windows-qa-analyst-v1": {"total_duration_seconds": 31.9848963, "prompt_eval_count": 2697, "eval_count": 2118},
+    "windows-qa-analyst-v2": {"total_duration_seconds": 50.807445, "prompt_eval_count": 2785, "eval_count": 2338, "resource_probe_total_duration_seconds": 41.5922725, "resource_probe_eval_count": 2811, "ollama_loaded_size_gb": 10, "gpu_processor_percent": 100, "gpu_memory_used_mib": 10317, "gpu_memory_total_mib": 16303, "system_ram_total_mib": 32221, "system_ram_free_during_probe_mib": 15694},
+    "qwen3:14b": {"total_duration_seconds": 38.3579321, "prompt_eval_count": 2550, "eval_count": 2635},
+    "deepseek-coder-v2:16b-lite-instruct-q4_K_M": {"total_duration_seconds": 41.0514156, "prompt_eval_count": 2790, "eval_count": 1306},
+    "library-coder:latest": {"total_duration_seconds": 25.7041975, "prompt_eval_count": 3257, "eval_count": 2220},
+    "qwen3.5:9b-q4_K_M": {"status": "EMPTY_RESPONSE_TWICE", "scored": false}
+  }
+}

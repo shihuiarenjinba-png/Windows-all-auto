@@ -47,5 +47,7 @@ Python 3.12以上を想定。現在のオフライン検査に追加PyPIライ�
 - [Windows担当の詳細手順](docs/CODE_OWNER_WINDOWS_HANDOFF_2026-10-26.md)
 - [ローカルQA証拠の永続化・GitHub返送・読み戻しゲート](docs/LOCAL_QA_EVIDENCE_RETURN.md)
 - [既存実装の再利用・未実装監査（2026-11-12）](docs/LOCAL_QA_EXISTING_IMPLEMENTATION_AUDIT_20261112.md)
+- [Ollama Windows QA解析の権限分離・RAG・故障時動作](docs/OLLAMA_QA_ARCHITECTURE.md)
+- [Ollamaモデル共通24ケース評価と採用判断](docs/OLLAMA_MODEL_BENCHMARK.md)
 
 Windows実機/Partner Centerの実操作で正規の確認が取れるまで本番販売・提出はHOLDです。アプリ/ゲーム別固定ルールを用い、**セキュリティ系宣言・価格・Identity・Store Product IDは人間が根拠付きで確定**してください。

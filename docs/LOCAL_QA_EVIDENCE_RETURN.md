@@ -34,6 +34,7 @@ runs/<run-id>/uia-actions.jsonl          GUI driver action/result history
 runs/<run-id>/screenshots/               local originals
 runs/<run-id>/manifest.json              final local result and E2E gate
 runs/<run-id>/github-envelope.json       sanitized return payload
+runs/<run-id>/analysis/windows-qa-analysis.json optional derived analysis
 retry-queue/<run-id>.json                exponential-backoff retry state
 github-acks/<run-id>.json                verified GitHub readback receipt
 ```
@@ -98,6 +99,10 @@ Retry only:
 py -3 -m scripts.local_qa_evidence_worker `
   --state-root "$env:LOCALAPPDATA\WindowsAllAuto\QA-Evidence" --retry-only
 ```
+
+Optional local Ollama analysis is documented in
+[`OLLAMA_QA_ARCHITECTURE.md`](OLLAMA_QA_ARCHITECTURE.md). It reads only the
+sanitized envelope and cannot change the authoritative test or E2E result.
 
 Registration is opt-in. The script refuses to replace an existing task and
 uses the current user with limited privileges:

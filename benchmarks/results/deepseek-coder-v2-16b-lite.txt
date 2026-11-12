@@ -1,0 +1,132 @@
+ ```json
+[
+    {
+        "case_id": "case-01",
+        "classification": "TIMEOUT",
+        "recommended_owner": "APP",
+        "observed_excerpt": "runner: TEST_TIMEOUT after 300 seconds; process terminated",
+        "missing_evidence": [],
+        "confidence": "HIGH"
+    },
+    {
+        "case_id": "case-02",
+        "classification": "PROCESS_START_FAILED",
+        "recommended_owner": "GAME",
+        "observed_excerpt": "PROCESS_START_FAILED: WinError 2 while launching game.exe",
+        "missing_evidence": [],
+        "confidence": "HIGH"
+    },
+    {
+        "case_id": "case-03",
+        "classification": "SUBPROCESS_FAILED",
+        "recommended_owner": "GAME_3D",
+        "observed_excerpt": "renderer exited with code 7; stderr: device initialization failed",
+        "missing_evidence": [],
+        "confidence": "HIGH"
+    },
+    {
+        "case_id": "case-04",
+        "classification": "UIA_CONTROL_NOT_FOUND",
+        "recommended_owner": "APP",
+        "observed_excerpt": "UIA control SubmitButton not found in main window",
+        "missing_evidence": [],
+        "confidence": "HIGH"
+    },
+    {
+        "case_id": "case-05",
+        "classification": "UIA_NAME_MISMATCH",
+        "recommended_owner": "APP",
+        "observed_excerpt": "UIA Name mismatch: expected Save, actual 保存",
+        "missing_evidence": [],
+        "confidence": "HIGH"
+    },
+    {
+        "case_id": "case-06",
+        "classification": "UIA_INVOKE_FAILED",
+        "recommended_owner": "APP",
+        "observed_excerpt": "UIA Invoke failed for StartButton with ElementNotEnabledException",
+        "missing_evidence": [],
+        "confidence": "HIGH"
+    },
+    {
+        "case_id": "case-07",
+        "classification": "UIA_FOCUS_FAILED",
+        "recommended_owner": "GAME",
+        "observed_excerpt": "UIA focus failed for game window after three attempts",
+        "missing_evidence": [],
+        "confidence": "HIGH"
+    },
+    {
+        "case_id": "case-08",
+        "classification": "UI_STATE_UNCHANGED",
+        "recommended_owner": "GAME",
+        "observed_excerpt": "after clicking Play, UI state unchanged for 10 seconds",
+        "missing_evidence": [],
+        "confidence": "HIGH"
+    },
+    {
+        "case_id": "case-09",
+        "classification": "HASH_MISMATCH",
+        "recommended_owner": "APP",
+        "observed_excerpt": "artifact sha256 mismatch: expected aaa, actual bbb",
+        "missing_evidence": [],
+        "confidence": "HIGH"
+    },
+    {
+        "case_id": "case-10",
+        "classification": "SOURCE_SHA_CONFLICT",
+        "recommended_owner": "GAME",
+        "observed_excerpt": "source_sha conflict: handoff says aaaa but manifest says bbbb",
+        "missing_evidence": [],
+        "confidence": "HIGH"
+    },
+    {
+        "case_id": "case-11",
+        "classification": "ARTIFACT_MISSING",
+        "recommended_owner": "GAME_3D",
+        "observed_excerpt": "artifact missing from downloaded workflow bundle",
+        "missing_evidence": [],
+        "confidence": "HIGH"
+    },
+    {
+        "case_id": "case-12",
+        "classification": "STALE_ARTIFACT",
+        "recommended_owner": "APP",
+        "observed_excerpt": "stale artifact detected: build timestamp predates source commit",
+        "missing_evidence": [],
+        "confidence": "HIGH"
+    },
+    {
+        "case_id": "case-13",
+        "classification": "EVENT_LOG_UNAVAILABLE",
+        "recommended_owner": "APP",
+        "observed_excerpt": "Windows Event Log unavailable: wevtutil exit 5",
+        "missing_evidence": [],
+        "confidence": "HIGH"
+    },
+    {
+        "case_id": "case-14",
+        "classification": "PERMISSION_DENIED",
+        "recommended_owner": "GAME",
+        "observed_excerpt": "Permission denied while reading protected application data",
+        "missing_evidence": [],
+        "confidence": "HIGH"
+    },
+    {
+        "case_id": "case-15",
+        "classification": "GITHUB_RETURN_FAILED",
+        "recommended_owner": "GAME_3D",
+        "observed_excerpt": "GitHub evidence return failed with connection reset",
+        "missing_evidence": [],
+        "confidence": "HIGH"
+    },
+    {
+        "case_id": "case-16",
+        "classification": "GITHUB_READBACK_MISMATCH",
+        "recommended_owner": "APP",
+        "observed_excerpt": "GitHub readback correlation mismatch for payload_sha256",
+        "missing_evidence": [],
+        "confidence": "HIGH"
+    },
+    {
+        "case_id": "case-17",

@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/shihuiarenjinba-png/Windows-all-auto/schemas/windows-qa-analysis-v1.schema.json",
+  "title": "Derived Windows QA analysis",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "target_repository", "source_sha", "request_id", "classification", "failure_class", "severity", "observed", "inference", "unknown", "missing_evidence", "recommended_owner", "recommended_action", "suggested_fix_area", "regression_tests", "agent_dispatch_status", "e2e_pass_authority", "store_submission_allowed"],
+  "properties": {
+    "schema_version": {"const": "windows-qa-analysis-v1"},
+    "target_repository": {"type": "string"},
+    "source_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "request_id": {"type": "string"},
+    "classification": {"enum": ["TIMEOUT", "PROCESS_START_FAILED", "NONZERO_EXIT", "UIA_CONTROL_NOT_FOUND", "UIA_NAME_MISMATCH", "UIA_INVOKE_FAILED", "UIA_FOCUS_FAILED", "UI_STATE_UNCHANGED", "HASH_MISMATCH", "SOURCE_SHA_CONFLICT", "ARTIFACT_MISSING", "STALE_ARTIFACT", "EVENT_LOG_UNAVAILABLE", "PERMISSION_DENIED", "GITHUB_RETURN_FAILED", "GITHUB_READBACK_MISMATCH", "REQUEST_ID_CONFLICT", "PACKAGE_INVALID", "MANIFEST_MISMATCH", "IDENTITY_MISMATCH", "JSON_PARSE_ERROR", "IMPORT_ERROR", "TYPE_ERROR", "SUBPROCESS_FAILED", "UNKNOWN"]},
+    "failure_class": {"enum": ["TIMEOUT", "PROCESS_START_FAILED", "NONZERO_EXIT", "UIA_CONTROL_NOT_FOUND", "UIA_NAME_MISMATCH", "UIA_INVOKE_FAILED", "UIA_FOCUS_FAILED", "UI_STATE_UNCHANGED", "HASH_MISMATCH", "SOURCE_SHA_CONFLICT", "ARTIFACT_MISSING", "STALE_ARTIFACT", "EVENT_LOG_UNAVAILABLE", "PERMISSION_DENIED", "GITHUB_RETURN_FAILED", "GITHUB_READBACK_MISMATCH", "REQUEST_ID_CONFLICT", "PACKAGE_INVALID", "MANIFEST_MISMATCH", "IDENTITY_MISMATCH", "JSON_PARSE_ERROR", "IMPORT_ERROR", "TYPE_ERROR", "SUBPROCESS_FAILED", "UNKNOWN"]},
+    "severity": {"enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"]},
+    "observed": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["fact", "evidence_excerpt"], "properties": {"fact": {"type": "string", "minLength": 1}, "evidence_excerpt": {"type": "string", "minLength": 1}}}},
+    "inference": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["hypothesis", "confidence", "evidence_basis"], "properties": {"hypothesis": {"type": "string", "minLength": 1}, "confidence": {"enum": ["LOW", "MEDIUM", "HIGH"]}, "evidence_basis": {"type": "array", "items": {"type": "string", "minLength": 1}}}}},
+    "unknown": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "missing_evidence": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "recommended_owner": {"enum": ["APP", "GAME", "GAME_3D", "Windows-E2E", "infrastructure"]},
+    "recommended_action": {"type": "string", "minLength": 1},
+    "suggested_fix_area": {"type": "string", "minLength": 1},
+    "regression_tests": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "agent_dispatch_status": {"const": "AGENT_DISPATCH_PENDING"},
+    "e2e_pass_authority": {"const": false},
+    "store_submission_allowed": {"const": false}
+  }
+}
