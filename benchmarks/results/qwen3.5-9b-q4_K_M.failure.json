@@ -1,0 +1,8 @@
+{
+  "model": "qwen3.5:9b-q4_K_M",
+  "attempts": 2,
+  "status": "EMPTY_RESPONSE",
+  "output_file_created": false,
+  "protocol_changed": false,
+  "decision": "CANDIDATE_NOT_DEFAULT"
+}

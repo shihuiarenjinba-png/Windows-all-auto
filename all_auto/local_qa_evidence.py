@@ -603,7 +603,8 @@ class EvidenceStore:
         files = []
         text_names = ("stdout.log", "stderr.log", "windows-event-log.xml",
                       "windows-event-log.unavailable.txt", "uia-actions.jsonl",
-                      "screenshot-index.jsonl", "journal.jsonl")
+                      "screenshot-index.jsonl", "journal.jsonl",
+                      "analysis/windows-qa-analysis.json")
         for name in text_names:
             path = folder / name
             if not path.is_file():
@@ -636,6 +637,45 @@ class EvidenceStore:
             "source_sha": manifest["source_sha"],
             "payload_sha256": sha256_bytes(raw), "payload": payload,
         }
+
+    def attach_derived_analysis(self, run_directory: Path,
+                                outcome: dict[str, Any]) -> None:
+        """Attach sanitized, non-authoritative analysis before GitHub return.
+
+        The authoritative state and manifest are deliberately read-only here.
+        A queued envelope is rebuilt so the derived file is covered by the
+        payload hash that GitHub later reads back.
+        """
+        folder = run_directory.resolve()
+        if folder.parent != self.runs or not folder.is_dir():
+            raise ValueError("invalid analysis run directory")
+        run_id = folder.name
+        queue_path = self.queue / (run_id + ".json")
+        if not queue_path.is_file() or (self.acks / (run_id + ".json")).exists():
+            raise ValueError("analysis may only be attached before GitHub acknowledgement")
+        clean, redactions = self.redactor.clean(outcome)
+        raw = canonical(clean)
+        if len(raw) > 1024 * 1024:
+            raise ValueError("derived analysis exceeds 1 MiB")
+        if not self.redactor.leak_free(raw):
+            raise ValueError("secret-like data remains in derived analysis")
+        analysis_path = folder / "analysis" / "windows-qa-analysis.json"
+        atomic_json(analysis_path, clean)
+        manifest = json.loads((folder / "manifest.json").read_text(encoding="utf-8"))
+        envelope = self._build_envelope(folder, manifest)
+        atomic_json(folder / "github-envelope.json", envelope)
+        if (folder / "github-envelope.json").stat().st_size > MAX_ENVELOPE_BYTES:
+            raise ValueError("LOCAL_QA_HOLD: sanitized evidence envelope exceeds 25 MiB")
+        queue_item = json.loads(queue_path.read_text(encoding="utf-8"))
+        queue_item.update({"payload_sha256": envelope["payload_sha256"],
+                           "status": "PENDING_GITHUB_RETURN",
+                           "next_attempt_at_utc": utc_now(), "last_error": None})
+        atomic_json(queue_path, queue_item)
+        append_jsonl(folder / "journal.jsonl", {
+            "at": utc_now(), "event": "DERIVED_AI_ANALYSIS_ATTACHED",
+            "analysis_status": clean.get("status") if isinstance(clean, dict) else None,
+            "redactions": redactions,
+            "payload_sha256": envelope["payload_sha256"]})
 
 
 class GitHubReturnError(RuntimeError):
@@ -764,6 +804,27 @@ def process_retry_queue(store: EvidenceStore, transport: Any, *,
             envelope = (store.root / item["envelope"]).resolve()
             if store.root not in envelope.parents or not envelope.is_file():
                 item.update({"status": "LOCAL_EVIDENCE_MISSING", "last_error": "envelope missing"})
+                atomic_json(item_path, item)
+                failed += 1
+                continue
+            try:
+                envelope_value = json.loads(envelope.read_text(encoding="utf-8"))
+                calculated = sha256_bytes(canonical(envelope_value["payload"]))
+                if (envelope_value.get("request_id") != item.get("request_id") or
+                        envelope_value.get("source_sha") != item.get("source_sha") or
+                        envelope_value.get("payload_sha256") != calculated):
+                    raise ValueError("invalid local envelope correlation")
+                if item.get("payload_sha256") != calculated:
+                    item["payload_sha256"] = calculated
+                    item["status"] = "PENDING_GITHUB_RETURN"
+                    item["last_error"] = None
+                    atomic_json(item_path, item)
+                    append_jsonl(store._run_path(item["run_id"]) / "journal.jsonl", {
+                        "at": utc_now(), "event": "RETRY_HASH_RECOVERED",
+                        "payload_sha256": calculated})
+            except (OSError, KeyError, TypeError, ValueError, json.JSONDecodeError):
+                item.update({"status": "LOCAL_EVIDENCE_INVALID",
+                             "last_error": "envelope integrity check failed"})
                 atomic_json(item_path, item)
                 failed += 1
                 continue

@@ -1,0 +1,1233 @@
+{
+  "deepseek-coder-v2-16b-lite": {
+    "cases": 24,
+    "classification_accuracy": 0.0,
+    "critical_miss": 13,
+    "details": [
+      {
+        "classification_correct": false,
+        "critical_miss": true,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-01",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": true,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-02",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": false,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-03",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": false,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-04",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": false,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-05",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": false,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-06",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": false,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-07",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": false,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-08",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": true,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-09",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": true,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-10",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": true,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-11",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": true,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-12",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": false,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-13",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": true,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-14",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": true,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-15",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": true,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-16",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": true,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-17",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": true,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-18",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": true,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-19",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": true,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-20",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": false,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-21",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": false,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-22",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": false,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-23",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": false,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-24",
+        "owner_correct": false,
+        "valid": false
+      }
+    ],
+    "hallucination": 0,
+    "owner_routing_accuracy": 0.0,
+    "valid_json_rate": 0.0,
+    "valid_top_level_json": false
+  },
+  "library-coder": {
+    "cases": 24,
+    "classification_accuracy": 0.0,
+    "critical_miss": 13,
+    "details": [
+      {
+        "classification_correct": false,
+        "critical_miss": true,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-01",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": true,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-02",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": false,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-03",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": false,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-04",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": false,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-05",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": false,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-06",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": false,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-07",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": false,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-08",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": true,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-09",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": true,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-10",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": true,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-11",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": true,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-12",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": false,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-13",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": true,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-14",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": true,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-15",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": true,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-16",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": true,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-17",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": true,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-18",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": true,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-19",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": true,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-20",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": false,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-21",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": false,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-22",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": false,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-23",
+        "owner_correct": false,
+        "valid": false
+      },
+      {
+        "classification_correct": false,
+        "critical_miss": false,
+        "errors": [
+          "missing result"
+        ],
+        "hallucination": false,
+        "id": "case-24",
+        "owner_correct": false,
+        "valid": false
+      }
+    ],
+    "hallucination": 0,
+    "owner_routing_accuracy": 0.0,
+    "valid_json_rate": 0.0,
+    "valid_top_level_json": false
+  },
+  "qwen3-14b": {
+    "cases": 24,
+    "classification_accuracy": 1.0,
+    "critical_miss": 0,
+    "details": [
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-01",
+        "owner_correct": false,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-02",
+        "owner_correct": false,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-03",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-04",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-05",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-06",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-07",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-08",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-09",
+        "owner_correct": false,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-10",
+        "owner_correct": false,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-11",
+        "owner_correct": false,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-12",
+        "owner_correct": false,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-13",
+        "owner_correct": false,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-14",
+        "owner_correct": false,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-15",
+        "owner_correct": false,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-16",
+        "owner_correct": false,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-17",
+        "owner_correct": false,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-18",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-19",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-20",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-21",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-22",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-23",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-24",
+        "owner_correct": true,
+        "valid": true
+      }
+    ],
+    "hallucination": 0,
+    "owner_routing_accuracy": 0.5417,
+    "valid_json_rate": 1.0,
+    "valid_top_level_json": true
+  },
+  "windows-qa-analyst-v1": {
+    "cases": 24,
+    "classification_accuracy": 1.0,
+    "critical_miss": 0,
+    "details": [
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-01",
+        "owner_correct": false,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-02",
+        "owner_correct": false,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-03",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-04",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-05",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-06",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-07",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-08",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-09",
+        "owner_correct": false,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-10",
+        "owner_correct": false,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-11",
+        "owner_correct": false,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-12",
+        "owner_correct": false,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-13",
+        "owner_correct": false,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-14",
+        "owner_correct": false,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-15",
+        "owner_correct": false,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-16",
+        "owner_correct": false,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-17",
+        "owner_correct": false,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-18",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-19",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-20",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-21",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-22",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-23",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-24",
+        "owner_correct": true,
+        "valid": true
+      }
+    ],
+    "hallucination": 0,
+    "owner_routing_accuracy": 0.5417,
+    "valid_json_rate": 1.0,
+    "valid_top_level_json": true
+  },
+  "windows-qa-analyst-v2": {
+    "cases": 24,
+    "classification_accuracy": 1.0,
+    "critical_miss": 0,
+    "details": [
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-01",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-02",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-03",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-04",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-05",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-06",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-07",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-08",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-09",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-10",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-11",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-12",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-13",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-14",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-15",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-16",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-17",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-18",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-19",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-20",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-21",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-22",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-23",
+        "owner_correct": true,
+        "valid": true
+      },
+      {
+        "classification_correct": true,
+        "critical_miss": false,
+        "errors": [],
+        "hallucination": false,
+        "id": "case-24",
+        "owner_correct": true,
+        "valid": true
+      }
+    ],
+    "hallucination": 0,
+    "owner_routing_accuracy": 1.0,
+    "valid_json_rate": 1.0,
+    "valid_top_level_json": true
+  }
+}

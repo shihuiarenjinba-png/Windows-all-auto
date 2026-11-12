@@ -9,6 +9,8 @@ import sys
 from all_auto.local_qa_evidence import (
     EvidenceStore, GitHubContentsTransport, process_retry_queue,
 )
+from qa_ai.analyzer import AnalysisEngine, OllamaClient, analyze_run
+from qa_ai.rag import RepairHistory
 
 
 def _load(path: Path) -> dict:
@@ -32,6 +34,12 @@ def main(argv=None) -> int:
     parser.add_argument("--github-base-ref", default="codex/windows-all-auto-integration-20261026")
     parser.add_argument("--retention-days", type=int, default=30)
     parser.add_argument("--max-state-bytes", type=int, default=5 * 1024 * 1024 * 1024)
+    parser.add_argument("--enable-ai-analysis", action="store_true")
+    parser.add_argument("--ai-model", default="windows-qa-analyst")
+    parser.add_argument("--ai-timeout", type=int, default=120)
+    parser.add_argument("--ollama-endpoint", default="http://127.0.0.1:11434")
+    parser.add_argument("--rag-db", type=Path)
+    parser.add_argument("--embedding-model", default="nomic-embed-text:latest")
     args = parser.parse_args(argv)
     try:
         store = EvidenceStore(args.state_root)
@@ -54,6 +62,31 @@ def main(argv=None) -> int:
             )
         else:
             result = None
+        ai_status = "DISABLED"
+        if result is not None and args.enable_ai_analysis:
+            try:
+                history = RepairHistory(
+                    args.rag_db or args.state_root / "qa-ai-repair-history.sqlite3",
+                    embedding_model=args.embedding_model)
+                engine = AnalysisEngine(
+                    client=OllamaClient(endpoint=args.ollama_endpoint,
+                                        timeout=args.ai_timeout),
+                    model=args.ai_model, history=history)
+                ai_status = analyze_run(store, result.run_directory,
+                                        engine=engine).status
+            except Exception as exc:  # AI failure must never stop evidence return.
+                ai_status = "AI_ANALYSIS_UNAVAILABLE:" + type(exc).__name__
+                try:
+                    store.attach_derived_analysis(result.run_directory, {
+                        "status": "AI_ANALYSIS_UNAVAILABLE", "analysis": None,
+                        "errors": [type(exc).__name__], "model": args.ai_model,
+                        "route_level": 2, "metrics": {},
+                        "authoritative_test_result_changed": False,
+                        "e2e_pass_authority": False,
+                        "store_submission_allowed": False,
+                    })
+                except Exception:
+                    pass
         transport = GitHubContentsTransport(
             repository=args.github_repository, branch=args.github_branch,
             base_ref=args.github_base_ref)
@@ -64,6 +97,7 @@ def main(argv=None) -> int:
                   "retention": retention,
                   "run_id": result.run_id if result else None,
                   "test_status": result.status if result else None,
+                  "ai_analysis_status": ai_status,
                   "e2e_pass": False}
         if result:
             manifest = json.loads((result.run_directory / "manifest.json").read_text(encoding="utf-8"))
