@@ -9,7 +9,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 SHA = re.compile(r"^[0-9a-f]{40}$")
-VERSION = re.compile(r"^\\d+\\.\\d+\\.\\d+\\.\\d+$")
+VERSION = re.compile(r"^\d+\.\d+\.\d+\.\d+$")
 NS = "{http://schemas.microsoft.com/appx/manifest/foundation/windows10}"
 
 def authorize_transport(identity, approval, package_path, receipt):
@@ -94,6 +94,10 @@ class TransportRegression(unittest.TestCase):
         self.identity["package_version_gate"] = "HOLD"
         self.identity["signature_status"] = "PRE_IDENTITY_EXE_NOT_MSIX"
         self.assertEqual(self.check()["status"], "HOLD")
+    def test_malformed_version_rejected(self):
+        self.approval["package_version"] = "1.2.3.x"
+        self.receipt["package_version"] = "1.2.3.x"
+        self.assertEqual(self.check()["reason"], "VERSION_NOT_APPROVED")
     def test_no_version(self):
         del self.approval["package_version"]
         self.assertEqual(self.check()["status"], "HOLD")
