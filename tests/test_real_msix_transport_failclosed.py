@@ -150,6 +150,9 @@ class TransportRegression(unittest.TestCase):
         digest = hashlib.sha256(self.path.read_bytes()).hexdigest()
         self.approval["msix_sha256"] = digest
         self.receipt["msix_sha256"] = self.receipt["local_sha256"] = digest
+        # Keep independent custody evidence consistent with the deliberately altered fixture.
+        # Otherwise the digest gate correctly rejects before manifest validation is reached.
+        self.custody["msix_sha256"] = digest
         self.assertEqual(self.check()["reason"], "MANIFEST_IDENTITY_MISMATCH")
 if __name__ == "__main__":
     unittest.main()
