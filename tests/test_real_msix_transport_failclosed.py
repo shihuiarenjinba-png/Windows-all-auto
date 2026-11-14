@@ -12,7 +12,7 @@ SHA = re.compile(r"^[0-9a-f]{40}$")
 VERSION = re.compile(r"^\d+\.\d+\.\d+\.\d+$")
 NS = "{http://schemas.microsoft.com/appx/manifest/foundation/windows10}"
 
-def authorize_transport(identity, approval, package_path, receipt):
+def authorize_transport(identity, approval, package_path, receipt, custody=None):
     """Return a bounded preflight receipt; never assert GUI/checker success."""
     def hold(reason):
         return {"status": "HOLD", "reason": reason}
@@ -45,6 +45,14 @@ def authorize_transport(identity, approval, package_path, receipt):
         return hold("BACKLOG_NOT_VERIFIED")
     if receipt.get("local_pull_status") != "VERIFIED" or receipt.get("local_sha256") != digest:
         return hold("LOCAL_BYTES_NOT_VERIFIED")
+    # The producer's VERIFIED strings alone do not prove custody.
+    if not isinstance(custody, dict) or custody.get("status") != "CUSTODY_VERIFIED_ONLY":
+        return hold("INDEPENDENT_CUSTODY_REQUIRED")
+    if custody.get("e2e_pass") is not False or custody.get("msix_sha256") != digest:
+        return hold("CUSTODY_SCOPE_OR_DIGEST_MISMATCH")
+    if any(type(custody.get(k)) is not int or custody[k] <= 0 or receipt.get(k) != custody[k]
+           for k in ("run_id", "artifact_id")):
+        return hold("CUSTODY_RUN_ARTIFACT_MISMATCH")
     try:
         with zipfile.ZipFile(p) as z:
             members = z.namelist()
@@ -84,12 +92,27 @@ class TransportRegression(unittest.TestCase):
         self.approval["msix_sha256"] = digest
         self.receipt = {k:self.identity[k] for k in ("request_id","source_sha","name","publisher","store_id")}
         self.receipt.update(package_version="1.2.3.4", msix_sha256=digest, local_sha256=digest,
-            artifact_kind="REAL_MSIX", github_backlog_status="VERIFIED", local_pull_status="VERIFIED")
+            artifact_kind="REAL_MSIX", github_backlog_status="VERIFIED", local_pull_status="VERIFIED",
+            run_id=12345, artifact_id=67890)
+        self.custody = dict(status="CUSTODY_VERIFIED_ONLY", e2e_pass=False,
+            msix_sha256=digest, run_id=12345, artifact_id=67890)
     def check(self):
-        return authorize_transport(self.identity, self.approval, self.path, self.receipt)
+        return authorize_transport(self.identity, self.approval, self.path, self.receipt, self.custody)
     def test_mock_only_preflight_never_e2e(self):
         self.assertEqual(self.check()["status"], "TRANSPORT_PREFLIGHT_PASS_ONLY")
         self.assertFalse(self.check()["e2e_pass"])
+    def test_self_reported_verified_is_not_independent_custody(self):
+        result = authorize_transport(self.identity, self.approval, self.path, self.receipt)
+        self.assertEqual(result["reason"], "INDEPENDENT_CUSTODY_REQUIRED")
+    def test_custody_digest_mismatch(self):
+        self.custody["msix_sha256"] = "0" * 64
+        self.assertEqual(self.check()["reason"], "CUSTODY_SCOPE_OR_DIGEST_MISMATCH")
+    def test_custody_run_mismatch(self):
+        self.receipt["run_id"] = 999
+        self.assertEqual(self.check()["reason"], "CUSTODY_RUN_ARTIFACT_MISMATCH")
+    def test_custody_claims_e2e(self):
+        self.custody["e2e_pass"] = True
+        self.assertEqual(self.check()["reason"], "CUSTODY_SCOPE_OR_DIGEST_MISMATCH")
     def test_actual_identity_hold(self):
         self.identity["package_version_gate"] = "HOLD"
         self.identity["signature_status"] = "PRE_IDENTITY_EXE_NOT_MSIX"
