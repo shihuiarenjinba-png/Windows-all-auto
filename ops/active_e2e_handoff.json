@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-03T01:36:00Z",
+  "updated_at_utc": "2026-11-14T01:39:33Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -11125,5 +11125,32 @@
       "latest_artifact_zip_sha256": "365e56c08b7458e89cfdabfd9113ac2fd00b91725ecaea214bb888a48432fc46",
       "rehash_scope": "Downloaded GitHub artifact 13672673982 ZIP; independently SHA256 verified ZIP vs GitHub digest and seven receipt-listed screenshot bytes vs receipt; receipt source/request/EXE/PCK/manifest match existing independently verified Factory lineage; no new Factory EXE/PCK bytes downloaded; physical GUI and package remain HOLD"
     }
+  },
+  "windows_e2e_custody_reconciliation": {
+    "checked_at_utc": "2026-11-14T01:39:33Z",
+    "status": "HOLD",
+    "pr161_head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
+    "pr164_head_sha": "145cd1f44bdec9e584eb0f045dd139ef330c6321",
+    "pr165_tested_head_sha": "83a2fb142a40eb1444042b03e6dd10985f4800dd",
+    "pr165_ci": [
+      {
+        "run_id": 43512699368,
+        "conclusion": "success",
+        "scope": "synthetic artifact custody regression"
+      },
+      {
+        "run_id": 43512699370,
+        "conclusion": "success",
+        "scope": "offline QA"
+      }
+    ],
+    "approved_version": "UNVERIFIED",
+    "real_msix": "NOT_VERIFIED",
+    "github_real_msix_artifact_receipt": "NOT_VERIFIED",
+    "local_msix_sha_receipt": "NOT_VERIFIED",
+    "checker_gui_e2e": "NOT_VERIFIED",
+    "focus_file_integrity_phase": "POST_IDENTITY",
+    "prism_revision": "HOLD_NO_OLD_SOURCE_CAS",
+    "note": "CI success is synthetic regression only. No release, identity CAS, or E2E PASS."
   }
 }
