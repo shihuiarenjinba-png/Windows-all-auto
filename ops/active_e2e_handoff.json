@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-14T14:34:00Z",
+  "updated_at_utc": "2026-11-14T15:40:00Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -11179,24 +11179,24 @@
       }
     ],
     "latest_head_ci_observation": {
-      "observed_at_jst": "2026-11-14 23:34",
-      "head_sha": "331c5f0bc567e153a0cdd1272ec7c9ae541b4201",
+      "observed_at_jst": "2026-11-15 00:40",
+      "head_sha": "2f3607708d90d0cf93ebf63113c3771ca4602e0e",
       "workflow_runs": [
         {
-          "run_id": 43595503305,
+          "run_id": 43605601239,
           "conclusion": "success",
           "scope": "GitHub artifact custody fail-closed regression"
         },
         {
-          "run_id": 43595503307,
+          "run_id": 43605601238,
           "conclusion": "success",
           "scope": "Windows-all-auto Offline QA"
         }
       ],
       "pr161_head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
-      "scope": "exact-head synthetic CI only, not real MSIX/backlog/local checker/GUI",
+      "scope": "exact-head synthetic CI only; no real MSIX/backlog/local checker/GUI",
       "status": "HOLD",
-      "blocker": "Focus/File Integrity approved package Version absent; real MSIX, GitHub backlog, local SHA receipt, checker/GUI not verified"
+      "blocker": "Focus/File Integrity package Version unapproved; real MSIX, backlog, local SHA receipt and checker/GUI not verified"
     }
   }
 }
