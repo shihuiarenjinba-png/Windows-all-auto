@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-03T01:36:00Z",
+  "updated_at_utc": "2026-11-14T16:36:00Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -11124,6 +11124,80 @@
       "real_msix_verified": false,
       "latest_artifact_zip_sha256": "365e56c08b7458e89cfdabfd9113ac2fd00b91725ecaea214bb888a48432fc46",
       "rehash_scope": "Downloaded GitHub artifact 13672673982 ZIP; independently SHA256 verified ZIP vs GitHub digest and seven receipt-listed screenshot bytes vs receipt; receipt source/request/EXE/PCK/manifest match existing independently verified Factory lineage; no new Factory EXE/PCK bytes downloaded; physical GUI and package remain HOLD"
+    }
+  },
+  "windows_e2e_custody_reconciliation": {
+    "checked_at_utc": "2026-11-14T06:40:05Z",
+    "status": "HOLD",
+    "pr161_head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
+    "pr164_head_sha": "145cd1f44bdec9e584eb0f045dd139ef330c6321",
+    "pr165_tested_head_sha": "fd1a7918c562cee3ce99239c93ab9bbc206922ba",
+    "pr165_ci": [
+      {
+        "run_id": 43557686198,
+        "conclusion": "success",
+        "scope": "synthetic artifact custody regression exact-head"
+      },
+      {
+        "run_id": 43557686203,
+        "conclusion": "success",
+        "scope": "offline QA exact-head"
+      }
+    ],
+    "approved_version": "UNVERIFIED",
+    "real_msix": "NOT_VERIFIED",
+    "github_real_msix_artifact_receipt": "NOT_VERIFIED",
+    "local_msix_sha_receipt": "NOT_VERIFIED",
+    "checker_gui_e2e": "NOT_VERIFIED",
+    "focus_file_integrity_phase": "POST_IDENTITY",
+    "prism_revision": "HOLD_NO_OLD_SOURCE_CAS",
+    "note": "Exact-head CI success only proves synthetic regression. Approved Identity files independently read at fixed commits for two APP lanes; both explicitly package_version_gate HOLD, package_kind exe, signature PRE_IDENTITY_EXE_NOT_MSIX. No real MSIX, GitHub backlog or local receipt. Prism current 4c22875c must not reuse historical 15fdcb52 CAS. No E2E PASS.",
+    "approved_identity_product_checks": [
+      {
+        "product": "Focus Session Desk",
+        "request_id": "app-focus-session-desk-8b00bc4e9082",
+        "source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+        "approved_file_commit": "8a7139375524830bf823469526837259266172be",
+        "approved_file_blob": "00c56e85ec7590783284e372ba100a3127614971",
+        "version": "UNAPPROVED",
+        "real_msix": "NOT_VERIFIED",
+        "backlog": "NOT_VERIFIED",
+        "checker_gui": "NOT_VERIFIED",
+        "local_receipt": "NOT_VERIFIED"
+      },
+      {
+        "product": "File Integrity Ledger",
+        "request_id": "app-file-integrity-ledger-d1108d12f7d1",
+        "source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
+        "approved_file_commit": "db9a57af822788af4c8384499a6e343ec7b0353d",
+        "approved_file_blob": "78034cf62be3479f9ed752a2585ab31bb24c49ff",
+        "version": "UNAPPROVED",
+        "real_msix": "NOT_VERIFIED",
+        "backlog": "NOT_VERIFIED",
+        "checker_gui": "NOT_VERIFIED",
+        "local_receipt": "NOT_VERIFIED"
+      }
+    ],
+    "latest_head_ci_observation": {
+      "observed_at_jst": "2026-11-15 01:36",
+      "head_sha": "cdb0d2ee9db6412fc00bfbbdb3b021b763a39f71",
+      "workflow_runs": [
+        {
+          "run_id": 43611452048,
+          "conclusion": "success",
+          "scope": "GitHub artifact custody fail-closed regression (synthetic)"
+        },
+        {
+          "run_id": 43611452064,
+          "conclusion": "success",
+          "scope": "Windows-all-auto Offline QA"
+        }
+      ],
+      "pr161_head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
+      "scope": "exact-head CI only; real MSIX/backlog/local checker/GUI not evidenced",
+      "status": "HOLD",
+      "blocker": "Focus/File Integrity approved Package Version absent; real MSIX, backlog, local SHA receipt and checker/GUI not verified",
+      "implementation_status": "REAL_PACKAGE_TRANSPORT_NOT_IMPLEMENTED_OR_VERIFIED_IN_THIS_RUN"
     }
   }
 }
