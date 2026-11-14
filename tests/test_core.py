@@ -211,9 +211,9 @@ class CoordinatorPreflightTests(unittest.TestCase):
         r = preflight({"schema_version": "1", "products": [self.product]}, self.root)
         out = self.root / "reports"
         export_results(r, out)
-        self.assertEqual(json.loads((out / "summary.json").read_text())["drafts_saved"], 0)
+        self.assertEqual(json.loads((out / "summary.json").read_text(encoding="utf-8"))["drafts_saved"], 0)
         self.assertTrue((out / "audit-sample.json").exists())
-        self.assertIn("No Partner Center operation", (out / "summary.md").read_text())
+        self.assertIn("No Partner Center operation", (out / "summary.md").read_text(encoding="utf-8"))
 
     def test_23_manifest_version_enforced(self):
         with self.assertRaises(ValueError):

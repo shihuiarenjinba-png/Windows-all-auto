@@ -12,8 +12,15 @@ import re
 REQUEST = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{3,127}$")
 BRANCH = re.compile(r"^codex/[A-Za-z0-9._/-]+$")
 SHA40 = re.compile(r"^[0-9a-f]{40}$")
+SHA64 = re.compile(r"^[0-9a-f]{64}$")
 STORE = re.compile(r"^[A-Za-z0-9]{8,32}$")
-LANES = {"app": ("APP", "AI-App-Factory"), "game": ("GAME", "AI-Game-Factory")}
+PFN = re.compile(r"^[A-Za-z0-9._-]+_[a-z0-9]{13}$")
+PACKAGE_SID = re.compile(r"^S-1-15-2(?:-\d+){7}$")
+LANES = {
+    "app": ("APP", "AI-App-Factory", "https://github.com/shihuiarenjinba-png/AI-App-Factory"),
+    "game": ("GAME", "AI-Game-Factory", "https://github.com/shihuiarenjinba-png/AI-Game-Factory"),
+    "3d-game": ("GAME_3D", "3d-game-factory", "shihuiarenjinba-png/3d-game-factory"),
+}
 IMMUTABLE = ("request_id", "product_type", "source_factory",
              "source_repository", "source_branch", "source_sha", "slug")
 
@@ -29,15 +36,15 @@ def validate_immutable(data: dict, kind: str) -> dict:
     present = any(key in data for key in
                   ("request_id", "product_type", "source_factory", "source_branch",
                    "expected_head_sha", "factory_head_sha", "store_id"))
-    if not present:
+    if not present and kind != "3d-game":
         return {"contract_status": "LEGACY_HOLD"}
-    product_type, factory = LANES[kind]
+    product_type, factory, repository = LANES[kind]
     for field in IMMUTABLE:
         if not isinstance(data.get(field), str) or not data[field]:
             raise ValueError("HANDOFF_HOLD: incomplete immutable key " + field)
     if data["product_type"] != product_type or data["source_factory"] != factory:
         raise ValueError("HANDOFF_HOLD: APP/GAME lane collision")
-    if data["source_repository"] != "https://github.com/shihuiarenjinba-png/" + factory:
+    if data["source_repository"] != repository:
         raise ValueError("HANDOFF_HOLD: source repository/factory mismatch")
     if not REQUEST.fullmatch(data["request_id"]):
         raise ValueError("HANDOFF_HOLD: invalid request_id")
@@ -46,11 +53,21 @@ def validate_immutable(data: dict, kind: str) -> dict:
         raise ValueError("HANDOFF_HOLD: invalid codex source branch")
     if not SHA40.fullmatch(data["source_sha"]) or data.get("expected_head_sha") != data["source_sha"]:
         raise ValueError("HANDOFF_HOLD: immutable source SHA / expected HEAD mismatch")
-    head = data.get("factory_head_sha", data["source_sha"])
+    head_field = "factory_build_head" if kind == "3d-game" else "factory_head_sha"
+    head = data.get(head_field, data["source_sha"])
     if not isinstance(head, str) or not SHA40.fullmatch(head):
         raise ValueError("HANDOFF_HOLD: invalid Factory MSIX build HEAD")
-    if not isinstance(data.get("store_id"), str) or not STORE.fullmatch(data["store_id"]):
+    identity = data.get("identity") if isinstance(data.get("identity"), dict) else {}
+    store_id = identity.get("store_id") if kind == "3d-game" else data.get("store_id")
+    if not isinstance(store_id, str) or not STORE.fullmatch(store_id):
         raise ValueError("HANDOFF_HOLD: missing claimed official Store ID")
+    if kind == "3d-game":
+        if not isinstance(data.get("local_package_sha256"), str) or not SHA64.fullmatch(data["local_package_sha256"]):
+            raise ValueError("HANDOFF_HOLD: invalid 3D local package provenance")
+        if not isinstance(identity.get("package_family_name"), str) or not PFN.fullmatch(identity["package_family_name"]):
+            raise ValueError("HANDOFF_HOLD: missing 3D package family name")
+        if not isinstance(identity.get("package_sid"), str) or not PACKAGE_SID.fullmatch(identity["package_sid"]):
+            raise ValueError("HANDOFF_HOLD: missing 3D package SID")
     if data.get("signature_status") not in (None, "UNSIGNED"):
         raise ValueError("HANDOFF_HOLD: unsupported signing claim in unsigned QA transfer")
     return {
@@ -60,8 +77,9 @@ def validate_immutable(data: dict, kind: str) -> dict:
         "source_factory": factory,
         "source_branch": branch,
         "expected_head_sha": data["source_sha"],
-        "factory_head_sha": head,
-        "claimed_store_id": data["store_id"],
+        head_field: head,
+        "claimed_store_id": store_id,
+        **({"local_package_sha256": data["local_package_sha256"]} if kind == "3d-game" else {}),
     }
 
 
@@ -70,7 +88,7 @@ def relative_package_path(info: dict) -> Path:
     folder = info["slug"] + "-" + info["package_sha256"][:12]
     if info.get("contract_status") == "IMMUTABLE_QA_ONLY" or info.get("request_id"):
         kind = info.get("product_type")
-        if kind not in ("APP", "GAME"):
+        if kind not in ("APP", "GAME", "GAME_3D"):
             raise ValueError("HANDOFF_HOLD: invalid local QA lane")
         return Path(kind) / folder
     return Path(folder)

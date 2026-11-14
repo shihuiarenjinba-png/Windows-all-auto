@@ -8,13 +8,22 @@ from all_auto.identity_commit import stage_and_commit
 
 RECORD={
  "schema_version":1, "type":"3d-game",
+ "request_id":"3d-request-0001","product_type":"GAME_3D",
+ "source_factory":"3d-game-factory",
+ "source_repository":"shihuiarenjinba-png/3d-game-factory",
+ "source_branch":"codex/3d-real-msix-build-path-20261027","source_sha":"c"*40,
  "slug":"experimental-3d-1",
  "expected_head_sha":"c"*40,
+ "package_sha256":"e"*64,
+ "package_family_name":"OkinawaDesktopTools.Experiment3D_abcdefghijklm",
+ "package_sid":"S-1-15-2-1-2-3-4-5-6-7","signature_status":"NOTSIGNED",
  "operator_verified":True,"verified_by":"operator-confirmed",
  "official_evidence_url":"https://partner.microsoft.com/en-us/dashboard/apps-and-games/overview",
  "identity":{
    "store_id":"9PTEST3D0001","name":"OkinawaDesktopTools.Experiment3D",
-   "publisher":"CN=verified-publisher","version":"1.0.0.0"
+   "publisher":"CN=verified-publisher","version":"1.0.0.0",
+   "package_family_name":"OkinawaDesktopTools.Experiment3D_abcdefghijklm",
+   "package_sid":"S-1-15-2-1-2-3-4-5-6-7"
  }
 }
 class Test3DIdentityReturn(unittest.TestCase):
@@ -23,7 +32,7 @@ class Test3DIdentityReturn(unittest.TestCase):
         self.calls=[]
     def api(self,path,body=None,allow_missing=False):
         self.calls.append(path)
-        if path.endswith("/git/ref/heads/codex/3d-provisioner-job-contract-20261027"):
+        if path.endswith("/git/ref/heads/codex/3d-real-msix-build-path-20261027"):
             return {"object":{"sha":"c"*40}}
         if "project.godot?ref=" in path:
             return {"encoding":"base64","content":base64.b64encode(
@@ -36,13 +45,14 @@ class Test3DIdentityReturn(unittest.TestCase):
             self.assertEqual(inp["branch"]["repositoryNameWithOwner"],
                 "shihuiarenjinba-png/3d-game-factory")
             self.assertEqual(inp["branch"]["branchName"],
-                "codex/3d-provisioner-job-contract-20261027")
+                "codex/3d-real-msix-build-path-20261027")
             self.assertEqual(inp["expectedHeadOid"],"c"*40)
             addition=inp["fileChanges"]["additions"][0]
             self.assertEqual(addition["path"],
                 "products/experimental-3d-1/store/approved-identity.json")
             meta=json.loads(base64.b64decode(addition["contents"]))
             self.assertEqual(meta["store_id"],RECORD["identity"]["store_id"])
+            self.assertEqual(meta["verified_source_sha"],"c"*40)
             return {"data":{"createCommitOnBranch":{"commit":{
                 "oid":"d"*40,"url":"https://github.com/example/commit"}}}}
         raise AssertionError("unexpected API request "+path)
