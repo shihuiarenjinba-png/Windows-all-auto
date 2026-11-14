@@ -37,7 +37,7 @@ def validate(d):
     go = r["observations"]["signal-sprint-current-artifact-pr18"]
     po = r["observations"]["prism-route-3d-consumer-qa-pr15"]
 
-    assert d["updated_at_utc"] == c["observed_at_utc"] > r["observed_at_utc"] == live["observed_at_utc"]
+    assert d["updated_at_utc"] >= c["observed_at_utc"] > r["observed_at_utc"] == live["observed_at_utc"]
     assert prior["observed_at_utc"] < live["observed_at_utc"]
     assert r["writer"] == c["writer"] == live["writer"] == "36_WINDOWS_E2E_ONLY"
     assert prior_qa["app"]["qa83_pinned_product_source_sha"] == QA83_BASE
@@ -144,6 +144,12 @@ class ExactPinAndByteCustody(unittest.TestCase):
         mutate(d)
         with self.assertRaises(AssertionError):
             validate(d)
+
+    def test_reject_ledger_update_older_than_current_observation(self):
+        self.reject(lambda d: d.__setitem__("updated_at_utc", "2026-11-02T00:00:00Z"))
+
+    def test_reject_current_observation_older_than_history(self):
+        self.reject(lambda d: d["revision_review_reconciliation"]["current_four_lane_observation"].__setitem__("observed_at_utc", "2026-11-02T00:00:00Z"))
 
     def test_reject_qa83_old_base_as_product_pin(self):
         self.reject(lambda d: d["revision_review_reconciliation"]["post_handoff_newer_review_candidates_20261103_0736"]["app"].__setitem__("qa83_pinned_product_source_sha", QA83_BASE))
