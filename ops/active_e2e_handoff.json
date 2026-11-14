@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-14T01:39:33Z",
+  "updated_at_utc": "2026-11-14T07:38:10Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -11177,6 +11177,24 @@
         "checker_gui": "NOT_VERIFIED",
         "local_receipt": "NOT_VERIFIED"
       }
-    ]
+    ],
+    "latest_head_ci_observation": {
+      "observed_at_jst": "2026-11-14 16:38",
+      "head_sha": "fd8609bd6f498772a68f4831073fa7cf779db930",
+      "workflow_runs": [
+        {
+          "run_id": 43567516984,
+          "conclusion": "success"
+        },
+        {
+          "run_id": 43567516922,
+          "conclusion": "success"
+        }
+      ],
+      "scope": "GitHub exact-head CI; not real MSIX transport or physical E2E",
+      "pr161_head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
+      "blocker": "APP approved identity/source/request present but package Version unapproved; real MSIX/backlog/local checker GUI and receipts absent",
+      "status": "HOLD"
+    }
   }
 }
