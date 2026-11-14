@@ -15,7 +15,11 @@ OWNER="shihuiarenjinba-png"
 SLUG=re.compile(r"^[a-z][a-z0-9-]{3,39}$")
 SHA40=re.compile(r"^[a-f0-9]{40}$")
 SHA64=re.compile(r"^[a-f0-9]{64}$")
-REPO=re.compile(r"^https://github\.com/shihuiarenjinba-png/(AI-App-Factory|AI-Game-Factory|3d-game-factory)$")
+REPOSITORY_KINDS={
+    "https://github.com/shihuiarenjinba-png/AI-App-Factory":"app",
+    "https://github.com/shihuiarenjinba-png/AI-Game-Factory":"game",
+    "shihuiarenjinba-png/3d-game-factory":"3d-game",
+}
 MAX_BYTES=300*1024*1024
 REQUIRED={"handoff.json","package.msix"}
 
@@ -106,14 +110,10 @@ def validate_bundle(directory:Path,expected_run_sha:str|None=None)->dict:
         fail("wrong schema")
     repo=data.get("source_repository")
     kind=data.get("type")
-    if not isinstance(repo,str) or not REPO.fullmatch(repo):
+    if not isinstance(repo,str) or repo not in REPOSITORY_KINDS:
         fail("untrusted source repository")
     # The 3D lane is distinct from the ordinary game lane all the way to QA.
-    expected_kind={
-        "AI-App-Factory":"app",
-        "AI-Game-Factory":"game",
-        "3d-game-factory":"3d-game",
-    }[repo.rsplit("/",1)[-1]]
+    expected_kind=REPOSITORY_KINDS[repo]
     if kind!=expected_kind: fail("source factory / product type mismatch")
     slug=data.get("slug")
     if not isinstance(slug,str) or not SLUG.fullmatch(slug):
@@ -145,7 +145,9 @@ def validate_bundle(directory:Path,expected_run_sha:str|None=None)->dict:
                 or not isinstance(data.get("prebuilt_exe_sha256"),str)
                 or not SHA64.fullmatch(data["prebuilt_exe_sha256"])):
             fail("APP Identity-return provenance fields missing")
-    if expected_run_sha is not None and (factory_head or sha)!=expected_run_sha:
+    immutable=validate_immutable(data,kind)
+    build_head=immutable.get("factory_build_head",factory_head or sha)
+    if expected_run_sha is not None and build_head!=expected_run_sha:
         fail("artifact provenance / Actions head SHA mismatch")
     if data.get("package")!="package.msix" or data.get("status")!="QA_UNSIGNED":
         fail("no approved package handoff state")
@@ -180,7 +182,7 @@ def validate_bundle(directory:Path,expected_run_sha:str|None=None)->dict:
             "prebuilt_exe_sha256":data["prebuilt_exe_sha256"],
             "claimed_store_id":data["store_id"],
         })
-    result.update(validate_immutable(data,kind))
+    result.update(immutable)
     return result
 
 def stage_bundle(source:Path,target:Path,expected_run_sha:str|None=None)->dict:

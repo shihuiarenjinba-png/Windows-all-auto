@@ -5,7 +5,13 @@ import unittest
 from all_auto.identity_commit import stage_and_commit
 
 EXAMPLE={
-    "schema_version":1,"type":"app","slug":"verified-tool",
+    "schema_version":1,"type":"app","request_id":"app-request-0001",
+    "product_type":"APP","source_factory":"AI-App-Factory",
+    "source_repository":"shihuiarenjinba-png/AI-App-Factory",
+    "source_branch":"codex/factory-autoloop-20261026","source_sha":"a"*40,
+    "slug":"verified-tool","package_sha256":"c"*64,
+    "package_family_name":"OkinawaDesktopTools.VerifiedTool_abcdefghijklm",
+    "package_sid":"S-1-15-2-1-2-3-4-5-6-7","signature_status":"NOTSIGNED",
     "expected_head_sha":"a"*40,"operator_verified":True,
     "verified_by":"authenticated-operator",
     "official_evidence_url":"https://partner.microsoft.com/en-us/dashboard/apps-and-games/overview",
@@ -14,6 +20,8 @@ EXAMPLE={
         "name":"OkinawaDesktopTools.VerifiedTool",
         "publisher":"CN=verified-publisher",
         "version":"1.0.0.0",
+        "package_family_name":"OkinawaDesktopTools.VerifiedTool_abcdefghijklm",
+        "package_sid":"S-1-15-2-1-2-3-4-5-6-7",
     }
 }
 class IdentityCommitTests(unittest.TestCase):
@@ -39,6 +47,8 @@ class IdentityCommitTests(unittest.TestCase):
             self.assertEqual(addition["path"],"products/verified-tool/store/approved-identity.json")
             data=json.loads(base64.b64decode(addition["contents"]))
             self.assertEqual(data["store_id"],self.record["identity"]["store_id"])
+            self.assertEqual(data["verified_source_sha"],"a"*40)
+            self.assertEqual(data["package_sha256"],"c"*64)
             return {"data":{"createCommitOnBranch":{
                 "commit":{"oid":"b"*40,"url":"https://github.com/example/commit"}}}}
         raise AssertionError("Unanticipated GitHub API request")
