@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-14T12:33:00Z",
+  "updated_at_utc": "2026-11-14T14:34:00Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -11179,24 +11179,24 @@
       }
     ],
     "latest_head_ci_observation": {
-      "observed_at_jst": "2026-11-14 21:33",
-      "head_sha": "e46c0cf9a2fba161da7f764ccb774eb8a23bdabf",
+      "observed_at_jst": "2026-11-14 23:34",
+      "head_sha": "331c5f0bc567e153a0cdd1272ec7c9ae541b4201",
       "workflow_runs": [
         {
-          "run_id": 43590590624,
+          "run_id": 43595503305,
           "conclusion": "success",
           "scope": "GitHub artifact custody fail-closed regression"
         },
         {
-          "run_id": 43590590641,
+          "run_id": 43595503307,
           "conclusion": "success",
           "scope": "Windows-all-auto Offline QA"
         }
       ],
       "pr161_head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
-      "scope": "exact-head CI only; synthetic regression, not real MSIX or physical E2E",
+      "scope": "exact-head synthetic CI only, not real MSIX/backlog/local checker/GUI",
       "status": "HOLD",
-      "blocker": "Focus/File Integrity approved package Version absent; real MSIX, GitHub backlog, local SHA receipt and checker/GUI unverified"
+      "blocker": "Focus/File Integrity approved package Version absent; real MSIX, GitHub backlog, local SHA receipt, checker/GUI not verified"
     }
   }
 }
