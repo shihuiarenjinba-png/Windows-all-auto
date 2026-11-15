@@ -7,8 +7,10 @@
     "schema_version", "run_id", "request_id", "product_type",
     "source_repository", "source_branch", "source_sha", "artifact_sha256",
     "test_suite_version", "status", "collection", "collection_complete",
-    "local_persistence_verified", "github_return", "e2e_pass",
-    "store_submission_allowed"
+    "local_persistence_verified", "github_return",
+    "evidence_return_e2e_pass", "product_e2e_pass",
+    "product_e2e_requirements", "e2e_pass", "release_ready",
+    "store_submission_allowed", "user_product_approval", "user_price_approval"
   ],
   "properties": {
     "schema_version": { "const": "local-qa-evidence-v1" },
@@ -20,8 +22,34 @@
     "status": { "enum": ["TEST_PASS", "TEST_FAIL", "INTERRUPTED_RESTART"] },
     "collection_complete": { "type": "boolean" },
     "local_persistence_verified": { "type": "boolean" },
-    "e2e_pass": { "type": "boolean" },
+    "evidence_return_e2e_pass": { "type": "boolean" },
+    "product_e2e_pass": { "const": false },
+    "product_e2e_requirements": {
+      "type": "object",
+      "required": [
+        "product_specific_tests", "physical_gui_qa", "package_qa",
+        "identity_correlation", "version_correlation",
+        "artifact_package_sha_correlation", "product_specific_regression"
+      ],
+      "properties": {
+        "product_specific_tests": { "const": false },
+        "physical_gui_qa": { "const": false },
+        "package_qa": { "const": false },
+        "identity_correlation": { "const": false },
+        "version_correlation": { "const": false },
+        "artifact_package_sha_correlation": { "const": false },
+        "product_specific_regression": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "e2e_pass": {
+      "const": false,
+      "description": "Deprecated product-E2E compatibility field; fail-closed."
+    },
+    "release_ready": { "const": false },
     "store_submission_allowed": { "const": false },
+    "user_product_approval": { "const": false },
+    "user_price_approval": { "const": false },
     "github_return": {
       "type": "object",
       "required": ["status", "readback_verified"],
@@ -34,7 +62,7 @@
   },
   "allOf": [
     {
-      "if": { "properties": { "e2e_pass": { "const": true } } },
+      "if": { "properties": { "evidence_return_e2e_pass": { "const": true } } },
       "then": {
         "properties": {
           "status": { "const": "TEST_PASS" },

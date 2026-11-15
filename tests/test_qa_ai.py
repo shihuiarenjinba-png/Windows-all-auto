@@ -41,7 +41,11 @@ def valid_analysis(evidence: str, *, classification: str = "UNKNOWN",
         "suggested_fix_area": "Product or QA integration boundary",
         "regression_tests": ["Repeat the same sanitized test case"],
         "agent_dispatch_status": "AGENT_DISPATCH_PENDING",
-        "e2e_pass_authority": False, "store_submission_allowed": False,
+        "e2e_pass_authority": False,
+        "evidence_return_e2e_pass_authority": False,
+        "product_e2e_pass_authority": False,
+        "release_ready_authority": False,
+        "store_submission_allowed": False,
     }
 
 
@@ -84,7 +88,14 @@ class AnalysisSafetyTests(unittest.TestCase):
                     context=CONTEXT, evidence="ambiguous crash", force_model=True)
                 self.assertEqual(outcome.status, "AI_ANALYSIS_UNAVAILABLE")
                 self.assertIsNone(outcome.analysis)
-                self.assertFalse(outcome.as_dict()["authoritative_test_result_changed"])
+                status = outcome.as_dict()
+                self.assertFalse(status["authoritative_test_result_changed"])
+                for field in ("e2e_pass_authority",
+                              "evidence_return_e2e_pass_authority",
+                              "product_e2e_pass_authority",
+                              "release_ready_authority",
+                              "store_submission_allowed"):
+                    self.assertFalse(status[field])
 
     def test_empty_model_response_is_rejected(self):
         outcome = AnalysisEngine(client=StaticClient("")).analyze(
@@ -120,9 +131,15 @@ class AnalysisSafetyTests(unittest.TestCase):
     def test_ai_cannot_claim_e2e_or_store_authority(self):
         value = valid_analysis("evidence")
         value["e2e_pass_authority"] = True
+        value["evidence_return_e2e_pass_authority"] = True
+        value["product_e2e_pass_authority"] = True
+        value["release_ready_authority"] = True
         value["store_submission_allowed"] = True
         errors = validate_analysis(value, context=CONTEXT, evidence_text="evidence")
         self.assertIn("AI cannot have E2E authority", errors)
+        self.assertIn("AI cannot have evidence-return E2E authority", errors)
+        self.assertIn("AI cannot have product E2E authority", errors)
+        self.assertIn("AI cannot have release authority", errors)
         self.assertIn("AI cannot allow Store submission", errors)
 
 
@@ -221,9 +238,16 @@ class EvidenceIntegrationTests(unittest.TestCase):
                       {item["path"] for item in envelope["payload"]["files"]})
         queued = json.loads(next(self.store.queue.glob("*.json")).read_text())
         self.assertEqual(queued["payload_sha256"], envelope["payload_sha256"])
-        self.assertFalse(json.loads(manifest_before)["e2e_pass"])
+        before = json.loads(manifest_before)
+        self.assertFalse(before["evidence_return_e2e_pass"])
+        self.assertFalse(before["product_e2e_pass"])
+        self.assertFalse(before["e2e_pass"])
         self.assertEqual(process_retry_queue(self.store, AckTransport())["verified"], 1)
-        self.assertTrue(json.loads((result.run_directory / "manifest.json").read_text())["e2e_pass"])
+        after = json.loads((result.run_directory / "manifest.json").read_text())
+        self.assertTrue(after["evidence_return_e2e_pass"])
+        self.assertFalse(after["product_e2e_pass"])
+        self.assertFalse(after["e2e_pass"])
+        self.assertFalse(after["store_submission_allowed"])
 
     def test_ollama_failure_keeps_evidence_and_retry_queue(self):
         result = self.execute_run()
@@ -236,6 +260,8 @@ class EvidenceIntegrationTests(unittest.TestCase):
         self.assertTrue(list(self.store.queue.glob("*.json")))
         manifest = json.loads((result.run_directory / "manifest.json").read_text())
         self.assertEqual(manifest["status"], "TEST_PASS")
+        self.assertFalse(manifest["evidence_return_e2e_pass"])
+        self.assertFalse(manifest["product_e2e_pass"])
         self.assertFalse(manifest["e2e_pass"])
 
     def test_ai_receives_redacted_envelope_not_secret_raw_log(self):
