@@ -6,7 +6,9 @@ import unittest
 import zipfile
 from pathlib import Path
 from scripts.github_artifact_custody import verify_custody
-from tests.test_real_msix_transport_failclosed import authorize_transport
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from test_real_msix_transport_failclosed import authorize_transport
 
 class CustodyTests(unittest.TestCase):
     def setUp(self):
