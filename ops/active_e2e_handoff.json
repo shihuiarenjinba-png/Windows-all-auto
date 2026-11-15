@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-14T16:36:00Z",
+  "updated_at_utc": "2026-11-15T04:36:31Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -11127,19 +11127,24 @@
     }
   },
   "windows_e2e_custody_reconciliation": {
-    "checked_at_utc": "2026-11-14T06:40:05Z",
+    "checked_at_utc": "2026-11-15T04:36:31Z",
     "status": "HOLD",
     "pr161_head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
     "pr164_head_sha": "145cd1f44bdec9e584eb0f045dd139ef330c6321",
-    "pr165_tested_head_sha": "fd1a7918c562cee3ce99239c93ab9bbc206922ba",
+    "pr165_tested_head_sha": "4e04adb44d796ba7c629fab782ec32054d8bc885",
     "pr165_ci": [
       {
-        "run_id": 43557686198,
+        "run_id": 43663685958,
         "conclusion": "success",
-        "scope": "synthetic artifact custody regression exact-head"
+        "scope": "synthetic artifact custody exact-head"
       },
       {
-        "run_id": 43557686203,
+        "run_id": 43663685889,
+        "conclusion": "success",
+        "scope": "synthetic transport fail-closed exact-head"
+      },
+      {
+        "run_id": 43663685896,
         "conclusion": "success",
         "scope": "offline QA exact-head"
       }
@@ -11179,25 +11184,30 @@
       }
     ],
     "latest_head_ci_observation": {
-      "observed_at_jst": "2026-11-15 01:36",
-      "head_sha": "cdb0d2ee9db6412fc00bfbbdb3b021b763a39f71",
+      "observed_at_jst": "2026-11-15 13:36",
+      "head_sha": "4e04adb44d796ba7c629fab782ec32054d8bc885",
       "workflow_runs": [
         {
-          "run_id": 43611452048,
+          "run_id": 43663685958,
           "conclusion": "success",
-          "scope": "GitHub artifact custody fail-closed regression (synthetic)"
+          "scope": "synthetic artifact custody exact-head"
         },
         {
-          "run_id": 43611452064,
+          "run_id": 43663685889,
           "conclusion": "success",
-          "scope": "Windows-all-auto Offline QA"
+          "scope": "synthetic transport fail-closed exact-head"
+        },
+        {
+          "run_id": 43663685896,
+          "conclusion": "success",
+          "scope": "offline QA exact-head"
         }
       ],
       "pr161_head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
-      "scope": "exact-head CI only; real MSIX/backlog/local checker/GUI not evidenced",
+      "scope": "Synthetic CI only; no real package or physical Windows execution",
       "status": "HOLD",
-      "blocker": "Focus/File Integrity approved Package Version absent; real MSIX, backlog, local SHA receipt and checker/GUI not verified",
-      "implementation_status": "REAL_PACKAGE_TRANSPORT_NOT_IMPLEMENTED_OR_VERIFIED_IN_THIS_RUN"
+      "blocker": "Focus/File Integrity approved Version absent; real MSIX/backlog/local SHA/checker/GUI unverified",
+      "implementation_status": "SYNTHETIC_CUSTODY_TRANSPORT_REGRESSION_GREEN__REAL_PACKAGE_TRANSPORT_NOT_VERIFIED"
     }
   }
 }
