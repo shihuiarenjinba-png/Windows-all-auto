@@ -24,7 +24,9 @@ REQUIRED_KEYS = {
     "classification", "failure_class", "severity", "observed", "inference",
     "unknown", "missing_evidence", "recommended_owner", "recommended_action",
     "suggested_fix_area", "regression_tests", "agent_dispatch_status",
-    "e2e_pass_authority", "store_submission_allowed",
+    "e2e_pass_authority", "evidence_return_e2e_pass_authority",
+    "product_e2e_pass_authority", "release_ready_authority",
+    "store_submission_allowed",
 }
 SHA40 = re.compile(r"^[0-9a-f]{40}$")
 
@@ -63,6 +65,9 @@ def json_schema() -> dict[str, Any]:
             "regression_tests": string_array,
             "agent_dispatch_status": {"const": "AGENT_DISPATCH_PENDING"},
             "e2e_pass_authority": {"const": False},
+            "evidence_return_e2e_pass_authority": {"const": False},
+            "product_e2e_pass_authority": {"const": False},
+            "release_ready_authority": {"const": False},
             "store_submission_allowed": {"const": False},
         },
     }
@@ -99,6 +104,12 @@ def validate_analysis(value: Any, *, context: dict[str, str], evidence_text: str
         errors.append("agent dispatch authority violation")
     if value.get("e2e_pass_authority") is not False:
         errors.append("AI cannot have E2E authority")
+    if value.get("evidence_return_e2e_pass_authority") is not False:
+        errors.append("AI cannot have evidence-return E2E authority")
+    if value.get("product_e2e_pass_authority") is not False:
+        errors.append("AI cannot have product E2E authority")
+    if value.get("release_ready_authority") is not False:
+        errors.append("AI cannot have release authority")
     if value.get("store_submission_allowed") is not False:
         errors.append("AI cannot allow Store submission")
     observed = value.get("observed")

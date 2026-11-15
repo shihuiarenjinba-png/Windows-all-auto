@@ -182,6 +182,8 @@ class RunResult:
     status: str
     exit_code: int | None
     timed_out: bool
+    evidence_return_e2e_pass: bool
+    product_e2e_pass: bool
     e2e_pass: bool
 
 
@@ -241,7 +243,11 @@ class EvidenceStore:
             "started_at_utc": utc_now(), "finished_at_utc": None,
             "job": job, "command": command, "expected": expected,
             "job_key": job_key,
-            "gui_test": bool(gui_test), "e2e_pass": False,
+            "gui_test": bool(gui_test),
+            "evidence_return_e2e_pass": False,
+            "product_e2e_pass": False, "e2e_pass": False,
+            "release_ready": False, "store_submission_allowed": False,
+            "user_product_approval": False, "user_price_approval": False,
             "github_return": {"status": "NOT_ATTEMPTED", "readback_verified": False},
         }
         try:
@@ -324,7 +330,11 @@ class EvidenceStore:
                 continue
             folder = state_path.parent
             state.update({"state": "INTERRUPTED_RESTART", "finished_at_utc": utc_now(),
-                          "e2e_pass": False, "exit_code": None, "timed_out": False,
+                          "evidence_return_e2e_pass": False,
+                          "product_e2e_pass": False, "e2e_pass": False,
+                          "release_ready": False, "store_submission_allowed": False,
+                          "user_product_approval": False, "user_price_approval": False,
+                          "exit_code": None, "timed_out": False,
                           "failure_reason": "PROCESS_OR_PC_RESTARTED_BEFORE_FINALIZATION"})
             atomic_json(state_path, state)
             append_jsonl(folder / "journal.jsonl", {
@@ -460,7 +470,11 @@ class EvidenceStore:
             timed_out=timed_out, failure_reason=failure_reason,
             stdout=stdout_observation, stderr=stderr_observation,
             actual={"exit_code": exit_code, "timed_out": timed_out,
-                    "process_started": process is not None}, e2e_pass=False,
+                    "process_started": process is not None},
+            evidence_return_e2e_pass=False, product_e2e_pass=False,
+            e2e_pass=False, release_ready=False,
+            store_submission_allowed=False, user_product_approval=False,
+            user_price_approval=False,
         )
         append_jsonl(folder / "journal.jsonl", {
             "at": utc_now(), "event": "PROCESS_FINISHED", "status": status,
@@ -472,7 +486,8 @@ class EvidenceStore:
                            event_log_error=event_error)
         finally:
             self._release_job_lock(state)
-        return RunResult(run_id, folder, status, exit_code, timed_out, False)
+        return RunResult(run_id, folder, status, exit_code, timed_out,
+                         False, False, False)
 
     def _collect_event_log(self, folder: Path, started: str, finished: str,
                            collector: Callable[[str, str], str] | None) -> tuple[str, str | None]:
@@ -566,7 +581,22 @@ class EvidenceStore:
                 "target_repository": FACTORY_ROUTES[state["job"]["product_type"]],
                 "reason": "No verified automatic development-agent dispatch contract is configured",
             },
-            "e2e_pass": False, "store_submission_allowed": False,
+            "evidence_return_e2e_pass": False,
+            "product_e2e_pass": False,
+            "product_e2e_requirements": {
+                "product_specific_tests": False,
+                "physical_gui_qa": False,
+                "package_qa": False,
+                "identity_correlation": False,
+                "version_correlation": False,
+                "artifact_package_sha_correlation": False,
+                "product_specific_regression": False,
+            },
+            "e2e_pass": False,
+            "release_ready": False,
+            "store_submission_allowed": False,
+            "user_product_approval": False,
+            "user_price_approval": False,
         }
         atomic_json(folder / "manifest.json", manifest)
         persisted = json.loads((folder / "manifest.json").read_text(encoding="utf-8"))
@@ -839,20 +869,34 @@ def process_retry_queue(store: EvidenceStore, transport: Any, *,
                 run_folder = store._run_path(item["run_id"])
                 state = json.loads((run_folder / "state.json").read_text(encoding="utf-8"))
                 manifest = json.loads((run_folder / "manifest.json").read_text(encoding="utf-8"))
-                e2e = (state.get("state") == "TEST_PASS" and
-                       manifest.get("collection_complete") is True and
-                       manifest.get("local_persistence_verified") is True)
+                evidence_return_e2e = (
+                    state.get("state") == "TEST_PASS" and
+                    manifest.get("collection_complete") is True and
+                    manifest.get("local_persistence_verified") is True)
                 state["github_return"] = acknowledgement
                 state["github_return"]["readback_verified"] = True
-                state["e2e_pass"] = e2e
+                state["evidence_return_e2e_pass"] = evidence_return_e2e
+                state["product_e2e_pass"] = False
+                state["e2e_pass"] = False
+                state["release_ready"] = False
+                state["store_submission_allowed"] = False
+                state["user_product_approval"] = False
+                state["user_price_approval"] = False
                 manifest["github_return"] = state["github_return"]
-                manifest["e2e_pass"] = e2e
+                manifest["evidence_return_e2e_pass"] = evidence_return_e2e
+                manifest["product_e2e_pass"] = False
+                manifest["e2e_pass"] = False
+                manifest["release_ready"] = False
                 manifest["store_submission_allowed"] = False
+                manifest["user_product_approval"] = False
+                manifest["user_price_approval"] = False
                 atomic_json(run_folder / "state.json", state)
                 atomic_json(run_folder / "manifest.json", manifest)
                 append_jsonl(run_folder / "journal.jsonl", {
                     "at": utc_now(), "event": "GITHUB_READBACK_VERIFIED",
-                    "payload_sha256": item["payload_sha256"], "e2e_pass": e2e})
+                    "payload_sha256": item["payload_sha256"],
+                    "evidence_return_e2e_pass": evidence_return_e2e,
+                    "product_e2e_pass": False, "e2e_pass": False})
                 item_path.unlink()
                 verified += 1
             except (GitHubReturnError, OSError, json.JSONDecodeError) as exc:

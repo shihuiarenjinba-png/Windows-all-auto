@@ -83,6 +83,9 @@ def main(argv=None) -> int:
                         "route_level": 2, "metrics": {},
                         "authoritative_test_result_changed": False,
                         "e2e_pass_authority": False,
+                        "evidence_return_e2e_pass_authority": False,
+                        "product_e2e_pass_authority": False,
+                        "release_ready_authority": False,
                         "store_submission_allowed": False,
                     })
                 except Exception:
@@ -98,12 +101,22 @@ def main(argv=None) -> int:
                   "run_id": result.run_id if result else None,
                   "test_status": result.status if result else None,
                   "ai_analysis_status": ai_status,
-                  "e2e_pass": False}
+                  "evidence_return_e2e_pass": False,
+                  "product_e2e_pass": False,
+                  "e2e_pass": False,
+                  "release_ready": False,
+                  "store_submission_allowed": False,
+                  "user_product_approval": False,
+                  "user_price_approval": False}
         if result:
             manifest = json.loads((result.run_directory / "manifest.json").read_text(encoding="utf-8"))
-            output["e2e_pass"] = bool(manifest.get("e2e_pass"))
+            for field in ("evidence_return_e2e_pass", "product_e2e_pass",
+                          "e2e_pass", "release_ready", "store_submission_allowed",
+                          "user_product_approval", "user_price_approval"):
+                output[field] = bool(manifest.get(field))
         print(json.dumps(output, ensure_ascii=False, indent=2))
-        return 0 if output["e2e_pass"] or args.retry_only and retry["failed"] == 0 else 2
+        return 0 if (output["evidence_return_e2e_pass"] or
+                     args.retry_only and retry["failed"] == 0) else 2
     except (OSError, ValueError, KeyError, TypeError, json.JSONDecodeError) as exc:
         print(str(exc)[:300], file=sys.stderr)
         return 2

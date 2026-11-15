@@ -4,9 +4,9 @@ This component extends the existing pull/checker path. It does not replace the
 00/12/24/36/48 GitHub rotations, `local_handoff_pull.py`, or
 `local_checker_queue.py`, and it never edits product source.
 
-## Hard E2E gate
+## Evidence-return E2E gate
 
-`E2E_PASS` is possible only when all of these are true for the same immutable
+`evidence_return_e2e_pass` is possible only when all of these are true for the same immutable
 `request_id` and `source_sha`:
 
 1. the test result is `TEST_PASS`;
@@ -18,8 +18,40 @@ This component extends the existing pull/checker path. It does not replace the
 5. GitHub content was downloaded again and its request ID, source SHA and
    `payload_sha256` matched.
 
-Store submission remains false even after E2E pass. Package, Identity, pricing,
-release review and user approval are separate gates.
+This means only that the evidence-return pipeline completed end to end. It is
+not a product E2E result. A successful `print("ok")` plus GitHub readback has:
+
+```text
+evidence_return_e2e_pass = true
+product_e2e_pass = false
+e2e_pass = false  # deprecated product-E2E compatibility field
+release_ready = false
+store_submission_allowed = false
+user_product_approval = false
+user_price_approval = false
+```
+
+This local evidence component has no authority to set `product_e2e_pass` true.
+Its manifest records product-specific tests, physical GUI QA, package QA,
+Identity, Version, artifact/package SHA correlation, and product regression as
+unverified. A separate product authority must verify every product gate before
+any future product-E2E promotion. Product E2E still would not imply Store
+submission, release readiness, product approval, or price approval.
+
+## Legacy `e2e_pass` consumer audit
+
+Repository-wide consumers were classified before this change:
+
+- `all_auto/local_qa_evidence.py`, its worker, schema, and tests previously used
+  `e2e_pass` for evidence-return completion. They now use
+  `evidence_return_e2e_pass`; their legacy field is retained as deprecated and
+  always false.
+- `ops/active_e2e_handoff.json` and its regression tests use `e2e_pass` for the
+  broader physical/product handoff. They remain unchanged and fail-closed.
+- `scripts/local_checker_queue.py` uses `e2e_pass` for the checker/product path,
+  not the evidence-return transport. It remains unchanged and false.
+
+No repository-wide product consumer is promoted from evidence return alone.
 
 ## Durable layout
 
@@ -32,7 +64,7 @@ runs/<run-id>/stdout.log / stderr.log    bounded process output
 runs/<run-id>/windows-event-log.xml      best-effort Application log
 runs/<run-id>/uia-actions.jsonl          GUI driver action/result history
 runs/<run-id>/screenshots/               local originals
-runs/<run-id>/manifest.json              final local result and E2E gate
+runs/<run-id>/manifest.json              evidence-return and fail-closed product gates
 runs/<run-id>/github-envelope.json       sanitized return payload
 runs/<run-id>/analysis/windows-qa-analysis.json optional derived analysis
 retry-queue/<run-id>.json                exponential-backoff retry state
@@ -48,7 +80,9 @@ Every missing item is reported as `UNAVAILABLE`,
 `UNAVAILABLE_PROCESS_RESTART`, or `UNAVAILABLE_PRIVACY_REVIEW`; it is never
 silently omitted. Text is redacted before return. A screenshot stays local
 unless the GUI driver/operator explicitly marks it privacy-reviewed and
-shareable. A GUI test without a shareable screenshot cannot become E2E pass.
+shareable. A GUI test without a shareable screenshot cannot make
+`evidence_return_e2e_pass` true. Even complete GUI evidence does not establish
+`product_e2e_pass` without the remaining product gates.
 
 ## Trusted job and profile
 
@@ -102,7 +136,10 @@ py -3 -m scripts.local_qa_evidence_worker `
 
 Optional local Ollama analysis is documented in
 [`OLLAMA_QA_ARCHITECTURE.md`](OLLAMA_QA_ARCHITECTURE.md). It reads only the
-sanitized envelope and cannot change the authoritative test or E2E result.
+sanitized envelope and cannot change the authoritative test, evidence-return
+E2E, or product E2E result.
+It has no authority over evidence-return E2E, product E2E, release, Store,
+Identity, Version, price, source SHA, or package SHA.
 
 Registration is opt-in. The script refuses to replace an existing task and
 uses the current user with limited privileges:
@@ -121,8 +158,9 @@ screenshots must not be placed in public repositories manually.
 `tests/test_local_qa_evidence.py` covers normal completion, non-zero exit,
 process start failure, timeout, transport outage, GitHub readback mismatch,
 restart recovery, Event Log denial, missing GUI evidence, secret/PII redaction,
-and a complete GUI evidence/readback path. These use synthetic programs and do
-not establish a real product E2E pass.
+and a complete GUI evidence/readback path. These use synthetic programs and can
+establish only evidence-return E2E; they do not establish a real product E2E
+pass.
 
 The manifest routes APP/GAME/GAME_3D back to the corresponding Factory, but the
 current repositories expose no verified development-agent dispatch contract.

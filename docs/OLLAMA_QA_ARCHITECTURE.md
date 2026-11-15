@@ -5,13 +5,14 @@
 Ollama is a local, optional, derived-analysis service. The Windows runner,
 durable evidence store, GitHub return/readback check, and existing E2E gate are
 authoritative. An AI response cannot change `TEST_PASS`, `TEST_FAIL`,
-`e2e_pass`, Store submission permission, Identity, Version, price, source code,
-or the trusted command/profile.
+`evidence_return_e2e_pass`, `product_e2e_pass`, deprecated `e2e_pass`,
+`release_ready`, Store submission permission, Identity, Version, price, source
+or package SHA, source code, or the trusted command/profile.
 
 If Ollama is missing, times out, returns empty or malformed JSON, violates the
 schema, invents an evidence excerpt, or cannot embed a query, the status is
 `AI_ANALYSIS_UNAVAILABLE`. Evidence return and ordinary QA continue. This is a
-fail-open-to-QA policy, not a fail-open-to-release policy.
+fail-open-to-QA policy, not a fail-open-to-product-E2E or release policy.
 
 ## Data flow
 

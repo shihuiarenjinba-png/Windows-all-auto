@@ -70,19 +70,31 @@ class DurableEvidenceTests(unittest.TestCase):
     def manifest(self, result):
         return json.loads((result.run_directory / "manifest.json").read_text(encoding="utf-8"))
 
-    def test_normal_exit_is_not_e2e_until_github_readback(self):
+    def assert_product_fail_closed(self, report):
+        self.assertFalse(report["product_e2e_pass"])
+        self.assertFalse(report["e2e_pass"])
+        self.assertFalse(report["release_ready"])
+        self.assertFalse(report["store_submission_allowed"])
+        self.assertFalse(report["user_product_approval"])
+        self.assertFalse(report["user_price_approval"])
+        self.assertTrue(report["product_e2e_requirements"])
+        self.assertFalse(any(report["product_e2e_requirements"].values()))
+
+    def test_normal_exit_is_not_evidence_return_e2e_until_github_readback(self):
         result = self.store.execute(
             self.job, self.command("print('ok')"), cwd=self.root,
             timeout_seconds=5, event_log_collector=self.events)
         before = self.manifest(result)
         self.assertEqual(before["status"], "TEST_PASS")
         self.assertTrue(before["collection_complete"])
+        self.assertFalse(before["evidence_return_e2e_pass"])
         self.assertFalse(before["e2e_pass"])
         outcome = process_retry_queue(self.store, AckTransport())
         self.assertEqual(outcome["verified"], 1)
         after = self.manifest(result)
         self.assertTrue(after["github_return"]["readback_verified"])
-        self.assertTrue(after["e2e_pass"])
+        self.assertTrue(after["evidence_return_e2e_pass"])
+        self.assert_product_fail_closed(after)
         self.assertEqual(after["factory_dispatch"]["status"], "AGENT_DISPATCH_PENDING")
         self.assertEqual((result.run_directory / "stdout.log").read_text().strip(), "ok")
 
@@ -98,6 +110,7 @@ class DurableEvidenceTests(unittest.TestCase):
         self.assertEqual(report["actual"]["exit_code"], 7)
         self.assertIn("before crash", (result.run_directory / "stdout.log").read_text())
         self.assertIn("boom", (result.run_directory / "stderr.log").read_text())
+        self.assertFalse(report["evidence_return_e2e_pass"])
         self.assertFalse(report["e2e_pass"])
 
     def test_process_start_failure_is_durable_and_marks_exit_code_unavailable(self):
@@ -153,7 +166,9 @@ class DurableEvidenceTests(unittest.TestCase):
             event_log_collector=self.events)
         outcome = process_retry_queue(self.store, MismatchTransport())
         self.assertEqual(outcome["failed"], 1)
-        self.assertFalse(self.manifest(result)["e2e_pass"])
+        report = self.manifest(result)
+        self.assertFalse(report["evidence_return_e2e_pass"])
+        self.assert_product_fail_closed(report)
 
     def test_same_request_with_changed_source_is_rejected(self):
         first = self.store.execute(
@@ -206,7 +221,7 @@ class DurableEvidenceTests(unittest.TestCase):
         self.assertTrue((recovered_store.queue / (run_id + ".json")).is_file())
         self.assertFalse(report["e2e_pass"])
 
-    def test_event_log_collection_failure_blocks_e2e_pass(self):
+    def test_event_log_collection_failure_blocks_evidence_return_e2e(self):
         def denied(_start, _finish):
             raise OSError("access denied")
         result = self.store.execute(
@@ -216,6 +231,7 @@ class DurableEvidenceTests(unittest.TestCase):
         report = self.manifest(result)
         self.assertEqual(report["collection"]["windows_event_log"], "UNAVAILABLE")
         self.assertFalse(report["collection_complete"])
+        self.assertFalse(report["evidence_return_e2e_pass"])
         self.assertFalse(report["e2e_pass"])
 
     def test_gui_requires_uia_and_privacy_reviewed_screenshot(self):
@@ -226,6 +242,7 @@ class DurableEvidenceTests(unittest.TestCase):
         report = self.manifest(result)
         self.assertEqual(report["collection"]["uia_actions"], "UNAVAILABLE")
         self.assertEqual(report["collection"]["screenshots"], "UNAVAILABLE")
+        self.assertFalse(report["evidence_return_e2e_pass"])
         self.assertFalse(report["e2e_pass"])
 
     def test_retention_never_removes_pending_evidence(self):
@@ -250,7 +267,7 @@ class DurableEvidenceTests(unittest.TestCase):
         self.assertEqual(outcome["deleted_runs"], 1)
         self.assertFalse(result.run_directory.exists())
 
-    def test_complete_gui_evidence_can_pass_only_after_readback(self):
+    def test_complete_gui_evidence_can_pass_evidence_return_only_after_readback(self):
         run_id, folder = self.store.start(
             self.job, ["trusted-gui-driver"], expected={"exit_code": 0}, gui_test=True)
         self.store.record_ui_action(run_id, action="Invoke", target="SaveButton",
@@ -271,10 +288,12 @@ class DurableEvidenceTests(unittest.TestCase):
         self.store._finalize(folder, state, event_log_status="CAPTURED", event_log_error=None)
         before = json.loads((folder / "manifest.json").read_text())
         self.assertTrue(before["collection_complete"])
+        self.assertFalse(before["evidence_return_e2e_pass"])
         self.assertFalse(before["e2e_pass"])
         process_retry_queue(self.store, AckTransport())
         after = json.loads((folder / "manifest.json").read_text())
-        self.assertTrue(after["e2e_pass"])
+        self.assertTrue(after["evidence_return_e2e_pass"])
+        self.assert_product_fail_closed(after)
         envelope = json.loads((folder / "github-envelope.json").read_text())
         self.assertIn("screenshots/000.png", {x["path"] for x in envelope["payload"]["files"]})
 
@@ -331,6 +350,18 @@ class GitHubContentsTransportTests(unittest.TestCase):
             base_ref="main", gh_runner=self.runner)
         with self.assertRaisesRegex(GitHubReturnError, "correlation mismatch"):
             transport.put_and_readback(self.path)
+
+
+class EvidenceSchemaTests(unittest.TestCase):
+    def test_schema_separates_evidence_and_product_e2e(self):
+        schema = json.loads(Path("schemas/local-qa-evidence-v1.schema.json").read_text(
+            encoding="utf-8"))
+        required = set(schema["required"])
+        self.assertIn("evidence_return_e2e_pass", required)
+        self.assertIn("product_e2e_pass", required)
+        self.assertEqual(schema["properties"]["product_e2e_pass"]["const"], False)
+        self.assertEqual(schema["properties"]["e2e_pass"]["const"], False)
+        self.assertEqual(schema["properties"]["store_submission_allowed"]["const"], False)
 
 
 if __name__ == "__main__":

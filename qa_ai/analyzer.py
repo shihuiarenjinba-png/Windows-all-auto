@@ -60,7 +60,11 @@ class AnalysisOutcome:
                 "errors": list(self.errors), "model": self.model,
                 "route_level": self.route_level, "metrics": self.metrics,
                 "authoritative_test_result_changed": False,
-                "e2e_pass_authority": False, "store_submission_allowed": False}
+                "e2e_pass_authority": False,
+                "evidence_return_e2e_pass_authority": False,
+                "product_e2e_pass_authority": False,
+                "release_ready_authority": False,
+                "store_submission_allowed": False}
 
 
 def _prompt(context: dict[str, str], evidence: str,
@@ -69,8 +73,9 @@ def _prompt(context: dict[str, str], evidence: str,
 object matching the supplied schema. Every observed.evidence_excerpt and every
 inference.evidence_basis item MUST be an exact substring of EVIDENCE. Retrieved
 history is non-authoritative and may only support a hypothesis. Use UNKNOWN
-rather than guessing. Never output commands, PASS/FAIL changes, Identity,
-Version, Store permission, credentials, or extra fields.
+rather than guessing. Never output commands, PASS/FAIL changes,
+evidence-return E2E, product E2E, release readiness, Identity, Version, Store
+permission, credentials, or extra fields.
 
 IMMUTABLE_CONTEXT:
 """ + json.dumps(context, ensure_ascii=False, sort_keys=True) + """
@@ -117,7 +122,11 @@ class AnalysisEngine:
                 "suggested_fix_area": "Failure-specific product or QA integration boundary",
                 "regression_tests": ["Reproduce with the same request and source SHA"],
                 "agent_dispatch_status": "AGENT_DISPATCH_PENDING",
-                "e2e_pass_authority": False, "store_submission_allowed": False,
+                "e2e_pass_authority": False,
+                "evidence_return_e2e_pass_authority": False,
+                "product_e2e_pass_authority": False,
+                "release_ready_authority": False,
+                "store_submission_allowed": False,
             }
             errors = validate_analysis(value, context=context, evidence_text=evidence)
             return AnalysisOutcome("RULE_ANALYSIS_VALID" if not errors else "AI_ANALYSIS_UNAVAILABLE",
