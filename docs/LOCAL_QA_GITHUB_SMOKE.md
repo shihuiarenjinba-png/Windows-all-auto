@@ -1,7 +1,7 @@
 # Local Windows ↔ GitHub evidence smoke
 
 This smoke test proves the local QA evidence transport on a real Windows PC without
-using a real product package or Store operation.
+using a real product package or any Store operation.
 
 It is intentionally stacked on the evidence/product E2E split. Passing this smoke
 means only:
@@ -11,7 +11,8 @@ local Windows synthetic test
   -> durable raw evidence
   -> sanitization
   -> GitHub evidence branch write
-  -> GitHub independent readback
+  -> GitHub readback
+  -> independent second GitHub fetch
   -> immutable request/source/payload correlation
   -> evidence_return_e2e_pass = true
 ```
@@ -19,7 +20,28 @@ local Windows synthetic test
 It never proves product E2E, release readiness, Store readiness, user product
 approval, or user price approval.
 
-## What the script verifies
+## Privacy boundary
+
+The repository is public, so this smoke deliberately does **not** collect the
+machine's real Windows Application Event Log.
+
+Instead, `scripts/local_qa_github_smoke_driver.py` injects one synthetic Event
+Log record into the same evidence pipeline. This exercises the durable evidence,
+sanitization, GitHub transport, acknowledgement, and readback path without
+risking unrelated local Application events being returned to a public branch.
+
+Therefore:
+
+```text
+synthetic_event_log = true
+real_windows_event_log_collected = false
+```
+
+Real Windows Event Log collection remains a separate product/local-QA test and
+must be reviewed under the normal privacy rules before any public evidence
+return.
+
+## What the smoke verifies
 
 `scripts/local_qa_github_smoke.ps1` performs these checks:
 
@@ -28,16 +50,16 @@ approval, or user price approval.
 3. The local branch HEAD exactly equals the corresponding GitHub branch HEAD.
 4. The configured evidence branch is separate and uses the
    `codex/local-qa-evidence-*` namespace.
-5. A synthetic trusted local test is executed by the existing
-   `local_qa_evidence_worker`.
+5. A synthetic local test is executed through the core evidence implementation.
 6. Raw local stdout contains a deliberately fake token-shaped marker.
-7. Only the sanitized evidence envelope is written to GitHub.
-8. GitHub readback verifies request ID, source SHA, and payload hash.
-9. A second independent `gh api` fetch reads the remote evidence again.
-10. The fake marker is present locally but absent remotely, with a redaction marker
-    present in the returned evidence.
-11. The retry queue entry is removed only after a durable GitHub acknowledgement.
-12. The final local manifest has:
+7. A synthetic Event Log record satisfies the smoke's evidence requirement.
+8. Only the sanitized evidence envelope is written to GitHub.
+9. GitHub readback verifies request ID, source SHA, and payload hash.
+10. A second independent `gh api` fetch reads the remote evidence again.
+11. The fake marker is present locally but absent remotely, with a redaction
+    marker present remotely.
+12. The retry queue entry is removed only after a durable GitHub acknowledgement.
+13. The final local manifest has:
 
 ```text
 TEST_PASS = true
@@ -50,7 +72,7 @@ user_product_approval = false
 user_price_approval = false
 ```
 
-The script does not install an MSIX, register or replace a Scheduled Task, change
+The smoke does not install an MSIX, register or replace a Scheduled Task, change
 Partner Center, submit or publish a Store product, edit a price, or edit product
 source.
 
@@ -66,8 +88,8 @@ git pull --ff-only
 
 Confirm that the checkout is clean before continuing.
 
-The smoke script itself also compares the local commit with the current GitHub
-branch head and fails closed on drift.
+The smoke script also compares the local commit with the current GitHub branch
+HEAD and fails closed on drift.
 
 ## Preflight only
 
@@ -82,12 +104,14 @@ Expected result:
 ```text
 status = PREFLIGHT_PASS
 github_write_requested = false
+synthetic_event_log = true
+real_windows_event_log_returned = false
 store_operations = false
 scheduled_task_changes = false
 ```
 
-If `gh auth status` fails, repair the local GitHub CLI authentication before the
-real smoke. Do not paste a GitHub token into logs, issues, or chat.
+If `gh auth status` fails, repair local GitHub CLI authentication before the
+real smoke. Never paste a GitHub token into logs, issues, or chat.
 
 ## Real sanitized round trip
 
@@ -103,8 +127,8 @@ The default remote destination is the dedicated evidence branch:
 codex/local-qa-evidence-smoke
 ```
 
-The worker may create that evidence branch if it does not exist. Evidence paths
-are content-addressed under `ops/local-qa-results/`.
+The transport may create that evidence branch if it does not exist. Evidence
+paths are content-addressed under `ops/local-qa-results/`.
 
 Expected final status:
 
@@ -119,11 +143,13 @@ github_ack = GITHUB_READBACK_VERIFIED
 evidence_return_e2e_pass = true
 product_e2e_pass = false
 store_submission_allowed = false
+synthetic_event_log = true
+real_windows_event_log_returned = false
 ```
 
-The synthetic evidence is intentionally safe for repository return. It contains
-no real credential. The token-shaped string exists only to prove that the raw
-local log and sanitized remote evidence remain separated.
+The token-shaped string used by the fixture is generated from known smoke-only
+text and is not a credential. Its purpose is to prove that raw local evidence and
+sanitized remote evidence remain separated.
 
 ## Optional Ollama check
 
@@ -134,8 +160,8 @@ round trip can include the optional derived analyzer:
 pwsh -File scripts\local_qa_github_smoke.ps1 -AllowGitHubWrite -EnableAI
 ```
 
-Ollama remains advisory. AI failure must not change product, release, or Store
-authority.
+Ollama remains advisory. AI failure must not change evidence-return, product,
+release, or Store authority.
 
 ## Failure behavior
 
@@ -162,7 +188,7 @@ been reviewed. The default root is:
 ```
 
 The smoke does not register the 15-minute pull or evidence-retry Scheduled Tasks.
-Those remain separate, explicit opt-in steps.
+Those remain separate explicit opt-in steps.
 
 Only after this synthetic GitHub round trip passes should a revision-specific real
 product be selected for:
@@ -172,7 +198,7 @@ GitHub artifact
  -> local pull
  -> checker
  -> physical GUI/runtime test
- -> durable evidence
+ -> real Windows evidence under normal privacy review
  -> GitHub return
  -> repair handoff
 ```
