@@ -1,4 +1,6 @@
 import unittest
+import json
+from pathlib import Path
 from all_auto.store_product_handoff import normalize_store_product_handoff,to_windows_automator_input,StoreHandoffError
 
 def sample():
@@ -36,6 +38,26 @@ class StoreProductHandoffTests(unittest.TestCase):
         self.assertEqual(a["price_mode"],"paid")
         self.assertEqual(a["fields"]["free_trial"]["value"],"7_days")
         self.assertEqual(a["fields"]["free_trial"]["mode"],"manual")
+
+    def test_exact_folder_fixture_is_hold_only_on_live_commercial_gates(self):
+        path=Path(__file__).parent/"fixtures"/"folder_engine_paid_trial_handoff_v2.json"
+        n=normalize_store_product_handoff(json.loads(path.read_text(encoding="utf-8")))
+        self.assertFalse(n["ready_for_automator_draft"])
+        self.assertEqual(n["commercial"]["free_trial"],"7_days")
+        self.assertEqual(n["package"]["package_sha256"],
+                         "911f8eb13abfdbb51bea8f279006d138d6be9cba4a25413416c1d70458676450")
+        expected={
+            "identity.live_partner_center_reverified",
+            "identity.accepted_version_history_verified",
+            "commercial.price_confirmed",
+            "commercial.approved_by",
+            "commercial.price_value",
+            "assets.owner_visual_approval",
+            "security.owner_confirmation_complete",
+            "approvals.owner_approved_for_draft",
+            "distribution.known_user_group",
+        }
+        self.assertEqual(set(n["missing_for_draft"]),expected)
 
     def test_free_product_cannot_have_trial(self):
         p=sample();p["commercial"]["model"]="free"
