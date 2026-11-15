@@ -8,7 +8,7 @@ class PaidTrialPricingTests(unittest.TestCase):
         item={
             "id":"sampleapp","type":"app","submission_kind":"new",
             "price":{"amount_minor":amount,"currency":"JPY","approved_by":approved_by,
-                     "free_trial":trial,"trial_approved_by":trial_approved_by},
+                     "approval_required":True,"free_trial":trial,"trial_approved_by":trial_approved_by},
             "owner_approved_for_draft":owner,
         }
         return check_product(item,Path("."))
