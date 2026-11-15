@@ -306,14 +306,30 @@ def check_product(item: Any, base: Path) -> dict[str, Any]:
     price = item.get("price")
     if not isinstance(price, dict) or type(price.get("amount_minor")) is not int or price["amount_minor"] < 0:
         hold.append("PRICE_UNCONFIRMED")
-    elif price.get("amount_minor") == 0:
-        # Free products must be explicitly approved too; never default to free
-        # or infer the decision from absent pricing information.
-        if (price.get("free_approved") is not True
-                or not isinstance(price.get("approved_by"), str)
-                or not price["approved_by"].strip()
-                or item.get("owner_approved_for_draft") is not True):
-            hold.append("FREE_PRICE_NOT_APPROVED")
+    else:
+        amount_minor = price["amount_minor"]
+        approved_by = price.get("approved_by")
+        trial = price.get("free_trial", "none")
+        trial_approved_by = price.get("trial_approved_by")
+        if trial not in {"none","1_day","7_days","15_days","30_days","unlimited"}:
+            hold.append("FREE_TRIAL_UNCONFIRMED")
+        if amount_minor == 0:
+            # Free products must be explicitly approved too; never default to free.
+            if (price.get("free_approved") is not True
+                    or not isinstance(approved_by, str)
+                    or not approved_by.strip()
+                    or item.get("owner_approved_for_draft") is not True):
+                hold.append("FREE_PRICE_NOT_APPROVED")
+            if trial != "none":
+                hold.append("TRIAL_REQUIRES_PAID_PRODUCT")
+        else:
+            # Paid products require an explicit price approval source as well.
+            if (not isinstance(approved_by, str)
+                    or not approved_by.strip()
+                    or item.get("owner_approved_for_draft") is not True):
+                hold.append("PAID_PRICE_NOT_APPROVED")
+            if trial != "none" and (not isinstance(trial_approved_by, str) or not trial_approved_by.strip()):
+                hold.append("FREE_TRIAL_NOT_APPROVED")
     if isinstance(price, dict) and price.get("currency") not in ("JPY", "USD"):
         hold.append("CURRENCY_UNCONFIRMED")
     if item.get("assets_reviewed") is not True:
