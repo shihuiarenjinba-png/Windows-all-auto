@@ -1,7 +1,7 @@
 import unittest
 import json
 from pathlib import Path
-from all_auto.store_product_handoff import normalize_store_product_handoff,to_windows_automator_input,StoreHandoffError
+from all_auto.store_product_handoff import normalize_store_product_handoff,to_windows_automator_input,apply_identity_reverify_receipt,StoreHandoffError
 
 def sample():
     return {
@@ -58,6 +58,51 @@ class StoreProductHandoffTests(unittest.TestCase):
             "distribution.known_user_group",
         }
         self.assertEqual(set(n["missing_for_draft"]),expected)
+
+    def test_identity_receipt_advances_only_live_identity_gate(self):
+        p=sample()
+        p["identity"]["package_family_name"]="OkinawaDesktopTools.FolderAutomationEngine_j8yefg9jgfh58"
+        p["identity"]["package_sid"]="S-1-15-2-1-2-3-4-5-6-7"
+        receipt={
+            "schema_version":"existing-store-identity-reverify-receipt/1",
+            "status":"EXISTING_IDENTITY_EXACT_MATCH",
+            "partner_center_reverified":True,
+            "source_sha":"a"*40,
+            "package_sha256":"b"*64,
+            "store_id":"9PTEST",
+            "identity_name":"OkinawaDesktopTools.FolderAutomationEngine",
+            "publisher":"CN=TEST",
+            "package_family_name":"OkinawaDesktopTools.FolderAutomationEngine_j8yefg9jgfh58",
+            "package_sid":"S-1-15-2-1-2-3-4-5-6-7",
+            "created_or_reserved_product":False,
+            "submission_started":False,
+            "package_uploaded":False,
+            "pricing_changed":False,
+            "submitted":False,
+            "published":False,
+        }
+        n=apply_identity_reverify_receipt(p,receipt)
+        self.assertTrue(n["identity"]["live_partner_center_reverified"])
+        self.assertFalse(n["identity"]["accepted_version_history_verified"])
+        self.assertIn("identity.accepted_version_history_verified",n["missing_for_draft"])
+        self.assertNotIn("identity.live_partner_center_reverified",n["missing_for_draft"])
+
+    def test_identity_receipt_rejects_different_store_id_or_write(self):
+        p=sample()
+        base={
+            "schema_version":"existing-store-identity-reverify-receipt/1",
+            "status":"EXISTING_IDENTITY_EXACT_MATCH","partner_center_reverified":True,
+            "source_sha":"a"*40,"package_sha256":"b"*64,
+            "store_id":"OTHER","identity_name":"OkinawaDesktopTools.FolderAutomationEngine",
+            "publisher":"CN=TEST","package_family_name":"","package_sid":"",
+            "created_or_reserved_product":False,"submission_started":False,
+            "package_uploaded":False,"pricing_changed":False,"submitted":False,"published":False,
+        }
+        with self.assertRaises(StoreHandoffError):
+            apply_identity_reverify_receipt(p,base)
+        base["store_id"]="9PTEST"; base["package_uploaded"]=True
+        with self.assertRaises(StoreHandoffError):
+            apply_identity_reverify_receipt(p,base)
 
     def test_free_product_cannot_have_trial(self):
         p=sample();p["commercial"]["model"]="free"
