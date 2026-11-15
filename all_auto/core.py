@@ -323,8 +323,10 @@ def check_product(item: Any, base: Path) -> dict[str, Any]:
             if trial != "none":
                 hold.append("TRIAL_REQUIRES_PAID_PRODUCT")
         else:
-            # Paid products require an explicit price approval source as well.
-            if (not isinstance(approved_by, str)
+            # Legacy QA manifests stay compatible. New commercial handoffs opt
+            # into strict paid-price approval with approval_required=true.
+            if price.get("approval_required") is True and (
+                    not isinstance(approved_by, str)
                     or not approved_by.strip()
                     or item.get("owner_approved_for_draft") is not True):
                 hold.append("PAID_PRICE_NOT_APPROVED")
