@@ -5,6 +5,7 @@ uploads a package, changes pricing, submits certification, or publishes.
 """
 from __future__ import annotations
 from pathlib import Path
+import copy
 from typing import Any
 import re
 
@@ -57,6 +58,8 @@ def normalize_store_product_handoff(payload:Any)->dict[str,Any]:
     if not re.fullmatch(r"\d+\.\d+\.\d+\.\d+",identity_norm["version"]):
         raise StoreHandoffError("identity.version must be four-part")
     store_id=_text(identity.get("store_id"),"identity.store_id")
+    package_family_name=str(identity.get("package_family_name") or "").strip()
+    package_sid=str(identity.get("package_sid") or "").strip()
 
     model=_text(commercial.get("model"),"commercial.model")
     if model not in {"free","paid_one_time"}: raise StoreHandoffError("unsupported commercial.model")
@@ -100,6 +103,8 @@ def normalize_store_product_handoff(payload:Any)->dict[str,Any]:
         "product":{**product,"source_sha":source_sha,"submission_route":route},
         "package":{**package,"package_type":package_type,"package_sha256":package_sha},
         "identity":{**identity_norm,"store_id":store_id,
+                    "package_family_name":package_family_name,
+                    "package_sid":package_sid,
                     "live_partner_center_reverified":identity.get("live_partner_center_reverified") is True,
                     "accepted_version_history_verified":identity.get("accepted_version_history_verified") is True},
         "commercial":{**commercial,"model":model,"currency":currency,"free_trial":trial},
@@ -110,6 +115,50 @@ def normalize_store_product_handoff(payload:Any)->dict[str,Any]:
         "missing_for_draft":missing,
         "ready_for_automator_draft":not missing,
     }
+
+def apply_identity_reverify_receipt(payload:Any, receipt:Any)->dict[str,Any]:
+    """Bind a local read-only Partner Center identity receipt to the Store handoff.
+
+    Only the live identity re-verification flag is advanced. Version history,
+    pricing, security, assets, draft approval, certification and publication
+    remain independent gates.
+    """
+    raw=_obj(payload,"handoff")
+    current=normalize_store_product_handoff(raw)
+    rec=_obj(receipt,"identity receipt")
+    if rec.get("schema_version")!="existing-store-identity-reverify-receipt/1":
+        raise StoreHandoffError("unsupported identity receipt schema")
+    if rec.get("status")!="EXISTING_IDENTITY_EXACT_MATCH" or rec.get("partner_center_reverified") is not True:
+        raise StoreHandoffError("identity receipt is not an exact-match PASS")
+    if str(rec.get("source_sha") or "").lower()!=current["product"]["source_sha"]:
+        raise StoreHandoffError("identity receipt source_sha mismatch")
+    if str(rec.get("package_sha256") or "").lower()!=current["package"]["package_sha256"]:
+        raise StoreHandoffError("identity receipt package_sha256 mismatch")
+
+    expected={
+        "store_id":current["identity"]["store_id"],
+        "identity_name":current["identity"]["name"],
+        "publisher":current["identity"]["publisher"],
+    }
+    if current["identity"].get("package_family_name"):
+        expected["package_family_name"]=current["identity"]["package_family_name"]
+    if current["identity"].get("package_sid"):
+        expected["package_sid"]=current["identity"]["package_sid"]
+    for key,value in expected.items():
+        if rec.get(key)!=value:
+            raise StoreHandoffError(f"identity receipt mismatch: {key}")
+    for flag in (
+        "created_or_reserved_product","submission_started","package_uploaded",
+        "pricing_changed","submitted","published",
+    ):
+        if rec.get(flag) is not False:
+            raise StoreHandoffError(f"identity receipt must prove read-only behavior: {flag}")
+
+    updated=copy.deepcopy(raw)
+    updated.setdefault("identity",{})["live_partner_center_reverified"]=True
+    updated["identity"]["live_reverify_receipt_status"]="EXISTING_IDENTITY_EXACT_MATCH"
+    return normalize_store_product_handoff(updated)
+
 
 def to_windows_automator_input(normalized:dict[str,Any], *, package_path:str, images_dir:str)->dict[str,Any]:
     if normalized.get("schema_version")!="store-product-handoff/2":
