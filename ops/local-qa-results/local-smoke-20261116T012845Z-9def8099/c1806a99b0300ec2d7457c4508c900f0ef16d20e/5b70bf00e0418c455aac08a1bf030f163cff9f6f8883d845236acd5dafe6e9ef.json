@@ -1,0 +1,119 @@
+{
+  "payload": {
+    "files": [
+      {
+        "content": "TE9DQUxfUUFfR0lUSFVCX1NNT0tFX09LDQpBdXRob3JpemF0aW9uOiBCZWFyZXIgW1JFREFDVEVEXQ0K",
+        "encoding": "base64",
+        "path": "stdout.log",
+        "sha256": "e7643eb703d260e03943179f3f18fac101385f6069f6f377bf092178514d3271"
+      },
+      {
+        "content": "TE9DQUxfUUFfR0lUSFVCX1NNT0tFX1NUREVSUg0K",
+        "encoding": "base64",
+        "path": "stderr.log",
+        "sha256": "613d3edda013cef53d5fc435e4cf3b3842772c3a22c434340a8106fab6b02777"
+      },
+      {
+        "content": "PEV2ZW50cz48RXZlbnQ+PFByb3ZpZGVyIE5hbWU9IldpbmRvd3NBbGxBdXRvU3ludGhldGljU21va2UiLz48RGF0YSBOYW1lPSJTdGFydGVkIj4yMDI2LTExLTE2VDAxOjI4OjQ1WjwvRGF0YT48RGF0YSBOYW1lPSJGaW5pc2hlZCI+MjAyNi0xMS0xNlQwMToyODo0NVo8L0RhdGE+PC9FdmVudD48L0V2ZW50cz4=",
+        "encoding": "base64",
+        "path": "windows-event-log.xml",
+        "sha256": "54f8debd657e4010f320dca02276d92e5c05bfe50207dc5a980abff11a83d52a"
+      },
+      {
+        "content": "eyJhdCI6IjIwMjYtMTEtMTZUMDE6Mjg6NDVaIiwiZXZlbnQiOiJSVU5fU1RBUlRFRCJ9CnsiYXQiOiIyMDI2LTExLTE2VDAxOjI4OjQ1WiIsImV2ZW50IjoiUFJPQ0VTU19TVEFSVEVEIiwicGlkIjoyMDE4OH0KeyJhdCI6IjIwMjYtMTEtMTZUMDE6Mjg6NDVaIiwiZXZlbnQiOiJQUk9DRVNTX0ZJTklTSEVEIiwiZXhpdF9jb2RlIjowLCJzdGF0dXMiOiJURVNUX1BBU1MiLCJ0aW1lZF9vdXQiOmZhbHNlfQp7ImF0IjoiMjAyNi0xMS0xNlQwMToyODo0NVoiLCJldmVudCI6IkVWSURFTkNFX0RVUkFCTEVfQU5EX1FVRVVFRCIsInBheWxvYWRfc2hhMjU2IjoiNTFmMDdlNzNjNWU0YWIxNzVmMDg1NmZkNTA2MjI4OGM4NTFlNTAyZTE1MmI1MGEzYzc4NzBiODYzMDhiYWIyYSJ9Cg==",
+        "encoding": "base64",
+        "path": "journal.jsonl",
+        "sha256": "96e7de058aff71b50fa94c4d708d58dcf6e3c6fc49d863c33fd0197eb16c1376"
+      },
+      {
+        "content": "ewogICJhbmFseXNpcyI6IG51bGwsCiAgImF1dGhvcml0YXRpdmVfdGVzdF9yZXN1bHRfY2hhbmdlZCI6IGZhbHNlLAogICJlMmVfcGFzc19hdXRob3JpdHkiOiBmYWxzZSwKICAiZXJyb3JzIjogWwogICAgIm9ic2VydmVkWzJdIGV4Y2VycHQgaXMgbm90IHByZXNlbnQgaW4gZXZpZGVuY2UiLAogICAgImluZmVyZW5jZVswXSBiYXNpcyBpcyBub3QgcHJlc2VudCBpbiBldmlkZW5jZSIKICBdLAogICJldmlkZW5jZV9yZXR1cm5fZTJlX3Bhc3NfYXV0aG9yaXR5IjogZmFsc2UsCiAgIm1ldHJpY3MiOiB7CiAgICAiZXZhbF9jb3VudCI6IDYzNiwKICAgICJsb2FkX2R1cmF0aW9uIjogMzQwNjEyNTcwMCwKICAgICJwcm9tcHRfZXZhbF9jb3VudCI6IDczMSwKICAgICJ0b3RhbF9kdXJhdGlvbiI6IDEyNjM1MzQyNzAwCiAgfSwKICAibW9kZWwiOiAid2luZG93cy1xYS1hbmFseXN0IiwKICAicHJvZHVjdF9lMmVfcGFzc19hdXRob3JpdHkiOiBmYWxzZSwKICAicmVsZWFzZV9yZWFkeV9hdXRob3JpdHkiOiBmYWxzZSwKICAicm91dGVfbGV2ZWwiOiAyLAogICJzdGF0dXMiOiAiQUlfQU5BTFlTSVNfVU5BVkFJTEFCTEUiLAogICJzdG9yZV9zdWJtaXNzaW9uX2FsbG93ZWQiOiBmYWxzZQp9Cg==",
+        "encoding": "base64",
+        "path": "analysis/windows-qa-analysis.json",
+        "sha256": "131fd48f0e46042fcab3f7f1592f748a58c635bb5b742810bbfb1a09d88c300b"
+      }
+    ],
+    "manifest": {
+      "actual": {
+        "exit_code": 0,
+        "process_started": true,
+        "timed_out": false
+      },
+      "artifact_sha256": "d81ad07e15028b0aa3ce9257e4fa3474612abfdf868ef50a14a3d344318b0df5",
+      "collection": {
+        "exit_code": "CAPTURED",
+        "expected_and_actual": "CAPTURED",
+        "github_shareable_screenshot": "NOT_APPLICABLE",
+        "screenshots": "NOT_APPLICABLE",
+        "stderr": "CAPTURED",
+        "stdout": "CAPTURED",
+        "uia_actions": "NOT_APPLICABLE",
+        "windows_event_log": "CAPTURED",
+        "windows_event_log_error": null
+      },
+      "collection_complete": true,
+      "e2e_pass": false,
+      "environment": {
+        "architecture": "AMD64",
+        "machine_id": "42a592ef3c164d409ebea091c0f3d3a9",
+        "os": "Windows",
+        "os_release": "11",
+        "python": "3.14.4"
+      },
+      "evidence_return_e2e_pass": false,
+      "exit_code": 0,
+      "expected": {
+        "exit_code": 0
+      },
+      "factory_dispatch": {
+        "reason": "No verified automatic development-agent dispatch contract is configured",
+        "status": "AGENT_DISPATCH_PENDING",
+        "target_repository": "shihuiarenjinba-png/AI-App-Factory"
+      },
+      "failed_tests": [],
+      "finished_at_utc": "2026-11-16T01:28:45Z",
+      "github_return": {
+        "readback_verified": false,
+        "status": "QUEUED"
+      },
+      "local_persistence_verified": true,
+      "product_e2e_pass": false,
+      "product_e2e_requirements": {
+        "artifact_package_sha_correlation": false,
+        "identity_correlation": false,
+        "package_qa": false,
+        "physical_gui_qa": false,
+        "product_specific_regression": false,
+        "product_specific_tests": false,
+        "version_correlation": false
+      },
+      "product_type": "APP",
+      "release_ready": false,
+      "request_id": "local-smoke-20261116T012845Z-9def8099",
+      "run_id": "20261116T012845Z-2f911f87713ab0be",
+      "schema_version": "local-qa-evidence-v1",
+      "slug": "windows-all-auto-local-smoke",
+      "source_branch": "codex/local-github-evidence-smoke-20261116",
+      "source_repository": "shihuiarenjinba-png/Windows-all-auto",
+      "source_sha": "c1806a99b0300ec2d7457c4508c900f0ef16d20e",
+      "started_at_utc": "2026-11-16T01:28:45Z",
+      "status": "TEST_PASS",
+      "store_submission_allowed": false,
+      "test_command": [
+        "C:\\Python314\\python.exe",
+        "C:\\Users\\[REDACTED]\\AppData\\Local\\WindowsAllAuto\\QA-Evidence-Smoke\\smoke-fixtures\\local-smoke-20261116T012845Z-9def8099\\smoke_fixture.py"
+      ],
+      "test_suite_version": "local-github-smoke-v1",
+      "timed_out": false,
+      "user_price_approval": false,
+      "user_product_approval": false
+    },
+    "redaction": {
+      "replacement_count": 2,
+      "screenshots_require_explicit_privacy_review": true
+    }
+  },
+  "payload_sha256": "5b70bf00e0418c455aac08a1bf030f163cff9f6f8883d845236acd5dafe6e9ef",
+  "request_id": "local-smoke-20261116T012845Z-9def8099",
+  "schema_version": "local-qa-evidence-v1",
+  "source_sha": "c1806a99b0300ec2d7457c4508c900f0ef16d20e"
+}
