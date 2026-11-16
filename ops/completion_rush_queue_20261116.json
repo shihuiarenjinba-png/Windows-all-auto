@@ -1,0 +1,84 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-11-16",
+  "policy": "COMPLETION_RUSH_EXISTING_PRODUCTS_ONLY",
+  "new_product_generation_allowed": false,
+  "rules": {
+    "functional_hold": "Improve product only when paid value, core functionality, beginner UX, safety, or stability is deficient.",
+    "delivery_hold": "Do not add features. Advance authoritative Version/Identity binding, real package, artifact custody, checker, Windows QA, and Store Draft readiness.",
+    "freeze_for_package": "When no FUNCTIONAL_HOLD remains, product code is frozen except package-blocking defects.",
+    "never_guess": [
+      "Identity",
+      "Publisher",
+      "PFN",
+      "SID",
+      "Package Version"
+    ]
+  },
+  "priority": [
+    {
+      "rank": 1,
+      "product": "Focus Session Desk",
+      "lane": "APP",
+      "state": "POST_IDENTITY_UPGRADE",
+      "hold_class": "DELIVERY_HOLD",
+      "functional_hold": false,
+      "product_frozen_for_package": true,
+      "identity_return": "VERIFIED",
+      "store_id": "9P6452C61N7B",
+      "source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+      "package_version": null,
+      "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
+      "real_msix": false,
+      "next_action": "Obtain authoritative Package Version for this exact Store ID/source; then build real MSIX with existing fail-closed builder and handoff."
+    },
+    {
+      "rank": 2,
+      "product": "File Integrity Ledger",
+      "lane": "APP",
+      "state": "POST_IDENTITY_UPGRADE",
+      "hold_class": "DELIVERY_HOLD",
+      "functional_hold": false,
+      "product_frozen_for_package": true,
+      "identity_return": "VERIFIED",
+      "store_id": "9PGZ445SR5GM",
+      "source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
+      "package_version": null,
+      "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
+      "real_msix": false,
+      "next_action": "Obtain authoritative Package Version for this exact Store ID/source; then build real MSIX with existing fail-closed builder and handoff."
+    },
+    {
+      "rank": 3,
+      "product": "Prism Route 3D",
+      "lane": "3D",
+      "state": "POST_IDENTITY_UPGRADE",
+      "hold_class": "DELIVERY_AND_PHYSICAL_QA_HOLD",
+      "functional_hold": false,
+      "product_frozen_for_package": true,
+      "factory_source_sha": "4c22875c5ed79d393516c6a7a95361b9e9ed1950",
+      "independent_qa_head": "5884955f855e379cb16568de8b516a24475404c0",
+      "real_export_verified": true,
+      "independent_cloud_qa_verified": true,
+      "physical_windows_6_condition_pass": false,
+      "package_version": null,
+      "real_msix": false,
+      "next_action": "Complete JA/EN x DPI100/125/150 physical Windows evidence, exact current-source Identity rebind, authoritative Package Version, then real MSIX."
+    },
+    {
+      "rank": 4,
+      "product": "Signal Sprint",
+      "lane": "GAME",
+      "state": "POST_IDENTITY_UPGRADE",
+      "hold_class": "FUNCTIONAL_QA_THEN_DELIVERY_HOLD",
+      "functional_hold": true,
+      "product_frozen_for_package": false,
+      "gdk_identity_return": "VERIFIED",
+      "current_uia_fixture_head": "d0607bd7dcb9076cc3d6414205d628db63503fb7",
+      "fixture_ci_verified": true,
+      "real_windows_uia_pass": false,
+      "real_msixvc": false,
+      "next_action": "Prove real Windows JA/EN five controls and LOST UIA; once PASS, freeze product and advance GDK Version/SDK/assets/CAS/MSIXVC."
+    }
+  ]
+}
