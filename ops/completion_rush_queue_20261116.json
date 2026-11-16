@@ -30,13 +30,14 @@
       "package_version": null,
       "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
       "real_msix": false,
-      "next_action": "Create/approve the three required package PNG assets for this exact product, obtain authoritative Package Version for this exact Store ID/source, then build real MSIX with the existing fail-closed builder and handoff. Do not add product features.",
-      "store_assets_status": "MISSING_REQUIRED_PACKAGE_PNGS",
+      "next_action": "Wait only for authoritative Package Version, then run MSIX workflow; package PNGs are generated deterministically in CI. Do not add product features.",
+      "store_assets_status": "GENERATOR_AND_APPROVED_RECIPE_COMMITTED",
       "required_store_assets": [
         "StoreLogo.png",
         "Square150.png",
         "Square44.png"
-      ]
+      ],
+      "store_assets_branch_head": "995fcd3b403225fded65f4ac9491ea3216b73eb9"
     },
     {
       "rank": 2,
@@ -52,13 +53,14 @@
       "package_version": null,
       "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
       "real_msix": false,
-      "next_action": "Create/approve the three required package PNG assets for this exact product, obtain authoritative Package Version for this exact Store ID/source, then build real MSIX with the existing fail-closed builder and handoff. Do not add product features.",
-      "store_assets_status": "MISSING_REQUIRED_PACKAGE_PNGS",
+      "next_action": "Wait only for authoritative Package Version, then run MSIX workflow; package PNGs are generated deterministically in CI. Do not add product features.",
+      "store_assets_status": "GENERATOR_AND_APPROVED_RECIPE_COMMITTED",
       "required_store_assets": [
         "StoreLogo.png",
         "Square150.png",
         "Square44.png"
-      ]
+      ],
+      "store_assets_branch_head": "a74f5f79026d0f376e94dfe6c5d60d07e67fa68b"
     },
     {
       "rank": 3,
