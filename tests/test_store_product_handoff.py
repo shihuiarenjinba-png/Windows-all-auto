@@ -1,7 +1,7 @@
 import unittest
 import json
 from pathlib import Path
-from all_auto.store_product_handoff import normalize_store_product_handoff,to_windows_automator_input,apply_identity_reverify_receipt,StoreHandoffError
+from all_auto.store_product_handoff import normalize_store_product_handoff,to_windows_automator_input,apply_identity_reverify_receipt,apply_initial_submission_receipt,StoreHandoffError
 
 def sample():
     return {
@@ -123,6 +123,40 @@ class StoreProductHandoffTests(unittest.TestCase):
         n=normalize_store_product_handoff(p)
         self.assertFalse(n["identity"]["version_history_ready"])
         self.assertIn("identity.version_history_ready",n["missing_for_draft"])
+
+    def test_initial_submission_receipt_binds_only_draft_id(self):
+        p=sample()
+        p["product"]["submission_kind"]="new"
+        p["identity"].update({
+            "live_partner_center_reverified":True,
+            "version_history_state":"NO_ACCEPTED_PACKAGE_OBSERVED",
+            "version_conflict":False,
+        })
+        receipt={
+            "schema_version":"existing-store-initial-submission-start-receipt/1",
+            "status":"INITIAL_SUBMISSION_DRAFT_CREATED",
+            "store_id":"9PTEST",
+            "source_sha":"a"*40,
+            "package_sha256":"b"*64,
+            "submission_kind":"new",
+            "draft_id":"12345",
+            "draft_url":"https://partner.microsoft.com/en-us/dashboard/products/9PTEST/submissions/12345",
+            "created_or_reserved_product":False,
+            "submission_started":True,
+            "start_submission_clicked":True,
+            "start_update_clicked":False,
+            "package_uploaded":False,
+            "pricing_changed":False,
+            "submitted":False,
+            "published":False,
+        }
+        n=apply_initial_submission_receipt(p,receipt)
+        self.assertEqual(n["product"]["draft_id"],"12345")
+        self.assertTrue(n["product"]["initial_submission_started"])
+        self.assertFalse(n["commercial"]["price_confirmed"])
+        self.assertIn("commercial.price_value",n["missing_for_draft"])
+        a=to_windows_automator_input(n,package_path="C:/x.msix",images_dir="C:/images")
+        self.assertEqual(a["draft_id"],"12345")
 
     def test_free_product_cannot_have_trial(self):
         p=sample();p["commercial"]["model"]="free"
