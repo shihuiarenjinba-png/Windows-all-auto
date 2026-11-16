@@ -15,6 +15,7 @@ ROUTES={"msix_pwa_app":("app",{"msix","msixupload","msixbundle","appx","appxuplo
         "msix_pwa_game":("game",{"msix","msixupload","msixbundle","appx","appxupload","appxbundle"})}
 TRIALS={"none","1_day","7_days","15_days","30_days","unlimited"}
 AUDIENCES={"PRIVATE_AUDIENCE_TEST","PUBLIC_RELEASE"}
+VERSION_HISTORY_STATES={"VERIFIED_ACCEPTED_HISTORY","NO_ACCEPTED_PACKAGE_OBSERVED","UNKNOWN"}
 
 class StoreHandoffError(ValueError): pass
 
@@ -60,6 +61,26 @@ def normalize_store_product_handoff(payload:Any)->dict[str,Any]:
     store_id=_text(identity.get("store_id"),"identity.store_id")
     package_family_name=str(identity.get("package_family_name") or "").strip()
     package_sid=str(identity.get("package_sid") or "").strip()
+    submission_kind=_text(product.get("submission_kind"),"product.submission_kind")
+    if submission_kind not in {"new","update"}:
+        raise StoreHandoffError("unsupported product.submission_kind")
+    version_history_state=str(identity.get("version_history_state") or "UNKNOWN").strip()
+    if version_history_state not in VERSION_HISTORY_STATES:
+        raise StoreHandoffError("unsupported identity.version_history_state")
+    version_conflict=identity.get("version_conflict")
+    if version_conflict not in {True,False,None}:
+        raise StoreHandoffError("identity.version_conflict must be true, false, or null")
+    if submission_kind=="new":
+        version_history_ready=(
+            version_history_state=="NO_ACCEPTED_PACKAGE_OBSERVED"
+            and version_conflict is False
+        )
+    else:
+        version_history_ready=(
+            version_history_state=="VERIFIED_ACCEPTED_HISTORY"
+            and identity.get("accepted_version_history_verified") is True
+            and version_conflict is False
+        )
 
     model=_text(commercial.get("model"),"commercial.model")
     if model not in {"free","paid_one_time"}: raise StoreHandoffError("unsupported commercial.model")
@@ -84,7 +105,7 @@ def normalize_store_product_handoff(payload:Any)->dict[str,Any]:
 
     ready_checks={
         "identity.live_partner_center_reverified": identity.get("live_partner_center_reverified") is True,
-        "identity.accepted_version_history_verified": identity.get("accepted_version_history_verified") is True,
+        "identity.version_history_ready": version_history_ready,
         "commercial.price_confirmed": commercial.get("price_confirmed") is True,
         "commercial.approved_by": isinstance(commercial.get("approved_by"),str) and bool(commercial.get("approved_by").strip()),
         "commercial.price_value": model=="free" or isinstance(price_value,str) and bool(price_value.strip()),
@@ -100,13 +121,16 @@ def normalize_store_product_handoff(payload:Any)->dict[str,Any]:
 
     return {
         "schema_version":"store-product-handoff/2",
-        "product":{**product,"source_sha":source_sha,"submission_route":route},
+        "product":{**product,"source_sha":source_sha,"submission_route":route,"submission_kind":submission_kind},
         "package":{**package,"package_type":package_type,"package_sha256":package_sha},
         "identity":{**identity_norm,"store_id":store_id,
                     "package_family_name":package_family_name,
                     "package_sid":package_sid,
                     "live_partner_center_reverified":identity.get("live_partner_center_reverified") is True,
-                    "accepted_version_history_verified":identity.get("accepted_version_history_verified") is True},
+                    "accepted_version_history_verified":identity.get("accepted_version_history_verified") is True,
+                    "version_history_state":version_history_state,
+                    "version_conflict":version_conflict,
+                    "version_history_ready":version_history_ready},
         "commercial":{**commercial,"model":model,"currency":currency,"free_trial":trial},
         "distribution":distribution,
         "assets":assets,
