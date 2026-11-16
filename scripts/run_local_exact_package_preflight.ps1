@@ -42,7 +42,7 @@ New-Item -ItemType Directory -Path $unpack | Out-Null
 
 $kit = Join-Path ([Environment]::GetEnvironmentVariable("ProgramFiles(x86)")) "Windows Kits\10\bin"
 $makeappx = Get-ChildItem -LiteralPath $kit -Recurse -Filter MakeAppx.exe -File -ErrorAction SilentlyContinue |
-    Where-Object { $_.DirectoryName -match '\x64$' } |
+    Where-Object { $_.Directory.Name -ceq "x64" } |
     Sort-Object FullName -Descending |
     Select-Object -First 1
 if ($null -eq $makeappx) { throw "x64 MakeAppx.exe not installed" }

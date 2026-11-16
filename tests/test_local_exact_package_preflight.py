@@ -13,6 +13,7 @@ class LocalExactPackagePreflightContractTests(unittest.TestCase):
             "Manifest Publisher mismatch",
             "Manifest Version mismatch",
             "Unpacked main EXE SHA256 mismatch",
+            '$_.Directory.Name -ceq "x64"',
             'package_rebuilt = $false',
             'security_bypass_used = $false',
         ):
