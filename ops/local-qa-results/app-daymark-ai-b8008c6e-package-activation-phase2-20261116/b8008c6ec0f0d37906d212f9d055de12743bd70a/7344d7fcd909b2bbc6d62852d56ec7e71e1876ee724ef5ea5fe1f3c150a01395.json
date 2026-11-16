@@ -1,0 +1,150 @@
+{
+  "payload": {
+    "files": [
+      {
+        "content": "",
+        "encoding": "base64",
+        "path": "stdout.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "content": "UEFDS0FHRV9BQ1RJVkFUSU9OX0ZBSUxFRA0K",
+        "encoding": "base64",
+        "path": "stderr.log",
+        "sha256": "84dbc10a17bd6f86effa9c331b6a4f3c0f54497c511892320ee834c248162d66"
+      },
+      {
+        "content": "",
+        "encoding": "base64",
+        "path": "windows-event-log.xml",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "content": "eyJhdCI6IjIwMjYtMTEtMTZUMDQ6MDA6NTdaIiwiZXZlbnQiOiJSVU5fU1RBUlRFRCJ9CnsiYXQiOiIyMDI2LTExLTE2VDA0OjAwOjU3WiIsImV2ZW50IjoiUFJPQ0VTU19TVEFSVEVEIiwicGlkIjoxOTMxMn0KeyJhdCI6IjIwMjYtMTEtMTZUMDQ6MDA6NThaIiwiZXZlbnQiOiJQUk9DRVNTX0ZJTklTSEVEIiwiZXhpdF9jb2RlIjo0LCJzdGF0dXMiOiJURVNUX0ZBSUwiLCJ0aW1lZF9vdXQiOmZhbHNlfQp7ImF0IjoiMjAyNi0xMS0xNlQwNDowMDo1OFoiLCJldmVudCI6IkVWSURFTkNFX0RVUkFCTEVfQU5EX1FVRVVFRCIsInBheWxvYWRfc2hhMjU2IjoiYTVhZTk1NzZhNjE3NjJlMTFkZTA3YTQyZTdhM2Q2YjJlYzQ2NjhjM2ExNTQ0MWEyZjBhNTlmYTdkNWQ2YjU4OSJ9Cg==",
+        "encoding": "base64",
+        "path": "journal.jsonl",
+        "sha256": "0b71817a6b90bc458c020bc1f8fe65cb35e6135652a7c2737efca736e163737a"
+      },
+      {
+        "content": "ewogICJhbmFseXNpcyI6IHsKICAgICJhZ2VudF9kaXNwYXRjaF9zdGF0dXMiOiAiQUdFTlRfRElTUEFUQ0hfUEVORElORyIsCiAgICAiY2xhc3NpZmljYXRpb24iOiAiUEFDS0FHRV9JTlZBTElEIiwKICAgICJlMmVfcGFzc19hdXRob3JpdHkiOiBmYWxzZSwKICAgICJldmlkZW5jZV9yZXR1cm5fZTJlX3Bhc3NfYXV0aG9yaXR5IjogZmFsc2UsCiAgICAiZmFpbHVyZV9jbGFzcyI6ICJQQUNLQUdFX0lOVkFMSUQiLAogICAgImluZmVyZW5jZSI6IFsKICAgICAgewogICAgICAgICJjb25maWRlbmNlIjogIkxPVyIsCiAgICAgICAgImV2aWRlbmNlX2Jhc2lzIjogWwogICAgICAgICAgIlBBQ0tBR0VfQUNUSVZBVElPTl9GQUlMRUQiCiAgICAgICAgXSwKICAgICAgICAiaHlwb3RoZXNpcyI6ICJUaGUgcGFja2FnZSBhY3RpdmF0aW9uIGZhaWxlZCBkdWUgdG8gYW4gZXJyb3IgaW4gdGhlIGFwcGxpY2F0aW9uJ3MgZXhlY3V0aW9uLiIKICAgICAgfQogICAgXSwKICAgICJtaXNzaW5nX2V2aWRlbmNlIjogWwogICAgICAiRGV0YWlsZWQgZXJyb3IgbG9ncyBvciBzdGFjayB0cmFjZXMgZnJvbSB0aGUgYXBwbGljYXRpb24gZXhlY3V0aW9uLiIsCiAgICAgICJBZGRpdGlvbmFsIGNvbnRleHQgb3IgZXJyb3IgbWVzc2FnZXMgdGhhdCBjb3VsZCBleHBsYWluIHRoZSBmYWlsdXJlLiIKICAgIF0sCiAgICAib2JzZXJ2ZWQiOiBbCiAgICAgIHsKICAgICAgICAiZXZpZGVuY2VfZXhjZXJwdCI6ICJzdGRvdXQubG9nIiwKICAgICAgICAiZmFjdCI6ICJzdGRvdXQubG9nIgogICAgICB9LAogICAgICB7CiAgICAgICAgImV2aWRlbmNlX2V4Y2VycHQiOiAiUEFDS0FHRV9BQ1RJVkFUSU9OX0ZBSUxFRCIsCiAgICAgICAgImZhY3QiOiAic3RkZXJyLmxvZyIKICAgICAgfQogICAgXSwKICAgICJwcm9kdWN0X2UyZV9wYXNzX2F1dGhvcml0eSI6IGZhbHNlLAogICAgInJlY29tbWVuZGVkX2FjdGlvbiI6ICJJbnZlc3RpZ2F0ZSB0aGUgYXBwbGljYXRpb24ncyBleGVjdXRpb24gbG9ncyBhbmQgZXJyb3IgbWVzc2FnZXMgdG8gZGV0ZXJtaW5lIHRoZSByb290IGNhdXNlIG9mIHRoZSBwYWNrYWdlIGFjdGl2YXRpb24gZmFpbHVyZS4gRW5zdXJlIHRoYXQgYWxsIGRlcGVuZGVuY2llcyBhbmQgcHJlcmVxdWlzaXRlcyBhcmUgbWV0IGJlZm9yZSBhdHRlbXB0aW5nIHRvIGFjdGl2YXRlIHRoZSBwYWNrYWdlIGFnYWluLiIsCiAgICAicmVjb21tZW5kZWRfb3duZXIiOiAiQVBQIiwKICAgICJyZWdyZXNzaW9uX3Rlc3RzIjogWwogICAgICAiTE9DQUwtQ09NTUFORCIKICAgIF0sCiAgICAicmVsZWFzZV9yZWFkeV9hdXRob3JpdHkiOiBmYWxzZSwKICAgICJyZXF1ZXN0X2lkIjogImFwcC1kYXltYXJrLWFpLWI4MDA4YzZlLXBhY2thZ2UtYWN0aXZhdGlvbi1waGFzZTItMjAyNjExMTYiLAogICAgInNjaGVtYV92ZXJzaW9uIjogIndpbmRvd3MtcWEtYW5hbHlzaXMtdjEiLAogICAgInNldmVyaXR5IjogIkNSSVRJQ0FMIiwKICAgICJzb3VyY2Vfc2hhIjogImI4MDA4YzZlYzBmMGQzNzkwNmQyMTJmOWQwNTVkZTEyNzQzYmQ3MGEiLAogICAgInN0b3JlX3N1Ym1pc3Npb25fYWxsb3dlZCI6IGZhbHNlLAogICAgInN1Z2dlc3RlZF9maXhfYXJlYSI6ICJBcHBsaWNhdGlvbiBleGVjdXRpb24gYW5kIHBhY2thZ2UgYWN0aXZhdGlvbiBwcm9jZXNzIiwKICAgICJ0YXJnZXRfcmVwb3NpdG9yeSI6ICJ0c3VoYXNxbmktcGl4ZWwvZGFpbHktb2xsYW1hIiwKICAgICJ1bmtub3duIjogWwogICAgICAiVGhlIGV4YWN0IGNhdXNlIG9mIHRoZSBwYWNrYWdlIGFjdGl2YXRpb24gZmFpbHVyZSBpcyBub3Qgc3BlY2lmaWVkIGluIHRoZSBldmlkZW5jZS4iCiAgICBdCiAgfSwKICAiYXV0aG9yaXRhdGl2ZV90ZXN0X3Jlc3VsdF9jaGFuZ2VkIjogZmFsc2UsCiAgImUyZV9wYXNzX2F1dGhvcml0eSI6IGZhbHNlLAogICJlcnJvcnMiOiBbXSwKICAiZXZpZGVuY2VfcmV0dXJuX2UyZV9wYXNzX2F1dGhvcml0eSI6IGZhbHNlLAogICJtZXRyaWNzIjogewogICAgImV2YWxfY291bnQiOiA0ODEsCiAgICAibG9hZF9kdXJhdGlvbiI6IDMxNzQ2MTI3MDAsCiAgICAicHJvbXB0X2V2YWxfY291bnQiOiA4MDQsCiAgICAidG90YWxfZHVyYXRpb24iOiAxMDgzNTAyNTYwMAogIH0sCiAgIm1vZGVsIjogIndpbmRvd3MtcWEtYW5hbHlzdCIsCiAgInByb2R1Y3RfZTJlX3Bhc3NfYXV0aG9yaXR5IjogZmFsc2UsCiAgInJlbGVhc2VfcmVhZHlfYXV0aG9yaXR5IjogZmFsc2UsCiAgInJvdXRlX2xldmVsIjogMiwKICAic3RhdHVzIjogIkFJX0FOQUxZU0lTX1ZBTElEIiwKICAic3RvcmVfc3VibWlzc2lvbl9hbGxvd2VkIjogZmFsc2UKfQo=",
+        "encoding": "base64",
+        "path": "analysis/windows-qa-analysis.json",
+        "sha256": "2ffe277d6f21258a24dfd36bfbfc51146b514c809a59ee7b356b42c9d04cc9a9"
+      }
+    ],
+    "manifest": {
+      "actual": {
+        "exit_code": 4,
+        "observation_seconds": null,
+        "process_started": true,
+        "survived_observation": false,
+        "terminated_by_harness": false,
+        "timed_out": false
+      },
+      "artifact_sha256": "162b6abda1d190af5dbfea6b8ebfadc4bd6da2bcad6feef1493da811cd3fb59a",
+      "collection": {
+        "exit_code": "CAPTURED",
+        "expected_and_actual": "CAPTURED",
+        "github_shareable_screenshot": "NOT_APPLICABLE",
+        "screenshots": "NOT_APPLICABLE",
+        "stderr": "CAPTURED",
+        "stdout": "EMPTY_VALID",
+        "uia_actions": "NOT_APPLICABLE",
+        "windows_event_log": "EMPTY_VALID",
+        "windows_event_log_error": null
+      },
+      "collection_complete": true,
+      "e2e_pass": false,
+      "environment": {
+        "architecture": "AMD64",
+        "machine_id": "8b4a25fb85ff473bb9b6584c93e68a82",
+        "os": "Windows",
+        "os_release": "11",
+        "python": "3.14.4"
+      },
+      "evidence_return_e2e_pass": false,
+      "exit_code": 4,
+      "expected": {
+        "completion_policy": "WAIT_FOR_EXIT",
+        "exit_code": 0,
+        "observation_seconds": 0
+      },
+      "factory_dispatch": {
+        "reason": "No verified automatic development-agent dispatch contract is configured",
+        "status": "AGENT_DISPATCH_PENDING",
+        "target_repository": "shihuiarenjinba-png/AI-App-Factory"
+      },
+      "failed_tests": [
+        {
+          "actual": {
+            "exit_code": 4,
+            "observation_seconds": null,
+            "process_started": true,
+            "survived_observation": false,
+            "terminated_by_harness": false,
+            "timed_out": false
+          },
+          "category": "LOCAL_QA",
+          "error": "unexpected exit code",
+          "expected": {
+            "completion_policy": "WAIT_FOR_EXIT",
+            "exit_code": 0,
+            "observation_seconds": 0
+          },
+          "test_id": "LOCAL-COMMAND"
+        }
+      ],
+      "finished_at_utc": "2026-11-16T04:00:58Z",
+      "github_actions_run_id": 42055072806,
+      "github_return": {
+        "readback_verified": false,
+        "status": "QUEUED"
+      },
+      "local_persistence_verified": true,
+      "product_e2e_pass": false,
+      "product_e2e_requirements": {
+        "artifact_package_sha_correlation": false,
+        "identity_correlation": false,
+        "package_qa": false,
+        "physical_gui_qa": false,
+        "product_specific_regression": false,
+        "product_specific_tests": false,
+        "version_correlation": false
+      },
+      "product_type": "APP",
+      "release_ready": false,
+      "request_id": "app-daymark-ai-b8008c6e-package-activation-phase2-20261116",
+      "run_id": "20261116T040057Z-ef41b403aeedb057",
+      "schema_version": "local-qa-evidence-v1",
+      "slug": "daymark-ai-installed-package",
+      "source_branch": "codex/store-ollama-download-20261024",
+      "source_repository": "tsuhasqni-pixel/daily-ollama",
+      "source_sha": "b8008c6ec0f0d37906d212f9d055de12743bd70a",
+      "started_at_utc": "2026-11-16T04:00:57Z",
+      "status": "TEST_FAIL",
+      "store_submission_allowed": false,
+      "test_command": [
+        "C:\\Python314\\python.exe",
+        "C:\\Users\\[REDACTED]\\Desktop\\portfolio-audit\\_task_worktrees\\waa-ollama-local-qa-supervisor\\scripts\\trusted_qa_test_runner.py",
+        "--test-id",
+        "PROCESS_START",
+        "--artifact",
+        "C:\\Program Files\\WindowsApps\\OkinawaDesktopTools.DaymarkAI_1.0.4.0_x64__j8yefg9jgfh58\\VFS\\ProgramFilesX64\\OkinawaDesktopTools\\DaymarkAI\\DaymarkAI.exe",
+        "--expected-sha",
+        "162b6abda1d190af5dbfea6b8ebfadc4bd6da2bcad6feef1493da811cd3fb59a"
+      ],
+      "test_suite_version": "ollama-supervisor-real-app-phase2-v2",
+      "timed_out": false,
+      "user_price_approval": false,
+      "user_product_approval": false
+    },
+    "redaction": {
+      "replacement_count": 1,
+      "screenshots_require_explicit_privacy_review": true
+    }
+  },
+  "payload_sha256": "7344d7fcd909b2bbc6d62852d56ec7e71e1876ee724ef5ea5fe1f3c150a01395",
+  "request_id": "app-daymark-ai-b8008c6e-package-activation-phase2-20261116",
+  "schema_version": "local-qa-evidence-v1",
+  "source_sha": "b8008c6ec0f0d37906d212f9d055de12743bd70a"
+}
