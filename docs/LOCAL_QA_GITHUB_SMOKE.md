@@ -14,6 +14,7 @@ local Windows synthetic test
   -> GitHub readback
   -> independent second GitHub fetch
   -> immutable request/source/payload correlation
+  -> separate ACK receipt write + readback
   -> evidence_return_e2e_pass = true
 ```
 
@@ -58,8 +59,10 @@ return.
 10. A second independent `gh api` fetch reads the remote evidence again.
 11. The fake marker is present locally but absent remotely, with a redaction
     marker present remotely.
-12. The retry queue entry is removed only after a durable GitHub acknowledgement.
-13. The final local manifest has:
+12. A separate immutable `local-qa-github-ack-v1` receipt is written and read
+    back from `ops/local-qa-acks/`.
+13. The retry queue entry is removed only after the evidence and ACK readbacks.
+14. The final local manifest has:
 
 ```text
 TEST_PASS = true
@@ -96,7 +99,7 @@ HEAD and fails closed on drift.
 The default invocation performs no GitHub write:
 
 ```powershell
-pwsh -File scripts\local_qa_github_smoke.ps1
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts\local_qa_github_smoke.ps1
 ```
 
 Expected result:
@@ -118,7 +121,7 @@ real smoke. Never paste a GitHub token into logs, issues, or chat.
 A GitHub write is explicit:
 
 ```powershell
-pwsh -File scripts\local_qa_github_smoke.ps1 -AllowGitHubWrite
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts\local_qa_github_smoke.ps1 -AllowGitHubWrite
 ```
 
 The default remote destination is the dedicated evidence branch:
@@ -140,6 +143,7 @@ and:
 
 ```text
 github_ack = GITHUB_READBACK_VERIFIED
+github_ack_receipt = GITHUB_ACK_RECEIPT_VERIFIED
 evidence_return_e2e_pass = true
 product_e2e_pass = false
 store_submission_allowed = false
@@ -157,7 +161,7 @@ GitHub transport should first be proven without Ollama. After that, the same
 round trip can include the optional derived analyzer:
 
 ```powershell
-pwsh -File scripts\local_qa_github_smoke.ps1 -AllowGitHubWrite -EnableAI
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts\local_qa_github_smoke.ps1 -AllowGitHubWrite -EnableAI
 ```
 
 Ollama remains advisory. AI failure must not change evidence-return, product,

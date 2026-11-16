@@ -312,23 +312,25 @@ class GitHubContentsTransportTests(unittest.TestCase):
                          "payload_sha256": sha256_bytes(canonical(payload)), "payload": payload}
         self.path = self.root / "envelope.json"
         atomic_json(self.path, self.envelope)
-        self.remote_content = None
+        self.remote_contents = {}
 
     def runner(self, command, **_kwargs):
         route = next((x for x in command if isinstance(x, str) and x.startswith("repos/")), "")
+        content_key = route.split("?", 1)[0]
         method = command[command.index("--method") + 1] if "--method" in command else "GET"
         if "/git/ref/heads/" in route:
             return subprocess.CompletedProcess(command, 0,
                 json.dumps({"object": {"sha": "c" * 40}}), "")
         if "/contents/" in route and method == "GET":
-            if self.remote_content is None:
+            if content_key not in self.remote_contents:
                 return subprocess.CompletedProcess(command, 1, "", "not found")
             return subprocess.CompletedProcess(command, 0,
-                json.dumps({"encoding": "base64", "content": self.remote_content}), "")
+                json.dumps({"encoding": "base64",
+                            "content": self.remote_contents[content_key]}), "")
         if "/contents/" in route and method == "PUT":
             request_path = Path(command[command.index("--input") + 1])
             body = json.loads(request_path.read_text(encoding="utf-8"))
-            self.remote_content = body["content"]
+            self.remote_contents[content_key] = body["content"]
             return subprocess.CompletedProcess(command, 0, json.dumps({"commit": {"sha": "d" * 40}}), "")
         raise AssertionError(command)
 
@@ -340,15 +342,72 @@ class GitHubContentsTransportTests(unittest.TestCase):
         self.assertEqual(ack["status"], "GITHUB_READBACK_VERIFIED")
         self.assertEqual(ack["source_sha"], SOURCE)
         self.assertEqual(ack["payload_sha256"], self.envelope["payload_sha256"])
+        self.assertEqual(ack["schema_version"], "local-qa-github-ack-v1")
+        self.assertTrue(ack["ack_path"].endswith(".ack-receipt.json"))
+        self.assertFalse(ack["evidence_return_e2e_pass"])
+        self.assertFalse(ack["product_e2e_pass"])
+        self.assertFalse(ack["release_ready"])
+        self.assertFalse(ack["store_submission_allowed"])
 
     def test_tampered_readback_is_rejected(self):
         bad = dict(self.envelope)
         bad["source_sha"] = "f" * 40
-        self.remote_content = base64.b64encode(json.dumps(bad).encode()).decode()
+        evidence_path = (
+            "repos/owner/repo/contents/ops/local-qa-results/app-request-0001/"
+            f"{SOURCE}/{self.envelope['payload_sha256']}.json"
+        )
+        self.remote_contents[evidence_path] = base64.b64encode(
+            json.dumps(bad).encode()
+        ).decode()
         transport = GitHubContentsTransport(
             repository="owner/repo", branch="codex/local-evidence",
             base_ref="main", gh_runner=self.runner)
         with self.assertRaisesRegex(GitHubReturnError, "correlation mismatch"):
+            transport.put_and_readback(self.path)
+
+    def test_ack_receipt_is_true_only_for_complete_passing_evidence(self):
+        from all_auto.local_qa_evidence import canonical, sha256_bytes
+        payload = {
+            "manifest": {
+                "status": "TEST_PASS", "collection_complete": True,
+                "local_persistence_verified": True,
+            },
+            "files": [], "redaction": {},
+        }
+        envelope = dict(self.envelope)
+        envelope.update({
+            "payload": payload,
+            "payload_sha256": sha256_bytes(canonical(payload)),
+        })
+        atomic_json(self.path, envelope)
+        transport = GitHubContentsTransport(
+            repository="owner/repo", branch="codex/local-evidence",
+            base_ref="main", gh_runner=self.runner)
+        ack = transport.put_and_readback(self.path)
+        self.assertTrue(ack["evidence_return_e2e_pass"])
+        self.assertFalse(ack["product_e2e_pass"])
+
+    def test_existing_tampered_ack_receipt_is_rejected(self):
+        request = self.envelope["request_id"]
+        payload_sha = self.envelope["payload_sha256"]
+        evidence_path = (
+            "repos/owner/repo/contents/ops/local-qa-results/"
+            f"{request}/{SOURCE}/{payload_sha}.json"
+        )
+        ack_path = (
+            "repos/owner/repo/contents/ops/local-qa-acks/"
+            f"{request}/{SOURCE}/{payload_sha}.ack-receipt.json"
+        )
+        self.remote_contents[evidence_path] = base64.b64encode(
+            self.path.read_bytes()
+        ).decode()
+        self.remote_contents[ack_path] = base64.b64encode(
+            b'{"status":"TAMPERED"}\n'
+        ).decode()
+        transport = GitHubContentsTransport(
+            repository="owner/repo", branch="codex/local-evidence",
+            base_ref="main", gh_runner=self.runner)
+        with self.assertRaisesRegex(GitHubReturnError, "receipt mismatch"):
             transport.put_and_readback(self.path)
 
 
@@ -362,6 +421,15 @@ class EvidenceSchemaTests(unittest.TestCase):
         self.assertEqual(schema["properties"]["product_e2e_pass"]["const"], False)
         self.assertEqual(schema["properties"]["e2e_pass"]["const"], False)
         self.assertEqual(schema["properties"]["store_submission_allowed"]["const"], False)
+
+    def test_ack_receipt_schema_is_fail_closed(self):
+        schema = json.loads(Path("schemas/local-qa-github-ack-v1.schema.json").read_text(
+            encoding="utf-8"))
+        self.assertEqual(schema["properties"]["schema_version"]["const"],
+                         "local-qa-github-ack-v1")
+        for field in ("product_e2e_pass", "e2e_pass", "release_ready",
+                      "store_submission_allowed"):
+            self.assertEqual(schema["properties"][field]["const"], False)
 
 
 if __name__ == "__main__":

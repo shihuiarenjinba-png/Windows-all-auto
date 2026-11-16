@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/shihuiarenjinba-png/Windows-all-auto/schemas/local-qa-github-ack-v1.schema.json",
+  "title": "Verified local QA GitHub acknowledgement receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "e2e_pass",
+    "evidence_path",
+    "evidence_return_e2e_pass",
+    "payload_sha256",
+    "product_e2e_pass",
+    "release_ready",
+    "remote_file_sha256",
+    "request_id",
+    "schema_version",
+    "source_sha",
+    "status",
+    "store_submission_allowed"
+  ],
+  "properties": {
+    "schema_version": { "const": "local-qa-github-ack-v1" },
+    "request_id": { "type": "string", "minLength": 4 },
+    "source_sha": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "payload_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "status": { "const": "GITHUB_READBACK_VERIFIED" },
+    "evidence_return_e2e_pass": { "type": "boolean" },
+    "product_e2e_pass": { "const": false },
+    "e2e_pass": { "const": false },
+    "release_ready": { "const": false },
+    "store_submission_allowed": { "const": false },
+    "evidence_path": { "type": "string", "minLength": 1 },
+    "remote_file_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

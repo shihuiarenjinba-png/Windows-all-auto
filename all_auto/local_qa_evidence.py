@@ -27,6 +27,7 @@ import uuid
 
 
 SCHEMA = "local-qa-evidence-v1"
+ACK_SCHEMA = "local-qa-github-ack-v1"
 SHA40 = re.compile(r"^[0-9a-f]{40}$")
 SHA64 = re.compile(r"^[0-9a-f]{64}$")
 REQUEST = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{3,127}$")
@@ -797,12 +798,62 @@ class GitHubContentsTransport:
                 remote.get("payload_sha256") != envelope["payload_sha256"] or
                 sha256_bytes(canonical(remote.get("payload"))) != envelope["payload_sha256"]):
             raise GitHubReturnError("GitHub readback correlation mismatch")
-        return {"status": "GITHUB_READBACK_VERIFIED", "repository": self.repository,
-                "branch": self.branch, "path": remote_path,
-                "request_id": envelope["request_id"],
-                "source_sha": envelope["source_sha"],
-                "payload_sha256": envelope["payload_sha256"],
-                "remote_file_sha256": sha256_bytes(remote_raw)}
+        manifest = remote.get("payload", {}).get("manifest", {})
+        evidence_return_e2e = (
+            manifest.get("status") == "TEST_PASS" and
+            manifest.get("collection_complete") is True and
+            manifest.get("local_persistence_verified") is True
+        )
+        acknowledgement = {
+            "schema_version": ACK_SCHEMA,
+            "request_id": envelope["request_id"],
+            "source_sha": envelope["source_sha"],
+            "payload_sha256": envelope["payload_sha256"],
+            "status": "GITHUB_READBACK_VERIFIED",
+            "evidence_return_e2e_pass": evidence_return_e2e,
+            "product_e2e_pass": False,
+            "e2e_pass": False,
+            "release_ready": False,
+            "store_submission_allowed": False,
+            "evidence_path": remote_path,
+            "remote_file_sha256": sha256_bytes(remote_raw),
+        }
+        ack_path = (f"ops/local-qa-acks/{request}/{envelope['source_sha']}/"
+                    f"{envelope['payload_sha256']}.ack-receipt.json")
+        ack_raw = json.dumps(
+            acknowledgement, ensure_ascii=False, indent=2, sort_keys=True,
+        ).encode("utf-8") + b"\n"
+        ack_encoded = base64.b64encode(ack_raw).decode("ascii")
+        code, existing_ack, _ = self._call(
+            [f"repos/{self.repository}/contents/{ack_path}?ref={self.branch}"],
+            allow_failure=True)
+        if code == 0:
+            remote_ack_raw = self._decode_content(existing_ack)
+        else:
+            self._call(
+                ["--method", "PUT", f"repos/{self.repository}/contents/{ack_path}"],
+                body={
+                    "message": "qa: record verified local evidence acknowledgement " + request,
+                    "content": ack_encoded,
+                    "branch": self.branch,
+                })
+            _, fetched_ack, _ = self._call(
+                [f"repos/{self.repository}/contents/{ack_path}?ref={self.branch}"])
+            remote_ack_raw = self._decode_content(fetched_ack)
+        try:
+            remote_ack = json.loads(remote_ack_raw)
+        except json.JSONDecodeError as exc:
+            raise GitHubReturnError("GitHub acknowledgement receipt is malformed") from exc
+        if remote_ack != acknowledgement:
+            raise GitHubReturnError("GitHub acknowledgement receipt mismatch")
+        return {
+            **acknowledgement,
+            "repository": self.repository,
+            "branch": self.branch,
+            "path": remote_path,
+            "ack_path": ack_path,
+            "ack_receipt_sha256": sha256_bytes(remote_ack_raw),
+        }
 
     @staticmethod
     def _decode_content(response: dict[str, Any] | None) -> bytes:

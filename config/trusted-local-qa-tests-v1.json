@@ -1,0 +1,48 @@
+{
+  "schema_version": "trusted-local-qa-catalog-v1",
+  "tests": [
+    {
+      "test_id": "ARTIFACT_HASH",
+      "description": "Recalculate the immutable artifact SHA-256 before execution.",
+      "allowed_product_types": ["APP", "GAME", "GAME_3D"],
+      "executable": "TRUSTED_PYTHON_QA_RUNNER",
+      "arguments_template": [
+        "--test-id",
+        "ARTIFACT_HASH",
+        "--artifact",
+        "{artifact_path}",
+        "--expected-sha",
+        "{artifact_sha256}"
+      ],
+      "timeout_seconds": 60,
+      "expected_exit_codes": [0],
+      "gui_test": false,
+      "admin_required": false,
+      "destructive": false,
+      "side_effect_class": "READ_ONLY",
+      "resource_units": 1,
+      "max_retries": 1,
+      "supported_gui_operation": null,
+      "evidence_requirements": ["stdout", "stderr", "exit_code", "artifact_sha256"]
+    },
+    {
+      "test_id": "PROCESS_START",
+      "description": "Start the exact immutable artifact with no model-provided arguments.",
+      "allowed_product_types": ["APP", "GAME", "GAME_3D"],
+      "executable": "TRUSTED_ARTIFACT_PROCESS",
+      "arguments_template": [
+        "{artifact_path}"
+      ],
+      "timeout_seconds": 90,
+      "expected_exit_codes": [0],
+      "gui_test": false,
+      "admin_required": false,
+      "destructive": false,
+      "side_effect_class": "PROCESS_EXECUTION",
+      "resource_units": 3,
+      "max_retries": 1,
+      "supported_gui_operation": null,
+      "evidence_requirements": ["stdout", "stderr", "exit_code", "windows_event_log"]
+    }
+  ]
+}

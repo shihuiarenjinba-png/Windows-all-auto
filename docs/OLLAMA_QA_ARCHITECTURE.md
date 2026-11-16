@@ -14,6 +14,15 @@ schema, invents an evidence excerpt, or cannot embed a query, the status is
 `AI_ANALYSIS_UNAVAILABLE`. Evidence return and ordinary QA continue. This is a
 fail-open-to-QA policy, not a fail-open-to-product-E2E or release policy.
 
+Ollama may additionally act as a bounded test planner through
+`qa_ai/planner.py`. The planner emits only strict `windows-qa-plan-v1` JSON and
+can select only test IDs disclosed from the locally hash-pinned trusted
+catalog. It never receives executable paths or argument templates. The
+deterministic guard in `all_auto/qa_supervisor.py` performs product-lane,
+artifact-path, symlink, admin, destructive, GUI-operation, retry, runtime,
+test-count, and resource-budget checks before expanding an ID into a command.
+Product logs are explicitly labeled untrusted data in the planner prompt.
+
 ## Data flow
 
 ```text
@@ -27,6 +36,11 @@ trusted local profile -> Windows test -> raw durable evidence (local only)
                                       -> rebuilt hashed envelope
                                       -> GitHub return + readback gate
 ```
+
+The bounded supervisor permits at most five planner rounds, twelve tests,
+thirty minutes, and one identical retry by default. Every planner decision and
+test result is checkpointed. A restart converts a still-running supervisor
+state to `INTERRUPTED_RESTART` with all E2E/release/Store fields false.
 
 The analyzer reads only `github-envelope.json`; it never reads raw local logs
 directly. `analysis/windows-qa-analysis.json` is redacted, size-bounded, and
@@ -98,6 +112,11 @@ over a production repair corpus.
 - repair records with secret-like strings are rejected;
 - no generated command is executed and no AI output selects an executable;
 - the model service binds to loopback by default.
+- the model never supplies a command, path, executable, or argument;
+- the trusted catalog is byte-hash pinned and rejects traversal, symlinks,
+  unknown fields, untrusted executable identifiers, and shell metacharacters;
+- completed GitHub readback creates a separate immutable
+  `local-qa-github-ack-v1` receipt while leaving the evidence snapshot intact.
 
 ## Fault injection
 
