@@ -30,14 +30,24 @@
       "package_version": null,
       "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
       "real_msix": false,
-      "next_action": "Wait only for authoritative Package Version, then run MSIX workflow; package PNGs are generated deterministically in CI. Do not add product features.",
+      "next_action": "DELIVERY_HOLD: independently obtain authoritative Package Version AND verify generated StoreLogo.png, Square150.png, Square44.png as real PNG bytes embedded in exact-source MSIX; generator/recipe commit alone is not asset proof. After both gates PASS, build real MSIX and verify Identity/source/request/version, SHA-256 custody, GitHub backlog, local pull, checker and GUI. No inferred Version or E2E promotion.",
       "store_assets_status": "GENERATOR_AND_APPROVED_RECIPE_COMMITTED",
       "required_store_assets": [
         "StoreLogo.png",
         "Square150.png",
         "Square44.png"
       ],
-      "store_assets_branch_head": "995fcd3b403225fded65f4ac9491ea3216b73eb9"
+      "store_assets_branch_head": "995fcd3b403225fded65f4ac9491ea3216b73eb9",
+      "package_blockers": [
+        {
+          "field": "package_version",
+          "status": "AUTHORITATIVE_VALUE_REQUIRED"
+        },
+        {
+          "field": "required_store_assets",
+          "status": "GENERATORS_COMMITTED_REAL_PNG_BYTES_AND_MSIX_EMBED_NOT_INDEPENDENTLY_VERIFIED"
+        }
+      ]
     },
     {
       "rank": 2,
@@ -53,14 +63,24 @@
       "package_version": null,
       "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
       "real_msix": false,
-      "next_action": "Wait only for authoritative Package Version, then run MSIX workflow; package PNGs are generated deterministically in CI. Do not add product features.",
+      "next_action": "DELIVERY_HOLD: independently obtain authoritative Package Version AND verify generated StoreLogo.png, Square150.png, Square44.png as real PNG bytes embedded in exact-source MSIX; generator/recipe commit alone is not asset proof. After both gates PASS, build real MSIX and verify Identity/source/request/version, SHA-256 custody, GitHub backlog, local pull, checker and GUI. No inferred Version or E2E promotion.",
       "store_assets_status": "GENERATOR_AND_APPROVED_RECIPE_COMMITTED",
       "required_store_assets": [
         "StoreLogo.png",
         "Square150.png",
         "Square44.png"
       ],
-      "store_assets_branch_head": "a74f5f79026d0f376e94dfe6c5d60d07e67fa68b"
+      "store_assets_branch_head": "a74f5f79026d0f376e94dfe6c5d60d07e67fa68b",
+      "package_blockers": [
+        {
+          "field": "package_version",
+          "status": "AUTHORITATIVE_VALUE_REQUIRED"
+        },
+        {
+          "field": "required_store_assets",
+          "status": "GENERATORS_COMMITTED_REAL_PNG_BYTES_AND_MSIX_EMBED_NOT_INDEPENDENTLY_VERIFIED"
+        }
+      ]
     },
     {
       "rank": 3,
