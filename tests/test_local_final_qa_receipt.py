@@ -1,4 +1,6 @@
 import json
+import subprocess
+import sys
 import unittest
 from pathlib import Path
 
@@ -62,6 +64,26 @@ class LocalFinalQaReceiptTests(unittest.TestCase):
         bad["security_bypass_used"] = True
         with self.assertRaises(StoreHandoffError):
             apply_local_final_qa_receipt(self.payload, bad)
+
+    def test_documented_store_handoff_scripts_run_directly(self):
+        root = Path(__file__).resolve().parents[1]
+        scripts = (
+            "create_local_final_qa_receipt_template.py",
+            "apply_local_final_qa_receipt.py",
+            "prepare_store_automator_input.py",
+            "apply_identity_reverify_receipt.py",
+            "apply_initial_submission_receipt.py",
+        )
+        for name in scripts:
+            with self.subTest(script=name):
+                result = subprocess.run(
+                    [sys.executable, str(root / "scripts" / name), "--help"],
+                    cwd=root,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                self.assertEqual(0, result.returncode, result.stderr)
 
 
 if __name__ == "__main__":
