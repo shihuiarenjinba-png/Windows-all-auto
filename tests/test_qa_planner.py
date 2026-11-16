@@ -125,6 +125,7 @@ class PlannerSafetyTests(unittest.TestCase):
         self.assertEqual(outcome.status, "AI_PLAN_VALID")
         self.assertIn("EXECUTION_HISTORY", client.prompt)
         self.assertIn('"status": "TEST_PASS"', client.prompt)
+        self.assertIn("requires_test_passes", client.prompt)
         self.assertNotIn("arguments_template", client.prompt)
 
     def test_timeout_offline_empty_malformed_and_schema_violation_fail_safe(self):
