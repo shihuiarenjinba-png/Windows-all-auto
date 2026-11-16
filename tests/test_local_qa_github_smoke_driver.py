@@ -85,11 +85,22 @@ class LocalGitHubSmokeDriverTests(unittest.TestCase):
             raw_stdout = (run_root / "stdout.log").read_text(encoding="utf-8")
             self.assertIn(smoke.FAKE_SECRET, raw_stdout)
 
-            remote_envelope = (run_root / "github-envelope.json").read_text(
+            remote_envelope_text = (run_root / "github-envelope.json").read_text(
                 encoding="utf-8"
             )
-            self.assertNotIn(smoke.FAKE_SECRET, remote_envelope)
-            self.assertIn("[REDACTED]", remote_envelope)
+            self.assertNotIn(smoke.FAKE_SECRET, remote_envelope_text)
+            remote_envelope = json.loads(remote_envelope_text)
+            stdout_items = [
+                item
+                for item in remote_envelope["payload"]["files"]
+                if item["path"] == "stdout.log"
+            ]
+            self.assertEqual(len(stdout_items), 1)
+            decoded_stdout = base64.b64decode(
+                stdout_items[0]["content"]
+            ).decode("utf-8")
+            self.assertNotIn(smoke.FAKE_SECRET, decoded_stdout)
+            self.assertIn("[REDACTED]", decoded_stdout)
 
             manifest = json.loads(
                 (run_root / "manifest.json").read_text(encoding="utf-8")
