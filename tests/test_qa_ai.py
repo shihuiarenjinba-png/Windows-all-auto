@@ -73,6 +73,11 @@ class AnalysisSafetyTests(unittest.TestCase):
     def test_deterministic_router_handles_known_signatures(self):
         self.assertEqual(classify("TEST_TIMEOUT after 30 seconds").classification, "TIMEOUT")
         self.assertEqual(classify("hash verification mismatch").level, 0)
+        blocked = classify(
+            "trusted package activation failed with HRESULT -2147020345"
+        )
+        self.assertEqual(blocked.classification, "APPLICATION_CONTROL_BLOCKED")
+        self.assertEqual(blocked.level, 0)
         self.assertEqual(classify("unstructured crash").classification, "UNKNOWN")
 
     def test_l0_artifact_failure_routes_to_windows_e2e_without_model(self):
@@ -80,6 +85,16 @@ class AnalysisSafetyTests(unittest.TestCase):
             context=CONTEXT, evidence="artifact missing from workflow bundle")
         self.assertEqual(outcome.status, "RULE_ANALYSIS_VALID")
         self.assertEqual(outcome.analysis["recommended_owner"], "Windows-E2E")
+
+    def test_l0_application_control_block_routes_to_infrastructure(self):
+        outcome = AnalysisEngine(client=StaticClient(error=AssertionError())).analyze(
+            context=CONTEXT,
+            evidence="trusted package activation failed with HRESULT -2147020345",
+        )
+        self.assertEqual(outcome.status, "RULE_ANALYSIS_VALID")
+        self.assertEqual(outcome.analysis["classification"],
+                         "APPLICATION_CONTROL_BLOCKED")
+        self.assertEqual(outcome.analysis["recommended_owner"], "infrastructure")
 
     def test_model_missing_and_timeout_are_non_authoritative(self):
         for error in (AnalysisUnavailable("model missing"), TimeoutError("late")):

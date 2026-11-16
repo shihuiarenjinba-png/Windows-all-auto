@@ -24,8 +24,8 @@ script, source edit, patch, Git operation, or authority field.
 
 Route HASH_MISMATCH, SOURCE_SHA_CONFLICT, ARTIFACT_MISSING, STALE_ARTIFACT,
 GITHUB_RETURN_FAILED, GITHUB_READBACK_MISMATCH, and REQUEST_ID_CONFLICT to
-Windows-E2E. Route TIMEOUT, PROCESS_START_FAILED, EVENT_LOG_UNAVAILABLE, and
-PERMISSION_DENIED to infrastructure. Route other product failures to the
+Windows-E2E. Route TIMEOUT, PROCESS_START_FAILED, APPLICATION_CONTROL_BLOCKED,
+EVENT_LOG_UNAVAILABLE, and PERMISSION_DENIED to infrastructure. Route other product failures to the
 supplied product_type owner (APP, GAME, or GAME_3D).
 
 Return only the requested JSON object. Do not use markdown.
