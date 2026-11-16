@@ -17,7 +17,7 @@
           "admin_required", "allowed_product_types", "arguments_template",
           "description", "destructive", "evidence_requirements", "executable",
           "expected_exit_codes", "gui_test", "max_retries", "resource_units",
-          "side_effect_class", "supported_gui_operation", "test_id",
+          "requires_test_passes", "side_effect_class", "supported_gui_operation", "test_id",
           "timeout_seconds"
         ],
         "properties": {
@@ -52,6 +52,10 @@
           "evidence_requirements": {
             "type": "array", "minItems": 1,
             "items": { "type": "string", "minLength": 1 }
+          },
+          "requires_test_passes": {
+            "type": "array", "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]{2,63}$" }
           }
         }
       }
