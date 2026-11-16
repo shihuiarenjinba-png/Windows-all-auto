@@ -23,7 +23,8 @@
       "resource_units": 1,
       "max_retries": 1,
       "supported_gui_operation": null,
-      "evidence_requirements": ["stdout", "stderr", "exit_code", "artifact_sha256"]
+      "evidence_requirements": ["stdout", "stderr", "exit_code", "artifact_sha256"],
+      "requires_test_passes": []
     },
     {
       "test_id": "PROCESS_START",
@@ -42,7 +43,8 @@
       "resource_units": 3,
       "max_retries": 1,
       "supported_gui_operation": null,
-      "evidence_requirements": ["stdout", "stderr", "exit_code", "windows_event_log"]
+      "evidence_requirements": ["stdout", "stderr", "exit_code", "windows_event_log"],
+      "requires_test_passes": ["ARTIFACT_HASH"]
     }
   ]
 }
