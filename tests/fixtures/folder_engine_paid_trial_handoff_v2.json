@@ -6,7 +6,7 @@
     "name": "Folder Automation Engine",
     "edition": "standard",
     "summary": "Safely copy or move files by type with preview and optional automatic organizing.",
-    "submission_kind": "update",
+    "submission_kind": "new",
     "submission_route": "msix_pwa_app",
     "repository": "https://github.com/shihuiarenjinba-png/folder-automation-engine",
     "source_ref": "codex/folder-standard-consumer-ui-20261026",
@@ -31,8 +31,12 @@
     "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
     "version": "1.0.0.0",
     "architecture": "x64",
-    "live_partner_center_reverified": false,
-    "accepted_version_history_verified": false
+    "live_partner_center_reverified": true,
+    "accepted_version_history_verified": false,
+    "version_history_state": "NO_ACCEPTED_PACKAGE_OBSERVED",
+    "version_conflict": false,
+    "package_family_name": "OkinawaDesktopTools.FolderAutomationEngine_j8yefg9jgfh58",
+    "package_sid": "S-1-15-2-795676864-310991790-2802347502-2718627192-2651328981-310414558-459028798"
   },
   "commercial": {
     "model": "paid_one_time",
