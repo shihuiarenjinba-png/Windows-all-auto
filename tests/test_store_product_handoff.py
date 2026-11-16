@@ -8,7 +8,7 @@ def sample():
       "schema_version":"store-product-handoff/2",
       "product":{"id":"folder-engine","type":"app","name":"Folder Automation Engine","edition":"standard","submission_kind":"update","submission_route":"msix_pwa_app","repository":"https://github.com/shihuiarenjinba-png/folder-automation-engine","source_ref":"codex/x","source_sha":"a"*40},
       "package":{"package_type":"msix","file_name":"Folder.msix","package_sha256":"b"*64},
-      "identity":{"store_id":"9PTEST","name":"OkinawaDesktopTools.FolderAutomationEngine","publisher":"CN=TEST","version":"1.0.0.0","architecture":"x64","live_partner_center_reverified":False,"accepted_version_history_verified":False},
+      "identity":{"store_id":"9PTEST","name":"OkinawaDesktopTools.FolderAutomationEngine","publisher":"CN=TEST","version":"1.0.0.0","architecture":"x64","live_partner_center_reverified":False,"accepted_version_history_verified":False,"version_history_state":"VERIFIED_ACCEPTED_HISTORY","version_conflict":False},
       "commercial":{"model":"paid_one_time","currency":"JPY","exact_partner_center_price_value":None,"price_confirmed":False,"approved_by":None,"free_trial":"7_days","trial_confirmed":True,"trial_approved_by":"owner-confirmed","publishing_hold":"manual_publish"},
       "distribution":{"audience":"PRIVATE_AUDIENCE_TEST","known_user_group":None,"public_release_approved":False},
       "assets":{"owner_visual_approval":False},
@@ -27,6 +27,8 @@ class StoreProductHandoffTests(unittest.TestCase):
         p=sample()
         p["identity"]["live_partner_center_reverified"]=True
         p["identity"]["accepted_version_history_verified"]=True
+        p["identity"]["version_history_state"]="VERIFIED_ACCEPTED_HISTORY"
+        p["identity"]["version_conflict"]=False
         p["commercial"].update({"exact_partner_center_price_value":"LIVE_LOW_PRICE_TIER","price_confirmed":True,"approved_by":"owner-confirmed"})
         p["distribution"]["known_user_group"]="owner-testers"
         p["assets"]["owner_visual_approval"]=True
@@ -48,7 +50,7 @@ class StoreProductHandoffTests(unittest.TestCase):
                          "911f8eb13abfdbb51bea8f279006d138d6be9cba4a25413416c1d70458676450")
         expected={
             "identity.live_partner_center_reverified",
-            "identity.accepted_version_history_verified",
+            "identity.version_history_ready",
             "commercial.price_confirmed",
             "commercial.approved_by",
             "commercial.price_value",
@@ -84,7 +86,7 @@ class StoreProductHandoffTests(unittest.TestCase):
         n=apply_identity_reverify_receipt(p,receipt)
         self.assertTrue(n["identity"]["live_partner_center_reverified"])
         self.assertFalse(n["identity"]["accepted_version_history_verified"])
-        self.assertIn("identity.accepted_version_history_verified",n["missing_for_draft"])
+        self.assertIn("identity.version_history_ready",n["missing_for_draft"])
         self.assertNotIn("identity.live_partner_center_reverified",n["missing_for_draft"])
 
     def test_identity_receipt_rejects_different_store_id_or_write(self):
@@ -103,6 +105,26 @@ class StoreProductHandoffTests(unittest.TestCase):
         base["store_id"]="9PTEST"; base["package_uploaded"]=True
         with self.assertRaises(StoreHandoffError):
             apply_identity_reverify_receipt(p,base)
+
+    def test_initial_submission_can_be_version_ready_without_accepted_history(self):
+        p=sample()
+        p["product"]["submission_kind"]="new"
+        p["identity"]["accepted_version_history_verified"]=False
+        p["identity"]["version_history_state"]="NO_ACCEPTED_PACKAGE_OBSERVED"
+        p["identity"]["version_conflict"]=False
+        n=normalize_store_product_handoff(p)
+        self.assertTrue(n["identity"]["version_history_ready"])
+        self.assertNotIn("identity.version_history_ready",n["missing_for_draft"])
+
+    def test_update_still_requires_verified_accepted_history(self):
+        p=sample()
+        p["product"]["submission_kind"]="update"
+        p["identity"]["accepted_version_history_verified"]=False
+        p["identity"]["version_history_state"]="NO_ACCEPTED_PACKAGE_OBSERVED"
+        p["identity"]["version_conflict"]=False
+        n=normalize_store_product_handoff(p)
+        self.assertFalse(n["identity"]["version_history_ready"])
+        self.assertIn("identity.version_history_ready",n["missing_for_draft"])
 
     def test_free_product_cannot_have_trial(self):
         p=sample();p["commercial"]["model"]="free"
