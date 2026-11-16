@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-15T04:36:31Z",
+  "updated_at_utc": "2026-11-16T01:38:48Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -11127,26 +11127,26 @@
     }
   },
   "windows_e2e_custody_reconciliation": {
-    "checked_at_utc": "2026-11-15T04:36:31Z",
+    "checked_at_utc": "2026-11-16T01:38:48Z",
     "status": "HOLD",
     "pr161_head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
     "pr164_head_sha": "145cd1f44bdec9e584eb0f045dd139ef330c6321",
-    "pr165_tested_head_sha": "4e04adb44d796ba7c629fab782ec32054d8bc885",
+    "pr165_tested_head_sha": "b3ff2076fdf36c90784ce6bbf510f280f26bded0",
     "pr165_ci": [
       {
-        "run_id": 43663685958,
+        "run_id": 43677551667,
         "conclusion": "success",
-        "scope": "synthetic artifact custody exact-head"
+        "scope": "Windows-all-auto Offline QA (synthetic fail-closed CI; no real MSIX evidence)"
       },
       {
-        "run_id": 43663685889,
+        "run_id": 43677551674,
         "conclusion": "success",
-        "scope": "synthetic transport fail-closed exact-head"
+        "scope": "Windows E2E transport fail-closed regression (synthetic fail-closed CI; no real MSIX evidence)"
       },
       {
-        "run_id": 43663685896,
+        "run_id": 43677551669,
         "conclusion": "success",
-        "scope": "offline QA exact-head"
+        "scope": "GitHub artifact custody fail-closed regression (synthetic fail-closed CI; no real MSIX evidence)"
       }
     ],
     "approved_version": "UNVERIFIED",
@@ -11156,7 +11156,7 @@
     "checker_gui_e2e": "NOT_VERIFIED",
     "focus_file_integrity_phase": "POST_IDENTITY",
     "prism_revision": "HOLD_NO_OLD_SOURCE_CAS",
-    "note": "Exact-head CI success only proves synthetic regression. Approved Identity files independently read at fixed commits for two APP lanes; both explicitly package_version_gate HOLD, package_kind exe, signature PRE_IDENTITY_EXE_NOT_MSIX. No real MSIX, GitHub backlog or local receipt. Prism current 4c22875c must not reuse historical 15fdcb52 CAS. No E2E PASS.",
+    "note": "Exact-head CI success only proves synthetic regression. Approved Identity files independently read at fixed commits for two APP lanes; both explicitly package_version_gate HOLD, package_kind exe, signature PRE_IDENTITY_EXE_NOT_MSIX. No real MSIX, GitHub backlog or local receipt. Prism current 4c22875c must not reuse historical 15fdcb52 CAS. No E2E PASS. Reconciled PR165 head and three CI runs 2026-11-16; HOLD unchanged, no real transport evidence.",
     "approved_identity_product_checks": [
       {
         "product": "Focus Session Desk",
@@ -11184,27 +11184,27 @@
       }
     ],
     "latest_head_ci_observation": {
-      "observed_at_jst": "2026-11-15 13:36",
-      "head_sha": "4e04adb44d796ba7c629fab782ec32054d8bc885",
+      "observed_at_jst": "2026-11-16 10:38",
+      "head_sha": "b3ff2076fdf36c90784ce6bbf510f280f26bded0",
       "workflow_runs": [
         {
-          "run_id": 43663685958,
+          "run_id": 43677551667,
           "conclusion": "success",
-          "scope": "synthetic artifact custody exact-head"
+          "scope": "Windows-all-auto Offline QA (synthetic fail-closed CI; no real MSIX evidence)"
         },
         {
-          "run_id": 43663685889,
+          "run_id": 43677551674,
           "conclusion": "success",
-          "scope": "synthetic transport fail-closed exact-head"
+          "scope": "Windows E2E transport fail-closed regression (synthetic fail-closed CI; no real MSIX evidence)"
         },
         {
-          "run_id": 43663685896,
+          "run_id": 43677551669,
           "conclusion": "success",
-          "scope": "offline QA exact-head"
+          "scope": "GitHub artifact custody fail-closed regression (synthetic fail-closed CI; no real MSIX evidence)"
         }
       ],
       "pr161_head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
-      "scope": "Synthetic CI only; no real package or physical Windows execution",
+      "scope": "Synthetic/offline CI only; real MSIX, local receipt, checker and physical GUI not verified",
       "status": "HOLD",
       "blocker": "Focus/File Integrity approved Version absent; real MSIX/backlog/local SHA/checker/GUI unverified",
       "implementation_status": "SYNTHETIC_CUSTODY_TRANSPORT_REGRESSION_GREEN__REAL_PACKAGE_TRANSPORT_NOT_VERIFIED"
