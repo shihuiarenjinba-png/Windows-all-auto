@@ -32,14 +32,19 @@
       "test_id": "PROCESS_START",
       "description": "Start the exact immutable artifact with no model-provided arguments.",
       "allowed_product_types": ["APP", "GAME", "GAME_3D"],
-      "executable": "TRUSTED_ARTIFACT_PROCESS",
+      "executable": "TRUSTED_PYTHON_QA_RUNNER",
       "arguments_template": [
-        "{artifact_path}"
+        "--test-id",
+        "PROCESS_START",
+        "--artifact",
+        "{artifact_path}",
+        "--expected-sha",
+        "{artifact_sha256}"
       ],
       "timeout_seconds": 90,
       "expected_exit_codes": [0],
-      "completion_policy": "PASS_IF_RUNNING_AFTER_OBSERVATION",
-      "observation_seconds": 5,
+      "completion_policy": "WAIT_FOR_EXIT",
+      "observation_seconds": 0,
       "gui_test": false,
       "admin_required": false,
       "destructive": false,

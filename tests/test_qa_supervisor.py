@@ -271,6 +271,8 @@ class SupervisorTests(unittest.TestCase):
         ).hexdigest()
         definition = replace(
             self.catalog.tests["PROCESS_START"],
+            executable="TRUSTED_ARTIFACT_PROCESS",
+            arguments_template=("{artifact_path}",),
             timeout_seconds=1,
             requires_test_passes=(),
             completion_policy="WAIT_FOR_EXIT",

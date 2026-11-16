@@ -23,7 +23,7 @@ CATALOG_SCHEMA = "trusted-local-qa-catalog-v1"
 SUPERVISOR_SCHEMA = "windows-qa-supervisor-v1"
 # Updated only with an intentional catalog review. Product artifacts and model
 # output cannot supply or replace this value.
-DEFAULT_CATALOG_SHA256 = "a5794ce52bf5b581ac4bc3e4d6c5edbf887c15c833cf46911f066ba32a769541"
+DEFAULT_CATALOG_SHA256 = "e2a3427ed792e066ae9e03d8c83e56e259828bacbeeddd50ca36b9309976f6e0"
 TEST_ID = re.compile(r"^[A-Z][A-Z0-9_]{2,63}$")
 SHA64 = re.compile(r"^[0-9a-f]{64}$")
 SHA40 = re.compile(r"^[0-9a-f]{40}$")

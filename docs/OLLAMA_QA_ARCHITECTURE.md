@@ -27,7 +27,10 @@ Product logs are explicitly labeled untrusted data in the planner prompt.
 process that remains alive for five seconds is terminated by the QA harness and
 recorded as a successful start probe, not as a timeout or a normal product
 exit. A process that exits during the observation must still return the trusted
-exit code. This does not grant UI automation authority.
+exit code. Registered packaged classic apps are activated only after the
+manifest executable, registered install root, package name, Version, status,
+artifact SHA, AUMID, and observed process path are deterministically
+correlated. This does not grant UI automation authority.
 
 For real Windows products, the supervisor queries the time-bounded Application
 log in memory and retains only raw event XML containing the exact tested
