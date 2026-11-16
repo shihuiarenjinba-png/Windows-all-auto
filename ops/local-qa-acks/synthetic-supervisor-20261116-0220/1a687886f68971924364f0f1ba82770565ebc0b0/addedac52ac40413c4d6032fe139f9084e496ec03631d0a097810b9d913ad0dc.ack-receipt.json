@@ -1,0 +1,14 @@
+{
+  "e2e_pass": false,
+  "evidence_path": "ops/local-qa-results/synthetic-supervisor-20261116-0220/1a687886f68971924364f0f1ba82770565ebc0b0/addedac52ac40413c4d6032fe139f9084e496ec03631d0a097810b9d913ad0dc.json",
+  "evidence_return_e2e_pass": true,
+  "payload_sha256": "addedac52ac40413c4d6032fe139f9084e496ec03631d0a097810b9d913ad0dc",
+  "product_e2e_pass": false,
+  "release_ready": false,
+  "remote_file_sha256": "bbecaeb5cb848d5addfc5a929e46bc62aba6a4c286e9b45bfb9baca56e3063ce",
+  "request_id": "synthetic-supervisor-20261116-0220",
+  "schema_version": "local-qa-github-ack-v1",
+  "source_sha": "1a687886f68971924364f0f1ba82770565ebc0b0",
+  "status": "GITHUB_READBACK_VERIFIED",
+  "store_submission_allowed": false
+}
