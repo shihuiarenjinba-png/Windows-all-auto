@@ -23,7 +23,7 @@ CATALOG_SCHEMA = "trusted-local-qa-catalog-v1"
 SUPERVISOR_SCHEMA = "windows-qa-supervisor-v1"
 # Updated only with an intentional catalog review. Product artifacts and model
 # output cannot supply or replace this value.
-DEFAULT_CATALOG_SHA256 = "618775e8a5e3e54d4297a112c55836a4a366d5cdde20836a596468d9e03442c3"
+DEFAULT_CATALOG_SHA256 = "c774a701c2b8124297824c8e807c614ed77364d0aef8e26d2c274ccbf4ad47f0"
 TEST_ID = re.compile(r"^[A-Z][A-Z0-9_]{2,63}$")
 SHA64 = re.compile(r"^[0-9a-f]{64}$")
 SHA40 = re.compile(r"^[0-9a-f]{40}$")
@@ -33,7 +33,7 @@ SPEC_KEYS = {
     "arguments_template", "timeout_seconds", "expected_exit_codes",
     "gui_test", "admin_required", "destructive", "side_effect_class",
     "resource_units", "max_retries", "supported_gui_operation",
-    "evidence_requirements",
+    "evidence_requirements", "requires_test_passes",
 }
 
 
@@ -83,6 +83,7 @@ class TestDefinition:
     max_retries: int
     supported_gui_operation: str | None
     evidence_requirements: tuple[str, ...]
+    requires_test_passes: tuple[str, ...]
 
 
 class TrustedTestCatalog:
@@ -129,6 +130,29 @@ class TrustedTestCatalog:
             if definition.test_id in tests:
                 raise CatalogError("duplicate trusted test ID")
             tests[definition.test_id] = definition
+        for definition in tests.values():
+            for required in definition.requires_test_passes:
+                if required == definition.test_id:
+                    raise CatalogError("trusted test may not depend on itself")
+                if required not in tests:
+                    raise CatalogError("trusted test dependency is missing: " + required)
+
+        visiting: set[str] = set()
+        visited: set[str] = set()
+
+        def visit(test_id: str) -> None:
+            if test_id in visiting:
+                raise CatalogError("trusted test dependency cycle")
+            if test_id in visited:
+                return
+            visiting.add(test_id)
+            for required in tests[test_id].requires_test_passes:
+                visit(required)
+            visiting.remove(test_id)
+            visited.add(test_id)
+
+        for test_id in tests:
+            visit(test_id)
         return cls(tests, digest=digest, path=resolved)
 
     @staticmethod
@@ -189,6 +213,12 @@ class TrustedTestCatalog:
             not isinstance(item, str) or not item for item in evidence
         ):
             raise CatalogError("invalid evidence requirements")
+        requirements = value.get("requires_test_passes")
+        if (not isinstance(requirements, list) or
+                any(not isinstance(item, str) or not TEST_ID.fullmatch(item)
+                    for item in requirements) or
+                len(requirements) != len(set(requirements))):
+            raise CatalogError("invalid trusted test dependencies")
         description = value.get("description")
         if not isinstance(description, str) or not description.strip():
             raise CatalogError("test description is required")
@@ -203,6 +233,7 @@ class TrustedTestCatalog:
             resource_units=resource, max_retries=retries,
             supported_gui_operation=operation,
             evidence_requirements=tuple(evidence),
+            requires_test_passes=tuple(requirements),
         )
 
     def planner_summary(self, product_type: str) -> list[dict[str, Any]]:
@@ -213,6 +244,7 @@ class TrustedTestCatalog:
                 "gui_test": item.gui_test,
                 "max_retries": item.max_retries,
                 "evidence_requirements": list(item.evidence_requirements),
+                "requires_test_passes": list(item.requires_test_passes),
             }
             for item in self.tests.values()
             if product_type in item.allowed_product_types
@@ -265,6 +297,14 @@ class AuthorizedTest:
     cwd: Path
 
 
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for block in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
 class PolicyGuard:
     def __init__(self, catalog: TrustedTestCatalog,
                  policy: ExecutionPolicy | None = None):
@@ -283,16 +323,25 @@ class PolicyGuard:
             artifact_path.absolute(), root
         ):
             raise PolicyViolation("artifact path contains a symlink")
+        expected_artifact_sha = job.get("artifact_sha256")
+        if (not isinstance(expected_artifact_sha, str) or
+                not SHA64.fullmatch(expected_artifact_sha)):
+            raise PolicyViolation("job artifact SHA-256 is invalid")
+        if _sha256_file(artifact) != expected_artifact_sha:
+            raise PolicyViolation("artifact SHA-256 changed after immutable intake")
         selected = plan.get("selected_test_ids")
         if not isinstance(selected, list):
             raise PolicyViolation("planner did not provide test IDs")
         if len(executions) + len(selected) > self.policy.max_tests:
             raise PolicyViolation("test count budget exceeded")
         counts: dict[str, int] = {}
+        passed: set[str] = set()
         for result in executions:
             test_id = result.get("test_id")
             if isinstance(test_id, str):
                 counts[test_id] = counts.get(test_id, 0) + 1
+                if result.get("status") == "TEST_PASS":
+                    passed.add(test_id)
         authorized: list[AuthorizedTest] = []
         planned_resource = resource_units_used
         planned_timeout = sum(int(item.get("timeout_seconds", 0)) for item in executions)
@@ -302,6 +351,15 @@ class PolicyGuard:
                 raise PolicyViolation("unknown test ID")
             if job.get("product_type") not in definition.allowed_product_types:
                 raise PolicyViolation("test is disallowed for this product type")
+            missing_prerequisites = [
+                required for required in definition.requires_test_passes
+                if required not in passed
+            ]
+            if missing_prerequisites:
+                raise PolicyViolation(
+                    "required prerequisite tests have not passed: " +
+                    ", ".join(missing_prerequisites)
+                )
             if definition.admin_required and not self.policy.allow_admin:
                 raise PolicyViolation("admin-only test is not approved")
             if definition.destructive and not self.policy.allow_destructive:
