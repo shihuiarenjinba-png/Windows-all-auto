@@ -1,0 +1,131 @@
+{
+  "payload": {
+    "files": [
+      {
+        "content": "QVJUSUZBQ1RfU0hBMjU2PTE2MmI2YWJkYTFkMTkwYWY1ZGJmZWE2YjhlYmZhZGM0YmQ2ZGEyYmNhZDZmZWVmMTQ5M2RhODExY2QzZmI1OWENCkFSVElGQUNUX0hBU0hfVkVSSUZJRUQNCg==",
+        "encoding": "base64",
+        "path": "stdout.log",
+        "sha256": "ca433f75f29b134bf27e3e8cab79a021e718a4ee0587ebadb42603af72670c23"
+      },
+      {
+        "content": "",
+        "encoding": "base64",
+        "path": "stderr.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "content": "",
+        "encoding": "base64",
+        "path": "windows-event-log.xml",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "content": "eyJhdCI6IjIwMjYtMTEtMTZUMDQ6MDA6MjBaIiwiZXZlbnQiOiJSVU5fU1RBUlRFRCJ9CnsiYXQiOiIyMDI2LTExLTE2VDA0OjAwOjIwWiIsImV2ZW50IjoiUFJPQ0VTU19TVEFSVEVEIiwicGlkIjozMTExMn0KeyJhdCI6IjIwMjYtMTEtMTZUMDQ6MDA6MjBaIiwiZXZlbnQiOiJQUk9DRVNTX0ZJTklTSEVEIiwiZXhpdF9jb2RlIjowLCJzdGF0dXMiOiJURVNUX1BBU1MiLCJ0aW1lZF9vdXQiOmZhbHNlfQp7ImF0IjoiMjAyNi0xMS0xNlQwNDowMDoyMFoiLCJldmVudCI6IkVWSURFTkNFX0RVUkFCTEVfQU5EX1FVRVVFRCIsInBheWxvYWRfc2hhMjU2IjoiYzE5MWYyOTNhMzUxNWRjOTE4MjZlMTExYTNmYmI0NjQxMjU2NjFmYzczM2QyMzAwZWQ1NWJiOTMyMjRmMzM3NCJ9Cg==",
+        "encoding": "base64",
+        "path": "journal.jsonl",
+        "sha256": "f1103de48e5d1d38787456554a86d17f29ff3c20e5d3e316a8f8d08d66f1f612"
+      },
+      {
+        "content": "ewogICJhbmFseXNpcyI6IG51bGwsCiAgImF1dGhvcml0YXRpdmVfdGVzdF9yZXN1bHRfY2hhbmdlZCI6IGZhbHNlLAogICJlMmVfcGFzc19hdXRob3JpdHkiOiBmYWxzZSwKICAiZXJyb3JzIjogWwogICAgIm9ic2VydmVkWzBdIGV4Y2VycHQgaXMgbm90IHByZXNlbnQgaW4gZXZpZGVuY2UiLAogICAgImluZmVyZW5jZVswXSBiYXNpcyBpcyBub3QgcHJlc2VudCBpbiBldmlkZW5jZSIKICBdLAogICJldmlkZW5jZV9yZXR1cm5fZTJlX3Bhc3NfYXV0aG9yaXR5IjogZmFsc2UsCiAgIm1ldHJpY3MiOiB7CiAgICAiZXZhbF9jb3VudCI6IDYyMiwKICAgICJsb2FkX2R1cmF0aW9uIjogMzUyMjk0MzQwMCwKICAgICJwcm9tcHRfZXZhbF9jb3VudCI6IDc2MywKICAgICJ0b3RhbF9kdXJhdGlvbiI6IDEyNTY1NjgyNzAwCiAgfSwKICAibW9kZWwiOiAid2luZG93cy1xYS1hbmFseXN0IiwKICAicHJvZHVjdF9lMmVfcGFzc19hdXRob3JpdHkiOiBmYWxzZSwKICAicmVsZWFzZV9yZWFkeV9hdXRob3JpdHkiOiBmYWxzZSwKICAicm91dGVfbGV2ZWwiOiAyLAogICJzdGF0dXMiOiAiQUlfQU5BTFlTSVNfVU5BVkFJTEFCTEUiLAogICJzdG9yZV9zdWJtaXNzaW9uX2FsbG93ZWQiOiBmYWxzZQp9Cg==",
+        "encoding": "base64",
+        "path": "analysis/windows-qa-analysis.json",
+        "sha256": "53bf355b298efef2edf13de07877d9a941bcb277b4fcf916d470e9523b64012a"
+      }
+    ],
+    "manifest": {
+      "actual": {
+        "exit_code": 0,
+        "observation_seconds": null,
+        "process_started": true,
+        "survived_observation": false,
+        "terminated_by_harness": false,
+        "timed_out": false
+      },
+      "artifact_sha256": "162b6abda1d190af5dbfea6b8ebfadc4bd6da2bcad6feef1493da811cd3fb59a",
+      "collection": {
+        "exit_code": "CAPTURED",
+        "expected_and_actual": "CAPTURED",
+        "github_shareable_screenshot": "NOT_APPLICABLE",
+        "screenshots": "NOT_APPLICABLE",
+        "stderr": "EMPTY_VALID",
+        "stdout": "CAPTURED",
+        "uia_actions": "NOT_APPLICABLE",
+        "windows_event_log": "EMPTY_VALID",
+        "windows_event_log_error": null
+      },
+      "collection_complete": true,
+      "e2e_pass": false,
+      "environment": {
+        "architecture": "AMD64",
+        "machine_id": "8b4a25fb85ff473bb9b6584c93e68a82",
+        "os": "Windows",
+        "os_release": "11",
+        "python": "3.14.4"
+      },
+      "evidence_return_e2e_pass": false,
+      "exit_code": 0,
+      "expected": {
+        "completion_policy": "WAIT_FOR_EXIT",
+        "exit_code": 0,
+        "observation_seconds": 0
+      },
+      "factory_dispatch": {
+        "reason": "No verified automatic development-agent dispatch contract is configured",
+        "status": "AGENT_DISPATCH_PENDING",
+        "target_repository": "shihuiarenjinba-png/AI-App-Factory"
+      },
+      "failed_tests": [],
+      "finished_at_utc": "2026-11-16T04:00:20Z",
+      "github_actions_run_id": 42055072806,
+      "github_return": {
+        "readback_verified": false,
+        "status": "QUEUED"
+      },
+      "local_persistence_verified": true,
+      "product_e2e_pass": false,
+      "product_e2e_requirements": {
+        "artifact_package_sha_correlation": false,
+        "identity_correlation": false,
+        "package_qa": false,
+        "physical_gui_qa": false,
+        "product_specific_regression": false,
+        "product_specific_tests": false,
+        "version_correlation": false
+      },
+      "product_type": "APP",
+      "release_ready": false,
+      "request_id": "app-daymark-ai-b8008c6e-package-activation-phase2-20261116",
+      "run_id": "20261116T040020Z-20ecc33e3e9153ec",
+      "schema_version": "local-qa-evidence-v1",
+      "slug": "daymark-ai-installed-package",
+      "source_branch": "codex/store-ollama-download-20261024",
+      "source_repository": "tsuhasqni-pixel/daily-ollama",
+      "source_sha": "b8008c6ec0f0d37906d212f9d055de12743bd70a",
+      "started_at_utc": "2026-11-16T04:00:20Z",
+      "status": "TEST_PASS",
+      "store_submission_allowed": false,
+      "test_command": [
+        "C:\\Python314\\python.exe",
+        "C:\\Users\\[REDACTED]\\Desktop\\portfolio-audit\\_task_worktrees\\waa-ollama-local-qa-supervisor\\scripts\\trusted_qa_test_runner.py",
+        "--test-id",
+        "ARTIFACT_HASH",
+        "--artifact",
+        "C:\\Program Files\\WindowsApps\\OkinawaDesktopTools.DaymarkAI_1.0.4.0_x64__j8yefg9jgfh58\\VFS\\ProgramFilesX64\\OkinawaDesktopTools\\DaymarkAI\\DaymarkAI.exe",
+        "--expected-sha",
+        "162b6abda1d190af5dbfea6b8ebfadc4bd6da2bcad6feef1493da811cd3fb59a"
+      ],
+      "test_suite_version": "ollama-supervisor-real-app-phase2-v2",
+      "timed_out": false,
+      "user_price_approval": false,
+      "user_product_approval": false
+    },
+    "redaction": {
+      "replacement_count": 1,
+      "screenshots_require_explicit_privacy_review": true
+    }
+  },
+  "payload_sha256": "288b746d4b927920a97838f1320b86c11a9d09adbf8ecf21514a67f2c87fef8c",
+  "request_id": "app-daymark-ai-b8008c6e-package-activation-phase2-20261116",
+  "schema_version": "local-qa-evidence-v1",
+  "source_sha": "b8008c6ec0f0d37906d212f9d055de12743bd70a"
+}
