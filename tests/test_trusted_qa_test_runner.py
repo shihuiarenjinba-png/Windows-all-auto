@@ -4,8 +4,11 @@ import hashlib
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
-from scripts.trusted_qa_test_runner import _manifest_binding, process_start
+from scripts.trusted_qa_test_runner import (
+    _activate_registered_app, _manifest_binding, process_start,
+)
 
 
 class TrustedQATestRunnerTests(unittest.TestCase):
@@ -44,6 +47,20 @@ class TrustedQATestRunnerTests(unittest.TestCase):
         artifact = self.root / "product.py"
         artifact.write_text("print('NOT_RUN')\n", encoding="utf-8")
         self.assertEqual(process_start(artifact, "0" * 64, observation_seconds=1), 2)
+
+    def test_registered_activation_accepts_only_exact_numeric_result(self):
+        with patch(
+            "scripts.trusted_qa_test_runner._powershell_json",
+            return_value={"HResult": 0, "ProcessId": 1234},
+        ) as query:
+            self.assertEqual(_activate_registered_app("Example.Family_abc!App"), 1234)
+        self.assertEqual(query.call_args.args[1], {"WAA_AUMID": "Example.Family_abc!App"})
+        with patch(
+            "scripts.trusted_qa_test_runner._powershell_json",
+            return_value={"HResult": -1, "ProcessId": 0},
+        ):
+            with self.assertRaisesRegex(OSError, "HRESULT -1"):
+                _activate_registered_app("Example.Family_abc!App")
 
 
 if __name__ == "__main__":

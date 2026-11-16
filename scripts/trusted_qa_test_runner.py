@@ -145,6 +145,58 @@ def _stop_process(process_id: int) -> None:
     )
 
 
+def _activate_registered_app(aumid: str) -> int:
+    # Fixed COM contract copied from the repository's existing packaged-GUI QA.
+    # The AUMID is derived from a verified package registration and manifest;
+    # no command, argument, or code is accepted from the planner or product.
+    script = r"""
+$ErrorActionPreference='Stop'
+$interop=@'
+using System;
+using System.Runtime.InteropServices;
+namespace WindowsAllAutoQa {
+  [ComImport, Guid("2e941141-7f97-4756-ba1d-9decde894a3d"),
+   InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+  public interface IApplicationActivationManager {
+    [PreserveSig]
+    int ActivateApplication(
+      [MarshalAs(UnmanagedType.LPWStr)] string appUserModelId,
+      [MarshalAs(UnmanagedType.LPWStr)] string arguments,
+      uint options,
+      out uint processId);
+  }
+  [ComImport, Guid("45BA127D-10A8-46EA-8AB7-56EA9078943C")]
+  public class ApplicationActivationManager : IApplicationActivationManager {
+    [System.Runtime.CompilerServices.MethodImpl(
+      System.Runtime.CompilerServices.MethodImplOptions.InternalCall,
+      MethodCodeType=System.Runtime.CompilerServices.MethodCodeType.Runtime),
+     PreserveSig]
+    public extern int ActivateApplication(
+      [MarshalAs(UnmanagedType.LPWStr)] string appUserModelId,
+      [MarshalAs(UnmanagedType.LPWStr)] string arguments,
+      uint options,
+      out uint processId);
+  }
+}
+'@
+Add-Type -TypeDefinition $interop -ErrorAction Stop
+$manager=[WindowsAllAutoQa.IApplicationActivationManager](New-Object WindowsAllAutoQa.ApplicationActivationManager)
+$pidOut=[uint32]0
+$hr=$manager.ActivateApplication($env:WAA_AUMID, '', [uint32]2, [ref]$pidOut)
+[pscustomobject]@{HResult=[int]$hr;ProcessId=[uint32]$pidOut} | ConvertTo-Json -Compress
+"""
+    value = _powershell_json(script, {"WAA_AUMID": aumid})
+    if (not isinstance(value, dict) or set(value) != {"HResult", "ProcessId"} or
+            type(value["HResult"]) is not int or type(value["ProcessId"]) is not int):
+        raise OSError("trusted package activation returned an invalid record")
+    if value["HResult"] != 0 or value["ProcessId"] <= 0:
+        raise OSError(
+            "trusted package activation failed with HRESULT " +
+            str(value["HResult"])
+        )
+    return value["ProcessId"]
+
+
 def _start_registered_package(artifact: Path, binding: dict[str, str],
                               observation_seconds: int) -> int:
     package = _registered_package(binding)
@@ -153,20 +205,17 @@ def _start_registered_package(artifact: Path, binding: dict[str, str],
         print("PROCESS_START_HOLD: tested product is already running", file=sys.stderr)
         return 3
     aumid = package["PackageFamilyName"] + "!" + binding["application_id"]
-    activation = subprocess.run(
-        ["explorer.exe", "shell:AppsFolder\\" + aumid],
-        capture_output=True, text=True, encoding="utf-8", errors="replace",
-        timeout=30, check=False,
-    )
-    if activation.returncode:
-        print("PACKAGE_ACTIVATION_FAILED", file=sys.stderr)
+    try:
+        activated_process_id = _activate_registered_app(aumid)
+    except OSError as exc:
+        print("PACKAGE_ACTIVATION_FAILED:" + str(exc), file=sys.stderr)
         return 4
     deadline = time.monotonic() + 15
     process_id = None
     while time.monotonic() < deadline:
         current = _process_ids(artifact.stem, artifact) - before
-        if len(current) == 1:
-            process_id = next(iter(current))
+        if activated_process_id in current and len(current) == 1:
+            process_id = activated_process_id
             break
         if len(current) > 1:
             for unexpected_id in current:
