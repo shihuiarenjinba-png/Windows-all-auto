@@ -1,6 +1,7 @@
 """Regression coverage for the synthetic local GitHub smoke driver."""
 from __future__ import annotations
 
+import base64
 from contextlib import redirect_stdout
 import io
 import json
