@@ -39,6 +39,11 @@ def normalize_store_product_handoff(payload:Any)->dict[str,Any]:
     assets=_obj(root.get("assets"),"assets")
     security=_obj(root.get("security"),"security")
     approvals=_obj(root.get("approvals"),"approvals")
+    qa_present="qa" in root
+    qa=_obj(root.get("qa"),"qa") if qa_present else {}
+    release_holds=root.get("release_holds") or []
+    if not isinstance(release_holds,list) or not all(isinstance(x,str) and x.strip() for x in release_holds):
+        raise StoreHandoffError("release_holds must be a list of non-empty strings")
 
     product_type=_text(product.get("type"),"product.type")
     route=_text(product.get("submission_route"),"product.submission_route")
@@ -103,6 +108,11 @@ def normalize_store_product_handoff(payload:Any)->dict[str,Any]:
     if security.get("package_sha256")!=package_sha:
         raise StoreHandoffError("security confirmation is not bound to package SHA")
 
+    if qa_present:
+        for key in ("github_exact_head_ci_pass","local_final_pass","store_signed_install_pass"):
+            if qa.get(key) not in {True,False}:
+                raise StoreHandoffError(f"qa.{key} must be boolean")
+
     ready_checks={
         "identity.live_partner_center_reverified": identity.get("live_partner_center_reverified") is True,
         "identity.version_history_ready": version_history_ready,
@@ -115,11 +125,13 @@ def normalize_store_product_handoff(payload:Any)->dict[str,Any]:
         "security.owner_confirmation_complete": security.get("owner_confirmation_complete") is True,
         "approvals.owner_approved_for_draft": approvals.get("owner_approved_for_draft") is True,
     }
+    if qa_present:
+        ready_checks["qa.local_final_pass"]=qa.get("local_final_pass") is True
     if audience=="PRIVATE_AUDIENCE_TEST":
         ready_checks["distribution.known_user_group"]=isinstance(distribution.get("known_user_group"),str) and bool(distribution.get("known_user_group").strip())
     missing=sorted(k for k,v in ready_checks.items() if not v)
 
-    return {
+    result={
         "schema_version":"store-product-handoff/2",
         "product":{**product,"source_sha":source_sha,"submission_route":route,"submission_kind":submission_kind},
         "package":{**package,"package_type":package_type,"package_sha256":package_sha},
@@ -136,9 +148,63 @@ def normalize_store_product_handoff(payload:Any)->dict[str,Any]:
         "assets":assets,
         "security":security,
         "approvals":approvals,
+        "release_holds":list(release_holds),
+        "notes":list(root.get("notes") or []),
         "missing_for_draft":missing,
         "ready_for_automator_draft":not missing,
     }
+    if qa_present:
+        result["qa"]={**qa,
+                      "github_exact_head_ci_pass":qa.get("github_exact_head_ci_pass") is True,
+                      "local_final_pass":qa.get("local_final_pass") is True,
+                      "store_signed_install_pass":qa.get("store_signed_install_pass") is True}
+    return result
+
+def apply_local_final_qa_receipt(payload:Any, receipt:Any)->dict[str,Any]:
+    """Bind exact-package local Windows QA to the Store handoff.
+
+    The receipt cannot grant Partner Center, pricing, certification or publish
+    approval. It only proves that the exact source/package candidate passed the
+    required pre-upload local acceptance.
+    """
+    raw=_obj(payload,"handoff")
+    current=normalize_store_product_handoff(raw)
+    rec=_obj(receipt,"local QA receipt")
+    if rec.get("schema_version")!="local-final-qa-receipt/1":
+        raise StoreHandoffError("unsupported local QA receipt schema")
+    if rec.get("status")!="PASS":
+        raise StoreHandoffError("local QA receipt is not PASS")
+    expected={
+        "store_id":current["identity"]["store_id"],
+        "source_sha":current["product"]["source_sha"],
+        "package_sha256":current["package"]["package_sha256"],
+    }
+    for key,value in expected.items():
+        actual=str(rec.get(key) or "")
+        if key.endswith("sha") or key.endswith("sha256"):
+            actual=actual.lower()
+        if actual!=value:
+            raise StoreHandoffError(f"local QA receipt mismatch: {key}")
+    required_true=(
+        "tests_passed","package_sha_verified","unpacked_exe_sha_verified",
+        "jp_en_gui_passed","dpi_matrix_passed","product_specific_acceptance_passed",
+        "normal_exit_passed",
+    )
+    for key in required_true:
+        if rec.get(key) is not True:
+            raise StoreHandoffError(f"local QA receipt missing PASS: {key}")
+    for key in ("package_rebuilt","security_bypass_used"):
+        if rec.get(key) is not False:
+            raise StoreHandoffError(f"unsafe local QA receipt flag: {key}")
+
+    updated=copy.deepcopy(raw)
+    updated.setdefault("qa",{})
+    updated["qa"]["github_exact_head_ci_pass"]=True
+    updated["qa"]["local_final_pass"]=True
+    updated["qa"].setdefault("store_signed_install_pass",False)
+    updated["qa"]["local_final_qa_receipt_status"]="PASS"
+    updated["qa"]["local_final_qa_product_specific_checks"]=list(rec.get("product_specific_checks") or [])
+    return normalize_store_product_handoff(updated)
 
 def apply_identity_reverify_receipt(payload:Any, receipt:Any)->dict[str,Any]:
     """Bind a local read-only Partner Center identity receipt to the Store handoff.
