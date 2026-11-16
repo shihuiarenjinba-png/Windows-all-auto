@@ -129,6 +129,37 @@ class SupervisorTests(unittest.TestCase):
         self.assertTrue(handoff["retest_requires_new_source_sha"])
         self.assertFalse(handoff["source_edit_authority"])
 
+    def test_process_start_requires_prior_artifact_hash_pass(self):
+        result = self.supervisor([plan(["PROCESS_START"])], transport=None).run(
+            job=self.job, artifact_path=self.artifact, intake_root=self.intake,
+        )
+        self.assertEqual(result.status, "POLICY_VIOLATION")
+        self.assertEqual(result.run_ids, ())
+        state = json.loads(result.state_path.read_text())
+        self.assertIn(
+            "required prerequisite tests have not passed",
+            state["planner_rounds"][0]["policy_error"],
+        )
+
+    def test_artifact_is_rehashed_before_dependent_execution(self):
+        guard = PolicyGuard(self.catalog)
+        self.artifact.write_text("print('CHANGED_AFTER_HASH')\n", encoding="utf-8")
+        with self.assertRaisesRegex(
+            PolicyViolation, "artifact SHA-256 changed after immutable intake"
+        ):
+            guard.authorize(
+                plan=plan(["PROCESS_START"]),
+                job=self.job,
+                artifact_path=self.artifact,
+                intake_root=self.intake,
+                executions=[{
+                    "test_id": "ARTIFACT_HASH",
+                    "status": "TEST_PASS",
+                    "timeout_seconds": 60,
+                }],
+                resource_units_used=1,
+            )
+
     def test_unknown_test_id_is_stopped_by_deterministic_guard(self):
         result = self.supervisor([plan(["HALLUCINATED_TEST"])], transport=None).run(
             job=self.job, artifact_path=self.artifact, intake_root=self.intake,
@@ -185,7 +216,9 @@ class SupervisorTests(unittest.TestCase):
         self.assertEqual(len(result.run_ids), 3)
 
     def test_resource_budget_admin_destructive_and_gui_are_rejected(self):
-        definition = self.catalog.tests["PROCESS_START"]
+        definition = replace(
+            self.catalog.tests["PROCESS_START"], requires_test_passes=()
+        )
         cases = (
             (definition, ExecutionPolicy(max_resource_units=1), "resource"),
             (replace(definition, admin_required=True), ExecutionPolicy(), "admin"),
@@ -213,7 +246,11 @@ class SupervisorTests(unittest.TestCase):
         self.job["artifact_sha256"] = hashlib.sha256(
             self.artifact.read_bytes()
         ).hexdigest()
-        definition = replace(self.catalog.tests["PROCESS_START"], timeout_seconds=1)
+        definition = replace(
+            self.catalog.tests["PROCESS_START"],
+            timeout_seconds=1,
+            requires_test_passes=(),
+        )
         catalog = TrustedTestCatalog(
             {definition.test_id: definition}, digest=self.catalog.digest,
             path=self.catalog.path,
