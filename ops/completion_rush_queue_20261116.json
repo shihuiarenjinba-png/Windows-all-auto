@@ -30,7 +30,13 @@
       "package_version": null,
       "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
       "real_msix": false,
-      "next_action": "Obtain authoritative Package Version for this exact Store ID/source; then build real MSIX with existing fail-closed builder and handoff."
+      "next_action": "Create/approve the three required package PNG assets for this exact product, obtain authoritative Package Version for this exact Store ID/source, then build real MSIX with the existing fail-closed builder and handoff. Do not add product features.",
+      "store_assets_status": "MISSING_REQUIRED_PACKAGE_PNGS",
+      "required_store_assets": [
+        "StoreLogo.png",
+        "Square150.png",
+        "Square44.png"
+      ]
     },
     {
       "rank": 2,
@@ -46,7 +52,13 @@
       "package_version": null,
       "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
       "real_msix": false,
-      "next_action": "Obtain authoritative Package Version for this exact Store ID/source; then build real MSIX with existing fail-closed builder and handoff."
+      "next_action": "Create/approve the three required package PNG assets for this exact product, obtain authoritative Package Version for this exact Store ID/source, then build real MSIX with the existing fail-closed builder and handoff. Do not add product features.",
+      "store_assets_status": "MISSING_REQUIRED_PACKAGE_PNGS",
+      "required_store_assets": [
+        "StoreLogo.png",
+        "Square150.png",
+        "Square44.png"
+      ]
     },
     {
       "rank": 3,
