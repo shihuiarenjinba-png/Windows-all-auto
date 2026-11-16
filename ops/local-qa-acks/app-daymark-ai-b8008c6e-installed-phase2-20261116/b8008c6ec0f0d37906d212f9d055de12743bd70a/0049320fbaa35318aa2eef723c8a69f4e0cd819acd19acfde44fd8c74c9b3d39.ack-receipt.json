@@ -1,0 +1,14 @@
+{
+  "e2e_pass": false,
+  "evidence_path": "ops/local-qa-results/app-daymark-ai-b8008c6e-installed-phase2-20261116/b8008c6ec0f0d37906d212f9d055de12743bd70a/0049320fbaa35318aa2eef723c8a69f4e0cd819acd19acfde44fd8c74c9b3d39.json",
+  "evidence_return_e2e_pass": true,
+  "payload_sha256": "0049320fbaa35318aa2eef723c8a69f4e0cd819acd19acfde44fd8c74c9b3d39",
+  "product_e2e_pass": false,
+  "release_ready": false,
+  "remote_file_sha256": "35693a5b890f07b28313f873a70100ee8e42ba11a4520b59a0a249f557a243c3",
+  "request_id": "app-daymark-ai-b8008c6e-installed-phase2-20261116",
+  "schema_version": "local-qa-github-ack-v1",
+  "source_sha": "b8008c6ec0f0d37906d212f9d055de12743bd70a",
+  "status": "GITHUB_READBACK_VERIFIED",
+  "store_submission_allowed": false
+}
