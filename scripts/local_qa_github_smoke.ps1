@@ -214,8 +214,22 @@ try {
   if ($remoteText.Contains($fakeSecret)) {
     throw 'SMOKE_ASSERT_FAILED: synthetic token marker leaked to GitHub evidence'
   }
-  if (-not $remoteText.Contains('[REDACTED]')) {
-    throw 'SMOKE_ASSERT_FAILED: expected redaction marker is absent from remote evidence'
+
+  # Evidence file bodies are base64 inside the JSON envelope. Decode stdout
+  # before asserting the redaction marker; do not look for plaintext inside the
+  # outer JSON serialization.
+  $stdoutItems = @($remoteEnvelope.payload.files | Where-Object { $_.path -eq 'stdout.log' })
+  if ($stdoutItems.Count -ne 1) {
+    throw 'SMOKE_ASSERT_FAILED: remote envelope must contain exactly one stdout.log'
+  }
+  $stdoutBase64 = ([string]$stdoutItems[0].content) -replace '\s', ''
+  $remoteStdoutBytes = [Convert]::FromBase64String($stdoutBase64)
+  $remoteStdoutText = [Text.Encoding]::UTF8.GetString($remoteStdoutBytes)
+  if ($remoteStdoutText.Contains($fakeSecret)) {
+    throw 'SMOKE_ASSERT_FAILED: synthetic token marker leaked inside remote stdout'
+  }
+  if (-not $remoteStdoutText.Contains('[REDACTED]')) {
+    throw 'SMOKE_ASSERT_FAILED: decoded remote stdout lacks the expected redaction marker'
   }
 
   [ordered]@{
