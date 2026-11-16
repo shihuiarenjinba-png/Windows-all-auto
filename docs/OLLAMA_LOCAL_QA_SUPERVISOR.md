@@ -39,6 +39,24 @@ path and artifact SHA. Unknown fields, absolute/traversing template paths,
 shell metacharacters, symlinks, admin tests, destructive tests, and unsupported
 GUI operations fail closed.
 
+Each catalog item can also declare `requires_test_passes`. The dependency graph
+is hash-pinned with the rest of the catalog, rejects missing/self/cyclic
+dependencies, and is enforced deterministically by the policy guard. A dependent
+test may run only after every prerequisite has already completed as
+`TEST_PASS` in a previous execution. Prerequisites and dependents are not
+trusted merely because the model selected them in the same round.
+
+The policy guard also recomputes the current artifact SHA-256 before authorizing
+every planner round. If the artifact differs from the immutable
+`job.artifact_sha256`, execution stops before any dependent process is started.
+The initial dependency is:
+
+```text
+ARTIFACT_HASH TEST_PASS
+        ↓
+PROCESS_START
+```
+
 ## Iteration and recovery
 
 Defaults are five planner rounds, twelve tests, thirty minutes, twenty-four
