@@ -6,12 +6,14 @@ transport contract and it never authorizes Partner Center writes by itself.
 
 ## Separation of responsibilities
 
-1. Windows-data / Factory: build and identify exact package bytes.
-2. Windows-all-auto: bind package/source/identity evidence to commercial,
-   distribution and owner approvals.
-3. Windows-Automator: apply the validated product-specific choices to the
-   current Partner Center form and save a draft.
-4. Certification submission and Publish remain separate owner gates.
+1. Product repository / Factory: build and identify exact package bytes.
+2. Product CI: emit `store-product-handoff.json` bound to exact source/MSIX/EXE SHA.
+3. Local Windows QA: download those exact bytes, test without rebuilding, and emit
+   `local-final-qa-receipt/1`.
+4. Windows-all-auto: bind the local QA receipt plus live identity/commercial evidence.
+5. Windows-Automator: apply the validated product-specific choices to the current
+   Partner Center form and save a draft/package only under the relevant approval.
+6. Certification submission and Publish remain separate owner gates.
 
 ## Required sections
 
@@ -25,6 +27,52 @@ transport contract and it never authorizes Partner Center writes by itself.
 - assets: visual approval state
 - security: package-SHA-bound human security confirmation
 - approvals: draft / certification / publish gates
+- qa (when present): exact-head CI, local final QA, and later Store-signed install state
+
+Generated handoffs for Group B standard products intentionally start HOLD. CI proves
+engineering/package identity; it does not impersonate live Partner Center state or
+human approvals.
+
+## Exact-package local QA
+
+When a handoff contains `qa`, `qa.local_final_pass=true` is required before the
+handoff can become ready for Windows-Automator.
+
+Create a receipt template:
+
+```powershell
+python scripts/create_local_final_qa_receipt_template.py `
+  --handoff C:\qa\store-product-handoff.json `
+  --output C:\qa\local-final-qa-receipt.json
+```
+
+Run the product-specific repository QA against the exact downloaded package. Do not
+rebuild it. Set the receipt to PASS only when all required fields are true:
+
+- tests_passed
+- package_sha_verified
+- unpacked_exe_sha_verified
+- jp_en_gui_passed
+- dpi_matrix_passed
+- product_specific_acceptance_passed
+- normal_exit_passed
+
+The receipt must also prove:
+
+- package_rebuilt = false
+- security_bypass_used = false
+
+Apply it:
+
+```powershell
+python scripts/apply_local_final_qa_receipt.py `
+  --handoff C:\qa\store-product-handoff.json `
+  --receipt C:\qa\local-final-qa-receipt.json `
+  --output C:\qa\store-product-after-local-qa.json
+```
+
+The receipt is rejected if Store ID, source SHA or package SHA differ. Applying local
+QA cannot approve security fields, assets, pricing, certification or Publish.
 
 ## Paid + trial
 
