@@ -1,37 +1,55 @@
-# Group B standard apps — GitHub handoff
+# Group B standard apps — GitHub-to-local Store handoff
 
 Updated: 2026-11-16 JST
 
-## Purpose
+## Objective
 
-Advance the four standard Group B Windows apps from validated GitHub/MSIX engineering
-candidates into the controlled Microsoft Store pipeline. This handoff is GitHub-side
-coordination only.
+GitHub should finish every task that does not require the owner's physical Windows
+machine, live Partner Center state, or a human/legal approval. Local work should begin
+from exact CI artifacts, not from rebuilding source.
 
-Do NOT:
-
-- merge main/release branches;
-- modify Windows security policy or certificate stores;
-- create/modify Partner Center products without the explicit gate for that action;
-- upload a package, edit pricing, submit certification, or publish merely because a
-  repository file says it is approved;
-- mix any `-2` consumer repositories with these standard products.
-
-## Priority order
+Standard products only:
 
 1. Folder Automation Engine
 2. Scheduled API Runner
 3. Workflow Automation Hub
 4. Browser Automation Runner
 
-The goal is to open one complete Store conveyor with Folder first, then reuse the
-verified path for the remaining products.
+Never mix the `-2` repositories with these products.
 
-## 1. Folder Automation Engine — Store execution lane
+## Shared completed GitHub path
+
+For Scheduled / Hub / Browser, each product repository now contains:
+
+- `store/generate_store_handoff.py`
+- `store/STORE_HANDOFF_PROFILE_20261116.json`
+- `store/LOCAL_FINAL_QA_AND_STORE_HANDOFF_20261116.md`
+- generator contract tests
+- CI wiring that emits `store-product-handoff.json` next to the exact MSIX
+- Store listing/privacy/runFullTrust material in the MSIX artifact
+
+The generated handoff binds:
+
+- exact source commit;
+- exact MSIX SHA256;
+- exact EXE SHA256;
+- Store ID / Identity / Publisher / Version;
+- commercial model;
+- Private-audience route;
+- security/package binding;
+- explicit HOLDs for live state and owner approvals.
+
+Windows-all-auto supports exact-package local QA receipts:
+
+- `scripts/create_local_final_qa_receipt_template.py`
+- `scripts/apply_local_final_qa_receipt.py`
+
+A QA receipt cannot be reused for another source/package.
+
+## Priority 1 — Folder Automation Engine
 
 Repository: `shihuiarenjinba-png/folder-automation-engine`  
-PR: #10  
-Branch: `codex/folder-standard-consumer-ui-20261026`
+PR: #10
 
 Frozen upload candidate:
 
@@ -41,143 +59,111 @@ Frozen upload candidate:
 - MSIX SHA256: `911f8eb13abfdbb51bea8f279006d138d6be9cba4a25413416c1d70458676450`
 - EXE SHA256: `d53161ea1119445afb8070d989d4a72e8019895b8c5e166738a3e38718b54976`
 
-Product engineering before the latest metadata-only documentation update:
+The later Folder commits after the frozen product source are Store metadata/runbook
+changes only. Do not rebuild the product only because those metadata files changed.
 
-- PR #10 exact-head workflows all SUCCESS;
-- Windows Store build: 87 tests PASS;
-- GUI startup evidence PASS;
-- JP/EN Store capture PASS at 1366×768+;
-- MSIX pack/unpack, manifest identity, source binding and EXE roundtrip PASS.
+Local-only sequence:
 
-The frozen product source to the later metadata head contains Store metadata/runbook
-changes only. Do not rebuild the product solely because those metadata files changed.
+1. sync the three execution repositories;
+2. run local tests and exact frozen-SHA checks;
+3. re-read Partner Center;
+4. require exact initial-submission/update classification;
+5. direct execution-time approval for any Start action;
+6. bind Draft receipt;
+7. observe remaining Store fields;
+8. VALIDATE_ONLY;
+9. DRY_RUN;
+10. separate package-upload approval.
 
-Required next local steps:
+## Priority 2 — Scheduled API Runner
 
-1. sync Folder, Windows-all-auto and Windows-Automator worktrees to their required heads;
-2. run local tests;
-3. verify the frozen MSIX SHA exactly;
-4. re-read Partner Center submission state;
-5. require `EXISTING_PRODUCT_INITIAL_SUBMISSION`;
-6. obtain direct execution-time approval for exactly one `Start submission` write;
-7. create one initial Draft and bind the receipt;
-8. read price/category/customer-group/security values without saving;
-9. complete owner-confirmed fields;
-10. run VALIDATE_ONLY and DRY_RUN;
-11. require a separate approval before package upload.
+PR #8.
 
-Certification and Publish remain later independent gates.
+GitHub completion target:
 
-## 2. Scheduled API Runner — package lane
+- exact-head unit/reliability CI;
+- exact Windows EXE + unsigned MSIX;
+- exact-package handoff emitted in artifact;
+- Store docs bundled;
+- local final QA runbook committed.
 
-Repository: `shihuiarenjinba-png/scheduled-api-runner`  
-PR: #8  
-Head validated before handoff: `a1f7c09ff9363f73c0e9560f9e389107c477ac26`
+Local-only acceptance:
 
-Evidence:
+- physical JP/EN + DPI;
+- controlled authorized API GET;
+- dated CSV behavior;
+- secret redaction;
+- Task Scheduler lifecycle;
+- live Partner Center reverify.
 
-- Reliability workflow SUCCESS;
-- Windows desktop workflow SUCCESS;
-- 79 Windows build tests PASS;
-- unsigned Store MSIX `ScheduledApiRunner_1.0.0.0_x64_StoreDraft_UNSIGNED.msix` generated;
-- source/manifest/SHA/EXE roundtrip guards PASS.
+Commercial model: FREE candidate. Actual Partner Center change remains owner-gated.
 
-Commercial position: FREE candidate.
+## Priority 3 — Workflow Automation Hub
 
-Remaining gates:
+PR #12.
 
-- controlled real API GET acceptance;
-- Windows Task Scheduler lifecycle acceptance;
-- JP/EN Store imagery;
-- final Store route and owner-approved free pricing.
+GitHub completion target:
 
-Do not upload before the Folder Store lane has proved the shared submission pipeline.
+- exact Windows build;
+- GUI evidence;
+- source/frozen self-test;
+- SBOM / third-party notices;
+- unsigned MSIX;
+- exact-package handoff emitted in artifact;
+- Store docs bundled.
 
-## 3. Workflow Automation Hub — integration lane
+Local-only acceptance:
 
-Repository: `shihuiarenjinba-png/workflow-automation-hub`  
-PR: #12  
-Head validated before handoff: `d090ae4c6d51d4412cd9c3687de8c9367e675db5`
+- physical JP/EN + DPI;
+- controlled non-production Google OAuth/Blogger;
+- Dry Run then one controlled test-blog mutation;
+- backup / duplicate guard;
+- Task Scheduler lifecycle;
+- live Partner Center reverify.
 
-Evidence:
+Commercial model: FREE candidate. No production Blogger write is implied.
 
-- Windows build workflow SUCCESS;
-- 100 tests PASS;
-- GUI review artifact present;
-- source and packaged EXE self-test PASS;
-- CycloneDX SBOM and THIRD_PARTY_NOTICES checked;
-- unsigned Store MSIX generated and Store identity matched.
+## Priority 4 — Browser Automation Runner
 
-Commercial position: FREE candidate.
+PR #8.
 
-Remaining gates:
+GitHub completion target:
 
-- controlled real Google OAuth;
-- Blogger connection;
-- Dry Run then controlled test-blog mutation;
-- Windows Task Scheduler lifecycle;
-- JP/EN Store imagery and free pricing approval.
+- exact Windows build;
+- bundled Chromium offline smoke;
+- unsigned MSIX;
+- customer-readable Playwright/Chromium/FFmpeg notice collection;
+- package inventory + roundtrip hash verification;
+- exact-package handoff emitted in artifact;
+- Store docs bundled.
 
-No live Blogger write is authorized by this handoff.
+Local-only acceptance:
 
-## 4. Browser Automation Runner — rights lane
+- physical JP/EN + DPI;
+- safe test-site workflow;
+- bundled Chromium behavior;
+- output collision/no-overwrite;
+- owner/legal review of exact redistributed browser payload;
+- live Partner Center reverify.
 
-Repository: `shihuiarenjinba-png/browser-automation-runner`  
-PR: #8  
-Head validated before handoff: `0d223d2968a976b2de0edba64822a82499ada977`
+Technical notice collection does not replace the human redistribution-rights decision.
 
-Evidence:
+## Definition of GitHub-side completion
 
-- Reliability workflow SUCCESS;
-- Windows desktop build SUCCESS;
-- 42 Windows build tests PASS;
-- Chromium-bundled unsigned Store MSIX generated;
-- source/manifest/SHA/EXE roundtrip guards PASS.
+A product is GitHub-complete when its latest PR HEAD has successful required CI and
+the Store artifact contains:
 
-Commercial position: FREE candidate.
+1. exact MSIX;
+2. `msix_validation.json`;
+3. checksum file;
+4. `store-product-handoff.json`;
+5. local final-QA runbook;
+6. Store listing/privacy/runFullTrust documents;
+7. product-specific compliance evidence where applicable.
 
-Hard release hold:
+At that point, do not add speculative product features. Download the exact artifact,
+perform local QA, return the exact-package QA receipt, reverify live Partner Center,
+then proceed through separately authorized Store gates.
 
-- Playwright/Chromium/FFmpeg redistribution notices and rights review;
-- exact customer-readable third-party notices/SBOM;
-- final Store imagery and pricing approval.
-
-The CI warning that Chromium rights review is incomplete must remain release-blocking
-until the legal/distribution evidence is closed.
-
-## Shared automation contracts
-
-Windows-all-auto:
-
-- branch `codex/msix-commercial-handoff-20261115`;
-- commercial Store handoff v2;
-- fail-closed translation to Windows-Automator;
-- price/trial approval cannot be inferred;
-- initial-submission receipt binds only the Draft ID;
-- package/certification/publish gates remain separate.
-
-Windows-Automator:
-
-- branch `codex/msix-commercial-contract-20261115`;
-- read-only existing-submission inspection;
-- owner-gated initial Draft start;
-- exact state is re-read immediately before `Start submission`;
-- exactly one Start submission control is required;
-- ambiguous write outcome is HOLD and must not be blindly retried;
-- initial Draft creation cannot upload package, change price, submit certification or publish.
-
-## Completion definition for the next operator
-
-The next operator should not report Group B as "Store conveyor open" until Folder has:
-
-- synced local execution repos;
-- local tests PASS;
-- frozen package SHA PASS;
-- exact Partner Center initial-submission state reverified;
-- one initial Draft receipt bound to the exact Store ID/source/package;
-- Store fields observed;
-- VALIDATE_ONLY PASS;
-- DRY_RUN PASS.
-
-Package upload requires its own later approval. Certification and Publish require
-separate later approvals.
+Main/release merges, package upload, certification and Publish are not authorized by
+this document.
