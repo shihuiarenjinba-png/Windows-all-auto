@@ -184,6 +184,47 @@ def apply_identity_reverify_receipt(payload:Any, receipt:Any)->dict[str,Any]:
     return normalize_store_product_handoff(updated)
 
 
+def apply_initial_submission_receipt(payload:Any, receipt:Any)->dict[str,Any]:
+    """Bind an owner-authorized initial Draft creation receipt to the handoff."""
+    raw=_obj(payload,"handoff")
+    current=normalize_store_product_handoff(raw)
+    rec=_obj(receipt,"initial submission receipt")
+    if rec.get("schema_version")!="existing-store-initial-submission-start-receipt/1":
+        raise StoreHandoffError("unsupported initial submission receipt schema")
+    if rec.get("status")!="INITIAL_SUBMISSION_DRAFT_CREATED":
+        raise StoreHandoffError("initial submission receipt is not a PASS")
+    if current["product"]["submission_kind"]!="new":
+        raise StoreHandoffError("initial submission receipt requires submission_kind=new")
+    if rec.get("store_id")!=current["identity"]["store_id"]:
+        raise StoreHandoffError("initial submission receipt store_id mismatch")
+    if str(rec.get("source_sha") or "").lower()!=current["product"]["source_sha"]:
+        raise StoreHandoffError("initial submission receipt source_sha mismatch")
+    if str(rec.get("package_sha256") or "").lower()!=current["package"]["package_sha256"]:
+        raise StoreHandoffError("initial submission receipt package_sha256 mismatch")
+    draft_id=str(rec.get("draft_id") or "").strip()
+    if not draft_id.isdigit():
+        raise StoreHandoffError("initial submission receipt draft_id is invalid")
+    required={
+        "created_or_reserved_product":False,
+        "submission_started":True,
+        "start_submission_clicked":True,
+        "start_update_clicked":False,
+        "package_uploaded":False,
+        "pricing_changed":False,
+        "submitted":False,
+        "published":False,
+    }
+    for key,value in required.items():
+        if rec.get(key) is not value:
+            raise StoreHandoffError(f"initial submission receipt has unsafe or missing flag: {key}")
+    updated=copy.deepcopy(raw)
+    updated.setdefault("product",{})["draft_id"]=draft_id
+    updated["product"]["initial_submission_started"]=True
+    updated["product"]["initial_submission_receipt_status"]="INITIAL_SUBMISSION_DRAFT_CREATED"
+    updated.setdefault("approvals",{})["initial_submission_start_completed"]=True
+    return normalize_store_product_handoff(updated)
+
+
 def to_windows_automator_input(normalized:dict[str,Any], *, package_path:str, images_dir:str)->dict[str,Any]:
     if normalized.get("schema_version")!="store-product-handoff/2":
         raise StoreHandoffError("normalize handoff before translation")
@@ -200,6 +241,7 @@ def to_windows_automator_input(normalized:dict[str,Any], *, package_path:str, im
         "commercial_approved_by":str(c.get("approved_by") or c.get("trial_approved_by") or ""),
         "market_preset":p.get("market_preset",""),
         "submission_kind":p["submission_kind"], "submission_route":p["submission_route"],
+        "draft_id":str(p.get("draft_id") or ""),
         "submission_route_source":"upstream", "package_type":pkg["package_type"],
         "package_sha256":pkg["package_sha256"], "source_sha":p["source_sha"],
         "identity_name":ident["name"], "identity_publisher":ident["publisher"],
