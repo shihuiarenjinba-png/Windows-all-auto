@@ -478,6 +478,12 @@ class QASupervisor:
                 context=context,
                 catalog=self.catalog.planner_summary(context["product_type"]),
                 evidence=evidence, round_number=round_number,
+                execution_history=[
+                    {key: item[key] for key in (
+                        "test_id", "status", "exit_code", "timed_out",
+                    )}
+                    for item in state["executions"]
+                ],
             )
             round_record = outcome.as_dict()
             state["planner_rounds"].append(round_record)

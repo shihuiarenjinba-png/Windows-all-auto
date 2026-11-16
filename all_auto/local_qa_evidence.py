@@ -84,7 +84,17 @@ def atomic_write(path: Path, data: bytes) -> None:
         stream.write(data)
         stream.flush()
         os.fsync(stream.fileno())
-    os.replace(temporary, path)
+    for attempt in range(5):
+        try:
+            os.replace(temporary, path)
+            break
+        except PermissionError:
+            if attempt == 4:
+                raise
+            # Antivirus/indexer handles can briefly block ReplaceFile-style
+            # operations on Windows. Retry is bounded and keeps the same
+            # already-fsynced temporary evidence bytes.
+            time.sleep(0.05 * (attempt + 1))
     _fsync_directory(path.parent)
 
 
@@ -327,22 +337,49 @@ class EvidenceStore:
                 state = json.loads(state_path.read_text(encoding="utf-8"))
             except (OSError, json.JSONDecodeError):
                 continue
-            if state.get("state") != "RUNNING":
-                continue
             folder = state_path.parent
-            state.update({"state": "INTERRUPTED_RESTART", "finished_at_utc": utc_now(),
-                          "evidence_return_e2e_pass": False,
-                          "product_e2e_pass": False, "e2e_pass": False,
-                          "release_ready": False, "store_submission_allowed": False,
-                          "user_product_approval": False, "user_price_approval": False,
-                          "exit_code": None, "timed_out": False,
-                          "failure_reason": "PROCESS_OR_PC_RESTARTED_BEFORE_FINALIZATION"})
-            atomic_json(state_path, state)
+            if state.get("state") == "RUNNING":
+                state.update({"state": "INTERRUPTED_RESTART", "finished_at_utc": utc_now(),
+                              "evidence_return_e2e_pass": False,
+                              "product_e2e_pass": False, "e2e_pass": False,
+                              "release_ready": False, "store_submission_allowed": False,
+                              "user_product_approval": False, "user_price_approval": False,
+                              "exit_code": None, "timed_out": False,
+                              "failure_reason": "PROCESS_OR_PC_RESTARTED_BEFORE_FINALIZATION"})
+                atomic_json(state_path, state)
+                append_jsonl(folder / "journal.jsonl", {
+                    "at": utc_now(), "event": "RECOVERED_INTERRUPTED_RUN"})
+                try:
+                    self._finalize(
+                        folder, state,
+                        event_log_status="UNAVAILABLE_PROCESS_RESTART",
+                        event_log_error="collection did not complete before restart",
+                    )
+                finally:
+                    self._release_job_lock(state)
+                recovered.append(state["run_id"])
+                continue
+            completed = state.get("state") in {"TEST_PASS", "TEST_FAIL"}
+            acknowledged = (self.acks / (folder.name + ".json")).is_file()
+            finalized = (
+                (folder / "manifest.json").is_file() and
+                (folder / "github-envelope.json").is_file() and
+                (self.queue / (folder.name + ".json")).is_file()
+            )
+            if not completed or acknowledged or finalized:
+                continue
+            if (folder / "windows-event-log.xml").is_file():
+                event_status, event_error = "CAPTURED", None
+            else:
+                event_status = "UNAVAILABLE_FINALIZATION_RESTART"
+                event_error = "event log was unavailable during finalization recovery"
             append_jsonl(folder / "journal.jsonl", {
-                "at": utc_now(), "event": "RECOVERED_INTERRUPTED_RUN"})
+                "at": utc_now(), "event": "RECOVERED_INCOMPLETE_FINALIZATION"})
             try:
-                self._finalize(folder, state, event_log_status="UNAVAILABLE_PROCESS_RESTART",
-                               event_log_error="collection did not complete before restart")
+                self._finalize(
+                    folder, state, event_log_status=event_status,
+                    event_log_error=event_error,
+                )
             finally:
                 self._release_job_lock(state)
             recovered.append(state["run_id"])

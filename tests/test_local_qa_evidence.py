@@ -9,6 +9,7 @@ from pathlib import Path
 import subprocess
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from all_auto.local_qa_evidence import (
     EvidenceStore, GitHubContentsTransport, GitHubReturnError,
@@ -79,6 +80,24 @@ class DurableEvidenceTests(unittest.TestCase):
         self.assertFalse(report["user_price_approval"])
         self.assertTrue(report["product_e2e_requirements"])
         self.assertFalse(any(report["product_e2e_requirements"].values()))
+
+    def test_atomic_write_recovers_from_transient_windows_replace_denial(self):
+        target = self.root / "atomic-retry.txt"
+        real_replace = os.replace
+        attempts = 0
+
+        def transient_replace(source, destination):
+            nonlocal attempts
+            attempts += 1
+            if attempts == 1:
+                raise PermissionError("simulated transient sharing violation")
+            return real_replace(source, destination)
+
+        with patch("all_auto.local_qa_evidence.os.replace",
+                   side_effect=transient_replace):
+            atomic_write(target, b"durable\n")
+        self.assertEqual(target.read_bytes(), b"durable\n")
+        self.assertEqual(attempts, 2)
 
     def test_normal_exit_is_not_evidence_return_e2e_until_github_readback(self):
         result = self.store.execute(
@@ -220,6 +239,29 @@ class DurableEvidenceTests(unittest.TestCase):
         self.assertEqual((folder / "stdout.log").read_text().strip(), "persisted before restart")
         self.assertTrue((recovered_store.queue / (run_id + ".json")).is_file())
         self.assertFalse(report["e2e_pass"])
+
+    def test_restart_recovers_completed_state_when_finalization_was_interrupted(self):
+        run_id, folder = self.store.start(
+            self.job, self.command("print('completed')"),
+            expected={"exit_code": 0}, gui_test=False)
+        atomic_write(folder / "stdout.log", b"completed\n")
+        atomic_write(folder / "stderr.log", b"")
+        atomic_write(folder / "windows-event-log.xml", b"<Events/>")
+        state = json.loads((folder / "state.json").read_text())
+        state.update({
+            "state": "TEST_PASS", "finished_at_utc": "2026-11-16T00:00:00Z",
+            "exit_code": 0, "timed_out": False, "failure_reason": None,
+            "actual": {"exit_code": 0, "timed_out": False,
+                       "process_started": True},
+        })
+        atomic_json(folder / "state.json", state)
+        recovered = EvidenceStore(self.root / "state")
+        self.assertEqual(recovered.recover_interrupted(), [run_id])
+        self.assertTrue((folder / "manifest.json").is_file())
+        self.assertTrue((folder / "github-envelope.json").is_file())
+        self.assertTrue((recovered.queue / (run_id + ".json")).is_file())
+        self.assertIn("RECOVERED_INCOMPLETE_FINALIZATION",
+                      (folder / "journal.jsonl").read_text())
 
     def test_event_log_collection_failure_blocks_evidence_return_e2e(self):
         def denied(_start, _finish):
