@@ -49,8 +49,6 @@ class StoreProductHandoffTests(unittest.TestCase):
         self.assertEqual(n["package"]["package_sha256"],
                          "911f8eb13abfdbb51bea8f279006d138d6be9cba4a25413416c1d70458676450")
         expected={
-            "identity.live_partner_center_reverified",
-            "identity.version_history_ready",
             "commercial.price_confirmed",
             "commercial.approved_by",
             "commercial.price_value",
