@@ -23,7 +23,7 @@ CATALOG_SCHEMA = "trusted-local-qa-catalog-v1"
 SUPERVISOR_SCHEMA = "windows-qa-supervisor-v1"
 # Updated only with an intentional catalog review. Product artifacts and model
 # output cannot supply or replace this value.
-DEFAULT_CATALOG_SHA256 = "c774a701c2b8124297824c8e807c614ed77364d0aef8e26d2c274ccbf4ad47f0"
+DEFAULT_CATALOG_SHA256 = "a5794ce52bf5b581ac4bc3e4d6c5edbf887c15c833cf46911f066ba32a769541"
 TEST_ID = re.compile(r"^[A-Z][A-Z0-9_]{2,63}$")
 SHA64 = re.compile(r"^[0-9a-f]{64}$")
 SHA40 = re.compile(r"^[0-9a-f]{40}$")
@@ -31,6 +31,7 @@ TEMPLATE_FIELDS = {"{artifact_path}", "{artifact_sha256}"}
 SPEC_KEYS = {
     "test_id", "description", "allowed_product_types", "executable",
     "arguments_template", "timeout_seconds", "expected_exit_codes",
+    "completion_policy", "observation_seconds",
     "gui_test", "admin_required", "destructive", "side_effect_class",
     "resource_units", "max_retries", "supported_gui_operation",
     "evidence_requirements", "requires_test_passes",
@@ -75,6 +76,8 @@ class TestDefinition:
     arguments_template: tuple[str, ...]
     timeout_seconds: int
     expected_exit_codes: tuple[int, ...]
+    completion_policy: str
+    observation_seconds: int
     gui_test: bool
     admin_required: bool
     destructive: bool
@@ -186,6 +189,8 @@ class TrustedTestCatalog:
                 arguments != ["{artifact_path}"]):
             raise CatalogError("artifact process cannot receive arguments")
         timeout = value.get("timeout_seconds")
+        completion_policy = value.get("completion_policy")
+        observation_seconds = value.get("observation_seconds")
         resource = value.get("resource_units")
         retries = value.get("max_retries")
         exits = value.get("expected_exit_codes")
@@ -198,6 +203,19 @@ class TrustedTestCatalog:
         if (not isinstance(exits, list) or len(exits) != 1 or
                 any(type(x) is not int for x in exits)):
             raise CatalogError("invalid expected exit codes")
+        if completion_policy not in {
+            "WAIT_FOR_EXIT", "PASS_IF_RUNNING_AFTER_OBSERVATION",
+        }:
+            raise CatalogError("invalid completion policy")
+        if type(observation_seconds) is not int or not 0 <= observation_seconds <= 30:
+            raise CatalogError("invalid observation seconds")
+        if completion_policy == "WAIT_FOR_EXIT" and observation_seconds != 0:
+            raise CatalogError("exit completion policy cannot observe a running process")
+        if completion_policy == "PASS_IF_RUNNING_AFTER_OBSERVATION" and not (
+            executable == "TRUSTED_ARTIFACT_PROCESS" and
+            1 <= observation_seconds < timeout
+        ):
+            raise CatalogError("process start observation policy is invalid")
         for field in ("gui_test", "admin_required", "destructive"):
             if type(value.get(field)) is not bool:
                 raise CatalogError("invalid boolean catalog field: " + field)
@@ -227,6 +245,8 @@ class TrustedTestCatalog:
             allowed_product_types=tuple(product_types),
             executable=value["executable"], arguments_template=tuple(arguments),
             timeout_seconds=timeout, expected_exit_codes=tuple(exits),
+            completion_policy=completion_policy,
+            observation_seconds=observation_seconds,
             gui_test=value["gui_test"], admin_required=value["admin_required"],
             destructive=value["destructive"],
             side_effect_class=value["side_effect_class"],
@@ -573,9 +593,18 @@ class QASupervisor:
                 result = self.store.execute(
                     job, list(item.command), cwd=item.cwd,
                     timeout_seconds=item.definition.timeout_seconds,
-                    expected={"exit_code": item.definition.expected_exit_codes[0]},
+                    expected={
+                        "exit_code": item.definition.expected_exit_codes[0],
+                        "completion_policy": item.definition.completion_policy,
+                        "observation_seconds": item.definition.observation_seconds,
+                    },
                     gui_test=item.definition.gui_test,
                     event_log_collector=self.event_log_collector,
+                    pass_if_running_after_seconds=(
+                        item.definition.observation_seconds
+                        if item.definition.completion_policy ==
+                        "PASS_IF_RUNNING_AFTER_OBSERVATION" else None
+                    ),
                 )
                 analysis_status = "DISABLED"
                 if self.analyzer is not None:

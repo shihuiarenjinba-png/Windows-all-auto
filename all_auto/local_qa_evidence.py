@@ -445,10 +445,15 @@ class EvidenceStore:
                 timeout_seconds: int, expected: dict[str, Any] | None = None,
                 gui_test: bool = False,
                 event_log_collector: Callable[[str, str], str] | None = None,
+                pass_if_running_after_seconds: int | None = None,
                 poll_seconds: float = 0.2) -> RunResult:
         expected = expected or {"exit_code": 0}
         if not 1 <= timeout_seconds <= 24 * 60 * 60:
             raise ValueError("LOCAL_QA_HOLD: invalid timeout")
+        if (pass_if_running_after_seconds is not None and
+                (type(pass_if_running_after_seconds) is not int or
+                 not 1 <= pass_if_running_after_seconds < timeout_seconds)):
+            raise ValueError("LOCAL_QA_HOLD: invalid process observation window")
         if cwd.is_symlink() or not cwd.is_dir():
             raise ValueError("LOCAL_QA_HOLD: invalid test cwd")
         run_id, folder = self.start(job, command, expected=expected, gui_test=gui_test)
@@ -459,6 +464,8 @@ class EvidenceStore:
         exit_code = None
         timed_out = False
         failure_reason = None
+        survived_observation = False
+        terminated_by_harness = False
         threads: list[threading.Thread] = []
         try:
             process = subprocess.Popen(command, cwd=str(cwd), stdout=subprocess.PIPE,
@@ -474,7 +481,21 @@ class EvidenceStore:
             for thread in threads:
                 thread.start()
             deadline = time.monotonic() + timeout_seconds
+            observation_deadline = (
+                time.monotonic() + pass_if_running_after_seconds
+                if pass_if_running_after_seconds is not None else None
+            )
             while process.poll() is None:
+                if (observation_deadline is not None and
+                        time.monotonic() >= observation_deadline):
+                    survived_observation = True
+                    terminated_by_harness = True
+                    process.terminate()
+                    try:
+                        process.wait(timeout=5)
+                    except subprocess.TimeoutExpired:
+                        process.kill()
+                    break
                 if time.monotonic() >= deadline:
                     timed_out = True
                     process.terminate()
@@ -501,14 +522,19 @@ class EvidenceStore:
         if timed_out:
             failure_reason = "TEST_TIMEOUT"
         expected_exit = expected.get("exit_code")
-        status = "TEST_PASS" if (not timed_out and failure_reason is None and
-                                 exit_code == expected_exit) else "TEST_FAIL"
+        status = "TEST_PASS" if (
+            not timed_out and failure_reason is None and
+            (survived_observation or exit_code == expected_exit)
+        ) else "TEST_FAIL"
         state = self._update_state(
             folder, state=status, finished_at_utc=utc_now(), exit_code=exit_code,
             timed_out=timed_out, failure_reason=failure_reason,
             stdout=stdout_observation, stderr=stderr_observation,
             actual={"exit_code": exit_code, "timed_out": timed_out,
-                    "process_started": process is not None},
+                    "process_started": process is not None,
+                    "survived_observation": survived_observation,
+                    "observation_seconds": pass_if_running_after_seconds,
+                    "terminated_by_harness": terminated_by_harness},
             evidence_return_e2e_pass=False, product_e2e_pass=False,
             e2e_pass=False, release_ready=False,
             store_submission_allowed=False, user_product_approval=False,

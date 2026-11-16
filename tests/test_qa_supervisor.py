@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import Mock
 
 from all_auto.local_qa_evidence import EvidenceStore, GitHubReturnError
 from all_auto.qa_supervisor import (
@@ -16,6 +17,7 @@ from all_auto.qa_supervisor import (
     require_new_source_sha,
 )
 from qa_ai.planner import PlannerOutcome
+from scripts.local_qa_supervisor import _product_event_log_collector
 
 
 SOURCE = "a" * 40
@@ -128,6 +130,27 @@ class SupervisorTests(unittest.TestCase):
         self.assertEqual(handoff["agent_dispatch_status"], "AGENT_DISPATCH_PENDING")
         self.assertTrue(handoff["retest_requires_new_source_sha"])
         self.assertFalse(handoff["source_edit_authority"])
+
+    def test_real_product_event_log_excludes_unrelated_application_events(self):
+        runner = Mock(return_value=Mock(
+            returncode=0,
+            stdout=(
+                "<Events>"
+                "<Event><EventData><Data>OtherApp.exe failed</Data></EventData></Event>"
+                "<Event><EventData><Data>DaymarkAI.exe failed at "
+                r"C:\Users\Alice\private.dll"
+                "</Data></EventData></Event>"
+                "</Events>"
+            ),
+        ))
+        collector = _product_event_log_collector(
+            "DaymarkAI.exe", platform_name="nt", runner=runner,
+        )
+        value = collector("2026-11-16T00:00:00Z", "2026-11-16T00:00:10Z")
+        self.assertIn("DaymarkAI.exe", value)
+        self.assertNotIn("OtherApp.exe", value)
+        command = runner.call_args.args[0]
+        self.assertEqual(command[:3], ["wevtutil", "qe", "Application"])
 
     def test_process_start_requires_prior_artifact_hash_pass(self):
         result = self.supervisor([plan(["PROCESS_START"])], transport=None).run(
@@ -250,6 +273,8 @@ class SupervisorTests(unittest.TestCase):
             self.catalog.tests["PROCESS_START"],
             timeout_seconds=1,
             requires_test_passes=(),
+            completion_policy="WAIT_FOR_EXIT",
+            observation_seconds=0,
         )
         catalog = TrustedTestCatalog(
             {definition.test_id: definition}, digest=self.catalog.digest,

@@ -154,6 +154,22 @@ class DurableEvidenceTests(unittest.TestCase):
         self.assertIn("started", (result.run_directory / "stdout.log").read_text())
         self.assertFalse(report["e2e_pass"])
 
+    def test_process_start_probe_passes_after_bounded_observation(self):
+        result = self.store.execute(
+            self.job,
+            self.command("import time; print('ready', flush=True); time.sleep(30)"),
+            cwd=self.root, timeout_seconds=5,
+            pass_if_running_after_seconds=1,
+            event_log_collector=self.events, poll_seconds=0.02,
+        )
+        report = self.manifest(result)
+        self.assertEqual(report["status"], "TEST_PASS")
+        self.assertFalse(report["timed_out"])
+        self.assertTrue(report["actual"]["survived_observation"])
+        self.assertTrue(report["actual"]["terminated_by_harness"])
+        self.assertEqual(report["actual"]["observation_seconds"], 1)
+        self.assertIn("ready", (result.run_directory / "stdout.log").read_text())
+
     def test_secret_and_personal_data_are_redacted_before_queueing(self):
         secret = "ghp_abcdefghijklmnopqrstuvwxyz123456"
         source = ("print('Authorization: Bearer " + secret + "'); "

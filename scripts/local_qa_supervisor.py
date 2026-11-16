@@ -3,7 +3,11 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from pathlib import Path
+import re
+import subprocess
+from typing import Callable
 
 from all_auto.local_qa_evidence import EvidenceStore, GitHubContentsTransport
 from all_auto.qa_supervisor import (
@@ -19,6 +23,51 @@ def _synthetic_event_log(started: str, finished: str) -> str:
         f'<Data Name="Started">{started}</Data>'
         f'<Data Name="Finished">{finished}</Data></Event></Events>'
     )
+
+
+def _product_event_log_collector(
+    executable_name: str, *,
+    platform_name: str = os.name,
+    runner: Callable[..., subprocess.CompletedProcess[str]] = subprocess.run,
+) -> Callable[[str, str], str]:
+    """Return only raw Application events bound to the tested executable.
+
+    The time-bounded Application query is never persisted. Only event XML that
+    contains the exact executable basename is retained locally; the existing
+    evidence redactor sanitizes that product-specific subset before upload.
+    """
+    if not executable_name or Path(executable_name).name != executable_name:
+        raise ValueError("invalid product executable name")
+    needle = executable_name.casefold()
+
+    def collect(started: str, finished: str) -> str:
+        if platform_name != "nt":
+            raise OSError("product-specific Windows Event Log requires Windows")
+        query = (
+            "*[System[TimeCreated[@SystemTime>='" + started +
+            "' and @SystemTime<='" + finished + "']]]"
+        )
+        result = runner(
+            ["wevtutil", "qe", "Application", "/q:" + query,
+             "/f:RenderedXml", "/c:200", "/rd:true"],
+            capture_output=True, text=True, encoding="utf-8", errors="replace",
+            timeout=30, check=False,
+        )
+        if result.returncode:
+            raise OSError("wevtutil exit " + str(result.returncode))
+        raw = result.stdout.strip()
+        if not raw:
+            return ""
+        events = re.findall(
+            r"<Event(?:\s[^>]*)?>.*?</Event>", raw,
+            flags=re.IGNORECASE | re.DOTALL,
+        )
+        if not events:
+            raise OSError("wevtutil returned malformed event XML")
+        selected = [event for event in events if needle in event.casefold()]
+        return "<Events>" + "".join(selected) + "</Events>" if selected else ""
+
+    return collect
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -62,7 +111,10 @@ def main(argv: list[str] | None = None) -> int:
     supervisor = QASupervisor(
         catalog=catalog, store=store, planner=planner,
         analyzer=analyzer, transport=transport,
-        event_log_collector=_synthetic_event_log if args.synthetic_phase1 else None,
+        event_log_collector=(
+            _synthetic_event_log if args.synthetic_phase1 else
+            _product_event_log_collector(args.artifact.name)
+        ),
     )
     supervisor.states.recover_interrupted()
     result = supervisor.run(

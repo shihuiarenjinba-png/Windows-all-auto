@@ -23,6 +23,18 @@ artifact-path, symlink, admin, destructive, GUI-operation, retry, runtime,
 test-count, and resource-budget checks before expanding an ID into a command.
 Product logs are explicitly labeled untrusted data in the planner prompt.
 
+`PROCESS_START` uses a catalog-pinned bounded observation policy. A product
+process that remains alive for five seconds is terminated by the QA harness and
+recorded as a successful start probe, not as a timeout or a normal product
+exit. A process that exits during the observation must still return the trusted
+exit code. This does not grant UI automation authority.
+
+For real Windows products, the supervisor queries the time-bounded Application
+log in memory and retains only raw event XML containing the exact tested
+executable basename. Unrelated Application events are discarded before local
+evidence persistence; the product-specific subset is redacted again when the
+GitHub envelope is built. Synthetic runs continue to use synthetic events.
+
 ## Data flow
 
 ```text
