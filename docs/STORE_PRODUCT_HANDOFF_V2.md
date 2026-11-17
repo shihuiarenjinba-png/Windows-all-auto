@@ -57,8 +57,17 @@ Pre-Store QA and post-Store-signed QA are deliberately separated:
 5. Only after the Store-signed private-audience QA passes may a later submission
    change the product to Public audience. Public certification/publication remains
    a separate owner gate.
-6. For later updates, package flights may be used as the limited-audience signed
-   test lane before broad release.
+6. For the first paid-app acquisition, do **not** assume Private audience means free.
+   A paid Private-audience app can still require the tester to pay the configured
+   price. The signed physical-QA acquisition must therefore be zero-cost.
+7. Preferred zero-cost routes, evaluated only after the product is published:
+   - promotional code, when Partner Center offers it for the published app;
+   - the configured free trial, only if the live Store actually offers a zero-cost
+     install for the tester;
+   - a separately approved temporary Free Private-beta submission as a fallback.
+   Never click through a non-zero purchase merely to satisfy QA.
+8. Package flights are for subsequent updates to users who already have the app;
+   do not treat a package flight as the initial acquisition path.
 
 Uploading a package, submitting certification, private-audience publishing, and
 public publishing are distinct external writes and require distinct execution-time
@@ -130,6 +139,14 @@ For paid one-time products:
 Folder Automation Engine is the first reference product:
 low-cost paid one-time + owner-approved 7-day trial. Its exact price remains
 HOLD until the current live Partner Center choice is selected and confirmed.
+
+For Folder's Store-signed QA, no paid self-purchase is permitted. Prefer a promotional
+code after publication because Microsoft documents promo codes as a way to give
+beta testers free access to a published app. If the live Store does not make that
+available for this product/audience, test whether the configured trial provides a
+zero-cost install; otherwise use a separately approved temporary Free Private-beta
+submission and restore the final paid + trial commercial configuration in a later
+submission before Public release.
 
 ## Safe conversion
 
