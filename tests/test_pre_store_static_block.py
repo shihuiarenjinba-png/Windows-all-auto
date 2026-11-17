@@ -333,6 +333,104 @@ class FinalizeApplicationControlBlockLaneTests(unittest.TestCase):
             self.assertEqual(reconciled["event_flat_hash"], "c" * 64)
             self.assertFalse((root / ".finalized.staging").exists())
 
+    def test_cli_can_derive_frozen_handoff_path_from_artifact_receipt(self):
+        launch = {
+            "schema_version": "unsigned-exe-launch-receipt/1",
+            "status": "LAUNCH_FAILED",
+            "expected_exe_sha256": "c" * 64,
+            "actual_exe_sha256": "c" * 64,
+            "normal_user_context": True,
+            "elevated": False,
+            "launch_attempts": 1,
+            "process_started": False,
+            "exit_code": None,
+            "normal_exit": False,
+            "code_integrity_event_ids": [],
+            "package_rebuilt": False,
+            "security_bypass_used": False,
+            "security_policy_modified": False,
+            "certificate_store_modified": False,
+            "alternate_bypass_used": False,
+            "msix_installed": False,
+            "partner_center_write_performed": False,
+            "package_uploaded": False,
+            "certification_submitted": False,
+            "published": False,
+        }
+        evidence = {
+            "schema_version": "code-integrity-block-evidence/1",
+            "status": "APPLICATION_CONTROL_BLOCKED",
+            "exe_sha256": "c" * 64,
+            "event_ids": [3033, 3077, 3118],
+            "blocking_event_ids": [3033, 3077],
+            "supplemental_event_ids": [3118],
+            "policy_name": "VerifiedAndReputableDesktop",
+            "policy_guid": "{0283ac0f-fff1-49ae-ada1-8a933130cad6}",
+            "correlation_activity_id": "{2f3574e4-74dd-0008-cd37-9c3add74dd01}",
+            "policy_id": "27555.1000.240208",
+            "status_code": "0xc0e90002",
+            "event_flat_hash": "c" * 64,
+            "event_flat_hash_matches_exe_sha256": True,
+            "launch_attempts": 1,
+            "process_started": False,
+            "security_bypass_used": False,
+            "security_policy_modified": False,
+            "certificate_store_modified": False,
+            "alternate_bypass_used": False,
+            "msix_installed": False,
+            "partner_center_write_performed": False,
+            "package_uploaded": False,
+            "certification_submitted": False,
+            "published": False,
+        }
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            handoff_path = root / "handoff.json"
+            artifact_path = root / "artifact.json"
+            launch_path = root / "launch.json"
+            evidence_path = root / "ci.json"
+            output_dir = root / "finalized"
+            handoff_path.write_text(json.dumps(handoff()), encoding="utf-8")
+            artifact = artifact_receipt()
+            artifact["local_handoff_path"] = str(handoff_path)
+            artifact_path.write_text(json.dumps(artifact), encoding="utf-8")
+            launch_path.write_text(json.dumps(launch), encoding="utf-8")
+            evidence_path.write_text(json.dumps(evidence), encoding="utf-8")
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(ROOT / "scripts" / "finalize_application_control_block_lane.py"),
+                    "--artifact-receipt",
+                    str(artifact_path),
+                    "--launch-receipt",
+                    str(launch_path),
+                    "--code-integrity-evidence",
+                    str(evidence_path),
+                    "--output-dir",
+                    str(output_dir),
+                ],
+                cwd=ROOT,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            reconciled = json.loads(
+                (
+                    output_dir
+                    / "unsigned-exe-launch-reconciliation-receipt.json"
+                ).read_text(encoding="utf-8")
+            )
+            self.assertEqual(
+                reconciled["input_bindings"]["handoff_path_source"],
+                "artifact_receipt.local_handoff_path",
+            )
+            self.assertEqual(
+                Path(reconciled["input_bindings"]["handoff_path"]),
+                handoff_path,
+            )
+
     def test_cli_failure_removes_partial_staging(self):
         launch = {
             "schema_version": "unsigned-exe-launch-receipt/1",
