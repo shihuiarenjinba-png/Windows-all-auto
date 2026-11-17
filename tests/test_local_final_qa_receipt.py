@@ -192,7 +192,7 @@ class LocalFinalQaReceiptTests(unittest.TestCase):
             "apply_unsigned_exe_launch_receipt.py",
             "reconcile_delayed_code_integrity_launch.py",
             "create_code_integrity_block_evidence.py",
-            "reconcile_delayed_code_integrity_block.py",
+            "reconcile_delayed_code_integrity_launch.py",
             "create_pre_store_static_block_receipt.py",
         )
         for name in scripts:
