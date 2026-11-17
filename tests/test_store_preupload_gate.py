@@ -125,6 +125,23 @@ class StorePreuploadGateTests(unittest.TestCase):
         broken["store_fields"]["pricing"] = False
         self.assertEqual(self.status(broken), "HOLD_STORE_ASSETS")
 
+    def test_read_only_ui_state_change_requires_reload_reconcile(self):
+        broken = copy.deepcopy(self.payload)
+        broken["store_fields"]["read_only_ui_state_changed"] = True
+        broken["store_fields"]["read_only_reload_reconciled"] = False
+        receipt = evaluate_store_preupload_gate(broken)
+        self.assertEqual(receipt["status"], "HOLD_UNKNOWN_PARTNER_CENTER_STATE")
+        self.assertTrue(receipt["read_only_reconciliation_required"])
+        self.assertFalse(receipt["write_performed"])
+
+    def test_read_only_ui_state_change_can_clear_after_reload_reconcile(self):
+        observed = copy.deepcopy(self.payload)
+        observed["store_fields"]["read_only_ui_state_changed"] = True
+        observed["store_fields"]["read_only_reload_reconciled"] = True
+        receipt = evaluate_store_preupload_gate(observed)
+        self.assertEqual(receipt["status"], "READY_FOR_MSIX_UPLOAD_APPROVAL")
+        self.assertFalse(receipt["write_performed"])
+
     def test_unknown_partner_center_state(self):
         broken = copy.deepcopy(self.payload)
         broken["store_fields"]["pricing"] = False
