@@ -299,12 +299,12 @@ class BoundProductPlanPlanner:
     Only action IDs already present in the local trusted catalog are emitted.
     This is intentionally not a shell-command planner.
     """
-    plan: dict[str, Any]
+    bound_plan: dict[str, Any]
     supported_test_ids: set[str]
 
     def __post_init__(self) -> None:
         required = {
-            step["action"] for step in self.plan["steps"] if step["required"] is True
+            step["action"] for step in self.bound_plan["steps"] if step["required"] is True
         }
         unsupported = sorted(required - self.supported_test_ids)
         if unsupported:
@@ -340,9 +340,9 @@ class BoundProductPlanPlanner:
             )
 
         step_id_to_action = {
-            step["step_id"]: step["action"] for step in self.plan["steps"]
+            step["step_id"]: step["action"] for step in self.bound_plan["steps"]
         }
-        for step in self.plan["steps"]:
+        for step in self.bound_plan["steps"]:
             if step["required"] is not True:
                 continue
             action = step["action"]
