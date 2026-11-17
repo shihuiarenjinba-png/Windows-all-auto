@@ -20,6 +20,7 @@ if str(ROOT) not in sys.path:
 from all_auto.product_artifact_pull import (
     ProductArtifactPullError,
     require_expected_identity,
+    select_github_artifact_metadata,
     stage_verified_store_artifact,
     validate_extracted_store_artifact,
     write_immutable_receipt,
@@ -38,6 +39,21 @@ def gh(*args: str) -> str:
     if result.returncode != 0:
         raise ProductArtifactPullError("GitHub CLI/API operation failed")
     return result.stdout
+
+
+def fetch_artifact_metadata(repository: str, run_id: int, artifact_name: str) -> dict:
+    raw = json.loads(
+        gh(
+            "api",
+            "-X",
+            "GET",
+            f"repos/{repository}/actions/runs/{run_id}/artifacts?per_page=100",
+        )
+    )
+    return select_github_artifact_metadata(
+        raw.get("artifacts"),
+        artifact_name=artifact_name,
+    )
 
 
 def verify_run(repository: str, run_id: int) -> dict:
@@ -72,6 +88,11 @@ def main() -> int:
 
     try:
         run = verify_run(args.repo, args.run_id)
+        artifact_meta = fetch_artifact_metadata(
+            args.repo,
+            args.run_id,
+            args.artifact_name,
+        )
         if args.expected_workflow_name is not None:
             if not args.expected_workflow_name.strip():
                 raise ProductArtifactPullError("expected workflow name is empty")
@@ -136,6 +157,7 @@ def main() -> int:
             staged["workflow_name"] = run["workflow_name"]
             staged["workflow_event"] = run["event"]
             staged["workflow_head_sha"] = run["head_sha"]
+            staged.update(artifact_meta)
             write_immutable_receipt(args.receipt, staged)
         print(
             json.dumps(
