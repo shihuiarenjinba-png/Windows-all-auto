@@ -377,6 +377,68 @@ class DurableEvidenceTests(unittest.TestCase):
         self.assertIn("screenshots/000.png", {x["path"] for x in envelope["payload"]["files"]})
 
 
+    def test_screenshot_privacy_approval_rebuilds_gui_envelope(self):
+        run_id, folder = self.store.start(
+            self.job, ["trusted-gui-driver"], expected={"exit_code": 0}, gui_test=True)
+        self.store.record_ui_action(
+            run_id, action="UIA_FIND_WINDOW", target="Folio AI",
+            result="PASS", details={"match_count": 1},
+        )
+        picture = self.root / "review.png"
+        atomic_write(picture, b"\x89PNG\r\n\x1a\nreview-later")
+        stored = self.store.add_screenshot(
+            run_id, picture, label="review later",
+            privacy_reviewed_shareable=False,
+        )
+        atomic_write(folder / "stdout.log", b"GUI driver completed\n")
+        atomic_write(folder / "stderr.log", b"")
+        state = json.loads((folder / "state.json").read_text())
+        state.update({
+            "state": "TEST_PASS",
+            "finished_at_utc": "2026-11-18T00:00:01Z",
+            "exit_code": 0,
+            "timed_out": False,
+            "failure_reason": None,
+            "actual": {"exit_code": 0, "timed_out": False, "process_started": True},
+        })
+        atomic_json(folder / "state.json", state)
+        atomic_write(folder / "windows-event-log.xml", b"<Events/>")
+        self.store._finalize(
+            folder, state, event_log_status="CAPTURED", event_log_error=None,
+        )
+        before = json.loads((folder / "manifest.json").read_text())
+        self.assertFalse(before["collection_complete"])
+        digest = sha256_file(stored)
+
+        after = self.store.approve_screenshot_for_github(
+            run_id, filename=stored.name, expected_sha256=digest,
+        )
+        self.assertTrue(after["collection_complete"])
+        envelope = json.loads((folder / "github-envelope.json").read_text())
+        self.assertIn(
+            "screenshots/" + stored.name,
+            {item["path"] for item in envelope["payload"]["files"]},
+        )
+        queue = json.loads((self.store.queue / (run_id + ".json")).read_text())
+        self.assertEqual(queue["payload_sha256"], envelope["payload_sha256"])
+
+    def test_screenshot_privacy_approval_rejects_hash_drift(self):
+        run_id, folder = self.store.start(
+            self.job, ["trusted-gui-driver"], expected={"exit_code": 0}, gui_test=True)
+        picture = self.root / "review.png"
+        atomic_write(picture, b"\x89PNG\r\n\x1a\noriginal")
+        stored = self.store.add_screenshot(
+            run_id, picture, label="review later",
+            privacy_reviewed_shareable=False,
+        )
+        stored.write_bytes(b"tampered")
+        with self.assertRaisesRegex(ValueError, "hash mismatch"):
+            self.store.approve_screenshot_for_github(
+                run_id, filename=stored.name,
+                expected_sha256="0" * 64,
+            )
+
+
 class GitHubContentsTransportTests(unittest.TestCase):
     def setUp(self):
         local_tmp = Path.cwd() / ".test-tmp"
