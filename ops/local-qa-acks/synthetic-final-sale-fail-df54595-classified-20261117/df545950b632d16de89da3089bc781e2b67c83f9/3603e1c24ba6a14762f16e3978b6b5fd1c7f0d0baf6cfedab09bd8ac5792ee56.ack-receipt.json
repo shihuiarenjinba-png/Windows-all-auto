@@ -1,0 +1,14 @@
+{
+  "e2e_pass": false,
+  "evidence_path": "ops/local-qa-results/synthetic-final-sale-fail-df54595-classified-20261117/df545950b632d16de89da3089bc781e2b67c83f9/3603e1c24ba6a14762f16e3978b6b5fd1c7f0d0baf6cfedab09bd8ac5792ee56.json",
+  "evidence_return_e2e_pass": false,
+  "payload_sha256": "3603e1c24ba6a14762f16e3978b6b5fd1c7f0d0baf6cfedab09bd8ac5792ee56",
+  "product_e2e_pass": false,
+  "release_ready": false,
+  "remote_file_sha256": "0f195b429fce05bf4b64e64e11e13992ffcf0fabe88c3749320b45b4b5f99d70",
+  "request_id": "synthetic-final-sale-fail-df54595-classified-20261117",
+  "schema_version": "local-qa-github-ack-v1",
+  "source_sha": "df545950b632d16de89da3089bc781e2b67c83f9",
+  "status": "GITHUB_READBACK_VERIFIED",
+  "store_submission_allowed": false
+}
