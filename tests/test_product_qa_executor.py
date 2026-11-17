@@ -89,6 +89,26 @@ class ProductQAExecutorTests(unittest.TestCase):
         self.assertTrue(process.terminated)
         self.assertEqual(len(self.log.read_text(encoding="utf-8").splitlines()), 4)
 
+
+    def test_before_terminate_callback_runs_while_process_is_live(self):
+        process = FakeProcess()
+        observed = []
+
+        def callback(active, actions):
+            self.assertIsNone(active.poll())
+            observed.append((active.pid, [item["action"] for item in actions]))
+
+        result = execute_bound_product_plan(
+            self.plan, artifact_path=self.artifact, action_log=self.log,
+            process_factory=lambda *_args, **_kwargs: process,
+            uia_executor=FakeUIA(), sleeper=lambda _seconds: None,
+            before_terminate=callback,
+        )
+        self.assertEqual(result.status, "TEST_PASS")
+        self.assertEqual(observed[0][0], 4321)
+        self.assertIn("UIA_SET_TEXT", observed[0][1])
+        self.assertTrue(process.terminated)
+
     def test_dependency_artifact_and_ambiguous_uia_fail_closed(self):
         changed = dict(self.plan)
         changed["executable_sha256"] = "0" * 64
