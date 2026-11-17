@@ -52,7 +52,11 @@ def write_new(path: Path, value: dict) -> None:
 
 def main() -> int:
     p = argparse.ArgumentParser()
-    p.add_argument("--handoff", required=True, type=Path)
+    p.add_argument(
+        "--handoff",
+        type=Path,
+        help="Frozen store-product-handoff.json. If omitted, derive from artifact receipt local_handoff_path.",
+    )
     p.add_argument("--artifact-receipt", required=True, type=Path)
     p.add_argument("--launch-receipt", required=True, type=Path)
     p.add_argument("--code-integrity-evidence", required=True, type=Path)
@@ -68,8 +72,22 @@ def main() -> int:
     staging.mkdir(parents=False, exist_ok=False)
 
     try:
-        handoff = load(a.handoff)
         artifact = load(a.artifact_receipt)
+        if a.handoff is not None:
+            handoff_path = a.handoff
+            handoff_path_source = "explicit"
+        else:
+            derived = str(artifact.get("local_handoff_path") or "").strip()
+            if not derived:
+                raise ValueError(
+                    "artifact receipt does not contain local_handoff_path; pass --handoff explicitly"
+                )
+            handoff_path = Path(derived)
+            handoff_path_source = "artifact_receipt.local_handoff_path"
+        if not handoff_path.is_file():
+            raise ValueError("resolved frozen handoff path does not exist")
+
+        handoff = load(handoff_path)
         launch = load(a.launch_receipt)
         ci = load(a.code_integrity_evidence)
 
@@ -80,7 +98,9 @@ def main() -> int:
             expected_exe_sha256=normalized["package"]["exe_sha256"],
         )
         reconciled["input_bindings"] = {
-            "handoff_sha256": file_sha256(a.handoff),
+            "handoff_path": str(handoff_path),
+            "handoff_path_source": handoff_path_source,
+            "handoff_sha256": file_sha256(handoff_path),
             "artifact_receipt_sha256": file_sha256(a.artifact_receipt),
             "launch_receipt_sha256": file_sha256(a.launch_receipt),
             "code_integrity_evidence_sha256": file_sha256(a.code_integrity_evidence),
