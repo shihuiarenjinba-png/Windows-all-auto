@@ -862,8 +862,9 @@ class GitHubContentsTransport:
                 sha256_bytes(canonical(remote.get("payload"))) != envelope["payload_sha256"]):
             raise GitHubReturnError("GitHub readback correlation mismatch")
         manifest = remote.get("payload", {}).get("manifest", {})
+        test_status = manifest.get("status")
         evidence_return_e2e = (
-            manifest.get("status") == "TEST_PASS" and
+            test_status in {"TEST_PASS", "TEST_FAIL"} and
             manifest.get("collection_complete") is True and
             manifest.get("local_persistence_verified") is True
         )
@@ -873,6 +874,7 @@ class GitHubContentsTransport:
             "source_sha": envelope["source_sha"],
             "payload_sha256": envelope["payload_sha256"],
             "status": "GITHUB_READBACK_VERIFIED",
+            "test_status": test_status,
             "evidence_return_e2e_pass": evidence_return_e2e,
             "product_e2e_pass": False,
             "e2e_pass": False,
@@ -984,7 +986,8 @@ def process_retry_queue(store: EvidenceStore, transport: Any, *,
                 state = json.loads((run_folder / "state.json").read_text(encoding="utf-8"))
                 manifest = json.loads((run_folder / "manifest.json").read_text(encoding="utf-8"))
                 evidence_return_e2e = (
-                    state.get("state") == "TEST_PASS" and
+                    acknowledgement.get("evidence_return_e2e_pass") is True and
+                    manifest.get("status") in {"TEST_PASS", "TEST_FAIL"} and
                     manifest.get("collection_complete") is True and
                     manifest.get("local_persistence_verified") is True)
                 state["github_return"] = acknowledgement
