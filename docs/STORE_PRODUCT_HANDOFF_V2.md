@@ -33,10 +33,43 @@ Generated handoffs for Group B standard products intentionally start HOLD. CI pr
 engineering/package identity; it does not impersonate live Partner Center state or
 human approvals.
 
-## Exact-package local QA
+## Exact-package QA and Microsoft Store signing strategy
 
-When a handoff contains `qa`, `qa.local_final_pass=true` is required before the
-handoff can become ready for Windows-Automator.
+For Microsoft Store MSIX distribution, do not purchase or require a third-party
+production code-signing certificate solely to satisfy this pipeline. The intended
+production signing path is Microsoft Store signing after certification.
+
+Pre-Store QA and post-Store-signed QA are deliberately separated:
+
+1. Before any Store write, bind the exact source/MSIX/EXE hashes and complete all
+   static/package-integrity checks plus source/CI functional tests that do not
+   require weakening Windows security policy.
+2. If the physical QA machine naturally permits the exact unsigned executable,
+   complete the existing package-bound local GUI/DPI/product QA receipt before
+   Store submission.
+3. If Windows Application Control blocks the exact unsigned executable, record an
+   environment HOLD. Do not weaken policy, add a temporary certificate, or use a
+   bypass path merely to force the test.
+4. For an initial release that needs Microsoft-signed physical QA, use a separately
+   approved **Private audience** Store submission. After certification and private
+   publishing, install the Microsoft-signed package through the Store and perform
+   the final physical GUI/DPI/product-specific QA there.
+5. Only after the Store-signed private-audience QA passes may a later submission
+   change the product to Public audience. Public certification/publication remains
+   a separate owner gate.
+6. For later updates, package flights may be used as the limited-audience signed
+   test lane before broad release.
+
+Uploading a package, submitting certification, private-audience publishing, and
+public publishing are distinct external writes and require distinct execution-time
+approval. A checked-in approval value is evidence only.
+
+### Local QA receipt
+
+When a handoff contains `qa`, the existing `local-final-qa-receipt/1` remains the
+receipt format for a completed physical QA run. Do not mark it PASS when execution
+was blocked by Application Control; retain HOLD evidence and continue through the
+approved Store-signed test lane instead.
 
 Create a receipt template:
 
