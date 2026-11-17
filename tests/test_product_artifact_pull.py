@@ -141,6 +141,43 @@ class ProductArtifactPullTests(unittest.TestCase):
             with self.assertRaisesRegex(ProductArtifactPullError, "refusing to overwrite"):
                 write_immutable_receipt(path, receipt)
 
+    def test_stage_rejects_unsafe_product_id(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td) / "download"
+            root.mkdir()
+            build_artifact(root)
+            verified = validate_extracted_store_artifact(
+                root,
+                repository_full_name="acme/demo",
+                run_id=123,
+                artifact_name="Demo-Store-MSIX-UNSIGNED-DRAFT",
+            )
+            verified["product_id"] = "../escape"
+            with self.assertRaisesRegex(ProductArtifactPullError, "unsafe"):
+                stage_verified_store_artifact(
+                    verified,
+                    target_root=Path(td) / "inbox",
+                )
+
+    def test_failed_copy_does_not_leave_partial_staging_directory(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td) / "download"
+            root.mkdir()
+            build_artifact(root)
+            verified = validate_extracted_store_artifact(
+                root,
+                repository_full_name="acme/demo",
+                run_id=123,
+                artifact_name="Demo-Store-MSIX-UNSIGNED-DRAFT",
+            )
+            Path(verified["_source_paths"]["validation"]).unlink()
+            target = Path(td) / "inbox"
+            with self.assertRaisesRegex(ProductArtifactPullError, "disappeared"):
+                stage_verified_store_artifact(verified, target_root=target)
+            product_root = target / "demo"
+            if product_root.exists():
+                self.assertEqual(list(product_root.iterdir()), [])
+
     def test_stage_refuses_existing_destination(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td) / "download"
