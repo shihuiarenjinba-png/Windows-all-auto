@@ -103,6 +103,8 @@ class UnsignedLaunchPowerShellContractTests(unittest.TestCase):
             "Microsoft-Windows-CodeIntegrity/Operational",
             "3033",
             "3077",
+            "for ($pollAttempt = 1; $pollAttempt -le 6; $pollAttempt++)",
+            "code_integrity_query_attempts",
             "security_bypass_used = $false",
             "msix_installed = $false",
             "partner_center_write_performed = $false",

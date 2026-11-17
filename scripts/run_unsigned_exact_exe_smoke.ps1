@@ -51,6 +51,8 @@ $launchError = ''
 $status = 'LAUNCH_FAILED'
 $ciEventIds = @()
 $ciEvents = @()
+$ciEvidenceQueryAttempts = 0
+$ciEvidenceQueryError = ''
 
 try {
     $process = Start-Process -FilePath $exe.FullName -PassThru -ErrorAction Stop
@@ -74,21 +76,40 @@ try {
 }
 catch {
     $launchError = $_.Exception.Message
-    Start-Sleep -Milliseconds 750
 
     try {
         $windowStart = $startedAt.AddSeconds(-2)
-        $windowEnd = (Get-Date).AddSeconds(2)
         $namePattern = [regex]::Escape($exe.Name)
-        $events = Get-WinEvent -FilterHashtable @{
-            LogName = 'Microsoft-Windows-CodeIntegrity/Operational'
-            StartTime = $windowStart
-        } -ErrorAction SilentlyContinue |
-            Where-Object {
-                $_.TimeCreated -le $windowEnd -and
-                (($_.ToXml() -match $namePattern) -or ($_.Message -match $namePattern))
-            } |
-            Select-Object -First 20
+        $events = @()
+
+        # Code Integrity events can arrive shortly after Start-Process returns
+        # the blocking error. Poll the read-only log for a bounded interval;
+        # never retry the executable itself.
+        for ($pollAttempt = 1; $pollAttempt -le 6; $pollAttempt++) {
+            $ciEvidenceQueryAttempts = $pollAttempt
+            if ($pollAttempt -gt 1) {
+                Start-Sleep -Milliseconds 500
+            }
+            $queryErrors = @()
+            $windowEnd = (Get-Date).AddSeconds(2)
+            $candidateEvents = @(Get-WinEvent -FilterHashtable @{
+                LogName = 'Microsoft-Windows-CodeIntegrity/Operational'
+                StartTime = $windowStart
+            } -ErrorAction SilentlyContinue -ErrorVariable queryErrors |
+                Where-Object {
+                    $_.TimeCreated -le $windowEnd -and
+                    (($_.ToXml() -match $namePattern) -or ($_.Message -match $namePattern))
+                } |
+                Select-Object -First 20)
+
+            if ($queryErrors.Count -gt 0) {
+                $ciEvidenceQueryError = [string]$queryErrors[0].Exception.Message
+            }
+            if ($candidateEvents.Count -gt 0) {
+                $events = $candidateEvents
+                break
+            }
+        }
 
         foreach ($evt in $events) {
             $ciEventIds += [int]$evt.Id
@@ -134,6 +155,8 @@ $receipt = [ordered]@{
     launch_error = $launchError
     code_integrity_event_ids = @($ciEventIds)
     code_integrity_events = @($ciEvents)
+    code_integrity_query_attempts = $ciEvidenceQueryAttempts
+    code_integrity_query_error = $ciEvidenceQueryError
     package_rebuilt = $false
     security_bypass_used = $false
     security_policy_modified = $false
