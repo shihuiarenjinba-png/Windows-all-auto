@@ -250,20 +250,45 @@ Store artifact from that run:
 
 Current local state:
 
-`PASS_STATIC_ONLY_GUI_PENDING`
+`APPLICATION_CONTROL_BLOCKED_STORE_SIGNED_QA_REQUIRED`
 
-Static confirmation is complete and must not be repeated unless evidence integrity is
-lost. The QA template remains `HOLD`.
+The one-shot unsigned launch is complete and must **not** be repeated.
 
-Next local-only sequence after action-time approval:
+Observed:
 
-1. one normal-user launch attempt of the frozen exact EXE;
+- action-time approval: yes
+- attempts: 1
+- normal user: yes
+- process started: no
+- original wrapper status: `LAUNCH_FAILED`
+- reconciled classification: `APPLICATION_CONTROL_BLOCKED`
+- Code Integrity block events: 3033 / 3077
+- supplemental event: 3118
+- policy: `VerifiedAndReputableDesktop`
+- policy GUID: `{0283ac0f-fff1-49ae-ada1-8a933130cad6}`
+- residual processes: 0
+- security bypass: none
+- Store write: none
+
+The original launch receipt remains immutable. The later Code Integrity evidence must
+be reconciled into a separate
+`unsigned-exe-launch-reconciliation-receipt/1` using
+`scripts/reconcile_delayed_code_integrity_launch.py`.
+
+The next physical QA is **not another unsigned launch**. It resumes on a Microsoft
+Store-signed Private distribution of the same frozen candidate.
+
+Remaining signed-build QA:
+
+1. Microsoft Store delivery/signature verification;
 2. JP/EN GUI + normal exit;
 3. real OS DPI 100/125/150;
 4. authorized non-production HTTPS GET using an owner-approved endpoint only;
-5. Windows Task Scheduler register -> run -> verify -> unregister.
+5. CSV append / duplicate-date protection / secret redaction;
+6. Windows Task Scheduler register -> run -> verify -> unregister.
 
-Do not invent an endpoint and do not contact production systems merely to complete QA.
+Do not invent an endpoint, do not pay to reacquire the owner's own application, and
+do not contact production systems merely to complete QA.
 
 ### Workflow Automation Hub
 
@@ -328,7 +353,7 @@ Do not flip that flag from file existence alone.
 
 Work in this order.
 
-### P0 — Scheduled exact artifact/static lane is already complete
+### P0 — Scheduled unsigned lane is complete and blocked
 
 Do **not** repeat Scheduled artifact staging or static confirmation. The local report
 has already established:
@@ -348,36 +373,43 @@ has already established:
 The next action is the one-shot physical launch below. It requires action-time
 confirmation. Do not treat this handoff document as that approval.
 
-### P0.5 — one-shot exact unsigned EXE launch evidence
+### P0.5 — reconcile the delayed Code Integrity evidence
 
-For Scheduled, after exact artifact/static verification, use:
+Do **not** relaunch the unsigned EXE.
 
-- `scripts/run_unsigned_exact_exe_smoke.ps1`
-- `scripts/apply_unsigned_exe_launch_receipt.py`
+Use the immutable original launch receipt plus the separate
+`code-integrity-block-evidence/1`:
 
-The launch wrapper refuses elevated/admin PowerShell, re-hashes the exact EXE before
-launch, performs one attempt only, records Code Integrity evidence when available,
-and contains no bypass/install/Store action.
+```powershell
+python scripts/reconcile_delayed_code_integrity_launch.py `
+  --handoff <frozen store-product-handoff.json> `
+  --launch-receipt <original unsigned-exe-launch-receipt.json> `
+  --code-integrity-evidence <code-integrity-block-evidence.json> `
+  --output <new unsigned-exe-launch-reconciliation-receipt.json>
+```
 
-Accepted launch statuses are:
+Then bind that new reconciliation receipt into a **new** QA evidence file with
+`apply_unsigned_exe_launch_receipt.py`.
 
-- `PASS_NORMAL_EXIT`
-- `STARTED_NOT_CLOSED_WITHIN_WINDOW`
-- `EXITED_NONZERO`
-- `APPLICATION_CONTROL_BLOCKED`
-- `LAUNCH_FAILED`
+Expected classification:
 
-Only `PASS_NORMAL_EXIT` proves the launch/normal-exit slice, and even that must leave
-the full local QA at `HOLD` until JP/EN, DPI, HTTPS GET, Task Scheduler and remaining
-product acceptance are complete.
+`APPLICATION_CONTROL_BLOCKED`
 
-Do not relaunch after an Application Control block. Do not alter security policy,
-certificate stores, or use an alternate launcher.
+The original launch receipt and Code Integrity evidence remain unchanged. The QA state
+remains `HOLD`.
 
-### P1 — return machine-readable local evidence
+### P1 — hand the frozen block evidence to the Store execution owner
 
-Complete only the local-only checks that actually require Windows. Do not rerun the
-whole GitHub unit suite.
+The code-owner lane must not perform Partner Center writes. Provide the Store owner
+the exact frozen package binding plus the reconciled Application Control evidence and
+request the Store-signed Private distribution path.
+
+After the Store-signed build is available at zero acquisition cost, resume physical
+QA there. No unsigned relaunch is permitted.
+
+
+Complete only the remaining local-only checks on the Store-signed build. Do not rerun
+the whole GitHub unit suite.
 
 Return the exact package-bound local QA receipt to Windows-all-auto.
 
