@@ -189,6 +189,7 @@ class LocalFinalQaReceiptTests(unittest.TestCase):
             "apply_initial_submission_receipt.py",
             "apply_pre_store_static_qa_receipt.py",
             "apply_store_signed_install_qa_receipt.py",
+            "apply_unsigned_exe_launch_receipt.py",
         )
         for name in scripts:
             with self.subTest(script=name):
