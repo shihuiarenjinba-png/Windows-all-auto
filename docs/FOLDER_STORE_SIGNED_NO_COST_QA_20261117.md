@@ -86,6 +86,39 @@ and requires separate owner approval because the confidentiality properties diff
 
 Do not silently change the product price to Free as a workaround.
 
+## Local conveyor entrypoint before Store upload
+
+The reusable local pre-upload entrypoint is:
+
+```text
+scripts/run_store_preupload_readiness.ps1
+```
+
+For Folder, use the frozen package path and `SourceCheckoutMode=ContainedCommit`.
+This allows the current local Folder worktree to contain later Store metadata/runbook
+commits while keeping the package source SHA frozen. The script still requires the
+frozen source commit to exist in local Git history and to be an ancestor of the
+current HEAD; it never changes the package bytes or source SHA.
+
+The wrapper performs only local/read-only work:
+
+1. exact package existence and SHA verification;
+2. MSIX unpack + Manifest/EXE identity/hash verification;
+3. exact Draft binding verification in the handoff;
+4. optional Store-assets directory presence check;
+5. emits one deterministic readiness receipt.
+
+It can return:
+
+- `HOLD_LOCAL_MSIX_NOT_FOUND`
+- `HOLD_LOCAL_MSIX_SHA_MISMATCH`
+- `HOLD_SUBMISSION_RECONCILE_REQUIRED`
+- `HOLD_EXACT_PACKAGE_MISMATCH`
+- `HOLD_STORE_ASSETS`
+- `READY_FOR_MSIX_UPLOAD_APPROVAL`
+
+It never uploads a package, submits certification, or publishes.
+
 ## Pilot sequence
 
 ### Gate 1 — initial Draft
