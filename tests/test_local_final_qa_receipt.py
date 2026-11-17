@@ -114,6 +114,8 @@ class LocalFinalQaReceiptTests(unittest.TestCase):
             "identity_name": self.payload["identity"]["name"],
             "version": self.payload["identity"]["version"],
             "architecture": self.payload["identity"]["architecture"],
+            "acquisition_method": "PROMO_CODE",
+            "acquisition_cost_paid": False,
             "microsoft_store_delivery_verified": True,
             "signature_trust_verified": True,
             "jp_en_gui_passed": True,
@@ -129,6 +131,34 @@ class LocalFinalQaReceiptTests(unittest.TestCase):
         self.assertNotIn("qa.store_signed_install_pass", n["missing_for_draft"])
         self.assertFalse(n["approvals"]["owner_approved_for_draft"])
         self.assertFalse(n["security"]["owner_confirmation_complete"])
+        self.assertEqual("PROMO_CODE", n["qa"]["store_signed_acquisition_method"])
+        self.assertFalse(n["qa"]["store_signed_acquisition_cost_paid"])
+
+    def test_store_signed_receipt_rejects_paid_acquisition(self):
+        self.payload["distribution"]["audience"] = "PUBLIC_RELEASE"
+        self.payload["distribution"]["public_release_approved"] = True
+        receipt = {
+            "schema_version": "store-signed-install-qa-receipt/1",
+            "status": "PASS",
+            "store_id": self.payload["identity"]["store_id"],
+            "source_sha": self.payload["product"]["source_sha"],
+            "original_package_sha256": self.payload["package"]["package_sha256"],
+            "identity_name": self.payload["identity"]["name"],
+            "version": self.payload["identity"]["version"],
+            "architecture": self.payload["identity"]["architecture"],
+            "acquisition_method": "PROMO_CODE",
+            "acquisition_cost_paid": True,
+            "microsoft_store_delivery_verified": True,
+            "signature_trust_verified": True,
+            "jp_en_gui_passed": True,
+            "dpi_matrix_passed": True,
+            "product_specific_acceptance_passed": True,
+            "normal_exit_passed": True,
+            "package_rebuilt": False,
+            "security_bypass_used": False,
+        }
+        with self.assertRaises(StoreHandoffError):
+            apply_store_signed_install_qa_receipt(self.payload, receipt)
 
     def test_documented_store_handoff_scripts_run_directly(self):
         root = Path(__file__).resolve().parents[1]
