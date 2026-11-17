@@ -1,0 +1,143 @@
+{
+  "payload": {
+    "files": [
+      {
+        "content": "U1lOVEhFVElDX1NBTEVfUUFfSU5URU5USU9OQUxfRkFJTFVSRQ0KUFJPQ0VTU19TVEFSVEVEX1BJRD0zMDM0MA0K",
+        "encoding": "base64",
+        "path": "stdout.log",
+        "sha256": "b74d8011aa49ae2fabeaabc61640841acd8cc5fbeb3fd6e9f9d583e3bd0fd6bc"
+      },
+      {
+        "content": "",
+        "encoding": "base64",
+        "path": "stderr.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "content": "PEV2ZW50cz48RXZlbnQ+PFByb3ZpZGVyIE5hbWU9IldpbmRvd3NBbGxBdXRvU3ludGhldGljU3VwZXJ2aXNvciIvPjxEYXRhIE5hbWU9IlN0YXJ0ZWQiPjIwMjYtMTEtMTdUMDI6MjQ6NTJaPC9EYXRhPjxEYXRhIE5hbWU9IkZpbmlzaGVkIj4yMDI2LTExLTE3VDAyOjI0OjUyWjwvRGF0YT48L0V2ZW50PjwvRXZlbnRzPg==",
+        "encoding": "base64",
+        "path": "windows-event-log.xml",
+        "sha256": "1a41a8c5fa68be0ff5125210e779e786684d873232d3c99bba673483277f939e"
+      },
+      {
+        "content": "eyJhdCI6IjIwMjYtMTEtMTdUMDI6MjQ6NTJaIiwiZXZlbnQiOiJSVU5fU1RBUlRFRCJ9CnsiYXQiOiIyMDI2LTExLTE3VDAyOjI0OjUyWiIsImV2ZW50IjoiUFJPQ0VTU19TVEFSVEVEIiwicGlkIjoyODgyNH0KeyJhdCI6IjIwMjYtMTEtMTdUMDI6MjQ6NTJaIiwiZXZlbnQiOiJQUk9DRVNTX0ZJTklTSEVEIiwiZXhpdF9jb2RlIjoxNywic3RhdHVzIjoiVEVTVF9GQUlMIiwidGltZWRfb3V0IjpmYWxzZX0K",
+        "encoding": "base64",
+        "path": "journal.jsonl",
+        "sha256": "855c44b7a8136e21e41f59af3c263d70cc02585daf66eccd135496d2e2adf829"
+      }
+    ],
+    "manifest": {
+      "actual": {
+        "exit_code": 17,
+        "observation_seconds": null,
+        "process_started": true,
+        "survived_observation": false,
+        "terminated_by_harness": false,
+        "timed_out": false
+      },
+      "artifact_sha256": "d818fa25025e5412133c873c1bbbf09ec846d63fcbfa1241965c7e08eca3d1d4",
+      "collection": {
+        "exit_code": "CAPTURED",
+        "expected_and_actual": "CAPTURED",
+        "github_shareable_screenshot": "NOT_APPLICABLE",
+        "screenshots": "NOT_APPLICABLE",
+        "stderr": "EMPTY_VALID",
+        "stdout": "CAPTURED",
+        "uia_actions": "NOT_APPLICABLE",
+        "windows_event_log": "CAPTURED",
+        "windows_event_log_error": null
+      },
+      "collection_complete": true,
+      "e2e_pass": false,
+      "environment": {
+        "architecture": "AMD64",
+        "machine_id": "477adc4573924c02bebd4cb90bed6446",
+        "os": "Windows",
+        "os_release": "11",
+        "python": "3.14.4"
+      },
+      "evidence_return_e2e_pass": false,
+      "exit_code": 17,
+      "expected": {
+        "completion_policy": "WAIT_FOR_EXIT",
+        "exit_code": 0,
+        "observation_seconds": 0
+      },
+      "factory_dispatch": {
+        "reason": "No verified automatic development-agent dispatch contract is configured",
+        "status": "AGENT_DISPATCH_PENDING",
+        "target_repository": "shihuiarenjinba-png/AI-App-Factory"
+      },
+      "failed_tests": [
+        {
+          "actual": {
+            "exit_code": 17,
+            "observation_seconds": null,
+            "process_started": true,
+            "survived_observation": false,
+            "terminated_by_harness": false,
+            "timed_out": false
+          },
+          "category": "LOCAL_QA",
+          "error": "unexpected exit code",
+          "expected": {
+            "completion_policy": "WAIT_FOR_EXIT",
+            "exit_code": 0,
+            "observation_seconds": 0
+          },
+          "test_id": "LOCAL-COMMAND"
+        }
+      ],
+      "finished_at_utc": "2026-11-17T02:24:52Z",
+      "github_return": {
+        "readback_verified": false,
+        "status": "QUEUED"
+      },
+      "local_persistence_verified": true,
+      "product_e2e_pass": false,
+      "product_e2e_requirements": {
+        "artifact_package_sha_correlation": false,
+        "identity_correlation": false,
+        "package_qa": false,
+        "physical_gui_qa": false,
+        "product_specific_regression": false,
+        "product_specific_tests": false,
+        "version_correlation": false
+      },
+      "product_type": "APP",
+      "release_ready": false,
+      "request_id": "synthetic-final-sale-fail-df54595-classified-20261117",
+      "run_id": "20261117T022452Z-4c81e0dde2663798",
+      "schema_version": "local-qa-evidence-v1",
+      "slug": "synthetic-sale-loop",
+      "source_branch": "codex/final-sale-qa-synthetic-20261117",
+      "source_repository": "shihuiarenjinba-png/AI-App-Factory",
+      "source_sha": "df545950b632d16de89da3089bc781e2b67c83f9",
+      "started_at_utc": "2026-11-17T02:24:52Z",
+      "status": "TEST_FAIL",
+      "store_submission_allowed": false,
+      "test_command": [
+        "C:\\Python314\\python.exe",
+        "C:\\Users\\[REDACTED]\\Desktop\\portfolio-audit\\_task_worktrees\\waa-ollama-local-qa-supervisor\\scripts\\trusted_qa_test_runner.py",
+        "--test-id",
+        "PROCESS_START",
+        "--artifact",
+        "C:\\Users\\[REDACTED]\\Desktop\\portfolio-audit\\_task_worktrees\\waa-ollama-local-qa-supervisor\\.test-tmp\\final-sale\\fail-df54595-classified\\synthetic_product.py",
+        "--expected-sha",
+        "d818fa25025e5412133c873c1bbbf09ec846d63fcbfa1241965c7e08eca3d1d4"
+      ],
+      "test_suite_version": "factory-windows-closed-loop-v1",
+      "timed_out": false,
+      "user_price_approval": false,
+      "user_product_approval": false
+    },
+    "redaction": {
+      "replacement_count": 2,
+      "screenshots_require_explicit_privacy_review": true
+    }
+  },
+  "payload_sha256": "3603e1c24ba6a14762f16e3978b6b5fd1c7f0d0baf6cfedab09bd8ac5792ee56",
+  "request_id": "synthetic-final-sale-fail-df54595-classified-20261117",
+  "schema_version": "local-qa-evidence-v1",
+  "source_sha": "df545950b632d16de89da3089bc781e2b67c83f9"
+}
