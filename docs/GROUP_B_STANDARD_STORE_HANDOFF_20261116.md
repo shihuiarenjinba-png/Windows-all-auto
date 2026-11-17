@@ -145,7 +145,7 @@ changes only. Do not rebuild the product only because those metadata files chang
 Local-only sequence:
 
 1. sync the three execution repositories;
-2. run local tests and exact frozen-SHA checks;
+2. verify the existing frozen local MSIX and exact SHA/Manifest/EXE binding; do not rerun GitHub's full test suite locally;
 3. re-read Partner Center;
 4. require exact initial-submission/update classification;
 5. direct execution-time approval for any Start action;
@@ -227,6 +227,44 @@ Local-only acceptance:
 - live Partner Center reverify.
 
 Technical notice collection does not replace the human redistribution-rights decision.
+
+## Direct product-artifact pull for local confirmation
+
+For Scheduled API Runner, Workflow Automation Hub, and Browser Automation Runner,
+do not manually retype repository/artifact names when staging the exact successful
+Store artifact. Use the checked-in Group B registry:
+
+```text
+ops/group_b_standard_store_products.json
+```
+
+and the wrapper:
+
+```powershell
+python scripts/pull_group_b_store_product.py `
+  --product-id <scheduled-api-runner|workflow-automation-hub|browser-automation-runner> `
+  --run-id <exact successful GitHub Actions run id> `
+  --target-root C:\path\to\group-b-local-inbox `
+  --receipt C:\path\to\evidence\artifact-pull-receipt.json
+```
+
+The wrapper delegates to `pull_store_product_artifact.py` and requires:
+
+- the run conclusion is SUCCESS;
+- workflow head SHA equals the artifact handoff source SHA;
+- exactly one MSIX, validation report, checksum, and Store handoff;
+- package SHA matches handoff + validation + checksum;
+- EXE SHA roundtrip matches;
+- Store ID / Identity / Publisher / Version match;
+- the destination and receipt do not already exist.
+
+It records `package_rebuilt=false`, `security_bypass_used=false`,
+`submitted_to_store=false`, `certification_submitted=false`, and
+`published=false`.
+
+Folder is intentionally excluded from this direct-pull route because its pilot uses
+the already-frozen source/package bytes. Do not replace Folder's frozen candidate with
+a newer product-repository artifact.
 
 ## Definition of GitHub-side completion
 
