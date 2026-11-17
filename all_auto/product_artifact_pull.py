@@ -9,6 +9,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from hashlib import sha256
 import json
+import os
 from pathlib import Path
 import re
 import shutil
@@ -20,6 +21,8 @@ from all_auto.store_product_handoff import normalize_store_product_handoff
 RECEIPT_SCHEMA = "local-store-product-artifact-pull-receipt/1"
 PRODUCT_ID = re.compile(r"^[a-z0-9][a-z0-9-]{0,63}$")
 HEX40 = re.compile(r"^[0-9a-f]{40}$")
+WINDOWS_PATH_LENGTH_GUARD = os.name == "nt"
+WINDOWS_LEGACY_MAX_PATH = 260
 
 
 class ProductArtifactPullError(ValueError):
@@ -261,6 +264,22 @@ def stage_verified_store_artifact(
     sources = verified.get("_source_paths")
     if not isinstance(sources, dict):
         raise ProductArtifactPullError("verified source paths are missing")
+
+    # Keep the atomic staging suffix from turning an otherwise acceptable
+    # destination into an opaque WinError 3 on Windows hosts where legacy
+    # MAX_PATH handling is still active.  Receipt paths remain ordinary paths;
+    # callers only need to choose a shorter target root/workspace.
+    if WINDOWS_PATH_LENGTH_GUARD:
+        staging_paths = [staging]
+        for key in ("msix", "handoff", "validation", "checksum"):
+            source_name = Path(str(sources.get(key) or "")).name
+            if source_name:
+                staging_paths.append(staging / source_name)
+        if any(len(str(path)) >= WINDOWS_LEGACY_MAX_PATH for path in staging_paths):
+            raise ProductArtifactPullError(
+                "Windows staging path exceeds the legacy MAX_PATH limit; "
+                "choose a shorter --target-root/workspace"
+            )
 
     staging.parent.mkdir(parents=True, exist_ok=True)
     staging.mkdir(parents=False, exist_ok=False)

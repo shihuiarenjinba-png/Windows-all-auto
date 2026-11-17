@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest import mock
 
 from all_auto.product_artifact_pull import (
     ProductArtifactPullError,
@@ -268,6 +269,29 @@ class ProductArtifactPullTests(unittest.TestCase):
             product_root = target / "demo"
             if product_root.exists():
                 self.assertEqual(list(product_root.iterdir()), [])
+
+    def test_windows_staging_path_limit_fails_closed_before_creating_target(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td) / "download"
+            root.mkdir()
+            build_artifact(root)
+            verified = validate_extracted_store_artifact(
+                root,
+                repository_full_name="acme/demo",
+                run_id=123,
+                artifact_name="Demo-Store-MSIX-UNSIGNED-DRAFT",
+            )
+            target = Path(td) / ("long-workspace-" * 14)
+            with mock.patch(
+                "all_auto.product_artifact_pull.WINDOWS_PATH_LENGTH_GUARD",
+                True,
+            ):
+                with self.assertRaisesRegex(
+                    ProductArtifactPullError,
+                    "shorter --target-root/workspace",
+                ):
+                    stage_verified_store_artifact(verified, target_root=target)
+            self.assertFalse(target.exists())
 
     def test_stage_refuses_existing_destination(self):
         with tempfile.TemporaryDirectory() as td:
