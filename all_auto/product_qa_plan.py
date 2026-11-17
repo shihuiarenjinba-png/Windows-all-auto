@@ -181,6 +181,12 @@ def verify_plan_for_job(plan: dict[str, Any], *, job: dict[str, Any],
     if "package_sha256" in job and job["package_sha256"] != plan["package_sha256"]:
         _fail("job package SHA differs from plan")
 
+    for step in plan["steps"]:
+        if step["action"] == "ARTIFACT_HASH" and step["params"] != {}:
+            _fail("local ARTIFACT_HASH does not accept parameters")
+        if (step["action"] == "PROCESS_START" and
+                step["params"] != {"observation_seconds": 5}):
+            _fail("local PROCESS_START currently requires observation_seconds=5")
     required_actions = {
         step["action"] for step in plan["steps"] if step["required"] is True
     }
