@@ -91,7 +91,7 @@ def select_exact_successful_run(
     return matches[0]["id"]
 
 
-def discover_run_id(product: dict) -> int:
+def resolve_registered_head(product: dict) -> str:
     repository = product["repository_full_name"]
     source_ref = product["source_ref"]
     commit = gh_json(
@@ -100,6 +100,31 @@ def discover_run_id(product: dict) -> int:
     head_sha = str(commit.get("sha") or "")
     if len(head_sha) != 40:
         raise ValueError("registered source_ref did not resolve to a commit")
+    return head_sha
+
+
+def require_explicit_run_matches_head(
+    product: dict,
+    *,
+    run_id: int,
+    head_sha: str,
+) -> None:
+    if type(run_id) is not int or run_id <= 0:
+        raise ValueError("run-id must be positive")
+    run = gh_json(
+        f"repos/{product['repository_full_name']}/actions/runs/{run_id}"
+    )
+    if run.get("head_sha") != head_sha:
+        raise ValueError("explicit run-id is not for the current registered branch HEAD")
+    if run.get("name") != product["workflow_name"]:
+        raise ValueError("explicit run-id is not the registered Store workflow")
+    if run.get("status") != "completed" or run.get("conclusion") != "success":
+        raise ValueError("explicit run-id is not a completed SUCCESS Store workflow")
+
+
+def discover_run_id(product: dict, *, head_sha: str) -> int:
+    repository = product["repository_full_name"]
+    source_ref = product["source_ref"]
     response = gh_json(
         f"repos/{repository}/actions/runs?branch={quote(source_ref, safe='')}&status=success&per_page=100"
     )
@@ -128,9 +153,16 @@ def main() -> int:
 
     try:
         product = load_product(args.registry, args.product_id)
-        run_id = args.run_id if args.run_id is not None else discover_run_id(product)
-        if run_id <= 0:
-            raise ValueError("run-id must be positive")
+        head_sha = resolve_registered_head(product)
+        if args.run_id is not None:
+            require_explicit_run_matches_head(
+                product,
+                run_id=args.run_id,
+                head_sha=head_sha,
+            )
+            run_id = args.run_id
+        else:
+            run_id = discover_run_id(product, head_sha=head_sha)
         cmd = [
             sys.executable,
             str(ROOT / "scripts" / "pull_store_product_artifact.py"),
@@ -166,6 +198,7 @@ def main() -> int:
                     "store_id": product["store_id"],
                     "identity_name": product["identity_name"],
                     "run_id": run_id,
+                    "registered_head_sha": head_sha,
                     "run_id_source": "explicit" if args.run_id is not None else "exact_head_discovery",
                     "receipt": str(args.receipt),
                     "submitted_to_store": False,
