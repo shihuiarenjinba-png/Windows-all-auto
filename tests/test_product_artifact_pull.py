@@ -9,6 +9,7 @@ import unittest
 from all_auto.product_artifact_pull import (
     ProductArtifactPullError,
     require_expected_identity,
+    select_github_artifact_metadata,
     stage_verified_store_artifact,
     validate_extracted_store_artifact,
     write_immutable_receipt,
@@ -170,6 +171,58 @@ class ProductArtifactPullTests(unittest.TestCase):
                     version=handoff["identity"]["version"],
                     architecture=handoff["identity"]["architecture"],
                 )
+
+    def test_github_artifact_metadata_requires_one_live_exact_name(self):
+        metadata = select_github_artifact_metadata(
+            [
+                {
+                    "id": 100,
+                    "name": "Demo-Store-MSIX-UNSIGNED-DRAFT",
+                    "expired": False,
+                    "size_in_bytes": 1234,
+                    "digest": "sha256:" + "c" * 64,
+                }
+            ],
+            artifact_name="Demo-Store-MSIX-UNSIGNED-DRAFT",
+        )
+        self.assertEqual(metadata["github_artifact_id"], 100)
+        self.assertEqual(metadata["github_artifact_size_in_bytes"], 1234)
+        self.assertFalse(metadata["github_artifact_expired"])
+
+        with self.assertRaisesRegex(ProductArtifactPullError, "exactly one live"):
+            select_github_artifact_metadata(
+                [],
+                artifact_name="Demo-Store-MSIX-UNSIGNED-DRAFT",
+            )
+
+        with self.assertRaisesRegex(ProductArtifactPullError, "exactly one live"):
+            select_github_artifact_metadata(
+                [
+                    {
+                        "id": 1,
+                        "name": "Demo-Store-MSIX-UNSIGNED-DRAFT",
+                        "expired": True,
+                        "size_in_bytes": 100,
+                        "digest": "sha256:" + "a" * 64,
+                    }
+                ],
+                artifact_name="Demo-Store-MSIX-UNSIGNED-DRAFT",
+            )
+
+    def test_github_artifact_metadata_rejects_invalid_digest(self):
+        with self.assertRaisesRegex(ProductArtifactPullError, "digest"):
+            select_github_artifact_metadata(
+                [
+                    {
+                        "id": 1,
+                        "name": "Demo-Store-MSIX-UNSIGNED-DRAFT",
+                        "expired": False,
+                        "size_in_bytes": 100,
+                        "digest": "sha256:not-a-digest",
+                    }
+                ],
+                artifact_name="Demo-Store-MSIX-UNSIGNED-DRAFT",
+            )
 
     def test_receipt_is_immutable(self):
         with tempfile.TemporaryDirectory() as td:
