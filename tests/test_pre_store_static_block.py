@@ -65,6 +65,11 @@ def reconciled_launch() -> dict:
         "all_observed_event_ids": [3033, 3077, 3118],
         "policy_name": "VerifiedAndReputableDesktop",
         "policy_guid": "{0283ac0f-fff1-49ae-ada1-8a933130cad6}",
+        "correlation_activity_id": "{2f3574e4-74dd-0008-cd37-9c3add74dd01}",
+        "policy_id": "27555.1000.240208",
+        "status_code": "0xc0e90002",
+        "event_flat_hash": "c" * 64,
+        "event_flat_hash_matches_exe_sha256": True,
         "original_receipt_preserved": True,
         "second_launch_performed": False,
         "security_bypass_used": False,
@@ -99,6 +104,14 @@ class PreStoreStaticBlockReceiptTests(unittest.TestCase):
         self.assertFalse(result["security_bypass_used"])
         self.assertEqual(result["blocking_event_ids"], [3033, 3077])
         self.assertEqual(result["policy_name"], "VerifiedAndReputableDesktop")
+        self.assertEqual(
+            result["correlation_activity_id"],
+            "{2f3574e4-74dd-0008-cd37-9c3add74dd01}",
+        )
+        self.assertEqual(result["policy_id"], "27555.1000.240208")
+        self.assertEqual(result["status_code"], "0xc0e90002")
+        self.assertEqual(result["event_flat_hash"], "c" * 64)
+        self.assertTrue(result["event_flat_hash_matches_exe_sha256"])
 
     def test_rejects_wrong_package_or_unsafe_artifact(self):
         bad = artifact_receipt()
@@ -158,6 +171,11 @@ class FinalizeApplicationControlBlockLaneTests(unittest.TestCase):
             "supplemental_event_ids": [3118],
             "policy_name": "VerifiedAndReputableDesktop",
             "policy_guid": "{0283ac0f-fff1-49ae-ada1-8a933130cad6}",
+            "correlation_activity_id": "{2f3574e4-74dd-0008-cd37-9c3add74dd01}",
+            "policy_id": "27555.1000.240208",
+            "status_code": "0xc0e90002",
+            "event_flat_hash": "c" * 64,
+            "event_flat_hash_matches_exe_sha256": True,
             "launch_attempts": 1,
             "process_started": False,
             "security_bypass_used": False,
@@ -214,6 +232,19 @@ class FinalizeApplicationControlBlockLaneTests(unittest.TestCase):
             self.assertTrue(bound["qa"]["private_store_signing_lane_ready"])
             self.assertFalse(bound["qa"]["local_final_pass"])
             self.assertFalse(bound["qa"]["store_signed_install_pass"])
+            reconciled = json.loads(
+                (
+                    output_dir
+                    / "unsigned-exe-launch-reconciliation-receipt.json"
+                ).read_text(encoding="utf-8")
+            )
+            self.assertEqual(
+                reconciled["correlation_activity_id"],
+                "{2f3574e4-74dd-0008-cd37-9c3add74dd01}",
+            )
+            self.assertEqual(reconciled["policy_id"], "27555.1000.240208")
+            self.assertEqual(reconciled["status_code"], "0xc0e90002")
+            self.assertEqual(reconciled["event_flat_hash"], "c" * 64)
             self.assertFalse((root / ".finalized.staging").exists())
 
     def test_cli_failure_removes_partial_staging(self):
