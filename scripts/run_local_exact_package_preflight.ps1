@@ -4,6 +4,7 @@ param(
     [Parameter(Mandatory=$true)][string]$HandoffPath,
     [Parameter(Mandatory=$true)][string]$MainExeName,
     [Parameter(Mandatory=$true)][string]$OutputDirectory,
+    [ValidateSet("ExactHead","ContainedCommit")][string]$SourceCheckoutMode = "ExactHead",
     [switch]$RunSelfTest
 )
 
@@ -22,8 +23,22 @@ $handoff = Get-Content -LiteralPath $handoffFile -Raw -Encoding UTF8 | ConvertFr
 if ($handoff.schema_version -cne "store-product-handoff/2") { throw "Unsupported handoff schema" }
 
 $head = (& git -C $repo rev-parse HEAD).Trim()
-if ($LASTEXITCODE -ne 0 -or $head -cne [string]$handoff.product.source_sha) {
-    throw "Local product repository HEAD does not match handoff source SHA"
+if ($LASTEXITCODE -ne 0) { throw "Unable to resolve local product repository HEAD" }
+$expectedSource = [string]$handoff.product.source_sha
+
+if ($SourceCheckoutMode -ceq "ExactHead") {
+    if ($head -cne $expectedSource) {
+        throw "Local product repository HEAD does not match handoff source SHA"
+    }
+} else {
+    & git -C $repo cat-file -e "$expectedSource^{commit}" 2>$null
+    if ($LASTEXITCODE -ne 0) {
+        throw "Handoff source SHA is not present in local product repository"
+    }
+    & git -C $repo merge-base --is-ancestor $expectedSource $head
+    if ($LASTEXITCODE -ne 0) {
+        throw "Local product repository HEAD does not contain handoff source SHA"
+    }
 }
 
 $actualPackageSha = (Get-FileHash -LiteralPath $package -Algorithm SHA256).Hash.ToLowerInvariant()
@@ -79,6 +94,8 @@ $report = [ordered]@{
     status = "PASS"
     store_id = [string]$handoff.identity.store_id
     source_sha = [string]$handoff.product.source_sha
+    local_repo_head = $head
+    source_checkout_mode = $SourceCheckoutMode
     package_sha256 = $actualPackageSha
     unpacked_exe_sha256 = $actualExeSha
     manifest_identity_verified = $true
