@@ -86,6 +86,13 @@ def build_pre_store_static_block_receipt(
         "blocking_event_ids": list(launch["blocking_event_ids"]),
         "policy_name": launch["policy_name"],
         "policy_guid": launch["policy_guid"],
+        "correlation_activity_id": launch.get("correlation_activity_id"),
+        "policy_id": launch.get("policy_id"),
+        "status_code": launch.get("status_code"),
+        "event_flat_hash": launch.get("event_flat_hash"),
+        "event_flat_hash_matches_exe_sha256": launch.get(
+            "event_flat_hash_matches_exe_sha256"
+        ),
         "original_launch_status": launch["original_launch_status"],
         "original_receipt_preserved": True,
         "second_launch_performed": False,
