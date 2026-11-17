@@ -34,7 +34,21 @@
         "Windows Task Scheduler lifecycle"
       ],
       "workflow_name": "Windows desktop / Windowsデスクトップ",
-      "source_ref": "codex/scheduled-standard-consumer-ui-20261113"
+      "source_ref": "codex/scheduled-standard-consumer-ui-20261113",
+      "frozen_candidate": {
+        "status": "LOCAL_STATIC_VERIFIED",
+        "source_sha": "28ef873ab2ff325b8f26c61a9ba48701280e8290",
+        "store_run_id": 44093493317,
+        "artifact_id": 14333575447,
+        "artifact_name": "ScheduledApiRunner-Store-MSIX-UNSIGNED-DRAFT",
+        "artifact_digest": "sha256:b45d53a0473f5b8cdcac64c1ffdcf12957919da2e5cb846564344d757165afa7",
+        "msix_sha256": "db599cdfa673688e8fe7db70d11acc69010562636c67f4996b4cba36adfd8877",
+        "exe_sha256": "06d3b92bd83281750e5a454f9add6526fa90f6bfc29017fd6919bbeaa64213d9",
+        "package_rebuilt": false,
+        "security_bypass_used": false,
+        "local_static_verified": true,
+        "promotion_requires_new_local_static_verification": true
+      }
     },
     "workflow-automation-hub": {
       "name": "Workflow Automation Hub",
