@@ -99,7 +99,7 @@ class GroupBConveyorCheckpointTests(unittest.TestCase):
         self.assertEqual(local["task_scheduler_lifecycle"], "NOT_TESTED")
         self.assertEqual(
             local["next_action"],
-            "STORE_SIGNED_PRIVATE_GUI_QA",
+            "CREATE_AND_BIND_PRE_STORE_STATIC_BLOCK_RECEIPT",
         )
 
     def test_direct_product_snapshot_matches_registry_routes(self):
