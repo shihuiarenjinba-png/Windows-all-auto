@@ -68,6 +68,7 @@ class TrustedUIATests(unittest.TestCase):
 
         result = TrustedUIAExecutor(
             source=self.source, build_root=self.build, runner=runner,
+            platform_name="nt",
         ).execute(
             action="UIA_FIND_CONTROL",
             params={"name": "検索", "control_type": "Button"},
@@ -76,13 +77,14 @@ class TrustedUIATests(unittest.TestCase):
         )
         self.assertEqual(result["observed"], "検索")
         command = commands[0]
-        self.assertEqual(command[0].casefold(), str(self.helper).casefold())
+        self.assertTrue(Path(command[0]).samefile(self.helper))
         self.assertNotIn("powershell", " ".join(command).lower())
         self.assertIn(str(self.artifact.resolve()), command)
 
     def test_artifact_drift_and_result_mismatch_hold(self):
         executor = TrustedUIAExecutor(
             source=self.source, build_root=self.build,
+            platform_name="nt",
             runner=lambda *_args, **_kwargs: Completed(stdout=json.dumps({
                 "status": "UIA_PASS", "action": "UIA_READ_TEXT",
                 "process_id": 999,
