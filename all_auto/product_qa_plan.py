@@ -14,6 +14,8 @@ import json
 from pathlib import Path
 import re
 from typing import Any
+import xml.etree.ElementTree as ET
+import zipfile
 
 from qa_ai.planner import PlannerOutcome
 
@@ -79,6 +81,89 @@ def _normalized_repo(value: str) -> str:
     if value.startswith(prefix):
         value = value[len(prefix):]
     return value.removesuffix(".git")
+
+
+def _inspect_package(path: Path) -> dict[str, Any]:
+    """Independently bind an intake package to its Identity and executable.
+
+    This intentionally does not reuse Factory code.  Local Windows treats the
+    package as untrusted ZIP input and derives all provenance again.
+    """
+    package = path.resolve()
+    if (path.is_symlink() or not package.is_file() or
+            not 0 < package.stat().st_size <= 300 * 1024 * 1024):
+        _fail("package is missing, linked, empty, or oversized")
+    try:
+        with zipfile.ZipFile(package) as archive:
+            entries = archive.infolist()
+            if not 2 <= len(entries) <= 2000:
+                _fail("unsafe package file count")
+            names: dict[str, zipfile.ZipInfo] = {}
+            for entry in entries:
+                name = entry.filename.replace("\\", "/")
+                parts = name.split("/")
+                if (name.startswith("/") or any(
+                        not part or part in {".", ".."} or
+                        part.endswith((" ", ".")) or ":" in part or
+                        any(ord(character) < 32 or ord(character) == 127
+                            for character in part)
+                        for part in parts)):
+                    _fail("unsafe package member path")
+                if (entry.file_size > 300 * 1024 * 1024 or
+                        (entry.compress_size and
+                         entry.file_size > 100 * entry.compress_size)):
+                    _fail("unsafe package member size")
+                folded = name.casefold()
+                if folded in names:
+                    _fail("duplicate package member name")
+                names[folded] = entry
+            manifest_entry = names.get("appxmanifest.xml")
+            if manifest_entry is None or not 0 < manifest_entry.file_size <= 2 * 1024 * 1024:
+                _fail("package manifest missing or oversized")
+            root = ET.fromstring(archive.read(manifest_entry))
+            if root.tag.rsplit("}", 1)[-1] != "Package":
+                _fail("package manifest root invalid")
+            identities = [
+                element for element in root.iter()
+                if element.tag.rsplit("}", 1)[-1] == "Identity"
+            ]
+            applications = [
+                element for element in root.iter()
+                if element.tag.rsplit("}", 1)[-1] == "Application"
+            ]
+            if len(identities) != 1 or len(applications) != 1:
+                _fail("package must contain one Identity and one Application")
+            identity = {
+                "name": identities[0].attrib.get("Name"),
+                "publisher": identities[0].attrib.get("Publisher"),
+                "version": identities[0].attrib.get("Version"),
+            }
+            if any(not isinstance(value, str) or not value for value in identity.values()):
+                _fail("package identity fields incomplete")
+            executable = applications[0].attrib.get("Executable")
+            if not isinstance(executable, str) or not executable:
+                _fail("package executable path missing")
+            executable_name = executable.replace("\\", "/")
+            executable_entry = names.get(executable_name.casefold())
+            if (executable_entry is None or executable_entry.is_dir() or
+                    not 0 < executable_entry.file_size <= 300 * 1024 * 1024):
+                _fail("package executable payload missing or empty")
+            executable_digest = sha256()
+            with archive.open(executable_entry) as stream:
+                for block in iter(lambda: stream.read(1024 * 1024), b""):
+                    executable_digest.update(block)
+    except ProductQAPlanHold:
+        raise
+    except (OSError, KeyError, RuntimeError, ET.ParseError,
+            zipfile.BadZipFile) as exc:
+        raise ProductQAPlanHold(
+            "PRODUCT_QA_PLAN_HOLD: invalid package container: " + type(exc).__name__
+        ) from exc
+    return {
+        "package_sha256": _sha256_file(package),
+        "executable_sha256": executable_digest.hexdigest(),
+        "identity": identity,
+    }
 
 
 def _validate_params(action: str, params: Any) -> None:
@@ -242,13 +327,20 @@ def load_bound_plan(path: Path) -> dict[str, Any]:
 
 
 def verify_plan_for_job(plan: dict[str, Any], *, job: dict[str, Any],
-                        artifact_path: Path,
+                        artifact_path: Path, package_path: Path,
                         supported_test_ids: set[str]) -> dict[str, Any]:
     artifact = artifact_path.resolve()
     if not artifact.is_file() or artifact_path.is_symlink():
         _fail("artifact is missing or linked")
     if _sha256_file(artifact) != plan["executable_sha256"]:
         _fail("local artifact does not match bound executable SHA")
+    package = _inspect_package(package_path)
+    if package["package_sha256"] != plan["package_sha256"]:
+        _fail("local package does not match bound package SHA")
+    if package["executable_sha256"] != plan["executable_sha256"]:
+        _fail("package executable does not match bound executable SHA")
+    if package["identity"] != plan["identity"]:
+        _fail("package Identity or Version differs from plan")
     if job.get("artifact_sha256") != plan["executable_sha256"]:
         _fail("job artifact SHA differs from plan")
     if job.get("source_sha") != plan["source_sha"]:
@@ -262,8 +354,10 @@ def verify_plan_for_job(plan: dict[str, Any], *, job: dict[str, Any],
     slug = job.get("slug")
     if isinstance(slug, str) and slug and slug != plan["product_slug"]:
         _fail("job product slug differs from plan")
-    if "package_sha256" in job and job["package_sha256"] != plan["package_sha256"]:
+    if job.get("package_sha256") != plan["package_sha256"]:
         _fail("job package SHA differs from plan")
+    if job.get("identity") != plan["identity"]:
+        _fail("job Identity or Version differs from plan")
 
     for step in plan["steps"]:
         if step["action"] == "ARTIFACT_HASH" and step["params"] != {}:
@@ -289,6 +383,7 @@ def verify_plan_for_job(plan: dict[str, Any], *, job: dict[str, Any],
         "product_slug": plan["product_slug"],
         "product_type": plan["product_type"],
         "template_sha256": plan["template_sha256"],
+        "identity": dict(plan["identity"]),
     }
 
 

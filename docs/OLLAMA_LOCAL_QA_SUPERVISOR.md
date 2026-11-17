@@ -88,6 +88,14 @@ release_ready
 store_submission_allowed
 ```
 
+When a product test fails after its evidence and ACK were returned, the
+supervisor records `evidence_return_status=GITHUB_READBACK_VERIFIED` separately
+while retaining `evidence_return_e2e_pass=false`. It returns the durable repair
+handoff under `ops/local-qa-repairs/` and independently reads back the
+request/source/artifact/repair hashes. The repair request still has
+`source_edit_authority=false`; only a separate GitHub-side coding agent may
+change product source.
+
 ## Repair handoff
 
 The local handoff includes immutable source/request/artifact hashes, failed
@@ -100,3 +108,12 @@ separate authority.
 Phase 1 uses only a synthetic artifact. Phase 2 requires an explicitly selected
 stable real APP artifact and privacy-reviewed GUI/package policy. No product,
 Identity, Version, package, Store, or release claim is implied by Phase 1.
+
+## Bound package intake
+
+`--product-qa-plan` also requires `--package`. Before any trusted action is
+authorized, local Windows independently re-hashes the package, parses its
+untrusted `AppxManifest.xml`, re-hashes the manifest-selected executable member,
+and compares package SHA, executable SHA, Identity, Version, repository, source
+SHA, slug, product type, template SHA, and authority flags with both the bound
+plan and immutable job. A mismatch is `PRODUCT_QA_PLAN_HOLD`.

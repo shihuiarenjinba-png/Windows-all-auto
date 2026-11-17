@@ -468,6 +468,37 @@ class GitHubContentsTransportTests(unittest.TestCase):
         with self.assertRaisesRegex(GitHubReturnError, "receipt mismatch"):
             transport.put_and_readback(self.path)
 
+    def test_repair_request_is_returned_and_read_back_without_edit_authority(self):
+        handoff = self.root / "repair.json"
+        atomic_json(handoff, {
+            "schema_version": "windows-qa-repair-handoff-v1",
+            "source_sha": SOURCE,
+            "request_id": "app-request-0001",
+            "artifact_sha256": "d" * 64,
+            "failed_test_ids": ["PROCESS_START"],
+            "failure_class": "PROCESS_START_FAILED",
+            "observed_evidence": [],
+            "missing_evidence": [],
+            "recommended_owner": "APP",
+            "recommended_regression_test_ids": ["PROCESS_START"],
+            "agent_dispatch_status": "AGENT_DISPATCH_PENDING",
+            "source_edit_authority": False,
+            "retest_requires_new_source_sha": True,
+            "product_e2e_pass": False,
+            "release_ready": False,
+            "store_submission_allowed": False,
+        })
+        transport = GitHubContentsTransport(
+            repository="owner/repo", branch="codex/local-evidence",
+            base_ref="main", gh_runner=self.runner,
+        )
+        receipt = transport.put_repair_and_readback(handoff)
+        self.assertEqual(receipt["status"], "GITHUB_REPAIR_READBACK_VERIFIED")
+        self.assertEqual(receipt["source_sha"], SOURCE)
+        self.assertTrue(receipt["path"].endswith(".repair-request.json"))
+        self.assertFalse(receipt["source_edit_authority"])
+        self.assertTrue(receipt["retest_requires_new_source_sha"])
+
 
 class EvidenceSchemaTests(unittest.TestCase):
     def test_schema_separates_evidence_and_product_e2e(self):

@@ -61,6 +61,17 @@ class AckTransport:
             "payload_sha256": envelope["payload_sha256"],
         }
 
+    def put_repair_and_readback(self, path):
+        handoff = json.loads(path.read_text(encoding="utf-8"))
+        return {
+            "status": "GITHUB_REPAIR_READBACK_VERIFIED",
+            "request_id": handoff["request_id"],
+            "source_sha": handoff["source_sha"],
+            "artifact_sha256": handoff["artifact_sha256"],
+            "source_edit_authority": False,
+            "retest_requires_new_source_sha": True,
+        }
+
 
 class OfflineTransport:
     def put_and_readback(self, _path):
@@ -288,7 +299,13 @@ class SupervisorTests(unittest.TestCase):
             job=self.job, artifact_path=self.artifact, intake_root=self.intake,
         )
         self.assertEqual(result.test_status, "TEST_FAIL")
+        self.assertEqual(result.evidence_return_status, "GITHUB_READBACK_VERIFIED")
         self.assertFalse(result.evidence_return_e2e_pass)
+        state = json.loads(result.state_path.read_text())
+        self.assertEqual(
+            state["repair_return"]["status"],
+            "GITHUB_REPAIR_READBACK_VERIFIED",
+        )
         manifest = json.loads(
             (self.store.runs / result.run_ids[0] / "manifest.json").read_text()
         )

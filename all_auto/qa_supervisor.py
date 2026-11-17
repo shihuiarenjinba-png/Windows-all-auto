@@ -13,7 +13,7 @@ import time
 from typing import Any, Callable
 
 from all_auto.local_qa_evidence import (
-    EvidenceStore, atomic_json, process_retry_queue,
+    EvidenceStore, GitHubReturnError, atomic_json, process_retry_queue,
 )
 from qa_ai.analyzer import AnalysisEngine, analyze_run
 from qa_ai.planner import PlannerEngine, PlannerOutcome
@@ -488,6 +488,7 @@ class SupervisorResult:
     state_path: Path
     run_ids: tuple[str, ...]
     test_status: str
+    evidence_return_status: str
     evidence_return_e2e_pass: bool
     product_e2e_pass: bool
     handoff_path: Path
@@ -670,6 +671,12 @@ class QASupervisor:
         evidence_pass = bool(manifests) and all(
             item.get("evidence_return_e2e_pass") is True for item in manifests
         )
+        evidence_return_status = (
+            "GITHUB_READBACK_VERIFIED" if manifests and all(
+                item.get("github_return", {}).get("status") ==
+                "GITHUB_READBACK_VERIFIED" for item in manifests
+            ) else "EVIDENCE_RETURN_NOT_VERIFIED"
+        )
         failed_ids = [
             item["test_id"] for item in state["executions"]
             if item["status"] != "TEST_PASS"
@@ -702,22 +709,37 @@ class QASupervisor:
             hashlib.sha256(context["request_id"].encode("utf-8")).hexdigest() + ".json"
         )
         atomic_json(handoff_path, handoff)
+        repair_return: dict[str, Any] = {"status": "REPAIR_NOT_REQUIRED"}
+        if failed_ids:
+            repair_return = {"status": "AGENT_DISPATCH_PENDING"}
+            if self.transport is not None and hasattr(
+                    self.transport, "put_repair_and_readback"):
+                try:
+                    repair_return = self.transport.put_repair_and_readback(handoff_path)
+                except (GitHubReturnError, OSError, json.JSONDecodeError) as exc:
+                    repair_return = {
+                        "status": "GITHUB_REPAIR_RETURN_FAILED",
+                        "error": type(exc).__name__,
+                    }
         if final_status == "SUPERVISOR_COMPLETE" and not manifests:
             final_status = "NO_TESTS_EXECUTED"
         state.update({
             "status": final_status, "finished_at_utc": _utc_now(),
             "test_status": test_status,
+            "evidence_return_status": evidence_return_status,
             "evidence_return_e2e_pass": evidence_pass,
             "product_e2e_pass": False, "e2e_pass": False,
             "release_ready": False, "store_submission_allowed": False,
             "user_product_approval": False, "user_price_approval": False,
             "handoff": str(handoff_path.relative_to(self.store.root)),
+            "repair_return": repair_return,
         })
         self.states.checkpoint(state_path, state)
         return SupervisorResult(
             status=final_status, state_path=state_path,
             run_ids=tuple(item["run_id"] for item in state["executions"]),
             test_status=test_status,
+            evidence_return_status=evidence_return_status,
             evidence_return_e2e_pass=evidence_pass,
             product_e2e_pass=False, handoff_path=handoff_path,
         )

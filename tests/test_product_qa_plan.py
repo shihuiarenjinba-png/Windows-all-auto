@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+import zipfile
 
 from all_auto.product_qa_plan import (
     BoundProductPlanPlanner, ProductQAPlanHold, canonical, load_bound_plan,
@@ -14,7 +15,11 @@ from all_auto.product_qa_plan import (
 
 
 SOURCE = "a" * 40
-PACKAGE = "b" * 64
+IDENTITY = {
+    "name": "OkinawaDesktopTools.Demo",
+    "publisher": "CN=TEST",
+    "version": "1.0.0.0",
+}
 
 
 def template(executable_sha: str):
@@ -58,7 +63,7 @@ def template(executable_sha: str):
     }
 
 
-def bound_plan(executable_sha: str):
+def bound_plan(executable_sha: str, package_sha: str):
     base = template(executable_sha)
     value = dict(base)
     value["schema_version"] = "windows-product-qa-plan-v1"
@@ -66,13 +71,9 @@ def bound_plan(executable_sha: str):
         "template_sha256": sha256(canonical(base)).hexdigest(),
         "source_repository": "https://github.com/owner/product",
         "source_sha": SOURCE,
-        "package_sha256": PACKAGE,
+        "package_sha256": package_sha,
         "executable_sha256": executable_sha,
-        "identity": {
-            "name": "OkinawaDesktopTools.Demo",
-            "publisher": "CN=TEST",
-            "version": "1.0.0.0",
-        },
+        "identity": dict(IDENTITY),
     })
     return value
 
@@ -85,9 +86,12 @@ class ProductQAPlanIntakeTests(unittest.TestCase):
         self.artifact = self.root / "demo.exe"
         self.artifact.write_bytes(b"exact executable bytes")
         self.exe_sha = sha256(self.artifact.read_bytes()).hexdigest()
+        self.package = self.root / "package.msix"
+        self.write_package(self.artifact.read_bytes())
+        self.package_sha = sha256(self.package.read_bytes()).hexdigest()
         self.path = self.root / "qa-plan.json"
         self.path.write_text(
-            json.dumps(bound_plan(self.exe_sha)), encoding="utf-8"
+            json.dumps(bound_plan(self.exe_sha, self.package_sha)), encoding="utf-8"
         )
         self.job = {
             "request_id": "product-plan-test",
@@ -96,13 +100,28 @@ class ProductQAPlanIntakeTests(unittest.TestCase):
             "source_repository": "owner/product",
             "source_sha": SOURCE,
             "artifact_sha256": self.exe_sha,
-            "package_sha256": PACKAGE,
+            "package_sha256": self.package_sha,
+            "identity": dict(IDENTITY),
         }
+
+    def write_package(self, executable: bytes, *, identity=None):
+        identity = identity or IDENTITY
+        manifest = (
+            '<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10">'
+            f'<Identity Name="{identity["name"]}" '
+            f'Publisher="{identity["publisher"]}" Version="{identity["version"]}"/>'
+            '<Applications><Application Id="App" Executable="demo.exe" '
+            'EntryPoint="Windows.FullTrustApplication"/></Applications></Package>'
+        )
+        with zipfile.ZipFile(self.package, "w", zipfile.ZIP_DEFLATED) as archive:
+            archive.writestr("AppxManifest.xml", manifest)
+            archive.writestr("demo.exe", executable)
 
     def test_valid_plan_binds_to_exact_job_and_artifact(self):
         plan = load_bound_plan(self.path)
         result = verify_plan_for_job(
             plan, job=self.job, artifact_path=self.artifact,
+            package_path=self.package,
             supported_test_ids={"ARTIFACT_HASH", "PROCESS_START"},
         )
         self.assertEqual(result["status"], "PRODUCT_QA_PLAN_READY")
@@ -115,6 +134,7 @@ class ProductQAPlanIntakeTests(unittest.TestCase):
         with self.assertRaisesRegex(ProductQAPlanHold, "source SHA"):
             verify_plan_for_job(
                 plan, job=changed, artifact_path=self.artifact,
+                package_path=self.package,
                 supported_test_ids={"ARTIFACT_HASH", "PROCESS_START"},
             )
 
@@ -124,6 +144,46 @@ class ProductQAPlanIntakeTests(unittest.TestCase):
         with self.assertRaisesRegex(ProductQAPlanHold, "executable SHA"):
             verify_plan_for_job(
                 plan, job=self.job, artifact_path=self.artifact,
+                package_path=self.package,
+                supported_test_ids={"ARTIFACT_HASH", "PROCESS_START"},
+            )
+
+    def test_package_byte_drift_holds(self):
+        plan = load_bound_plan(self.path)
+        self.package.write_bytes(self.package.read_bytes() + b"tamper")
+        with self.assertRaisesRegex(ProductQAPlanHold, "package SHA"):
+            verify_plan_for_job(
+                plan, job=self.job, artifact_path=self.artifact,
+                package_path=self.package,
+                supported_test_ids={"ARTIFACT_HASH", "PROCESS_START"},
+            )
+
+    def test_package_executable_drift_holds(self):
+        self.write_package(b"different executable bytes")
+        changed_sha = sha256(self.package.read_bytes()).hexdigest()
+        value = bound_plan(self.exe_sha, changed_sha)
+        self.path.write_text(json.dumps(value), encoding="utf-8")
+        self.job["package_sha256"] = changed_sha
+        plan = load_bound_plan(self.path)
+        with self.assertRaisesRegex(ProductQAPlanHold, "package executable"):
+            verify_plan_for_job(
+                plan, job=self.job, artifact_path=self.artifact,
+                package_path=self.package,
+                supported_test_ids={"ARTIFACT_HASH", "PROCESS_START"},
+            )
+
+    def test_package_identity_or_version_drift_holds(self):
+        changed_identity = {**IDENTITY, "version": "9.9.9.9"}
+        self.write_package(self.artifact.read_bytes(), identity=changed_identity)
+        changed_sha = sha256(self.package.read_bytes()).hexdigest()
+        value = bound_plan(self.exe_sha, changed_sha)
+        self.path.write_text(json.dumps(value), encoding="utf-8")
+        self.job["package_sha256"] = changed_sha
+        plan = load_bound_plan(self.path)
+        with self.assertRaisesRegex(ProductQAPlanHold, "Identity or Version"):
+            verify_plan_for_job(
+                plan, job=self.job, artifact_path=self.artifact,
+                package_path=self.package,
                 supported_test_ids={"ARTIFACT_HASH", "PROCESS_START"},
             )
 
@@ -132,6 +192,28 @@ class ProductQAPlanIntakeTests(unittest.TestCase):
         value["steps"][1]["params"]["observation_seconds"] = 6
         self.path.write_text(json.dumps(value))
         with self.assertRaisesRegex(ProductQAPlanHold, "template hash"):
+            load_bound_plan(self.path)
+
+    def test_raw_command_field_holds(self):
+        value = json.loads(self.path.read_text())
+        value["steps"][1]["command"] = "powershell.exe -Command whoami"
+        self.path.write_text(json.dumps(value))
+        with self.assertRaisesRegex(ProductQAPlanHold, "step fields"):
+            load_bound_plan(self.path)
+
+    def test_dependency_violation_holds(self):
+        value = json.loads(self.path.read_text())
+        value["steps"][1]["requires"] = []
+        base = {
+            key: value[key] for key in (
+                "product_slug", "product_type", "plan_version", "steps",
+                "allowed_diagnostics", "forbidden_actions", "success_policy",
+            )
+        }
+        base["schema_version"] = "windows-product-qa-plan-template-v1"
+        value["template_sha256"] = sha256(canonical(base)).hexdigest()
+        self.path.write_text(json.dumps(value))
+        with self.assertRaisesRegex(ProductQAPlanHold, "ARTIFACT_HASH"):
             load_bound_plan(self.path)
 
     def test_store_authority_attempt_holds(self):
@@ -170,6 +252,7 @@ class ProductQAPlanIntakeTests(unittest.TestCase):
         plan = load_bound_plan(self.path)
         result = verify_plan_for_job(
             plan, job=self.job, artifact_path=self.artifact,
+            package_path=self.package,
             supported_test_ids={"ARTIFACT_HASH", "PROCESS_START"},
         )
         self.assertEqual(result["status"], "PRODUCT_QA_PLAN_CAPABILITY_HOLD")
@@ -191,6 +274,7 @@ class ProductQAPlanIntakeTests(unittest.TestCase):
         with self.assertRaisesRegex(ProductQAPlanHold, "observation_seconds=5"):
             verify_plan_for_job(
                 plan, job=self.job, artifact_path=self.artifact,
+                package_path=self.package,
                 supported_test_ids={"ARTIFACT_HASH", "PROCESS_START"},
             )
 

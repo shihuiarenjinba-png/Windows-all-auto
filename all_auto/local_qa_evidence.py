@@ -918,6 +918,75 @@ class GitHubContentsTransport:
             "ack_receipt_sha256": sha256_bytes(remote_ack_raw),
         }
 
+    def put_repair_and_readback(self, handoff_path: Path) -> dict[str, Any]:
+        """Return a fail-closed repair request without granting edit authority."""
+        raw = handoff_path.read_bytes()
+        try:
+            handoff = json.loads(raw)
+        except json.JSONDecodeError as exc:
+            raise GitHubReturnError("local repair handoff is malformed") from exc
+        if (handoff.get("schema_version") != "windows-qa-repair-handoff-v1" or
+                not isinstance(handoff.get("failed_test_ids"), list) or
+                not handoff["failed_test_ids"] or
+                handoff.get("source_edit_authority") is not False or
+                handoff.get("retest_requires_new_source_sha") is not True or
+                handoff.get("product_e2e_pass") is not False or
+                handoff.get("release_ready") is not False or
+                handoff.get("store_submission_allowed") is not False or
+                not isinstance(handoff.get("request_id"), str) or
+                not SHA40.fullmatch(str(handoff.get("source_sha", ""))) or
+                not SHA64.fullmatch(str(handoff.get("artifact_sha256", "")))):
+            raise GitHubReturnError("local repair handoff violates authority contract")
+        self._ensure_branch()
+        request = re.sub(r"[^A-Za-z0-9._-]", "_", handoff["request_id"])
+        repair_sha = sha256_bytes(canonical(handoff))
+        remote_path = (
+            f"ops/local-qa-repairs/{request}/{handoff['source_sha']}/"
+            f"{repair_sha}.repair-request.json"
+        )
+        encoded = base64.b64encode(raw).decode("ascii")
+        code, existing, _ = self._call(
+            [f"repos/{self.repository}/contents/{remote_path}?ref={self.branch}"],
+            allow_failure=True,
+        )
+        if code == 0:
+            remote_raw = self._decode_content(existing)
+        else:
+            self._call(
+                ["--method", "PUT", f"repos/{self.repository}/contents/{remote_path}"],
+                body={
+                    "message": "qa: return verified repair request " + request,
+                    "content": encoded,
+                    "branch": self.branch,
+                },
+            )
+            _, fetched, _ = self._call(
+                [f"repos/{self.repository}/contents/{remote_path}?ref={self.branch}"]
+            )
+            remote_raw = self._decode_content(fetched)
+        try:
+            remote = json.loads(remote_raw)
+        except json.JSONDecodeError as exc:
+            raise GitHubReturnError("GitHub repair readback is malformed") from exc
+        if (remote.get("request_id") != handoff["request_id"] or
+                remote.get("source_sha") != handoff["source_sha"] or
+                remote.get("artifact_sha256") != handoff["artifact_sha256"] or
+                sha256_bytes(canonical(remote)) != repair_sha):
+            raise GitHubReturnError("GitHub repair readback correlation mismatch")
+        return {
+            "status": "GITHUB_REPAIR_READBACK_VERIFIED",
+            "request_id": handoff["request_id"],
+            "source_sha": handoff["source_sha"],
+            "artifact_sha256": handoff["artifact_sha256"],
+            "repair_sha256": repair_sha,
+            "repository": self.repository,
+            "branch": self.branch,
+            "path": remote_path,
+            "remote_file_sha256": sha256_bytes(remote_raw),
+            "source_edit_authority": False,
+            "retest_requires_new_source_sha": True,
+        }
+
     @staticmethod
     def _decode_content(response: dict[str, Any] | None) -> bytes:
         try:

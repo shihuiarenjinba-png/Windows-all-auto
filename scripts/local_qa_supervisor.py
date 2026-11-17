@@ -79,6 +79,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--state-root", type=Path, required=True)
     parser.add_argument("--job", type=Path, required=True)
     parser.add_argument("--artifact", type=Path, required=True)
+    parser.add_argument("--package", type=Path)
     parser.add_argument("--intake-root", type=Path, required=True)
     parser.add_argument("--model", default="windows-qa-analyst")
     parser.add_argument("--enable-analysis", action="store_true")
@@ -103,12 +104,15 @@ def main(argv: list[str] | None = None) -> int:
     store.recover_interrupted()
     catalog = load_default_catalog()
     if args.product_qa_plan:
+        if args.package is None:
+            parser.error("--product-qa-plan requires --package")
         try:
             bound_plan = load_bound_plan(args.product_qa_plan)
             capability = verify_plan_for_job(
                 bound_plan,
                 job=job,
                 artifact_path=args.artifact,
+                package_path=args.package,
                 supported_test_ids=set(catalog.tests),
             )
         except ProductQAPlanHold as exc:
@@ -160,6 +164,7 @@ def main(argv: list[str] | None = None) -> int:
         "state_path": str(result.state_path),
         "run_ids": list(result.run_ids),
         "test_status": result.test_status,
+        "evidence_return_status": result.evidence_return_status,
         "evidence_return_e2e_pass": result.evidence_return_e2e_pass,
         "product_e2e_pass": False,
         "e2e_pass": False,
