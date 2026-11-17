@@ -45,16 +45,18 @@ class GroupBConveyorCheckpointTests(unittest.TestCase):
         self.assertEqual(len(folder["frozen_msix_sha256"]), 64)
         self.assertEqual(len(folder["frozen_exe_sha256"]), 64)
 
-    def test_scheduled_checkpoint_is_static_pass_gui_pending(self):
+    def test_scheduled_checkpoint_records_app_control_block_and_store_signed_next_lane(self):
         scheduled = self.checkpoint["products"]["scheduled-api-runner"]
         self.assertEqual(
             scheduled["conveyor_state"],
-            "PASS_STATIC_ONLY_GUI_PENDING",
+            "APPLICATION_CONTROL_BLOCKED_STORE_SIGNED_QA_REQUIRED",
         )
         local = scheduled["local_confirmation"]
-        self.assertEqual(local["status"], "PASS_STATIC_ONLY_GUI_PENDING")
+        self.assertEqual(
+            local["status"],
+            "APPLICATION_CONTROL_BLOCKED_STORE_SIGNED_QA_REQUIRED",
+        )
         self.assertTrue(local["artifact_receipt_verified"])
-        self.assertTrue(local["evidence_rerun_refused_and_hashes_unchanged"])
         self.assertEqual(local["makeappx_unpack"], "PASS")
         self.assertEqual(
             local["manifest_identity_publisher_version_architecture"],
@@ -68,11 +70,36 @@ class GroupBConveyorCheckpointTests(unittest.TestCase):
         self.assertTrue(local["github_ci_primary"])
         self.assertFalse(local["local_full_suite_run"])
         self.assertEqual(local["qa_template_status"], "HOLD")
-        self.assertFalse(local["gui_launch_attempted"])
-        self.assertTrue(local["action_time_confirmation_required"])
+        self.assertTrue(local["launch_action_time_approved"])
+        self.assertEqual(local["launch_attempts"], 1)
+        self.assertTrue(local["normal_user_context"])
+        self.assertFalse(local["process_started"])
+        self.assertIsNone(local["exit_code"])
+        self.assertFalse(local["normal_exit"])
+        self.assertEqual(local["original_wrapper_status"], "LAUNCH_FAILED")
+        self.assertEqual(
+            local["reconciled_classification"],
+            "APPLICATION_CONTROL_BLOCKED",
+        )
+        self.assertEqual(
+            local["code_integrity_blocking_event_ids"],
+            [3033, 3077],
+        )
+        self.assertEqual(
+            local["policy_guid"],
+            "{0283ac0f-fff1-49ae-ada1-8a933130cad6}",
+        )
+        self.assertFalse(local["security_bypass_used"])
+        self.assertFalse(local["package_installed"])
+        self.assertFalse(local["store_write_performed"])
+        self.assertTrue(local["unsigned_launch_retries_forbidden"])
+        self.assertEqual(local["jp_en_gui"], "NOT_TESTED")
+        self.assertEqual(local["dpi_matrix"], "NOT_TESTED")
+        self.assertEqual(local["https_get"], "NOT_TESTED")
+        self.assertEqual(local["task_scheduler_lifecycle"], "NOT_TESTED")
         self.assertEqual(
             local["next_action"],
-            "ONE_SHOT_NORMAL_USER_EXE_LAUNCH",
+            "STORE_SIGNED_PRIVATE_GUI_QA",
         )
 
     def test_direct_product_snapshot_matches_registry_routes(self):
