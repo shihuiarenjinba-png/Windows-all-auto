@@ -1,0 +1,14 @@
+{
+  "e2e_pass": false,
+  "evidence_path": "ops/local-qa-results/folio-github-exact-gui-cbb9de-20261118/cbb9de223c0eac79563651ba2d0ae22e43653d68/df3b9ed04038b7fb7d89bbe8dd257b09038b3b3afaadc6674adb460ee05849be.json",
+  "evidence_return_e2e_pass": false,
+  "payload_sha256": "df3b9ed04038b7fb7d89bbe8dd257b09038b3b3afaadc6674adb460ee05849be",
+  "product_e2e_pass": false,
+  "release_ready": false,
+  "remote_file_sha256": "072a5922e58237cff9bad4b16d8f562d73a9164c69909df775454329b5efa6d4",
+  "request_id": "folio-github-exact-gui-cbb9de-20261118",
+  "schema_version": "local-qa-github-ack-v1",
+  "source_sha": "cbb9de223c0eac79563651ba2d0ae22e43653d68",
+  "status": "GITHUB_READBACK_VERIFIED",
+  "store_submission_allowed": false
+}
