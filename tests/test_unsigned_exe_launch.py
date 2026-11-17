@@ -101,6 +101,8 @@ class UnsignedLaunchPowerShellContractTests(unittest.TestCase):
             "WindowsBuiltInRole]::Administrator",
             "APPLICATION_CONTROL_BLOCKED",
             "Microsoft-Windows-CodeIntegrity/Operational",
+            "3033",
+            "3077",
             "security_bypass_used = $false",
             "msix_installed = $false",
             "partner_center_write_performed = $false",
