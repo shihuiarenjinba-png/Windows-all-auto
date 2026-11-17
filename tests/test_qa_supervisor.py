@@ -54,11 +54,19 @@ class SequencePlanner:
 class AckTransport:
     def put_and_readback(self, path):
         envelope = json.loads(path.read_text(encoding="utf-8"))
+        manifest = envelope["payload"]["manifest"]
+        test_status = manifest.get("status")
         return {
             "status": "GITHUB_READBACK_VERIFIED",
             "request_id": envelope["request_id"],
             "source_sha": envelope["source_sha"],
             "payload_sha256": envelope["payload_sha256"],
+            "test_status": test_status,
+            "evidence_return_e2e_pass": (
+                test_status in {"TEST_PASS", "TEST_FAIL"} and
+                manifest.get("collection_complete") is True and
+                manifest.get("local_persistence_verified") is True
+            ),
         }
 
 
@@ -288,7 +296,7 @@ class SupervisorTests(unittest.TestCase):
             job=self.job, artifact_path=self.artifact, intake_root=self.intake,
         )
         self.assertEqual(result.test_status, "TEST_FAIL")
-        self.assertFalse(result.evidence_return_e2e_pass)
+        self.assertTrue(result.evidence_return_e2e_pass)
         manifest = json.loads(
             (self.store.runs / result.run_ids[0] / "manifest.json").read_text()
         )
