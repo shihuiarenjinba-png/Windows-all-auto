@@ -210,7 +210,7 @@ package, or touch Partner Center from this lane.
 
 Repository: `shihuiarenjinba-png/scheduled-api-runner`  
 PR: #8  
-Current branch HEAD: `0c2a38ff8c7d5311b115e67387deaed2ce11a523`
+Current branch HEAD: `9ecd71c6192af9e4b79cd61241618a8d2d65eb19`
 
 The current branch HEAD contains a Store-runbook-only documentation change. It does
 **not** replace the locally static-verified Store candidate.
@@ -408,6 +408,37 @@ The original launch receipt and Code Integrity evidence remain unchanged. The QA
 remains `HOLD`.
 
 ### P1 — formalize the limited pre-Store signing lane, then hand off
+
+Preferred path: use the atomic local-only finalizer so the reconciliation receipt,
+pre-Store static receipt, and bound handoff are created together or not at all:
+
+```powershell
+python scripts/finalize_application_control_block_lane.py `
+  --handoff <frozen store-product-handoff.json> `
+  --artifact-receipt <immutable artifact-pull-receipt.json> `
+  --launch-receipt <original unsigned-exe-launch-receipt.json> `
+  --code-integrity-evidence <code-integrity-block-evidence.json> `
+  --output-dir <new immutable evidence directory>
+```
+
+Expected terminal result:
+
+`PRIVATE_STORE_SIGNING_LANE_READY`
+
+The finalizer:
+
+- performs no second launch;
+- performs no Store/Partner Center write;
+- preserves the original launch receipt and Code Integrity evidence;
+- atomically writes
+  `unsigned-exe-launch-reconciliation-receipt.json`,
+  `pre-store-static-qa-receipt.json`, and
+  `handoff-after-pre-store-static-block.json`;
+- refuses an existing output/staging directory;
+- removes partial staging if any validation fails;
+- leaves `local_final_pass=false` and `store_signed_install_pass=false`.
+
+The manual commands below are retained only as a decomposed troubleshooting path.
 
 Before sending the evidence to the Store execution owner, convert the already-verified
 artifact + reconciled Application Control block into the central contract:
