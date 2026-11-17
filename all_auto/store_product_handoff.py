@@ -17,6 +17,7 @@ TRIALS={"none","1_day","7_days","15_days","30_days","unlimited"}
 AUDIENCES={"PRIVATE_AUDIENCE_TEST","PUBLIC_RELEASE"}
 VERSION_HISTORY_STATES={"VERIFIED_ACCEPTED_HISTORY","NO_ACCEPTED_PACKAGE_OBSERVED","UNKNOWN"}
 UNSIGNED_GUI_STATES={"NOT_ATTEMPTED","PASS","APPLICATION_CONTROL_BLOCKED","OTHER_HOLD"}
+STORE_SIGNED_ACQUISITION_METHODS={"PROMO_CODE","FREE_TRIAL","TEMPORARY_FREE_PRIVATE_BETA"}
 
 class StoreHandoffError(ValueError): pass
 
@@ -315,6 +316,11 @@ def apply_store_signed_install_qa_receipt(payload:Any, receipt:Any)->dict[str,An
             actual=actual.lower()
         if actual!=value:
             raise StoreHandoffError(f"Store-signed install QA receipt mismatch: {key}")
+    acquisition_method=str(rec.get("acquisition_method") or "").strip()
+    if acquisition_method not in STORE_SIGNED_ACQUISITION_METHODS:
+        raise StoreHandoffError("unsupported or missing zero-cost Store acquisition method")
+    if rec.get("acquisition_cost_paid") is not False:
+        raise StoreHandoffError("Store-signed QA must not require a paid acquisition")
     for key in (
         "microsoft_store_delivery_verified","signature_trust_verified",
         "jp_en_gui_passed","dpi_matrix_passed","product_specific_acceptance_passed",
@@ -332,6 +338,8 @@ def apply_store_signed_install_qa_receipt(payload:Any, receipt:Any)->dict[str,An
     updated["qa"].setdefault("local_final_pass",False)
     updated["qa"]["store_signed_install_pass"]=True
     updated["qa"]["store_signed_install_qa_receipt_status"]="PASS"
+    updated["qa"]["store_signed_acquisition_method"]=acquisition_method
+    updated["qa"]["store_signed_acquisition_cost_paid"]=False
     updated["qa"]["store_signed_product_specific_checks"]=list(rec.get("product_specific_checks") or [])
     return normalize_store_product_handoff(updated)
 
