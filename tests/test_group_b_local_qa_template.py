@@ -38,6 +38,27 @@ class GroupBLocalQaTemplateTests(unittest.TestCase):
             self.assertIn("Store-signed JP/EN GUI", receipt["product_specific_checks"])
             self.assertIn("real OS DPI 100/125/150", receipt["product_specific_checks"])
 
+    def test_template_refuses_to_overwrite_existing_evidence(self):
+        with tempfile.TemporaryDirectory() as td:
+            output = Path(td) / "receipt.json"
+            output.write_text('{"existing": true}\n', encoding="utf-8")
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(ROOT / "scripts" / "create_local_final_qa_receipt_template.py"),
+                    "--handoff",
+                    str(FIXTURE),
+                    "--output",
+                    str(output),
+                ],
+                cwd=ROOT,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("refusing to overwrite", result.stderr + result.stdout)
+
     def test_template_script_does_not_authorize_store_write(self):
         text = (
             ROOT / "scripts" / "create_local_final_qa_receipt_template.py"
