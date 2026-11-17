@@ -7,6 +7,8 @@ import json
 from pathlib import Path
 import re
 from typing import Any
+import xml.etree.ElementTree as ET
+import zipfile
 
 from qa_ai.planner import PlannerOutcome
 
@@ -182,7 +184,8 @@ def load_handoff_bundle(bundle: Path) -> AcceptedProductQAPlan:
     required = {
         "schema_version","source_repository","source_sha","source_branch","type","slug",
         "package","status","package_sha256","package_bytes","executable_sha256",
-        "identity","qa_plan","qa_plan_schema","qa_plan_sha256",
+        "executable_path","application_id","identity",
+        "qa_plan","qa_plan_schema","qa_plan_sha256",
     }
     if not isinstance(handoff, dict) or set(handoff) != required:
         _hold("handoff fields are invalid")
@@ -192,6 +195,8 @@ def load_handoff_bundle(bundle: Path) -> AcceptedProductQAPlan:
     source_branch = handoff.get("source_branch")
     package_sha = handoff.get("package_sha256")
     exe_sha = handoff.get("executable_sha256")
+    executable_path = handoff.get("executable_path")
+    application_id = handoff.get("application_id")
     plan_sha = handoff.get("qa_plan_sha256")
     if not isinstance(source_sha,str) or not SHA40.fullmatch(source_sha):
         _hold("source SHA is invalid")
@@ -217,6 +222,14 @@ def load_handoff_bundle(bundle: Path) -> AcceptedProductQAPlan:
         _hold("package identity evidence is invalid")
     if handoff.get("qa_plan_schema") != PLAN_SCHEMA:
         _hold("handoff QA plan schema mismatch")
+    if (not isinstance(executable_path,str) or not executable_path or
+            executable_path.startswith("/") or
+            any(part in {"", ".", ".."} for part in executable_path.replace("\\","/").split("/")) or
+            not executable_path.lower().endswith(".exe")):
+        _hold("packaged executable path is invalid")
+    if (not isinstance(application_id,str) or not application_id or
+            any(not (ch.isalnum() or ch in "._") for ch in application_id)):
+        _hold("application_id is invalid")
     slug=handoff.get("slug")
     kind=handoff.get("type")
     if not isinstance(slug,str) or not SLUG.fullmatch(slug) or kind not in {"app","game"}:
@@ -231,6 +244,42 @@ def load_handoff_bundle(bundle: Path) -> AcceptedProductQAPlan:
             digest.update(block)
     if digest.hexdigest()!=package_sha:
         _hold("package hash mismatch")
+    try:
+        with zipfile.ZipFile(package_path) as archive:
+            names={}
+            for info in archive.infolist():
+                normalized=info.filename.replace("\\","/")
+                key=normalized.casefold()
+                if key in names:
+                    _hold("duplicate package member name")
+                names[key]=info
+            member=names.get(executable_path.replace("\\","/").casefold())
+            manifest_member=names.get("appxmanifest.xml")
+            if member is None or member.is_dir() or manifest_member is None:
+                _hold("packaged executable/manifest is missing")
+            executable_digest=sha256()
+            with archive.open(member) as stream:
+                for block in iter(lambda:stream.read(1024*1024),b""):
+                    executable_digest.update(block)
+            if executable_digest.hexdigest()!=exe_sha:
+                _hold("contained executable hash mismatch")
+            manifest=ET.fromstring(archive.read(manifest_member))
+            applications=[
+                element for element in manifest.iter()
+                if element.tag.rsplit("}",1)[-1]=="Application"
+            ]
+            bound=[
+                element for element in applications
+                if str(element.attrib.get("Executable","")).replace("\\","/").casefold()
+                == executable_path.replace("\\","/").casefold()
+                and element.attrib.get("Id")==application_id
+            ]
+            if len(bound)!=1:
+                _hold("manifest executable/application binding mismatch")
+    except (zipfile.BadZipFile,ET.ParseError,OSError,KeyError,RuntimeError) as exc:
+        raise ProductQAPlanIntakeError(
+            "PRODUCT_QA_PLAN_INTAKE_HOLD: invalid MSIX package internals"
+        ) from exc
     source_repository=handoff.get("source_repository")
     if (not isinstance(source_repository,str) or
             not source_repository.startswith("https://github.com/")):
