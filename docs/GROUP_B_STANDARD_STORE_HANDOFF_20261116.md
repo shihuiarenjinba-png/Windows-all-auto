@@ -271,6 +271,31 @@ Folder is intentionally excluded from this direct-pull route because its pilot u
 the already-frozen source/package bytes. Do not replace Folder's frozen candidate with
 a newer product-repository artifact.
 
+### Recommended one-command local confirmation workspace
+
+For Scheduled / Hub / Browser, prefer the higher-level local-only entrypoint:
+
+```powershell
+python scripts/prepare_group_b_local_confirmation.py `
+  --product-id <scheduled-api-runner|workflow-automation-hub|browser-automation-runner> `
+  --workspace-root C:\path\to\group-b-confirmation\<product-id>
+```
+
+It performs only the local conveyor preparation:
+
+1. resolve the registered current branch HEAD;
+2. find a unique exact-head SUCCESS Store-build run;
+3. pull and verify the registered GitHub artifact;
+4. preserve GitHub artifact ID/digest/size provenance;
+5. stage the exact MSIX/handoff/validation/checksum without overwrite;
+6. create the product-specific local QA template from the registry;
+7. write `workspace.json` with
+   `READY_FOR_LOCAL_WINDOWS_CONFIRMATION`.
+
+It does **not** install the package, rerun the full GitHub test suite, open Partner
+Center, upload, certify, or publish. If `--run-id` is supplied, the run must still
+match the current registered branch HEAD and Store workflow.
+
 ## Definition of GitHub-side completion
 
 A product is GitHub-complete when its latest PR HEAD has successful required CI and
