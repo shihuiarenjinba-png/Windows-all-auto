@@ -45,16 +45,16 @@ class GroupBConveyorCheckpointTests(unittest.TestCase):
         self.assertEqual(len(folder["frozen_msix_sha256"]), 64)
         self.assertEqual(len(folder["frozen_exe_sha256"]), 64)
 
-    def test_scheduled_checkpoint_records_app_control_block_and_store_signed_next_lane(self):
+    def test_scheduled_checkpoint_records_private_signing_lane_ready(self):
         scheduled = self.checkpoint["products"]["scheduled-api-runner"]
         self.assertEqual(
             scheduled["conveyor_state"],
-            "APPLICATION_CONTROL_BLOCKED_STORE_SIGNED_QA_REQUIRED",
+            "PRIVATE_STORE_SIGNING_LANE_READY",
         )
         local = scheduled["local_confirmation"]
         self.assertEqual(
             local["status"],
-            "APPLICATION_CONTROL_BLOCKED_STORE_SIGNED_QA_REQUIRED",
+            "PRIVATE_STORE_SIGNING_LANE_READY",
         )
         self.assertTrue(local["artifact_receipt_verified"])
         self.assertEqual(local["makeappx_unpack"], "PASS")
@@ -97,9 +97,18 @@ class GroupBConveyorCheckpointTests(unittest.TestCase):
         self.assertEqual(local["dpi_matrix"], "NOT_TESTED")
         self.assertEqual(local["https_get"], "NOT_TESTED")
         self.assertEqual(local["task_scheduler_lifecycle"], "NOT_TESTED")
+        self.assertTrue(local["atomic_finalizer_reported_complete"])
+        self.assertEqual(
+            local["atomic_finalizer_report_source"],
+            "code_owner_local_report_20261118",
+        )
+        self.assertTrue(local["pre_store_static_pass"])
+        self.assertTrue(local["private_store_signing_lane_ready"])
+        self.assertFalse(local["local_final_pass"])
+        self.assertFalse(local["store_signed_install_pass"])
         self.assertEqual(
             local["next_action"],
-            "RUN_ATOMIC_APPLICATION_CONTROL_BLOCK_FINALIZER",
+            "STORE_OWNER_CONFIRM_ZERO_COST_PRIVATE_ACQUISITION",
         )
 
     def test_direct_product_snapshot_matches_registry_routes(self):
