@@ -84,6 +84,10 @@ def main() -> int:
     parser.add_argument("--expected-version")
     parser.add_argument("--expected-architecture")
     parser.add_argument("--expected-workflow-name")
+    parser.add_argument("--expected-artifact-id", type=int)
+    parser.add_argument("--expected-artifact-digest")
+    parser.add_argument("--expected-msix-sha256")
+    parser.add_argument("--expected-exe-sha256")
     args = parser.parse_args()
 
     try:
@@ -93,6 +97,12 @@ def main() -> int:
             args.run_id,
             args.artifact_name,
         )
+        if args.expected_artifact_id is not None:
+            if artifact_meta["github_artifact_id"] != args.expected_artifact_id:
+                raise ProductArtifactPullError("GitHub artifact id does not match frozen candidate")
+        if args.expected_artifact_digest is not None:
+            if artifact_meta["github_artifact_digest"] != args.expected_artifact_digest:
+                raise ProductArtifactPullError("GitHub artifact digest does not match frozen candidate")
         if args.expected_workflow_name is not None:
             if not args.expected_workflow_name.strip():
                 raise ProductArtifactPullError("expected workflow name is empty")
@@ -121,6 +131,21 @@ def main() -> int:
                 raise ProductArtifactPullError(
                     "artifact source SHA does not match successful workflow head SHA"
                 )
+            if args.expected_msix_sha256 is not None:
+                if verified["package"]["sha256"].lower() != args.expected_msix_sha256.lower():
+                    raise ProductArtifactPullError("MSIX SHA256 does not match frozen candidate")
+            if args.expected_exe_sha256 is not None:
+                if verified["identity"] is None:
+                    raise ProductArtifactPullError("verified identity is missing")
+                handoff_exe_sha = str(
+                    json.loads(
+                        Path(verified["_source_paths"]["handoff"]).read_text(
+                            encoding="utf-8-sig"
+                        )
+                    )["package"]["exe_sha256"]
+                ).lower()
+                if handoff_exe_sha != args.expected_exe_sha256.lower():
+                    raise ProductArtifactPullError("EXE SHA256 does not match frozen candidate")
             expected_values = (
                 args.expected_store_id,
                 args.expected_identity_name,
