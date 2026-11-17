@@ -63,10 +63,18 @@ class StaticClient:
 class AckTransport:
     def put_and_readback(self, path):
         envelope = json.loads(path.read_text(encoding="utf-8"))
+        manifest = envelope["payload"]["manifest"]
+        test_status = manifest.get("status")
         return {"status": "GITHUB_READBACK_VERIFIED",
                 "request_id": envelope["request_id"],
                 "source_sha": envelope["source_sha"],
-                "payload_sha256": envelope["payload_sha256"]}
+                "payload_sha256": envelope["payload_sha256"],
+                "test_status": test_status,
+                "evidence_return_e2e_pass": (
+                    test_status in {"TEST_PASS", "TEST_FAIL"} and
+                    manifest.get("collection_complete") is True and
+                    manifest.get("local_persistence_verified") is True
+                )}
 
 
 class AnalysisSafetyTests(unittest.TestCase):
