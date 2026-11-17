@@ -166,6 +166,42 @@ def validate_extracted_store_artifact(
     }
 
 
+def select_github_artifact_metadata(
+    artifacts: Any,
+    *,
+    artifact_name: str,
+) -> dict[str, Any]:
+    if not isinstance(artifacts, list):
+        raise ProductArtifactPullError("GitHub artifact listing is invalid")
+    matches = [
+        artifact
+        for artifact in artifacts
+        if isinstance(artifact, dict)
+        and artifact.get("name") == artifact_name
+        and artifact.get("expired") is False
+    ]
+    if len(matches) != 1:
+        raise ProductArtifactPullError(
+            f"expected exactly one live GitHub artifact named {artifact_name}; got {len(matches)}"
+        )
+    artifact = matches[0]
+    artifact_id = artifact.get("id")
+    size = artifact.get("size_in_bytes")
+    digest = str(artifact.get("digest") or "")
+    if type(artifact_id) is not int or artifact_id <= 0:
+        raise ProductArtifactPullError("GitHub artifact id is invalid")
+    if type(size) is not int or size <= 0:
+        raise ProductArtifactPullError("GitHub artifact size is invalid")
+    if not re.fullmatch(r"sha256:[0-9a-f]{64}", digest):
+        raise ProductArtifactPullError("GitHub artifact digest is invalid")
+    return {
+        "github_artifact_id": artifact_id,
+        "github_artifact_digest": digest,
+        "github_artifact_size_in_bytes": size,
+        "github_artifact_expired": False,
+    }
+
+
 def require_expected_identity(
     verified: dict[str, Any],
     *,
