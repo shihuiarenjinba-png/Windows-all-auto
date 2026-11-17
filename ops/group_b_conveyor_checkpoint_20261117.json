@@ -25,7 +25,7 @@
     "scheduled-api-runner": {
       "repository_full_name": "shihuiarenjinba-png/scheduled-api-runner",
       "pr_number": 8,
-      "head_sha": "28ef873ab2ff325b8f26c61a9ba48701280e8290",
+      "head_sha": "0c2a38ff8c7d5311b115e67387deaed2ce11a523",
       "store_workflow_name": "Windows desktop / Windowsデスクトップ",
       "store_run_id": 44093493317,
       "store_artifact": {
@@ -36,8 +36,30 @@
       },
       "reliability_run_id": 44093493219,
       "ci_conclusion": "success",
-      "conveyor_state": "GITHUB_COMPLETE_LOCAL_EXACT_ARTIFACT_CONFIRMATION_PENDING",
-      "exact_head_store_run_unique": true
+      "conveyor_state": "LOCAL_STATIC_VERIFIED_FROZEN_CANDIDATE",
+      "exact_head_store_run_unique": false,
+      "frozen_candidate": {
+        "source_sha": "28ef873ab2ff325b8f26c61a9ba48701280e8290",
+        "store_run_id": 44093493317,
+        "artifact_id": 14333575447,
+        "artifact_name": "ScheduledApiRunner-Store-MSIX-UNSIGNED-DRAFT",
+        "artifact_digest": "sha256:b45d53a0473f5b8cdcac64c1ffdcf12957919da2e5cb846564344d757165afa7",
+        "msix_sha256": "db599cdfa673688e8fe7db70d11acc69010562636c67f4996b4cba36adfd8877",
+        "exe_sha256": "06d3b92bd83281750e5a454f9add6526fa90f6bfc29017fd6919bbeaa64213d9",
+        "local_static_verified": true
+      },
+      "unpromoted_descendant": {
+        "source_sha": "0c2a38ff8c7d5311b115e67387deaed2ce11a523",
+        "commit_scope": "docs_only_store_runbook",
+        "store_run_id": 44106267118,
+        "artifact_id": 14337483379,
+        "artifact_name": "ScheduledApiRunner-Store-MSIX-UNSIGNED-DRAFT",
+        "artifact_digest": "sha256:f5956e1efa048c5fda7b74791ff7a06ef3cfefbb2d3f609d6fa2f3c6b3947170",
+        "msix_sha256": "9ebaf882688aea4445dc612c361ce84cc8a2668597f9f3c4ab817245210a884f",
+        "exe_sha256": "61ec0df4201d09057af494249aca70527cb25ffd425678f06b60c4bfa75d4c3d",
+        "promoted": false,
+        "reason": "docs-only descendant rebuild produced different executable bytes; requires new local static verification before candidate promotion"
+      }
     },
     "workflow-automation-hub": {
       "repository_full_name": "shihuiarenjinba-png/workflow-automation-hub",
@@ -93,6 +115,7 @@
     "exact_head_discovery_enabled": true,
     "stale_explicit_run_rejected": true,
     "direct_product_artifact_archive_provenance": true,
-    "local_confirmation_workspace_enabled": true
+    "local_confirmation_workspace_enabled": true,
+    "frozen_candidate_semantics_enabled": true
   }
 }
