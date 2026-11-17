@@ -93,6 +93,8 @@ def validate_plan(value: Any, *, slug: str, kind: str) -> None:
         params = step.get("parameters")
         if not isinstance(params, dict) or set(params) - PARAM_KEYS:
             _hold("parameters are invalid")
+        if test_id in {"ARTIFACT_HASH", "PROCESS_START"} and params:
+            _hold("baseline ARTIFACT_HASH/PROCESS_START parameters must be empty")
         for key, item in params.items():
             if key in {"observation_seconds", "dpi_percent"}:
                 if type(item) is not int:
