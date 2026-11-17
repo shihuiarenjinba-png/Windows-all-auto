@@ -1,0 +1,124 @@
+{
+  "payload": {
+    "files": [
+      {
+        "content": "QVJUSUZBQ1RfU0hBMjU2PWVhZWJkNmM1ZDRjNmYxM2NiZGJmNjg1NTk0NDE0YjA5ZjJhMThhNGIxYzA2NDk4MmU5ODE5NzI4YjZkZTQ5NzYNCkFSVElGQUNUX0hBU0hfVkVSSUZJRUQNCg==",
+        "encoding": "base64",
+        "path": "stdout.log",
+        "sha256": "58f663c65afa91f1586902e42b3eabfbdedc61f891753050b2f0dfc1fe29a0a3"
+      },
+      {
+        "content": "",
+        "encoding": "base64",
+        "path": "stderr.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "content": "PEV2ZW50cz48RXZlbnQ+PFByb3ZpZGVyIE5hbWU9IldpbmRvd3NBbGxBdXRvU3ludGhldGljU3VwZXJ2aXNvciIvPjxEYXRhIE5hbWU9IlN0YXJ0ZWQiPjIwMjYtMTEtMTdUMDI6MjY6MDBaPC9EYXRhPjxEYXRhIE5hbWU9IkZpbmlzaGVkIj4yMDI2LTExLTE3VDAyOjI2OjAxWjwvRGF0YT48L0V2ZW50PjwvRXZlbnRzPg==",
+        "encoding": "base64",
+        "path": "windows-event-log.xml",
+        "sha256": "c6b70277f9b65d13520a6f18b25a18d98af205022aca4f534dcd1d8733460a39"
+      },
+      {
+        "content": "eyJhdCI6IjIwMjYtMTEtMTdUMDI6MjY6MDBaIiwiZXZlbnQiOiJSVU5fU1RBUlRFRCJ9CnsiYXQiOiIyMDI2LTExLTE3VDAyOjI2OjAwWiIsImV2ZW50IjoiUFJPQ0VTU19TVEFSVEVEIiwicGlkIjozNjc1Nn0KeyJhdCI6IjIwMjYtMTEtMTdUMDI6MjY6MDFaIiwiZXZlbnQiOiJQUk9DRVNTX0ZJTklTSEVEIiwiZXhpdF9jb2RlIjowLCJzdGF0dXMiOiJURVNUX1BBU1MiLCJ0aW1lZF9vdXQiOmZhbHNlfQo=",
+        "encoding": "base64",
+        "path": "journal.jsonl",
+        "sha256": "34cc0ac62c8d655039fa14454b8549646c5a8c6546686e622262c357d4a1df32"
+      }
+    ],
+    "manifest": {
+      "actual": {
+        "exit_code": 0,
+        "observation_seconds": null,
+        "process_started": true,
+        "survived_observation": false,
+        "terminated_by_harness": false,
+        "timed_out": false
+      },
+      "artifact_sha256": "eaebd6c5d4c6f13cbdbf685594414b09f2a18a4b1c064982e9819728b6de4976",
+      "collection": {
+        "exit_code": "CAPTURED",
+        "expected_and_actual": "CAPTURED",
+        "github_shareable_screenshot": "NOT_APPLICABLE",
+        "screenshots": "NOT_APPLICABLE",
+        "stderr": "EMPTY_VALID",
+        "stdout": "CAPTURED",
+        "uia_actions": "NOT_APPLICABLE",
+        "windows_event_log": "CAPTURED",
+        "windows_event_log_error": null
+      },
+      "collection_complete": true,
+      "e2e_pass": false,
+      "environment": {
+        "architecture": "AMD64",
+        "machine_id": "33899df5ea804bb594495f97379019a0",
+        "os": "Windows",
+        "os_release": "11",
+        "python": "3.14.4"
+      },
+      "evidence_return_e2e_pass": false,
+      "exit_code": 0,
+      "expected": {
+        "completion_policy": "WAIT_FOR_EXIT",
+        "exit_code": 0,
+        "observation_seconds": 0
+      },
+      "factory_dispatch": {
+        "reason": "No verified automatic development-agent dispatch contract is configured",
+        "status": "AGENT_DISPATCH_PENDING",
+        "target_repository": "shihuiarenjinba-png/AI-App-Factory"
+      },
+      "failed_tests": [],
+      "finished_at_utc": "2026-11-17T02:26:01Z",
+      "github_return": {
+        "readback_verified": false,
+        "status": "QUEUED"
+      },
+      "local_persistence_verified": true,
+      "product_e2e_pass": false,
+      "product_e2e_requirements": {
+        "artifact_package_sha_correlation": false,
+        "identity_correlation": false,
+        "package_qa": false,
+        "physical_gui_qa": false,
+        "product_specific_regression": false,
+        "product_specific_tests": false,
+        "version_correlation": false
+      },
+      "product_type": "APP",
+      "release_ready": false,
+      "request_id": "synthetic-final-sale-retest-5fc7125-20261117",
+      "run_id": "20261117T022600Z-41cb4def4c8c92ed",
+      "schema_version": "local-qa-evidence-v1",
+      "slug": "synthetic-sale-loop",
+      "source_branch": "codex/final-sale-qa-synthetic-20261117",
+      "source_repository": "shihuiarenjinba-png/AI-App-Factory",
+      "source_sha": "5fc7125cee75cc97d702fa800d6b79f806e40d3e",
+      "started_at_utc": "2026-11-17T02:26:00Z",
+      "status": "TEST_PASS",
+      "store_submission_allowed": false,
+      "test_command": [
+        "C:\\Python314\\python.exe",
+        "C:\\Users\\[REDACTED]\\Desktop\\portfolio-audit\\_task_worktrees\\waa-ollama-local-qa-supervisor\\scripts\\trusted_qa_test_runner.py",
+        "--test-id",
+        "ARTIFACT_HASH",
+        "--artifact",
+        "C:\\Users\\[REDACTED]\\Desktop\\portfolio-audit\\_task_worktrees\\waa-ollama-local-qa-supervisor\\.test-tmp\\final-sale\\repaired-5fc7125\\synthetic_product.py",
+        "--expected-sha",
+        "eaebd6c5d4c6f13cbdbf685594414b09f2a18a4b1c064982e9819728b6de4976"
+      ],
+      "test_suite_version": "factory-windows-closed-loop-v1",
+      "timed_out": false,
+      "user_price_approval": false,
+      "user_product_approval": false
+    },
+    "redaction": {
+      "replacement_count": 2,
+      "screenshots_require_explicit_privacy_review": true
+    }
+  },
+  "payload_sha256": "361bbc70b3c9925cbb77972ba3363a49add0975b4d47ce7e67bc913f35ebc6fd",
+  "request_id": "synthetic-final-sale-retest-5fc7125-20261117",
+  "schema_version": "local-qa-evidence-v1",
+  "source_sha": "5fc7125cee75cc97d702fa800d6b79f806e40d3e"
+}
