@@ -28,6 +28,8 @@ def main(argv=None) -> int:
         "slug":accepted.slug,
         "package_sha256":accepted.package_sha256,
         "executable_sha256":accepted.executable_sha256,
+        "executable_path":accepted.executable_path,
+        "application_id":accepted.application_id,
         "qa_plan_sha256":accepted.qa_plan_sha256,
         "steps":[{
             "step_id":step["step_id"],
