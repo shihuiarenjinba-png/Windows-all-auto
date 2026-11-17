@@ -67,6 +67,25 @@ class LocalFinalQaReceiptTests(unittest.TestCase):
         with self.assertRaises(StoreHandoffError):
             apply_local_final_qa_receipt(self.payload, bad)
 
+    def test_duplicate_full_local_suite_contract_is_rejected(self):
+        bad = dict(self.receipt)
+        bad["local_full_test_suite_required"] = True
+        with self.assertRaisesRegex(StoreHandoffError, "duplicating the full GitHub CI"):
+            apply_local_final_qa_receipt(self.payload, bad)
+
+    def test_github_primary_metadata_is_validated_when_present(self):
+        good = dict(self.receipt)
+        good["github_ci_is_primary"] = True
+        good["local_full_test_suite_required"] = False
+        good["test_source"] = "github_exact_head_ci"
+        n = apply_local_final_qa_receipt(self.payload, good)
+        self.assertTrue(n["qa"]["local_final_pass"])
+
+        bad = dict(good)
+        bad["github_ci_is_primary"] = False
+        with self.assertRaisesRegex(StoreHandoffError, "GitHub CI as primary"):
+            apply_local_final_qa_receipt(self.payload, bad)
+
     def test_application_control_block_opens_only_private_store_signing_lane(self):
         receipt = {
             "schema_version": "pre-store-static-qa-receipt/1",
