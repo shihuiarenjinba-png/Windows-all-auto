@@ -422,98 +422,47 @@ Expected classification:
 The original launch receipt and Code Integrity evidence remain unchanged. The QA state
 remains `HOLD`.
 
-### P1 — formalize the limited pre-Store signing lane, then hand off
+### P1 — Scheduled pre-Store signing lane is complete; hand off to Store execution owner
 
-Preferred path: use the atomic local-only finalizer so the reconciliation receipt,
-pre-Store static receipt, and bound handoff are created together or not at all:
+The code-owner lane has reported completion of the atomic Application Control block
+finalizer. Do **not** rerun the finalizer against the same immutable evidence unless
+evidence integrity is lost.
 
-```powershell
-python scripts/finalize_application_control_block_lane.py `
-  --artifact-receipt <immutable artifact-pull-receipt.json> `
-  --launch-receipt <original unsigned-exe-launch-receipt.json> `
-  --code-integrity-evidence <code-integrity-block-evidence.json> `
-  --output-dir <new immutable evidence directory>
-```
-
-Expected terminal result:
+Current reported state:
 
 `PRIVATE_STORE_SIGNING_LANE_READY`
 
-By default the finalizer resolves the exact frozen handoff path from
-`artifact-pull-receipt.json -> local_handoff_path`. This avoids manually retyping a
-long Windows path. It fails closed if that path is absent or no longer points to a
-file. `--handoff <path>` remains available as an explicit override/troubleshooting
-input.
+The reported atomic outputs are:
 
-The finalizer:
+- `unsigned-exe-launch-reconciliation-receipt.json`
+- `pre-store-static-qa-receipt.json`
+- `handoff-after-pre-store-static-block.json`
 
-- performs no second launch;
-- performs no Store/Partner Center write;
-- preserves the original launch receipt and Code Integrity evidence;
-- atomically writes
-  `unsigned-exe-launch-reconciliation-receipt.json`,
-  `pre-store-static-qa-receipt.json`, and
-  `handoff-after-pre-store-static-block.json`;
-- refuses an existing output/staging directory;
-- removes partial staging if any validation fails;
-- leaves `local_final_pass=false` and `store_signed_install_pass=false`.
-
-The manual commands below are retained only as a decomposed troubleshooting path.
-
-Before sending the evidence to the Store execution owner, convert the already-verified
-artifact + reconciled Application Control block into the central contract:
-
-`pre-store-static-qa-receipt/1`
-
-Use:
-
-```powershell
-python scripts/create_pre_store_static_block_receipt.py `
-  --handoff <frozen store-product-handoff.json> `
-  --artifact-receipt <immutable artifact-pull-receipt.json> `
-  --launch-reconciliation <unsigned-exe-launch-reconciliation-receipt.json> `
-  --output <new pre-store-static-qa-receipt.json>
-```
-
-Then apply it to a **new** handoff evidence file:
-
-```powershell
-python scripts/apply_pre_store_static_qa_receipt.py `
-  --handoff <frozen store-product-handoff.json> `
-  --receipt <pre-store-static-qa-receipt.json> `
-  --output <new handoff-after-pre-store-static-block.json>
-```
-
-Expected central QA state:
+Expected bound QA state has been reported as:
 
 - `pre_store_static_pass=true`
 - `unsigned_gui_execution_status=APPLICATION_CONTROL_BLOCKED`
+- `private_store_signing_lane_ready=true`
 - `local_final_pass=false`
 - `store_signed_install_pass=false`
-- Private Store-signing lane may be ready only subject to the other independent
-  commercial/assets/security/audience gates.
 
-This receipt does **not** authorize upload, certification, pricing, audience change,
-or publication.
+The local evidence files and their SHA256 values were supplied by the code-owner
+report. Treat them as immutable handoff evidence; the central repository does not
+recreate or overwrite them.
 
-The code-owner lane must not perform Partner Center writes. Provide the Store owner
-the exact frozen package binding, the reconciliation receipt, the pre-Store static
-receipt, and the updated package-bound handoff. Request a Microsoft Store-signed
-Private distribution path with zero acquisition cost.
+The code-owner lane must stop here. No second unsigned launch, package rebuild,
+security-policy change, certificate change, MSIX install, package upload,
+certification, pricing/audience write, or publication is authorized.
 
-After the Store-signed build is available, resume physical QA there. No unsigned
-relaunch is permitted. Complete only the remaining local-only checks on the
-Store-signed build. Do not rerun the whole GitHub unit suite.
+Next dependency:
 
-Return the exact package-bound local QA receipt to Windows-all-auto.
+1. Store execution owner confirms a **zero-cost** Private acquisition route in live
+   Partner Center for the exact frozen candidate.
+2. Store execution owner obtains the Microsoft Store-signed build of that same
+   candidate without owner self-payment.
+3. Physical QA resumes only on the Store-delivered signed build.
 
-If Windows Application Control blocks an exact unsigned executable:
-
-- record the block;
-- do not change policy;
-- do not add a temporary certificate;
-- do not bypass it;
-- use the established pre-Store static/Store-signing lane if applicable.
+No unsigned local GUI retry is permitted.
 
 ### P2 — keep direct-pull products generic
 
