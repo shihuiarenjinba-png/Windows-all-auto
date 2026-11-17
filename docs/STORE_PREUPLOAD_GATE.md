@@ -65,6 +65,23 @@ python scripts/evaluate_store_preupload_gate.py `
 The output uses schema `store-preupload-gate-receipt/1`. Store the receipt
 beside the product's other package-bound preflight evidence.
 
+## One-command local conveyor receipt
+
+On Windows, `scripts/run_store_preupload_readiness.ps1` is the generic local
+entrypoint. It first performs the cheap frozen-file/Draft check, then unpacks
+the same MSIX and verifies its Manifest Identity and main EXE SHA. Finally,
+`scripts/finalize_store_preupload_receipt.py` binds both results into
+`store-preupload-readiness.json`.
+
+The final receipt includes `immutable_binding`, `static_preflight`, and
+`store_actions`. `READY_FOR_MSIX_UPLOAD_APPROVAL` is emitted only when the
+same machine-readable receipt proves that the package was not rebuilt, no
+security bypass was used, and upload/certification/publish were not executed.
+For a frozen source followed only by metadata commits, pass
+`-SourceCheckoutMode ContainedCommit`. Do not pass `-RunSelfTest` for a product
+whose exact unsigned executable already has a recorded Application Control
+block.
+
 ## Folder Automation Engine example
 
 The 2026-11-17 read-only reconciliation found the existing Draft for Store ID

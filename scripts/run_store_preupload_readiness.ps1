@@ -50,6 +50,13 @@ try {
         -OutputDirectory $preflightOut `
         -SourceCheckoutMode $SourceCheckoutMode
     if ($LASTEXITCODE -ne 0) { throw "exact package preflight returned $LASTEXITCODE" }
+
+    python (Join-Path $PSScriptRoot "finalize_store_preupload_receipt.py") `
+        --candidate $readinessOut `
+        --preflight (Join-Path $preflightOut "local-static-preflight.json") `
+        --handoff $HandoffPath `
+        --output $readinessOut
+    if ($LASTEXITCODE -ne 0) { throw "pre-upload receipt finalization returned $LASTEXITCODE" }
 } catch {
     $failed = [ordered]@{
         schema_version = "store-preupload-readiness/1"
@@ -59,6 +66,7 @@ try {
         package_upload_executed = $false
         certification_executed = $false
         published = $false
+        partner_center_write_performed = $false
     }
     $failed | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath $readinessOut -Encoding UTF8
     Write-Host ("STORE_PREUPLOAD_HOLD status=HOLD_EXACT_PACKAGE_MISMATCH receipt=" + $readinessOut)
@@ -68,6 +76,12 @@ try {
 $receipt = Get-Content -LiteralPath $readinessOut -Raw -Encoding UTF8 | ConvertFrom-Json
 if ($receipt.package_upload_executed -or $receipt.certification_executed -or $receipt.published) {
     throw "Pre-upload readiness performed an external Store write"
+}
+if ($receipt.partner_center_write_performed -or -not $receipt.ready_for_upload_approval) {
+    throw "Pre-upload readiness receipt is not a read-only upload-approval boundary"
+}
+if ($receipt.static_preflight.status -cne "PASS") {
+    throw "Final receipt did not bind the static package preflight"
 }
 
 Write-Host ("STORE_PREUPLOAD_READY receipt=" + $readinessOut)

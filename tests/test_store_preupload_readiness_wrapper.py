@@ -10,7 +10,9 @@ class StorePreuploadReadinessWrapperContractTests(unittest.TestCase):
         )
         candidate = text.index("check_local_store_upload_candidate.py")
         preflight = text.index("run_local_exact_package_preflight.ps1")
+        finalizer = text.index("finalize_store_preupload_receipt.py")
         self.assertLess(candidate, preflight)
+        self.assertLess(preflight, finalizer)
         for required in (
             "HOLD_EXACT_PACKAGE_MISMATCH",
             "READY_FOR_MSIX_UPLOAD_APPROVAL",
@@ -18,6 +20,8 @@ class StorePreuploadReadinessWrapperContractTests(unittest.TestCase):
             "certification_executed",
             "published",
             "SourceCheckoutMode",
+            "partner_center_write_performed",
+            "static_preflight",
         ):
             self.assertIn(required, text)
         for forbidden in (
