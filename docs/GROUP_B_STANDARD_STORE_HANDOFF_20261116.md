@@ -271,6 +271,25 @@ Folder is intentionally excluded from this direct-pull route because its pilot u
 the already-frozen source/package bytes. Do not replace Folder's frozen candidate with
 a newer product-repository artifact.
 
+### Frozen candidate after local static verification
+
+Once a direct-pull product has completed local exact artifact/static verification,
+the registry may contain a `frozen_candidate`. That candidate is the Store-bound
+byte set until a **new** candidate completes the same local static verification.
+
+For a frozen candidate:
+
+- later docs/runbook commits do not replace the candidate;
+- a nondeterministic rebuild from a metadata-only descendant does not replace it;
+- normal artifact pull uses the frozen run/artifact/source/hash binding;
+- supplying another `--run-id` is rejected;
+- promotion to another artifact requires a new local static verification and an
+  explicit registry/checkpoint update.
+
+Scheduled API Runner currently uses this rule. Its locally verified candidate remains
+source `28ef873ab2ff325b8f26c61a9ba48701280e8290`, run `44093493317`,
+artifact `14333575447`, even though later runbook-only commits may exist.
+
 ### Recommended one-command local confirmation workspace
 
 For Scheduled / Hub / Browser, prefer the higher-level local-only entrypoint:
