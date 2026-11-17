@@ -7,7 +7,8 @@ import tempfile
 import unittest
 
 from all_auto.product_qa_plan_intake import (
-    ProductQAPlanIntakeError, canonical, load_handoff_bundle,
+    GitHubProductQAPlanner, ProductQAPlanIntakeError, canonical,
+    job_from_handoff, load_handoff_bundle,
 )
 
 
@@ -106,6 +107,57 @@ class ProductQAPlanIntakeTests(unittest.TestCase):
         self.save_handoff()
         with self.assertRaisesRegex(ProductQAPlanIntakeError,"PROCESS_START"):
             load_handoff_bundle(self.bundle)
+
+    def test_github_plan_planner_emits_only_trusted_test_id(self):
+        accepted=load_handoff_bundle(self.bundle)
+        planner=GitHubProductQAPlanner(accepted.plan)
+        catalog=[
+            {"test_id":"ARTIFACT_HASH"},
+            {"test_id":"PROCESS_START"},
+        ]
+        first=planner.plan(
+            context={"product_type":"APP"},catalog=catalog,evidence="",
+            round_number=1,execution_history=[],
+        )
+        self.assertEqual(first.status,"QA_PLAN_VALID")
+        self.assertEqual(first.plan["selected_test_ids"],["ARTIFACT_HASH"])
+        second=planner.plan(
+            context={"product_type":"APP"},catalog=catalog,evidence="",
+            round_number=2,execution_history=[{
+                "test_id":"ARTIFACT_HASH","status":"TEST_PASS",
+                "exit_code":0,"timed_out":False,
+            }],
+        )
+        self.assertEqual(second.status,"QA_PLAN_VALID")
+        self.assertEqual(second.plan["selected_test_ids"],["PROCESS_START"])
+
+    def test_unsupported_required_product_check_holds(self):
+        self.plan["steps"][2]["required"]=True
+        (self.bundle/"qa-plan.json").write_text(json.dumps(self.plan),encoding="utf-8")
+        self.handoff["qa_plan_sha256"]=sha256(canonical(self.plan)).hexdigest()
+        self.save_handoff()
+        accepted=load_handoff_bundle(self.bundle)
+        planner=GitHubProductQAPlanner(accepted.plan)
+        history=[
+            {"test_id":"ARTIFACT_HASH","status":"TEST_PASS","exit_code":0,"timed_out":False},
+            {"test_id":"PROCESS_START","status":"TEST_PASS","exit_code":0,"timed_out":False},
+        ]
+        outcome=planner.plan(
+            context={"product_type":"APP"},
+            catalog=[{"test_id":"ARTIFACT_HASH"},{"test_id":"PROCESS_START"}],
+            evidence="",round_number=3,execution_history=history,
+        )
+        self.assertEqual(outcome.status,"QA_PLAN_CAPABILITY_HOLD")
+        self.assertIn("UIA_FIND_CONTROL",outcome.errors[0])
+
+    def test_job_is_bound_to_factory_revision(self):
+        accepted=load_handoff_bundle(self.bundle)
+        job=job_from_handoff(accepted,request_id="final-sale-qa-0001")
+        self.assertEqual(job["source_sha"],"a"*40)
+        self.assertEqual(job["source_branch"],"codex/factory-qa-plan-test")
+        self.assertEqual(job["artifact_sha256"],"b"*64)
+        self.assertEqual(job["factory_package_sha256"],self.handoff["package_sha256"])
+        self.assertEqual(job["factory_qa_plan_sha256"],self.handoff["qa_plan_sha256"])
 
     def test_source_sha_is_not_inferred(self):
         self.handoff["source_sha"]="UNKNOWN"
