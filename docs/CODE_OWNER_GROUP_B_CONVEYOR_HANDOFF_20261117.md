@@ -382,10 +382,25 @@ Use the immutable original launch receipt plus a separate
 
 If the existing raw Code Integrity evidence is not already in that schema, do not
 edit it. Create a new canonical evidence file with
-`scripts/create_code_integrity_block_evidence.py`, binding the exact EXE SHA,
-events 3033/3077 (3118 may remain supplemental), policy name
-`VerifiedAndReputableDesktop`, policy GUID
-`{0283ac0f-fff1-49ae-ada1-8a933130cad6}`, and the raw evidence path/hash.
+`scripts/create_code_integrity_block_evidence.py`, binding:
+
+- exact EXE SHA:
+  `06d3b92bd83281750e5a454f9add6526fa90f6bfc29017fd6919bbeaa64213d9`
+- blocking events: 3033 / 3077
+- supplemental event: 3118
+- correlation Activity ID:
+  `{2f3574e4-74dd-0008-cd37-9c3add74dd01}`
+- policy name: `VerifiedAndReputableDesktop`
+- policy GUID: `{0283ac0f-fff1-49ae-ada1-8a933130cad6}`
+- policy ID: `27555.1000.240208`
+- status code: `0xc0e90002`
+- event flat hash:
+  `06D3B92BD83281750E5A454F9ADD6526FA90F6BFC29017FD6919BBEAA64213D9`
+- raw evidence path/hash.
+
+The canonicalizer must reject an event flat hash that does not equal the exact EXE
+SHA256. This provides a second byte-level correlation between the Code Integrity
+event and the frozen executable.
 
 Then reconcile:
 
