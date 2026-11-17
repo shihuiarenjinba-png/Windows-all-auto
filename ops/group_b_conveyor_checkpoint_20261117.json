@@ -36,7 +36,7 @@
       },
       "reliability_run_id": 44093493219,
       "ci_conclusion": "success",
-      "conveyor_state": "PASS_STATIC_ONLY_GUI_PENDING",
+      "conveyor_state": "APPLICATION_CONTROL_BLOCKED_STORE_SIGNED_QA_REQUIRED",
       "exact_head_store_run_unique": false,
       "frozen_candidate": {
         "source_sha": "28ef873ab2ff325b8f26c61a9ba48701280e8290",
@@ -61,10 +61,9 @@
         "reason": "docs-only descendant rebuild produced different executable bytes; requires new local static verification before candidate promotion"
       },
       "local_confirmation": {
-        "status": "PASS_STATIC_ONLY_GUI_PENDING",
-        "evidence_source": "local_code_owner_report_20261117",
+        "status": "APPLICATION_CONTROL_BLOCKED_STORE_SIGNED_QA_REQUIRED",
+        "evidence_source": "local_code_owner_report_20261118",
         "artifact_receipt_verified": true,
-        "evidence_rerun_refused_and_hashes_unchanged": true,
         "makeappx_unpack": "PASS",
         "manifest_identity_publisher_version_architecture": "PASS",
         "unpacked_exe_hash": "PASS",
@@ -75,10 +74,36 @@
         "github_ci_primary": true,
         "local_full_suite_run": false,
         "qa_template_status": "HOLD",
-        "gui_launch_attempted": false,
-        "next_action": "ONE_SHOT_NORMAL_USER_EXE_LAUNCH",
-        "action_time_confirmation_required": true
-      }
+        "launch_action_time_approved": true,
+        "launch_attempts": 1,
+        "normal_user_context": true,
+        "process_started": false,
+        "exit_code": null,
+        "normal_exit": false,
+        "original_wrapper_status": "LAUNCH_FAILED",
+        "reconciled_classification": "APPLICATION_CONTROL_BLOCKED",
+        "code_integrity_blocking_event_ids": [
+          3033,
+          3077
+        ],
+        "code_integrity_supplemental_event_ids": [
+          3118
+        ],
+        "policy_name": "VerifiedAndReputableDesktop",
+        "policy_guid": "{0283ac0f-fff1-49ae-ada1-8a933130cad6}",
+        "residual_processes": 0,
+        "original_launch_receipt_overwritten": false,
+        "security_bypass_used": false,
+        "package_installed": false,
+        "store_write_performed": false,
+        "unsigned_launch_retries_forbidden": true,
+        "jp_en_gui": "NOT_TESTED",
+        "dpi_matrix": "NOT_TESTED",
+        "https_get": "NOT_TESTED",
+        "task_scheduler_lifecycle": "NOT_TESTED",
+        "next_action": "STORE_SIGNED_PRIVATE_GUI_QA"
+      },
+      "next_dependency": "Store execution owner provides Microsoft Store-signed Private distribution path for zero-cost physical QA"
     },
     "workflow-automation-hub": {
       "repository_full_name": "shihuiarenjinba-png/workflow-automation-hub",
