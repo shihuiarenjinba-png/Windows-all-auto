@@ -9,7 +9,13 @@
       "version": "1.0.0.0",
       "architecture": "x64",
       "direct_product_artifact_pull_supported": false,
-      "reason": "Pilot uses an already-frozen exact local/legacy artifact. Do not replace it with a newer product-repo build."
+      "reason": "Pilot uses an already-frozen exact local/legacy artifact. Do not replace it with a newer product-repo build.",
+      "local_only_checks": [
+        "Store-signed JP/EN GUI",
+        "real OS DPI 100/125/150",
+        "Preview / Dry Run / approval / copy / move / no-overwrite",
+        "symlink / junction / source-destination safety / restart / normal exit"
+      ]
     },
     "scheduled-api-runner": {
       "name": "Scheduled API Runner",
