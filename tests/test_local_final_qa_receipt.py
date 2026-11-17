@@ -190,6 +190,7 @@ class LocalFinalQaReceiptTests(unittest.TestCase):
             "apply_pre_store_static_qa_receipt.py",
             "apply_store_signed_install_qa_receipt.py",
             "apply_unsigned_exe_launch_receipt.py",
+            "reconcile_delayed_code_integrity_launch.py",
             "create_code_integrity_block_evidence.py",
             "reconcile_delayed_code_integrity_block.py",
             "create_pre_store_static_block_receipt.py",
