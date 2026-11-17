@@ -25,7 +25,7 @@
     "scheduled-api-runner": {
       "repository_full_name": "shihuiarenjinba-png/scheduled-api-runner",
       "pr_number": 8,
-      "head_sha": "9caa07075e096ff52e57a1d4611a3884ae06f974",
+      "head_sha": "aa3ba75c1e01fd5ca5de88670083e36a07cf259d",
       "store_workflow_name": "Windows desktop / Windowsデスクトップ",
       "store_run_id": 44093493317,
       "store_artifact": {
