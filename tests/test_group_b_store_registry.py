@@ -74,6 +74,7 @@ class GroupBStoreRegistryTests(unittest.TestCase):
                 self.assertEqual(product["architecture"], "x64")
                 self.assertEqual(product["version"], "1.0.0.0")
                 self.assertGreaterEqual(len(product["local_only_checks"]), 3)
+                self.assertTrue(product["workflow_name"].strip())
 
     def test_unknown_product_is_rejected(self):
         with self.assertRaisesRegex(ValueError, "unknown Group B product_id"):
