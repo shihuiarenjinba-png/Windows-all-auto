@@ -8,7 +8,7 @@ publish.
 
 ## Inputs and evidence
 
-The input schema is `store-preupload-gate-input/1`. Every evaluation requires:
+The input schema is `store-preupload-gate-input/2`. Every evaluation requires:
 
 - the exact local package path and expected SHA-256;
 - immutable Store ID, Identity, Publisher, Version, Architecture, source SHA,
@@ -17,18 +17,14 @@ The input schema is `store-preupload-gate-input/1`. Every evaluation requires:
   `existing-store-initial-submission-reconcile-receipt/1`;
 - explicit evidence that every required Partner Center section was inspected;
 - an explicit Store-assets readiness decision.
+- an exact confirmed JPY price value;
+- a confirmed Private Audience Known User Group;
+- owner confirmation of the personal-data and runFullTrust answers;
+- a read-only reload reconciliation with no unexpected write observed.
 
 The evaluator re-hashes the local package during each run. It never trusts a
 previous hash receipt as a substitute for checking the bytes that would be
 uploaded.
-
-If merely opening/rendering a Partner Center section changes its Overview state
-(for example Pricing becoming `In progress` without an explicit Save), the input
-must set `store_fields.read_only_ui_state_changed=true`. The gate then remains
-fail-closed until a reload/reopen reconciliation proves the read-only observation
-did not become an unintended persisted write by setting
-`store_fields.read_only_reload_reconciled=true`. A visual state change alone is
-never treated as proof of a write or proof of a successful Save.
 
 ## Deterministic result priority
 
@@ -39,8 +35,11 @@ The first matching result is returned in this order:
 3. `HOLD_SUBMISSION_RECONCILE_REQUIRED`
 4. `HOLD_EXACT_PACKAGE_MISMATCH`
 5. `HOLD_STORE_ASSETS`
-6. `HOLD_UNKNOWN_PARTNER_CENTER_STATE`
-7. `READY_FOR_MSIX_UPLOAD_APPROVAL`
+6. `HOLD_EXACT_PRICE_TIER_UNCONFIRMED`
+7. `HOLD_PRIVATE_AUDIENCE_GROUP_REQUIRED`
+8. `HOLD_OWNER_SECURITY_CONFIRMATION_REQUIRED`
+9. `HOLD_UNKNOWN_PARTNER_CENTER_STATE`
+10. `READY_FOR_MSIX_UPLOAD_APPROVAL`
 
 `READY_FOR_MSIX_UPLOAD_APPROVAL` is an approval boundary, not upload
 authorization. A separate authorized workflow must still perform the upload
@@ -62,50 +61,15 @@ python scripts/evaluate_store_preupload_gate.py `
   --output C:\path\to\store-preupload-gate-receipt.json
 ```
 
-The output uses schema `store-preupload-gate-receipt/1`. Store the receipt
+The output uses schema `store-preupload-gate-receipt/2`. Store the receipt
 beside the product's other package-bound preflight evidence.
-
-## One-command local conveyor receipt
-
-On Windows, `scripts/run_store_preupload_readiness.ps1` is the generic local
-entrypoint. It first performs the cheap frozen-file/Draft check, then unpacks
-the same MSIX and verifies its Manifest Identity and main EXE SHA. Finally,
-`scripts/finalize_store_preupload_receipt.py` binds both results into
-`store-preupload-readiness.json`.
-
-The final receipt includes `immutable_binding`, `static_preflight`, and
-`store_actions`. `READY_FOR_MSIX_UPLOAD_APPROVAL` is emitted only when the
-same machine-readable receipt proves that the package was not rebuilt, no
-security bypass was used, and upload/certification/publish were not executed.
-For a frozen source followed only by metadata commits, pass
-`-SourceCheckoutMode ContainedCommit`. Do not pass `-RunSelfTest` for a product
-whose exact unsigned executable already has a recorded Application Control
-block.
-
-The preceding local artifact pull can also persist its verification result:
-
-```powershell
-python scripts/local_handoff_pull.py `
-  --target C:\path\to\local-qa-inbox `
-  --receipt C:\path\to\evidence\artifact-pull-receipt.json
-```
-
-The immutable `local-exact-artifact-pull-receipt/1` records the GitHub run,
-artifact name, exact local package path/size/SHA, source repository/SHA and
-Identity for every newly staged package. It records `package_rebuilt=false`,
-`security_bypass_used=false`, and `submitted_to_store=0`; an existing receipt
-is never overwritten.
 
 ## Folder Automation Engine example
 
-As of the current checked-in handoff, the exact frozen
-`FolderAutomationEngine_1.0.0.0_x64_StoreDraft_UNSIGNED.msix` re-hashes to the
-expected SHA-256, but no recovered Draft ID/URL has yet been bound into the handoff.
-Therefore the correct fail-closed state is
-`HOLD_SUBMISSION_RECONCILE_REQUIRED` until the Store execution owner supplies a
-read-only reconciliation receipt with status
-`INITIAL_SUBMISSION_DRAFT_PRESENT_RECOVERED`.
-
-Only after that receipt is validated and bound may later gates such as Store assets
-be evaluated. No Partner Center write is performed by this local pre-upload gate.
+The 2026-11-17 read-only reconciliation found the existing Draft for Store ID
+`9P99MJX1R4V6` and preserved its numeric Draft ID. The exact frozen
+`FolderAutomationEngine_1.0.0.0_x64_StoreDraft_UNSIGNED.msix` re-hashed to the
+expected SHA-256. Two deterministic application-window screenshot candidates
+exist, but owner visual approval is false, so the gate correctly returns
+`HOLD_STORE_ASSETS`. No Partner Center write is performed.
 
