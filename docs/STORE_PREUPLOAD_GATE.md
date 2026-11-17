@@ -22,6 +22,14 @@ The evaluator re-hashes the local package during each run. It never trusts a
 previous hash receipt as a substitute for checking the bytes that would be
 uploaded.
 
+If merely opening/rendering a Partner Center section changes its Overview state
+(for example Pricing becoming `In progress` without an explicit Save), the input
+must set `store_fields.read_only_ui_state_changed=true`. The gate then remains
+fail-closed until a reload/reopen reconciliation proves the read-only observation
+did not become an unintended persisted write by setting
+`store_fields.read_only_reload_reconciled=true`. A visual state change alone is
+never treated as proof of a write or proof of a successful Save.
+
 ## Deterministic result priority
 
 The first matching result is returned in this order:
