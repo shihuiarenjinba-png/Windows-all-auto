@@ -12,6 +12,7 @@ import json
 from pathlib import Path
 import subprocess
 import sys
+from urllib.parse import quote
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -40,16 +41,86 @@ def load_product(registry: Path, product_id: str) -> dict:
         "version",
         "architecture",
         "workflow_name",
+        "source_ref",
     ):
         if not isinstance(product.get(key), str) or not product[key].strip():
             raise ValueError(f"Group B product entry missing {key}")
     return product
 
 
+def gh_json(endpoint: str) -> dict:
+    result = subprocess.run(
+        ["gh", "api", "-X", "GET", endpoint],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        timeout=120,
+        check=False,
+    )
+    if result.returncode != 0:
+        raise ValueError("GitHub API lookup failed")
+    value = json.loads(result.stdout)
+    if not isinstance(value, dict):
+        raise ValueError("GitHub API returned invalid JSON")
+    return value
+
+
+def select_exact_successful_run(
+    runs: list[dict],
+    *,
+    head_sha: str,
+    workflow_name: str,
+) -> int:
+    matches = [
+        run
+        for run in runs
+        if isinstance(run, dict)
+        and run.get("head_sha") == head_sha
+        and run.get("name") == workflow_name
+        and run.get("status") == "completed"
+        and run.get("conclusion") == "success"
+        and type(run.get("id")) is int
+        and run["id"] > 0
+    ]
+    if not matches:
+        raise ValueError("no exact-head successful Store artifact workflow run")
+    if len(matches) != 1:
+        raise ValueError(
+            "multiple exact-head successful Store runs; specify --run-id explicitly"
+        )
+    return matches[0]["id"]
+
+
+def discover_run_id(product: dict) -> int:
+    repository = product["repository_full_name"]
+    source_ref = product["source_ref"]
+    commit = gh_json(
+        f"repos/{repository}/commits/{quote(source_ref, safe='')}"
+    )
+    head_sha = str(commit.get("sha") or "")
+    if len(head_sha) != 40:
+        raise ValueError("registered source_ref did not resolve to a commit")
+    response = gh_json(
+        f"repos/{repository}/actions/runs?branch={quote(source_ref, safe='')}&status=success&per_page=100"
+    )
+    runs = response.get("workflow_runs")
+    if not isinstance(runs, list):
+        raise ValueError("GitHub Actions run listing is invalid")
+    return select_exact_successful_run(
+        runs,
+        head_sha=head_sha,
+        workflow_name=product["workflow_name"],
+    )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--product-id", required=True)
-    parser.add_argument("--run-id", required=True, type=int)
+    parser.add_argument(
+        "--run-id",
+        type=int,
+        help="Exact successful Store workflow run. Omit to discover a unique exact-head SUCCESS run.",
+    )
     parser.add_argument("--target-root", required=True, type=Path)
     parser.add_argument("--receipt", required=True, type=Path)
     parser.add_argument("--registry", type=Path, default=DEFAULT_REGISTRY)
@@ -57,13 +128,16 @@ def main() -> int:
 
     try:
         product = load_product(args.registry, args.product_id)
+        run_id = args.run_id if args.run_id is not None else discover_run_id(product)
+        if run_id <= 0:
+            raise ValueError("run-id must be positive")
         cmd = [
             sys.executable,
             str(ROOT / "scripts" / "pull_store_product_artifact.py"),
             "--repo",
             product["repository_full_name"],
             "--run-id",
-            str(args.run_id),
+            str(run_id),
             "--artifact-name",
             product["artifact_name"],
             "--target-root",
@@ -91,7 +165,8 @@ def main() -> int:
                     "product_id": args.product_id,
                     "store_id": product["store_id"],
                     "identity_name": product["identity_name"],
-                    "run_id": args.run_id,
+                    "run_id": run_id,
+                    "run_id_source": "explicit" if args.run_id is not None else "exact_head_discovery",
                     "receipt": str(args.receipt),
                     "submitted_to_store": False,
                 },
