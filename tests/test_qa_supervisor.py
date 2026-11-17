@@ -306,10 +306,29 @@ class SupervisorTests(unittest.TestCase):
             state["repair_return"]["status"],
             "GITHUB_REPAIR_READBACK_VERIFIED",
         )
+        handoff = json.loads(result.handoff_path.read_text())
+        self.assertEqual(handoff["failure_class"], "TIMEOUT")
         manifest = json.loads(
             (self.store.runs / result.run_ids[0] / "manifest.json").read_text()
         )
         self.assertTrue(manifest["timed_out"])
+
+    def test_nonzero_exit_is_deterministically_classified_for_repair(self):
+        self.artifact.write_text("raise SystemExit(17)\n", encoding="utf-8")
+        self.job["artifact_sha256"] = hashlib.sha256(
+            self.artifact.read_bytes()
+        ).hexdigest()
+        result = self.supervisor([
+            plan(["ARTIFACT_HASH"]), plan(["PROCESS_START"]),
+            plan([], stop="Failure evidence captured."),
+        ], transport=AckTransport()).run(
+            job=self.job, artifact_path=self.artifact, intake_root=self.intake,
+        )
+        self.assertEqual(result.test_status, "TEST_FAIL")
+        self.assertEqual(result.evidence_return_status, "GITHUB_READBACK_VERIFIED")
+        handoff = json.loads(result.handoff_path.read_text())
+        self.assertEqual(handoff["failed_test_ids"], ["PROCESS_START"])
+        self.assertEqual(handoff["failure_class"], "NONZERO_EXIT")
 
     def test_planner_unavailable_preserves_fail_closed_state(self):
         result = self.supervisor([None], transport=None).run(

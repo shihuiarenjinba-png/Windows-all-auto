@@ -608,6 +608,14 @@ class QASupervisor:
                     ),
                 )
                 analysis_status = "DISABLED"
+                if result.status != "TEST_PASS":
+                    if result.timed_out:
+                        analysis_failure_class = "TIMEOUT"
+                    elif (result.exit_code is not None and
+                          result.exit_code not in item.definition.expected_exit_codes):
+                        analysis_failure_class = "NONZERO_EXIT"
+                    elif item.definition.test_id == "PROCESS_START":
+                        analysis_failure_class = "PROCESS_START_FAILED"
                 if self.analyzer is not None:
                     analysis = analyze_run(
                         self.store, result.run_directory, engine=self.analyzer,
