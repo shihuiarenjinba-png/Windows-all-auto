@@ -45,6 +45,36 @@ class GroupBConveyorCheckpointTests(unittest.TestCase):
         self.assertEqual(len(folder["frozen_msix_sha256"]), 64)
         self.assertEqual(len(folder["frozen_exe_sha256"]), 64)
 
+    def test_scheduled_checkpoint_is_static_pass_gui_pending(self):
+        scheduled = self.checkpoint["products"]["scheduled-api-runner"]
+        self.assertEqual(
+            scheduled["conveyor_state"],
+            "PASS_STATIC_ONLY_GUI_PENDING",
+        )
+        local = scheduled["local_confirmation"]
+        self.assertEqual(local["status"], "PASS_STATIC_ONLY_GUI_PENDING")
+        self.assertTrue(local["artifact_receipt_verified"])
+        self.assertTrue(local["evidence_rerun_refused_and_hashes_unchanged"])
+        self.assertEqual(local["makeappx_unpack"], "PASS")
+        self.assertEqual(
+            local["manifest_identity_publisher_version_architecture"],
+            "PASS",
+        )
+        self.assertEqual(local["unpacked_exe_hash"], "PASS")
+        self.assertEqual(local["defender_exact_msix"], "NO_THREATS")
+        self.assertEqual(local["defender_exact_exe"], "NO_THREATS")
+        self.assertEqual(local["authenticode_msix"], "NotSigned")
+        self.assertEqual(local["authenticode_exe"], "NotSigned")
+        self.assertTrue(local["github_ci_primary"])
+        self.assertFalse(local["local_full_suite_run"])
+        self.assertEqual(local["qa_template_status"], "HOLD")
+        self.assertFalse(local["gui_launch_attempted"])
+        self.assertTrue(local["action_time_confirmation_required"])
+        self.assertEqual(
+            local["next_action"],
+            "ONE_SHOT_NORMAL_USER_EXE_LAUNCH",
+        )
+
     def test_direct_product_snapshot_matches_registry_routes(self):
         products = self.checkpoint["products"]
         registry = self.registry["products"]
