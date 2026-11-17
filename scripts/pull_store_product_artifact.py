@@ -67,10 +67,16 @@ def main() -> int:
     parser.add_argument("--expected-identity-name")
     parser.add_argument("--expected-version")
     parser.add_argument("--expected-architecture")
+    parser.add_argument("--expected-workflow-name")
     args = parser.parse_args()
 
     try:
         run = verify_run(args.repo, args.run_id)
+        if args.expected_workflow_name is not None:
+            if not args.expected_workflow_name.strip():
+                raise ProductArtifactPullError("expected workflow name is empty")
+            if run["workflow_name"] != args.expected_workflow_name:
+                raise ProductArtifactPullError("workflow name does not match central registry")
         with tempfile.TemporaryDirectory(prefix="store-product-artifact-") as td:
             root = Path(td)
             gh(
