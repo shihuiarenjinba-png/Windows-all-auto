@@ -25,7 +25,7 @@ def plan():
             {
                 "step_id":"process_start","test_id":"PROCESS_START","required":True,
                 "requires":["artifact_hash"],"purpose":"Launch exact product.",
-                "parameters":{"observation_seconds":5},"evidence":["exit_code"],
+                "parameters":{},"evidence":["exit_code"],
                 "on_fail":"STOP_AND_RETURN"
             },
             {
