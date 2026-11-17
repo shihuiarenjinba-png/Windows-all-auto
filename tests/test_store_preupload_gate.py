@@ -52,7 +52,7 @@ class StorePreuploadGateTests(unittest.TestCase):
             "package_file_name": self.package.name,
         }
         self.payload = {
-            "schema_version": "store-preupload-gate-input/1",
+            "schema_version": "store-preupload-gate-input/2",
             "package_path": str(self.package),
             "expected": expected,
             "observed": copy.deepcopy(expected),
@@ -68,7 +68,29 @@ class StorePreuploadGateTests(unittest.TestCase):
                 "submission_options": True,
                 "unknown_partner_center_state": False,
             },
-            "assets": {"ready": True},
+            "assets": {
+                "ready": True,
+                "owner_visual_approval": True,
+            },
+            "commercial": {
+                "currency": "JPY",
+                "price_confirmed": True,
+                "exact_partner_center_price_value": "JPY 500",
+            },
+            "distribution": {
+                "audience": "PRIVATE_AUDIENCE_TEST",
+                "known_user_group": "Folder pilot testers",
+                "known_user_group_confirmed": True,
+            },
+            "security": {
+                "owner_confirmation_complete": True,
+                "personal_data_answer_confirmed": True,
+                "run_full_trust_explanation_owner_confirmed": True,
+            },
+            "read_only_reconciliation": {
+                "read_only_reload_reconciled": True,
+                "unexpected_write_observed": False,
+            },
         }
 
     def status(self, payload=None):
@@ -125,22 +147,31 @@ class StorePreuploadGateTests(unittest.TestCase):
         broken["store_fields"]["pricing"] = False
         self.assertEqual(self.status(broken), "HOLD_STORE_ASSETS")
 
-    def test_read_only_ui_state_change_requires_reload_reconcile(self):
+    def test_asset_directory_is_not_owner_approval(self):
         broken = copy.deepcopy(self.payload)
-        broken["store_fields"]["read_only_ui_state_changed"] = True
-        broken["store_fields"]["read_only_reload_reconciled"] = False
-        receipt = evaluate_store_preupload_gate(broken)
-        self.assertEqual(receipt["status"], "HOLD_UNKNOWN_PARTNER_CENTER_STATE")
-        self.assertTrue(receipt["read_only_reconciliation_required"])
-        self.assertFalse(receipt["write_performed"])
+        broken["assets"]["owner_visual_approval"] = False
+        self.assertEqual(self.status(broken), "HOLD_STORE_ASSETS")
 
-    def test_read_only_ui_state_change_can_clear_after_reload_reconcile(self):
-        observed = copy.deepcopy(self.payload)
-        observed["store_fields"]["read_only_ui_state_changed"] = True
-        observed["store_fields"]["read_only_reload_reconciled"] = True
-        receipt = evaluate_store_preupload_gate(observed)
-        self.assertEqual(receipt["status"], "READY_FOR_MSIX_UPLOAD_APPROVAL")
-        self.assertFalse(receipt["write_performed"])
+    def test_exact_jpy_price_is_required(self):
+        broken = copy.deepcopy(self.payload)
+        broken["commercial"]["price_confirmed"] = False
+        self.assertEqual(
+            self.status(broken), "HOLD_EXACT_PRICE_TIER_UNCONFIRMED"
+        )
+
+    def test_private_audience_group_is_required(self):
+        broken = copy.deepcopy(self.payload)
+        broken["distribution"]["known_user_group"] = None
+        self.assertEqual(
+            self.status(broken), "HOLD_PRIVATE_AUDIENCE_GROUP_REQUIRED"
+        )
+
+    def test_owner_security_confirmation_is_required(self):
+        broken = copy.deepcopy(self.payload)
+        broken["security"]["personal_data_answer_confirmed"] = False
+        self.assertEqual(
+            self.status(broken), "HOLD_OWNER_SECURITY_CONFIRMATION_REQUIRED"
+        )
 
     def test_unknown_partner_center_state(self):
         broken = copy.deepcopy(self.payload)
@@ -148,6 +179,20 @@ class StorePreuploadGateTests(unittest.TestCase):
         receipt = evaluate_store_preupload_gate(broken)
         self.assertEqual(receipt["status"], "HOLD_UNKNOWN_PARTNER_CENTER_STATE")
         self.assertEqual(receipt["unread_sections"], ["pricing"])
+
+    def test_read_only_reload_must_be_reconciled(self):
+        broken = copy.deepcopy(self.payload)
+        broken["read_only_reconciliation"]["read_only_reload_reconciled"] = False
+        self.assertEqual(
+            self.status(broken), "HOLD_UNKNOWN_PARTNER_CENTER_STATE"
+        )
+
+    def test_unexpected_write_observation_holds(self):
+        broken = copy.deepcopy(self.payload)
+        broken["read_only_reconciliation"]["unexpected_write_observed"] = True
+        self.assertEqual(
+            self.status(broken), "HOLD_UNKNOWN_PARTNER_CENTER_STATE"
+        )
 
 
 if __name__ == "__main__":
