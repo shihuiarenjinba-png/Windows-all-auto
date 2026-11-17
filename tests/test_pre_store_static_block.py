@@ -137,6 +137,92 @@ class PreStoreStaticBlockReceiptTests(unittest.TestCase):
             )
 
 
+class CodeIntegrityCanonicalEvidenceCliTests(unittest.TestCase):
+    def test_cli_records_detailed_metadata_and_exact_flat_hash_binding(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            raw = root / "raw.json"
+            raw.write_text('{"raw": true}\n', encoding="utf-8")
+            output = root / "canonical.json"
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(ROOT / "scripts" / "create_code_integrity_block_evidence.py"),
+                    "--exe-sha256",
+                    "c" * 64,
+                    "--event-id",
+                    "3033",
+                    "--event-id",
+                    "3077",
+                    "--event-id",
+                    "3118",
+                    "--policy-name",
+                    "VerifiedAndReputableDesktop",
+                    "--policy-guid",
+                    "{0283ac0f-fff1-49ae-ada1-8a933130cad6}",
+                    "--correlation-activity-id",
+                    "{2f3574e4-74dd-0008-cd37-9c3add74dd01}",
+                    "--policy-id",
+                    "27555.1000.240208",
+                    "--status-code",
+                    "0xc0e90002",
+                    "--event-flat-hash",
+                    "c" * 64,
+                    "--raw-evidence",
+                    str(raw),
+                    "--output",
+                    str(output),
+                ],
+                cwd=ROOT,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            data = json.loads(output.read_text(encoding="utf-8"))
+            self.assertEqual(
+                data["correlation_activity_id"],
+                "{2f3574e4-74dd-0008-cd37-9c3add74dd01}",
+            )
+            self.assertEqual(data["policy_id"], "27555.1000.240208")
+            self.assertEqual(data["status_code"], "0xc0e90002")
+            self.assertEqual(data["event_flat_hash"], "c" * 64)
+            self.assertTrue(data["event_flat_hash_matches_exe_sha256"])
+            self.assertEqual(data["blocking_event_ids"], [3033, 3077])
+            self.assertEqual(data["supplemental_event_ids"], [3118])
+            self.assertTrue(data["raw_evidence_sha256"])
+
+    def test_cli_rejects_flat_hash_not_matching_exact_exe(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            output = root / "canonical.json"
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(ROOT / "scripts" / "create_code_integrity_block_evidence.py"),
+                    "--exe-sha256",
+                    "c" * 64,
+                    "--event-id",
+                    "3077",
+                    "--policy-name",
+                    "VerifiedAndReputableDesktop",
+                    "--policy-guid",
+                    "{0283ac0f-fff1-49ae-ada1-8a933130cad6}",
+                    "--event-flat-hash",
+                    "d" * 64,
+                    "--output",
+                    str(output),
+                ],
+                cwd=ROOT,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("event-flat-hash must match", result.stderr + result.stdout)
+            self.assertFalse(output.exists())
+
+
 class FinalizeApplicationControlBlockLaneTests(unittest.TestCase):
     def test_cli_atomically_builds_reconciliation_static_receipt_and_bound_handoff(self):
         launch = {
