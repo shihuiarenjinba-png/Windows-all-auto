@@ -25,7 +25,7 @@
     "scheduled-api-runner": {
       "repository_full_name": "shihuiarenjinba-png/scheduled-api-runner",
       "pr_number": 8,
-      "head_sha": "0c2a38ff8c7d5311b115e67387deaed2ce11a523",
+      "head_sha": "3035e1ce2e4fd64427600eaba4c4d98b698b1fd8",
       "store_workflow_name": "Windows desktop / Windowsデスクトップ",
       "store_run_id": 44093493317,
       "store_artifact": {
@@ -101,9 +101,11 @@
         "dpi_matrix": "NOT_TESTED",
         "https_get": "NOT_TESTED",
         "task_scheduler_lifecycle": "NOT_TESTED",
-        "next_action": "STORE_SIGNED_PRIVATE_GUI_QA"
+        "next_action": "CREATE_AND_BIND_PRE_STORE_STATIC_BLOCK_RECEIPT",
+        "reconciliation_receipt_required": true,
+        "pre_store_static_block_receipt_required": true
       },
-      "next_dependency": "Store execution owner provides Microsoft Store-signed Private distribution path for zero-cost physical QA"
+      "next_dependency": "Code owner creates immutable launch reconciliation + pre-store static block receipt, then Store execution owner provides Microsoft Store-signed Private zero-cost QA path"
     },
     "workflow-automation-hub": {
       "repository_full_name": "shihuiarenjinba-png/workflow-automation-hub",
@@ -166,6 +168,8 @@
     "code_integrity_block_ids": [
       3033,
       3077
-    ]
+    ],
+    "delayed_code_integrity_reconciliation_enabled": true,
+    "pre_store_static_block_receipt_from_immutable_evidence_enabled": true
   }
 }
