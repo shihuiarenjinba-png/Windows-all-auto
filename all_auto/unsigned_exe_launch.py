@@ -14,6 +14,7 @@ SCHEMA = "unsigned-exe-launch-receipt/1"
 PASS = "PASS_NORMAL_EXIT"
 HOLD_STATUSES = {
     "STARTED_NOT_CLOSED_WITHIN_WINDOW",
+    "EXITED_NONZERO",
     "APPLICATION_CONTROL_BLOCKED",
     "LAUNCH_FAILED",
 }
@@ -82,6 +83,16 @@ def validate_unsigned_exe_launch_receipt(
         if process_started is not True or normal_exit is not False or exit_code is not None:
             raise UnsignedExeLaunchReceiptError(
                 "running-window HOLD has inconsistent process evidence"
+            )
+    elif status == "EXITED_NONZERO":
+        if (
+            process_started is not True
+            or normal_exit is not False
+            or type(exit_code) is not int
+            or exit_code == 0
+        ):
+            raise UnsignedExeLaunchReceiptError(
+                "nonzero-exit HOLD has inconsistent process evidence"
             )
     elif status == "APPLICATION_CONTROL_BLOCKED":
         if process_started is not False or normal_exit is not False:
