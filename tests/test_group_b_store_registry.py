@@ -188,6 +188,61 @@ class GroupBStoreRegistryTests(unittest.TestCase):
                     head_sha="a" * 40,
                 )
 
+    def test_scheduled_locally_verified_candidate_is_frozen(self):
+        product = MODULE.load_product(
+            ROOT / "ops" / "group_b_standard_store_products.json",
+            "scheduled-api-runner",
+        )
+        frozen = MODULE.get_frozen_candidate(product)
+        self.assertIsNotNone(frozen)
+        self.assertEqual(
+            frozen["source_sha"],
+            "28ef873ab2ff325b8f26c61a9ba48701280e8290",
+        )
+        self.assertEqual(frozen["store_run_id"], 44093493317)
+        self.assertEqual(frozen["artifact_id"], 14333575447)
+        self.assertTrue(frozen["local_static_verified"])
+        self.assertTrue(frozen["promotion_requires_new_local_static_verification"])
+
+    def test_invalid_frozen_candidate_fails_closed(self):
+        product = MODULE.load_product(
+            ROOT / "ops" / "group_b_standard_store_products.json",
+            "scheduled-api-runner",
+        )
+        product = dict(product)
+        product["frozen_candidate"] = {"local_static_verified": False}
+        with self.assertRaisesRegex(ValueError, "not locally static-verified"):
+            MODULE.get_frozen_candidate(product)
+
+    def test_frozen_candidate_run_must_match_frozen_source(self):
+        product = MODULE.load_product(
+            ROOT / "ops" / "group_b_standard_store_products.json",
+            "scheduled-api-runner",
+        )
+        frozen = MODULE.get_frozen_candidate(product)
+        run = {
+            "head_sha": frozen["source_sha"],
+            "name": product["workflow_name"],
+            "status": "completed",
+            "conclusion": "success",
+        }
+        with patch.object(MODULE, "gh_json", return_value=run):
+            MODULE.require_run_matches_source(
+                product,
+                run_id=frozen["store_run_id"],
+                source_sha=frozen["source_sha"],
+            )
+
+        stale = dict(run)
+        stale["head_sha"] = "0" * 40
+        with patch.object(MODULE, "gh_json", return_value=stale):
+            with self.assertRaisesRegex(ValueError, "required candidate source SHA"):
+                MODULE.require_run_matches_source(
+                    product,
+                    run_id=frozen["store_run_id"],
+                    source_sha=frozen["source_sha"],
+                )
+
     def test_unknown_product_is_rejected(self):
         with self.assertRaisesRegex(ValueError, "unknown Group B product_id"):
             MODULE.load_product(
