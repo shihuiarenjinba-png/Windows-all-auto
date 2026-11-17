@@ -51,6 +51,12 @@ A QA receipt cannot be reused for another source/package.
 The intended production signing route is the Microsoft Store's MSIX signing path.
 Do not introduce a paid CA certificate merely to satisfy these Store releases.
 
+The GAME pipeline was reviewed for reusable safety principles only. Reuse its
+immutable-artifact binding, exact SHA/source provenance, check-only staging,
+Code-Integrity non-bypass rule, and separation of signing from physical QA. Do not
+copy GDK/MSIXVC packaging, CAS, Xbox sandbox, or game-specific submission mechanics
+into this standard App route.
+
 If an owner-controlled Windows QA device naturally runs the exact unsigned test
 bytes, complete physical QA before Store submission as usual. If Windows Application
 Control blocks those exact unsigned bytes, treat that as an environment HOLD rather
@@ -71,8 +77,25 @@ The Private-audience publish is not the same approval as package upload,
 certification submission, or later Public publication. Do not infer any of those
 approvals from this document.
 
+For Folder, which is intended to be paid, Private audience does not by itself make
+the acquisition free. Never pay the app price merely to execute signed QA.
+
+After the initial Private-audience submission is published, prefer this zero-cost
+acquisition order:
+
+1. use a Partner Center promotional code if the published app exposes that option;
+2. otherwise use the configured Store free trial only if the live Store offers the
+   tester a zero-cost install;
+3. otherwise create a separately owner-approved temporary Free Private-beta
+   submission, perform signed QA, then restore paid one-time + 7-day trial in a later
+   submission before Public release.
+
+The signed-QA receipt must record a zero-cost acquisition method and
+`acquisition_cost_paid=false`.
+
 For subsequent updates, a Package flight may be used as the limited-audience signed
-test path before broad release.
+test path before broad release. A flight is not the first-install solution because
+flight members must already have the app.
 
 ### No-purchase signed QA for paid Private-audience products
 
