@@ -82,6 +82,20 @@ For a frozen source followed only by metadata commits, pass
 whose exact unsigned executable already has a recorded Application Control
 block.
 
+The preceding local artifact pull can also persist its verification result:
+
+```powershell
+python scripts/local_handoff_pull.py `
+  --target C:\path\to\local-qa-inbox `
+  --receipt C:\path\to\evidence\artifact-pull-receipt.json
+```
+
+The immutable `local-exact-artifact-pull-receipt/1` records the GitHub run,
+artifact name, exact local package path/size/SHA, source repository/SHA and
+Identity for every newly staged package. It records `package_rebuilt=false`,
+`security_bypass_used=false`, and `submitted_to_store=0`; an existing receipt
+is never overwritten.
+
 ## Folder Automation Engine example
 
 The 2026-11-17 read-only reconciliation found the existing Draft for Store ID
