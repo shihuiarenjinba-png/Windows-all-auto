@@ -72,6 +72,131 @@ class UnsignedExeLaunchReceiptTests(unittest.TestCase):
         with self.assertRaisesRegex(UnsignedExeLaunchReceiptError, "exactly 1"):
             validate_unsigned_exe_launch_receipt(receipt, expected_exe_sha256=SHA)
 
+    def test_delayed_code_integrity_reconciliation_preserves_original_and_blocks(self):
+        launch = base_receipt("LAUNCH_FAILED")
+        evidence = {
+            "schema_version": "code-integrity-block-evidence/1",
+            "exe_sha256": SHA,
+            "launch_attempts": 1,
+            "process_started": False,
+            "event_ids": [3033, 3077, 3118],
+            "policy_name": "VerifiedAndReputableDesktop",
+            "policy_guid": "{0283ac0f-fff1-49ae-ada1-8a933130cad6}",
+            "security_bypass_used": False,
+            "security_policy_modified": False,
+            "certificate_store_modified": False,
+            "alternate_bypass_used": False,
+            "msix_installed": False,
+            "partner_center_write_performed": False,
+            "package_uploaded": False,
+            "certification_submitted": False,
+            "published": False,
+        }
+        reconciled = reconcile_delayed_application_control_evidence(
+            launch,
+            evidence,
+            expected_exe_sha256=SHA,
+        )
+        self.assertEqual(
+            reconciled["schema_version"],
+            "unsigned-exe-launch-reconciliation-receipt/1",
+        )
+        self.assertEqual(reconciled["status"], "APPLICATION_CONTROL_BLOCKED")
+        self.assertEqual(reconciled["original_launch_status"], "LAUNCH_FAILED")
+        self.assertEqual(reconciled["blocking_event_ids"], [3033, 3077])
+        self.assertTrue(reconciled["original_receipt_preserved"])
+        self.assertFalse(reconciled["second_launch_performed"])
+        self.assertFalse(reconciled["local_final_qa_pass"])
+        self.assertFalse(reconciled["store_actions_authorized"])
+
+        validated = validate_unsigned_exe_launch_reconciliation_receipt(
+            reconciled,
+            expected_exe_sha256=SHA,
+        )
+        self.assertEqual(validated["status"], "APPLICATION_CONTROL_BLOCKED")
+
+    def test_delayed_code_integrity_reconciliation_rejects_wrong_or_nonblocking_evidence(self):
+        launch = base_receipt("LAUNCH_FAILED")
+        evidence = {
+            "schema_version": "code-integrity-block-evidence/1",
+            "exe_sha256": "1" * 64,
+            "launch_attempts": 1,
+            "process_started": False,
+            "event_ids": [3033],
+            "policy_name": "VerifiedAndReputableDesktop",
+            "policy_guid": "{0283ac0f-fff1-49ae-ada1-8a933130cad6}",
+            "security_bypass_used": False,
+            "security_policy_modified": False,
+            "certificate_store_modified": False,
+            "alternate_bypass_used": False,
+            "msix_installed": False,
+            "partner_center_write_performed": False,
+            "package_uploaded": False,
+            "certification_submitted": False,
+            "published": False,
+        }
+        with self.assertRaisesRegex(UnsignedExeLaunchReceiptError, "SHA256 mismatch"):
+            reconcile_delayed_application_control_evidence(
+                launch,
+                evidence,
+                expected_exe_sha256=SHA,
+            )
+
+        evidence["exe_sha256"] = SHA
+        evidence["event_ids"] = [3118]
+        with self.assertRaisesRegex(UnsignedExeLaunchReceiptError, "3033/3077"):
+            reconcile_delayed_application_control_evidence(
+                launch,
+                evidence,
+                expected_exe_sha256=SHA,
+            )
+
+    def test_reconciled_block_evidence_binds_but_never_unlocks_full_qa(self):
+        qa = {
+            "schema_version": "local-final-qa-receipt/1",
+            "status": "HOLD",
+            "product_specific_acceptance_passed": False,
+            "normal_exit_passed": False,
+            "package_rebuilt": False,
+            "security_bypass_used": False,
+        }
+        launch = base_receipt("LAUNCH_FAILED")
+        evidence = {
+            "schema_version": "code-integrity-block-evidence/1",
+            "exe_sha256": SHA,
+            "launch_attempts": 1,
+            "process_started": False,
+            "event_ids": [3033, 3077],
+            "policy_name": "VerifiedAndReputableDesktop",
+            "policy_guid": "{0283ac0f-fff1-49ae-ada1-8a933130cad6}",
+            "security_bypass_used": False,
+            "security_policy_modified": False,
+            "certificate_store_modified": False,
+            "alternate_bypass_used": False,
+            "msix_installed": False,
+            "partner_center_write_performed": False,
+            "package_uploaded": False,
+            "certification_submitted": False,
+            "published": False,
+        }
+        reconciled = reconcile_delayed_application_control_evidence(
+            launch,
+            evidence,
+            expected_exe_sha256=SHA,
+        )
+        bound = bind_unsigned_launch_to_local_qa(
+            qa,
+            reconciled,
+            expected_exe_sha256=SHA,
+        )
+        self.assertEqual(bound["status"], "HOLD")
+        self.assertFalse(bound["product_specific_acceptance_passed"])
+        self.assertFalse(bound["normal_exit_passed"])
+        self.assertEqual(
+            bound["unsigned_exe_launch"]["status"],
+            "APPLICATION_CONTROL_BLOCKED",
+        )
+
     def test_bind_never_unlocks_full_local_qa(self):
         qa = {
             "schema_version": "local-final-qa-receipt/1",
