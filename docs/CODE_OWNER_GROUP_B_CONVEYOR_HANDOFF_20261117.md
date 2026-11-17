@@ -248,12 +248,22 @@ Store artifact from that run:
 - digest:
   `sha256:b45d53a0473f5b8cdcac64c1ffdcf12957919da2e5cb846564344d757165afa7`
 
-Local-only focus:
+Current local state:
 
-- real JP/EN GUI;
-- real OS DPI 100/125/150;
-- authorized non-production HTTPS GET;
-- Windows Task Scheduler lifecycle.
+`PASS_STATIC_ONLY_GUI_PENDING`
+
+Static confirmation is complete and must not be repeated unless evidence integrity is
+lost. The QA template remains `HOLD`.
+
+Next local-only sequence after action-time approval:
+
+1. one normal-user launch attempt of the frozen exact EXE;
+2. JP/EN GUI + normal exit;
+3. real OS DPI 100/125/150;
+4. authorized non-production HTTPS GET using an owner-approved endpoint only;
+5. Windows Task Scheduler register -> run -> verify -> unregister.
+
+Do not invent an endpoint and do not contact production systems merely to complete QA.
 
 ### Workflow Automation Hub
 
@@ -318,22 +328,25 @@ Do not flip that flag from file existence alone.
 
 Work in this order.
 
-### P0 — validate the new direct artifact path on real local Windows
+### P0 — Scheduled exact artifact/static lane is already complete
 
-Use **Scheduled API Runner first** because it is the smallest of the three direct-pull
-products.
+Do **not** repeat Scheduled artifact staging or static confirmation. The local report
+has already established:
 
-Run the one-command local confirmation workspace against its current exact HEAD.
-Confirm:
+- state: `PASS_STATIC_ONLY_GUI_PENDING`;
+- artifact receipt verified against the frozen candidate;
+- repeated workspace/receipt/template creation refused and prior evidence hashes
+  remained unchanged;
+- MakeAppx unpack PASS;
+- Manifest Identity / Publisher / Version / Architecture PASS;
+- unpacked EXE SHA PASS;
+- Defender custom scan reported no threats for the exact MSIX and EXE;
+- Authenticode is `NotSigned` for both, which is expected for the unsigned draft;
+- GitHub CI remains primary and no full local suite was duplicated;
+- QA template remains `HOLD`.
 
-- auto-discovered run is the exact registered Store workflow;
-- artifact archive ID/digest are persisted;
-- exact MSIX/handoff/validation/checksum are staged;
-- no overwrite occurs on a repeated workspace/evidence path;
-- no package rebuild occurs;
-- no Store action occurs.
-
-Do not install merely to prove the artifact pull path.
+The next action is the one-shot physical launch below. It requires action-time
+confirmation. Do not treat this handoff document as that approval.
 
 ### P0.5 — one-shot exact unsigned EXE launch evidence
 
