@@ -75,6 +75,70 @@ class GroupBStoreRegistryTests(unittest.TestCase):
                 self.assertEqual(product["version"], "1.0.0.0")
                 self.assertGreaterEqual(len(product["local_only_checks"]), 3)
                 self.assertTrue(product["workflow_name"].strip())
+                self.assertTrue(product["source_ref"].strip())
+
+    def test_exact_head_run_selection_accepts_only_one_store_workflow_success(self):
+        runs = [
+            {
+                "id": 10,
+                "head_sha": "a" * 40,
+                "name": "Windows build",
+                "status": "completed",
+                "conclusion": "success",
+            },
+            {
+                "id": 11,
+                "head_sha": "a" * 40,
+                "name": "Reliability",
+                "status": "completed",
+                "conclusion": "success",
+            },
+            {
+                "id": 12,
+                "head_sha": "b" * 40,
+                "name": "Windows build",
+                "status": "completed",
+                "conclusion": "success",
+            },
+        ]
+        self.assertEqual(
+            MODULE.select_exact_successful_run(
+                runs,
+                head_sha="a" * 40,
+                workflow_name="Windows build",
+            ),
+            10,
+        )
+
+    def test_exact_head_run_selection_holds_when_missing_or_ambiguous(self):
+        with self.assertRaisesRegex(ValueError, "no exact-head"):
+            MODULE.select_exact_successful_run(
+                [],
+                head_sha="a" * 40,
+                workflow_name="Windows build",
+            )
+        runs = [
+            {
+                "id": 10,
+                "head_sha": "a" * 40,
+                "name": "Windows build",
+                "status": "completed",
+                "conclusion": "success",
+            },
+            {
+                "id": 11,
+                "head_sha": "a" * 40,
+                "name": "Windows build",
+                "status": "completed",
+                "conclusion": "success",
+            },
+        ]
+        with self.assertRaisesRegex(ValueError, "multiple exact-head"):
+            MODULE.select_exact_successful_run(
+                runs,
+                head_sha="a" * 40,
+                workflow_name="Windows build",
+            )
 
     def test_unknown_product_is_rejected(self):
         with self.assertRaisesRegex(ValueError, "unknown Group B product_id"):
