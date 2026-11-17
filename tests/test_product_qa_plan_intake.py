@@ -100,7 +100,11 @@ class ProductQAPlanIntakeTests(unittest.TestCase):
             load_handoff_bundle(self.bundle)
 
     def test_tampered_package_holds(self):
-        (self.bundle/"package.msix").write_bytes(b"changed")
+        original=(self.bundle/"package.msix").read_bytes()
+        self.assertGreater(len(original),0)
+        tampered=bytes([original[0] ^ 1]) + original[1:]
+        self.assertEqual(len(tampered),len(original))
+        (self.bundle/"package.msix").write_bytes(tampered)
         with self.assertRaisesRegex(ProductQAPlanIntakeError,"package hash"):
             load_handoff_bundle(self.bundle)
 
