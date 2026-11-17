@@ -1,0 +1,63 @@
+{
+  "schema_version": "group-b-standard-store-products/1",
+  "products": {
+    "folder-engine": {
+      "name": "Folder Automation Engine",
+      "repository_full_name": "shihuiarenjinba-png/folder-automation-engine",
+      "store_id": "9P99MJX1R4V6",
+      "identity_name": "OkinawaDesktopTools.FolderAutomationEngine",
+      "version": "1.0.0.0",
+      "architecture": "x64",
+      "direct_product_artifact_pull_supported": false,
+      "reason": "Pilot uses an already-frozen exact local/legacy artifact. Do not replace it with a newer product-repo build."
+    },
+    "scheduled-api-runner": {
+      "name": "Scheduled API Runner",
+      "repository_full_name": "shihuiarenjinba-png/scheduled-api-runner",
+      "store_id": "9PND0HG61XD6",
+      "identity_name": "OkinawaDesktopTools.ScheduledAPIRunner",
+      "version": "1.0.0.0",
+      "architecture": "x64",
+      "artifact_name": "ScheduledApiRunner-Store-MSIX-UNSIGNED-DRAFT",
+      "direct_product_artifact_pull_supported": true,
+      "local_only_checks": [
+        "real JP/EN GUI",
+        "real OS DPI 100/125/150",
+        "authorized non-production HTTPS GET",
+        "Windows Task Scheduler lifecycle"
+      ]
+    },
+    "workflow-automation-hub": {
+      "name": "Workflow Automation Hub",
+      "repository_full_name": "shihuiarenjinba-png/workflow-automation-hub",
+      "store_id": "9P6SXJNNB5KK",
+      "identity_name": "OkinawaDesktopTools.WorkflowAutomationHub",
+      "version": "1.0.0.0",
+      "architecture": "x64",
+      "artifact_name": "WorkflowAutomationHub-Store-MSIX-UNSIGNED-DRAFT",
+      "direct_product_artifact_pull_supported": true,
+      "local_only_checks": [
+        "real JP/EN GUI",
+        "real OS DPI 100/125/150",
+        "non-production Google OAuth and Blogger acceptance",
+        "Windows Task Scheduler lifecycle"
+      ]
+    },
+    "browser-automation-runner": {
+      "name": "Browser Automation Runner",
+      "repository_full_name": "shihuiarenjinba-png/browser-automation-runner",
+      "store_id": "9NQHC8VW729G",
+      "identity_name": "OkinawaDesktopTools.BrowserAutomationRunner",
+      "version": "1.0.0.0",
+      "architecture": "x64",
+      "artifact_name": "BrowserAutomationRunner-Store-MSIX-UNSIGNED-DRAFT",
+      "direct_product_artifact_pull_supported": true,
+      "local_only_checks": [
+        "real JP/EN GUI",
+        "real OS DPI 100/125/150",
+        "bundled Chromium physical launch and harmless workflow",
+        "owner/legal redistribution-rights review"
+      ]
+    }
+  }
+}
