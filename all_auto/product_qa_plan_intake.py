@@ -17,6 +17,14 @@ BRANCH = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._/-]{0,199}$")
 SLUG = re.compile(r"^[a-z][a-z0-9-]{3,39}$")
 STEP_ID = re.compile(r"^[a-z][a-z0-9_]{2,63}$")
 TEST_ID = re.compile(r"^[A-Z][A-Z0-9_]{2,63}$")
+KNOWN_TEST_IDS = {
+    "ARTIFACT_HASH", "PROCESS_START", "WINDOW_RESPONSIVE",
+    "UIA_FIND_CONTROL", "UIA_INVOKE", "UIA_READ_TEXT", "UIA_ASSERT_TEXT",
+    "NORMAL_EXIT", "SAVE_RELOAD", "PACKAGE_IDENTITY_READ",
+    "PACKAGE_VERSION_READ", "FILE_OUTPUT_EXISTS",
+    "EVENT_LOG_QUERY", "PROCESS_STATUS", "WINDOW_ENUMERATION",
+}
+DIAGNOSTIC_TEST_IDS = {"EVENT_LOG_QUERY", "PROCESS_STATUS", "WINDOW_ENUMERATION"}
 FORBIDDEN_TEXT = re.compile(
     r"(?i)(powershell|pwsh|cmd\.exe|\bgit\s+(?:add|commit|push|merge|reset)|"
     r"\b(?:curl|wget)\s|(?:^|\s)(?:python|py)\.exe\s|[;&|])"
@@ -80,8 +88,9 @@ def validate_plan(value: Any, *, slug: str, kind: str) -> None:
         test_id = step.get("test_id")
         if not isinstance(step_id, str) or not STEP_ID.fullmatch(step_id) or step_id in seen:
             _hold("step_id is invalid")
-        if not isinstance(test_id, str) or not TEST_ID.fullmatch(test_id):
-            _hold("test_id is invalid")
+        if (not isinstance(test_id, str) or not TEST_ID.fullmatch(test_id) or
+                test_id not in KNOWN_TEST_IDS):
+            _hold("test_id is invalid or unsupported by the QA-plan contract")
         if type(step.get("required")) is not bool:
             _hold("required flag is invalid")
         requires = step.get("requires")
@@ -130,7 +139,8 @@ def validate_plan(value: Any, *, slug: str, kind: str) -> None:
     diagnostics = value.get("allowed_diagnostics")
     if (not isinstance(diagnostics, list) or len(diagnostics)>16 or
             len(diagnostics)!=len(set(diagnostics)) or
-            any(not isinstance(x,str) or not TEST_ID.fullmatch(x) for x in diagnostics)):
+            any(not isinstance(x,str) or not TEST_ID.fullmatch(x)
+                or x not in DIAGNOSTIC_TEST_IDS for x in diagnostics)):
         _hold("allowed_diagnostics are invalid")
     criteria = value.get("success_criteria")
     if (not isinstance(criteria,list) or not 1<=len(criteria)<=12 or
