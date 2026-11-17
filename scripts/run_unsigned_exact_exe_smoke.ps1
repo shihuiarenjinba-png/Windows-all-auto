@@ -107,7 +107,9 @@ catch {
         }
     }
 
-    if ($ciEventIds.Count -gt 0) {
+    $blockingEventIds = @(3033, 3077)
+    $blockingEvidence = @($ciEventIds | Where-Object { $blockingEventIds -contains $_ })
+    if ($blockingEvidence.Count -gt 0) {
         $status = 'APPLICATION_CONTROL_BLOCKED'
     } else {
         $status = 'LAUNCH_FAILED'
