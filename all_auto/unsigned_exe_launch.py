@@ -121,6 +121,119 @@ def validate_unsigned_exe_launch_receipt(
     return result
 
 
+def reconcile_delayed_application_control_evidence(
+    launch_receipt: Any,
+    code_integrity_evidence: Any,
+    *,
+    expected_exe_sha256: str,
+) -> dict[str, Any]:
+    """Reclassify one immutable LAUNCH_FAILED receipt using later CI log evidence.
+
+    This is read-only reconciliation: it never changes the original launch receipt
+    and never implies a second launch attempt.
+    """
+    launch = validate_unsigned_exe_launch_receipt(
+        launch_receipt,
+        expected_exe_sha256=expected_exe_sha256,
+    )
+    if launch["status"] != "LAUNCH_FAILED":
+        raise UnsignedExeLaunchReceiptError(
+            "delayed Code Integrity reconciliation requires original LAUNCH_FAILED"
+        )
+    if launch.get("process_started") is not False:
+        raise UnsignedExeLaunchReceiptError(
+            "delayed block reconciliation requires process_started=false"
+        )
+
+    if not isinstance(code_integrity_evidence, dict):
+        raise UnsignedExeLaunchReceiptError("Code Integrity evidence must be an object")
+    if code_integrity_evidence.get("schema_version") != "code-integrity-block-evidence/1":
+        raise UnsignedExeLaunchReceiptError("unsupported Code Integrity evidence schema")
+
+    evidence_sha = _sha(
+        code_integrity_evidence.get("exe_sha256"),
+        "Code Integrity evidence EXE SHA256",
+    )
+    if evidence_sha != _sha(expected_exe_sha256, "expected EXE SHA256"):
+        raise UnsignedExeLaunchReceiptError("Code Integrity evidence EXE SHA256 mismatch")
+
+    if code_integrity_evidence.get("launch_attempts") != 1:
+        raise UnsignedExeLaunchReceiptError(
+            "Code Integrity evidence must preserve exactly one launch attempt"
+        )
+    if code_integrity_evidence.get("process_started") is not False:
+        raise UnsignedExeLaunchReceiptError(
+            "Code Integrity block evidence requires process_started=false"
+        )
+    for key in (
+        "security_bypass_used",
+        "security_policy_modified",
+        "certificate_store_modified",
+        "alternate_bypass_used",
+        "msix_installed",
+        "partner_center_write_performed",
+        "package_uploaded",
+        "certification_submitted",
+        "published",
+    ):
+        if code_integrity_evidence.get(key) is not False:
+            raise UnsignedExeLaunchReceiptError(
+                f"unsafe delayed Code Integrity evidence flag: {key}"
+            )
+
+    event_ids = code_integrity_evidence.get("event_ids")
+    if (
+        not isinstance(event_ids, list)
+        or not event_ids
+        or not all(type(value) is int and value > 0 for value in event_ids)
+    ):
+        raise UnsignedExeLaunchReceiptError(
+            "Code Integrity evidence requires event_ids"
+        )
+    blocking_ids = sorted({value for value in event_ids if value in {3033, 3077}})
+    if not blocking_ids:
+        raise UnsignedExeLaunchReceiptError(
+            "Code Integrity evidence lacks block-class event 3033/3077"
+        )
+
+    policy = str(code_integrity_evidence.get("policy_name") or "").strip()
+    policy_guid = str(code_integrity_evidence.get("policy_guid") or "").strip()
+    if not policy:
+        raise UnsignedExeLaunchReceiptError("Code Integrity evidence policy_name is required")
+    if not policy_guid:
+        raise UnsignedExeLaunchReceiptError("Code Integrity evidence policy_guid is required")
+
+    result = {
+        "schema_version": "unsigned-exe-launch-reconciliation-receipt/1",
+        "status": "APPLICATION_CONTROL_BLOCKED",
+        "original_launch_status": launch["status"],
+        "expected_exe_sha256": launch["expected_exe_sha256"],
+        "actual_exe_sha256": launch["actual_exe_sha256"],
+        "launch_attempts": 1,
+        "process_started": False,
+        "normal_exit": False,
+        "exit_code": None,
+        "blocking_event_ids": blocking_ids,
+        "all_observed_event_ids": sorted(set(event_ids)),
+        "policy_name": policy,
+        "policy_guid": policy_guid,
+        "original_receipt_preserved": True,
+        "second_launch_performed": False,
+        "security_bypass_used": False,
+        "security_policy_modified": False,
+        "certificate_store_modified": False,
+        "alternate_bypass_used": False,
+        "msix_installed": False,
+        "partner_center_write_performed": False,
+        "package_uploaded": False,
+        "certification_submitted": False,
+        "published": False,
+        "local_final_qa_pass": False,
+        "store_actions_authorized": False,
+    }
+    return result
+
+
 def bind_unsigned_launch_to_local_qa(
     qa_template: Any,
     launch_receipt: Any,
