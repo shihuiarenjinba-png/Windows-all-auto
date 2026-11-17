@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+import zipfile
 
 from all_auto.product_qa_plan_intake import (
     GitHubProductQAPlanner, ProductQAPlanIntakeError, canonical,
@@ -46,8 +47,20 @@ class ProductQAPlanIntakeTests(unittest.TestCase):
         t=tempfile.TemporaryDirectory()
         self.addCleanup(t.cleanup)
         self.bundle=Path(t.name)
-        self.package=b"example msix bytes"
-        (self.bundle/"package.msix").write_bytes(self.package)
+        self.executable=b"example executable bytes"
+        package_path=self.bundle/"package.msix"
+        manifest=(
+            '<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10">'
+            '<Identity Name="Demo" Publisher="CN=TEST" Version="1.0.0.0"/>'
+            '<Applications><Application Id="App" Executable="demo.exe"/></Applications>'
+            '</Package>'
+        )
+        with zipfile.ZipFile(package_path,"w") as archive:
+            archive.writestr("AppxManifest.xml",manifest)
+            archive.writestr("AppxBlockMap.xml","<BlockMap/>")
+            archive.writestr("[Content_Types].xml","<Types/>")
+            archive.writestr("demo.exe",self.executable)
+        self.package=package_path.read_bytes()
         self.plan=plan()
         (self.bundle/"qa-plan.json").write_text(json.dumps(self.plan),encoding="utf-8")
         self.handoff={
@@ -61,7 +74,9 @@ class ProductQAPlanIntakeTests(unittest.TestCase):
             "status":"QA_UNSIGNED",
             "package_sha256":sha256(self.package).hexdigest(),
             "package_bytes":len(self.package),
-            "executable_sha256":"b"*64,
+            "executable_sha256":sha256(self.executable).hexdigest(),
+            "executable_path":"demo.exe",
+            "application_id":"App",
             "identity":{"name":"Demo","publisher":"CN=TEST","version":"1.0.0.0"},
             "qa_plan":"qa-plan.json",
             "qa_plan_schema":"windows-product-qa-plan-v1",
@@ -171,7 +186,9 @@ class ProductQAPlanIntakeTests(unittest.TestCase):
         job=job_from_handoff(accepted,request_id="final-sale-qa-0001")
         self.assertEqual(job["source_sha"],"a"*40)
         self.assertEqual(job["source_branch"],"codex/factory-qa-plan-test")
-        self.assertEqual(job["artifact_sha256"],"b"*64)
+        self.assertEqual(
+            job["artifact_sha256"],sha256(self.executable).hexdigest()
+        )
         self.assertEqual(job["factory_package_sha256"],self.handoff["package_sha256"])
         self.assertEqual(job["factory_qa_plan_sha256"],self.handoff["qa_plan_sha256"])
 
