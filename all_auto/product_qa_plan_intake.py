@@ -8,6 +8,8 @@ from pathlib import Path
 import re
 from typing import Any
 
+from qa_ai.planner import PlannerOutcome
+
 PLAN_SCHEMA = "windows-product-qa-plan-v1"
 SHA40 = re.compile(r"^[0-9a-f]{40}$")
 SHA64 = re.compile(r"^[0-9a-f]{64}$")
@@ -223,3 +225,126 @@ def load_handoff_bundle(bundle: Path) -> AcceptedProductQAPlan:
         qa_plan_sha256=plan_sha,
         plan=plan,
     )
+
+
+class GitHubProductQAPlanner:
+    """Deterministically translate a reviewed GitHub product QA plan to trusted test IDs.
+
+    The GitHub plan is the primary plan. This adapter never executes raw commands and
+    never converts free text into commands. Parameterized required steps are held until
+    a trusted local parameter binding is explicitly implemented.
+    """
+
+    def __init__(self, plan: dict[str, Any]):
+        self.plan_value = plan
+        self.required_steps = [step for step in plan["steps"] if step["required"]]
+
+    def plan(self, *, context: dict[str, str], catalog: list[dict[str, Any]],
+             evidence: str, round_number: int,
+             execution_history: list[dict[str, Any]] | None = None) -> PlannerOutcome:
+        del evidence, round_number
+        history = execution_history or []
+        allowed = {
+            item.get("test_id") for item in catalog
+            if isinstance(item, dict) and isinstance(item.get("test_id"), str)
+        }
+        completed = len(history)
+        if completed > len(self.required_steps):
+            return PlannerOutcome(
+                "QA_PLAN_STATE_HOLD", None,
+                ("execution history exceeds required GitHub QA plan",),
+                "github-product-qa-plan", {},
+            )
+        if history:
+            previous_index = completed - 1
+            previous_step = self.required_steps[previous_index]
+            previous_result = history[-1]
+            if previous_result.get("test_id") != previous_step["test_id"]:
+                return PlannerOutcome(
+                    "QA_PLAN_STATE_HOLD", None,
+                    ("execution history does not match GitHub QA plan order",),
+                    "github-product-qa-plan", {},
+                )
+            if previous_result.get("status") != "TEST_PASS":
+                return PlannerOutcome(
+                    "QA_PLAN_VALID",
+                    {
+                        "schema_version": "windows-qa-plan-v1",
+                        "selected_test_ids": [],
+                        "reason": "Required GitHub QA step failed; return evidence.",
+                        "missing_evidence": [],
+                        "expected_signal": [],
+                        "retry_policy": "NO_RETRY",
+                        "stop_reason": (
+                            "Required GitHub QA step failed: " +
+                            previous_step["step_id"]
+                        ),
+                        "recommended_owner": context["product_type"],
+                    },
+                    (), "github-product-qa-plan", {},
+                )
+        if completed == len(self.required_steps):
+            return PlannerOutcome(
+                "QA_PLAN_VALID",
+                {
+                    "schema_version": "windows-qa-plan-v1",
+                    "selected_test_ids": [],
+                    "reason": "All required GitHub QA steps completed.",
+                    "missing_evidence": [],
+                    "expected_signal": [],
+                    "retry_policy": "NO_RETRY",
+                    "stop_reason": "GitHub product QA plan completed.",
+                    "recommended_owner": context["product_type"],
+                },
+                (), "github-product-qa-plan", {},
+            )
+
+        step = self.required_steps[completed]
+        test_id = step["test_id"]
+        if test_id not in allowed:
+            return PlannerOutcome(
+                "QA_PLAN_CAPABILITY_HOLD", None,
+                ("unsupported required test_id: " + test_id,),
+                "github-product-qa-plan", {},
+            )
+        if step["parameters"]:
+            return PlannerOutcome(
+                "QA_PLAN_CAPABILITY_HOLD", None,
+                ("parameterized required step not yet bound locally: " +
+                 step["step_id"],),
+                "github-product-qa-plan", {},
+            )
+        return PlannerOutcome(
+            "QA_PLAN_VALID",
+            {
+                "schema_version": "windows-qa-plan-v1",
+                "selected_test_ids": [test_id],
+                "reason": step["purpose"],
+                "missing_evidence": list(step["evidence"]),
+                "expected_signal": list(step["evidence"]),
+                "retry_policy": "NO_RETRY",
+                "stop_reason": None,
+                "recommended_owner": context["product_type"],
+            },
+            (), "github-product-qa-plan", {},
+        )
+
+
+def job_from_handoff(accepted: AcceptedProductQAPlan, *, request_id: str) -> dict[str, Any]:
+    if not isinstance(request_id, str) or not 4 <= len(request_id) <= 160:
+        _hold("request_id is invalid")
+    repository = accepted.source_repository.removeprefix("https://github.com/").rstrip("/")
+    if repository.count("/") != 1:
+        _hold("source repository cannot be normalized")
+    return {
+        "request_id": request_id,
+        "product_type": accepted.product_type,
+        "source_repository": repository,
+        "source_branch": accepted.source_branch,
+        "source_sha": accepted.source_sha,
+        "artifact_sha256": accepted.executable_sha256,
+        "test_suite_version": PLAN_SCHEMA,
+        "slug": accepted.slug,
+        "factory_package_sha256": accepted.package_sha256,
+        "factory_qa_plan_sha256": accepted.qa_plan_sha256,
+    }
