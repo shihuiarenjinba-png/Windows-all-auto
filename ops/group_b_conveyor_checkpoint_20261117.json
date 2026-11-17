@@ -25,7 +25,7 @@
     "scheduled-api-runner": {
       "repository_full_name": "shihuiarenjinba-png/scheduled-api-runner",
       "pr_number": 8,
-      "head_sha": "9ecd71c6192af9e4b79cd61241618a8d2d65eb19",
+      "head_sha": "9caa07075e096ff52e57a1d4611a3884ae06f974",
       "store_workflow_name": "Windows desktop / Windowsデスクトップ",
       "store_run_id": 44093493317,
       "store_artifact": {
@@ -101,9 +101,16 @@
         "dpi_matrix": "NOT_TESTED",
         "https_get": "NOT_TESTED",
         "task_scheduler_lifecycle": "NOT_TESTED",
-        "next_action": "CREATE_AND_BIND_PRE_STORE_STATIC_BLOCK_RECEIPT",
+        "next_action": "RUN_ATOMIC_APPLICATION_CONTROL_BLOCK_FINALIZER",
         "reconciliation_receipt_required": true,
-        "pre_store_static_block_receipt_required": true
+        "pre_store_static_block_receipt_required": true,
+        "correlation_activity_id": "{2f3574e4-74dd-0008-cd37-9c3add74dd01}",
+        "policy_id": "27555.1000.240208",
+        "status_code": "0xc0e90002",
+        "event_flat_hash": "06d3b92bd83281750e5a454f9add6526fa90f6bfc29017fd6919bbeaa64213d9",
+        "event_flat_hash_matches_exe_sha256": true,
+        "atomic_block_lane_finalizer_preferred": true,
+        "atomic_finalizer_expected_status": "PRIVATE_STORE_SIGNING_LANE_READY"
       },
       "next_dependency": "Code owner creates immutable launch reconciliation + pre-store static block receipt, then Store execution owner provides Microsoft Store-signed Private zero-cost QA path"
     },
@@ -175,6 +182,9 @@
     "canonical_code_integrity_block_evidence_enabled": true,
     "application_control_block_lane_finalizer_enabled": true,
     "application_control_block_lane_finalizer_atomic": true,
-    "reconciliation_cli_compatibility_alias_enabled": true
+    "reconciliation_cli_compatibility_alias_enabled": true,
+    "canonical_code_integrity_detailed_metadata_enabled": true,
+    "event_flat_hash_must_match_exact_exe_sha256": true,
+    "atomic_application_control_block_finalizer_enabled": true
   }
 }
