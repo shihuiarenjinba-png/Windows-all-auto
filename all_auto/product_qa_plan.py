@@ -34,6 +34,14 @@ SUCCESS_KEYS = {
     "product_e2e_authority", "release_authority", "store_authority",
 }
 IDENTITY_KEYS = {"name", "publisher", "version"}
+ACTIONS = {
+    "ARTIFACT_HASH", "PROCESS_START", "PROCESS_STATUS", "EVENT_LOG_QUERY",
+    "UIA_FIND_WINDOW", "UIA_FIND_CONTROL", "UIA_INVOKE", "UIA_READ_TEXT",
+}
+DIAGNOSTICS = {
+    "PROCESS_STATUS", "EVENT_LOG_QUERY", "UIA_FIND_WINDOW",
+    "UIA_FIND_CONTROL", "UIA_READ_TEXT",
+}
 FORBIDDEN_ACTIONS = [
     "SOURCE_EDIT",
     "ARBITRARY_SHELL",
@@ -73,6 +81,53 @@ def _normalized_repo(value: str) -> str:
     return value.removesuffix(".git")
 
 
+def _validate_params(action: str, params: Any) -> None:
+    if not isinstance(params, dict):
+        _fail("params must be an object")
+    if action == "ARTIFACT_HASH":
+        if params:
+            _fail("ARTIFACT_HASH takes no parameters")
+        return
+    if action == "PROCESS_START":
+        if set(params) - {"observation_seconds"}:
+            _fail("PROCESS_START has unknown parameters")
+        seconds = params.get("observation_seconds", 5)
+        if type(seconds) is not int or not 1 <= seconds <= 60:
+            _fail("invalid PROCESS_START observation_seconds")
+        return
+    if action == "PROCESS_STATUS":
+        if params:
+            _fail("PROCESS_STATUS takes no parameters")
+        return
+    if action == "EVENT_LOG_QUERY":
+        if set(params) - {"lookback_seconds"}:
+            _fail("EVENT_LOG_QUERY has unknown parameters")
+        seconds = params.get("lookback_seconds", 300)
+        if type(seconds) is not int or not 1 <= seconds <= 900:
+            _fail("invalid EVENT_LOG_QUERY lookback_seconds")
+        return
+    if action == "UIA_FIND_WINDOW":
+        if set(params) != {"title_contains"}:
+            _fail("UIA_FIND_WINDOW requires title_contains only")
+        title = params["title_contains"]
+        if not isinstance(title, str) or not 1 <= len(title) <= 120:
+            _fail("invalid UIA window title")
+        return
+    if action in {"UIA_FIND_CONTROL", "UIA_INVOKE", "UIA_READ_TEXT"}:
+        if set(params) - {"name", "control_type"} or "name" not in params:
+            _fail(action + " requires name and optional control_type")
+        name = params["name"]
+        if not isinstance(name, str) or not 1 <= len(name) <= 120:
+            _fail("invalid UIA control name")
+        control = params.get("control_type")
+        if control is not None and control not in {
+            "Button", "Edit", "Text", "CheckBox", "ComboBox", "ListItem", "TabItem"
+        }:
+            _fail("unsupported UIA control_type")
+        return
+    _fail("unsupported action")
+
+
 def _template_from_bound(value: dict[str, Any]) -> dict[str, Any]:
     template = {
         key: deepcopy(value[key])
@@ -109,7 +164,8 @@ def load_bound_plan(path: Path) -> dict[str, Any]:
     for field in ("package_sha256", "executable_sha256", "template_sha256"):
         if not isinstance(value.get(field), str) or not SHA64.fullmatch(value[field]):
             _fail("invalid SHA-256 field")
-    if not isinstance(value.get("source_repository"), str):
+    if (not isinstance(value.get("source_repository"), str) or
+            not value["source_repository"].startswith("https://github.com/")):
         _fail("invalid source repository")
     identity = value.get("identity")
     if not isinstance(identity, dict) or set(identity) != IDENTITY_KEYS or any(
@@ -133,6 +189,8 @@ def load_bound_plan(path: Path) -> dict[str, Any]:
     if not isinstance(steps, list) or not 2 <= len(steps) <= 32:
         _fail("invalid step count")
     seen: set[str] = set()
+    step_by_id: dict[str, dict[str, Any]] = {}
+    actions: list[str] = []
     for step in steps:
         if not isinstance(step, dict) or set(step) != STEP_KEYS:
             _fail("step fields are invalid")
@@ -145,11 +203,37 @@ def load_bound_plan(path: Path) -> dict[str, Any]:
         if (not isinstance(requires, list) or len(requires) != len(set(requires)) or
                 any(not isinstance(item, str) or item not in seen for item in requires)):
             _fail("step dependencies must reference earlier steps")
-        if not isinstance(step.get("action"), str):
-            _fail("invalid action")
-        if type(step.get("required")) is not bool or not isinstance(step.get("params"), dict):
-            _fail("invalid step data")
+        action = step.get("action")
+        if action not in ACTIONS:
+            _fail("unsupported action")
+        if type(step.get("required")) is not bool:
+            _fail("invalid step required flag")
+        _validate_params(action, step.get("params"))
         seen.add(step_id)
+        step_by_id[step_id] = step
+        actions.append(action)
+    if actions[0] != "ARTIFACT_HASH":
+        _fail("first step must be ARTIFACT_HASH")
+    hash_step = steps[0]["step_id"]
+    for step in steps[1:]:
+        if step["action"] != "ARTIFACT_HASH" and hash_step not in step["requires"]:
+            _fail("every executable/diagnostic step must require ARTIFACT_HASH")
+    process_ids = [
+        step["step_id"] for step in steps if step["action"] == "PROCESS_START"
+    ]
+    if len(process_ids) != 1:
+        _fail("exactly one PROCESS_START step is required")
+    process_id = process_ids[0]
+    if hash_step not in step_by_id[process_id]["requires"]:
+        _fail("PROCESS_START must require ARTIFACT_HASH")
+    for step in steps:
+        if step["action"].startswith("UIA_") and process_id not in step["requires"]:
+            _fail("UIA steps must require PROCESS_START")
+    diagnostics = value.get("allowed_diagnostics")
+    if (not isinstance(diagnostics, list) or
+            len(diagnostics) != len(set(diagnostics)) or
+            any(item not in DIAGNOSTICS for item in diagnostics)):
+        _fail("invalid allowed diagnostics")
 
     template = _template_from_bound(value)
     if sha256(canonical(template)).hexdigest() != value["template_sha256"]:
