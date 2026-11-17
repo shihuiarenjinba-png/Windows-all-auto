@@ -36,7 +36,7 @@
       },
       "reliability_run_id": 44093493219,
       "ci_conclusion": "success",
-      "conveyor_state": "APPLICATION_CONTROL_BLOCKED_STORE_SIGNED_QA_REQUIRED",
+      "conveyor_state": "PRIVATE_STORE_SIGNING_LANE_READY",
       "exact_head_store_run_unique": false,
       "frozen_candidate": {
         "source_sha": "28ef873ab2ff325b8f26c61a9ba48701280e8290",
@@ -61,7 +61,7 @@
         "reason": "docs-only descendant rebuild produced different executable bytes; requires new local static verification before candidate promotion"
       },
       "local_confirmation": {
-        "status": "APPLICATION_CONTROL_BLOCKED_STORE_SIGNED_QA_REQUIRED",
+        "status": "PRIVATE_STORE_SIGNING_LANE_READY",
         "evidence_source": "local_code_owner_report_20261118",
         "artifact_receipt_verified": true,
         "makeappx_unpack": "PASS",
@@ -101,7 +101,7 @@
         "dpi_matrix": "NOT_TESTED",
         "https_get": "NOT_TESTED",
         "task_scheduler_lifecycle": "NOT_TESTED",
-        "next_action": "RUN_ATOMIC_APPLICATION_CONTROL_BLOCK_FINALIZER",
+        "next_action": "STORE_OWNER_CONFIRM_ZERO_COST_PRIVATE_ACQUISITION",
         "reconciliation_receipt_required": true,
         "pre_store_static_block_receipt_required": true,
         "correlation_activity_id": "{2f3574e4-74dd-0008-cd37-9c3add74dd01}",
@@ -110,9 +110,15 @@
         "event_flat_hash": "06d3b92bd83281750e5a454f9add6526fa90f6bfc29017fd6919bbeaa64213d9",
         "event_flat_hash_matches_exe_sha256": true,
         "atomic_block_lane_finalizer_preferred": true,
-        "atomic_finalizer_expected_status": "PRIVATE_STORE_SIGNING_LANE_READY"
+        "atomic_finalizer_expected_status": "PRIVATE_STORE_SIGNING_LANE_READY",
+        "atomic_finalizer_reported_complete": true,
+        "atomic_finalizer_report_source": "code_owner_local_report_20261118",
+        "pre_store_static_pass": true,
+        "private_store_signing_lane_ready": true,
+        "local_final_pass": false,
+        "store_signed_install_pass": false
       },
-      "next_dependency": "Code owner creates immutable launch reconciliation + pre-store static block receipt, then Store execution owner provides Microsoft Store-signed Private zero-cost QA path"
+      "next_dependency": "Store execution owner confirms a zero-cost Private acquisition route and obtains the Microsoft Store-signed build of the same frozen candidate"
     },
     "workflow-automation-hub": {
       "repository_full_name": "shihuiarenjinba-png/workflow-automation-hub",
