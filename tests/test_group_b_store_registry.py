@@ -188,7 +188,7 @@ class GroupBStoreRegistryTests(unittest.TestCase):
                     head_sha="a" * 40,
                 )
 
-    def test_scheduled_locally_verified_candidate_is_frozen_and_blocked(self):
+    def test_scheduled_locally_verified_candidate_is_frozen_and_private_signing_ready(self):
         product = MODULE.load_product(
             ROOT / "ops" / "group_b_standard_store_products.json",
             "scheduled-api-runner",
@@ -205,7 +205,7 @@ class GroupBStoreRegistryTests(unittest.TestCase):
         self.assertTrue(frozen["promotion_requires_new_local_static_verification"])
         self.assertEqual(
             frozen["local_confirmation_state"],
-            "APPLICATION_CONTROL_BLOCKED_STORE_SIGNED_QA_REQUIRED",
+            "PRIVATE_STORE_SIGNING_LANE_READY",
         )
         self.assertTrue(frozen["static_confirmation_complete"])
         self.assertTrue(frozen["gui_launch_attempted"])
@@ -219,10 +219,13 @@ class GroupBStoreRegistryTests(unittest.TestCase):
         self.assertTrue(frozen["unsigned_launch_retries_forbidden"])
         self.assertTrue(frozen["launch_action_confirmation_consumed"])
         self.assertTrue(frozen["store_signed_private_qa_required"])
+        self.assertTrue(frozen["private_store_signing_lane_ready"])
+        self.assertTrue(frozen["atomic_finalizer_reported_complete"])
         self.assertEqual(frozen["local_final_qa_status"], "HOLD")
+        self.assertFalse(frozen["store_signed_install_pass"])
         self.assertEqual(
             frozen["next_action"],
-            "STORE_SIGNED_PRIVATE_GUI_QA",
+            "STORE_OWNER_CONFIRM_ZERO_COST_PRIVATE_ACQUISITION",
         )
 
     def test_invalid_frozen_candidate_fails_closed(self):
