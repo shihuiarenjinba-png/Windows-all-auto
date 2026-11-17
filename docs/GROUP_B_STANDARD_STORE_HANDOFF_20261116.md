@@ -74,6 +74,35 @@ approvals from this document.
 For subsequent updates, a Package flight may be used as the limited-audience signed
 test path before broad release.
 
+### No-purchase signed QA for paid Private-audience products
+
+For a paid product such as Folder Automation Engine, membership in a Private audience
+does **not** make acquisition free. A tester would normally pay the configured Store
+price.
+
+The preferred owner test route is therefore:
+
+1. keep the product paid and Private audience;
+2. complete certification/private publishing under separate approval;
+3. after the product reaches the final published state for that private audience,
+   generate a Microsoft Store promotional code;
+4. redeem the code with the Microsoft account that belongs to the configured Private
+   audience / Known User Group;
+5. acquire and install the Microsoft-signed Store package at no charge;
+6. perform final signed-build QA;
+7. do not purchase the app merely to perform owner QA.
+
+Do not temporarily change the commercial model to Free only to avoid a test purchase.
+Do not assume a promo code is usable before the product completes publishing.
+Promo-code creation/redemption is an acquisition/test step; it does not itself approve
+a later Public release.
+
+The game/GDK repositories contain useful provenance and physical-QA patterns, but
+their GDK/MSIXVC2/sandbox rules are product-route-specific. Reuse only the general
+principles (immutable bytes, exact Identity/version, no Code Integrity bypass,
+separate physical QA evidence); never substitute a GDK package flow for this standard
+MSIX app.
+
 ## Priority 1 — Folder Automation Engine
 
 Repository: `shihuiarenjinba-png/folder-automation-engine`  
