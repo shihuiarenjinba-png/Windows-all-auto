@@ -116,6 +116,17 @@ def main() -> int:
                 verified,
                 target_root=args.target_root,
             )
+            staged["central_registry_binding_verified"] = all(
+                isinstance(value, str) and bool(value.strip())
+                for value in expected_values
+            )
+            if staged["central_registry_binding_verified"]:
+                staged["central_registry_binding"] = {
+                    "store_id": args.expected_store_id,
+                    "identity_name": args.expected_identity_name,
+                    "version": args.expected_version,
+                    "architecture": args.expected_architecture,
+                }
             staged["workflow_name"] = run["workflow_name"]
             staged["workflow_event"] = run["event"]
             staged["workflow_head_sha"] = run["head_sha"]
