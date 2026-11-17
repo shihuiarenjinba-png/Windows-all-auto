@@ -153,6 +153,7 @@ def normalize_store_product_handoff(payload:Any)->dict[str,Any]:
     if qa_present:
         ready_checks["qa.local_final_pass"]=(
             local_final_pass
+            or store_signed_install_pass
             or (
                 audience=="PRIVATE_AUDIENCE_TEST"
                 and private_store_signing_lane_ready
