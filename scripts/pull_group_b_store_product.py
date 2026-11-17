@@ -39,6 +39,7 @@ def load_product(registry: Path, product_id: str) -> dict:
         "identity_name",
         "version",
         "architecture",
+        "workflow_name",
     ):
         if not isinstance(product.get(key), str) or not product[key].strip():
             raise ValueError(f"Group B product entry missing {key}")
@@ -77,6 +78,8 @@ def main() -> int:
             product["version"],
             "--expected-architecture",
             product["architecture"],
+            "--expected-workflow-name",
+            product["workflow_name"],
         ]
         result = subprocess.run(cmd, check=False)
         if result.returncode != 0:
