@@ -210,7 +210,7 @@ package, or touch Partner Center from this lane.
 
 Repository: `shihuiarenjinba-png/scheduled-api-runner`  
 PR: #8  
-Current branch HEAD: `9ecd71c6192af9e4b79cd61241618a8d2d65eb19`
+Current branch HEAD: `9caa07075e096ff52e57a1d4611a3884ae06f974`
 
 The current branch HEAD contains a Store-runbook-only documentation change. It does
 **not** replace the locally static-verified Store candidate.
@@ -429,7 +429,6 @@ pre-Store static receipt, and bound handoff are created together or not at all:
 
 ```powershell
 python scripts/finalize_application_control_block_lane.py `
-  --handoff <frozen store-product-handoff.json> `
   --artifact-receipt <immutable artifact-pull-receipt.json> `
   --launch-receipt <original unsigned-exe-launch-receipt.json> `
   --code-integrity-evidence <code-integrity-block-evidence.json> `
@@ -439,6 +438,12 @@ python scripts/finalize_application_control_block_lane.py `
 Expected terminal result:
 
 `PRIVATE_STORE_SIGNING_LANE_READY`
+
+By default the finalizer resolves the exact frozen handoff path from
+`artifact-pull-receipt.json -> local_handoff_path`. This avoids manually retyping a
+long Windows path. It fails closed if that path is absent or no longer points to a
+file. `--handoff <path>` remains available as an explicit override/troubleshooting
+input.
 
 The finalizer:
 
