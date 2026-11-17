@@ -429,6 +429,53 @@ def apply_initial_submission_receipt(payload:Any, receipt:Any)->dict[str,Any]:
     return normalize_store_product_handoff(updated)
 
 
+
+def apply_recovered_initial_submission_receipt(payload:Any, receipt:Any)->dict[str,Any]:
+    """Bind a read-only recovered Draft after the owner manually started submission."""
+    raw=_obj(payload,"handoff")
+    current=normalize_store_product_handoff(raw)
+    rec=_obj(receipt,"recovered initial submission receipt")
+    if rec.get("schema_version")!="existing-store-initial-submission-reconcile-receipt/1":
+        raise StoreHandoffError("unsupported recovered initial submission receipt schema")
+    if rec.get("status")!="INITIAL_SUBMISSION_DRAFT_PRESENT_RECOVERED":
+        raise StoreHandoffError("recovered initial submission receipt is not a PASS")
+    if rec.get("submission_state")!="EXISTING_PRODUCT_DRAFT_PRESENT":
+        raise StoreHandoffError("recovered receipt did not prove an existing Draft")
+    if current["product"]["submission_kind"]!="new":
+        raise StoreHandoffError("recovered initial submission receipt requires submission_kind=new")
+    store_id=current["identity"]["store_id"]
+    if rec.get("store_id")!=store_id:
+        raise StoreHandoffError("recovered initial submission receipt store_id mismatch")
+    draft_id=str(rec.get("draft_id") or "").strip()
+    if not draft_id.isdigit():
+        raise StoreHandoffError("recovered initial submission receipt draft_id is invalid")
+    draft_url=str(rec.get("draft_url") or "").strip().rstrip("/")
+    expected_url=f"https://partner.microsoft.com/en-us/dashboard/products/{store_id}/submissions/{draft_id}"
+    if draft_url!=expected_url:
+        raise StoreHandoffError("recovered initial submission receipt draft_url mismatch")
+    required_false={
+        "retry_authorized":False,
+        "write_performed":False,
+        "start_submission_clicked":False,
+        "package_uploaded":False,
+        "pricing_changed":False,
+        "submitted":False,
+        "published":False,
+    }
+    for key,value in required_false.items():
+        if rec.get(key) is not value:
+            raise StoreHandoffError(f"recovered initial submission receipt has unsafe or missing flag: {key}")
+    updated=copy.deepcopy(raw)
+    updated.setdefault("product",{})["draft_id"]=draft_id
+    updated["product"]["draft_url"]=draft_url
+    updated["product"]["initial_submission_started"]=True
+    updated["product"]["initial_submission_start_source"]="owner_manual_reconciled"
+    updated["product"]["initial_submission_receipt_status"]="INITIAL_SUBMISSION_DRAFT_PRESENT_RECOVERED"
+    updated.setdefault("approvals",{})["initial_submission_start_completed"]=True
+    updated["approvals"]["initial_submission_start_completed_by"]="owner_manual_reconciled"
+    return normalize_store_product_handoff(updated)
+
+
 def to_windows_automator_input(normalized:dict[str,Any], *, package_path:str, images_dir:str)->dict[str,Any]:
     if normalized.get("schema_version")!="store-product-handoff/2":
         raise StoreHandoffError("normalize handoff before translation")
