@@ -243,10 +243,15 @@ and the wrapper:
 ```powershell
 python scripts/pull_group_b_store_product.py `
   --product-id <scheduled-api-runner|workflow-automation-hub|browser-automation-runner> `
-  --run-id <exact successful GitHub Actions run id> `
   --target-root C:\path\to\group-b-local-inbox `
   --receipt C:\path\to\evidence\artifact-pull-receipt.json
 ```
+
+By default the wrapper resolves the registered source branch, requires the current
+branch HEAD, and discovers a unique successful run of the registered Store-build
+workflow for that exact HEAD. If there are zero matches it HOLDs. If there are
+multiple exact-head successful Store runs it refuses to guess; pass `--run-id`
+explicitly after selecting the intended run.
 
 The wrapper delegates to `pull_store_product_artifact.py` and requires:
 
