@@ -82,6 +82,11 @@ class UnsignedExeLaunchReceiptTests(unittest.TestCase):
             "event_ids": [3033, 3077, 3118],
             "policy_name": "VerifiedAndReputableDesktop",
             "policy_guid": "{0283ac0f-fff1-49ae-ada1-8a933130cad6}",
+            "correlation_activity_id": "{2f3574e4-74dd-0008-cd37-9c3add74dd01}",
+            "policy_id": "27555.1000.240208",
+            "status_code": "0xc0e90002",
+            "event_flat_hash": SHA,
+            "event_flat_hash_matches_exe_sha256": True,
             "security_bypass_used": False,
             "security_policy_modified": False,
             "certificate_store_modified": False,
@@ -108,6 +113,14 @@ class UnsignedExeLaunchReceiptTests(unittest.TestCase):
         self.assertFalse(reconciled["second_launch_performed"])
         self.assertFalse(reconciled["local_final_qa_pass"])
         self.assertFalse(reconciled["store_actions_authorized"])
+        self.assertEqual(
+            reconciled["correlation_activity_id"],
+            "{2f3574e4-74dd-0008-cd37-9c3add74dd01}",
+        )
+        self.assertEqual(reconciled["policy_id"], "27555.1000.240208")
+        self.assertEqual(reconciled["status_code"], "0xc0e90002")
+        self.assertEqual(reconciled["event_flat_hash"], SHA)
+        self.assertTrue(reconciled["event_flat_hash_matches_exe_sha256"])
 
         validated = validate_unsigned_exe_launch_reconciliation_receipt(
             reconciled,
@@ -296,6 +309,18 @@ class DelayedCodeIntegrityReconciliationTests(unittest.TestCase):
         evidence = self._evidence()
         evidence["exe_sha256"] = "1" * 64
         with self.assertRaisesRegex(UnsignedExeLaunchReceiptError, "mismatch"):
+            reconcile_delayed_application_control_evidence(
+                launch,
+                evidence,
+                expected_exe_sha256=SHA,
+            )
+
+    def test_reconciliation_rejects_event_flat_hash_mismatch(self):
+        launch = base_receipt("LAUNCH_FAILED")
+        evidence = self._evidence()
+        evidence["event_flat_hash"] = "1" * 64
+        evidence["event_flat_hash_matches_exe_sha256"] = True
+        with self.assertRaisesRegex(UnsignedExeLaunchReceiptError, "flat hash"):
             reconcile_delayed_application_control_evidence(
                 launch,
                 evidence,
