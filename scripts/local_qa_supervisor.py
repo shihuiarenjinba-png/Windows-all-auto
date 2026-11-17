@@ -10,6 +10,10 @@ import subprocess
 from typing import Callable
 
 from all_auto.local_qa_evidence import EvidenceStore, GitHubContentsTransport
+from all_auto.product_qa_plan import (
+    BoundProductPlanPlanner, ProductQAPlanHold, load_bound_plan,
+    verify_plan_for_job,
+)
 from all_auto.qa_supervisor import (
     QASupervisor, load_default_catalog, require_new_source_sha,
 )
@@ -84,6 +88,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--evidence-branch", default="codex/local-qa-evidence-smoke")
     parser.add_argument("--base-ref")
     parser.add_argument("--previous-repair-handoff", type=Path)
+    parser.add_argument("--product-qa-plan", type=Path)
     args = parser.parse_args(argv)
 
     job = json.loads(args.job.read_text(encoding="utf-8"))
@@ -97,7 +102,37 @@ def main(argv: list[str] | None = None) -> int:
     store = EvidenceStore(args.state_root)
     store.recover_interrupted()
     catalog = load_default_catalog()
-    planner = PlannerEngine(client=OllamaPlannerClient(), model=args.model)
+    if args.product_qa_plan:
+        try:
+            bound_plan = load_bound_plan(args.product_qa_plan)
+            capability = verify_plan_for_job(
+                bound_plan,
+                job=job,
+                artifact_path=args.artifact,
+                supported_test_ids=set(catalog.tests),
+            )
+        except ProductQAPlanHold as exc:
+            print(json.dumps({
+                "status": "PRODUCT_QA_PLAN_HOLD",
+                "reason": str(exc),
+                "product_e2e_pass": False,
+                "release_ready": False,
+                "store_submission_allowed": False,
+            }, ensure_ascii=False, indent=2))
+            return 2
+        if capability["status"] != "PRODUCT_QA_PLAN_READY":
+            print(json.dumps({
+                **capability,
+                "product_e2e_pass": False,
+                "release_ready": False,
+                "store_submission_allowed": False,
+            }, ensure_ascii=False, indent=2))
+            return 2
+        planner = BoundProductPlanPlanner(
+            bound_plan, supported_test_ids=set(catalog.tests),
+        )
+    else:
+        planner = PlannerEngine(client=OllamaPlannerClient(), model=args.model)
     analyzer = (
         AnalysisEngine(client=OllamaClient(), model=args.model)
         if args.enable_analysis else None
