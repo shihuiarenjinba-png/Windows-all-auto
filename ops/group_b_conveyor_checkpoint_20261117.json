@@ -1,0 +1,91 @@
+{
+  "schema_version": "group-b-conveyor-checkpoint/1",
+  "recorded_date_jst": "2026-11-17",
+  "authority": "evidence_snapshot_only",
+  "store_write_authorized": false,
+  "main_release_merge_authorized": false,
+  "products": {
+    "folder-engine": {
+      "repository_full_name": "shihuiarenjinba-png/folder-automation-engine",
+      "pr_number": 10,
+      "head_sha": "a69d73aeeffbc7e734debec50aeb2b3b8900734d",
+      "ci": {
+        "safety_run_id": 44038977218,
+        "gui_validate_run_id": 44038977220,
+        "store_build_run_id": 44038977283,
+        "conclusion": "success"
+      },
+      "frozen_source_sha": "51597b389384be6cf2b3d85c09ee66099b80807e",
+      "frozen_msix_sha256": "911f8eb13abfdbb51bea8f279006d138d6be9cba4a25413416c1d70458676450",
+      "frozen_exe_sha256": "d53161ea1119445afb8070d989d4a72e8019895b8c5e166738a3e38718b54976",
+      "conveyor_state": "HOLD_SUBMISSION_RECONCILE_REQUIRED",
+      "direct_product_artifact_pull_supported": false,
+      "next_dependency": "Store execution owner returns INITIAL_SUBMISSION_DRAFT_PRESENT_RECOVERED receipt"
+    },
+    "scheduled-api-runner": {
+      "repository_full_name": "shihuiarenjinba-png/scheduled-api-runner",
+      "pr_number": 8,
+      "head_sha": "d0208ea9bedabb020ea7045ef1866dbf06e4b0fc",
+      "store_workflow_name": "Windows desktop / Windowsデスクトップ",
+      "store_run_id": 44091831027,
+      "store_artifact": {
+        "id": 14332625372,
+        "name": "ScheduledApiRunner-Store-MSIX-UNSIGNED-DRAFT",
+        "digest": "sha256:6ad2943f67d79b6e9a58b51cd72fb21919d3f45b6c35abd2a71e455cba640643",
+        "expired": false
+      },
+      "reliability_run_id": 44091831017,
+      "ci_conclusion": "success",
+      "conveyor_state": "GITHUB_COMPLETE_LOCAL_EXACT_ARTIFACT_CONFIRMATION_PENDING"
+    },
+    "workflow-automation-hub": {
+      "repository_full_name": "shihuiarenjinba-png/workflow-automation-hub",
+      "pr_number": 12,
+      "head_sha": "794f14eb9cb7a6e2998e720dbc2994ca7598d9be",
+      "store_workflow_name": "Windows build / Windowsビルド",
+      "store_run_id": 44091833266,
+      "store_artifact": {
+        "id": 14332076649,
+        "name": "WorkflowAutomationHub-Store-MSIX-UNSIGNED-DRAFT",
+        "digest": "sha256:ca3c4f56a3d5c41d235fb84d33cac46dd87ce539a5a2e29f0051e68421ca0921",
+        "expired": false
+      },
+      "gui_review_artifact": {
+        "id": 14332671548,
+        "name": "WorkflowAutomationHub-GUI-Review",
+        "digest": "sha256:673e9aaf2fddc305762fbe1a712e4325f16442f767cef04f1ccbe30c9919177c"
+      },
+      "ci_conclusion": "success",
+      "conveyor_state": "GITHUB_COMPLETE_LOCAL_EXACT_ARTIFACT_CONFIRMATION_PENDING"
+    },
+    "browser-automation-runner": {
+      "repository_full_name": "shihuiarenjinba-png/browser-automation-runner",
+      "pr_number": 8,
+      "head_sha": "56f7078ef425029c2fec3b5bd22fb0177bddbeb2",
+      "store_workflow_name": "Windows desktop code build",
+      "store_run_id": 44091842502,
+      "store_artifact": {
+        "id": 14332406569,
+        "name": "BrowserAutomationRunner-Store-MSIX-UNSIGNED-DRAFT",
+        "digest": "sha256:67e9db36f0802f3fb7840bf481e6902b9062bf55a3f0a296836736546083a1ac",
+        "expired": false
+      },
+      "reliability_run_id": 44091842536,
+      "ci_conclusion": "success",
+      "conveyor_state": "GITHUB_COMPLETE_LOCAL_EXACT_ARTIFACT_CONFIRMATION_PENDING",
+      "human_hold": "THIRD_PARTY_RIGHTS_OWNER_LEGAL_REVIEW"
+    }
+  },
+  "central": {
+    "repository_full_name": "shihuiarenjinba-png/Windows-all-auto",
+    "pr_number": 166,
+    "checkpoint_base_head": "be496f752498a7657937c481397c20b9c557ef4a",
+    "last_verified_offline_qa_run_id": 44092384913,
+    "last_verified_windows_tests": {
+      "total": 274,
+      "passed": 272,
+      "skipped": 2
+    },
+    "partner_center_write_performed": false
+  }
+}
