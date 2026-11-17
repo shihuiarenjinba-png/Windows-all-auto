@@ -166,6 +166,34 @@ def validate_extracted_store_artifact(
     }
 
 
+def require_expected_identity(
+    verified: dict[str, Any],
+    *,
+    store_id: str,
+    identity_name: str,
+    version: str,
+    architecture: str,
+) -> None:
+    identity = verified.get("identity")
+    if not isinstance(identity, dict):
+        raise ProductArtifactPullError("verified identity is missing")
+    expected = {
+        "store_id": store_id,
+        "identity_name": identity_name,
+        "version": version,
+        "architecture": architecture,
+    }
+    actual = {
+        "store_id": str(verified.get("store_id") or ""),
+        "identity_name": str(identity.get("name") or ""),
+        "version": str(identity.get("version") or ""),
+        "architecture": str(identity.get("architecture") or ""),
+    }
+    for key, value in expected.items():
+        if actual[key] != value:
+            raise ProductArtifactPullError(f"central registry mismatch: {key}")
+
+
 def stage_verified_store_artifact(
     verified: dict[str, Any],
     *,
