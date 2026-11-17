@@ -1,0 +1,36 @@
+{
+  "agent_dispatch_status": "AGENT_DISPATCH_PENDING",
+  "artifact_sha256": "d818fa25025e5412133c873c1bbbf09ec846d63fcbfa1241965c7e08eca3d1d4",
+  "failed_test_ids": [
+    "PROCESS_START"
+  ],
+  "failure_class": "UNKNOWN",
+  "missing_evidence": [],
+  "observed_evidence": [
+    {
+      "exit_code": 0,
+      "status": "TEST_PASS",
+      "test_id": "ARTIFACT_HASH",
+      "timed_out": false
+    },
+    {
+      "exit_code": 17,
+      "status": "TEST_FAIL",
+      "test_id": "PROCESS_START",
+      "timed_out": false
+    }
+  ],
+  "product_e2e_pass": false,
+  "recommended_owner": "APP",
+  "recommended_regression_test_ids": [
+    "ARTIFACT_HASH",
+    "PROCESS_START"
+  ],
+  "release_ready": false,
+  "request_id": "synthetic-final-sale-fail-df54595-20261117",
+  "retest_requires_new_source_sha": true,
+  "schema_version": "windows-qa-repair-handoff-v1",
+  "source_edit_authority": false,
+  "source_sha": "df545950b632d16de89da3089bc781e2b67c83f9",
+  "store_submission_allowed": false
+}
