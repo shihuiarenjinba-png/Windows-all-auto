@@ -398,18 +398,52 @@ Expected classification:
 The original launch receipt and Code Integrity evidence remain unchanged. The QA state
 remains `HOLD`.
 
-### P1 — hand the frozen block evidence to the Store execution owner
+### P1 — formalize the limited pre-Store signing lane, then hand off
+
+Before sending the evidence to the Store execution owner, convert the already-verified
+artifact + reconciled Application Control block into the central contract:
+
+`pre-store-static-qa-receipt/1`
+
+Use:
+
+```powershell
+python scripts/create_pre_store_static_block_receipt.py `
+  --handoff <frozen store-product-handoff.json> `
+  --artifact-receipt <immutable artifact-pull-receipt.json> `
+  --launch-reconciliation <unsigned-exe-launch-reconciliation-receipt.json> `
+  --output <new pre-store-static-qa-receipt.json>
+```
+
+Then apply it to a **new** handoff evidence file:
+
+```powershell
+python scripts/apply_pre_store_static_qa_receipt.py `
+  --handoff <frozen store-product-handoff.json> `
+  --receipt <pre-store-static-qa-receipt.json> `
+  --output <new handoff-after-pre-store-static-block.json>
+```
+
+Expected central QA state:
+
+- `pre_store_static_pass=true`
+- `unsigned_gui_execution_status=APPLICATION_CONTROL_BLOCKED`
+- `local_final_pass=false`
+- `store_signed_install_pass=false`
+- Private Store-signing lane may be ready only subject to the other independent
+  commercial/assets/security/audience gates.
+
+This receipt does **not** authorize upload, certification, pricing, audience change,
+or publication.
 
 The code-owner lane must not perform Partner Center writes. Provide the Store owner
-the exact frozen package binding plus the reconciled Application Control evidence and
-request the Store-signed Private distribution path.
+the exact frozen package binding, the reconciliation receipt, the pre-Store static
+receipt, and the updated package-bound handoff. Request a Microsoft Store-signed
+Private distribution path with zero acquisition cost.
 
-After the Store-signed build is available at zero acquisition cost, resume physical
-QA there. No unsigned relaunch is permitted.
-
-
-Complete only the remaining local-only checks on the Store-signed build. Do not rerun
-the whole GitHub unit suite.
+After the Store-signed build is available, resume physical QA there. No unsigned
+relaunch is permitted. Complete only the remaining local-only checks on the
+Store-signed build. Do not rerun the whole GitHub unit suite.
 
 Return the exact package-bound local QA receipt to Windows-all-auto.
 
