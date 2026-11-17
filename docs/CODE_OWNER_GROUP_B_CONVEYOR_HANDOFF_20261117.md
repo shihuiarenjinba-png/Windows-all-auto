@@ -311,6 +311,32 @@ Confirm:
 
 Do not install merely to prove the artifact pull path.
 
+### P0.5 — one-shot exact unsigned EXE launch evidence
+
+For Scheduled, after exact artifact/static verification, use:
+
+- `scripts/run_unsigned_exact_exe_smoke.ps1`
+- `scripts/apply_unsigned_exe_launch_receipt.py`
+
+The launch wrapper refuses elevated/admin PowerShell, re-hashes the exact EXE before
+launch, performs one attempt only, records Code Integrity evidence when available,
+and contains no bypass/install/Store action.
+
+Accepted launch statuses are:
+
+- `PASS_NORMAL_EXIT`
+- `STARTED_NOT_CLOSED_WITHIN_WINDOW`
+- `EXITED_NONZERO`
+- `APPLICATION_CONTROL_BLOCKED`
+- `LAUNCH_FAILED`
+
+Only `PASS_NORMAL_EXIT` proves the launch/normal-exit slice, and even that must leave
+the full local QA at `HOLD` until JP/EN, DPI, HTTPS GET, Task Scheduler and remaining
+product acceptance are complete.
+
+Do not relaunch after an Application Control block. Do not alter security policy,
+certificate stores, or use an alternate launcher.
+
 ### P1 — return machine-readable local evidence
 
 Complete only the local-only checks that actually require Windows. Do not rerun the
