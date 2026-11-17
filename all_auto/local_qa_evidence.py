@@ -324,6 +324,63 @@ class EvidenceStore:
         })
         return destination
 
+    def approve_screenshot_for_github(
+        self, run_id: str, *, filename: str, expected_sha256: str,
+    ) -> dict[str, Any]:
+        """Mark one already-captured screenshot shareable after explicit review.
+
+        Approval is only allowed before GitHub acknowledgement. The exact local
+        PNG/JPEG hash must still match the value recorded at capture time, then
+        the manifest/envelope/queue are rebuilt so the approved image is
+        covered by the payload hash that GitHub reads back.
+        """
+        folder = self._run_path(run_id)
+        if (self.acks / (run_id + ".json")).exists():
+            raise ValueError("screenshot approval must occur before GitHub acknowledgement")
+        index_path = folder / "screenshot-index.jsonl"
+        entries = self._jsonl(index_path)
+        matches = [item for item in entries if item.get("file") == filename]
+        if len(matches) != 1:
+            raise ValueError("screenshot approval target must match exactly once")
+        path = folder / "screenshots" / filename
+        if path.is_symlink() or not path.is_file():
+            raise ValueError("screenshot approval target missing or linked")
+        actual = sha256_file(path)
+        entry = matches[0]
+        if actual != expected_sha256 or entry.get("sha256") != expected_sha256:
+            raise ValueError("screenshot approval hash mismatch")
+        entry["privacy_reviewed_shareable"] = True
+        raw = "".join(
+            json.dumps(item, ensure_ascii=False, sort_keys=True) + "\n"
+            for item in entries
+        ).encode("utf-8")
+        atomic_write(index_path, raw)
+        append_jsonl(folder / "journal.jsonl", {
+            "at": utc_now(), "event": "SCREENSHOT_PRIVACY_REVIEW_APPROVED",
+            "file": filename, "sha256": expected_sha256,
+        })
+
+        state = json.loads((folder / "state.json").read_text(encoding="utf-8"))
+        event_path = folder / "windows-event-log.xml"
+        unavailable = folder / "windows-event-log.unavailable.txt"
+        if event_path.is_file():
+            event_status = "CAPTURED" if event_path.stat().st_size else "EMPTY_VALID"
+            event_error = None
+        elif unavailable.is_file():
+            event_status = "UNAVAILABLE"
+            event_error = unavailable.read_text(
+                encoding="utf-8", errors="replace"
+            )[:1000]
+        else:
+            event_status = "UNAVAILABLE"
+            event_error = "event log evidence missing"
+        self._finalize(
+            folder, state,
+            event_log_status=event_status,
+            event_log_error=event_error,
+        )
+        return json.loads((folder / "manifest.json").read_text(encoding="utf-8"))
+
     def _update_state(self, folder: Path, **changes: Any) -> dict[str, Any]:
         state = json.loads((folder / "state.json").read_text(encoding="utf-8"))
         state.update(changes)
