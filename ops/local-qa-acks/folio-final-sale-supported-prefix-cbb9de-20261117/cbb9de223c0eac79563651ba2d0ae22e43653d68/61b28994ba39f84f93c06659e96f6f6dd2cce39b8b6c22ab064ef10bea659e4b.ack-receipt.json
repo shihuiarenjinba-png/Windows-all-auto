@@ -1,0 +1,14 @@
+{
+  "e2e_pass": false,
+  "evidence_path": "ops/local-qa-results/folio-final-sale-supported-prefix-cbb9de-20261117/cbb9de223c0eac79563651ba2d0ae22e43653d68/61b28994ba39f84f93c06659e96f6f6dd2cce39b8b6c22ab064ef10bea659e4b.json",
+  "evidence_return_e2e_pass": true,
+  "payload_sha256": "61b28994ba39f84f93c06659e96f6f6dd2cce39b8b6c22ab064ef10bea659e4b",
+  "product_e2e_pass": false,
+  "release_ready": false,
+  "remote_file_sha256": "2008106613a2efe4423fb0323d08dd857293508bb4b78b3a9790c26557ee10c0",
+  "request_id": "folio-final-sale-supported-prefix-cbb9de-20261117",
+  "schema_version": "local-qa-github-ack-v1",
+  "source_sha": "cbb9de223c0eac79563651ba2d0ae22e43653d68",
+  "status": "GITHUB_READBACK_VERIFIED",
+  "store_submission_allowed": false
+}
