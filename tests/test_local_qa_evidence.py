@@ -486,7 +486,6 @@ class EvidenceSchemaTests(unittest.TestCase):
             encoding="utf-8"))
         required = set(schema["required"])
         self.assertIn("evidence_return_e2e_pass", required)
-        self.assertIn("test_status", required)
         self.assertIn("product_e2e_pass", required)
         self.assertEqual(schema["properties"]["product_e2e_pass"]["const"], False)
         self.assertEqual(schema["properties"]["e2e_pass"]["const"], False)
@@ -497,6 +496,11 @@ class EvidenceSchemaTests(unittest.TestCase):
             encoding="utf-8"))
         self.assertEqual(schema["properties"]["schema_version"]["const"],
                          "local-qa-github-ack-v1")
+        self.assertIn("test_status", set(schema["required"]))
+        self.assertEqual(
+            set(schema["properties"]["test_status"]["enum"]),
+            {"TEST_PASS", "TEST_FAIL"},
+        )
         for field in ("product_e2e_pass", "e2e_pass", "release_ready",
                       "store_submission_allowed"):
             self.assertEqual(schema["properties"][field]["const"], False)
