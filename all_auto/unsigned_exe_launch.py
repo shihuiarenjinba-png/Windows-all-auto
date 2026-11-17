@@ -213,6 +213,46 @@ def reconcile_delayed_application_control_evidence(
     if not policy_guid:
         raise UnsignedExeLaunchReceiptError("Code Integrity evidence policy_guid is required")
 
+    correlation_activity_id = code_integrity_evidence.get("correlation_activity_id")
+    if correlation_activity_id is not None:
+        correlation_activity_id = str(correlation_activity_id).strip()
+        if not (
+            correlation_activity_id.startswith("{")
+            and correlation_activity_id.endswith("}")
+            and len(correlation_activity_id) == 38
+        ):
+            raise UnsignedExeLaunchReceiptError(
+                "Code Integrity correlation_activity_id is invalid"
+            )
+
+    policy_id = code_integrity_evidence.get("policy_id")
+    if policy_id is not None:
+        policy_id = str(policy_id).strip()
+        if not policy_id:
+            raise UnsignedExeLaunchReceiptError("Code Integrity policy_id is empty")
+
+    status_code = code_integrity_evidence.get("status_code")
+    if status_code is not None:
+        status_code = str(status_code).strip().lower()
+        if (
+            len(status_code) != 10
+            or not status_code.startswith("0x")
+            or any(ch not in "0123456789abcdef" for ch in status_code[2:])
+        ):
+            raise UnsignedExeLaunchReceiptError("Code Integrity status_code is invalid")
+
+    event_flat_hash = code_integrity_evidence.get("event_flat_hash")
+    if event_flat_hash is not None:
+        event_flat_hash = _sha(event_flat_hash, "Code Integrity event flat hash")
+        if event_flat_hash != evidence_sha:
+            raise UnsignedExeLaunchReceiptError(
+                "Code Integrity event flat hash does not match exact EXE SHA256"
+            )
+        if code_integrity_evidence.get("event_flat_hash_matches_exe_sha256") is not True:
+            raise UnsignedExeLaunchReceiptError(
+                "Code Integrity evidence must explicitly confirm flat-hash binding"
+            )
+
     result = {
         "schema_version": "unsigned-exe-launch-reconciliation-receipt/1",
         "status": "APPLICATION_CONTROL_BLOCKED",
@@ -227,6 +267,13 @@ def reconcile_delayed_application_control_evidence(
         "all_observed_event_ids": sorted(set(event_ids)),
         "policy_name": policy,
         "policy_guid": policy_guid,
+        "correlation_activity_id": correlation_activity_id,
+        "policy_id": policy_id,
+        "status_code": status_code,
+        "event_flat_hash": event_flat_hash,
+        "event_flat_hash_matches_exe_sha256": (
+            event_flat_hash == evidence_sha if event_flat_hash is not None else None
+        ),
         "original_receipt_preserved": True,
         "second_launch_performed": False,
         "security_bypass_used": False,
@@ -276,6 +323,18 @@ def validate_unsigned_exe_launch_reconciliation_receipt(
     blocking = receipt.get("blocking_event_ids")
     if not isinstance(blocking, list) or not set(blocking).intersection({3033, 3077}):
         raise UnsignedExeLaunchReceiptError("reconciliation requires block-class event 3033/3077")
+
+    event_flat_hash = receipt.get("event_flat_hash")
+    if event_flat_hash is not None:
+        event_flat_hash = _sha(event_flat_hash, "reconciled event flat hash")
+        if event_flat_hash != expected:
+            raise UnsignedExeLaunchReceiptError(
+                "reconciled event flat hash does not match exact EXE SHA256"
+            )
+        if receipt.get("event_flat_hash_matches_exe_sha256") is not True:
+            raise UnsignedExeLaunchReceiptError(
+                "reconciled receipt must preserve flat-hash binding"
+            )
 
     for key in (
         "security_bypass_used",
