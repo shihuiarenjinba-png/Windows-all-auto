@@ -25,7 +25,7 @@
     "scheduled-api-runner": {
       "repository_full_name": "shihuiarenjinba-png/scheduled-api-runner",
       "pr_number": 8,
-      "head_sha": "3035e1ce2e4fd64427600eaba4c4d98b698b1fd8",
+      "head_sha": "9ecd71c6192af9e4b79cd61241618a8d2d65eb19",
       "store_workflow_name": "Windows desktop / Windowsデスクトップ",
       "store_run_id": 44093493317,
       "store_artifact": {
@@ -150,11 +150,11 @@
   "central": {
     "repository_full_name": "shihuiarenjinba-png/Windows-all-auto",
     "pr_number": 166,
-    "checkpoint_base_head": "a727723784f8b40cf335fe33d1f10011de305744",
-    "last_verified_offline_qa_run_id": 44188970996,
+    "checkpoint_base_head": "72c4b6275044a6d95a65e6b431f57a29d451806e",
+    "last_verified_offline_qa_run_id": 44189416920,
     "last_verified_windows_tests": {
-      "total": 311,
-      "passed": 309,
+      "total": 313,
+      "passed": 311,
       "skipped": 2
     },
     "partner_center_write_performed": false,
@@ -172,6 +172,9 @@
     "delayed_code_integrity_reconciliation_enabled": true,
     "pre_store_static_block_receipt_from_immutable_evidence_enabled": true,
     "latest_validation_date_jst": "2026-11-18",
-    "canonical_code_integrity_block_evidence_enabled": true
+    "canonical_code_integrity_block_evidence_enabled": true,
+    "application_control_block_lane_finalizer_enabled": true,
+    "application_control_block_lane_finalizer_atomic": true,
+    "reconciliation_cli_compatibility_alias_enabled": true
   }
 }
