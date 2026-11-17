@@ -160,6 +160,8 @@ class AcceptedProductQAPlan:
     slug: str
     package_sha256: str
     executable_sha256: str
+    executable_path: str
+    application_id: str
     qa_plan_sha256: str
     plan: dict[str, Any]
 
@@ -292,6 +294,8 @@ def load_handoff_bundle(bundle: Path) -> AcceptedProductQAPlan:
         slug=slug,
         package_sha256=package_sha,
         executable_sha256=exe_sha,
+        executable_path=executable_path,
+        application_id=application_id,
         qa_plan_sha256=plan_sha,
         plan=plan,
     )
@@ -413,6 +417,8 @@ def job_from_handoff(accepted: AcceptedProductQAPlan, *, request_id: str) -> dic
         "source_branch": accepted.source_branch,
         "source_sha": accepted.source_sha,
         "artifact_sha256": accepted.executable_sha256,
+        "factory_executable_path": accepted.executable_path,
+        "factory_application_id": accepted.application_id,
         "test_suite_version": PLAN_SCHEMA,
         "slug": accepted.slug,
         "factory_package_sha256": accepted.package_sha256,
