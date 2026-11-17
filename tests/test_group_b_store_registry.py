@@ -203,6 +203,19 @@ class GroupBStoreRegistryTests(unittest.TestCase):
         self.assertEqual(frozen["artifact_id"], 14333575447)
         self.assertTrue(frozen["local_static_verified"])
         self.assertTrue(frozen["promotion_requires_new_local_static_verification"])
+        self.assertEqual(
+            frozen["local_confirmation_state"],
+            "PASS_STATIC_ONLY_GUI_PENDING",
+        )
+        self.assertTrue(frozen["static_confirmation_complete"])
+        self.assertTrue(frozen["do_not_repeat_static_confirmation"])
+        self.assertFalse(frozen["gui_launch_attempted"])
+        self.assertTrue(frozen["launch_action_confirmation_required"])
+        self.assertFalse(frozen["local_full_test_suite_required"])
+        self.assertEqual(
+            frozen["next_action"],
+            "ONE_SHOT_NORMAL_USER_EXE_LAUNCH",
+        )
 
     def test_invalid_frozen_candidate_fails_closed(self):
         product = MODULE.load_product(
