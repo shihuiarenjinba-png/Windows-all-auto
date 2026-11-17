@@ -98,10 +98,14 @@ is never overwritten.
 
 ## Folder Automation Engine example
 
-The 2026-11-17 read-only reconciliation found the existing Draft for Store ID
-`9P99MJX1R4V6` and preserved its numeric Draft ID. The exact frozen
-`FolderAutomationEngine_1.0.0.0_x64_StoreDraft_UNSIGNED.msix` re-hashed to the
-expected SHA-256. Two deterministic application-window screenshot candidates
-exist, but owner visual approval is false, so the gate correctly returns
-`HOLD_STORE_ASSETS`. No Partner Center write is performed.
+As of the current checked-in handoff, the exact frozen
+`FolderAutomationEngine_1.0.0.0_x64_StoreDraft_UNSIGNED.msix` re-hashes to the
+expected SHA-256, but no recovered Draft ID/URL has yet been bound into the handoff.
+Therefore the correct fail-closed state is
+`HOLD_SUBMISSION_RECONCILE_REQUIRED` until the Store execution owner supplies a
+read-only reconciliation receipt with status
+`INITIAL_SUBMISSION_DRAFT_PRESENT_RECOVERED`.
+
+Only after that receipt is validated and bound may later gates such as Store assets
+be evaluated. No Partner Center write is performed by this local pre-upload gate.
 
