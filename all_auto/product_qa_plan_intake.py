@@ -206,6 +206,15 @@ def load_handoff_bundle(bundle: Path) -> AcceptedProductQAPlan:
             _hold(name+" is invalid")
     if handoff.get("package")!="package.msix" or handoff.get("qa_plan")!="qa-plan.json":
         _hold("handoff filenames are invalid")
+    package_bytes = handoff.get("package_bytes")
+    if (type(package_bytes) is not int or package_bytes <= 0 or
+            package_path.stat().st_size != package_bytes):
+        _hold("package byte count mismatch")
+    identity = handoff.get("identity")
+    if (not isinstance(identity, dict) or set(identity) != {"name","publisher","version"} or
+            any(not isinstance(identity.get(key),str) or not identity[key].strip()
+                for key in ("name","publisher","version"))):
+        _hold("package identity evidence is invalid")
     if handoff.get("qa_plan_schema") != PLAN_SCHEMA:
         _hold("handoff QA plan schema mismatch")
     slug=handoff.get("slug")
