@@ -64,6 +64,15 @@ Uploading a package, submitting certification, private-audience publishing, and
 public publishing are distinct external writes and require distinct execution-time
 approval. A checked-in approval value is evidence only.
 
+For paid Private-audience products, do not require the owner/tester to make a paid
+purchase merely to obtain the Store-signed build. Private audience controls who may
+acquire the product, but the configured paid price still applies. After certification
+and private publishing complete, use a Microsoft Store promotional code for the
+approved Private-audience Microsoft account so the signed build can be acquired at
+no charge. The product must complete publishing before the promotional code can be
+redeemed. Keep the intended commercial price intact; do not temporarily switch the
+product to Free solely for QA.
+
 ### Local QA receipt
 
 When a handoff contains `qa`, the existing `local-final-qa-receipt/1` remains the
