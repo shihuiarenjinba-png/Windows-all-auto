@@ -135,6 +135,23 @@ def _validate_job(job: dict[str, Any]) -> dict[str, Any]:
             if key == "slug" and not isinstance(job[key], str):
                 raise ValueError("LOCAL_QA_HOLD: invalid slug")
             safe[key] = job[key]
+    for key in ("package_sha256", "artifact_archive_sha256", "qa_plan_template_sha256"):
+        if key in job:
+            if not isinstance(job[key], str) or not SHA64.fullmatch(job[key]):
+                raise ValueError("LOCAL_QA_HOLD: invalid " + key)
+            safe[key] = job[key]
+    if "identity" in job:
+        identity = job["identity"]
+        if (not isinstance(identity, dict) or
+                set(identity) != {"name", "publisher", "version"} or
+                any(not isinstance(identity[name], str) or not identity[name]
+                    for name in ("name", "publisher", "version"))):
+            raise ValueError("LOCAL_QA_HOLD: invalid identity")
+        safe["identity"] = {
+            "name": identity["name"],
+            "publisher": identity["publisher"],
+            "version": identity["version"],
+        }
     return safe
 
 
