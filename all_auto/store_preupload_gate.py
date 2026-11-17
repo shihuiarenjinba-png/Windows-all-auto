@@ -188,12 +188,23 @@ def evaluate_store_preupload_gate(payload: Any) -> dict[str, Any]:
 
     fields_read = all(store_fields.get(section) is True for section in READ_SECTIONS)
     unknown = store_fields.get("unknown_partner_center_state") is not False
-    if not fields_read or unknown:
+    read_only_ui_state_changed = store_fields.get("read_only_ui_state_changed") is True
+    read_only_reload_reconciled = store_fields.get("read_only_reload_reconciled") is True
+    if (
+        not fields_read
+        or unknown
+        or (read_only_ui_state_changed and not read_only_reload_reconciled)
+    ):
         receipt = _base_receipt("HOLD_UNKNOWN_PARTNER_CENTER_STATE", package_path)
         receipt["local_package"] = package_evidence
         receipt["unread_sections"] = [
             section for section in READ_SECTIONS if store_fields.get(section) is not True
         ]
+        receipt["read_only_ui_state_changed"] = read_only_ui_state_changed
+        receipt["read_only_reload_reconciled"] = read_only_reload_reconciled
+        receipt["read_only_reconciliation_required"] = (
+            read_only_ui_state_changed and not read_only_reload_reconciled
+        )
         return receipt
 
     receipt = _base_receipt("READY_FOR_MSIX_UPLOAD_APPROVAL", package_path)
