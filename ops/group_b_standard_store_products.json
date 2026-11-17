@@ -31,7 +31,8 @@
         "real OS DPI 100/125/150",
         "authorized non-production HTTPS GET",
         "Windows Task Scheduler lifecycle"
-      ]
+      ],
+      "workflow_name": "Windows desktop / Windowsデスクトップ"
     },
     "workflow-automation-hub": {
       "name": "Workflow Automation Hub",
@@ -47,7 +48,8 @@
         "real OS DPI 100/125/150",
         "non-production Google OAuth and Blogger acceptance",
         "Windows Task Scheduler lifecycle"
-      ]
+      ],
+      "workflow_name": "Windows build / Windowsビルド"
     },
     "browser-automation-runner": {
       "name": "Browser Automation Runner",
@@ -63,7 +65,8 @@
         "real OS DPI 100/125/150",
         "bundled Chromium physical launch and harmless workflow",
         "owner/legal redistribution-rights review"
-      ]
+      ],
+      "workflow_name": "Windows desktop code build"
     }
   }
 }
