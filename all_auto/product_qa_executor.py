@@ -35,6 +35,7 @@ def execute_bound_product_plan(
     process_factory: Callable[..., Any] = subprocess.Popen,
     uia_executor: TrustedUIAExecutor | None = None,
     sleeper: Callable[[float], None] = time.sleep,
+    before_terminate: Callable[[Any, tuple[dict[str, Any], ...]], None] | None = None,
 ) -> ProductQAExecutionResult:
     """Run bound steps in order without accepting a command from the plan."""
     artifact = artifact_path.resolve()
@@ -123,7 +124,14 @@ def execute_bound_product_plan(
             else:
                 record(step, "SKIPPED_UNSUPPORTED_OPTIONAL")
             passed_steps.add(step["step_id"])
-        return ProductQAExecutionResult("TEST_PASS", tuple(actions))
+        frozen_actions = tuple(actions)
+        if before_terminate is not None:
+            if process is None or process.poll() is not None:
+                raise ProductQAExecutionHold(
+                    "PRODUCT_QA_EXECUTION_HOLD: product unavailable for evidence callback"
+                )
+            before_terminate(process, frozen_actions)
+        return ProductQAExecutionResult("TEST_PASS", frozen_actions)
     finally:
         if process is not None and process.poll() is None:
             process.terminate()
