@@ -2,6 +2,9 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import subprocess
+import sys
+import tempfile
 import unittest
 
 from all_auto.pre_store_static_block import (
@@ -119,6 +122,180 @@ class PreStoreStaticBlockReceiptTests(unittest.TestCase):
             build_pre_store_static_block_receipt(
                 handoff(), artifact_receipt(), bad
             )
+
+
+class FinalizeApplicationControlBlockLaneTests(unittest.TestCase):
+    def test_cli_atomically_builds_reconciliation_static_receipt_and_bound_handoff(self):
+        launch = {
+            "schema_version": "unsigned-exe-launch-receipt/1",
+            "status": "LAUNCH_FAILED",
+            "expected_exe_sha256": "c" * 64,
+            "actual_exe_sha256": "c" * 64,
+            "normal_user_context": True,
+            "elevated": False,
+            "launch_attempts": 1,
+            "process_started": False,
+            "exit_code": None,
+            "normal_exit": False,
+            "code_integrity_event_ids": [],
+            "package_rebuilt": False,
+            "security_bypass_used": False,
+            "security_policy_modified": False,
+            "certificate_store_modified": False,
+            "alternate_bypass_used": False,
+            "msix_installed": False,
+            "partner_center_write_performed": False,
+            "package_uploaded": False,
+            "certification_submitted": False,
+            "published": False,
+        }
+        evidence = {
+            "schema_version": "code-integrity-block-evidence/1",
+            "status": "APPLICATION_CONTROL_BLOCKED",
+            "exe_sha256": "c" * 64,
+            "event_ids": [3033, 3077, 3118],
+            "blocking_event_ids": [3033, 3077],
+            "supplemental_event_ids": [3118],
+            "policy_name": "VerifiedAndReputableDesktop",
+            "policy_guid": "{0283ac0f-fff1-49ae-ada1-8a933130cad6}",
+            "launch_attempts": 1,
+            "process_started": False,
+            "security_bypass_used": False,
+            "security_policy_modified": False,
+            "certificate_store_modified": False,
+            "alternate_bypass_used": False,
+            "msix_installed": False,
+            "partner_center_write_performed": False,
+            "package_uploaded": False,
+            "certification_submitted": False,
+            "published": False,
+        }
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            handoff_path = root / "handoff.json"
+            artifact_path = root / "artifact.json"
+            launch_path = root / "launch.json"
+            evidence_path = root / "ci.json"
+            output_dir = root / "finalized"
+            handoff_path.write_text(json.dumps(handoff()), encoding="utf-8")
+            artifact_path.write_text(json.dumps(artifact_receipt()), encoding="utf-8")
+            launch_path.write_text(json.dumps(launch), encoding="utf-8")
+            evidence_path.write_text(json.dumps(evidence), encoding="utf-8")
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(ROOT / "scripts" / "finalize_application_control_block_lane.py"),
+                    "--handoff",
+                    str(handoff_path),
+                    "--artifact-receipt",
+                    str(artifact_path),
+                    "--launch-receipt",
+                    str(launch_path),
+                    "--code-integrity-evidence",
+                    str(evidence_path),
+                    "--output-dir",
+                    str(output_dir),
+                ],
+                cwd=ROOT,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertTrue(
+                (output_dir / "unsigned-exe-launch-reconciliation-receipt.json").is_file()
+            )
+            self.assertTrue((output_dir / "pre-store-static-qa-receipt.json").is_file())
+            bound_path = output_dir / "handoff-after-pre-store-static-block.json"
+            self.assertTrue(bound_path.is_file())
+            bound = json.loads(bound_path.read_text(encoding="utf-8"))
+            self.assertTrue(bound["qa"]["pre_store_static_pass"])
+            self.assertTrue(bound["qa"]["private_store_signing_lane_ready"])
+            self.assertFalse(bound["qa"]["local_final_pass"])
+            self.assertFalse(bound["qa"]["store_signed_install_pass"])
+            self.assertFalse((root / ".finalized.staging").exists())
+
+    def test_cli_failure_removes_partial_staging(self):
+        launch = {
+            "schema_version": "unsigned-exe-launch-receipt/1",
+            "status": "LAUNCH_FAILED",
+            "expected_exe_sha256": "c" * 64,
+            "actual_exe_sha256": "c" * 64,
+            "normal_user_context": True,
+            "elevated": False,
+            "launch_attempts": 1,
+            "process_started": False,
+            "exit_code": None,
+            "normal_exit": False,
+            "code_integrity_event_ids": [],
+            "package_rebuilt": False,
+            "security_bypass_used": False,
+            "security_policy_modified": False,
+            "certificate_store_modified": False,
+            "alternate_bypass_used": False,
+            "msix_installed": False,
+            "partner_center_write_performed": False,
+            "package_uploaded": False,
+            "certification_submitted": False,
+            "published": False,
+        }
+        evidence = {
+            "schema_version": "code-integrity-block-evidence/1",
+            "status": "APPLICATION_CONTROL_BLOCKED",
+            "exe_sha256": "0" * 64,
+            "event_ids": [3033, 3077],
+            "blocking_event_ids": [3033, 3077],
+            "supplemental_event_ids": [],
+            "policy_name": "VerifiedAndReputableDesktop",
+            "policy_guid": "{0283ac0f-fff1-49ae-ada1-8a933130cad6}",
+            "launch_attempts": 1,
+            "process_started": False,
+            "security_bypass_used": False,
+            "security_policy_modified": False,
+            "certificate_store_modified": False,
+            "alternate_bypass_used": False,
+            "msix_installed": False,
+            "partner_center_write_performed": False,
+            "package_uploaded": False,
+            "certification_submitted": False,
+            "published": False,
+        }
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            handoff_path = root / "handoff.json"
+            artifact_path = root / "artifact.json"
+            launch_path = root / "launch.json"
+            evidence_path = root / "ci.json"
+            output_dir = root / "finalized"
+            handoff_path.write_text(json.dumps(handoff()), encoding="utf-8")
+            artifact_path.write_text(json.dumps(artifact_receipt()), encoding="utf-8")
+            launch_path.write_text(json.dumps(launch), encoding="utf-8")
+            evidence_path.write_text(json.dumps(evidence), encoding="utf-8")
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(ROOT / "scripts" / "finalize_application_control_block_lane.py"),
+                    "--handoff",
+                    str(handoff_path),
+                    "--artifact-receipt",
+                    str(artifact_path),
+                    "--launch-receipt",
+                    str(launch_path),
+                    "--code-integrity-evidence",
+                    str(evidence_path),
+                    "--output-dir",
+                    str(output_dir),
+                ],
+                cwd=ROOT,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertNotEqual(result.returncode, 0)
+            self.assertFalse(output_dir.exists())
+            self.assertFalse((root / ".finalized.staging").exists())
 
 
 if __name__ == "__main__":
