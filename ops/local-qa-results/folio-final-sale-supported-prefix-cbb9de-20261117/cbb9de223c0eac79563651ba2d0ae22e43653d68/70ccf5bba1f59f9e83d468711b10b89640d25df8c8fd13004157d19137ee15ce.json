@@ -1,0 +1,124 @@
+{
+  "payload": {
+    "files": [
+      {
+        "content": "UFJPQ0VTU19TVEFSVEVEX1BJRD0zNjQ0OA0KUFJPQ0VTU19TVVJWSVZFRF9PQlNFUlZBVElPTl9TRUNPTkRTPTUNClBST0NFU1NfVEVSTUlOQVRFRF9CWV9UUlVTVEVEX1FBX0hBUk5FU1MNCg==",
+        "encoding": "base64",
+        "path": "stdout.log",
+        "sha256": "7b9a3b9e6375dc6bb73d8088dfb5593167e10c8885fb6a0ba71e2c635bf668d7"
+      },
+      {
+        "content": "",
+        "encoding": "base64",
+        "path": "stderr.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "content": "",
+        "encoding": "base64",
+        "path": "windows-event-log.xml",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "content": "eyJhdCI6IjIwMjYtMTEtMTdUMDI6MzI6MzZaIiwiZXZlbnQiOiJSVU5fU1RBUlRFRCJ9CnsiYXQiOiIyMDI2LTExLTE3VDAyOjMyOjM2WiIsImV2ZW50IjoiUFJPQ0VTU19TVEFSVEVEIiwicGlkIjo3ODg4fQp7ImF0IjoiMjAyNi0xMS0xN1QwMjozMjo0NFoiLCJldmVudCI6IlBST0NFU1NfRklOSVNIRUQiLCJleGl0X2NvZGUiOjAsInN0YXR1cyI6IlRFU1RfUEFTUyIsInRpbWVkX291dCI6ZmFsc2V9Cg==",
+        "encoding": "base64",
+        "path": "journal.jsonl",
+        "sha256": "994d25f7292829c7de6bb3a9b97c77d59b07041a95164a34fca9d6def6ba979e"
+      }
+    ],
+    "manifest": {
+      "actual": {
+        "exit_code": 0,
+        "observation_seconds": null,
+        "process_started": true,
+        "survived_observation": false,
+        "terminated_by_harness": false,
+        "timed_out": false
+      },
+      "artifact_sha256": "ef812823e2adad59290c6f69ac41859aed3357b4d7900976f6b45c8eac6aee22",
+      "collection": {
+        "exit_code": "CAPTURED",
+        "expected_and_actual": "CAPTURED",
+        "github_shareable_screenshot": "NOT_APPLICABLE",
+        "screenshots": "NOT_APPLICABLE",
+        "stderr": "EMPTY_VALID",
+        "stdout": "CAPTURED",
+        "uia_actions": "NOT_APPLICABLE",
+        "windows_event_log": "EMPTY_VALID",
+        "windows_event_log_error": null
+      },
+      "collection_complete": true,
+      "e2e_pass": false,
+      "environment": {
+        "architecture": "AMD64",
+        "machine_id": "3a9f19c9b50748d8b49e0205f832b225",
+        "os": "Windows",
+        "os_release": "11",
+        "python": "3.14.4"
+      },
+      "evidence_return_e2e_pass": false,
+      "exit_code": 0,
+      "expected": {
+        "completion_policy": "WAIT_FOR_EXIT",
+        "exit_code": 0,
+        "observation_seconds": 0
+      },
+      "factory_dispatch": {
+        "reason": "No verified automatic development-agent dispatch contract is configured",
+        "status": "AGENT_DISPATCH_PENDING",
+        "target_repository": "shihuiarenjinba-png/AI-App-Factory"
+      },
+      "failed_tests": [],
+      "finished_at_utc": "2026-11-17T02:32:44Z",
+      "github_return": {
+        "readback_verified": false,
+        "status": "QUEUED"
+      },
+      "local_persistence_verified": true,
+      "product_e2e_pass": false,
+      "product_e2e_requirements": {
+        "artifact_package_sha_correlation": false,
+        "identity_correlation": false,
+        "package_qa": false,
+        "physical_gui_qa": false,
+        "product_specific_regression": false,
+        "product_specific_tests": false,
+        "version_correlation": false
+      },
+      "product_type": "APP",
+      "release_ready": false,
+      "request_id": "folio-final-sale-supported-prefix-cbb9de-20261117",
+      "run_id": "20261117T023236Z-ff08739c7f398a9b",
+      "schema_version": "local-qa-evidence-v1",
+      "slug": "folio-ai",
+      "source_branch": "codex/store-ollama-download-20261024",
+      "source_repository": "tsuhasqni-pixel/rag-ollama",
+      "source_sha": "cbb9de223c0eac79563651ba2d0ae22e43653d68",
+      "started_at_utc": "2026-11-17T02:32:36Z",
+      "status": "TEST_PASS",
+      "store_submission_allowed": false,
+      "test_command": [
+        "C:\\Python314\\python.exe",
+        "C:\\Users\\[REDACTED]\\Desktop\\portfolio-audit\\_task_worktrees\\waa-ollama-local-qa-supervisor\\scripts\\trusted_qa_test_runner.py",
+        "--test-id",
+        "PROCESS_START",
+        "--artifact",
+        "C:\\Users\\[REDACTED]\\Desktop\\portfolio-audit\\_task_worktrees\\waa-ollama-local-qa-supervisor\\.test-tmp\\final-sale\\folio\\diagnostic-intake\\FolioAI.exe",
+        "--expected-sha",
+        "ef812823e2adad59290c6f69ac41859aed3357b4d7900976f6b45c8eac6aee22"
+      ],
+      "test_suite_version": "factory-windows-closed-loop-v1",
+      "timed_out": false,
+      "user_price_approval": false,
+      "user_product_approval": false
+    },
+    "redaction": {
+      "replacement_count": 2,
+      "screenshots_require_explicit_privacy_review": true
+    }
+  },
+  "payload_sha256": "70ccf5bba1f59f9e83d468711b10b89640d25df8c8fd13004157d19137ee15ce",
+  "request_id": "folio-final-sale-supported-prefix-cbb9de-20261117",
+  "schema_version": "local-qa-evidence-v1",
+  "source_sha": "cbb9de223c0eac79563651ba2d0ae22e43653d68"
+}
