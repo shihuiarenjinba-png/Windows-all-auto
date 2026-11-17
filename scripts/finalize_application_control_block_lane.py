@@ -4,6 +4,7 @@ import argparse
 from hashlib import sha256
 import json
 from pathlib import Path
+import shutil
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -58,11 +59,13 @@ def main() -> int:
     p.add_argument("--output-dir", required=True, type=Path)
     a = p.parse_args()
 
-    if a.output_dir.exists():
-        if a.output_dir.is_symlink() or any(a.output_dir.iterdir()):
-            raise SystemExit("refusing non-empty or symlink output directory")
-    else:
-        a.output_dir.mkdir(parents=True, exist_ok=False)
+    if a.output_dir.exists() or a.output_dir.is_symlink():
+        raise SystemExit("refusing existing output directory")
+    a.output_dir.parent.mkdir(parents=True, exist_ok=True)
+    staging = a.output_dir.parent / f".{a.output_dir.name}.staging"
+    if staging.exists() or staging.is_symlink():
+        raise SystemExit("refusing existing staging directory")
+    staging.mkdir(parents=False, exist_ok=False)
 
     try:
         handoff = load(a.handoff)
@@ -83,6 +86,9 @@ def main() -> int:
             "code_integrity_evidence_sha256": file_sha256(a.code_integrity_evidence),
         }
 
+        reconciled_path = staging / "unsigned-exe-launch-reconciliation-receipt.json"
+        write_new(reconciled_path, reconciled)
+
         pre_store = build_pre_store_static_block_receipt(
             handoff,
             artifact,
@@ -90,10 +96,10 @@ def main() -> int:
         )
         pre_store["input_bindings"] = {
             "artifact_receipt_sha256": file_sha256(a.artifact_receipt),
-            "launch_reconciliation_sha256": sha256(
-                (json.dumps(reconciled, ensure_ascii=False, sort_keys=True) + "\n").encode("utf-8")
-            ).hexdigest(),
+            "launch_reconciliation_sha256": file_sha256(reconciled_path),
         }
+        pre_store_path = staging / "pre-store-static-qa-receipt.json"
+        write_new(pre_store_path, pre_store)
 
         bound = apply_pre_store_static_qa_receipt(handoff, pre_store)
         if bound["qa"]["private_store_signing_lane_ready"] is not True:
@@ -102,14 +108,13 @@ def main() -> int:
             raise ValueError("pre-Store static block must not mark local final QA PASS")
         if bound["qa"]["store_signed_install_pass"] is not False:
             raise ValueError("pre-Store static block must not mark Store-signed QA PASS")
-
-        reconciled_path = a.output_dir / "unsigned-exe-launch-reconciliation-receipt.json"
-        pre_store_path = a.output_dir / "pre-store-static-qa-receipt.json"
-        handoff_path = a.output_dir / "handoff-after-pre-store-static-block.json"
-
-        write_new(reconciled_path, reconciled)
-        write_new(pre_store_path, pre_store)
+        handoff_path = staging / "handoff-after-pre-store-static-block.json"
         write_new(handoff_path, bound)
+
+        staging.rename(a.output_dir)
+        reconciled_path = a.output_dir / reconciled_path.name
+        pre_store_path = a.output_dir / pre_store_path.name
+        handoff_path = a.output_dir / handoff_path.name
 
         print(
             json.dumps(
@@ -135,6 +140,8 @@ def main() -> int:
         StoreHandoffError,
         UnsignedExeLaunchReceiptError,
     ) as exc:
+        if staging.exists() and not staging.is_symlink():
+            shutil.rmtree(staging, ignore_errors=True)
         print(f"APPLICATION_CONTROL_BLOCK_LANE_HOLD: {str(exc)[:240]}", file=sys.stderr)
         return 2
 
