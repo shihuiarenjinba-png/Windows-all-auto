@@ -47,7 +47,19 @@
         "package_rebuilt": false,
         "security_bypass_used": false,
         "local_static_verified": true,
-        "promotion_requires_new_local_static_verification": true
+        "promotion_requires_new_local_static_verification": true,
+        "local_confirmation_state": "PASS_STATIC_ONLY_GUI_PENDING",
+        "static_confirmation_complete": true,
+        "artifact_receipt_verified": true,
+        "evidence_rerun_refused": true,
+        "manifest_identity_verified": true,
+        "defender_custom_scan_no_threats": true,
+        "authenticode_state": "NotSigned",
+        "gui_launch_attempted": false,
+        "launch_action_confirmation_required": true,
+        "local_full_test_suite_required": false,
+        "next_action": "ONE_SHOT_NORMAL_USER_EXE_LAUNCH",
+        "do_not_repeat_static_confirmation": true
       }
     },
     "workflow-automation-hub": {
