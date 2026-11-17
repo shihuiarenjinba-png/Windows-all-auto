@@ -10,6 +10,7 @@ from datetime import datetime, timezone
 from hashlib import sha256
 import json
 from pathlib import Path
+import re
 import shutil
 from typing import Any
 
@@ -17,6 +18,8 @@ from all_auto.store_product_handoff import normalize_store_product_handoff
 
 
 RECEIPT_SCHEMA = "local-store-product-artifact-pull-receipt/1"
+PRODUCT_ID = re.compile(r"^[a-z0-9][a-z0-9-]{0,63}$")
+HEX40 = re.compile(r"^[0-9a-f]{40}$")
 
 
 class ProductArtifactPullError(ValueError):
@@ -171,37 +174,58 @@ def stage_verified_store_artifact(
     if verified.get("schema_version") != RECEIPT_SCHEMA:
         raise ProductArtifactPullError("unsupported verified receipt schema")
     product_id = str(verified.get("product_id") or "").strip()
-    source_sha = str(verified.get("source_sha") or "").strip()
+    source_sha = str(verified.get("source_sha") or "").strip().lower()
     run_id = verified.get("artifact_run_id")
-    if not product_id or len(source_sha) != 40 or type(run_id) is not int:
-        raise ProductArtifactPullError("verified artifact binding is incomplete")
+    if (
+        not PRODUCT_ID.fullmatch(product_id)
+        or not HEX40.fullmatch(source_sha)
+        or type(run_id) is not int
+        or run_id <= 0
+    ):
+        raise ProductArtifactPullError("verified artifact binding is incomplete or unsafe")
 
+    target_root = target_root.resolve()
     destination = target_root / product_id / f"{source_sha[:12]}-run{run_id}"
+    staging = destination.parent / f".{destination.name}.staging"
     if destination.exists() or destination.is_symlink():
         raise ProductArtifactPullError("destination already exists; refusing to overwrite exact artifact")
-    destination.mkdir(parents=True, exist_ok=False)
+    if staging.exists() or staging.is_symlink():
+        raise ProductArtifactPullError("staging destination already exists; refusing ambiguous recovery")
+    if target_root not in destination.resolve().parents:
+        raise ProductArtifactPullError("destination escaped target root")
 
     sources = verified.get("_source_paths")
     if not isinstance(sources, dict):
         raise ProductArtifactPullError("verified source paths are missing")
-    copied = {}
-    for key in ("msix", "handoff", "validation", "checksum"):
-        src = Path(str(sources.get(key) or ""))
-        if not src.is_file():
-            raise ProductArtifactPullError(f"verified source file disappeared: {key}")
-        dst = destination / src.name
-        shutil.copy2(src, dst)
-        copied[key] = str(dst)
+
+    staging.parent.mkdir(parents=True, exist_ok=True)
+    staging.mkdir(parents=False, exist_ok=False)
+    copied: dict[str, Path] = {}
+    try:
+        for key in ("msix", "handoff", "validation", "checksum"):
+            src = Path(str(sources.get(key) or ""))
+            if not src.is_file():
+                raise ProductArtifactPullError(f"verified source file disappeared: {key}")
+            dst = staging / src.name
+            shutil.copy2(src, dst)
+            copied[key] = dst
+
+        if _hash(copied["msix"]) != verified["package"]["sha256"]:
+            raise ProductArtifactPullError("staged MSIX changed during copy")
+
+        staging.rename(destination)
+    except Exception:
+        if staging.exists() and not staging.is_symlink():
+            shutil.rmtree(staging, ignore_errors=True)
+        raise
 
     result = dict(verified)
     result.pop("_source_paths", None)
     result["staged_directory"] = str(destination)
-    result["local_package_path"] = copied["msix"]
-    result["local_handoff_path"] = copied["handoff"]
-    result["local_validation_path"] = copied["validation"]
-    result["local_checksum_path"] = copied["checksum"]
-    if _hash(Path(copied["msix"])) != result["package"]["sha256"]:
-        raise ProductArtifactPullError("staged MSIX changed during copy")
+    result["local_package_path"] = str(destination / copied["msix"].name)
+    result["local_handoff_path"] = str(destination / copied["handoff"].name)
+    result["local_validation_path"] = str(destination / copied["validation"].name)
+    result["local_checksum_path"] = str(destination / copied["checksum"].name)
     return result
 
 
