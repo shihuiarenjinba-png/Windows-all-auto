@@ -87,6 +87,18 @@ class ProductQAPlanIntakeTests(unittest.TestCase):
         with self.assertRaisesRegex(ProductQAPlanIntakeError,"plan hash"):
             load_handoff_bundle(self.bundle)
 
+    def test_package_byte_count_mismatch_holds(self):
+        self.handoff["package_bytes"] += 1
+        self.save_handoff()
+        with self.assertRaisesRegex(ProductQAPlanIntakeError,"byte count"):
+            load_handoff_bundle(self.bundle)
+
+    def test_invalid_source_branch_holds(self):
+        self.handoff["source_branch"]="../bad"
+        self.save_handoff()
+        with self.assertRaisesRegex(ProductQAPlanIntakeError,"source branch"):
+            load_handoff_bundle(self.bundle)
+
     def test_tampered_package_holds(self):
         (self.bundle/"package.msix").write_bytes(b"changed")
         with self.assertRaisesRegex(ProductQAPlanIntakeError,"package hash"):
