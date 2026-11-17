@@ -16,6 +16,7 @@ ROUTES={"msix_pwa_app":("app",{"msix","msixupload","msixbundle","appx","appxuplo
 TRIALS={"none","1_day","7_days","15_days","30_days","unlimited"}
 AUDIENCES={"PRIVATE_AUDIENCE_TEST","PUBLIC_RELEASE"}
 VERSION_HISTORY_STATES={"VERIFIED_ACCEPTED_HISTORY","NO_ACCEPTED_PACKAGE_OBSERVED","UNKNOWN"}
+UNSIGNED_GUI_STATES={"NOT_ATTEMPTED","PASS","APPLICATION_CONTROL_BLOCKED","OTHER_HOLD"}
 
 class StoreHandoffError(ValueError): pass
 
@@ -112,6 +113,30 @@ def normalize_store_product_handoff(payload:Any)->dict[str,Any]:
         for key in ("github_exact_head_ci_pass","local_final_pass","store_signed_install_pass"):
             if qa.get(key) not in {True,False}:
                 raise StoreHandoffError(f"qa.{key} must be boolean")
+        if "pre_store_static_pass" in qa and qa.get("pre_store_static_pass") not in {True,False}:
+            raise StoreHandoffError("qa.pre_store_static_pass must be boolean")
+        unsigned_gui_execution_status=str(
+            qa.get("unsigned_gui_execution_status")
+            or ("PASS" if qa.get("local_final_pass") is True else "NOT_ATTEMPTED")
+        ).strip()
+        if unsigned_gui_execution_status not in UNSIGNED_GUI_STATES:
+            raise StoreHandoffError("unsupported qa.unsigned_gui_execution_status")
+        pre_store_static_pass=qa.get("pre_store_static_pass") is True
+        local_final_pass=qa.get("local_final_pass") is True
+        store_signed_install_pass=qa.get("store_signed_install_pass") is True
+        private_store_signing_lane_ready=(
+            local_final_pass
+            or (
+                pre_store_static_pass
+                and unsigned_gui_execution_status=="APPLICATION_CONTROL_BLOCKED"
+            )
+        )
+    else:
+        unsigned_gui_execution_status="NOT_ATTEMPTED"
+        pre_store_static_pass=False
+        local_final_pass=False
+        store_signed_install_pass=False
+        private_store_signing_lane_ready=False
 
     ready_checks={
         "identity.live_partner_center_reverified": identity.get("live_partner_center_reverified") is True,
@@ -126,7 +151,15 @@ def normalize_store_product_handoff(payload:Any)->dict[str,Any]:
         "approvals.owner_approved_for_draft": approvals.get("owner_approved_for_draft") is True,
     }
     if qa_present:
-        ready_checks["qa.local_final_pass"]=qa.get("local_final_pass") is True
+        ready_checks["qa.local_final_pass"]=(
+            local_final_pass
+            or (
+                audience=="PRIVATE_AUDIENCE_TEST"
+                and private_store_signing_lane_ready
+            )
+        )
+        if audience=="PUBLIC_RELEASE":
+            ready_checks["qa.store_signed_install_pass"]=store_signed_install_pass
     if audience=="PRIVATE_AUDIENCE_TEST":
         ready_checks["distribution.known_user_group"]=isinstance(distribution.get("known_user_group"),str) and bool(distribution.get("known_user_group").strip())
     missing=sorted(k for k,v in ready_checks.items() if not v)
@@ -156,8 +189,11 @@ def normalize_store_product_handoff(payload:Any)->dict[str,Any]:
     if qa_present:
         result["qa"]={**qa,
                       "github_exact_head_ci_pass":qa.get("github_exact_head_ci_pass") is True,
-                      "local_final_pass":qa.get("local_final_pass") is True,
-                      "store_signed_install_pass":qa.get("store_signed_install_pass") is True}
+                      "local_final_pass":local_final_pass,
+                      "store_signed_install_pass":store_signed_install_pass,
+                      "pre_store_static_pass":pre_store_static_pass,
+                      "unsigned_gui_execution_status":unsigned_gui_execution_status,
+                      "private_store_signing_lane_ready":private_store_signing_lane_ready}
     return result
 
 def apply_local_final_qa_receipt(payload:Any, receipt:Any)->dict[str,Any]:
@@ -205,6 +241,99 @@ def apply_local_final_qa_receipt(payload:Any, receipt:Any)->dict[str,Any]:
     updated["qa"]["local_final_qa_receipt_status"]="PASS"
     updated["qa"]["local_final_qa_product_specific_checks"]=list(rec.get("product_specific_checks") or [])
     return normalize_store_product_handoff(updated)
+
+def apply_pre_store_static_qa_receipt(payload:Any, receipt:Any)->dict[str,Any]:
+    """Bind a safe pre-Store static QA HOLD caused by Windows Application Control.
+
+    This receipt does not claim GUI acceptance. It only permits the limited
+    Private-audience Microsoft Store signing lane when exact package provenance
+    passed and no security bypass was used.
+    """
+    raw=_obj(payload,"handoff")
+    current=normalize_store_product_handoff(raw)
+    rec=_obj(receipt,"pre-Store static QA receipt")
+    if rec.get("schema_version")!="pre-store-static-qa-receipt/1":
+        raise StoreHandoffError("unsupported pre-Store static QA receipt schema")
+    if rec.get("status")!="APPLICATION_CONTROL_BLOCKED":
+        raise StoreHandoffError("pre-Store static QA receipt must record Application Control block")
+    expected={
+        "store_id":current["identity"]["store_id"],
+        "source_sha":current["product"]["source_sha"],
+        "package_sha256":current["package"]["package_sha256"],
+    }
+    for key,value in expected.items():
+        actual=str(rec.get(key) or "")
+        if key.endswith("sha") or key.endswith("sha256"):
+            actual=actual.lower()
+        if actual!=value:
+            raise StoreHandoffError(f"pre-Store static QA receipt mismatch: {key}")
+    for key in (
+        "tests_passed","package_sha_verified","unpacked_exe_sha_verified",
+        "manifest_identity_verified","application_control_blocked",
+    ):
+        if rec.get(key) is not True:
+            raise StoreHandoffError(f"pre-Store static QA receipt missing evidence: {key}")
+    for key in (
+        "package_rebuilt","security_bypass_used","security_policy_modified",
+        "certificate_store_modified","alternate_bypass_used",
+    ):
+        if rec.get(key) is not False:
+            raise StoreHandoffError(f"unsafe pre-Store static QA receipt flag: {key}")
+
+    updated=copy.deepcopy(raw)
+    updated.setdefault("qa",{})
+    updated["qa"]["github_exact_head_ci_pass"]=True
+    updated["qa"]["local_final_pass"]=False
+    updated["qa"]["store_signed_install_pass"]=False
+    updated["qa"]["pre_store_static_pass"]=True
+    updated["qa"]["unsigned_gui_execution_status"]="APPLICATION_CONTROL_BLOCKED"
+    updated["qa"]["pre_store_static_qa_receipt_status"]="APPLICATION_CONTROL_BLOCKED"
+    return normalize_store_product_handoff(updated)
+
+
+def apply_store_signed_install_qa_receipt(payload:Any, receipt:Any)->dict[str,Any]:
+    """Bind final physical QA performed on the Microsoft Store-signed build."""
+    raw=_obj(payload,"handoff")
+    current=normalize_store_product_handoff(raw)
+    rec=_obj(receipt,"Store-signed install QA receipt")
+    if rec.get("schema_version")!="store-signed-install-qa-receipt/1":
+        raise StoreHandoffError("unsupported Store-signed install QA receipt schema")
+    if rec.get("status")!="PASS":
+        raise StoreHandoffError("Store-signed install QA receipt is not PASS")
+    expected={
+        "store_id":current["identity"]["store_id"],
+        "source_sha":current["product"]["source_sha"],
+        "original_package_sha256":current["package"]["package_sha256"],
+        "identity_name":current["identity"]["name"],
+        "version":current["identity"]["version"],
+        "architecture":current["identity"]["architecture"],
+    }
+    for key,value in expected.items():
+        actual=str(rec.get(key) or "")
+        if key.endswith("sha") or key.endswith("sha256"):
+            actual=actual.lower()
+        if actual!=value:
+            raise StoreHandoffError(f"Store-signed install QA receipt mismatch: {key}")
+    for key in (
+        "microsoft_store_delivery_verified","signature_trust_verified",
+        "jp_en_gui_passed","dpi_matrix_passed","product_specific_acceptance_passed",
+        "normal_exit_passed",
+    ):
+        if rec.get(key) is not True:
+            raise StoreHandoffError(f"Store-signed install QA receipt missing PASS: {key}")
+    for key in ("package_rebuilt","security_bypass_used"):
+        if rec.get(key) is not False:
+            raise StoreHandoffError(f"unsafe Store-signed install QA receipt flag: {key}")
+
+    updated=copy.deepcopy(raw)
+    updated.setdefault("qa",{})
+    updated["qa"].setdefault("github_exact_head_ci_pass",True)
+    updated["qa"].setdefault("local_final_pass",False)
+    updated["qa"]["store_signed_install_pass"]=True
+    updated["qa"]["store_signed_install_qa_receipt_status"]="PASS"
+    updated["qa"]["store_signed_product_specific_checks"]=list(rec.get("product_specific_checks") or [])
+    return normalize_store_product_handoff(updated)
+
 
 def apply_identity_reverify_receipt(payload:Any, receipt:Any)->dict[str,Any]:
     """Bind a local read-only Partner Center identity receipt to the Store handoff.
