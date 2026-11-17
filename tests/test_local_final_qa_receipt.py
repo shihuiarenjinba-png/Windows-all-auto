@@ -7,6 +7,8 @@ from pathlib import Path
 from all_auto.store_product_handoff import (
     StoreHandoffError,
     apply_local_final_qa_receipt,
+    apply_pre_store_static_qa_receipt,
+    apply_store_signed_install_qa_receipt,
     normalize_store_product_handoff,
 )
 
@@ -65,6 +67,69 @@ class LocalFinalQaReceiptTests(unittest.TestCase):
         with self.assertRaises(StoreHandoffError):
             apply_local_final_qa_receipt(self.payload, bad)
 
+    def test_application_control_block_opens_only_private_store_signing_lane(self):
+        receipt = {
+            "schema_version": "pre-store-static-qa-receipt/1",
+            "status": "APPLICATION_CONTROL_BLOCKED",
+            "store_id": self.payload["identity"]["store_id"],
+            "source_sha": self.payload["product"]["source_sha"],
+            "package_sha256": self.payload["package"]["package_sha256"],
+            "tests_passed": True,
+            "package_sha_verified": True,
+            "unpacked_exe_sha_verified": True,
+            "manifest_identity_verified": True,
+            "application_control_blocked": True,
+            "package_rebuilt": False,
+            "security_bypass_used": False,
+            "security_policy_modified": False,
+            "certificate_store_modified": False,
+            "alternate_bypass_used": False,
+        }
+        n = apply_pre_store_static_qa_receipt(self.payload, receipt)
+        self.assertTrue(n["qa"]["pre_store_static_pass"])
+        self.assertEqual(
+            "APPLICATION_CONTROL_BLOCKED",
+            n["qa"]["unsigned_gui_execution_status"],
+        )
+        self.assertTrue(n["qa"]["private_store_signing_lane_ready"])
+        self.assertFalse(n["qa"]["local_final_pass"])
+        self.assertFalse(n["qa"]["store_signed_install_pass"])
+        self.assertNotIn("qa.local_final_pass", n["missing_for_draft"])
+
+        public = json.loads(json.dumps(n))
+        public["distribution"]["audience"] = "PUBLIC_RELEASE"
+        public["distribution"]["public_release_approved"] = True
+        public_n = normalize_store_product_handoff(public)
+        self.assertIn("qa.store_signed_install_pass", public_n["missing_for_draft"])
+
+    def test_store_signed_receipt_unlocks_public_qa_gate_only(self):
+        self.payload["distribution"]["audience"] = "PUBLIC_RELEASE"
+        self.payload["distribution"]["public_release_approved"] = True
+        receipt = {
+            "schema_version": "store-signed-install-qa-receipt/1",
+            "status": "PASS",
+            "store_id": self.payload["identity"]["store_id"],
+            "source_sha": self.payload["product"]["source_sha"],
+            "original_package_sha256": self.payload["package"]["package_sha256"],
+            "identity_name": self.payload["identity"]["name"],
+            "version": self.payload["identity"]["version"],
+            "architecture": self.payload["identity"]["architecture"],
+            "microsoft_store_delivery_verified": True,
+            "signature_trust_verified": True,
+            "jp_en_gui_passed": True,
+            "dpi_matrix_passed": True,
+            "product_specific_acceptance_passed": True,
+            "normal_exit_passed": True,
+            "package_rebuilt": False,
+            "security_bypass_used": False,
+            "product_specific_checks": ["signed-store-install"],
+        }
+        n = apply_store_signed_install_qa_receipt(self.payload, receipt)
+        self.assertTrue(n["qa"]["store_signed_install_pass"])
+        self.assertNotIn("qa.store_signed_install_pass", n["missing_for_draft"])
+        self.assertFalse(n["approvals"]["owner_approved_for_draft"])
+        self.assertFalse(n["security"]["owner_confirmation_complete"])
+
     def test_documented_store_handoff_scripts_run_directly(self):
         root = Path(__file__).resolve().parents[1]
         scripts = (
@@ -73,6 +138,8 @@ class LocalFinalQaReceiptTests(unittest.TestCase):
             "prepare_store_automator_input.py",
             "apply_identity_reverify_receipt.py",
             "apply_initial_submission_receipt.py",
+            "apply_pre_store_static_qa_receipt.py",
+            "apply_store_signed_install_qa_receipt.py",
         )
         for name in scripts:
             with self.subTest(script=name):
