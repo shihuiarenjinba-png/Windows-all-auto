@@ -16,6 +16,7 @@
     "schema_version",
     "source_sha",
     "status",
+    "test_status",
     "store_submission_allowed"
   ],
   "properties": {
@@ -24,6 +25,7 @@
     "source_sha": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
     "payload_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
     "status": { "const": "GITHUB_READBACK_VERIFIED" },
+    "test_status": { "enum": ["TEST_PASS", "TEST_FAIL"] },
     "evidence_return_e2e_pass": { "type": "boolean" },
     "product_e2e_pass": { "const": false },
     "e2e_pass": { "const": false },
