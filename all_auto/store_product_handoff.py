@@ -234,6 +234,12 @@ def apply_local_final_qa_receipt(payload:Any, receipt:Any)->dict[str,Any]:
     for key in ("package_rebuilt","security_bypass_used"):
         if rec.get(key) is not False:
             raise StoreHandoffError(f"unsafe local QA receipt flag: {key}")
+    if rec.get("local_full_test_suite_required") is True:
+        raise StoreHandoffError("local QA must not require duplicating the full GitHub CI test suite")
+    if "github_ci_is_primary" in rec and rec.get("github_ci_is_primary") is not True:
+        raise StoreHandoffError("Group B local QA receipt must preserve GitHub CI as primary")
+    if "test_source" in rec and rec.get("test_source") != "github_exact_head_ci":
+        raise StoreHandoffError("unsupported local QA test_source")
 
     updated=copy.deepcopy(raw)
     updated.setdefault("qa",{})
