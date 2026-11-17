@@ -46,6 +46,34 @@ Windows-all-auto supports exact-package local QA receipts:
 
 A QA receipt cannot be reused for another source/package.
 
+## Signing policy for Group B standard MSIX products
+
+The intended production signing route is the Microsoft Store's MSIX signing path.
+Do not introduce a paid CA certificate merely to satisfy these Store releases.
+
+If an owner-controlled Windows QA device naturally runs the exact unsigned test
+bytes, complete physical QA before Store submission as usual. If Windows Application
+Control blocks those exact unsigned bytes, treat that as an environment HOLD rather
+than weakening policy or installing a temporary trust certificate.
+
+For the initial Store release, the preferred signed-QA lane is:
+
+1. exact source/MSIX/EXE provenance and static preflight PASS;
+2. source/CI functional tests PASS;
+3. live Partner Center identity/submission-state reverify;
+4. separately approved package upload;
+5. separately approved certification submission configured for **Private audience**;
+6. after certification/private publishing, install the Microsoft-signed Store build;
+7. run JP/EN, DPI and product-specific physical QA against that signed Store build;
+8. only after PASS, create a separate submission to move to Public audience.
+
+The Private-audience publish is not the same approval as package upload,
+certification submission, or later Public publication. Do not infer any of those
+approvals from this document.
+
+For subsequent updates, a Package flight may be used as the limited-audience signed
+test path before broad release.
+
 ## Priority 1 — Folder Automation Engine
 
 Repository: `shihuiarenjinba-png/folder-automation-engine`  
