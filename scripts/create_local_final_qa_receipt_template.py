@@ -62,6 +62,8 @@ def main() -> int:
         "product_specific_checks": checks,
         "notes": "",
     }
+    if a.output.exists() or a.output.is_symlink():
+        raise SystemExit("refusing to overwrite existing local QA evidence template")
     a.output.parent.mkdir(parents=True, exist_ok=True)
     a.output.write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps({
