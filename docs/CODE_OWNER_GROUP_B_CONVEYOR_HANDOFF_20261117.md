@@ -377,8 +377,17 @@ Do not request or perform another unsigned launch.
 
 Do **not** relaunch the unsigned EXE.
 
-Use the immutable original launch receipt plus the separate
-`code-integrity-block-evidence/1`:
+Use the immutable original launch receipt plus a separate
+`code-integrity-block-evidence/1`.
+
+If the existing raw Code Integrity evidence is not already in that schema, do not
+edit it. Create a new canonical evidence file with
+`scripts/create_code_integrity_block_evidence.py`, binding the exact EXE SHA,
+events 3033/3077 (3118 may remain supplemental), policy name
+`VerifiedAndReputableDesktop`, policy GUID
+`{0283ac0f-fff1-49ae-ada1-8a933130cad6}`, and the raw evidence path/hash.
+
+Then reconcile:
 
 ```powershell
 python scripts/reconcile_delayed_code_integrity_launch.py `
