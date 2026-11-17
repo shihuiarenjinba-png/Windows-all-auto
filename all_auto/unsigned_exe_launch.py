@@ -132,10 +132,20 @@ def reconcile_delayed_application_control_evidence(
     This is read-only reconciliation: it never changes the original launch receipt
     and never implies a second launch attempt.
     """
-    launch = validate_unsigned_exe_launch_receipt(
-        launch_receipt,
-        expected_exe_sha256=expected_exe_sha256,
-    )
+    if (
+        isinstance(launch_receipt, dict)
+        and launch_receipt.get("schema_version")
+        == "unsigned-exe-launch-reconciliation-receipt/1"
+    ):
+        launch = validate_unsigned_exe_launch_reconciliation_receipt(
+            launch_receipt,
+            expected_exe_sha256=expected_exe_sha256,
+        )
+    else:
+        launch = validate_unsigned_exe_launch_receipt(
+            launch_receipt,
+            expected_exe_sha256=expected_exe_sha256,
+        )
     if launch["status"] != "LAUNCH_FAILED":
         raise UnsignedExeLaunchReceiptError(
             "delayed Code Integrity reconciliation requires original LAUNCH_FAILED"
@@ -232,6 +242,58 @@ def reconcile_delayed_application_control_evidence(
         "store_actions_authorized": False,
     }
     return result
+
+
+def validate_unsigned_exe_launch_reconciliation_receipt(
+    receipt: Any,
+    *,
+    expected_exe_sha256: str,
+) -> dict[str, Any]:
+    if not isinstance(receipt, dict):
+        raise UnsignedExeLaunchReceiptError("reconciliation receipt must be an object")
+    if receipt.get("schema_version") != "unsigned-exe-launch-reconciliation-receipt/1":
+        raise UnsignedExeLaunchReceiptError("unsupported launch reconciliation schema")
+    if receipt.get("status") != "APPLICATION_CONTROL_BLOCKED":
+        raise UnsignedExeLaunchReceiptError("launch reconciliation must classify Application Control block")
+
+    expected = _sha(expected_exe_sha256, "expected EXE SHA256")
+    if _sha(receipt.get("expected_exe_sha256"), "reconciled expected EXE SHA256") != expected:
+        raise UnsignedExeLaunchReceiptError("reconciled expected EXE SHA256 mismatch")
+    if _sha(receipt.get("actual_exe_sha256"), "reconciled actual EXE SHA256") != expected:
+        raise UnsignedExeLaunchReceiptError("reconciled actual EXE SHA256 mismatch")
+
+    if receipt.get("original_launch_status") != "LAUNCH_FAILED":
+        raise UnsignedExeLaunchReceiptError("reconciliation must preserve original LAUNCH_FAILED")
+    if receipt.get("original_receipt_preserved") is not True:
+        raise UnsignedExeLaunchReceiptError("original launch receipt must remain preserved")
+    if receipt.get("second_launch_performed") is not False:
+        raise UnsignedExeLaunchReceiptError("reconciliation must not perform a second launch")
+    if receipt.get("launch_attempts") != 1:
+        raise UnsignedExeLaunchReceiptError("reconciliation must preserve exactly one launch attempt")
+    if receipt.get("process_started") is not False or receipt.get("normal_exit") is not False:
+        raise UnsignedExeLaunchReceiptError("reconciled Application Control block requires no process start")
+
+    blocking = receipt.get("blocking_event_ids")
+    if not isinstance(blocking, list) or not set(blocking).intersection({3033, 3077}):
+        raise UnsignedExeLaunchReceiptError("reconciliation requires block-class event 3033/3077")
+
+    for key in (
+        "security_bypass_used",
+        "security_policy_modified",
+        "certificate_store_modified",
+        "alternate_bypass_used",
+        "msix_installed",
+        "partner_center_write_performed",
+        "package_uploaded",
+        "certification_submitted",
+        "published",
+        "local_final_qa_pass",
+        "store_actions_authorized",
+    ):
+        if receipt.get(key) is not False:
+            raise UnsignedExeLaunchReceiptError(f"unsafe reconciliation flag: {key}")
+
+    return deepcopy(receipt)
 
 
 def bind_unsigned_launch_to_local_qa(
