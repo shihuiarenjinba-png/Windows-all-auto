@@ -358,7 +358,7 @@ Work in this order.
 Do **not** repeat Scheduled artifact staging or static confirmation. The local report
 has already established:
 
-- state: `PASS_STATIC_ONLY_GUI_PENDING`;
+- state: `APPLICATION_CONTROL_BLOCKED_STORE_SIGNED_QA_REQUIRED`;
 - artifact receipt verified against the frozen candidate;
 - repeated workspace/receipt/template creation refused and prior evidence hashes
   remained unchanged;
@@ -370,8 +370,8 @@ has already established:
 - GitHub CI remains primary and no full local suite was duplicated;
 - QA template remains `HOLD`.
 
-The next action is the one-shot physical launch below. It requires action-time
-confirmation. Do not treat this handoff document as that approval.
+The one-shot physical launch is already complete and blocked before process start.
+Do not request or perform another unsigned launch.
 
 ### P0.5 — reconcile the delayed Code Integrity evidence
 
@@ -421,7 +421,7 @@ If Windows Application Control blocks an exact unsigned executable:
 - do not bypass it;
 - use the established pre-Store static/Store-signing lane if applicable.
 
-### P1 — keep direct-pull products generic
+### P2 — keep direct-pull products generic
 
 Any code needed by Scheduled / Hub / Browser should live centrally when possible.
 Avoid copying product-independent artifact/provenance logic into three repositories.
@@ -433,7 +433,7 @@ Product repositories should own only:
 - product-specific local-only checklist;
 - customer-facing Store/compliance documents.
 
-### P2 — Folder resume path
+### P3 — Folder resume path
 
 When the Store owner returns the recovered Draft receipt:
 
@@ -444,7 +444,7 @@ When the Store owner returns the recovered Draft receipt:
 5. stop at `READY_FOR_MSIX_UPLOAD_APPROVAL`;
 6. do not perform upload from this code-owner lane.
 
-### P2 — preserve evidence immutability
+### P4 — preserve evidence immutability
 
 Continue refusing overwrite of:
 
@@ -468,9 +468,12 @@ If recovery is necessary, use a new evidence path rather than mutating prior evi
 
 ## Current human/external dependencies
 
-1. Folder recovered Draft receipt from Store execution owner.
-2. Folder Store assets/security/audience/price owner approvals later.
-3. Browser third-party redistribution-rights owner/legal decision.
-4. Package upload / certification / publish remain separate explicit approvals.
+1. Scheduled: Store execution owner must provide a Microsoft Store-signed Private
+   distribution / zero-cost acquisition path for the frozen candidate before GUI,
+   DPI, HTTPS GET and Task Scheduler physical QA can resume.
+2. Folder recovered Draft receipt from Store execution owner.
+3. Folder Store assets/security/audience/price owner approvals later.
+4. Browser third-party redistribution-rights owner/legal decision.
+5. Package upload / certification / publish remain separate explicit approvals.
 
 Do not convert any of these dependencies into guessed values or automated approvals.
