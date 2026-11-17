@@ -13,7 +13,7 @@ from unittest.mock import patch
 
 from all_auto.local_qa_evidence import (
     EvidenceStore, GitHubContentsTransport, GitHubReturnError,
-    atomic_json, atomic_write, process_retry_queue,
+    atomic_json, atomic_write, process_retry_queue, sha256_file,
 )
 
 
