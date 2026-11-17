@@ -23,6 +23,7 @@ def main(argv=None) -> int:
         "status":"QA_PLAN_ACCEPTED",
         "source_repository":accepted.source_repository,
         "source_sha":accepted.source_sha,
+        "source_branch":accepted.source_branch,
         "product_type":accepted.product_type,
         "slug":accepted.slug,
         "package_sha256":accepted.package_sha256,
