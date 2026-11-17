@@ -36,7 +36,7 @@
       },
       "reliability_run_id": 44093493219,
       "ci_conclusion": "success",
-      "conveyor_state": "LOCAL_STATIC_VERIFIED_FROZEN_CANDIDATE",
+      "conveyor_state": "PASS_STATIC_ONLY_GUI_PENDING",
       "exact_head_store_run_unique": false,
       "frozen_candidate": {
         "source_sha": "28ef873ab2ff325b8f26c61a9ba48701280e8290",
@@ -59,6 +59,25 @@
         "exe_sha256": "61ec0df4201d09057af494249aca70527cb25ffd425678f06b60c4bfa75d4c3d",
         "promoted": false,
         "reason": "docs-only descendant rebuild produced different executable bytes; requires new local static verification before candidate promotion"
+      },
+      "local_confirmation": {
+        "status": "PASS_STATIC_ONLY_GUI_PENDING",
+        "evidence_source": "local_code_owner_report_20261117",
+        "artifact_receipt_verified": true,
+        "evidence_rerun_refused_and_hashes_unchanged": true,
+        "makeappx_unpack": "PASS",
+        "manifest_identity_publisher_version_architecture": "PASS",
+        "unpacked_exe_hash": "PASS",
+        "defender_exact_msix": "NO_THREATS",
+        "defender_exact_exe": "NO_THREATS",
+        "authenticode_msix": "NotSigned",
+        "authenticode_exe": "NotSigned",
+        "github_ci_primary": true,
+        "local_full_suite_run": false,
+        "qa_template_status": "HOLD",
+        "gui_launch_attempted": false,
+        "next_action": "ONE_SHOT_NORMAL_USER_EXE_LAUNCH",
+        "action_time_confirmation_required": true
       }
     },
     "workflow-automation-hub": {
