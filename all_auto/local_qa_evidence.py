@@ -445,6 +445,7 @@ class EvidenceStore:
                 timeout_seconds: int, expected: dict[str, Any] | None = None,
                 gui_test: bool = False,
                 event_log_collector: Callable[[str, str], str] | None = None,
+                evidence_callback: Callable[[str, Path], None] | None = None,
                 pass_if_running_after_seconds: int | None = None,
                 poll_seconds: float = 0.2) -> RunResult:
         expected = expected or {"exit_code": 0}
@@ -546,6 +547,8 @@ class EvidenceStore:
         event_status, event_error = self._collect_event_log(
             folder, started, state["finished_at_utc"], event_log_collector)
         try:
+            if evidence_callback is not None:
+                evidence_callback(run_id, folder)
             self._finalize(folder, state, event_log_status=event_status,
                            event_log_error=event_error)
         finally:

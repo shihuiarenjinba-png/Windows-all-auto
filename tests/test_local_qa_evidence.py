@@ -303,6 +303,27 @@ class DurableEvidenceTests(unittest.TestCase):
         self.assertFalse(report["evidence_return_e2e_pass"])
         self.assertFalse(report["e2e_pass"])
 
+    def test_gui_evidence_callback_runs_before_finalization(self):
+        observed = []
+
+        def collect(run_id, folder):
+            observed.append((run_id, folder))
+            self.store.record_ui_action(
+                run_id, action="UIA_FIND_WINDOW", target="Folio AI",
+                result="PASS", details={"match_count": 1},
+            )
+
+        result = self.store.execute(
+            self.job, self.command("print('trusted GUI worker')"), cwd=self.root,
+            timeout_seconds=5, gui_test=True,
+            event_log_collector=self.events, evidence_callback=collect,
+        )
+        report = self.manifest(result)
+        self.assertEqual(len(observed), 1)
+        self.assertEqual(report["collection"]["uia_actions"], "CAPTURED")
+        self.assertEqual(report["collection"]["screenshots"], "UNAVAILABLE")
+        self.assertFalse(report["collection_complete"])
+
     def test_retention_never_removes_pending_evidence(self):
         pending = self.store.execute(
             self.job, self.command("print('pending')"), cwd=self.root,

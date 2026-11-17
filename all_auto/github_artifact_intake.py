@@ -42,10 +42,21 @@ def _fail(reason: str) -> None:
 
 def sha256_file(path: Path) -> str:
     digest = sha256()
-    with path.open("rb") as stream:
+    with _io_path(path).open("rb") as stream:
         for block in iter(lambda: stream.read(1024 * 1024), b""):
             digest.update(block)
     return digest.hexdigest()
+
+
+def _io_path(path: Path) -> Path:
+    """Use Win32 extended paths for deep, already-validated archive members."""
+    resolved = path.resolve()
+    if os.name != "nt":
+        return resolved
+    text = str(resolved)
+    if text.startswith("\\\\"):
+        return Path("\\\\?\\UNC\\" + text[2:])
+    return Path("\\\\?\\" + text)
 
 
 def _safe_member_name(raw: str) -> PurePosixPath:
@@ -95,10 +106,11 @@ def safe_extract_zip(archive_path: Path, destination: Path) -> list[Path]:
                 except ValueError:
                     _fail("archive path escapes destination")
                 if info.is_dir():
-                    target.mkdir(parents=True, exist_ok=True)
+                    _io_path(target).mkdir(parents=True, exist_ok=True)
                     continue
-                target.parent.mkdir(parents=True, exist_ok=True)
-                with archive.open(info) as source, target.open("wb") as output:
+                io_target = _io_path(target)
+                io_target.parent.mkdir(parents=True, exist_ok=True)
+                with archive.open(info) as source, io_target.open("wb") as output:
                     shutil.copyfileobj(source, output, length=1024 * 1024)
                 extracted.append(target)
     except ArtifactIntakeHold:
@@ -343,10 +355,17 @@ def fetch_actions_artifact(
     if sha256_file(package_path) != expected_package_sha256:
         _fail("MSIX SHA mismatch")
 
-    executable_path = destination / "intake" / "product.exe"
-    package_info = inspect_and_extract_msix(package_path, executable_path)
+    standalone_executable = destination / "intake" / "product.exe"
+    package_info = inspect_and_extract_msix(package_path, standalone_executable)
     if package_info["executable_sha256"] != expected_executable_sha256:
         _fail("contained executable SHA mismatch")
+    package_root = destination / "intake" / "package-root"
+    safe_extract_zip(package_path, package_root)
+    executable_relative = PurePosixPath(package_info["executable_name"])
+    executable_path = package_root / Path(*executable_relative.parts)
+    if (not _io_path(executable_path).is_file() or executable_path.is_symlink() or
+            sha256_file(executable_path) != expected_executable_sha256):
+        _fail("runtime executable SHA mismatch")
 
     manifest = {
         "schema_version": "github-actions-artifact-intake-v1",
@@ -358,7 +377,9 @@ def fetch_actions_artifact(
         "archive_sha256": expected_archive_sha256,
         "package_path": str(package_path),
         "package_sha256": package_info["package_sha256"],
+        "package_root": str(package_root),
         "executable_path": str(executable_path),
+        "standalone_executable_path": str(standalone_executable),
         "executable_sha256": package_info["executable_sha256"],
         "executable_name": package_info["executable_name"],
         "identity": package_info["identity"],

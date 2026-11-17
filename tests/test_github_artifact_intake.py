@@ -136,6 +136,12 @@ class GithubArtifactIntakeTests(unittest.TestCase):
         self.assertEqual(result.metadata["identity"]["version"], "1.0.0.0")
         self.assertFalse(result.metadata["store_purchase_required"])
         self.assertTrue(result.executable_path.is_file())
+        self.assertEqual(result.executable_path.name, "Demo.exe")
+        self.assertTrue((Path(result.metadata["package_root"]) /
+                         "AppxManifest.xml").is_file())
+        self.assertEqual(
+            sha256_file(result.executable_path), self.exe_sha,
+        )
 
     def test_package_sha_mismatch_holds(self):
         destination = self.root / "bad-package"

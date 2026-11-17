@@ -2,14 +2,18 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 from pathlib import Path
 import re
 import subprocess
+import sys
 from typing import Callable
 
-from all_auto.local_qa_evidence import EvidenceStore, GitHubContentsTransport
+from all_auto.local_qa_evidence import (
+    EvidenceStore, GitHubContentsTransport, process_retry_queue,
+)
 from all_auto.product_qa_plan import (
     BoundProductPlanPlanner, ProductQAPlanHold, load_bound_plan,
     verify_plan_for_job,
@@ -17,6 +21,7 @@ from all_auto.product_qa_plan import (
 from all_auto.qa_supervisor import (
     QASupervisor, load_default_catalog, require_new_source_sha,
 )
+from all_auto.trusted_uia import UIA_ACTIONS
 from qa_ai.analyzer import AnalysisEngine, OllamaClient
 from qa_ai.planner import OllamaPlannerClient, PlannerEngine
 
@@ -113,7 +118,7 @@ def main(argv: list[str] | None = None) -> int:
                 job=job,
                 artifact_path=args.artifact,
                 package_path=args.package,
-                supported_test_ids=set(catalog.tests),
+                supported_test_ids=set(catalog.tests) | UIA_ACTIONS,
             )
         except ProductQAPlanHold as exc:
             print(json.dumps({
@@ -133,7 +138,7 @@ def main(argv: list[str] | None = None) -> int:
             }, ensure_ascii=False, indent=2))
             return 2
         planner = BoundProductPlanPlanner(
-            bound_plan, supported_test_ids=set(catalog.tests),
+            bound_plan, supported_test_ids=set(catalog.tests) | UIA_ACTIONS,
         )
     else:
         planner = PlannerEngine(client=OllamaPlannerClient(), model=args.model)
@@ -147,6 +152,76 @@ def main(argv: list[str] | None = None) -> int:
             base_ref=args.base_ref,
         ) if args.allow_github_write else None
     )
+    if args.product_qa_plan and any(
+            step["action"] in UIA_ACTIONS for step in bound_plan["steps"]):
+        action_logs = args.state_root / "product-action-logs"
+        action_logs.mkdir(parents=True, exist_ok=True)
+        action_log = action_logs / (
+            hashlib.sha256(job["request_id"].encode("utf-8")).hexdigest() +
+            ".jsonl"
+        )
+        if action_log.exists():
+            raise SystemExit("PRODUCT_QA_EXECUTION_HOLD: action log already exists")
+        worker = (
+            Path(__file__).resolve().parent / "trusted_product_qa_worker.py"
+        )
+        command = [
+            sys.executable, str(worker), "--plan", str(args.product_qa_plan),
+            "--artifact", str(args.artifact), "--action-log", str(action_log),
+        ]
+
+        def collect_uia(run_id: str, _folder: Path) -> None:
+            if not action_log.is_file():
+                return
+            for line in action_log.read_text(encoding="utf-8").splitlines():
+                if not line.strip():
+                    continue
+                item = json.loads(line)
+                store.record_ui_action(
+                    run_id, action=str(item.get("action", "UNKNOWN")),
+                    target=str(item.get("target", "")),
+                    result=str(item.get("result", "UNKNOWN")),
+                    details=dict(item.get("details", {})),
+                )
+
+        result = store.execute(
+            job, command, cwd=args.intake_root, timeout_seconds=600,
+            expected={"exit_code": 0, "completion_policy": "WAIT_FOR_EXIT"},
+            gui_test=True,
+            event_log_collector=_product_event_log_collector(args.artifact.name),
+            evidence_callback=collect_uia,
+        )
+        github_return = (
+            process_retry_queue(store, transport, max_items=20)
+            if transport is not None else
+            {"verified": 0, "failed": 0, "deferred": 0, "locked": 0}
+        )
+        manifest = json.loads(
+            (result.run_directory / "manifest.json").read_text(encoding="utf-8")
+        )
+        acknowledgement = (
+            json.loads((store.acks / (result.run_id + ".json")).read_text(
+                encoding="utf-8"))
+            if (store.acks / (result.run_id + ".json")).is_file() else {}
+        )
+        output = {
+            "status": "SUPERVISOR_COMPLETE" if result.status == "TEST_PASS" else "TEST_FAIL",
+            "run_ids": [result.run_id], "test_status": result.status,
+            "evidence_return_status": acknowledgement.get(
+                "status", "EVIDENCE_RETURN_NOT_VERIFIED"),
+            "evidence_return_e2e_pass": bool(
+                acknowledgement.get("evidence_return_e2e_pass")),
+            "collection_complete": manifest.get("collection_complete", False),
+            "github_return": github_return,
+            "product_e2e_pass": False, "e2e_pass": False,
+            "release_ready": False, "store_submission_allowed": False,
+            "source_edit_authority": False,
+        }
+        print(json.dumps(output, ensure_ascii=False, indent=2))
+        return 0 if (
+            result.status == "TEST_PASS" and
+            (not args.allow_github_write or output["evidence_return_e2e_pass"])
+        ) else 2
     supervisor = QASupervisor(
         catalog=catalog, store=store, planner=planner,
         analyzer=analyzer, transport=transport,

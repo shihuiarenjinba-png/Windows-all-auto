@@ -117,3 +117,40 @@ untrusted `AppxManifest.xml`, re-hashes the manifest-selected executable member,
 and compares package SHA, executable SHA, Identity, Version, repository, source
 SHA, slug, product type, template SHA, and authority flags with both the bound
 plan and immutable job. A mismatch is `PRODUCT_QA_PLAN_HOLD`.
+
+## Process-scoped trusted UI Automation
+
+Validated product plans may use these locally fixed implementations:
+
+```text
+UIA_FIND_WINDOW
+UIA_FIND_CONTROL
+UIA_INVOKE
+UIA_READ_TEXT
+UIA_SET_TEXT
+```
+
+The plan supplies only `action`, bounded `params`, and earlier `requires`
+step IDs. It never supplies a command, executable path, PID, shell fallback,
+or coordinate. `UIA_SET_TEXT` is limited to an exact named Edit control and at
+most 4096 characters. Unknown fields, unknown control types, zero matches, and
+multiple matches fail closed.
+
+`scripts/trusted_product_qa_worker.py` starts only the already hash-verified
+artifact, keeps its PID, and evaluates bound steps in dependency order. The
+fixed C# helper verifies that PID still maps to the exact executable before
+searching the process's single top-level window and descendants. Invoke, read,
+and set operations use Windows UI Automation patterns; there is no desktop-wide
+search, arbitrary click, or shell fallback. The product process is stopped in
+a `finally` block.
+
+The main `--product-qa-plan` path routes plans containing UIA actions through
+this deterministic worker and copies its action journal into the durable
+EvidenceStore before finalization. Missing screenshots or privacy review remain
+explicitly `UNAVAILABLE`; GitHub readback may succeed while
+`evidence_return_e2e_pass`, `product_e2e_pass`, `release_ready`, and
+`store_submission_allowed` stay false.
+
+`UIA_SET_TEXT` is a Windows-side capability. A GitHub Factory may not emit it
+until its own schema, validator, template hashing, and negative tests have been
+updated in the same reviewed change.

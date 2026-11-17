@@ -278,6 +278,63 @@ class ProductQAPlanIntakeTests(unittest.TestCase):
                 supported_test_ids={"ARTIFACT_HASH", "PROCESS_START"},
             )
 
+    def test_uia_set_text_is_bounded_and_requires_process_start(self):
+        value = json.loads(self.path.read_text())
+        value["steps"].append({
+            "step_id": "set-search-text",
+            "action": "UIA_SET_TEXT",
+            "requires": ["artifact-hash", "process-start"],
+            "required": True,
+            "params": {
+                "name": "Search", "control_type": "Edit",
+                "value": "synthetic-token",
+            },
+        })
+        base = {
+            key: value[key] for key in (
+                "product_slug", "product_type", "plan_version", "steps",
+                "allowed_diagnostics", "forbidden_actions", "success_policy",
+            )
+        }
+        base["schema_version"] = "windows-product-qa-plan-template-v1"
+        value["template_sha256"] = sha256(canonical(base)).hexdigest()
+        self.path.write_text(json.dumps(value), encoding="utf-8")
+        plan = load_bound_plan(self.path)
+        result = verify_plan_for_job(
+            plan, job=self.job, artifact_path=self.artifact,
+            package_path=self.package,
+            supported_test_ids={"ARTIFACT_HASH", "PROCESS_START"},
+        )
+        self.assertEqual(result["status"], "PRODUCT_QA_PLAN_CAPABILITY_HOLD")
+        self.assertEqual(result["unsupported_required_actions"], ["UIA_SET_TEXT"])
+
+    def test_uia_set_text_rejects_unbounded_or_wrong_control(self):
+        for params in (
+            {"name": "Search", "control_type": "Button", "value": "x"},
+            {"name": "Search", "control_type": "Edit", "value": "x" * 4097},
+            {"name": "Search", "control_type": "Edit", "command": "cmd.exe"},
+        ):
+            with self.subTest(params=list(params)):
+                value = bound_plan(self.exe_sha, self.package_sha)
+                value["steps"].append({
+                    "step_id": "set-search-text",
+                    "action": "UIA_SET_TEXT",
+                    "requires": ["artifact-hash", "process-start"],
+                    "required": True,
+                    "params": params,
+                })
+                base = {
+                    key: value[key] for key in (
+                        "product_slug", "product_type", "plan_version", "steps",
+                        "allowed_diagnostics", "forbidden_actions", "success_policy",
+                    )
+                }
+                base["schema_version"] = "windows-product-qa-plan-template-v1"
+                value["template_sha256"] = sha256(canonical(base)).hexdigest()
+                self.path.write_text(json.dumps(value), encoding="utf-8")
+                with self.assertRaises(ProductQAPlanHold):
+                    load_bound_plan(self.path)
+
     def test_bound_plan_planner_follows_required_sequence(self):
         plan = load_bound_plan(self.path)
         planner = BoundProductPlanPlanner(

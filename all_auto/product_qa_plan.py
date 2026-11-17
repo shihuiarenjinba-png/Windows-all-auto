@@ -39,6 +39,7 @@ IDENTITY_KEYS = {"name", "publisher", "version"}
 ACTIONS = {
     "ARTIFACT_HASH", "PROCESS_START", "PROCESS_STATUS", "EVENT_LOG_QUERY",
     "UIA_FIND_WINDOW", "UIA_FIND_CONTROL", "UIA_INVOKE", "UIA_READ_TEXT",
+    "UIA_SET_TEXT",
 }
 DIAGNOSTICS = {
     "PROCESS_STATUS", "EVENT_LOG_QUERY", "UIA_FIND_WINDOW",
@@ -198,17 +199,31 @@ def _validate_params(action: str, params: Any) -> None:
         if not isinstance(title, str) or not 1 <= len(title) <= 120:
             _fail("invalid UIA window title")
         return
-    if action in {"UIA_FIND_CONTROL", "UIA_INVOKE", "UIA_READ_TEXT"}:
-        if set(params) - {"name", "control_type"} or "name" not in params:
+    if action in {
+            "UIA_FIND_CONTROL", "UIA_INVOKE", "UIA_READ_TEXT",
+            "UIA_SET_TEXT"}:
+        allowed = {"name", "control_type"}
+        if action == "UIA_SET_TEXT":
+            allowed.add("value")
+        if set(params) - allowed or "name" not in params:
             _fail(action + " requires name and optional control_type")
         name = params["name"]
         if not isinstance(name, str) or not 1 <= len(name) <= 120:
             _fail("invalid UIA control name")
         control = params.get("control_type")
         if control is not None and control not in {
-            "Button", "Edit", "Text", "CheckBox", "ComboBox", "ListItem", "TabItem"
+            "Button", "Edit", "Text", "CheckBox", "ComboBox", "ListItem",
+            "TabItem", "Document", "Group", "Pane",
         }:
             _fail("unsupported UIA control_type")
+        if action == "UIA_SET_TEXT":
+            if "value" not in params:
+                _fail("UIA_SET_TEXT requires value")
+            value = params["value"]
+            if not isinstance(value, str) or len(value) > 4096:
+                _fail("invalid UIA_SET_TEXT value")
+            if control not in {None, "Edit"}:
+                _fail("UIA_SET_TEXT control_type must be Edit")
         return
     _fail("unsupported action")
 
