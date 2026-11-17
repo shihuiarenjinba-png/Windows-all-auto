@@ -309,10 +309,20 @@ def bind_unsigned_launch_to_local_qa(
     if qa_template.get("status") != "HOLD":
         raise UnsignedExeLaunchReceiptError("local QA must remain HOLD before full acceptance")
 
-    launch = validate_unsigned_exe_launch_receipt(
-        launch_receipt,
-        expected_exe_sha256=expected_exe_sha256,
-    )
+    if (
+        isinstance(launch_receipt, dict)
+        and launch_receipt.get("schema_version")
+        == "unsigned-exe-launch-reconciliation-receipt/1"
+    ):
+        launch = validate_unsigned_exe_launch_reconciliation_receipt(
+            launch_receipt,
+            expected_exe_sha256=expected_exe_sha256,
+        )
+    else:
+        launch = validate_unsigned_exe_launch_receipt(
+            launch_receipt,
+            expected_exe_sha256=expected_exe_sha256,
+        )
     result = deepcopy(qa_template)
     result["unsigned_exe_launch"] = launch
     result["status"] = "HOLD"
