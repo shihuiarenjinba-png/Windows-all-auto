@@ -15,7 +15,8 @@
         "real OS DPI 100/125/150",
         "Preview / Dry Run / approval / copy / move / no-overwrite",
         "symlink / junction / source-destination safety / restart / normal exit"
-      ]
+      ],
+      "source_ref": "codex/folder-standard-consumer-ui-20261026"
     },
     "scheduled-api-runner": {
       "name": "Scheduled API Runner",
@@ -32,7 +33,8 @@
         "authorized non-production HTTPS GET",
         "Windows Task Scheduler lifecycle"
       ],
-      "workflow_name": "Windows desktop / Windowsデスクトップ"
+      "workflow_name": "Windows desktop / Windowsデスクトップ",
+      "source_ref": "codex/scheduled-standard-consumer-ui-20261113"
     },
     "workflow-automation-hub": {
       "name": "Workflow Automation Hub",
@@ -49,7 +51,8 @@
         "non-production Google OAuth and Blogger acceptance",
         "Windows Task Scheduler lifecycle"
       ],
-      "workflow_name": "Windows build / Windowsビルド"
+      "workflow_name": "Windows build / Windowsビルド",
+      "source_ref": "codex/hub-standard-consumer-ui-20261113"
     },
     "browser-automation-runner": {
       "name": "Browser Automation Runner",
@@ -66,7 +69,8 @@
         "bundled Chromium physical launch and harmless workflow",
         "owner/legal redistribution-rights review"
       ],
-      "workflow_name": "Windows desktop code build"
+      "workflow_name": "Windows desktop code build",
+      "source_ref": "codex/browser-standard-consumer-ui-20261113"
     }
   }
 }
