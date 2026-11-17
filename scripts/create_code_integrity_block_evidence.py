@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import re
 
 
 def sha256_file(path: Path) -> str:
@@ -16,6 +17,10 @@ def main() -> int:
     p.add_argument("--event-id", action="append", required=True, type=int)
     p.add_argument("--policy-name", required=True)
     p.add_argument("--policy-guid", required=True)
+    p.add_argument("--correlation-activity-id")
+    p.add_argument("--policy-id")
+    p.add_argument("--status-code")
+    p.add_argument("--event-flat-hash")
     p.add_argument("--raw-evidence", type=Path)
     p.add_argument("--output", required=True, type=Path)
     a = p.parse_args()
@@ -35,6 +40,32 @@ def main() -> int:
     if not a.policy_guid.strip():
         raise SystemExit("policy-guid is required")
 
+    correlation_activity_id = None
+    if a.correlation_activity_id is not None:
+        correlation_activity_id = a.correlation_activity_id.strip()
+        if not re.fullmatch(r"\{[0-9a-fA-F-]{36}\}", correlation_activity_id):
+            raise SystemExit("correlation-activity-id must be a braced GUID")
+
+    policy_id = None
+    if a.policy_id is not None:
+        policy_id = a.policy_id.strip()
+        if not policy_id:
+            raise SystemExit("policy-id must not be empty")
+
+    status_code = None
+    if a.status_code is not None:
+        status_code = a.status_code.strip().lower()
+        if not re.fullmatch(r"0x[0-9a-f]{8}", status_code):
+            raise SystemExit("status-code must be 0x followed by 8 hex digits")
+
+    event_flat_hash = None
+    if a.event_flat_hash is not None:
+        event_flat_hash = a.event_flat_hash.strip().lower()
+        if not re.fullmatch(r"[0-9a-f]{64}", event_flat_hash):
+            raise SystemExit("event-flat-hash must be exactly 64 hexadecimal characters")
+        if event_flat_hash != exe_sha:
+            raise SystemExit("event-flat-hash must match the exact EXE SHA256")
+
     evidence = {
         "schema_version": "code-integrity-block-evidence/1",
         "status": "APPLICATION_CONTROL_BLOCKED",
@@ -44,6 +75,13 @@ def main() -> int:
         "supplemental_event_ids": sorted(set(event_ids).difference({3033, 3077})),
         "policy_name": a.policy_name.strip(),
         "policy_guid": a.policy_guid.strip(),
+        "correlation_activity_id": correlation_activity_id,
+        "policy_id": policy_id,
+        "status_code": status_code,
+        "event_flat_hash": event_flat_hash,
+        "event_flat_hash_matches_exe_sha256": (
+            event_flat_hash == exe_sha if event_flat_hash is not None else None
+        ),
         "launch_attempts": 1,
         "process_started": False,
         "security_bypass_used": False,
