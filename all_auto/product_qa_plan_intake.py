@@ -11,6 +11,7 @@ from typing import Any
 PLAN_SCHEMA = "windows-product-qa-plan-v1"
 SHA40 = re.compile(r"^[0-9a-f]{40}$")
 SHA64 = re.compile(r"^[0-9a-f]{64}$")
+BRANCH = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._/-]{0,199}$")
 SLUG = re.compile(r"^[a-z][a-z0-9-]{3,39}$")
 STEP_ID = re.compile(r"^[a-z][a-z0-9_]{2,63}$")
 TEST_ID = re.compile(r"^[A-Z][A-Z0-9_]{2,63}$")
@@ -138,6 +139,7 @@ def validate_plan(value: Any, *, slug: str, kind: str) -> None:
 class AcceptedProductQAPlan:
     source_repository: str
     source_sha: str
+    source_branch: str
     product_type: str
     slug: str
     package_sha256: str
@@ -164,7 +166,7 @@ def load_handoff_bundle(bundle: Path) -> AcceptedProductQAPlan:
         ) from exc
 
     required = {
-        "schema_version","source_repository","source_sha","type","slug",
+        "schema_version","source_repository","source_sha","source_branch","type","slug",
         "package","status","package_sha256","package_bytes","executable_sha256",
         "identity","qa_plan","qa_plan_schema","qa_plan_sha256",
     }
@@ -173,11 +175,16 @@ def load_handoff_bundle(bundle: Path) -> AcceptedProductQAPlan:
     if handoff.get("schema_version") != 1 or handoff.get("status") != "QA_UNSIGNED":
         _hold("handoff state is invalid")
     source_sha = handoff.get("source_sha")
+    source_branch = handoff.get("source_branch")
     package_sha = handoff.get("package_sha256")
     exe_sha = handoff.get("executable_sha256")
     plan_sha = handoff.get("qa_plan_sha256")
     if not isinstance(source_sha,str) or not SHA40.fullmatch(source_sha):
         _hold("source SHA is invalid")
+    if (not isinstance(source_branch,str) or not BRANCH.fullmatch(source_branch) or
+            source_branch.startswith("/") or source_branch.endswith("/") or
+            ".." in source_branch):
+        _hold("source branch is invalid")
     for name,value in (
         ("package SHA",package_sha),("executable SHA",exe_sha),("QA plan SHA",plan_sha)
     ):
@@ -208,6 +215,7 @@ def load_handoff_bundle(bundle: Path) -> AcceptedProductQAPlan:
     return AcceptedProductQAPlan(
         source_repository=source_repository,
         source_sha=source_sha,
+        source_branch=source_branch,
         product_type="APP" if kind=="app" else "GAME",
         slug=slug,
         package_sha256=package_sha,
