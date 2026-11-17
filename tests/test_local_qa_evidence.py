@@ -117,6 +117,29 @@ class DurableEvidenceTests(unittest.TestCase):
         self.assertEqual(after["factory_dispatch"]["status"], "AGENT_DISPATCH_PENDING")
         self.assertEqual((result.run_directory / "stdout.log").read_text().strip(), "ok")
 
+
+    def test_validated_package_provenance_is_preserved_in_manifest(self):
+        job = dict(self.job)
+        job.update({
+            "package_sha256": "c" * 64,
+            "artifact_archive_sha256": "d" * 64,
+            "qa_plan_template_sha256": "e" * 64,
+            "identity": {
+                "name": "OkinawaDesktopTools.Demo",
+                "publisher": "CN=TEST",
+                "version": "1.0.0.0",
+            },
+        })
+        result = self.store.execute(
+            job, self.command("print('ok')"), cwd=self.root,
+            timeout_seconds=5, event_log_collector=self.events,
+        )
+        report = self.manifest(result)
+        self.assertEqual(report["package_sha256"], "c" * 64)
+        self.assertEqual(report["artifact_archive_sha256"], "d" * 64)
+        self.assertEqual(report["qa_plan_template_sha256"], "e" * 64)
+        self.assertEqual(report["identity"]["version"], "1.0.0.0")
+
     def test_nonzero_exit_preserves_stdout_stderr_expectation_and_actual(self):
         result = self.store.execute(
             self.job, self.command("import sys; print('before crash'); print('boom', file=sys.stderr); sys.exit(7)"),
