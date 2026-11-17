@@ -8,6 +8,7 @@ import unittest
 
 from all_auto.product_artifact_pull import (
     ProductArtifactPullError,
+    require_expected_identity,
     stage_verified_store_artifact,
     validate_extracted_store_artifact,
     write_immutable_receipt,
@@ -131,6 +132,43 @@ class ProductArtifactPullTests(unittest.TestCase):
                     repository_full_name="acme/other",
                     run_id=123,
                     artifact_name="Demo-Store-MSIX-UNSIGNED-DRAFT",
+                )
+
+    def test_central_registry_identity_binding_accepts_exact_values(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            handoff = build_artifact(root)
+            verified = validate_extracted_store_artifact(
+                root,
+                repository_full_name="acme/demo",
+                run_id=123,
+                artifact_name="Demo-Store-MSIX-UNSIGNED-DRAFT",
+            )
+            require_expected_identity(
+                verified,
+                store_id=handoff["identity"]["store_id"],
+                identity_name=handoff["identity"]["name"],
+                version=handoff["identity"]["version"],
+                architecture=handoff["identity"]["architecture"],
+            )
+
+    def test_central_registry_identity_binding_rejects_mismatch(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            handoff = build_artifact(root)
+            verified = validate_extracted_store_artifact(
+                root,
+                repository_full_name="acme/demo",
+                run_id=123,
+                artifact_name="Demo-Store-MSIX-UNSIGNED-DRAFT",
+            )
+            with self.assertRaisesRegex(ProductArtifactPullError, "central registry mismatch"):
+                require_expected_identity(
+                    verified,
+                    store_id="WRONG",
+                    identity_name=handoff["identity"]["name"],
+                    version=handoff["identity"]["version"],
+                    architecture=handoff["identity"]["architecture"],
                 )
 
     def test_receipt_is_immutable(self):
