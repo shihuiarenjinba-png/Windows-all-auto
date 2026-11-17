@@ -8,6 +8,9 @@ class LocalExactPackagePreflightContractTests(unittest.TestCase):
         text = (root / "scripts" / "run_local_exact_package_preflight.ps1").read_text(encoding="utf-8")
         for required in (
             "Local product repository HEAD does not match handoff source SHA",
+            "Handoff source SHA is not present in local product repository",
+            "Local product repository HEAD does not contain handoff source SHA",
+            'ValidateSet("ExactHead","ContainedCommit")',
             "MSIX SHA256 does not match handoff",
             "Manifest Identity Name mismatch",
             "Manifest Publisher mismatch",
