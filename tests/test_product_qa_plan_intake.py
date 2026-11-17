@@ -95,6 +95,28 @@ class ProductQAPlanIntakeTests(unittest.TestCase):
         self.assertEqual(result.product_type,"APP")
         self.assertEqual(result.source_branch,"codex/factory-qa-plan-test")
         self.assertEqual(result.plan["steps"][2]["test_id"],"UIA_FIND_CONTROL")
+        self.assertEqual(result.executable_path,"demo.exe")
+        self.assertEqual(result.application_id,"App")
+
+    def test_contained_executable_hash_is_independently_verified(self):
+        package_path=self.bundle/"package.msix"
+        manifest=(
+            '<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10">'
+            '<Identity Name="Demo" Publisher="CN=TEST" Version="1.0.0.0"/>'
+            '<Applications><Application Id="App" Executable="demo.exe"/></Applications>'
+            '</Package>'
+        )
+        with zipfile.ZipFile(package_path,"w") as archive:
+            archive.writestr("AppxManifest.xml",manifest)
+            archive.writestr("AppxBlockMap.xml","<BlockMap/>")
+            archive.writestr("[Content_Types].xml","<Types/>")
+            archive.writestr("demo.exe",b"different executable bytes")
+        package_bytes=package_path.read_bytes()
+        self.handoff["package_sha256"]=sha256(package_bytes).hexdigest()
+        self.handoff["package_bytes"]=len(package_bytes)
+        self.save_handoff()
+        with self.assertRaisesRegex(ProductQAPlanIntakeError,"contained executable hash"):
+            load_handoff_bundle(self.bundle)
 
     def test_tampered_plan_hash_holds(self):
         self.plan["steps"][2]["parameters"]["target_name"]="Different"
@@ -189,6 +211,8 @@ class ProductQAPlanIntakeTests(unittest.TestCase):
         self.assertEqual(
             job["artifact_sha256"],sha256(self.executable).hexdigest()
         )
+        self.assertEqual(job["factory_executable_path"],"demo.exe")
+        self.assertEqual(job["factory_application_id"],"App")
         self.assertEqual(job["factory_package_sha256"],self.handoff["package_sha256"])
         self.assertEqual(job["factory_qa_plan_sha256"],self.handoff["qa_plan_sha256"])
 
