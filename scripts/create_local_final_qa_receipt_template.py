@@ -11,6 +11,26 @@ if str(ROOT) not in sys.path:
 from all_auto.store_product_handoff import normalize_store_product_handoff
 
 
+REGISTRY = ROOT / "ops" / "group_b_standard_store_products.json"
+
+
+def local_only_checks(product_id: str) -> list[str]:
+    if not REGISTRY.is_file():
+        return []
+    data = json.loads(REGISTRY.read_text(encoding="utf-8-sig"))
+    if data.get("schema_version") != "group-b-standard-store-products/1":
+        return []
+    product = (data.get("products") or {}).get(product_id)
+    if not isinstance(product, dict):
+        return []
+    checks = product.get("local_only_checks")
+    if not isinstance(checks, list) or not all(
+        isinstance(item, str) and item.strip() for item in checks
+    ):
+        return []
+    return [item.strip() for item in checks]
+
+
 def main() -> int:
     p = argparse.ArgumentParser()
     p.add_argument("--handoff", required=True, type=Path)
@@ -20,6 +40,7 @@ def main() -> int:
     handoff = normalize_store_product_handoff(
         json.loads(a.handoff.read_text(encoding="utf-8-sig"))
     )
+    checks = local_only_checks(str(handoff["product"].get("id") or ""))
     receipt = {
         "schema_version": "local-final-qa-receipt/1",
         "status": "HOLD",
@@ -27,6 +48,9 @@ def main() -> int:
         "source_sha": handoff["product"]["source_sha"],
         "package_sha256": handoff["package"]["package_sha256"],
         "tests_passed": False,
+        "test_source": "github_exact_head_ci",
+        "github_ci_is_primary": True,
+        "local_full_test_suite_required": False,
         "package_sha_verified": False,
         "unpacked_exe_sha_verified": False,
         "jp_en_gui_passed": False,
@@ -35,7 +59,7 @@ def main() -> int:
         "normal_exit_passed": False,
         "package_rebuilt": False,
         "security_bypass_used": False,
-        "product_specific_checks": [],
+        "product_specific_checks": checks,
         "notes": "",
     }
     a.output.parent.mkdir(parents=True, exist_ok=True)
