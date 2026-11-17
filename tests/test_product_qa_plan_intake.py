@@ -53,6 +53,7 @@ class ProductQAPlanIntakeTests(unittest.TestCase):
             "schema_version":1,
             "source_repository":"https://github.com/shihuiarenjinba-png/AI-App-Factory",
             "source_sha":"a"*40,
+            "source_branch":"codex/factory-qa-plan-test",
             "type":"app",
             "slug":"demo-product",
             "package":"package.msix",
@@ -76,6 +77,7 @@ class ProductQAPlanIntakeTests(unittest.TestCase):
         result=load_handoff_bundle(self.bundle)
         self.assertEqual(result.slug,"demo-product")
         self.assertEqual(result.product_type,"APP")
+        self.assertEqual(result.source_branch,"codex/factory-qa-plan-test")
         self.assertEqual(result.plan["steps"][2]["test_id"],"UIA_FIND_CONTROL")
 
     def test_tampered_plan_hash_holds(self):
