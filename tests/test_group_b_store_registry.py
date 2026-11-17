@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -139,6 +140,53 @@ class GroupBStoreRegistryTests(unittest.TestCase):
                 head_sha="a" * 40,
                 workflow_name="Windows build",
             )
+
+    def test_explicit_run_must_match_current_registered_head(self):
+        product = MODULE.load_product(
+            ROOT / "ops" / "group_b_standard_store_products.json",
+            "scheduled-api-runner",
+        )
+        good_run = {
+            "head_sha": "a" * 40,
+            "name": product["workflow_name"],
+            "status": "completed",
+            "conclusion": "success",
+        }
+        with patch.object(MODULE, "gh_json", return_value=good_run):
+            MODULE.require_explicit_run_matches_head(
+                product,
+                run_id=123,
+                head_sha="a" * 40,
+            )
+
+        stale_run = dict(good_run)
+        stale_run["head_sha"] = "b" * 40
+        with patch.object(MODULE, "gh_json", return_value=stale_run):
+            with self.assertRaisesRegex(ValueError, "current registered branch HEAD"):
+                MODULE.require_explicit_run_matches_head(
+                    product,
+                    run_id=123,
+                    head_sha="a" * 40,
+                )
+
+    def test_explicit_run_must_match_registered_store_workflow(self):
+        product = MODULE.load_product(
+            ROOT / "ops" / "group_b_standard_store_products.json",
+            "scheduled-api-runner",
+        )
+        wrong_workflow = {
+            "head_sha": "a" * 40,
+            "name": "Reliability tests / 信頼性テスト",
+            "status": "completed",
+            "conclusion": "success",
+        }
+        with patch.object(MODULE, "gh_json", return_value=wrong_workflow):
+            with self.assertRaisesRegex(ValueError, "registered Store workflow"):
+                MODULE.require_explicit_run_matches_head(
+                    product,
+                    run_id=123,
+                    head_sha="a" * 40,
+                )
 
     def test_unknown_product_is_rejected(self):
         with self.assertRaisesRegex(ValueError, "unknown Group B product_id"):
