@@ -138,6 +138,50 @@ def discover_run_id(product: dict, *, head_sha: str) -> int:
     )
 
 
+def get_frozen_candidate(product: dict) -> dict | None:
+    candidate = product.get("frozen_candidate")
+    if candidate is None:
+        return None
+    if not isinstance(candidate, dict):
+        raise ValueError("frozen_candidate must be an object")
+    if candidate.get("local_static_verified") is not True:
+        raise ValueError("frozen_candidate is not locally static-verified")
+    required = (
+        "source_sha",
+        "store_run_id",
+        "artifact_id",
+        "artifact_name",
+        "artifact_digest",
+        "msix_sha256",
+        "exe_sha256",
+    )
+    for key in required:
+        if key not in candidate:
+            raise ValueError(f"frozen_candidate missing {key}")
+    if candidate["artifact_name"] != product["artifact_name"]:
+        raise ValueError("frozen_candidate artifact name mismatch")
+    return candidate
+
+
+def require_run_matches_source(
+    product: dict,
+    *,
+    run_id: int,
+    source_sha: str,
+) -> None:
+    if type(run_id) is not int or run_id <= 0:
+        raise ValueError("run-id must be positive")
+    run = gh_json(
+        f"repos/{product['repository_full_name']}/actions/runs/{run_id}"
+    )
+    if run.get("head_sha") != source_sha:
+        raise ValueError("run-id is not for the required candidate source SHA")
+    if run.get("name") != product["workflow_name"]:
+        raise ValueError("run-id is not the registered Store workflow")
+    if run.get("status") != "completed" or run.get("conclusion") != "success":
+        raise ValueError("run-id is not a completed SUCCESS Store workflow")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--product-id", required=True)
@@ -154,15 +198,33 @@ def main() -> int:
     try:
         product = load_product(args.registry, args.product_id)
         head_sha = resolve_registered_head(product)
-        if args.run_id is not None:
-            require_explicit_run_matches_head(
+        frozen = get_frozen_candidate(product)
+        if frozen is not None:
+            candidate_sha = str(frozen["source_sha"])
+            run_id = int(frozen["store_run_id"])
+            if args.run_id is not None and args.run_id != run_id:
+                raise ValueError(
+                    "locally verified frozen candidate exists; refusing automatic candidate replacement"
+                )
+            require_run_matches_source(
                 product,
-                run_id=args.run_id,
-                head_sha=head_sha,
+                run_id=run_id,
+                source_sha=candidate_sha,
             )
-            run_id = args.run_id
+            run_id_source = "frozen_candidate"
         else:
-            run_id = discover_run_id(product, head_sha=head_sha)
+            candidate_sha = head_sha
+            if args.run_id is not None:
+                require_explicit_run_matches_head(
+                    product,
+                    run_id=args.run_id,
+                    head_sha=head_sha,
+                )
+                run_id = args.run_id
+                run_id_source = "explicit"
+            else:
+                run_id = discover_run_id(product, head_sha=head_sha)
+                run_id_source = "exact_head_discovery"
         cmd = [
             sys.executable,
             str(ROOT / "scripts" / "pull_store_product_artifact.py"),
@@ -187,6 +249,19 @@ def main() -> int:
             "--expected-workflow-name",
             product["workflow_name"],
         ]
+        if frozen is not None:
+            cmd.extend(
+                [
+                    "--expected-artifact-id",
+                    str(frozen["artifact_id"]),
+                    "--expected-artifact-digest",
+                    str(frozen["artifact_digest"]),
+                    "--expected-msix-sha256",
+                    str(frozen["msix_sha256"]),
+                    "--expected-exe-sha256",
+                    str(frozen["exe_sha256"]),
+                ]
+            )
         result = subprocess.run(cmd, check=False)
         if result.returncode != 0:
             return result.returncode
@@ -199,7 +274,9 @@ def main() -> int:
                     "identity_name": product["identity_name"],
                     "run_id": run_id,
                     "registered_head_sha": head_sha,
-                    "run_id_source": "explicit" if args.run_id is not None else "exact_head_discovery",
+                    "candidate_source_sha": candidate_sha,
+                    "run_id_source": run_id_source,
+                    "frozen_candidate": frozen is not None,
                     "receipt": str(args.receipt),
                     "submitted_to_store": False,
                 },
