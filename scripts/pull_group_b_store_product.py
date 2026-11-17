@@ -69,6 +69,14 @@ def main() -> int:
             str(args.target_root),
             "--receipt",
             str(args.receipt),
+            "--expected-store-id",
+            product["store_id"],
+            "--expected-identity-name",
+            product["identity_name"],
+            "--expected-version",
+            product["version"],
+            "--expected-architecture",
+            product["architecture"],
         ]
         result = subprocess.run(cmd, check=False)
         if result.returncode != 0:
