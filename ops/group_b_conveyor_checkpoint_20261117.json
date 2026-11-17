@@ -25,67 +25,74 @@
     "scheduled-api-runner": {
       "repository_full_name": "shihuiarenjinba-png/scheduled-api-runner",
       "pr_number": 8,
-      "head_sha": "d0208ea9bedabb020ea7045ef1866dbf06e4b0fc",
+      "head_sha": "28ef873ab2ff325b8f26c61a9ba48701280e8290",
       "store_workflow_name": "Windows desktop / Windowsデスクトップ",
-      "store_run_id": 44091831027,
+      "store_run_id": 44093493317,
       "store_artifact": {
-        "id": 14332625372,
+        "id": 14333575447,
         "name": "ScheduledApiRunner-Store-MSIX-UNSIGNED-DRAFT",
-        "digest": "sha256:6ad2943f67d79b6e9a58b51cd72fb21919d3f45b6c35abd2a71e455cba640643",
+        "digest": "sha256:b45d53a0473f5b8cdcac64c1ffdcf12957919da2e5cb846564344d757165afa7",
         "expired": false
       },
-      "reliability_run_id": 44091831017,
+      "reliability_run_id": 44093493219,
       "ci_conclusion": "success",
-      "conveyor_state": "GITHUB_COMPLETE_LOCAL_EXACT_ARTIFACT_CONFIRMATION_PENDING"
+      "conveyor_state": "GITHUB_COMPLETE_LOCAL_EXACT_ARTIFACT_CONFIRMATION_PENDING",
+      "exact_head_store_run_unique": true
     },
     "workflow-automation-hub": {
       "repository_full_name": "shihuiarenjinba-png/workflow-automation-hub",
       "pr_number": 12,
-      "head_sha": "794f14eb9cb7a6e2998e720dbc2994ca7598d9be",
+      "head_sha": "f2ba58895492f0c64da7676b17edfc97e98330e7",
       "store_workflow_name": "Windows build / Windowsビルド",
-      "store_run_id": 44091833266,
+      "store_run_id": 44093505473,
       "store_artifact": {
-        "id": 14332076649,
+        "id": 14332647613,
         "name": "WorkflowAutomationHub-Store-MSIX-UNSIGNED-DRAFT",
-        "digest": "sha256:ca3c4f56a3d5c41d235fb84d33cac46dd87ce539a5a2e29f0051e68421ca0921",
+        "digest": "sha256:16b910bc658d75f403952d6dc73756be71e183c0292b120ce4691ec2d4e2d742",
         "expired": false
       },
       "gui_review_artifact": {
-        "id": 14332671548,
+        "id": 14331614716,
         "name": "WorkflowAutomationHub-GUI-Review",
-        "digest": "sha256:673e9aaf2fddc305762fbe1a712e4325f16442f767cef04f1ccbe30c9919177c"
+        "digest": "sha256:57104c35e4c0f08a07e668c4850cf50b987e73c6baf9049bf40bbbdc7c457f5e"
       },
       "ci_conclusion": "success",
-      "conveyor_state": "GITHUB_COMPLETE_LOCAL_EXACT_ARTIFACT_CONFIRMATION_PENDING"
+      "conveyor_state": "GITHUB_COMPLETE_LOCAL_EXACT_ARTIFACT_CONFIRMATION_PENDING",
+      "exact_head_store_run_unique": true
     },
     "browser-automation-runner": {
       "repository_full_name": "shihuiarenjinba-png/browser-automation-runner",
       "pr_number": 8,
-      "head_sha": "56f7078ef425029c2fec3b5bd22fb0177bddbeb2",
+      "head_sha": "2ae45a80f1a16e70dfcc86277ca44ed0ce80292a",
       "store_workflow_name": "Windows desktop code build",
-      "store_run_id": 44091842502,
+      "store_run_id": 44093519175,
       "store_artifact": {
-        "id": 14332406569,
+        "id": 14332567327,
         "name": "BrowserAutomationRunner-Store-MSIX-UNSIGNED-DRAFT",
-        "digest": "sha256:67e9db36f0802f3fb7840bf481e6902b9062bf55a3f0a296836736546083a1ac",
+        "digest": "sha256:9df4b194373ebc59bf386f1b8c8263d37ea0ba6f1235cb9c1649a8a654224276",
         "expired": false
       },
-      "reliability_run_id": 44091842536,
+      "reliability_run_id": 44093519140,
       "ci_conclusion": "success",
       "conveyor_state": "GITHUB_COMPLETE_LOCAL_EXACT_ARTIFACT_CONFIRMATION_PENDING",
-      "human_hold": "THIRD_PARTY_RIGHTS_OWNER_LEGAL_REVIEW"
+      "human_hold": "THIRD_PARTY_RIGHTS_OWNER_LEGAL_REVIEW",
+      "exact_head_store_run_unique": true
     }
   },
   "central": {
     "repository_full_name": "shihuiarenjinba-png/Windows-all-auto",
     "pr_number": 166,
-    "checkpoint_base_head": "be496f752498a7657937c481397c20b9c557ef4a",
-    "last_verified_offline_qa_run_id": 44092384913,
+    "checkpoint_base_head": "e65303a96f8f3067ff06f89fc8e1dd41f5205569",
+    "last_verified_offline_qa_run_id": 44094374017,
     "last_verified_windows_tests": {
-      "total": 274,
-      "passed": 272,
+      "total": 288,
+      "passed": 286,
       "skipped": 2
     },
-    "partner_center_write_performed": false
+    "partner_center_write_performed": false,
+    "exact_head_discovery_enabled": true,
+    "stale_explicit_run_rejected": true,
+    "direct_product_artifact_archive_provenance": true,
+    "local_confirmation_workspace_enabled": true
   }
 }
