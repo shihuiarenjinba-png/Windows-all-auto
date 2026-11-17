@@ -19,6 +19,7 @@ if str(ROOT) not in sys.path:
 
 from all_auto.product_artifact_pull import (
     ProductArtifactPullError,
+    require_expected_identity,
     stage_verified_store_artifact,
     validate_extracted_store_artifact,
     write_immutable_receipt,
@@ -62,6 +63,10 @@ def main() -> int:
     parser.add_argument("--artifact-name", required=True)
     parser.add_argument("--target-root", required=True, type=Path)
     parser.add_argument("--receipt", required=True, type=Path)
+    parser.add_argument("--expected-store-id")
+    parser.add_argument("--expected-identity-name")
+    parser.add_argument("--expected-version")
+    parser.add_argument("--expected-architecture")
     args = parser.parse_args()
 
     try:
@@ -88,6 +93,24 @@ def main() -> int:
             if verified["source_sha"] != run["head_sha"]:
                 raise ProductArtifactPullError(
                     "artifact source SHA does not match successful workflow head SHA"
+                )
+            expected_values = (
+                args.expected_store_id,
+                args.expected_identity_name,
+                args.expected_version,
+                args.expected_architecture,
+            )
+            if any(value is not None for value in expected_values):
+                if not all(isinstance(value, str) and value.strip() for value in expected_values):
+                    raise ProductArtifactPullError(
+                        "all expected Store identity arguments are required together"
+                    )
+                require_expected_identity(
+                    verified,
+                    store_id=args.expected_store_id,
+                    identity_name=args.expected_identity_name,
+                    version=args.expected_version,
+                    architecture=args.expected_architecture,
                 )
             staged = stage_verified_store_artifact(
                 verified,
