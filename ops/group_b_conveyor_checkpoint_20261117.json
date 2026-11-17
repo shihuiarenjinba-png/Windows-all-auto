@@ -104,11 +104,11 @@
   "central": {
     "repository_full_name": "shihuiarenjinba-png/Windows-all-auto",
     "pr_number": 166,
-    "checkpoint_base_head": "e65303a96f8f3067ff06f89fc8e1dd41f5205569",
-    "last_verified_offline_qa_run_id": 44094374017,
+    "checkpoint_base_head": "112c29d5e385d4c7eed7096679f359c06bc0bfa4",
+    "last_verified_offline_qa_run_id": 44107170934,
     "last_verified_windows_tests": {
-      "total": 288,
-      "passed": 286,
+      "total": 297,
+      "passed": 295,
       "skipped": 2
     },
     "partner_center_write_performed": false,
@@ -116,6 +116,12 @@
     "stale_explicit_run_rejected": true,
     "direct_product_artifact_archive_provenance": true,
     "local_confirmation_workspace_enabled": true,
-    "frozen_candidate_semantics_enabled": true
+    "frozen_candidate_semantics_enabled": true,
+    "one_shot_unsigned_launch_receipt_enabled": true,
+    "unsigned_launch_does_not_unlock_local_final_qa": true,
+    "code_integrity_block_ids": [
+      3033,
+      3077
+    ]
   }
 }
