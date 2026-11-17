@@ -210,7 +210,31 @@ package, or touch Partner Center from this lane.
 
 Repository: `shihuiarenjinba-png/scheduled-api-runner`  
 PR: #8  
-HEAD: `28ef873ab2ff325b8f26c61a9ba48701280e8290`
+Current branch HEAD: `0c2a38ff8c7d5311b115e67387deaed2ce11a523`
+
+The current branch HEAD contains a Store-runbook-only documentation change. It does
+**not** replace the locally static-verified Store candidate.
+
+Frozen candidate:
+
+- source: `28ef873ab2ff325b8f26c61a9ba48701280e8290`
+- Store/Windows run: `44093493317`
+- Store artifact: `14333575447`
+- artifact digest:
+  `sha256:b45d53a0473f5b8cdcac64c1ffdcf12957919da2e5cb846564344d757165afa7`
+- MSIX SHA256:
+  `db599cdfa673688e8fe7db70d11acc69010562636c67f4996b4cba36adfd8877`
+- EXE SHA256:
+  `06d3b92bd83281750e5a454f9add6526fa90f6bfc29017fd6919bbeaa64213d9`
+- local static verification: PASS
+- package rebuilt: false
+- security bypass: false
+
+A docs-only descendant build also exists at source
+`0c2a38ff8c7d5311b115e67387deaed2ce11a523`, run `44106267118`, artifact
+`14337483379`, but its MSIX/EXE bytes differ. It is **not promoted**. Do not replace
+the frozen candidate unless that descendant completes a fresh local static
+verification and the central frozen-candidate record is explicitly updated.
 
 Exact-head CI:
 
