@@ -24,10 +24,19 @@ ARTIFACT = "b" * 64
 class AckTransport:
     def put_and_readback(self, path):
         envelope = json.loads(path.read_text(encoding="utf-8"))
+        manifest = envelope["payload"]["manifest"]
+        test_status = manifest.get("status")
+        evidence_return = (
+            test_status in {"TEST_PASS", "TEST_FAIL"} and
+            manifest.get("collection_complete") is True and
+            manifest.get("local_persistence_verified") is True
+        )
         return {"status": "GITHUB_READBACK_VERIFIED",
                 "request_id": envelope["request_id"],
                 "source_sha": envelope["source_sha"],
                 "payload_sha256": envelope["payload_sha256"],
+                "test_status": test_status,
+                "evidence_return_e2e_pass": evidence_return,
                 "path": "ops/local-qa-results/evidence.json"}
 
 
@@ -129,7 +138,7 @@ class DurableEvidenceTests(unittest.TestCase):
         self.assertEqual(report["actual"]["exit_code"], 7)
         self.assertIn("before crash", (result.run_directory / "stdout.log").read_text())
         self.assertIn("boom", (result.run_directory / "stderr.log").read_text())
-        self.assertFalse(report["evidence_return_e2e_pass"])
+        self.assertTrue(report["evidence_return_e2e_pass"])
         self.assertFalse(report["e2e_pass"])
 
     def test_process_start_failure_is_durable_and_marks_exit_code_unavailable(self):
@@ -403,6 +412,7 @@ class GitHubContentsTransportTests(unittest.TestCase):
         self.assertEqual(ack["schema_version"], "local-qa-github-ack-v1")
         self.assertTrue(ack["ack_path"].endswith(".ack-receipt.json"))
         self.assertFalse(ack["evidence_return_e2e_pass"])
+        self.assertEqual(ack["test_status"], "TEST_FAIL")
         self.assertFalse(ack["product_e2e_pass"])
         self.assertFalse(ack["release_ready"])
         self.assertFalse(ack["store_submission_allowed"])
@@ -423,11 +433,11 @@ class GitHubContentsTransportTests(unittest.TestCase):
         with self.assertRaisesRegex(GitHubReturnError, "correlation mismatch"):
             transport.put_and_readback(self.path)
 
-    def test_ack_receipt_is_true_only_for_complete_passing_evidence(self):
+    def test_ack_receipt_is_true_for_complete_failed_evidence_return(self):
         from all_auto.local_qa_evidence import canonical, sha256_bytes
         payload = {
             "manifest": {
-                "status": "TEST_PASS", "collection_complete": True,
+                "status": "TEST_FAIL", "collection_complete": True,
                 "local_persistence_verified": True,
             },
             "files": [], "redaction": {},
@@ -443,6 +453,7 @@ class GitHubContentsTransportTests(unittest.TestCase):
             base_ref="main", gh_runner=self.runner)
         ack = transport.put_and_readback(self.path)
         self.assertTrue(ack["evidence_return_e2e_pass"])
+        self.assertEqual(ack["test_status"], "TEST_FAIL")
         self.assertFalse(ack["product_e2e_pass"])
 
     def test_existing_tampered_ack_receipt_is_rejected(self):
@@ -485,6 +496,11 @@ class EvidenceSchemaTests(unittest.TestCase):
             encoding="utf-8"))
         self.assertEqual(schema["properties"]["schema_version"]["const"],
                          "local-qa-github-ack-v1")
+        self.assertIn("test_status", set(schema["required"]))
+        self.assertEqual(
+            set(schema["properties"]["test_status"]["enum"]),
+            {"TEST_PASS", "TEST_FAIL"},
+        )
         for field in ("product_e2e_pass", "e2e_pass", "release_ready",
                       "store_submission_allowed"):
             self.assertEqual(schema["properties"][field]["const"], False)

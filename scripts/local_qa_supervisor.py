@@ -10,6 +10,9 @@ import subprocess
 from typing import Callable
 
 from all_auto.local_qa_evidence import EvidenceStore, GitHubContentsTransport
+from all_auto.product_qa_plan_intake import (
+    GitHubProductQAPlanner, job_from_handoff, load_handoff_bundle,
+)
 from all_auto.qa_supervisor import (
     QASupervisor, load_default_catalog, require_new_source_sha,
 )
@@ -73,7 +76,9 @@ def _product_event_log_collector(
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--state-root", type=Path, required=True)
-    parser.add_argument("--job", type=Path, required=True)
+    parser.add_argument("--job", type=Path)
+    parser.add_argument("--qa-plan-bundle", type=Path)
+    parser.add_argument("--request-id")
     parser.add_argument("--artifact", type=Path, required=True)
     parser.add_argument("--intake-root", type=Path, required=True)
     parser.add_argument("--model", default="windows-qa-analyst")
@@ -86,7 +91,16 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--previous-repair-handoff", type=Path)
     args = parser.parse_args(argv)
 
-    job = json.loads(args.job.read_text(encoding="utf-8"))
+    if bool(args.job) == bool(args.qa_plan_bundle):
+        parser.error("provide exactly one of --job or --qa-plan-bundle")
+    accepted = None
+    if args.qa_plan_bundle:
+        if not args.request_id:
+            parser.error("--qa-plan-bundle requires --request-id")
+        accepted = load_handoff_bundle(args.qa_plan_bundle)
+        job = job_from_handoff(accepted, request_id=args.request_id)
+    else:
+        job = json.loads(args.job.read_text(encoding="utf-8"))
     if args.synthetic_phase1 and not str(job.get("slug", "")).startswith("synthetic-"):
         parser.error("--synthetic-phase1 requires a synthetic-* job slug")
     if args.allow_github_write and (not args.repository or not args.base_ref):
@@ -97,7 +111,11 @@ def main(argv: list[str] | None = None) -> int:
     store = EvidenceStore(args.state_root)
     store.recover_interrupted()
     catalog = load_default_catalog()
-    planner = PlannerEngine(client=OllamaPlannerClient(), model=args.model)
+    planner = (
+        GitHubProductQAPlanner(accepted.plan)
+        if accepted is not None else
+        PlannerEngine(client=OllamaPlannerClient(), model=args.model)
+    )
     analyzer = (
         AnalysisEngine(client=OllamaClient(), model=args.model)
         if args.enable_analysis else None
@@ -132,6 +150,15 @@ def main(argv: list[str] | None = None) -> int:
         "store_submission_allowed": False,
         "source_edit_authority": False,
         "handoff_path": str(result.handoff_path),
+        "planner_source": (
+            "GITHUB_PRODUCT_QA_PLAN" if accepted is not None else "OLLAMA"
+        ),
+        "factory_package_sha256": (
+            accepted.package_sha256 if accepted is not None else None
+        ),
+        "factory_qa_plan_sha256": (
+            accepted.qa_plan_sha256 if accepted is not None else None
+        ),
     }
     print(json.dumps(output, ensure_ascii=False, indent=2))
     succeeded = (

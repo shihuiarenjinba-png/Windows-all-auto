@@ -566,8 +566,12 @@ class QASupervisor:
             round_record = outcome.as_dict()
             state["planner_rounds"].append(round_record)
             self.states.checkpoint(state_path, state)
-            if outcome.status != "AI_PLAN_VALID" or outcome.plan is None:
-                final_status = "AI_PLANNER_UNAVAILABLE"
+            if outcome.status not in {"AI_PLAN_VALID", "QA_PLAN_VALID"} or outcome.plan is None:
+                if outcome.status.startswith("QA_PLAN_"):
+                    final_status = outcome.status
+                    missing_evidence = list(outcome.errors)
+                else:
+                    final_status = "AI_PLANNER_UNAVAILABLE"
                 break
             plan = outcome.plan
             missing_evidence = list(plan["missing_evidence"])

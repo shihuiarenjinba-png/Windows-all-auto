@@ -21,8 +21,15 @@ class AckTransport:
 
     def put_and_readback(self, envelope_path: Path) -> dict:
         envelope = json.loads(envelope_path.read_text(encoding="utf-8"))
+        manifest = envelope["payload"]["manifest"]
         return {
             "status": "GITHUB_READBACK_VERIFIED",
+            "test_status": manifest["status"],
+            "evidence_return_e2e_pass": (
+                manifest["status"] in {"TEST_PASS", "TEST_FAIL"} and
+                manifest.get("collection_complete") is True and
+                manifest.get("local_persistence_verified") is True
+            ),
             "repository": self.repository,
             "branch": self.branch,
             "path": (
