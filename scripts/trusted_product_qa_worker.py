@@ -16,6 +16,9 @@ from all_auto.product_qa_plan import load_bound_plan  # noqa: E402
 from all_auto.trusted_window_capture import (  # noqa: E402
     TrustedWindowCapture, TrustedWindowCaptureHold,
 )
+from qa_ai.product_diagnostic_planner import (  # noqa: E402
+    ProductDiagnosticPlanner, OllamaProductDiagnosticClient,
+)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -25,6 +28,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--action-log", required=True, type=Path)
     parser.add_argument("--screenshot-output", type=Path)
     parser.add_argument("--screenshot-root", type=Path)
+    parser.add_argument("--enable-ollama-supervision", action="store_true")
+    parser.add_argument("--model", default="windows-qa-analyst")
     args = parser.parse_args(argv)
     try:
         plan = load_bound_plan(args.plan)
@@ -44,9 +49,17 @@ def main(argv: list[str] | None = None) -> int:
                 allowed_root=args.screenshot_root,
             )
 
+        diagnostic_planner = (
+            ProductDiagnosticPlanner(
+                client=OllamaProductDiagnosticClient(),
+                model=args.model,
+            )
+            if args.enable_ollama_supervision else None
+        )
         result = execute_bound_product_plan(
             plan, artifact_path=args.artifact, action_log=args.action_log,
             before_terminate=capture if args.screenshot_output else None,
+            diagnostic_planner=diagnostic_planner,
         )
     except (ProductQAExecutionHold, TrustedWindowCaptureHold, ValueError) as exc:
         print(json.dumps({
@@ -58,6 +71,7 @@ def main(argv: list[str] | None = None) -> int:
     print(json.dumps({
         "status": result.status, "actions": list(result.actions),
         "screenshot": capture_result,
+        "ai_diagnostic_decision": result.ai_diagnostic_decision,
         "product_e2e_pass": False, "release_ready": False,
         "store_submission_allowed": False,
     }, ensure_ascii=False, sort_keys=True))
