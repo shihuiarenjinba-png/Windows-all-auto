@@ -151,6 +151,62 @@ explicitly `UNAVAILABLE`; GitHub readback may succeed while
 `evidence_return_e2e_pass`, `product_e2e_pass`, `release_ready`, and
 `store_submission_allowed` stay false.
 
-`UIA_SET_TEXT` is a Windows-side capability. A GitHub Factory may not emit it
-until its own schema, validator, template hashing, and negative tests have been
-updated in the same reviewed change.
+AI-App-Factory PR #93 now carries the matching bounded `UIA_SET_TEXT`
+schema/validator contract, so a verified Factory plan may emit it when tied to
+a real Edit control.
+
+## Received product plan: actual operation + Ollama supervision
+
+For a bound product QA plan, the local machine is not a passive log reader.
+The deterministic worker actually starts the exact received executable and
+performs the plan's approved UI Automation actions against that exact process.
+
+The authority split is:
+
+```text
+GitHub strong model
+  -> authors product-specific required steps
+  -> pre-authors optional read-only diagnostic steps
+  -> binds source/package/EXE/Identity/Version
+
+local trusted script
+  -> verifies all immutable provenance
+  -> starts exact product bytes
+  -> performs required UIA actions
+  -> records deterministic observations
+
+Ollama local supervisor
+  -> receives failure/history + only pre-authored optional diagnostics
+  -> selects zero to three optional diagnostic step IDs
+  -> never creates an action or parameter
+
+local trusted script
+  -> performs the selected diagnostic steps
+  -> returns observations to EvidenceStore/GitHub
+```
+
+Optional diagnostics are executed only after a required step fails or is
+blocked. The model can select only exact `step_id` values already present as
+`required=false` in the verified bound plan and whose action also appears in
+`allowed_diagnostics`. Runtime diagnostics are additionally limited to the
+local read-only set:
+
+```text
+PROCESS_STATUS
+UIA_FIND_WINDOW
+UIA_FIND_CONTROL
+UIA_READ_TEXT
+```
+
+`UIA_INVOKE` and `UIA_SET_TEXT` are never offered to Ollama as failure
+diagnostics. They may still be required main-path actions when explicitly
+authored by the GitHub QA plan.
+
+Ollama unavailability, malformed output, hallucinated step IDs, cross-product
+ownership, or unauthorized diagnostic selection cannot change deterministic
+PASS/FAIL. A failed required step remains HOLD/FAIL even if all selected
+diagnostics succeed. The diagnostics exist to collect better evidence for the
+GitHub coding agent, not to override the gate.
+
+The trusted GUI evidence entrypoint enables this advisory Ollama supervision
+while the actual Windows operations remain in the deterministic executor.
