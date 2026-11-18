@@ -1,6 +1,6 @@
 {
   "schema_version": "group-b-conveyor-checkpoint/1",
-  "recorded_date_jst": "2026-11-17",
+  "recorded_date_jst": "2026-11-18",
   "authority": "evidence_snapshot_only",
   "store_write_authorized": false,
   "main_release_merge_authorized": false,
@@ -8,19 +8,63 @@
     "folder-engine": {
       "repository_full_name": "shihuiarenjinba-png/folder-automation-engine",
       "pr_number": 10,
-      "head_sha": "a69d73aeeffbc7e734debec50aeb2b3b8900734d",
+      "head_sha": "adfc0d08efb0a94602d5286557d399f9cb28b9dd",
       "ci": {
-        "safety_run_id": 44038977218,
-        "gui_validate_run_id": 44038977220,
-        "store_build_run_id": 44038977283,
+        "safety_run_id": 44269998255,
+        "gui_validate_run_id": 44269998380,
+        "store_build_run_id": 44269998298,
         "conclusion": "success"
       },
-      "frozen_source_sha": "51597b389384be6cf2b3d85c09ee66099b80807e",
-      "frozen_msix_sha256": "911f8eb13abfdbb51bea8f279006d138d6be9cba4a25413416c1d70458676450",
-      "frozen_exe_sha256": "d53161ea1119445afb8070d989d4a72e8019895b8c5e166738a3e38718b54976",
-      "conveyor_state": "HOLD_SUBMISSION_RECONCILE_REQUIRED",
+      "frozen_source_sha": "adfc0d08efb0a94602d5286557d399f9cb28b9dd",
+      "frozen_msix_sha256": "3c6bc8c1291450905ae71834f2704a59325d1aaa1c9de3f064bcb8c7ebca9fb9",
+      "frozen_exe_sha256": "de6894ae39cbe0fbe1889b4aa005e500f30a2ef95ee67403ddfb210dbcfb9f18",
+      "conveyor_state": "HOLD_OWNER_VISUAL_APPROVAL_PRICE_AUDIENCE_SECURITY_VERSION_REVERIFY",
       "direct_product_artifact_pull_supported": false,
-      "next_dependency": "Store execution owner returns INITIAL_SUBMISSION_DRAFT_PRESENT_RECOVERED receipt"
+      "next_dependency": "Owner visual approval, exact live JPY price, 7-day option recheck, existing Known User Group, new-SHA security binding, and live no-package/version reverify",
+      "store_artifact": {
+        "id": 14411892806,
+        "name": "FolderAutomationEngine-Store-MSIX-UNSIGNED-DRAFT",
+        "digest": "sha256:af62e80fe2661d4acf335530c5f6c22b5c968386d0b450236d7b9424eb0094f6",
+        "expired": false,
+        "run_id": 44269998298
+      },
+      "windows_artifact": {
+        "id": 14411209692,
+        "name": "FolderAutomationEngine-Windows",
+        "digest": "sha256:35e07400dc0b30487dac1f01a6b944df83f72a7aee0ae01f347a857addf81f8f",
+        "expired": false,
+        "run_id": 44269998298
+      },
+      "package": {
+        "file_name": "FolderAutomationEngine_1.0.0.0_x64_StoreDraft_UNSIGNED.msix",
+        "version": "1.0.0.0",
+        "architecture": "x64",
+        "identity_name": "OkinawaDesktopTools.FolderAutomationEngine",
+        "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+        "inventory_count": 999,
+        "makeappx_pack_unpack": "PASS"
+      },
+      "screenshots": {
+        "ja_count": 5,
+        "en_count": 5,
+        "resolution": "1366x768",
+        "native_pixels": true,
+        "resized": false,
+        "exact_packaged_executable": true,
+        "internal_visual_qa": "PASS",
+        "owner_visual_approval": false
+      },
+      "superseded_candidate": {
+        "source_sha": "51597b389384be6cf2b3d85c09ee66099b80807e",
+        "msix_sha256": "911f8eb13abfdbb51bea8f279006d138d6be9cba4a25413416c1d70458676450",
+        "exe_sha256": "d53161ea1119445afb8070d989d4a72e8019895b8c5e166738a3e38718b54976",
+        "status": "SUPERSEDED_BY_UI_POLISHED_CANDIDATE",
+        "upload_forbidden": true
+      },
+      "start_submission_repeated": false,
+      "package_uploaded": false,
+      "certification_submitted": false,
+      "published": false
     },
     "scheduled-api-runner": {
       "repository_full_name": "shihuiarenjinba-png/scheduled-api-runner",
