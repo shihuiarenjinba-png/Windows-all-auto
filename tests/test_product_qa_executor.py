@@ -46,6 +46,35 @@ class FakeUIA:
         }
 
 
+class FakeDecision:
+    def __init__(self, selected):
+        self.status = "AI_DIAGNOSTIC_VALID"
+        self.decision = {
+            "selected_optional_step_ids": selected,
+            "reason": "bounded diagnostic",
+            "stop_reason": None,
+            "recommended_owner": "APP",
+        }
+
+    def as_dict(self):
+        return {
+            "status": self.status,
+            "decision": self.decision,
+            "source_edit_authority": False,
+            "command_execution_authority": False,
+        }
+
+
+class FakeDiagnosticPlanner:
+    def __init__(self, selected):
+        self.selected = selected
+        self.calls = []
+
+    def decide(self, **kwargs):
+        self.calls.append(kwargs)
+        return FakeDecision(self.selected)
+
+
 class ProductQAExecutorTests(unittest.TestCase):
     def setUp(self):
         temporary = tempfile.TemporaryDirectory()
@@ -108,6 +137,80 @@ class ProductQAExecutorTests(unittest.TestCase):
         self.assertEqual(observed[0][0], 4321)
         self.assertIn("UIA_SET_TEXT", observed[0][1])
         self.assertTrue(process.terminated)
+
+
+    def test_ollama_selects_pre_authored_diagnostic_after_required_failure(self):
+        plan = {
+            "product_type": "APP",
+            "executable_sha256": self.digest,
+            "allowed_diagnostics": ["UIA_FIND_CONTROL", "UIA_READ_TEXT"],
+            "steps": [
+                {"step_id": "hash", "action": "ARTIFACT_HASH", "requires": [],
+                 "required": True, "params": {}},
+                {"step_id": "start", "action": "PROCESS_START", "requires": ["hash"],
+                 "required": True, "params": {"observation_seconds": 5}},
+                {"step_id": "required-control", "action": "UIA_FIND_CONTROL",
+                 "requires": ["hash", "start"], "required": True,
+                 "params": {"name": "Missing", "control_type": "Button"}},
+                {"step_id": "inspect-search", "action": "UIA_FIND_CONTROL",
+                 "requires": ["hash", "start"], "required": False,
+                 "params": {"name": "Search", "control_type": "Edit"}},
+            ],
+        }
+
+        class SelectiveUIA(FakeUIA):
+            def execute(self, **kwargs):
+                self.calls.append(kwargs)
+                if kwargs["params"].get("name") == "Missing":
+                    raise TrustedUIAHold("not found")
+                return {
+                    "status": "UIA_PASS", "action": kwargs["action"],
+                    "process_id": kwargs["process_id"], "observed": "Search",
+                }
+
+        planner = FakeDiagnosticPlanner(["inspect-search"])
+        with self.assertRaisesRegex(ProductQAExecutionHold, "trusted UIA"):
+            execute_bound_product_plan(
+                plan, artifact_path=self.artifact, action_log=self.log,
+                process_factory=lambda *_args, **_kwargs: FakeProcess(),
+                uia_executor=SelectiveUIA(), sleeper=lambda _seconds: None,
+                diagnostic_planner=planner,
+            )
+        self.assertEqual(len(planner.calls), 1)
+        log = self.log.read_text(encoding="utf-8")
+        self.assertIn("AI_DIAGNOSTIC_DECISION", log)
+        self.assertIn("inspect-search", log)
+        self.assertIn('"diagnostic": true', log)
+
+    def test_optional_write_step_is_never_offered_as_diagnostic(self):
+        plan = {
+            "product_type": "APP",
+            "executable_sha256": self.digest,
+            "allowed_diagnostics": ["UIA_FIND_CONTROL"],
+            "steps": [
+                {"step_id": "hash", "action": "ARTIFACT_HASH", "requires": [],
+                 "required": True, "params": {}},
+                {"step_id": "start", "action": "PROCESS_START", "requires": ["hash"],
+                 "required": True, "params": {"observation_seconds": 5}},
+                {"step_id": "required-control", "action": "UIA_FIND_CONTROL",
+                 "requires": ["hash", "start"], "required": True,
+                 "params": {"name": "Missing", "control_type": "Button"}},
+                {"step_id": "write-text", "action": "UIA_SET_TEXT",
+                 "requires": ["hash", "start"], "required": False,
+                 "params": {"name": "Search", "control_type": "Edit", "value": "x"}},
+            ],
+        }
+        planner = FakeDiagnosticPlanner([])
+        with self.assertRaises(ProductQAExecutionHold):
+            execute_bound_product_plan(
+                plan, artifact_path=self.artifact, action_log=self.log,
+                process_factory=lambda *_args, **_kwargs: FakeProcess(),
+                uia_executor=FakeUIA(fail=True), sleeper=lambda _seconds: None,
+                diagnostic_planner=planner,
+            )
+        self.assertEqual(planner.calls, [])
+        self.assertIn("NO_AVAILABLE_OPTIONAL_DIAGNOSTICS",
+                      self.log.read_text(encoding="utf-8"))
 
     def test_dependency_artifact_and_ambiguous_uia_fail_closed(self):
         changed = dict(self.plan)
