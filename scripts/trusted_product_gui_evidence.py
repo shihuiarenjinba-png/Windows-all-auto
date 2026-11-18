@@ -63,6 +63,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--artifact", required=True, type=Path)
     parser.add_argument("--package", required=True, type=Path)
     parser.add_argument("--timeout-seconds", type=int, default=300)
+    parser.add_argument("--model", default="windows-qa-analyst")
     args = parser.parse_args(argv)
 
     job = json.loads(args.job.read_text(encoding="utf-8"))
@@ -105,6 +106,8 @@ def main(argv: list[str] | None = None) -> int:
         "--action-log", str(action_log),
         "--screenshot-output", str(screenshot),
         "--screenshot-root", str(review),
+        "--enable-ollama-supervision",
+        "--model", args.model,
     ]
 
     def attach(run_id: str, _folder: Path) -> None:
