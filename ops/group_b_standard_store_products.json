@@ -9,14 +9,57 @@
       "version": "1.0.0.0",
       "architecture": "x64",
       "direct_product_artifact_pull_supported": false,
-      "reason": "Pilot uses an already-frozen exact local/legacy artifact. Do not replace it with a newer product-repo build.",
+      "reason": "Pilot uses the exact locally verified UI-polished candidate from run 44269998298. Direct pull remains disabled because this legacy artifact intentionally has no store-product-handoff.json; use the frozen SHA-bound local gate and never substitute another build.",
       "local_only_checks": [
         "Store-signed JP/EN GUI",
         "real OS DPI 100/125/150",
         "Preview / Dry Run / approval / copy / move / no-overwrite",
         "symlink / junction / source-destination safety / restart / normal exit"
       ],
-      "source_ref": "codex/folder-standard-consumer-ui-20261026"
+      "source_ref": "codex/folder-standard-consumer-ui-20261026",
+      "artifact_name": "FolderAutomationEngine-Store-MSIX-UNSIGNED-DRAFT",
+      "workflow_name": "Folder desktop and unsigned Store draft",
+      "frozen_candidate": {
+        "status": "UI_POLISHED_CANDIDATE_FROZEN_OWNER_VISUAL_APPROVAL_PENDING",
+        "source_sha": "adfc0d08efb0a94602d5286557d399f9cb28b9dd",
+        "safety_run_id": 44269998255,
+        "gui_run_id": 44269998380,
+        "store_run_id": 44269998298,
+        "windows_artifact_id": 14411209692,
+        "windows_artifact_digest": "sha256:35e07400dc0b30487dac1f01a6b944df83f72a7aee0ae01f347a857addf81f8f",
+        "store_artifact_id": 14411892806,
+        "store_artifact_name": "FolderAutomationEngine-Store-MSIX-UNSIGNED-DRAFT",
+        "store_artifact_digest": "sha256:af62e80fe2661d4acf335530c5f6c22b5c968386d0b450236d7b9424eb0094f6",
+        "file_name": "FolderAutomationEngine_1.0.0.0_x64_StoreDraft_UNSIGNED.msix",
+        "msix_sha256": "3c6bc8c1291450905ae71834f2704a59325d1aaa1c9de3f064bcb8c7ebca9fb9",
+        "exe_sha256": "de6894ae39cbe0fbe1889b4aa005e500f30a2ef95ee67403ddfb210dbcfb9f18",
+        "version": "1.0.0.0",
+        "architecture": "x64",
+        "identity_name": "OkinawaDesktopTools.FolderAutomationEngine",
+        "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+        "package_inventory_count": 999,
+        "makeappx_pack_unpack": "PASS",
+        "local_static_verified": true,
+        "package_rebuilt": true,
+        "security_bypass_used": false,
+        "screenshots": {
+          "ja_count": 5,
+          "en_count": 5,
+          "width": 1366,
+          "height": 768,
+          "native_pixels": true,
+          "resized": false,
+          "internal_visual_qa": "PASS",
+          "owner_visual_approval": false
+        },
+        "revoked_candidate": {
+          "source_sha": "51597b389384be6cf2b3d85c09ee66099b80807e",
+          "msix_sha256": "911f8eb13abfdbb51bea8f279006d138d6be9cba4a25413416c1d70458676450",
+          "status": "SUPERSEDED_BY_UI_POLISHED_CANDIDATE"
+        },
+        "pre_upload_gate_status": "HOLD_OWNER_VISUAL_APPROVAL_PRICE_AUDIENCE_SECURITY_VERSION_REVERIFY",
+        "next_action": "OWNER_VISUAL_APPROVAL_AND_LIVE_STORE_FIELDS_READ_ONLY"
+      }
     },
     "scheduled-api-runner": {
       "name": "Scheduled API Runner",
