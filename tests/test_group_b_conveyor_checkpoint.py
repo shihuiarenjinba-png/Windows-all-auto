@@ -35,15 +35,39 @@ class GroupBConveyorCheckpointTests(unittest.TestCase):
             self.checkpoint["central"]["partner_center_write_performed"]
         )
 
-    def test_folder_snapshot_preserves_frozen_pilot_and_reconcile_hold(self):
+    def test_folder_snapshot_binds_polished_candidate_and_remaining_holds(self):
         folder = self.checkpoint["products"]["folder-engine"]
         self.assertEqual(
-            folder["conveyor_state"], "HOLD_SUBMISSION_RECONCILE_REQUIRED"
+            folder["conveyor_state"],
+            "HOLD_OWNER_VISUAL_APPROVAL_PRICE_AUDIENCE_SECURITY_VERSION_REVERIFY",
         )
         self.assertFalse(folder["direct_product_artifact_pull_supported"])
-        self.assertTrue(HEX40.fullmatch(folder["frozen_source_sha"]))
-        self.assertEqual(len(folder["frozen_msix_sha256"]), 64)
-        self.assertEqual(len(folder["frozen_exe_sha256"]), 64)
+        self.assertEqual(
+            folder["frozen_source_sha"],
+            "adfc0d08efb0a94602d5286557d399f9cb28b9dd",
+        )
+        self.assertEqual(
+            folder["frozen_msix_sha256"],
+            "3c6bc8c1291450905ae71834f2704a59325d1aaa1c9de3f064bcb8c7ebca9fb9",
+        )
+        self.assertEqual(
+            folder["frozen_exe_sha256"],
+            "de6894ae39cbe0fbe1889b4aa005e500f30a2ef95ee67403ddfb210dbcfb9f18",
+        )
+        self.assertEqual(folder["ci"]["conclusion"], "success")
+        self.assertEqual(folder["package"]["makeappx_pack_unpack"], "PASS")
+        self.assertEqual(folder["screenshots"]["ja_count"], 5)
+        self.assertEqual(folder["screenshots"]["en_count"], 5)
+        self.assertEqual(folder["screenshots"]["resolution"], "1366x768")
+        self.assertTrue(folder["screenshots"]["native_pixels"])
+        self.assertFalse(folder["screenshots"]["resized"])
+        self.assertEqual(folder["screenshots"]["internal_visual_qa"], "PASS")
+        self.assertFalse(folder["screenshots"]["owner_visual_approval"])
+        self.assertTrue(folder["superseded_candidate"]["upload_forbidden"])
+        self.assertFalse(folder["start_submission_repeated"])
+        self.assertFalse(folder["package_uploaded"])
+        self.assertFalse(folder["certification_submitted"])
+        self.assertFalse(folder["published"])
 
     def test_scheduled_checkpoint_records_private_signing_lane_ready(self):
         scheduled = self.checkpoint["products"]["scheduled-api-runner"]
