@@ -20,7 +20,7 @@
       "artifact_name": "FolderAutomationEngine-Store-MSIX-UNSIGNED-DRAFT",
       "workflow_name": "Folder desktop and unsigned Store draft",
       "frozen_candidate": {
-        "status": "UI_POLISHED_CANDIDATE_FROZEN_OWNER_VISUAL_APPROVAL_PENDING",
+        "status": "UI_POLISHED_CANDIDATE_FROZEN_PRICING_SAVED",
         "source_sha": "adfc0d08efb0a94602d5286557d399f9cb28b9dd",
         "safety_run_id": 44269998255,
         "gui_run_id": 44269998380,
@@ -52,13 +52,25 @@
           "internal_visual_qa": "PASS",
           "owner_visual_approval": false
         },
+        "commercial": {
+          "model": "paid_one_time",
+          "currency": "JPY",
+          "exact_partner_center_price_value": "JPY 360",
+          "price_confirmed": true,
+          "approved_by": "owner-confirmed-live-partner-center-2026-11-18",
+          "free_trial": "none",
+          "trial_confirmed": true,
+          "pricing_saved": true,
+          "reload_retained": true,
+          "section_state": "Complete"
+        },
         "revoked_candidate": {
           "source_sha": "51597b389384be6cf2b3d85c09ee66099b80807e",
           "msix_sha256": "911f8eb13abfdbb51bea8f279006d138d6be9cba4a25413416c1d70458676450",
           "status": "SUPERSEDED_BY_UI_POLISHED_CANDIDATE"
         },
-        "pre_upload_gate_status": "HOLD_OWNER_VISUAL_APPROVAL_PRICE_AUDIENCE_SECURITY_VERSION_REVERIFY",
-        "next_action": "OWNER_VISUAL_APPROVAL_AND_LIVE_STORE_FIELDS_READ_ONLY"
+        "pre_upload_gate_status": "HOLD_OWNER_VISUAL_APPROVAL_AUDIENCE_SECURITY_VERSION_REVERIFY",
+        "next_action": "PRIVATE_AUDIENCE_GROUP_MEMBER_CONFIRMATION"
       }
     },
     "scheduled-api-runner": {

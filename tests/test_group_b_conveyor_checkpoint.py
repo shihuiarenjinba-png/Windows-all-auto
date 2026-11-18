@@ -31,7 +31,7 @@ class GroupBConveyorCheckpointTests(unittest.TestCase):
         self.assertEqual(self.checkpoint["authority"], "evidence_snapshot_only")
         self.assertFalse(self.checkpoint["store_write_authorized"])
         self.assertFalse(self.checkpoint["main_release_merge_authorized"])
-        self.assertFalse(
+        self.assertTrue(
             self.checkpoint["central"]["partner_center_write_performed"]
         )
 
@@ -39,7 +39,7 @@ class GroupBConveyorCheckpointTests(unittest.TestCase):
         folder = self.checkpoint["products"]["folder-engine"]
         self.assertEqual(
             folder["conveyor_state"],
-            "HOLD_OWNER_VISUAL_APPROVAL_PRICE_AUDIENCE_SECURITY_VERSION_REVERIFY",
+            "HOLD_OWNER_VISUAL_APPROVAL_AUDIENCE_SECURITY_VERSION_REVERIFY",
         )
         self.assertFalse(folder["direct_product_artifact_pull_supported"])
         self.assertEqual(
@@ -63,6 +63,21 @@ class GroupBConveyorCheckpointTests(unittest.TestCase):
         self.assertFalse(folder["screenshots"]["resized"])
         self.assertEqual(folder["screenshots"]["internal_visual_qa"], "PASS")
         self.assertFalse(folder["screenshots"]["owner_visual_approval"])
+        pricing = folder["live_partner_center"]["pricing"]
+        self.assertEqual(pricing["model"], "paid_one_time")
+        self.assertEqual(pricing["currency"], "JPY")
+        self.assertEqual(pricing["exact_value"], "360")
+        self.assertEqual(pricing["free_trial"], "none")
+        self.assertTrue(pricing["save_performed"])
+        self.assertTrue(pricing["reload_retained"])
+        self.assertEqual(pricing["section_state"], "Complete")
+        self.assertFalse(pricing["dirty_state_after_reload"])
+        group = folder["live_partner_center"]["customer_group"]
+        self.assertTrue(group["create_page_verified"])
+        self.assertEqual(group["member_source"], "CURRENT_PARTNER_CENTER_ACCOUNT")
+        self.assertFalse(group["member_value_persisted"])
+        self.assertFalse(group["member_transmission_confirmed"])
+        self.assertFalse(group["created"])
         self.assertTrue(folder["superseded_candidate"]["upload_forbidden"])
         self.assertFalse(folder["start_submission_repeated"])
         self.assertFalse(folder["package_uploaded"])

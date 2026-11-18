@@ -18,9 +18,9 @@
       "frozen_source_sha": "adfc0d08efb0a94602d5286557d399f9cb28b9dd",
       "frozen_msix_sha256": "3c6bc8c1291450905ae71834f2704a59325d1aaa1c9de3f064bcb8c7ebca9fb9",
       "frozen_exe_sha256": "de6894ae39cbe0fbe1889b4aa005e500f30a2ef95ee67403ddfb210dbcfb9f18",
-      "conveyor_state": "HOLD_OWNER_VISUAL_APPROVAL_PRICE_AUDIENCE_SECURITY_VERSION_REVERIFY",
+      "conveyor_state": "HOLD_OWNER_VISUAL_APPROVAL_AUDIENCE_SECURITY_VERSION_REVERIFY",
       "direct_product_artifact_pull_supported": false,
-      "next_dependency": "Owner visual approval, exact live JPY price, 7-day option recheck, existing Known User Group, new-SHA security binding, and live no-package/version reverify",
+      "next_dependency": "Owner visual approval, confirmed current Partner Center account membership in the Known User Group, new-SHA security binding, and live no-package/version reverify",
       "store_artifact": {
         "id": 14411892806,
         "name": "FolderAutomationEngine-Store-MSIX-UNSIGNED-DRAFT",
@@ -53,6 +53,33 @@
         "exact_packaged_executable": true,
         "internal_visual_qa": "PASS",
         "owner_visual_approval": false
+      },
+      "live_partner_center": {
+        "store_id": "9P99MJX1R4V6",
+        "draft_id": "1152921505702423660",
+        "pricing": {
+          "model": "paid_one_time",
+          "currency": "JPY",
+          "exact_value": "360",
+          "free_trial": "none",
+          "owner_confirmed": true,
+          "save_performed": true,
+          "reload_retained": true,
+          "section_state": "Complete",
+          "dirty_state_after_reload": false
+        },
+        "customer_group": {
+          "create_page_verified": true,
+          "page_path": "/en-us/dashboard/analytics/customers/add",
+          "audience_type": "Known user group",
+          "planned_group_name": "Folder Automation Engine Private QA",
+          "member_source": "CURRENT_PARTNER_CENTER_ACCOUNT",
+          "member_value_persisted": false,
+          "member_transmission_confirmed": false,
+          "created": false
+        },
+        "packages_state": "Not started",
+        "package_uploaded": false
       },
       "superseded_candidate": {
         "source_sha": "51597b389384be6cf2b3d85c09ee66099b80807e",
@@ -214,7 +241,7 @@
       "passed": 311,
       "skipped": 2
     },
-    "partner_center_write_performed": false,
+    "partner_center_write_performed": true,
     "exact_head_discovery_enabled": true,
     "stale_explicit_run_rejected": true,
     "direct_product_artifact_archive_provenance": true,

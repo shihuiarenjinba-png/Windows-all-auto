@@ -1,0 +1,68 @@
+{
+  "schema_version": "partner-center-teacher-receipt/1",
+  "recorded_date_jst": "2026-11-18",
+  "product": {
+    "name": "Folder Automation Engine",
+    "store_id": "9P99MJX1R4V6",
+    "draft_id": "1152921505702423660",
+    "submission_route": "msix_pwa_app"
+  },
+  "page_models": {
+    "customer_group_create": {
+      "verified_path": "/en-us/dashboard/analytics/customers/add",
+      "required_heading": "Create new group",
+      "fields": {
+        "group_name": "groupName",
+        "members": "NewFlightGroup_Emails"
+      },
+      "save_button": "createNewFlightGroupSubmit",
+      "audience_type": "Known user group",
+      "member_limit": 10000,
+      "planned_group_name": "Folder Automation Engine Private QA",
+      "member_source": "CURRENT_PARTNER_CENTER_ACCOUNT",
+      "persist_member_value": false,
+      "unknown_or_duplicate_warning_action": "HOLD",
+      "create_new_group_must_not_repeat": true
+    },
+    "pricing": {
+      "verified_path_suffix": "/submissions/1152921505702423660/availability",
+      "currency_field_label": "Currency",
+      "price_field_label": "Retail price",
+      "save_button": "saveButtonPricing",
+      "expected": {
+        "model": "paid_one_time",
+        "currency": "JPY - Japan",
+        "retail_price": "360",
+        "free_trial": "none"
+      },
+      "save_performed": true,
+      "reload_postconditions": {
+        "currency": "JPY - Japan",
+        "retail_price": "360",
+        "free_trial_text": "No free trial configured.",
+        "save_disabled": true,
+        "overview_section_state": "Complete"
+      }
+    }
+  },
+  "state_machine": [
+    "PRICING_SAVED",
+    "PRIVATE_AUDIENCE_MEMBER_CONFIRMATION_REQUIRED",
+    "PRIVATE_AUDIENCE_GROUP_CREATE_READY",
+    "PRIVATE_AUDIENCE_GROUP_READY",
+    "PRIVATE_AUDIENCE_SAVED",
+    "OWNER_VISUAL_APPROVAL_REQUIRED",
+    "OWNER_SECURITY_CONFIRMATION_REQUIRED",
+    "PREUPLOAD_GATE_REQUIRED",
+    "READY_FOR_MSIX_UPLOAD_APPROVAL",
+    "PACKAGE_SAVED_AWAITING_CERTIFICATION_APPROVAL"
+  ],
+  "current_state": "PRIVATE_AUDIENCE_MEMBER_CONFIRMATION_REQUIRED",
+  "safety": {
+    "start_submission_repeated": false,
+    "old_msix_used": false,
+    "package_uploaded": false,
+    "certification_executed": false,
+    "publish_executed": false
+  }
+}

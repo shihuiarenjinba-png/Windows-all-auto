@@ -56,7 +56,8 @@ product completes publishing.
 
 The preferred Folder pilot is therefore:
 
-1. keep the commercial model as paid one-time + 7-day trial candidate;
+1. keep the commercial model as paid one-time at the owner-confirmed live
+   Partner Center value of JPY 360, with no free trial;
 2. use the most restrictive practical pre-release visibility;
 3. after certification and limited publishing, verify that Partner Center exposes
    promotional-code ordering for this exact Folder product;

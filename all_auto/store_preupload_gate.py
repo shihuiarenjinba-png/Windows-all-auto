@@ -19,6 +19,8 @@ RECOVERED_DRAFT_SCHEMA = "existing-store-initial-submission-reconcile-receipt/1"
 HEX40 = re.compile(r"^[0-9a-fA-F]{40}$")
 HEX64 = re.compile(r"^[0-9a-fA-F]{64}$")
 NUMERIC_DRAFT = re.compile(r"^[0-9]+$")
+COMMERCIAL_MODELS = {"free", "paid_one_time"}
+TRIALS = {"none", "1_day", "7_days", "15_days", "30_days", "unlimited"}
 READ_SECTIONS = (
     "packages",
     "pricing",
@@ -210,6 +212,21 @@ def evaluate_store_preupload_gate(payload: Any) -> dict[str, Any]:
         return receipt
 
     if (
+        commercial.get("model") not in COMMERCIAL_MODELS
+        or commercial.get("free_trial") not in TRIALS
+        or commercial.get("trial_confirmed") is not True
+        or (
+            commercial.get("model") == "free"
+            and commercial.get("free_trial") != "none"
+        )
+    ):
+        receipt = _base_receipt(
+            "HOLD_COMMERCIAL_MODEL_OR_TRIAL_UNCONFIRMED", package_path
+        )
+        receipt["local_package"] = package_evidence
+        return receipt
+
+    if (
         distribution.get("audience") != "PRIVATE_AUDIENCE_TEST"
         or distribution.get("known_user_group_confirmed") is not True
         or not isinstance(distribution.get("known_user_group"), str)
@@ -256,6 +273,9 @@ def evaluate_store_preupload_gate(payload: Any) -> dict[str, Any]:
     receipt["store_fields_read"] = True
     receipt["assets_ready"] = True
     receipt["exact_jpy_price_confirmed"] = True
+    receipt["commercial_model"] = commercial["model"]
+    receipt["free_trial"] = commercial["free_trial"]
+    receipt["trial_confirmed"] = True
     receipt["private_audience_group_confirmed"] = True
     receipt["owner_security_confirmation_complete"] = True
     receipt["read_only_reload_reconciled"] = True

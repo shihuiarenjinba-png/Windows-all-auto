@@ -18,6 +18,8 @@ The input schema is `store-preupload-gate-input/2`. Every evaluation requires:
 - explicit evidence that every required Partner Center section was inspected;
 - an explicit Store-assets readiness decision.
 - an exact confirmed JPY price value;
+- an explicit commercial model and an owner-confirmed trial choice, including
+  `none` when no free trial is intended;
 - a confirmed Private Audience Known User Group;
 - owner confirmation of the personal-data and runFullTrust answers;
 - a read-only reload reconciliation with no unexpected write observed.
@@ -36,10 +38,11 @@ The first matching result is returned in this order:
 4. `HOLD_EXACT_PACKAGE_MISMATCH`
 5. `HOLD_STORE_ASSETS`
 6. `HOLD_EXACT_PRICE_TIER_UNCONFIRMED`
-7. `HOLD_PRIVATE_AUDIENCE_GROUP_REQUIRED`
-8. `HOLD_OWNER_SECURITY_CONFIRMATION_REQUIRED`
-9. `HOLD_UNKNOWN_PARTNER_CENTER_STATE`
-10. `READY_FOR_MSIX_UPLOAD_APPROVAL`
+7. `HOLD_COMMERCIAL_MODEL_OR_TRIAL_UNCONFIRMED`
+8. `HOLD_PRIVATE_AUDIENCE_GROUP_REQUIRED`
+9. `HOLD_OWNER_SECURITY_CONFIRMATION_REQUIRED`
+10. `HOLD_UNKNOWN_PARTNER_CENTER_STATE`
+11. `READY_FOR_MSIX_UPLOAD_APPROVAL`
 
 `READY_FOR_MSIX_UPLOAD_APPROVAL` is an approval boundary, not upload
 authorization. A separate authorized workflow must still perform the upload

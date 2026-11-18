@@ -73,9 +73,12 @@ class StorePreuploadGateTests(unittest.TestCase):
                 "owner_visual_approval": True,
             },
             "commercial": {
+                "model": "paid_one_time",
                 "currency": "JPY",
                 "price_confirmed": True,
                 "exact_partner_center_price_value": "JPY 500",
+                "free_trial": "none",
+                "trial_confirmed": True,
             },
             "distribution": {
                 "audience": "PRIVATE_AUDIENCE_TEST",
@@ -164,6 +167,23 @@ class StorePreuploadGateTests(unittest.TestCase):
         broken["distribution"]["known_user_group"] = None
         self.assertEqual(
             self.status(broken), "HOLD_PRIVATE_AUDIENCE_GROUP_REQUIRED"
+        )
+
+    def test_commercial_model_and_trial_must_be_explicit(self):
+        broken = copy.deepcopy(self.payload)
+        broken["commercial"]["trial_confirmed"] = False
+        self.assertEqual(
+            self.status(broken),
+            "HOLD_COMMERCIAL_MODEL_OR_TRIAL_UNCONFIRMED",
+        )
+
+    def test_free_product_cannot_have_a_trial(self):
+        broken = copy.deepcopy(self.payload)
+        broken["commercial"]["model"] = "free"
+        broken["commercial"]["free_trial"] = "7_days"
+        self.assertEqual(
+            self.status(broken),
+            "HOLD_COMMERCIAL_MODEL_OR_TRIAL_UNCONFIRMED",
         )
 
     def test_owner_security_confirmation_is_required(self):

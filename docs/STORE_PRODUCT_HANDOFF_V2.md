@@ -136,17 +136,16 @@ For paid one-time products:
 - a trial cannot be attached to a free product;
 - `manual_publish` is mandatory in this contract.
 
-Folder Automation Engine is the first reference product:
-low-cost paid one-time + owner-approved 7-day trial. Its exact price remains
-HOLD until the current live Partner Center choice is selected and confirmed.
+Folder Automation Engine is the first reference product. Its current owner-confirmed
+live configuration is low-cost paid one-time at JPY 360 with no free trial. Partner
+Center Save succeeded and reload retained the exact value on 2026-11-18.
 
 For Folder's Store-signed QA, no paid self-purchase is permitted. Prefer a promotional
 code after publication because Microsoft documents promo codes as a way to give
 beta testers free access to a published app. If the live Store does not make that
-available for this product/audience, test whether the configured trial provides a
-zero-cost install; otherwise use a separately approved temporary Free Private-beta
-submission and restore the final paid + trial commercial configuration in a later
-submission before Public release.
+available for this product/audience, STOP and return the live no-cost acquisition
+options to the owner. Do not silently add a trial or change the owner-confirmed JPY
+360 price as a QA workaround.
 
 ## Safe conversion
 
