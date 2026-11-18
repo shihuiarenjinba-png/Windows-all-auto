@@ -168,6 +168,7 @@ def main(argv: list[str] | None = None) -> int:
         command = [
             sys.executable, str(worker), "--plan", str(args.product_qa_plan),
             "--artifact", str(args.artifact), "--action-log", str(action_log),
+            "--enable-ollama-supervision", "--model", args.model,
         ]
 
         def collect_uia(run_id: str, _folder: Path) -> None:
