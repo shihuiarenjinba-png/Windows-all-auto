@@ -1,0 +1,151 @@
+{
+  "artifact_source": {
+    "archive_sha256": "9f47e9679c91cdde69b8d2fd6800545d4b063073a3876c0b0c5210196b319b57",
+    "artifact_id": 13371444087,
+    "artifact_name": "FolioAI_1.0.3.0_x64_STORE_CANDIDATE_UNSIGNED",
+    "executable_sha256": "ef812823e2adad59290c6f69ac41859aed3357b4d7900976f6b45c8eac6aee22",
+    "package_name": "FolioAI_1.0.3.0_x64_STORE_CANDIDATE_UNSIGNED.msix",
+    "package_sha256": "aeecfa80d79ffd9afe2b290dcef8e390fc0ca9433cc73335368b1164d9f4e459",
+    "repository": "tsuhasqni-pixel/rag-ollama",
+    "source_sha": "cbb9de223c0eac79563651ba2d0ae22e43653d68",
+    "workflow_run_id": 41931867008
+  },
+  "bound_plan": {
+    "allowed_diagnostics": [
+      "PROCESS_STATUS",
+      "UIA_FIND_WINDOW",
+      "UIA_FIND_CONTROL"
+    ],
+    "executable_sha256": "ef812823e2adad59290c6f69ac41859aed3357b4d7900976f6b45c8eac6aee22",
+    "forbidden_actions": [
+      "SOURCE_EDIT",
+      "ARBITRARY_SHELL",
+      "GIT_WRITE",
+      "STORE_SUBMIT",
+      "STORE_PUBLISH",
+      "SECURITY_POLICY_CHANGE"
+    ],
+    "identity": {
+      "name": "OkinawaDesktopTools.FolioAI",
+      "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+      "version": "1.0.3.0"
+    },
+    "package_sha256": "aeecfa80d79ffd9afe2b290dcef8e390fc0ca9433cc73335368b1164d9f4e459",
+    "plan_version": 1,
+    "product_slug": "folio-ai",
+    "product_type": "APP",
+    "schema_version": "windows-product-qa-plan-v1",
+    "source_repository": "https://github.com/tsuhasqni-pixel/rag-ollama",
+    "source_sha": "cbb9de223c0eac79563651ba2d0ae22e43653d68",
+    "steps": [
+      {
+        "action": "ARTIFACT_HASH",
+        "params": {},
+        "required": true,
+        "requires": [],
+        "step_id": "artifact-hash"
+      },
+      {
+        "action": "PROCESS_START",
+        "params": {
+          "observation_seconds": 5
+        },
+        "required": true,
+        "requires": [
+          "artifact-hash"
+        ],
+        "step_id": "process-start"
+      },
+      {
+        "action": "UIA_FIND_WINDOW",
+        "params": {
+          "title_contains": "Folio AI"
+        },
+        "required": true,
+        "requires": [
+          "artifact-hash",
+          "process-start"
+        ],
+        "step_id": "find-main-window"
+      },
+      {
+        "action": "UIA_FIND_CONTROL",
+        "params": {
+          "control_type": "Button",
+          "name": "AIを使ってみる"
+        },
+        "required": true,
+        "requires": [
+          "artifact-hash",
+          "process-start",
+          "find-main-window"
+        ],
+        "step_id": "find-ai-button"
+      },
+      {
+        "action": "PROCESS_STATUS",
+        "params": {},
+        "required": false,
+        "requires": [
+          "artifact-hash"
+        ],
+        "step_id": "diag-process-status"
+      },
+      {
+        "action": "UIA_FIND_WINDOW",
+        "params": {
+          "title_contains": "Folio AI"
+        },
+        "required": false,
+        "requires": [
+          "artifact-hash",
+          "process-start"
+        ],
+        "step_id": "diag-main-window"
+      },
+      {
+        "action": "UIA_FIND_CONTROL",
+        "params": {
+          "control_type": "Button",
+          "name": "ローカルに保存する"
+        },
+        "required": false,
+        "requires": [
+          "artifact-hash",
+          "process-start"
+        ],
+        "step_id": "diag-save-button"
+      }
+    ],
+    "success_policy": {
+      "evidence_return_required": true,
+      "product_e2e_authority": false,
+      "release_authority": false,
+      "required_steps_must_pass": true,
+      "store_authority": false
+    },
+    "template_sha256": "f9277953933528dd8c21c1d4f7b1e2df56cabda3cc0d3541cd9a614a7fdba42e"
+  },
+  "job": {
+    "artifact_archive_sha256": "9f47e9679c91cdde69b8d2fd6800545d4b063073a3876c0b0c5210196b319b57",
+    "artifact_sha256": "ef812823e2adad59290c6f69ac41859aed3357b4d7900976f6b45c8eac6aee22",
+    "github_actions_run_id": 41931867008,
+    "github_artifact_id": 13371444087,
+    "identity": {
+      "name": "OkinawaDesktopTools.FolioAI",
+      "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+      "version": "1.0.3.0"
+    },
+    "package_sha256": "aeecfa80d79ffd9afe2b290dcef8e390fc0ca9433cc73335368b1164d9f4e459",
+    "product_type": "APP",
+    "qa_plan_template_sha256": "f9277953933528dd8c21c1d4f7b1e2df56cabda3cc0d3541cd9a614a7fdba42e",
+    "request_id": "folio-trusted-readonly-cbb9de-20261118",
+    "slug": "folio-ai",
+    "source_branch": "codex/store-ollama-download-20261024",
+    "source_repository": "tsuhasqni-pixel/rag-ollama",
+    "source_sha": "cbb9de223c0eac79563651ba2d0ae22e43653d68",
+    "test_suite_version": "folio-trusted-readonly-v1"
+  },
+  "model": "windows-qa-analyst",
+  "schema_version": "received-product-qa-bundle-v1"
+}
