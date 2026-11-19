@@ -8,8 +8,8 @@ import unittest
 
 from all_auto.github_artifact_intake import IntakeResult
 from all_auto.store_upload_test import (
-    StoreUploadTestHold, classify_automator_report, prepare_queue,
-    validate_batch, verify_automator_checkout,
+    StoreUploadLedger, StoreUploadTestHold, classify_automator_report,
+    prepare_queue, validate_batch, verify_automator_checkout,
 )
 
 
@@ -212,6 +212,44 @@ class StoreUploadTestTests(unittest.TestCase):
                     batch(candidate()), root / "workspace",
                     fetcher=lambda **_kwargs: fake,
                 )
+
+
+    def test_live_ledger_blocks_duplicate_after_draft_saved(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "upload-ledger.sqlite"
+            item = candidate()
+            with StoreUploadLedger(path) as ledger:
+                ledger.begin_live([item])
+                ledger.finish_live([item], {
+                    "results": [{"status": "DRAFT_SAVED"}],
+                })
+                self.assertEqual(ledger.rows()[0]["status"], "DRAFT_SAVED")
+                with self.assertRaisesRegex(StoreUploadTestHold, "prior remote outcome"):
+                    ledger.begin_live([item])
+
+    def test_live_ledger_marks_lost_result_unknown_and_blocks_retry(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "upload-ledger.sqlite"
+            item = candidate()
+            with StoreUploadLedger(path) as ledger:
+                ledger.begin_live([item])
+                ledger.mark_unknown([item])
+                self.assertEqual(ledger.rows()[0]["status"], "UNKNOWN")
+                with self.assertRaisesRegex(StoreUploadTestHold, "prior remote outcome"):
+                    ledger.begin_live([item])
+
+    def test_live_ledger_allows_retry_after_explicit_hold_result(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "upload-ledger.sqlite"
+            item = candidate()
+            with StoreUploadLedger(path) as ledger:
+                ledger.begin_live([item])
+                ledger.finish_live([item], {
+                    "results": [{"status": "HOLD"}],
+                })
+                self.assertEqual(ledger.rows()[0]["status"], "HOLD")
+                ledger.begin_live([item])
+                self.assertEqual(ledger.rows()[0]["status"], "LIVE_ATTEMPT_STARTED")
 
     def test_dry_run_requires_every_candidate_done(self):
         report = {
