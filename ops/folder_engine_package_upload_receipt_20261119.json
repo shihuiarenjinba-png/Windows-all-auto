@@ -77,5 +77,18 @@
     "certification_executed": false,
     "publish_executed": false
   },
-  "status": "PACKAGE_SAVED_AWAITING_CERTIFICATION_APPROVAL"
+  "status": "STORE_DRAFT_REMAINING_SECTIONS_REQUIRED",
+  "completed_store_sections": {
+    "pricing_availability": "Complete",
+    "packages": "Complete"
+  },
+  "remaining_store_sections": [
+    "properties",
+    "age_ratings",
+    "store_listings",
+    "submission_options"
+  ],
+  "package_status": "PACKAGE_SAVED",
+  "overall_status": "STORE_DRAFT_REMAINING_SECTIONS_REQUIRED",
+  "next_target": "STORE_DRAFT_COMPLETE"
 }
