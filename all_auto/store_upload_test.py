@@ -14,9 +14,12 @@ Certification submission and publication are never authorized here.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import datetime, timezone
+import hashlib
 import json
 from pathlib import Path
 import re
+import sqlite3
 import subprocess
 from typing import Any, Callable
 
@@ -221,6 +224,151 @@ def verify_automator_checkout(
         _hold("Windows-Automator HEAD does not match pinned commit")
     if remote.returncode or _normalized_repo(remote.stdout) != automator["repository"]:
         _hold("Windows-Automator origin does not match pinned repository")
+
+
+def _utc_now() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+
+def upload_fingerprint(candidate: dict[str, Any]) -> str:
+    source = candidate["artifact_source"]
+    identity = candidate["identity"]
+    raw = json.dumps({
+        "request_id": candidate["request_id"],
+        "store_id": identity["store_id"],
+        "source_sha": source["source_sha"],
+        "package_sha256": source["package_sha256"],
+    }, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(raw).hexdigest()
+
+
+class StoreUploadLedger:
+    """Durable no-duplicate guard around remote Partner Center write attempts."""
+
+    REMOTE_GUARD = {"LIVE_ATTEMPT_STARTED", "DRAFT_SAVED", "UNKNOWN"}
+
+    def __init__(self, path: Path):
+        self.path = path.resolve()
+        if path.is_symlink():
+            _hold("upload ledger may not be a symlink")
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        self.db = sqlite3.connect(str(self.path), timeout=10, isolation_level=None)
+        self.db.execute("PRAGMA journal_mode=WAL")
+        self.db.execute("PRAGMA busy_timeout=10000")
+        self.db.execute(
+            """CREATE TABLE IF NOT EXISTS upload_jobs(
+            fingerprint TEXT PRIMARY KEY,
+            request_id TEXT NOT NULL,
+            store_id TEXT NOT NULL,
+            source_sha TEXT NOT NULL,
+            package_sha256 TEXT NOT NULL,
+            status TEXT NOT NULL,
+            updated_utc TEXT NOT NULL
+            )"""
+        )
+
+    def close(self) -> None:
+        self.db.close()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_args):
+        self.close()
+
+    def begin_live(self, candidates: list[dict[str, Any]]) -> None:
+        """Atomically reserve all live writes before Windows-Automator starts."""
+        self.db.execute("BEGIN IMMEDIATE")
+        try:
+            for candidate in candidates:
+                key = upload_fingerprint(candidate)
+                old = self.db.execute(
+                    "SELECT status FROM upload_jobs WHERE fingerprint=?", (key,)
+                ).fetchone()
+                if old and str(old[0]) in self.REMOTE_GUARD:
+                    raise StoreUploadTestHold(
+                        "STORE_UPLOAD_TEST_HOLD: prior remote outcome blocks automatic retry"
+                    )
+            now = _utc_now()
+            for candidate in candidates:
+                source = candidate["artifact_source"]
+                identity = candidate["identity"]
+                key = upload_fingerprint(candidate)
+                self.db.execute(
+                    """INSERT INTO upload_jobs(
+                    fingerprint,request_id,store_id,source_sha,package_sha256,status,updated_utc
+                    ) VALUES(?,?,?,?,?,?,?)
+                    ON CONFLICT(fingerprint) DO UPDATE SET
+                    status=excluded.status,updated_utc=excluded.updated_utc""",
+                    (
+                        key, candidate["request_id"], identity["store_id"],
+                        source["source_sha"], source["package_sha256"],
+                        "LIVE_ATTEMPT_STARTED", now,
+                    ),
+                )
+            self.db.execute("COMMIT")
+        except BaseException:
+            self.db.execute("ROLLBACK")
+            raise
+
+    def finish_live(
+        self, candidates: list[dict[str, Any]], report: dict[str, Any]
+    ) -> None:
+        results = report.get("results")
+        if not isinstance(results, list) or len(results) != len(candidates):
+            self.mark_unknown(candidates)
+            _hold("live report/candidate correlation failed")
+        self.db.execute("BEGIN IMMEDIATE")
+        try:
+            now = _utc_now()
+            for candidate, result in zip(candidates, results):
+                status = result.get("status") if isinstance(result, dict) else None
+                if status not in {
+                    "DRAFT_SAVED", "HOLD", "UNKNOWN", "ERROR", "AUTH_ERROR"
+                }:
+                    status = "UNKNOWN"
+                key = upload_fingerprint(candidate)
+                cur = self.db.execute(
+                    """UPDATE upload_jobs SET status=?,updated_utc=?
+                    WHERE fingerprint=? AND status='LIVE_ATTEMPT_STARTED'""",
+                    (status, now, key),
+                )
+                if cur.rowcount != 1:
+                    raise StoreUploadTestHold(
+                        "STORE_UPLOAD_TEST_HOLD: stale upload ledger transition"
+                    )
+            self.db.execute("COMMIT")
+        except BaseException:
+            self.db.execute("ROLLBACK")
+            raise
+
+    def mark_unknown(self, candidates: list[dict[str, Any]]) -> None:
+        """Any lost live result is ambiguous and must be manually reconciled."""
+        self.db.execute("BEGIN IMMEDIATE")
+        try:
+            now = _utc_now()
+            for candidate in candidates:
+                key = upload_fingerprint(candidate)
+                self.db.execute(
+                    """UPDATE upload_jobs SET status='UNKNOWN',updated_utc=?
+                    WHERE fingerprint=? AND status='LIVE_ATTEMPT_STARTED'""",
+                    (now, key),
+                )
+            self.db.execute("COMMIT")
+        except BaseException:
+            self.db.execute("ROLLBACK")
+            raise
+
+    def rows(self) -> list[dict[str, Any]]:
+        cur = self.db.execute(
+            """SELECT request_id,store_id,source_sha,package_sha256,status,updated_utc
+            FROM upload_jobs ORDER BY updated_utc,request_id"""
+        )
+        keys = (
+            "request_id", "store_id", "source_sha", "package_sha256",
+            "status", "updated_utc",
+        )
+        return [dict(zip(keys, row)) for row in cur.fetchall()]
 
 
 @dataclass(frozen=True)
