@@ -46,7 +46,7 @@
               "workflow_run_id": {"type": "integer", "minimum": 1},
               "source_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
               "archive_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-              "package_name": {"type": "string", "pattern": "(?i)\\.msix$"},
+              "package_name": {"type": "string", "pattern": "[.][mM][sS][iI][xX]$"},
               "package_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
               "executable_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
             }
