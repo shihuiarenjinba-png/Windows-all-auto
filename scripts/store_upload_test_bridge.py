@@ -11,8 +11,8 @@ if __package__ in {None, ""}:
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from all_auto.store_upload_test import (  # noqa: E402
-    StoreUploadTestHold, classify_automator_report, prepare_queue,
-    validate_batch, verify_automator_checkout,
+    StoreUploadLedger, StoreUploadTestHold, classify_automator_report,
+    prepare_queue, validate_batch, verify_automator_checkout,
 )
 
 
@@ -26,6 +26,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--confirm-live-draft", action="store_true")
     parser.add_argument("--cdp-url", default="")
+    parser.add_argument("--ledger", type=Path)
     args = parser.parse_args(argv)
 
     if args.execution_mode == "live":
@@ -33,6 +34,8 @@ def main(argv: list[str] | None = None) -> int:
             parser.error("live mode requires --confirm-live-draft at action time")
         if not args.cdp_url:
             parser.error("live mode requires --cdp-url for an already-authenticated Partner Center browser")
+        if args.ledger is None:
+            parser.error("live mode requires --ledger for durable duplicate/UNKNOWN protection")
 
     try:
         if args.batch.is_symlink() or not args.batch.is_file() or args.batch.stat().st_size > 2 * 1024 * 1024:
@@ -64,24 +67,41 @@ def main(argv: list[str] | None = None) -> int:
                 "--evidence-dir", str(args.workspace / "partner-center-evidence"),
             ]
 
-        completed = subprocess.run(
-            command,
-            cwd=str(args.automator_checkout.resolve()),
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            errors="replace",
-            timeout=3600 if args.execution_mode == "live" else 600,
-            check=False,
-        )
-        if not json_report.is_file() or json_report.stat().st_size > 10 * 1024 * 1024:
-            raise StoreUploadTestHold(
-                "STORE_UPLOAD_TEST_HOLD: Windows-Automator did not produce a valid JSON report"
+        ledger = None
+        live_reserved = False
+        if args.execution_mode == "live":
+            ledger = StoreUploadLedger(args.ledger)
+            ledger.begin_live(batch["candidates"])
+            live_reserved = True
+        try:
+            completed = subprocess.run(
+                command,
+                cwd=str(args.automator_checkout.resolve()),
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                timeout=3600 if args.execution_mode == "live" else 600,
+                check=False,
             )
-        report = json.loads(json_report.read_text(encoding="utf-8"))
-        result = classify_automator_report(
-            report, execution_mode=args.execution_mode
-        )
+            if not json_report.is_file() or json_report.stat().st_size > 10 * 1024 * 1024:
+                raise StoreUploadTestHold(
+                    "STORE_UPLOAD_TEST_HOLD: Windows-Automator did not produce a valid JSON report"
+                )
+            report = json.loads(json_report.read_text(encoding="utf-8"))
+            if ledger is not None:
+                ledger.finish_live(batch["candidates"], report)
+                live_reserved = False
+            result = classify_automator_report(
+                report, execution_mode=args.execution_mode
+            )
+        except BaseException:
+            if ledger is not None and live_reserved:
+                ledger.mark_unknown(batch["candidates"])
+            raise
+        finally:
+            if ledger is not None:
+                ledger.close()
         result.update({
             "automator_commit_sha": batch["automator"]["commit_sha"],
             "execution_mode": args.execution_mode,
