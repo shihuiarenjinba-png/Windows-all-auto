@@ -18,9 +18,9 @@
       "frozen_source_sha": "adfc0d08efb0a94602d5286557d399f9cb28b9dd",
       "frozen_msix_sha256": "3c6bc8c1291450905ae71834f2704a59325d1aaa1c9de3f064bcb8c7ebca9fb9",
       "frozen_exe_sha256": "de6894ae39cbe0fbe1889b4aa005e500f30a2ef95ee67403ddfb210dbcfb9f18",
-      "conveyor_state": "HOLD_OWNER_VISUAL_APPROVAL_SECURITY_VERSION_REVERIFY",
+      "conveyor_state": "PACKAGE_SAVED_AWAITING_CERTIFICATION_APPROVAL",
       "direct_product_artifact_pull_supported": false,
-      "next_dependency": "Owner visual approval, new-SHA security binding, and live no-package/version reverify",
+      "next_dependency": "Complete the remaining Store Draft sections; certification remains a separate owner approval gate",
       "store_artifact": {
         "id": 14411892806,
         "name": "FolderAutomationEngine-Store-MSIX-UNSIGNED-DRAFT",
@@ -52,7 +52,8 @@
         "resized": false,
         "exact_packaged_executable": true,
         "internal_visual_qa": "PASS",
-        "owner_visual_approval": false
+        "owner_visual_approval": true,
+        "owner_visual_approval_source": "owner-chat-2026-11-19"
       },
       "live_partner_center": {
         "store_id": "9P99MJX1R4V6",
@@ -93,8 +94,31 @@
           "free_trial_retained": "none",
           "section_state": "Complete"
         },
-        "packages_state": "Not started",
-        "package_uploaded": false
+        "security": {
+          "bound_package_sha256": "3C6BC8C1291450905AE71834F2704A59325D1AAA1C9DE3F064BCB8C7EBCA9FB9",
+          "owner_confirmation_complete": true,
+          "personal_data_answer_confirmed": true,
+          "personal_data_answer": "yes_local_user_selected_files_no_external_transmission",
+          "run_full_trust_explanation_owner_confirmed": true,
+          "approval_source": "owner-chat-2026-11-19"
+        },
+        "packages_state": "Complete",
+        "package_uploaded": true,
+        "package_validation_state": "Validated",
+        "package_upload": {
+          "attempts": 1,
+          "file_name": "FolderAutomationEngine_1.0.0.0_x64_StoreDraft_UNSIGNED.msix",
+          "version": "1.0.0.0",
+          "architecture": "X64",
+          "device_family": "Windows.Desktop",
+          "raw_validation": "WARNING",
+          "known_warning": "runFullTrust",
+          "unknown_warnings": [],
+          "errors": [],
+          "save_performed": true,
+          "reload_retained": true,
+          "duplicate_upload": false
+        }
       },
       "superseded_candidate": {
         "source_sha": "51597b389384be6cf2b3d85c09ee66099b80807e",
@@ -104,7 +128,7 @@
         "upload_forbidden": true
       },
       "start_submission_repeated": false,
-      "package_uploaded": false,
+      "package_uploaded": true,
       "certification_submitted": false,
       "published": false
     },

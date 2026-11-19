@@ -85,14 +85,38 @@ class FolderPartnerCenterTeacherTests(unittest.TestCase):
     def test_current_hold_prevents_upload_and_certification(self):
         self.assertEqual(
             self.receipt["current_state"],
-            "OWNER_VISUAL_APPROVAL_REQUIRED",
+            "PACKAGE_SAVED_AWAITING_CERTIFICATION_APPROVAL",
         )
+        approvals = self.receipt["owner_approvals"]
+        self.assertTrue(approvals["assets_approved"])
+        self.assertTrue(approvals["personal_data_answer_confirmed"])
+        self.assertTrue(approvals["run_full_trust_explanation_confirmed"])
+        self.assertFalse(approvals["certification_approved"])
+        self.assertFalse(approvals["publish_approved"])
         safety = self.receipt["safety"]
         self.assertFalse(safety["start_submission_repeated"])
         self.assertFalse(safety["old_msix_used"])
-        self.assertFalse(safety["package_uploaded"])
+        self.assertTrue(safety["package_uploaded"])
         self.assertFalse(safety["certification_executed"])
         self.assertFalse(safety["publish_executed"])
+
+    def test_exact_package_upload_save_and_reload_are_taught(self):
+        packages = self.receipt["page_models"]["packages"]
+        self.assertEqual(packages["upload_attempts"], 1)
+        self.assertEqual(
+            packages["observed_states"],
+            ["Uploading", "Analyzing package", "Validated"],
+        )
+        self.assertEqual(packages["validation"]["known_warning"], "runFullTrust")
+        self.assertEqual(packages["validation"]["unknown_warnings"], [])
+        self.assertEqual(packages["validation"]["errors"], [])
+        self.assertEqual(packages["parsed_package"]["version"], "1.0.0.0")
+        self.assertEqual(packages["parsed_package"]["architecture"], "X64")
+        self.assertEqual(
+            packages["parsed_package"]["device_family"], "Windows.Desktop"
+        )
+        self.assertTrue(packages["save_performed"])
+        self.assertTrue(packages["reload_postconditions"]["package_retained"])
 
 
 if __name__ == "__main__":

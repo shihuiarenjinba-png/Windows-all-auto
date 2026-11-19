@@ -39,7 +39,7 @@ class GroupBConveyorCheckpointTests(unittest.TestCase):
         folder = self.checkpoint["products"]["folder-engine"]
         self.assertEqual(
             folder["conveyor_state"],
-            "HOLD_OWNER_VISUAL_APPROVAL_SECURITY_VERSION_REVERIFY",
+            "PACKAGE_SAVED_AWAITING_CERTIFICATION_APPROVAL",
         )
         self.assertFalse(folder["direct_product_artifact_pull_supported"])
         self.assertEqual(
@@ -62,7 +62,7 @@ class GroupBConveyorCheckpointTests(unittest.TestCase):
         self.assertTrue(folder["screenshots"]["native_pixels"])
         self.assertFalse(folder["screenshots"]["resized"])
         self.assertEqual(folder["screenshots"]["internal_visual_qa"], "PASS")
-        self.assertFalse(folder["screenshots"]["owner_visual_approval"])
+        self.assertTrue(folder["screenshots"]["owner_visual_approval"])
         pricing = folder["live_partner_center"]["pricing"]
         self.assertEqual(pricing["model"], "paid_one_time")
         self.assertEqual(pricing["currency"], "JPY")
@@ -90,9 +90,23 @@ class GroupBConveyorCheckpointTests(unittest.TestCase):
         self.assertEqual(audience["pricing_retained"], "JPY 360")
         self.assertEqual(audience["free_trial_retained"], "none")
         self.assertEqual(audience["section_state"], "Complete")
+        security = folder["live_partner_center"]["security"]
+        self.assertTrue(security["owner_confirmation_complete"])
+        self.assertTrue(security["personal_data_answer_confirmed"])
+        self.assertTrue(
+            security["run_full_trust_explanation_owner_confirmed"]
+        )
         self.assertTrue(folder["superseded_candidate"]["upload_forbidden"])
         self.assertFalse(folder["start_submission_repeated"])
-        self.assertFalse(folder["package_uploaded"])
+        self.assertTrue(folder["package_uploaded"])
+        package_upload = folder["live_partner_center"]["package_upload"]
+        self.assertEqual(package_upload["attempts"], 1)
+        self.assertEqual(package_upload["known_warning"], "runFullTrust")
+        self.assertEqual(package_upload["unknown_warnings"], [])
+        self.assertEqual(package_upload["errors"], [])
+        self.assertTrue(package_upload["save_performed"])
+        self.assertTrue(package_upload["reload_retained"])
+        self.assertFalse(package_upload["duplicate_upload"])
         self.assertFalse(folder["certification_submitted"])
         self.assertFalse(folder["published"])
 

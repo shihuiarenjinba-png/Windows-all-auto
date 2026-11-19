@@ -77,6 +77,47 @@
         "free_trial_text": "No free trial configured.",
         "overview_section_state": "Complete"
       }
+    },
+    "packages": {
+      "verified_path_suffix": "/submissions/1152921505702423660/packages",
+      "precondition": "READY_FOR_MSIX_UPLOAD_APPROVAL",
+      "upload_control": "input[type=file] via visible browse your files link",
+      "expected_file_name": "FolderAutomationEngine_1.0.0.0_x64_StoreDraft_UNSIGNED.msix",
+      "expected_sha256": "3C6BC8C1291450905AE71834F2704A59325D1AAA1C9DE3F064BCB8C7EBCA9FB9",
+      "upload_attempts": 1,
+      "observed_states": [
+        "Uploading",
+        "Analyzing package",
+        "Validated"
+      ],
+      "validation": {
+        "raw_state": "WARNING",
+        "known_warning": "runFullTrust",
+        "unknown_warnings": [],
+        "errors": []
+      },
+      "parsed_package": {
+        "version": "1.0.0.0",
+        "architecture": "X64",
+        "device_family": "Windows.Desktop",
+        "languages": [
+          "ja-jp",
+          "en-us"
+        ]
+      },
+      "save_performed": true,
+      "reload_postconditions": {
+        "overview_validation_state": "Validated",
+        "overview_section_state": "Complete",
+        "package_retained": true,
+        "version_retained": true,
+        "architecture_retained": true,
+        "desktop_retained": true,
+        "known_warning_retained": true,
+        "same_draft": true
+      },
+      "timeout_retry_policy": "RECONCILE_BEFORE_ANY_RETRY",
+      "duplicate_upload_forbidden": true
     }
   },
   "state_machine": [
@@ -91,11 +132,20 @@
     "READY_FOR_MSIX_UPLOAD_APPROVAL",
     "PACKAGE_SAVED_AWAITING_CERTIFICATION_APPROVAL"
   ],
-  "current_state": "OWNER_VISUAL_APPROVAL_REQUIRED",
+  "current_state": "PACKAGE_SAVED_AWAITING_CERTIFICATION_APPROVAL",
+  "owner_approvals": {
+    "approval_source": "owner-chat-2026-11-19",
+    "assets_approved": true,
+    "personal_data_answer_confirmed": true,
+    "run_full_trust_explanation_confirmed": true,
+    "bound_package_sha256": "3C6BC8C1291450905AE71834F2704A59325D1AAA1C9DE3F064BCB8C7EBCA9FB9",
+    "certification_approved": false,
+    "publish_approved": false
+  },
   "safety": {
     "start_submission_repeated": false,
     "old_msix_used": false,
-    "package_uploaded": false,
+    "package_uploaded": true,
     "certification_executed": false,
     "publish_executed": false
   }
