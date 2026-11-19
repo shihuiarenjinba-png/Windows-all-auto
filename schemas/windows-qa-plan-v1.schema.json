@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/shihuiarenjinba-png/Windows-all-auto/schemas/windows-qa-plan-v1.schema.json",
+  "title": "Bounded Windows QA test plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "expected_signal",
+    "missing_evidence",
+    "reason",
+    "recommended_owner",
+    "retry_policy",
+    "schema_version",
+    "selected_test_ids",
+    "stop_reason"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "selected_test_ids": { "maxItems": 0 }
+        }
+      },
+      "then": {
+        "properties": {
+          "stop_reason": { "type": "string", "minLength": 1 }
+        }
+      },
+      "else": {
+        "properties": {
+          "stop_reason": { "const": null }
+        }
+      }
+    }
+  ],
+  "properties": {
+    "schema_version": { "const": "windows-qa-plan-v1" },
+    "selected_test_ids": {
+      "type": "array",
+      "maxItems": 12,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Z][A-Z0-9_]{2,63}$"
+      }
+    },
+    "reason": { "type": "string", "minLength": 1, "maxLength": 2048 },
+    "missing_evidence": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "expected_signal": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "retry_policy": {
+      "enum": ["NO_RETRY", "RETRY_FAILED_ONCE"]
+    },
+    "stop_reason": {
+      "type": ["string", "null"],
+      "minLength": 1
+    },
+    "recommended_owner": {
+      "enum": ["APP", "GAME", "GAME_3D", "INFRA", "WINDOWS_E2E"]
+    }
+  }
+}

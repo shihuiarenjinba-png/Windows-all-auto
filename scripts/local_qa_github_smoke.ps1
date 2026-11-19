@@ -232,6 +232,30 @@ try {
     throw 'SMOKE_ASSERT_FAILED: decoded remote stdout lacks the expected redaction marker'
   }
 
+  # The evidence envelope is the immutable pre-upload snapshot. Verify the
+  # separate post-readback acknowledgement receipt independently as well.
+  $remoteAckPath = [string]$ack.ack_path
+  if (-not $remoteAckPath) {
+    throw 'SMOKE_ASSERT_FAILED: acknowledgement has no remote ACK receipt path'
+  }
+  $ackResponseLines = @(& $gh api "repos/$Repository/contents/$remoteAckPath`?ref=$EvidenceBranch")
+  if ($LASTEXITCODE -ne 0 -or $ackResponseLines.Count -eq 0) {
+    throw 'SMOKE_ASSERT_FAILED: independent GitHub ACK receipt fetch failed'
+  }
+  $ackResponse = ($ackResponseLines -join [Environment]::NewLine) | ConvertFrom-Json
+  $ackBase64 = ([string]$ackResponse.content) -replace '\s', ''
+  $remoteAckBytes = [Convert]::FromBase64String($ackBase64)
+  $remoteAck = ([Text.Encoding]::UTF8.GetString($remoteAckBytes)) | ConvertFrom-Json
+  Assert-Equal $remoteAck.schema_version 'local-qa-github-ack-v1' 'ACK schema'
+  Assert-Equal $remoteAck.request_id $requestId 'ACK request_id'
+  Assert-Equal $remoteAck.source_sha $localHead 'ACK source_sha'
+  Assert-Equal $remoteAck.payload_sha256 $ack.payload_sha256 'ACK payload_sha256'
+  Assert-Equal $remoteAck.status 'GITHUB_READBACK_VERIFIED' 'ACK status'
+  Assert-Equal ([bool]$remoteAck.evidence_return_e2e_pass) $true 'ACK evidence return E2E'
+  Assert-False $remoteAck.product_e2e_pass 'ACK product_e2e_pass'
+  Assert-False $remoteAck.release_ready 'ACK release_ready'
+  Assert-False $remoteAck.store_submission_allowed 'ACK store_submission_allowed'
+
   [ordered]@{
     status = 'LOCAL_GITHUB_EVIDENCE_SMOKE_PASS'
     repository = $Repository
@@ -243,6 +267,8 @@ try {
     request_id = $requestId
     github_ack = 'GITHUB_READBACK_VERIFIED'
     remote_path = [string]$ack.path
+    remote_ack_path = $remoteAckPath
+    github_ack_receipt = 'GITHUB_ACK_RECEIPT_VERIFIED'
     synthetic_event_log = $true
     real_windows_event_log_returned = $false
     raw_local_secret_marker_present = $true

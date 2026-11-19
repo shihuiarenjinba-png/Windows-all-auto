@@ -27,6 +27,7 @@ import uuid
 
 
 SCHEMA = "local-qa-evidence-v1"
+ACK_SCHEMA = "local-qa-github-ack-v1"
 SHA40 = re.compile(r"^[0-9a-f]{40}$")
 SHA64 = re.compile(r"^[0-9a-f]{64}$")
 REQUEST = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{3,127}$")
@@ -83,7 +84,17 @@ def atomic_write(path: Path, data: bytes) -> None:
         stream.write(data)
         stream.flush()
         os.fsync(stream.fileno())
-    os.replace(temporary, path)
+    for attempt in range(5):
+        try:
+            os.replace(temporary, path)
+            break
+        except PermissionError:
+            if attempt == 4:
+                raise
+            # Antivirus/indexer handles can briefly block ReplaceFile-style
+            # operations on Windows. Retry is bounded and keeps the same
+            # already-fsynced temporary evidence bytes.
+            time.sleep(0.05 * (attempt + 1))
     _fsync_directory(path.parent)
 
 
@@ -124,6 +135,23 @@ def _validate_job(job: dict[str, Any]) -> dict[str, Any]:
             if key == "slug" and not isinstance(job[key], str):
                 raise ValueError("LOCAL_QA_HOLD: invalid slug")
             safe[key] = job[key]
+    for key in ("package_sha256", "artifact_archive_sha256", "qa_plan_template_sha256"):
+        if key in job:
+            if not isinstance(job[key], str) or not SHA64.fullmatch(job[key]):
+                raise ValueError("LOCAL_QA_HOLD: invalid " + key)
+            safe[key] = job[key]
+    if "identity" in job:
+        identity = job["identity"]
+        if (not isinstance(identity, dict) or
+                set(identity) != {"name", "publisher", "version"} or
+                any(not isinstance(identity[name], str) or not identity[name]
+                    for name in ("name", "publisher", "version"))):
+            raise ValueError("LOCAL_QA_HOLD: invalid identity")
+        safe["identity"] = {
+            "name": identity["name"],
+            "publisher": identity["publisher"],
+            "version": identity["version"],
+        }
     return safe
 
 
@@ -313,6 +341,63 @@ class EvidenceStore:
         })
         return destination
 
+    def approve_screenshot_for_github(
+        self, run_id: str, *, filename: str, expected_sha256: str,
+    ) -> dict[str, Any]:
+        """Mark one already-captured screenshot shareable after explicit review.
+
+        Approval is only allowed before GitHub acknowledgement. The exact local
+        PNG/JPEG hash must still match the value recorded at capture time, then
+        the manifest/envelope/queue are rebuilt so the approved image is
+        covered by the payload hash that GitHub reads back.
+        """
+        folder = self._run_path(run_id)
+        if (self.acks / (run_id + ".json")).exists():
+            raise ValueError("screenshot approval must occur before GitHub acknowledgement")
+        index_path = folder / "screenshot-index.jsonl"
+        entries = self._jsonl(index_path)
+        matches = [item for item in entries if item.get("file") == filename]
+        if len(matches) != 1:
+            raise ValueError("screenshot approval target must match exactly once")
+        path = folder / "screenshots" / filename
+        if path.is_symlink() or not path.is_file():
+            raise ValueError("screenshot approval target missing or linked")
+        actual = sha256_file(path)
+        entry = matches[0]
+        if actual != expected_sha256 or entry.get("sha256") != expected_sha256:
+            raise ValueError("screenshot approval hash mismatch")
+        entry["privacy_reviewed_shareable"] = True
+        raw = "".join(
+            json.dumps(item, ensure_ascii=False, sort_keys=True) + "\n"
+            for item in entries
+        ).encode("utf-8")
+        atomic_write(index_path, raw)
+        append_jsonl(folder / "journal.jsonl", {
+            "at": utc_now(), "event": "SCREENSHOT_PRIVACY_REVIEW_APPROVED",
+            "file": filename, "sha256": expected_sha256,
+        })
+
+        state = json.loads((folder / "state.json").read_text(encoding="utf-8"))
+        event_path = folder / "windows-event-log.xml"
+        unavailable = folder / "windows-event-log.unavailable.txt"
+        if event_path.is_file():
+            event_status = "CAPTURED" if event_path.stat().st_size else "EMPTY_VALID"
+            event_error = None
+        elif unavailable.is_file():
+            event_status = "UNAVAILABLE"
+            event_error = unavailable.read_text(
+                encoding="utf-8", errors="replace"
+            )[:1000]
+        else:
+            event_status = "UNAVAILABLE"
+            event_error = "event log evidence missing"
+        self._finalize(
+            folder, state,
+            event_log_status=event_status,
+            event_log_error=event_error,
+        )
+        return json.loads((folder / "manifest.json").read_text(encoding="utf-8"))
+
     def _update_state(self, folder: Path, **changes: Any) -> dict[str, Any]:
         state = json.loads((folder / "state.json").read_text(encoding="utf-8"))
         state.update(changes)
@@ -326,22 +411,49 @@ class EvidenceStore:
                 state = json.loads(state_path.read_text(encoding="utf-8"))
             except (OSError, json.JSONDecodeError):
                 continue
-            if state.get("state") != "RUNNING":
-                continue
             folder = state_path.parent
-            state.update({"state": "INTERRUPTED_RESTART", "finished_at_utc": utc_now(),
-                          "evidence_return_e2e_pass": False,
-                          "product_e2e_pass": False, "e2e_pass": False,
-                          "release_ready": False, "store_submission_allowed": False,
-                          "user_product_approval": False, "user_price_approval": False,
-                          "exit_code": None, "timed_out": False,
-                          "failure_reason": "PROCESS_OR_PC_RESTARTED_BEFORE_FINALIZATION"})
-            atomic_json(state_path, state)
+            if state.get("state") == "RUNNING":
+                state.update({"state": "INTERRUPTED_RESTART", "finished_at_utc": utc_now(),
+                              "evidence_return_e2e_pass": False,
+                              "product_e2e_pass": False, "e2e_pass": False,
+                              "release_ready": False, "store_submission_allowed": False,
+                              "user_product_approval": False, "user_price_approval": False,
+                              "exit_code": None, "timed_out": False,
+                              "failure_reason": "PROCESS_OR_PC_RESTARTED_BEFORE_FINALIZATION"})
+                atomic_json(state_path, state)
+                append_jsonl(folder / "journal.jsonl", {
+                    "at": utc_now(), "event": "RECOVERED_INTERRUPTED_RUN"})
+                try:
+                    self._finalize(
+                        folder, state,
+                        event_log_status="UNAVAILABLE_PROCESS_RESTART",
+                        event_log_error="collection did not complete before restart",
+                    )
+                finally:
+                    self._release_job_lock(state)
+                recovered.append(state["run_id"])
+                continue
+            completed = state.get("state") in {"TEST_PASS", "TEST_FAIL"}
+            acknowledged = (self.acks / (folder.name + ".json")).is_file()
+            finalized = (
+                (folder / "manifest.json").is_file() and
+                (folder / "github-envelope.json").is_file() and
+                (self.queue / (folder.name + ".json")).is_file()
+            )
+            if not completed or acknowledged or finalized:
+                continue
+            if (folder / "windows-event-log.xml").is_file():
+                event_status, event_error = "CAPTURED", None
+            else:
+                event_status = "UNAVAILABLE_FINALIZATION_RESTART"
+                event_error = "event log was unavailable during finalization recovery"
             append_jsonl(folder / "journal.jsonl", {
-                "at": utc_now(), "event": "RECOVERED_INTERRUPTED_RUN"})
+                "at": utc_now(), "event": "RECOVERED_INCOMPLETE_FINALIZATION"})
             try:
-                self._finalize(folder, state, event_log_status="UNAVAILABLE_PROCESS_RESTART",
-                               event_log_error="collection did not complete before restart")
+                self._finalize(
+                    folder, state, event_log_status=event_status,
+                    event_log_error=event_error,
+                )
             finally:
                 self._release_job_lock(state)
             recovered.append(state["run_id"])
@@ -407,10 +519,16 @@ class EvidenceStore:
                 timeout_seconds: int, expected: dict[str, Any] | None = None,
                 gui_test: bool = False,
                 event_log_collector: Callable[[str, str], str] | None = None,
+                evidence_callback: Callable[[str, Path], None] | None = None,
+                pass_if_running_after_seconds: int | None = None,
                 poll_seconds: float = 0.2) -> RunResult:
         expected = expected or {"exit_code": 0}
         if not 1 <= timeout_seconds <= 24 * 60 * 60:
             raise ValueError("LOCAL_QA_HOLD: invalid timeout")
+        if (pass_if_running_after_seconds is not None and
+                (type(pass_if_running_after_seconds) is not int or
+                 not 1 <= pass_if_running_after_seconds < timeout_seconds)):
+            raise ValueError("LOCAL_QA_HOLD: invalid process observation window")
         if cwd.is_symlink() or not cwd.is_dir():
             raise ValueError("LOCAL_QA_HOLD: invalid test cwd")
         run_id, folder = self.start(job, command, expected=expected, gui_test=gui_test)
@@ -421,6 +539,8 @@ class EvidenceStore:
         exit_code = None
         timed_out = False
         failure_reason = None
+        survived_observation = False
+        terminated_by_harness = False
         threads: list[threading.Thread] = []
         try:
             process = subprocess.Popen(command, cwd=str(cwd), stdout=subprocess.PIPE,
@@ -436,7 +556,21 @@ class EvidenceStore:
             for thread in threads:
                 thread.start()
             deadline = time.monotonic() + timeout_seconds
+            observation_deadline = (
+                time.monotonic() + pass_if_running_after_seconds
+                if pass_if_running_after_seconds is not None else None
+            )
             while process.poll() is None:
+                if (observation_deadline is not None and
+                        time.monotonic() >= observation_deadline):
+                    survived_observation = True
+                    terminated_by_harness = True
+                    process.terminate()
+                    try:
+                        process.wait(timeout=5)
+                    except subprocess.TimeoutExpired:
+                        process.kill()
+                    break
                 if time.monotonic() >= deadline:
                     timed_out = True
                     process.terminate()
@@ -463,14 +597,19 @@ class EvidenceStore:
         if timed_out:
             failure_reason = "TEST_TIMEOUT"
         expected_exit = expected.get("exit_code")
-        status = "TEST_PASS" if (not timed_out and failure_reason is None and
-                                 exit_code == expected_exit) else "TEST_FAIL"
+        status = "TEST_PASS" if (
+            not timed_out and failure_reason is None and
+            (survived_observation or exit_code == expected_exit)
+        ) else "TEST_FAIL"
         state = self._update_state(
             folder, state=status, finished_at_utc=utc_now(), exit_code=exit_code,
             timed_out=timed_out, failure_reason=failure_reason,
             stdout=stdout_observation, stderr=stderr_observation,
             actual={"exit_code": exit_code, "timed_out": timed_out,
-                    "process_started": process is not None},
+                    "process_started": process is not None,
+                    "survived_observation": survived_observation,
+                    "observation_seconds": pass_if_running_after_seconds,
+                    "terminated_by_harness": terminated_by_harness},
             evidence_return_e2e_pass=False, product_e2e_pass=False,
             e2e_pass=False, release_ready=False,
             store_submission_allowed=False, user_product_approval=False,
@@ -482,6 +621,8 @@ class EvidenceStore:
         event_status, event_error = self._collect_event_log(
             folder, started, state["finished_at_utc"], event_log_collector)
         try:
+            if evidence_callback is not None:
+                evidence_callback(run_id, folder)
             self._finalize(folder, state, event_log_status=event_status,
                            event_log_error=event_error)
         finally:
@@ -797,12 +938,131 @@ class GitHubContentsTransport:
                 remote.get("payload_sha256") != envelope["payload_sha256"] or
                 sha256_bytes(canonical(remote.get("payload"))) != envelope["payload_sha256"]):
             raise GitHubReturnError("GitHub readback correlation mismatch")
-        return {"status": "GITHUB_READBACK_VERIFIED", "repository": self.repository,
-                "branch": self.branch, "path": remote_path,
-                "request_id": envelope["request_id"],
-                "source_sha": envelope["source_sha"],
-                "payload_sha256": envelope["payload_sha256"],
-                "remote_file_sha256": sha256_bytes(remote_raw)}
+        manifest = remote.get("payload", {}).get("manifest", {})
+        evidence_return_e2e = (
+            manifest.get("status") == "TEST_PASS" and
+            manifest.get("collection_complete") is True and
+            manifest.get("local_persistence_verified") is True
+        )
+        acknowledgement = {
+            "schema_version": ACK_SCHEMA,
+            "request_id": envelope["request_id"],
+            "source_sha": envelope["source_sha"],
+            "payload_sha256": envelope["payload_sha256"],
+            "status": "GITHUB_READBACK_VERIFIED",
+            "evidence_return_e2e_pass": evidence_return_e2e,
+            "product_e2e_pass": False,
+            "e2e_pass": False,
+            "release_ready": False,
+            "store_submission_allowed": False,
+            "evidence_path": remote_path,
+            "remote_file_sha256": sha256_bytes(remote_raw),
+        }
+        ack_path = (f"ops/local-qa-acks/{request}/{envelope['source_sha']}/"
+                    f"{envelope['payload_sha256']}.ack-receipt.json")
+        ack_raw = json.dumps(
+            acknowledgement, ensure_ascii=False, indent=2, sort_keys=True,
+        ).encode("utf-8") + b"\n"
+        ack_encoded = base64.b64encode(ack_raw).decode("ascii")
+        code, existing_ack, _ = self._call(
+            [f"repos/{self.repository}/contents/{ack_path}?ref={self.branch}"],
+            allow_failure=True)
+        if code == 0:
+            remote_ack_raw = self._decode_content(existing_ack)
+        else:
+            self._call(
+                ["--method", "PUT", f"repos/{self.repository}/contents/{ack_path}"],
+                body={
+                    "message": "qa: record verified local evidence acknowledgement " + request,
+                    "content": ack_encoded,
+                    "branch": self.branch,
+                })
+            _, fetched_ack, _ = self._call(
+                [f"repos/{self.repository}/contents/{ack_path}?ref={self.branch}"])
+            remote_ack_raw = self._decode_content(fetched_ack)
+        try:
+            remote_ack = json.loads(remote_ack_raw)
+        except json.JSONDecodeError as exc:
+            raise GitHubReturnError("GitHub acknowledgement receipt is malformed") from exc
+        if remote_ack != acknowledgement:
+            raise GitHubReturnError("GitHub acknowledgement receipt mismatch")
+        return {
+            **acknowledgement,
+            "repository": self.repository,
+            "branch": self.branch,
+            "path": remote_path,
+            "ack_path": ack_path,
+            "ack_receipt_sha256": sha256_bytes(remote_ack_raw),
+        }
+
+    def put_repair_and_readback(self, handoff_path: Path) -> dict[str, Any]:
+        """Return a fail-closed repair request without granting edit authority."""
+        raw = handoff_path.read_bytes()
+        try:
+            handoff = json.loads(raw)
+        except json.JSONDecodeError as exc:
+            raise GitHubReturnError("local repair handoff is malformed") from exc
+        if (handoff.get("schema_version") != "windows-qa-repair-handoff-v1" or
+                not isinstance(handoff.get("failed_test_ids"), list) or
+                not handoff["failed_test_ids"] or
+                handoff.get("source_edit_authority") is not False or
+                handoff.get("retest_requires_new_source_sha") is not True or
+                handoff.get("product_e2e_pass") is not False or
+                handoff.get("release_ready") is not False or
+                handoff.get("store_submission_allowed") is not False or
+                not isinstance(handoff.get("request_id"), str) or
+                not SHA40.fullmatch(str(handoff.get("source_sha", ""))) or
+                not SHA64.fullmatch(str(handoff.get("artifact_sha256", "")))):
+            raise GitHubReturnError("local repair handoff violates authority contract")
+        self._ensure_branch()
+        request = re.sub(r"[^A-Za-z0-9._-]", "_", handoff["request_id"])
+        repair_sha = sha256_bytes(canonical(handoff))
+        remote_path = (
+            f"ops/local-qa-repairs/{request}/{handoff['source_sha']}/"
+            f"{repair_sha}.repair-request.json"
+        )
+        encoded = base64.b64encode(raw).decode("ascii")
+        code, existing, _ = self._call(
+            [f"repos/{self.repository}/contents/{remote_path}?ref={self.branch}"],
+            allow_failure=True,
+        )
+        if code == 0:
+            remote_raw = self._decode_content(existing)
+        else:
+            self._call(
+                ["--method", "PUT", f"repos/{self.repository}/contents/{remote_path}"],
+                body={
+                    "message": "qa: return verified repair request " + request,
+                    "content": encoded,
+                    "branch": self.branch,
+                },
+            )
+            _, fetched, _ = self._call(
+                [f"repos/{self.repository}/contents/{remote_path}?ref={self.branch}"]
+            )
+            remote_raw = self._decode_content(fetched)
+        try:
+            remote = json.loads(remote_raw)
+        except json.JSONDecodeError as exc:
+            raise GitHubReturnError("GitHub repair readback is malformed") from exc
+        if (remote.get("request_id") != handoff["request_id"] or
+                remote.get("source_sha") != handoff["source_sha"] or
+                remote.get("artifact_sha256") != handoff["artifact_sha256"] or
+                sha256_bytes(canonical(remote)) != repair_sha):
+            raise GitHubReturnError("GitHub repair readback correlation mismatch")
+        return {
+            "status": "GITHUB_REPAIR_READBACK_VERIFIED",
+            "request_id": handoff["request_id"],
+            "source_sha": handoff["source_sha"],
+            "artifact_sha256": handoff["artifact_sha256"],
+            "repair_sha256": repair_sha,
+            "repository": self.repository,
+            "branch": self.branch,
+            "path": remote_path,
+            "remote_file_sha256": sha256_bytes(remote_raw),
+            "source_edit_authority": False,
+            "retest_requires_new_source_sha": True,
+        }
 
     @staticmethod
     def _decode_content(response: dict[str, Any] | None) -> bytes:

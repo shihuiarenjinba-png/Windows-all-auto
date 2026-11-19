@@ -66,3 +66,28 @@ Windows-all-autoが自動取得・検証し、ローカルPCが引き取り、�
 「初めて実MSIXをFactoryから転送し中央のArtifactへ保存PASS」→
 「ローカル実機MSIX動作/画像取得PASS」→「Partner Center下書き保存PASS」→
 「審査提出PASS」を別々に報告する。下流を推測でPASSへ昇格させない。
+
+## Final QA → Store upload-test bridge
+
+Factory artifact intake and local QA are no longer the end of the conveyor.
+A product that has completed final local QA can be promoted into a separate,
+fail-closed Store upload-test batch.
+
+The bridge is implemented by:
+
+- `all_auto/store_upload_test.py`
+- `scripts/store_upload_test_bridge.py`
+- `schemas/store-upload-test-batch-v1.schema.json`
+
+Promotion requires Product E2E PASS, verified Evidence return, Windows-checker
+READY, official Partner Center Identity re-verification, security owner
+confirmation bound to the exact package SHA, and listing-asset readiness.
+
+The bridge first runs Windows-Automator in dry-run mode. Partner Center package
+upload + Save draft requires a separate action-time `--confirm-live-draft` flag
+and an already-authenticated browser. Successful live testing stops at
+`DRAFT_SAVED`; certification submission and publication remain outside this
+authority.
+
+Ambiguous Partner Center results become UNKNOWN and are never automatically
+retried.

@@ -9,10 +9,11 @@ from pathlib import Path
 import subprocess
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from all_auto.local_qa_evidence import (
     EvidenceStore, GitHubContentsTransport, GitHubReturnError,
-    atomic_json, atomic_write, process_retry_queue,
+    atomic_json, atomic_write, process_retry_queue, sha256_file,
 )
 
 
@@ -80,6 +81,24 @@ class DurableEvidenceTests(unittest.TestCase):
         self.assertTrue(report["product_e2e_requirements"])
         self.assertFalse(any(report["product_e2e_requirements"].values()))
 
+    def test_atomic_write_recovers_from_transient_windows_replace_denial(self):
+        target = self.root / "atomic-retry.txt"
+        real_replace = os.replace
+        attempts = 0
+
+        def transient_replace(source, destination):
+            nonlocal attempts
+            attempts += 1
+            if attempts == 1:
+                raise PermissionError("simulated transient sharing violation")
+            return real_replace(source, destination)
+
+        with patch("all_auto.local_qa_evidence.os.replace",
+                   side_effect=transient_replace):
+            atomic_write(target, b"durable\n")
+        self.assertEqual(target.read_bytes(), b"durable\n")
+        self.assertEqual(attempts, 2)
+
     def test_normal_exit_is_not_evidence_return_e2e_until_github_readback(self):
         result = self.store.execute(
             self.job, self.command("print('ok')"), cwd=self.root,
@@ -97,6 +116,29 @@ class DurableEvidenceTests(unittest.TestCase):
         self.assert_product_fail_closed(after)
         self.assertEqual(after["factory_dispatch"]["status"], "AGENT_DISPATCH_PENDING")
         self.assertEqual((result.run_directory / "stdout.log").read_text().strip(), "ok")
+
+
+    def test_validated_package_provenance_is_preserved_in_manifest(self):
+        job = dict(self.job)
+        job.update({
+            "package_sha256": "c" * 64,
+            "artifact_archive_sha256": "d" * 64,
+            "qa_plan_template_sha256": "e" * 64,
+            "identity": {
+                "name": "OkinawaDesktopTools.Demo",
+                "publisher": "CN=TEST",
+                "version": "1.0.0.0",
+            },
+        })
+        result = self.store.execute(
+            job, self.command("print('ok')"), cwd=self.root,
+            timeout_seconds=5, event_log_collector=self.events,
+        )
+        report = self.manifest(result)
+        self.assertEqual(report["package_sha256"], "c" * 64)
+        self.assertEqual(report["artifact_archive_sha256"], "d" * 64)
+        self.assertEqual(report["qa_plan_template_sha256"], "e" * 64)
+        self.assertEqual(report["identity"]["version"], "1.0.0.0")
 
     def test_nonzero_exit_preserves_stdout_stderr_expectation_and_actual(self):
         result = self.store.execute(
@@ -134,6 +176,22 @@ class DurableEvidenceTests(unittest.TestCase):
         self.assertEqual(report["failed_tests"][0]["error"], "TEST_TIMEOUT")
         self.assertIn("started", (result.run_directory / "stdout.log").read_text())
         self.assertFalse(report["e2e_pass"])
+
+    def test_process_start_probe_passes_after_bounded_observation(self):
+        result = self.store.execute(
+            self.job,
+            self.command("import time; print('ready', flush=True); time.sleep(30)"),
+            cwd=self.root, timeout_seconds=5,
+            pass_if_running_after_seconds=1,
+            event_log_collector=self.events, poll_seconds=0.02,
+        )
+        report = self.manifest(result)
+        self.assertEqual(report["status"], "TEST_PASS")
+        self.assertFalse(report["timed_out"])
+        self.assertTrue(report["actual"]["survived_observation"])
+        self.assertTrue(report["actual"]["terminated_by_harness"])
+        self.assertEqual(report["actual"]["observation_seconds"], 1)
+        self.assertIn("ready", (result.run_directory / "stdout.log").read_text())
 
     def test_secret_and_personal_data_are_redacted_before_queueing(self):
         secret = "ghp_abcdefghijklmnopqrstuvwxyz123456"
@@ -221,6 +279,29 @@ class DurableEvidenceTests(unittest.TestCase):
         self.assertTrue((recovered_store.queue / (run_id + ".json")).is_file())
         self.assertFalse(report["e2e_pass"])
 
+    def test_restart_recovers_completed_state_when_finalization_was_interrupted(self):
+        run_id, folder = self.store.start(
+            self.job, self.command("print('completed')"),
+            expected={"exit_code": 0}, gui_test=False)
+        atomic_write(folder / "stdout.log", b"completed\n")
+        atomic_write(folder / "stderr.log", b"")
+        atomic_write(folder / "windows-event-log.xml", b"<Events/>")
+        state = json.loads((folder / "state.json").read_text())
+        state.update({
+            "state": "TEST_PASS", "finished_at_utc": "2026-11-16T00:00:00Z",
+            "exit_code": 0, "timed_out": False, "failure_reason": None,
+            "actual": {"exit_code": 0, "timed_out": False,
+                       "process_started": True},
+        })
+        atomic_json(folder / "state.json", state)
+        recovered = EvidenceStore(self.root / "state")
+        self.assertEqual(recovered.recover_interrupted(), [run_id])
+        self.assertTrue((folder / "manifest.json").is_file())
+        self.assertTrue((folder / "github-envelope.json").is_file())
+        self.assertTrue((recovered.queue / (run_id + ".json")).is_file())
+        self.assertIn("RECOVERED_INCOMPLETE_FINALIZATION",
+                      (folder / "journal.jsonl").read_text())
+
     def test_event_log_collection_failure_blocks_evidence_return_e2e(self):
         def denied(_start, _finish):
             raise OSError("access denied")
@@ -244,6 +325,27 @@ class DurableEvidenceTests(unittest.TestCase):
         self.assertEqual(report["collection"]["screenshots"], "UNAVAILABLE")
         self.assertFalse(report["evidence_return_e2e_pass"])
         self.assertFalse(report["e2e_pass"])
+
+    def test_gui_evidence_callback_runs_before_finalization(self):
+        observed = []
+
+        def collect(run_id, folder):
+            observed.append((run_id, folder))
+            self.store.record_ui_action(
+                run_id, action="UIA_FIND_WINDOW", target="Folio AI",
+                result="PASS", details={"match_count": 1},
+            )
+
+        result = self.store.execute(
+            self.job, self.command("print('trusted GUI worker')"), cwd=self.root,
+            timeout_seconds=5, gui_test=True,
+            event_log_collector=self.events, evidence_callback=collect,
+        )
+        report = self.manifest(result)
+        self.assertEqual(len(observed), 1)
+        self.assertEqual(report["collection"]["uia_actions"], "CAPTURED")
+        self.assertEqual(report["collection"]["screenshots"], "UNAVAILABLE")
+        self.assertFalse(report["collection_complete"])
 
     def test_retention_never_removes_pending_evidence(self):
         pending = self.store.execute(
@@ -298,6 +400,68 @@ class DurableEvidenceTests(unittest.TestCase):
         self.assertIn("screenshots/000.png", {x["path"] for x in envelope["payload"]["files"]})
 
 
+    def test_screenshot_privacy_approval_rebuilds_gui_envelope(self):
+        run_id, folder = self.store.start(
+            self.job, ["trusted-gui-driver"], expected={"exit_code": 0}, gui_test=True)
+        self.store.record_ui_action(
+            run_id, action="UIA_FIND_WINDOW", target="Folio AI",
+            result="PASS", details={"match_count": 1},
+        )
+        picture = self.root / "review.png"
+        atomic_write(picture, b"\x89PNG\r\n\x1a\nreview-later")
+        stored = self.store.add_screenshot(
+            run_id, picture, label="review later",
+            privacy_reviewed_shareable=False,
+        )
+        atomic_write(folder / "stdout.log", b"GUI driver completed\n")
+        atomic_write(folder / "stderr.log", b"")
+        state = json.loads((folder / "state.json").read_text())
+        state.update({
+            "state": "TEST_PASS",
+            "finished_at_utc": "2026-11-18T00:00:01Z",
+            "exit_code": 0,
+            "timed_out": False,
+            "failure_reason": None,
+            "actual": {"exit_code": 0, "timed_out": False, "process_started": True},
+        })
+        atomic_json(folder / "state.json", state)
+        atomic_write(folder / "windows-event-log.xml", b"<Events/>")
+        self.store._finalize(
+            folder, state, event_log_status="CAPTURED", event_log_error=None,
+        )
+        before = json.loads((folder / "manifest.json").read_text())
+        self.assertFalse(before["collection_complete"])
+        digest = sha256_file(stored)
+
+        after = self.store.approve_screenshot_for_github(
+            run_id, filename=stored.name, expected_sha256=digest,
+        )
+        self.assertTrue(after["collection_complete"])
+        envelope = json.loads((folder / "github-envelope.json").read_text())
+        self.assertIn(
+            "screenshots/" + stored.name,
+            {item["path"] for item in envelope["payload"]["files"]},
+        )
+        queue = json.loads((self.store.queue / (run_id + ".json")).read_text())
+        self.assertEqual(queue["payload_sha256"], envelope["payload_sha256"])
+
+    def test_screenshot_privacy_approval_rejects_hash_drift(self):
+        run_id, folder = self.store.start(
+            self.job, ["trusted-gui-driver"], expected={"exit_code": 0}, gui_test=True)
+        picture = self.root / "review.png"
+        atomic_write(picture, b"\x89PNG\r\n\x1a\noriginal")
+        stored = self.store.add_screenshot(
+            run_id, picture, label="review later",
+            privacy_reviewed_shareable=False,
+        )
+        stored.write_bytes(b"tampered")
+        with self.assertRaisesRegex(ValueError, "hash mismatch"):
+            self.store.approve_screenshot_for_github(
+                run_id, filename=stored.name,
+                expected_sha256="0" * 64,
+            )
+
+
 class GitHubContentsTransportTests(unittest.TestCase):
     def setUp(self):
         local_tmp = Path.cwd() / ".test-tmp"
@@ -312,23 +476,25 @@ class GitHubContentsTransportTests(unittest.TestCase):
                          "payload_sha256": sha256_bytes(canonical(payload)), "payload": payload}
         self.path = self.root / "envelope.json"
         atomic_json(self.path, self.envelope)
-        self.remote_content = None
+        self.remote_contents = {}
 
     def runner(self, command, **_kwargs):
         route = next((x for x in command if isinstance(x, str) and x.startswith("repos/")), "")
+        content_key = route.split("?", 1)[0]
         method = command[command.index("--method") + 1] if "--method" in command else "GET"
         if "/git/ref/heads/" in route:
             return subprocess.CompletedProcess(command, 0,
                 json.dumps({"object": {"sha": "c" * 40}}), "")
         if "/contents/" in route and method == "GET":
-            if self.remote_content is None:
+            if content_key not in self.remote_contents:
                 return subprocess.CompletedProcess(command, 1, "", "not found")
             return subprocess.CompletedProcess(command, 0,
-                json.dumps({"encoding": "base64", "content": self.remote_content}), "")
+                json.dumps({"encoding": "base64",
+                            "content": self.remote_contents[content_key]}), "")
         if "/contents/" in route and method == "PUT":
             request_path = Path(command[command.index("--input") + 1])
             body = json.loads(request_path.read_text(encoding="utf-8"))
-            self.remote_content = body["content"]
+            self.remote_contents[content_key] = body["content"]
             return subprocess.CompletedProcess(command, 0, json.dumps({"commit": {"sha": "d" * 40}}), "")
         raise AssertionError(command)
 
@@ -340,16 +506,104 @@ class GitHubContentsTransportTests(unittest.TestCase):
         self.assertEqual(ack["status"], "GITHUB_READBACK_VERIFIED")
         self.assertEqual(ack["source_sha"], SOURCE)
         self.assertEqual(ack["payload_sha256"], self.envelope["payload_sha256"])
+        self.assertEqual(ack["schema_version"], "local-qa-github-ack-v1")
+        self.assertTrue(ack["ack_path"].endswith(".ack-receipt.json"))
+        self.assertFalse(ack["evidence_return_e2e_pass"])
+        self.assertFalse(ack["product_e2e_pass"])
+        self.assertFalse(ack["release_ready"])
+        self.assertFalse(ack["store_submission_allowed"])
 
     def test_tampered_readback_is_rejected(self):
         bad = dict(self.envelope)
         bad["source_sha"] = "f" * 40
-        self.remote_content = base64.b64encode(json.dumps(bad).encode()).decode()
+        evidence_path = (
+            "repos/owner/repo/contents/ops/local-qa-results/app-request-0001/"
+            f"{SOURCE}/{self.envelope['payload_sha256']}.json"
+        )
+        self.remote_contents[evidence_path] = base64.b64encode(
+            json.dumps(bad).encode()
+        ).decode()
         transport = GitHubContentsTransport(
             repository="owner/repo", branch="codex/local-evidence",
             base_ref="main", gh_runner=self.runner)
         with self.assertRaisesRegex(GitHubReturnError, "correlation mismatch"):
             transport.put_and_readback(self.path)
+
+    def test_ack_receipt_is_true_only_for_complete_passing_evidence(self):
+        from all_auto.local_qa_evidence import canonical, sha256_bytes
+        payload = {
+            "manifest": {
+                "status": "TEST_PASS", "collection_complete": True,
+                "local_persistence_verified": True,
+            },
+            "files": [], "redaction": {},
+        }
+        envelope = dict(self.envelope)
+        envelope.update({
+            "payload": payload,
+            "payload_sha256": sha256_bytes(canonical(payload)),
+        })
+        atomic_json(self.path, envelope)
+        transport = GitHubContentsTransport(
+            repository="owner/repo", branch="codex/local-evidence",
+            base_ref="main", gh_runner=self.runner)
+        ack = transport.put_and_readback(self.path)
+        self.assertTrue(ack["evidence_return_e2e_pass"])
+        self.assertFalse(ack["product_e2e_pass"])
+
+    def test_existing_tampered_ack_receipt_is_rejected(self):
+        request = self.envelope["request_id"]
+        payload_sha = self.envelope["payload_sha256"]
+        evidence_path = (
+            "repos/owner/repo/contents/ops/local-qa-results/"
+            f"{request}/{SOURCE}/{payload_sha}.json"
+        )
+        ack_path = (
+            "repos/owner/repo/contents/ops/local-qa-acks/"
+            f"{request}/{SOURCE}/{payload_sha}.ack-receipt.json"
+        )
+        self.remote_contents[evidence_path] = base64.b64encode(
+            self.path.read_bytes()
+        ).decode()
+        self.remote_contents[ack_path] = base64.b64encode(
+            b'{"status":"TAMPERED"}\n'
+        ).decode()
+        transport = GitHubContentsTransport(
+            repository="owner/repo", branch="codex/local-evidence",
+            base_ref="main", gh_runner=self.runner)
+        with self.assertRaisesRegex(GitHubReturnError, "receipt mismatch"):
+            transport.put_and_readback(self.path)
+
+    def test_repair_request_is_returned_and_read_back_without_edit_authority(self):
+        handoff = self.root / "repair.json"
+        atomic_json(handoff, {
+            "schema_version": "windows-qa-repair-handoff-v1",
+            "source_sha": SOURCE,
+            "request_id": "app-request-0001",
+            "artifact_sha256": "d" * 64,
+            "failed_test_ids": ["PROCESS_START"],
+            "failure_class": "PROCESS_START_FAILED",
+            "observed_evidence": [],
+            "missing_evidence": [],
+            "recommended_owner": "APP",
+            "recommended_regression_test_ids": ["PROCESS_START"],
+            "agent_dispatch_status": "AGENT_DISPATCH_PENDING",
+            "source_edit_authority": False,
+            "retest_requires_new_source_sha": True,
+            "product_e2e_pass": False,
+            "release_ready": False,
+            "store_submission_allowed": False,
+        })
+        transport = GitHubContentsTransport(
+            repository="owner/repo", branch="codex/local-evidence",
+            base_ref="main", gh_runner=self.runner,
+        )
+        receipt = transport.put_repair_and_readback(handoff)
+        self.assertEqual(receipt["status"], "GITHUB_REPAIR_READBACK_VERIFIED")
+        self.assertEqual(receipt["source_sha"], SOURCE)
+        self.assertTrue(receipt["path"].endswith(".repair-request.json"))
+        self.assertFalse(receipt["source_edit_authority"])
+        self.assertTrue(receipt["retest_requires_new_source_sha"])
 
 
 class EvidenceSchemaTests(unittest.TestCase):
@@ -362,6 +616,15 @@ class EvidenceSchemaTests(unittest.TestCase):
         self.assertEqual(schema["properties"]["product_e2e_pass"]["const"], False)
         self.assertEqual(schema["properties"]["e2e_pass"]["const"], False)
         self.assertEqual(schema["properties"]["store_submission_allowed"]["const"], False)
+
+    def test_ack_receipt_schema_is_fail_closed(self):
+        schema = json.loads(Path("schemas/local-qa-github-ack-v1.schema.json").read_text(
+            encoding="utf-8"))
+        self.assertEqual(schema["properties"]["schema_version"]["const"],
+                         "local-qa-github-ack-v1")
+        for field in ("product_e2e_pass", "e2e_pass", "release_ready",
+                      "store_submission_allowed"):
+            self.assertEqual(schema["properties"][field]["const"], False)
 
 
 if __name__ == "__main__":

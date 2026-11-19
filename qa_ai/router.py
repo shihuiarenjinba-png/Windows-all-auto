@@ -18,6 +18,7 @@ RULES = (
     ("REQUEST_ID_CONFLICT", r"(?i)(request[_ ]id[^\r\n]{0,40}(?:conflict|reused|duplicate))"),
     ("HASH_MISMATCH", r"(?i)(sha-?256|hash)[^\r\n]{0,60}mismatch"),
     ("GITHUB_RETURN_FAILED", r"(?i)(github[^\r\n]{0,40}(?:return|upload)[^\r\n]{0,40}(?:failed|error))"),
+    ("APPLICATION_CONTROL_BLOCKED", r"(?i)(-2147020345|0x800711c7|application control policy[^\r\n]{0,60}blocked|アプリケーション制御ポリシー[^\r\n]{0,60}ブロック)"),
     ("PROCESS_START_FAILED", r"(?i)(process_start_failed|failed to (?:start|launch) (?:process|exe)|winerror 2)"),
     ("TIMEOUT", r"(?i)(timed? out|test_timeout|timeout after)"),
     ("UIA_CONTROL_NOT_FOUND", r"(?i)(uia[^\r\n]{0,30}(?:control|element)[^\r\n]{0,30}not found)"),
@@ -45,7 +46,8 @@ def classify(text: str) -> Route:
         match = re.search(pattern, text)
         if match:
             simple = classification in {
-                "TIMEOUT", "PROCESS_START_FAILED", "HASH_MISMATCH",
+                "TIMEOUT", "PROCESS_START_FAILED", "APPLICATION_CONTROL_BLOCKED",
+                "HASH_MISMATCH",
                 "SOURCE_SHA_CONFLICT", "REQUEST_ID_CONFLICT", "ARTIFACT_MISSING",
                 "EVENT_LOG_UNAVAILABLE", "GITHUB_READBACK_MISMATCH",
             }
