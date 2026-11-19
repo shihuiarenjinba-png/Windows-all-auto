@@ -98,8 +98,11 @@ python .\scripts\store_upload_test_bridge.py `
   --workspace .\.test-tmp\store-upload-live `
   --execution-mode live `
   --confirm-live-draft `
-  --cdp-url http://127.0.0.1:<port>
+  --cdp-url http://127.0.0.1:<port> `
+  --ledger .\.test-tmp\store-upload-ledger.sqlite
 ```
+
+Before Windows-Automator starts, every live candidate is atomically reserved in the durable ledger. A prior `DRAFT_SAVED`, `UNKNOWN`, or unfinished `LIVE_ATTEMPT_STARTED` blocks automatic retry.
 
 The bridge delegates only to Windows-Automator's reviewed live-draft path.
 It may verify the exact product/draft, upload the exact package, wait for
@@ -111,8 +114,7 @@ A full batch succeeds only when every result is `DRAFT_SAVED`.
 ## UNKNOWN
 
 If a remote write outcome is ambiguous, the result is
-`UPLOAD_TEST_UNKNOWN_HOLD`. UNKNOWN is never automatically retried. The draft
-must first be reconciled in Partner Center.
+`UPLOAD_TEST_UNKNOWN_HOLD`. A lost live report is also persisted as `UNKNOWN`. UNKNOWN is never automatically retried. The draft must first be reconciled in Partner Center.
 
 ## Batch result
 
