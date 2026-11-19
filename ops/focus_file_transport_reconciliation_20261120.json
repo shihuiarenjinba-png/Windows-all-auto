@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "observed_date_utc": "2026-11-19/20",
+  "evidence_basis": {
+    "central_pr": 165,
+    "central_head": "ffd1ed3f6d71820847894e72931cbc43ccd79f72",
+    "ledger_path": "ops/active_e2e_handoff.json",
+    "queue_path": "ops/completion_rush_queue_20261116.json",
+    "pr161_head": "71d9c2125b6aed44a86ca1872d48ad19963f3e63"
+  },
+  "status": "HOLD",
+  "e2e_pass": false,
+  "priority_product": "Focus Session Desk",
+  "ledger_active_product": "Signal Sprint",
+  "note": "Priority selection is not proof of local execution; do not rewrite historical active_product as a completed Focus run.",
+  "products": [
+    {
+      "name": "Focus Session Desk",
+      "store_id": "9P6452C61N7B",
+      "source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+      "state": "POST_IDENTITY_UPGRADE",
+      "hold_class": "DELIVERY_HOLD",
+      "package_version": null,
+      "version_gate": "AUTHORITATIVE_VALUE_REQUIRED",
+      "asset_gate": "REAL_PNG_BYTES_AND_MSIX_EMBED_NOT_INDEPENDENTLY_VERIFIED",
+      "required_assets": [
+        "StoreLogo.png",
+        "Square150.png",
+        "Square44.png"
+      ],
+      "real_msix_sha256": null,
+      "github_backlog_receipt": null,
+      "local_checker_receipt": null,
+      "local_gui_receipt": null
+    },
+    {
+      "name": "File Integrity Ledger",
+      "store_id": "9PGZ445SR5GM",
+      "source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
+      "state": "POST_IDENTITY_UPGRADE",
+      "hold_class": "DELIVERY_HOLD",
+      "package_version": null,
+      "version_gate": "AUTHORITATIVE_VALUE_REQUIRED",
+      "asset_gate": "REAL_PNG_BYTES_AND_MSIX_EMBED_NOT_INDEPENDENTLY_VERIFIED",
+      "required_assets": [
+        "StoreLogo.png",
+        "Square150.png",
+        "Square44.png"
+      ],
+      "real_msix_sha256": null,
+      "github_backlog_receipt": null,
+      "local_checker_receipt": null,
+      "local_gui_receipt": null
+    }
+  ],
+  "transport_contract": {
+    "preflight": [
+      "independently approved package version tied to exact request/source/Identity",
+      "APP-owned real PNG byte signatures and dimensions verified",
+      "source and branch exact-head verified before build"
+    ],
+    "on_success": [
+      "real MSIX embedded manifest Identity and Version readback",
+      "SHA256 package custody and GitHub artifact archive SHA independently verified",
+      "backlog receipt exact request/source/package SHA",
+      "local pull SHA readback",
+      "Windows checker and GUI independent evidence ACK"
+    ],
+    "fail_closed": [
+      "missing or changed authoritative version",
+      "source/request/Identity mismatch",
+      "missing or invalid PNG",
+      "synthetic fixture substituted for real MSIX",
+      "artifact digest or local SHA mismatch",
+      "missing local receipt"
+    ],
+    "promotion": "HOLD until all evidence exists"
+  },
+  "prism_policy": "Never CAS approved Identity from source 15fdcb52 onto current source 4c22875c without fresh authorization.",
+  "store_submission_allowed": false,
+  "certification_allowed": false,
+  "publish_allowed": false,
+  "live_partner_center_write_allowed": false
+}
