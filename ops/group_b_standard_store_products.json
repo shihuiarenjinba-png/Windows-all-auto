@@ -20,7 +20,7 @@
       "artifact_name": "FolderAutomationEngine-Store-MSIX-UNSIGNED-DRAFT",
       "workflow_name": "Folder desktop and unsigned Store draft",
       "frozen_candidate": {
-        "status": "UI_POLISHED_CANDIDATE_FROZEN_PRICING_SAVED",
+        "status": "UI_POLISHED_CANDIDATE_FROZEN_PRIVATE_AUDIENCE_SAVED",
         "source_sha": "adfc0d08efb0a94602d5286557d399f9cb28b9dd",
         "safety_run_id": 44269998255,
         "gui_run_id": 44269998380,

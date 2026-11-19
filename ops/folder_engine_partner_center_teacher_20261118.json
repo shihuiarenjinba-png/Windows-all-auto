@@ -1,6 +1,6 @@
 {
   "schema_version": "partner-center-teacher-receipt/1",
-  "recorded_date_jst": "2026-11-18",
+  "recorded_date_jst": "2026-11-19",
   "product": {
     "name": "Folder Automation Engine",
     "store_id": "9P99MJX1R4V6",
@@ -21,6 +21,16 @@
       "planned_group_name": "Folder Automation Engine Private QA",
       "member_source": "CURRENT_PARTNER_CENTER_ACCOUNT",
       "persist_member_value": false,
+      "member_transmission_confirmed": true,
+      "create_save_performed": true,
+      "reload_postconditions": {
+        "list_path": "/en-us/dashboard/analytics/customers",
+        "group_name": "Folder Automation Engine Private QA",
+        "audience_type": "Known user group",
+        "customer_count": 1,
+        "result_count": 1,
+        "duplicate_group_detected": false
+      },
       "unknown_or_duplicate_warning_action": "HOLD",
       "create_new_group_must_not_repeat": true
     },
@@ -40,7 +50,31 @@
         "currency": "JPY - Japan",
         "retail_price": "360",
         "free_trial_text": "No free trial configured.",
+        "audience": "Private audience",
+        "known_user_group": "Folder Automation Engine Private QA",
         "save_disabled": true,
+        "overview_section_state": "Complete"
+      }
+    },
+    "private_audience": {
+      "verified_path_suffix": "/submissions/1152921505702423660/availability",
+      "public_radio_id": "radioDistribution_PublicAudience",
+      "private_radio_id": "radioDistribution_PrivateBetaAudience",
+      "expected_group": "Folder Automation Engine Private QA",
+      "public_expiration_enabled": false,
+      "schedule_transition_warning": {
+        "observed": true,
+        "classification": "KNOWN_PRIVATE_AUDIENCE_TRANSITION",
+        "accepted_only_after_default_schedule_verified": true
+      },
+      "save_performed": true,
+      "reload_postconditions": {
+        "private_audience_selected": true,
+        "expected_group_checked": true,
+        "public_expiration_unchecked": true,
+        "currency": "JPY - Japan",
+        "retail_price": "360",
+        "free_trial_text": "No free trial configured.",
         "overview_section_state": "Complete"
       }
     }
@@ -57,7 +91,7 @@
     "READY_FOR_MSIX_UPLOAD_APPROVAL",
     "PACKAGE_SAVED_AWAITING_CERTIFICATION_APPROVAL"
   ],
-  "current_state": "PRIVATE_AUDIENCE_MEMBER_CONFIRMATION_REQUIRED",
+  "current_state": "OWNER_VISUAL_APPROVAL_REQUIRED",
   "safety": {
     "start_submission_repeated": false,
     "old_msix_used": false,

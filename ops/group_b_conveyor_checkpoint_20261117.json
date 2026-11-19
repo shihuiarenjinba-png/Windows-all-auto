@@ -18,9 +18,9 @@
       "frozen_source_sha": "adfc0d08efb0a94602d5286557d399f9cb28b9dd",
       "frozen_msix_sha256": "3c6bc8c1291450905ae71834f2704a59325d1aaa1c9de3f064bcb8c7ebca9fb9",
       "frozen_exe_sha256": "de6894ae39cbe0fbe1889b4aa005e500f30a2ef95ee67403ddfb210dbcfb9f18",
-      "conveyor_state": "HOLD_OWNER_VISUAL_APPROVAL_AUDIENCE_SECURITY_VERSION_REVERIFY",
+      "conveyor_state": "HOLD_OWNER_VISUAL_APPROVAL_SECURITY_VERSION_REVERIFY",
       "direct_product_artifact_pull_supported": false,
-      "next_dependency": "Owner visual approval, confirmed current Partner Center account membership in the Known User Group, new-SHA security binding, and live no-package/version reverify",
+      "next_dependency": "Owner visual approval, new-SHA security binding, and live no-package/version reverify",
       "store_artifact": {
         "id": 14411892806,
         "name": "FolderAutomationEngine-Store-MSIX-UNSIGNED-DRAFT",
@@ -75,8 +75,23 @@
           "planned_group_name": "Folder Automation Engine Private QA",
           "member_source": "CURRENT_PARTNER_CENTER_ACCOUNT",
           "member_value_persisted": false,
-          "member_transmission_confirmed": false,
-          "created": false
+          "member_transmission_confirmed": true,
+          "created": true,
+          "save_performed": true,
+          "reload_retained": true,
+          "customer_count": 1,
+          "duplicate_group_detected": false
+        },
+        "private_audience": {
+          "selected": true,
+          "group_name": "Folder Automation Engine Private QA",
+          "group_checked": true,
+          "public_expiration_enabled": false,
+          "save_performed": true,
+          "reload_retained": true,
+          "pricing_retained": "JPY 360",
+          "free_trial_retained": "none",
+          "section_state": "Complete"
         },
         "packages_state": "Not started",
         "package_uploaded": false

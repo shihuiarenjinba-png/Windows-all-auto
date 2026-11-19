@@ -37,6 +37,13 @@ class FolderPartnerCenterTeacherTests(unittest.TestCase):
             pricing["reload_postconditions"]["overview_section_state"],
             "Complete",
         )
+        self.assertEqual(
+            pricing["reload_postconditions"]["audience"], "Private audience"
+        )
+        self.assertEqual(
+            pricing["reload_postconditions"]["known_user_group"],
+            "Folder Automation Engine Private QA",
+        )
 
     def test_customer_group_page_is_deterministic_and_redacts_member(self):
         group = self.receipt["page_models"]["customer_group_create"]
@@ -46,13 +53,39 @@ class FolderPartnerCenterTeacherTests(unittest.TestCase):
         self.assertTrue(group["create_new_group_must_not_repeat"])
         self.assertEqual(group["member_source"], "CURRENT_PARTNER_CENTER_ACCOUNT")
         self.assertFalse(group["persist_member_value"])
+        self.assertTrue(group["member_transmission_confirmed"])
+        self.assertTrue(group["create_save_performed"])
+        self.assertEqual(group["reload_postconditions"]["customer_count"], 1)
+        self.assertFalse(
+            group["reload_postconditions"]["duplicate_group_detected"]
+        )
         serialized = json.dumps(self.receipt)
         self.assertNotIn("@", serialized)
+
+    def test_private_audience_save_and_reload_are_fixed(self):
+        audience = self.receipt["page_models"]["private_audience"]
+        self.assertEqual(
+            audience["private_radio_id"],
+            "radioDistribution_PrivateBetaAudience",
+        )
+        self.assertEqual(
+            audience["expected_group"], "Folder Automation Engine Private QA"
+        )
+        self.assertTrue(audience["save_performed"])
+        self.assertTrue(
+            audience["reload_postconditions"]["private_audience_selected"]
+        )
+        self.assertTrue(
+            audience["reload_postconditions"]["expected_group_checked"]
+        )
+        self.assertEqual(
+            audience["reload_postconditions"]["retail_price"], "360"
+        )
 
     def test_current_hold_prevents_upload_and_certification(self):
         self.assertEqual(
             self.receipt["current_state"],
-            "PRIVATE_AUDIENCE_MEMBER_CONFIRMATION_REQUIRED",
+            "OWNER_VISUAL_APPROVAL_REQUIRED",
         )
         safety = self.receipt["safety"]
         self.assertFalse(safety["start_submission_repeated"])

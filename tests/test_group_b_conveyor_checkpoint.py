@@ -39,7 +39,7 @@ class GroupBConveyorCheckpointTests(unittest.TestCase):
         folder = self.checkpoint["products"]["folder-engine"]
         self.assertEqual(
             folder["conveyor_state"],
-            "HOLD_OWNER_VISUAL_APPROVAL_AUDIENCE_SECURITY_VERSION_REVERIFY",
+            "HOLD_OWNER_VISUAL_APPROVAL_SECURITY_VERSION_REVERIFY",
         )
         self.assertFalse(folder["direct_product_artifact_pull_supported"])
         self.assertEqual(
@@ -76,8 +76,20 @@ class GroupBConveyorCheckpointTests(unittest.TestCase):
         self.assertTrue(group["create_page_verified"])
         self.assertEqual(group["member_source"], "CURRENT_PARTNER_CENTER_ACCOUNT")
         self.assertFalse(group["member_value_persisted"])
-        self.assertFalse(group["member_transmission_confirmed"])
-        self.assertFalse(group["created"])
+        self.assertTrue(group["member_transmission_confirmed"])
+        self.assertTrue(group["created"])
+        self.assertTrue(group["save_performed"])
+        self.assertTrue(group["reload_retained"])
+        self.assertEqual(group["customer_count"], 1)
+        self.assertFalse(group["duplicate_group_detected"])
+        audience = folder["live_partner_center"]["private_audience"]
+        self.assertTrue(audience["selected"])
+        self.assertTrue(audience["group_checked"])
+        self.assertTrue(audience["save_performed"])
+        self.assertTrue(audience["reload_retained"])
+        self.assertEqual(audience["pricing_retained"], "JPY 360")
+        self.assertEqual(audience["free_trial_retained"], "none")
+        self.assertEqual(audience["section_state"], "Complete")
         self.assertTrue(folder["superseded_candidate"]["upload_forbidden"])
         self.assertFalse(folder["start_submission_repeated"])
         self.assertFalse(folder["package_uploaded"])
