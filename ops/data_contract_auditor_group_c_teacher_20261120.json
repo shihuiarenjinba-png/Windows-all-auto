@@ -33,7 +33,16 @@
   },
   "windows_real_device_qa": {
     "dpi_observed_percent": 100,
-    "portable_exe_gui_launch": "HOLD_UI_AUTOMATION_LAUNCH_UNAVAILABLE",
+    "portable_exe_gui_launch": "HOLD_UI_LAUNCH_RESULT_UNKNOWN",
+    "launch_reconciliation": {
+      "direct_ui_launch_attempted": true,
+      "windows_run_dialog_attempted": true,
+      "app_window_observed": false,
+      "matching_process_observed": false,
+      "matching_code_integrity_event_observed": false,
+      "matching_applocker_event_observed": false,
+      "classification": "UNKNOWN_NOT_POLICY_BLOCK"
+    },
     "core_engine": {
       "valid_input": "PASS",
       "invalid_duplicate_header": "PASS_REJECTED_WITH_CLEAR_ERROR",
@@ -48,7 +57,7 @@
     "secondary_dpi": "NOT_EXECUTED",
     "close_relaunch": "NOT_EXECUTED",
     "status": "PARTIAL_CORE_PASS_UI_PENDING",
-    "policy_note": "No Windows security policy was changed and no certificate was installed. The observed UI automation launch failure is not claimed as an unsigned-policy block without evidence."
+    "policy_note": "No Windows security policy was changed and no certificate was installed. No matching Code Integrity or AppLocker event was found, so the launch result remains UNKNOWN and is not claimed as an unsigned-policy block."
   },
   "partner_center_live_observation": {
     "product_list": {

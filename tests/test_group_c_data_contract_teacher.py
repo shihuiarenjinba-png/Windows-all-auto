@@ -61,6 +61,13 @@ class DataContractGroupCTeacherTests(unittest.TestCase):
         self.assertEqual(qa["ja_en_ui"], "NOT_EXECUTED")
         self.assertEqual(qa["secondary_dpi"], "NOT_EXECUTED")
         self.assertEqual(qa["status"], "PARTIAL_CORE_PASS_UI_PENDING")
+        self.assertEqual(
+            qa["launch_reconciliation"]["classification"],
+            "UNKNOWN_NOT_POLICY_BLOCK",
+        )
+        self.assertFalse(
+            qa["launch_reconciliation"]["matching_code_integrity_event_observed"]
+        )
 
     def test_missing_formal_inputs_fail_closed(self):
         gate = self.receipt["formal_candidate_gate"]
