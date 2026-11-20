@@ -1,0 +1,152 @@
+{
+  "schema_version": "partner-center-teacher-receipt/1",
+  "recorded_date_jst": "2026-11-19",
+  "product": {
+    "name": "Folder Automation Engine",
+    "store_id": "9P99MJX1R4V6",
+    "draft_id": "1152921505702423660",
+    "submission_route": "msix_pwa_app"
+  },
+  "page_models": {
+    "customer_group_create": {
+      "verified_path": "/en-us/dashboard/analytics/customers/add",
+      "required_heading": "Create new group",
+      "fields": {
+        "group_name": "groupName",
+        "members": "NewFlightGroup_Emails"
+      },
+      "save_button": "createNewFlightGroupSubmit",
+      "audience_type": "Known user group",
+      "member_limit": 10000,
+      "planned_group_name": "Folder Automation Engine Private QA",
+      "member_source": "CURRENT_PARTNER_CENTER_ACCOUNT",
+      "persist_member_value": false,
+      "member_transmission_confirmed": true,
+      "create_save_performed": true,
+      "reload_postconditions": {
+        "list_path": "/en-us/dashboard/analytics/customers",
+        "group_name": "Folder Automation Engine Private QA",
+        "audience_type": "Known user group",
+        "customer_count": 1,
+        "result_count": 1,
+        "duplicate_group_detected": false
+      },
+      "unknown_or_duplicate_warning_action": "HOLD",
+      "create_new_group_must_not_repeat": true
+    },
+    "pricing": {
+      "verified_path_suffix": "/submissions/1152921505702423660/availability",
+      "currency_field_label": "Currency",
+      "price_field_label": "Retail price",
+      "save_button": "saveButtonPricing",
+      "expected": {
+        "model": "paid_one_time",
+        "currency": "JPY - Japan",
+        "retail_price": "360",
+        "free_trial": "none"
+      },
+      "save_performed": true,
+      "reload_postconditions": {
+        "currency": "JPY - Japan",
+        "retail_price": "360",
+        "free_trial_text": "No free trial configured.",
+        "audience": "Private audience",
+        "known_user_group": "Folder Automation Engine Private QA",
+        "save_disabled": true,
+        "overview_section_state": "Complete"
+      }
+    },
+    "private_audience": {
+      "verified_path_suffix": "/submissions/1152921505702423660/availability",
+      "public_radio_id": "radioDistribution_PublicAudience",
+      "private_radio_id": "radioDistribution_PrivateBetaAudience",
+      "expected_group": "Folder Automation Engine Private QA",
+      "public_expiration_enabled": false,
+      "schedule_transition_warning": {
+        "observed": true,
+        "classification": "KNOWN_PRIVATE_AUDIENCE_TRANSITION",
+        "accepted_only_after_default_schedule_verified": true
+      },
+      "save_performed": true,
+      "reload_postconditions": {
+        "private_audience_selected": true,
+        "expected_group_checked": true,
+        "public_expiration_unchecked": true,
+        "currency": "JPY - Japan",
+        "retail_price": "360",
+        "free_trial_text": "No free trial configured.",
+        "overview_section_state": "Complete"
+      }
+    },
+    "packages": {
+      "verified_path_suffix": "/submissions/1152921505702423660/packages",
+      "precondition": "READY_FOR_MSIX_UPLOAD_APPROVAL",
+      "upload_control": "input[type=file] via visible browse your files link",
+      "expected_file_name": "FolderAutomationEngine_1.0.0.0_x64_StoreDraft_UNSIGNED.msix",
+      "expected_sha256": "3C6BC8C1291450905AE71834F2704A59325D1AAA1C9DE3F064BCB8C7EBCA9FB9",
+      "upload_attempts": 1,
+      "observed_states": [
+        "Uploading",
+        "Analyzing package",
+        "Validated"
+      ],
+      "validation": {
+        "raw_state": "WARNING",
+        "known_warning": "runFullTrust",
+        "unknown_warnings": [],
+        "errors": []
+      },
+      "parsed_package": {
+        "version": "1.0.0.0",
+        "architecture": "X64",
+        "device_family": "Windows.Desktop",
+        "languages": [
+          "ja-jp",
+          "en-us"
+        ]
+      },
+      "save_performed": true,
+      "reload_postconditions": {
+        "overview_validation_state": "Validated",
+        "overview_section_state": "Complete",
+        "package_retained": true,
+        "version_retained": true,
+        "architecture_retained": true,
+        "desktop_retained": true,
+        "known_warning_retained": true,
+        "same_draft": true
+      },
+      "timeout_retry_policy": "RECONCILE_BEFORE_ANY_RETRY",
+      "duplicate_upload_forbidden": true
+    }
+  },
+  "state_machine": [
+    "PRICING_SAVED",
+    "PRIVATE_AUDIENCE_MEMBER_CONFIRMATION_REQUIRED",
+    "PRIVATE_AUDIENCE_GROUP_CREATE_READY",
+    "PRIVATE_AUDIENCE_GROUP_READY",
+    "PRIVATE_AUDIENCE_SAVED",
+    "OWNER_VISUAL_APPROVAL_REQUIRED",
+    "OWNER_SECURITY_CONFIRMATION_REQUIRED",
+    "PREUPLOAD_GATE_REQUIRED",
+    "READY_FOR_MSIX_UPLOAD_APPROVAL",
+    "PACKAGE_SAVED_AWAITING_CERTIFICATION_APPROVAL"
+  ],
+  "current_state": "PACKAGE_SAVED_AWAITING_CERTIFICATION_APPROVAL",
+  "owner_approvals": {
+    "approval_source": "owner-chat-2026-11-19",
+    "assets_approved": true,
+    "personal_data_answer_confirmed": true,
+    "run_full_trust_explanation_confirmed": true,
+    "bound_package_sha256": "3C6BC8C1291450905AE71834F2704A59325D1AAA1C9DE3F064BCB8C7EBCA9FB9",
+    "certification_approved": false,
+    "publish_approved": false
+  },
+  "safety": {
+    "start_submission_repeated": false,
+    "old_msix_used": false,
+    "package_uploaded": true,
+    "certification_executed": false,
+    "publish_executed": false
+  }
+}

@@ -1,0 +1,306 @@
+{
+  "schema_version": "group-b-conveyor-checkpoint/1",
+  "recorded_date_jst": "2026-11-18",
+  "authority": "evidence_snapshot_only",
+  "store_write_authorized": false,
+  "main_release_merge_authorized": false,
+  "products": {
+    "folder-engine": {
+      "repository_full_name": "shihuiarenjinba-png/folder-automation-engine",
+      "pr_number": 10,
+      "head_sha": "adfc0d08efb0a94602d5286557d399f9cb28b9dd",
+      "ci": {
+        "safety_run_id": 44269998255,
+        "gui_validate_run_id": 44269998380,
+        "store_build_run_id": 44269998298,
+        "conclusion": "success"
+      },
+      "frozen_source_sha": "adfc0d08efb0a94602d5286557d399f9cb28b9dd",
+      "frozen_msix_sha256": "3c6bc8c1291450905ae71834f2704a59325d1aaa1c9de3f064bcb8c7ebca9fb9",
+      "frozen_exe_sha256": "de6894ae39cbe0fbe1889b4aa005e500f30a2ef95ee67403ddfb210dbcfb9f18",
+      "conveyor_state": "PACKAGE_SAVED_AWAITING_CERTIFICATION_APPROVAL",
+      "direct_product_artifact_pull_supported": false,
+      "next_dependency": "Complete the remaining Store Draft sections; certification remains a separate owner approval gate",
+      "store_artifact": {
+        "id": 14411892806,
+        "name": "FolderAutomationEngine-Store-MSIX-UNSIGNED-DRAFT",
+        "digest": "sha256:af62e80fe2661d4acf335530c5f6c22b5c968386d0b450236d7b9424eb0094f6",
+        "expired": false,
+        "run_id": 44269998298
+      },
+      "windows_artifact": {
+        "id": 14411209692,
+        "name": "FolderAutomationEngine-Windows",
+        "digest": "sha256:35e07400dc0b30487dac1f01a6b944df83f72a7aee0ae01f347a857addf81f8f",
+        "expired": false,
+        "run_id": 44269998298
+      },
+      "package": {
+        "file_name": "FolderAutomationEngine_1.0.0.0_x64_StoreDraft_UNSIGNED.msix",
+        "version": "1.0.0.0",
+        "architecture": "x64",
+        "identity_name": "OkinawaDesktopTools.FolderAutomationEngine",
+        "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+        "inventory_count": 999,
+        "makeappx_pack_unpack": "PASS"
+      },
+      "screenshots": {
+        "ja_count": 5,
+        "en_count": 5,
+        "resolution": "1366x768",
+        "native_pixels": true,
+        "resized": false,
+        "exact_packaged_executable": true,
+        "internal_visual_qa": "PASS",
+        "owner_visual_approval": true,
+        "owner_visual_approval_source": "owner-chat-2026-11-19"
+      },
+      "live_partner_center": {
+        "store_id": "9P99MJX1R4V6",
+        "draft_id": "1152921505702423660",
+        "pricing": {
+          "model": "paid_one_time",
+          "currency": "JPY",
+          "exact_value": "360",
+          "free_trial": "none",
+          "owner_confirmed": true,
+          "save_performed": true,
+          "reload_retained": true,
+          "section_state": "Complete",
+          "dirty_state_after_reload": false
+        },
+        "customer_group": {
+          "create_page_verified": true,
+          "page_path": "/en-us/dashboard/analytics/customers/add",
+          "audience_type": "Known user group",
+          "planned_group_name": "Folder Automation Engine Private QA",
+          "member_source": "CURRENT_PARTNER_CENTER_ACCOUNT",
+          "member_value_persisted": false,
+          "member_transmission_confirmed": true,
+          "created": true,
+          "save_performed": true,
+          "reload_retained": true,
+          "customer_count": 1,
+          "duplicate_group_detected": false
+        },
+        "private_audience": {
+          "selected": true,
+          "group_name": "Folder Automation Engine Private QA",
+          "group_checked": true,
+          "public_expiration_enabled": false,
+          "save_performed": true,
+          "reload_retained": true,
+          "pricing_retained": "JPY 360",
+          "free_trial_retained": "none",
+          "section_state": "Complete"
+        },
+        "security": {
+          "bound_package_sha256": "3C6BC8C1291450905AE71834F2704A59325D1AAA1C9DE3F064BCB8C7EBCA9FB9",
+          "owner_confirmation_complete": true,
+          "personal_data_answer_confirmed": true,
+          "personal_data_answer": "yes_local_user_selected_files_no_external_transmission",
+          "run_full_trust_explanation_owner_confirmed": true,
+          "approval_source": "owner-chat-2026-11-19"
+        },
+        "packages_state": "Complete",
+        "package_uploaded": true,
+        "package_validation_state": "Validated",
+        "package_upload": {
+          "attempts": 1,
+          "file_name": "FolderAutomationEngine_1.0.0.0_x64_StoreDraft_UNSIGNED.msix",
+          "version": "1.0.0.0",
+          "architecture": "X64",
+          "device_family": "Windows.Desktop",
+          "raw_validation": "WARNING",
+          "known_warning": "runFullTrust",
+          "unknown_warnings": [],
+          "errors": [],
+          "save_performed": true,
+          "reload_retained": true,
+          "duplicate_upload": false
+        }
+      },
+      "superseded_candidate": {
+        "source_sha": "51597b389384be6cf2b3d85c09ee66099b80807e",
+        "msix_sha256": "911f8eb13abfdbb51bea8f279006d138d6be9cba4a25413416c1d70458676450",
+        "exe_sha256": "d53161ea1119445afb8070d989d4a72e8019895b8c5e166738a3e38718b54976",
+        "status": "SUPERSEDED_BY_UI_POLISHED_CANDIDATE",
+        "upload_forbidden": true
+      },
+      "start_submission_repeated": false,
+      "package_uploaded": true,
+      "certification_submitted": false,
+      "published": false
+    },
+    "scheduled-api-runner": {
+      "repository_full_name": "shihuiarenjinba-png/scheduled-api-runner",
+      "pr_number": 8,
+      "head_sha": "aa3ba75c1e01fd5ca5de88670083e36a07cf259d",
+      "store_workflow_name": "Windows desktop / Windowsデスクトップ",
+      "store_run_id": 44093493317,
+      "store_artifact": {
+        "id": 14333575447,
+        "name": "ScheduledApiRunner-Store-MSIX-UNSIGNED-DRAFT",
+        "digest": "sha256:b45d53a0473f5b8cdcac64c1ffdcf12957919da2e5cb846564344d757165afa7",
+        "expired": false
+      },
+      "reliability_run_id": 44093493219,
+      "ci_conclusion": "success",
+      "conveyor_state": "PRIVATE_STORE_SIGNING_LANE_READY",
+      "exact_head_store_run_unique": false,
+      "frozen_candidate": {
+        "source_sha": "28ef873ab2ff325b8f26c61a9ba48701280e8290",
+        "store_run_id": 44093493317,
+        "artifact_id": 14333575447,
+        "artifact_name": "ScheduledApiRunner-Store-MSIX-UNSIGNED-DRAFT",
+        "artifact_digest": "sha256:b45d53a0473f5b8cdcac64c1ffdcf12957919da2e5cb846564344d757165afa7",
+        "msix_sha256": "db599cdfa673688e8fe7db70d11acc69010562636c67f4996b4cba36adfd8877",
+        "exe_sha256": "06d3b92bd83281750e5a454f9add6526fa90f6bfc29017fd6919bbeaa64213d9",
+        "local_static_verified": true
+      },
+      "unpromoted_descendant": {
+        "source_sha": "0c2a38ff8c7d5311b115e67387deaed2ce11a523",
+        "commit_scope": "docs_only_store_runbook",
+        "store_run_id": 44106267118,
+        "artifact_id": 14337483379,
+        "artifact_name": "ScheduledApiRunner-Store-MSIX-UNSIGNED-DRAFT",
+        "artifact_digest": "sha256:f5956e1efa048c5fda7b74791ff7a06ef3cfefbb2d3f609d6fa2f3c6b3947170",
+        "msix_sha256": "9ebaf882688aea4445dc612c361ce84cc8a2668597f9f3c4ab817245210a884f",
+        "exe_sha256": "61ec0df4201d09057af494249aca70527cb25ffd425678f06b60c4bfa75d4c3d",
+        "promoted": false,
+        "reason": "docs-only descendant rebuild produced different executable bytes; requires new local static verification before candidate promotion"
+      },
+      "local_confirmation": {
+        "status": "PRIVATE_STORE_SIGNING_LANE_READY",
+        "evidence_source": "local_code_owner_report_20261118",
+        "artifact_receipt_verified": true,
+        "makeappx_unpack": "PASS",
+        "manifest_identity_publisher_version_architecture": "PASS",
+        "unpacked_exe_hash": "PASS",
+        "defender_exact_msix": "NO_THREATS",
+        "defender_exact_exe": "NO_THREATS",
+        "authenticode_msix": "NotSigned",
+        "authenticode_exe": "NotSigned",
+        "github_ci_primary": true,
+        "local_full_suite_run": false,
+        "qa_template_status": "HOLD",
+        "launch_action_time_approved": true,
+        "launch_attempts": 1,
+        "normal_user_context": true,
+        "process_started": false,
+        "exit_code": null,
+        "normal_exit": false,
+        "original_wrapper_status": "LAUNCH_FAILED",
+        "reconciled_classification": "APPLICATION_CONTROL_BLOCKED",
+        "code_integrity_blocking_event_ids": [
+          3033,
+          3077
+        ],
+        "code_integrity_supplemental_event_ids": [
+          3118
+        ],
+        "policy_name": "VerifiedAndReputableDesktop",
+        "policy_guid": "{0283ac0f-fff1-49ae-ada1-8a933130cad6}",
+        "residual_processes": 0,
+        "original_launch_receipt_overwritten": false,
+        "security_bypass_used": false,
+        "package_installed": false,
+        "store_write_performed": false,
+        "unsigned_launch_retries_forbidden": true,
+        "jp_en_gui": "NOT_TESTED",
+        "dpi_matrix": "NOT_TESTED",
+        "https_get": "NOT_TESTED",
+        "task_scheduler_lifecycle": "NOT_TESTED",
+        "next_action": "STORE_OWNER_CONFIRM_ZERO_COST_PRIVATE_ACQUISITION",
+        "reconciliation_receipt_required": true,
+        "pre_store_static_block_receipt_required": true,
+        "correlation_activity_id": "{2f3574e4-74dd-0008-cd37-9c3add74dd01}",
+        "policy_id": "27555.1000.240208",
+        "status_code": "0xc0e90002",
+        "event_flat_hash": "06d3b92bd83281750e5a454f9add6526fa90f6bfc29017fd6919bbeaa64213d9",
+        "event_flat_hash_matches_exe_sha256": true,
+        "atomic_block_lane_finalizer_preferred": true,
+        "atomic_finalizer_expected_status": "PRIVATE_STORE_SIGNING_LANE_READY",
+        "atomic_finalizer_reported_complete": true,
+        "atomic_finalizer_report_source": "code_owner_local_report_20261118",
+        "pre_store_static_pass": true,
+        "private_store_signing_lane_ready": true,
+        "local_final_pass": false,
+        "store_signed_install_pass": false
+      },
+      "next_dependency": "Store execution owner confirms a zero-cost Private acquisition route and obtains the Microsoft Store-signed build of the same frozen candidate"
+    },
+    "workflow-automation-hub": {
+      "repository_full_name": "shihuiarenjinba-png/workflow-automation-hub",
+      "pr_number": 12,
+      "head_sha": "f2ba58895492f0c64da7676b17edfc97e98330e7",
+      "store_workflow_name": "Windows build / Windowsビルド",
+      "store_run_id": 44093505473,
+      "store_artifact": {
+        "id": 14332647613,
+        "name": "WorkflowAutomationHub-Store-MSIX-UNSIGNED-DRAFT",
+        "digest": "sha256:16b910bc658d75f403952d6dc73756be71e183c0292b120ce4691ec2d4e2d742",
+        "expired": false
+      },
+      "gui_review_artifact": {
+        "id": 14331614716,
+        "name": "WorkflowAutomationHub-GUI-Review",
+        "digest": "sha256:57104c35e4c0f08a07e668c4850cf50b987e73c6baf9049bf40bbbdc7c457f5e"
+      },
+      "ci_conclusion": "success",
+      "conveyor_state": "GITHUB_COMPLETE_LOCAL_EXACT_ARTIFACT_CONFIRMATION_PENDING",
+      "exact_head_store_run_unique": true
+    },
+    "browser-automation-runner": {
+      "repository_full_name": "shihuiarenjinba-png/browser-automation-runner",
+      "pr_number": 8,
+      "head_sha": "2ae45a80f1a16e70dfcc86277ca44ed0ce80292a",
+      "store_workflow_name": "Windows desktop code build",
+      "store_run_id": 44093519175,
+      "store_artifact": {
+        "id": 14332567327,
+        "name": "BrowserAutomationRunner-Store-MSIX-UNSIGNED-DRAFT",
+        "digest": "sha256:9df4b194373ebc59bf386f1b8c8263d37ea0ba6f1235cb9c1649a8a654224276",
+        "expired": false
+      },
+      "reliability_run_id": 44093519140,
+      "ci_conclusion": "success",
+      "conveyor_state": "GITHUB_COMPLETE_LOCAL_EXACT_ARTIFACT_CONFIRMATION_PENDING",
+      "human_hold": "THIRD_PARTY_RIGHTS_OWNER_LEGAL_REVIEW",
+      "exact_head_store_run_unique": true
+    }
+  },
+  "central": {
+    "repository_full_name": "shihuiarenjinba-png/Windows-all-auto",
+    "pr_number": 166,
+    "checkpoint_base_head": "72c4b6275044a6d95a65e6b431f57a29d451806e",
+    "last_verified_offline_qa_run_id": 44189416920,
+    "last_verified_windows_tests": {
+      "total": 313,
+      "passed": 311,
+      "skipped": 2
+    },
+    "partner_center_write_performed": true,
+    "exact_head_discovery_enabled": true,
+    "stale_explicit_run_rejected": true,
+    "direct_product_artifact_archive_provenance": true,
+    "local_confirmation_workspace_enabled": true,
+    "frozen_candidate_semantics_enabled": true,
+    "one_shot_unsigned_launch_receipt_enabled": true,
+    "unsigned_launch_does_not_unlock_local_final_qa": true,
+    "code_integrity_block_ids": [
+      3033,
+      3077
+    ],
+    "delayed_code_integrity_reconciliation_enabled": true,
+    "pre_store_static_block_receipt_from_immutable_evidence_enabled": true,
+    "latest_validation_date_jst": "2026-11-18",
+    "canonical_code_integrity_block_evidence_enabled": true,
+    "application_control_block_lane_finalizer_enabled": true,
+    "application_control_block_lane_finalizer_atomic": true,
+    "reconciliation_cli_compatibility_alias_enabled": true,
+    "canonical_code_integrity_detailed_metadata_enabled": true,
+    "event_flat_hash_must_match_exact_exe_sha256": true,
+    "atomic_application_control_block_finalizer_enabled": true
+  }
+}
