@@ -73,7 +73,7 @@ def authorize_transport(identity, approval, package_path, receipt, custody=None)
                 if info.file_size > 10 * 1024 * 1024:
                     return hold("STORE_ASSET_OVERSIZED")
                 raw = z.read(matches[0])
-                if len(raw) < 45 or raw[:8] != b"\\x89PNG\\r\\n\\x1a\\n" or raw[12:16] != b"IHDR":
+                if len(raw) < 45 or raw[:8] != b"\x89PNG\r\n\x1a\n" or raw[12:16] != b"IHDR":
                     return hold("STORE_ASSET_INVALID_PNG")
                 if struct.unpack(">II", raw[16:24]) != expected_size:
                     return hold("STORE_ASSET_DIMENSIONS_MISMATCH")
@@ -106,7 +106,7 @@ class TransportRegression(unittest.TestCase):
             for asset, size in (("StoreLogo.png", 50), ("Square150.png", 150), ("Square44.png", 44)):
                 ihdr = struct.pack(">IIBBBBB", size, size, 8, 6, 0, 0, 0)
                 chunk = b"IHDR" + ihdr
-                png = b"\\x89PNG\\r\\n\\x1a\\n" + struct.pack(">I", 13) + chunk + struct.pack(">I", zlib.crc32(chunk))
+                png = b"\x89PNG\r\n\x1a\n" + struct.pack(">I", 13) + chunk + struct.pack(">I", zlib.crc32(chunk))
                 z.writestr("Assets/" + asset, png + b"synthetic-fixture-not-production")
             z.writestr("[Content_Types].xml", "<Types/>")
             z.writestr("AppxManifest.xml", '<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"><Identity Name="OkinawaDesktopTools.FileIntegrityLedger" Publisher="CN=46263F21-A700-41DB-8C9B-114C22FB82FC" Version="1.2.3.4"/></Package>')
