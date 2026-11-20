@@ -1,0 +1,79 @@
+{
+  "schema_version": "group-c-store-products/1",
+  "execution_order": [
+    "data-contract-auditor",
+    "web-evidence-archiver",
+    "excel-csv-privacy-cleaner",
+    "image-privacy-cleaner",
+    "ai-upload-guard",
+    "pdf-privacy"
+  ],
+  "products": {
+    "data-contract-auditor": {
+      "name": "Data Contract Auditor",
+      "repository_full_name": "shihuiarenjinba-png/csv-import-validator",
+      "source_branch": "codex/store-p0-data-contract-20261023",
+      "source_sha": "107e59f2cbcde9c6ca88cf1aaf3d52262004e6e0",
+      "submission_route": "msix_pwa_app",
+      "store_id": "9PDL4ZWSB45P",
+      "draft_id": "1152921505702212222",
+      "teacher_level": "GROUP_C_TEACHER_1",
+      "receipt": "ops/data_contract_auditor_group_c_teacher_20261120.json"
+    },
+    "web-evidence-archiver": {
+      "name": "Web Evidence Archiver",
+      "repository_full_name": "shihuiarenjinba-png/web-evidence-archiver",
+      "source_branch": null,
+      "source_sha": null,
+      "submission_route": "msix_pwa_app",
+      "store_id": null,
+      "draft_id": null,
+      "teacher_level": "GROUP_C_DIFFERENCE_ONLY",
+      "receipt": null
+    },
+    "excel-csv-privacy-cleaner": {
+      "name": "Excel / CSV Privacy Cleaner",
+      "repository_full_name": "shihuiarenjinba-png/-Excel-CSV-Privacy-Cleaner",
+      "source_branch": "codex/store-p1-excel-csv-privacy-20261023",
+      "source_sha": "a3d39c1e3b9806de1c0c679203ed68366779e122",
+      "submission_route": "msix_pwa_app",
+      "store_id": "9P3Z36J7PSFC",
+      "draft_id": null,
+      "teacher_level": "GROUP_C_SCRIPT_FIRST",
+      "receipt": null
+    },
+    "image-privacy-cleaner": {
+      "name": "Image Privacy Cleaner",
+      "repository_full_name": "shihuiarenjinba-png/-Screenshot-Image-Privacy-Cleaner",
+      "source_branch": "codex/store-p1-image-privacy-20261023",
+      "source_sha": "ca38b92944f2ebef0d241350d8d1fc81e8175b8e",
+      "submission_route": "msix_pwa_app",
+      "store_id": "9PNSPFBKBBTQ",
+      "draft_id": null,
+      "teacher_level": "GROUP_C_SCRIPT_FIRST",
+      "receipt": null
+    },
+    "ai-upload-guard": {
+      "name": "AI Upload Guard",
+      "repository_full_name": "shihuiarenjinba-png/-AI-Upload-Guard-AI-",
+      "source_branch": "codex/store-p1-ai-upload-guard-20261023",
+      "source_sha": "5e9b3b7805193fdefc903c6310245f9586732ae4",
+      "submission_route": "msix_pwa_app",
+      "store_id": "9PDJ1T5BQ4P1",
+      "draft_id": null,
+      "teacher_level": "GROUP_C_SCRIPT_FIRST",
+      "receipt": null
+    },
+    "pdf-privacy": {
+      "name": "PDF Privacy",
+      "repository_full_name": "shihuiarenjinba-png/-PDF-Privacy-Toolkit",
+      "source_branch": null,
+      "source_sha": null,
+      "submission_route": "msix_pwa_app",
+      "store_id": null,
+      "draft_id": null,
+      "teacher_level": "GROUP_C_SCRIPT_FIRST",
+      "receipt": null
+    }
+  }
+}
