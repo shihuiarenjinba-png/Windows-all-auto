@@ -2,6 +2,8 @@
 import hashlib
 import json
 import re
+import struct
+import zlib
 import unittest
 import xml.etree.ElementTree as ET
 import zipfile
@@ -62,6 +64,21 @@ def authorize_transport(identity, approval, package_path, receipt, custody=None)
                 return hold("PACKAGE_STRUCTURE_INVALID")
             if z.getinfo("AppxManifest.xml").file_size > 1024 * 1024:
                 return hold("MANIFEST_OVERSIZED")
+            required_assets = {"StoreLogo.png": (50, 50), "Square150.png": (150, 150), "Square44.png": (44, 44)}
+            for asset, expected_size in required_assets.items():
+                matches = [n for n in members if n.rsplit("/", 1)[-1] == asset]
+                if len(matches) != 1:
+                    return hold("STORE_ASSET_MISSING_OR_DUPLICATE")
+                info = z.getinfo(matches[0])
+                if info.file_size > 10 * 1024 * 1024:
+                    return hold("STORE_ASSET_OVERSIZED")
+                raw = z.read(matches[0])
+                if len(raw) < 45 or raw[:8] != b"\\x89PNG\\r\\n\\x1a\\n" or raw[12:16] != b"IHDR":
+                    return hold("STORE_ASSET_INVALID_PNG")
+                if struct.unpack(">II", raw[16:24]) != expected_size:
+                    return hold("STORE_ASSET_DIMENSIONS_MISMATCH")
+                if zlib.crc32(raw[12:29]) != struct.unpack(">I", raw[29:33])[0]:
+                    return hold("STORE_ASSET_INVALID_PNG")
             node = ET.fromstring(z.read("AppxManifest.xml")).find(NS + "Identity")
             if node is None or any(node.get(field) != value for field, value in
                                    (("Name", identity["name"]), ("Publisher", identity["publisher"]), ("Version", version))):
@@ -86,6 +103,11 @@ class TransportRegression(unittest.TestCase):
         self.approval = {k:self.identity[k] for k in ("request_id","source_sha","name","publisher","store_id")}
         self.approval.update(package_version="1.2.3.4", approved=True)
         with zipfile.ZipFile(self.path, "w") as z:
+            for asset, size in (("StoreLogo.png", 50), ("Square150.png", 150), ("Square44.png", 44)):
+                ihdr = struct.pack(">IIBBBBB", size, size, 8, 6, 0, 0, 0)
+                chunk = b"IHDR" + ihdr
+                png = b"\\x89PNG\\r\\n\\x1a\\n" + struct.pack(">I", 13) + chunk + struct.pack(">I", zlib.crc32(chunk))
+                z.writestr("Assets/" + asset, png + b"synthetic-fixture-not-production")
             z.writestr("[Content_Types].xml", "<Types/>")
             z.writestr("AppxManifest.xml", '<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"><Identity Name="OkinawaDesktopTools.FileIntegrityLedger" Publisher="CN=46263F21-A700-41DB-8C9B-114C22FB82FC" Version="1.2.3.4"/></Package>')
         digest = hashlib.sha256(self.path.read_bytes()).hexdigest()
@@ -101,6 +123,15 @@ class TransportRegression(unittest.TestCase):
     def test_mock_only_preflight_never_e2e(self):
         self.assertEqual(self.check()["status"], "TRANSPORT_PREFLIGHT_PASS_ONLY")
         self.assertFalse(self.check()["e2e_pass"])
+    def test_missing_store_asset_fails_closed(self):
+        with zipfile.ZipFile(self.path, "r") as z:
+            entries = [(i.filename, z.read(i.filename)) for i in z.infolist() if not i.filename.endswith("Square44.png")]
+        with zipfile.ZipFile(self.path, "w") as z:
+            for name, data in entries:
+                z.writestr(name, data)
+        digest = hashlib.sha256(self.path.read_bytes()).hexdigest()
+        self.approval["msix_sha256"] = self.receipt["msix_sha256"] = self.receipt["local_sha256"] = self.custody["msix_sha256"] = digest
+        self.assertEqual(self.check()["reason"], "STORE_ASSET_MISSING_OR_DUPLICATE")
     def test_self_reported_verified_is_not_independent_custody(self):
         result = authorize_transport(self.identity, self.approval, self.path, self.receipt)
         self.assertEqual(result["reason"], "INDEPENDENT_CUSTODY_REQUIRED")
