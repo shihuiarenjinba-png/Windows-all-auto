@@ -1,0 +1,121 @@
+{
+  "schema_version": "group-c-store-teacher-receipt/1",
+  "recorded_date_jst": "2026-11-20",
+  "teacher_role": "GROUP_C_TEACHER_1",
+  "product": {
+    "name": "Data Contract Auditor",
+    "repository": "https://github.com/shihuiarenjinba-png/csv-import-validator",
+    "source_branch": "codex/store-p0-data-contract-20261023",
+    "source_sha": "107e59f2cbcde9c6ca88cf1aaf3d52262004e6e0",
+    "submission_route": "msix_pwa_app",
+    "store_id": "9PDL4ZWSB45P",
+    "draft_id": "1152921505702212222"
+  },
+  "github_evidence": {
+    "workflow_run_id": 44687803810,
+    "workflow_conclusion": "success",
+    "regression_preflight": "success",
+    "qa_unsigned_structural_msix": "success",
+    "formal_store_candidate_job": "skipped_by_approval_gate",
+    "source_tests": {
+      "passed": 32,
+      "failed": 0
+    },
+    "qa_only_package": {
+      "file_name": "DataContractSchemaDrift_QA_UNSIGNED_1.0.63.0_x64.msix",
+      "version": "1.0.63.0",
+      "architecture": "x64",
+      "exe_sha256": "99034C490D5E33012584272066BECEAA14B7D8F964190F5CBF16E3B8AB5BBDFA",
+      "msix_sha256": "166454748B2401BF69484D94A2EC4C88AD2E2BB8C0503D9E744FD3A8928D9928",
+      "store_upload_allowed": false,
+      "reason": "Workflow-generated version and placeholder assets are QA-only."
+    }
+  },
+  "windows_real_device_qa": {
+    "dpi_observed_percent": 100,
+    "portable_exe_gui_launch": "HOLD_UI_AUTOMATION_LAUNCH_UNAVAILABLE",
+    "core_engine": {
+      "valid_input": "PASS",
+      "invalid_duplicate_header": "PASS_REJECTED_WITH_CLEAR_ERROR",
+      "output_files": [
+        "data_drift_audit.json",
+        "data_drift_findings.csv",
+        "generated_contract.json"
+      ],
+      "source_files_byte_unchanged": true
+    },
+    "ja_en_ui": "NOT_EXECUTED",
+    "secondary_dpi": "NOT_EXECUTED",
+    "close_relaunch": "NOT_EXECUTED",
+    "status": "PARTIAL_CORE_PASS_UI_PENDING",
+    "policy_note": "No Windows security policy was changed and no certificate was installed. The observed UI automation launch failure is not claimed as an unsigned-policy block without evidence."
+  },
+  "partner_center_live_observation": {
+    "product_list": {
+      "name": "Data Contract Auditor",
+      "type": "MSIX or PWA app",
+      "status": "Not submitted"
+    },
+    "application_overview": {
+      "product_state": "In draft",
+      "submission": "Submission 1",
+      "last_modified": "2026-10-23",
+      "submit_for_certification_enabled": false,
+      "sections": {
+        "Pricing and availability": "Not started",
+        "Properties": "Not started",
+        "Age ratings": "Not started",
+        "Packages": "Not started",
+        "Store listings": "Not started",
+        "Submission options": "Recommended"
+      }
+    },
+    "identity": {
+      "package_identity_name": "OkinawaDesktopTools.DataContractAuditor",
+      "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+      "publisher_display_name": "Okinawa Desktop Tools",
+      "package_family_name": "OkinawaDesktopTools.DataContractAuditor_j8yefg9jgfh58",
+      "package_sid": "S-1-15-2-1604001028-3538366582-1604686486-898744028-3049784359-1003679317-2779270623"
+    }
+  },
+  "formal_candidate_gate": {
+    "approved_store_version": null,
+    "manifest_languages": [],
+    "final_artwork_approved": false,
+    "windows_real_device_qa_pass": false,
+    "ready_for_formal_store_msix": false,
+    "ready_for_partner_center_package_upload": false,
+    "blockers": [
+      "APPROVED_STORE_VERSION_MISSING",
+      "MANIFEST_LANGUAGES_NOT_OWNER_APPROVED",
+      "FINAL_STORE_ARTWORK_MISSING",
+      "WINDOWS_REAL_DEVICE_UI_QA_INCOMPLETE"
+    ]
+  },
+  "route_mechanics": {
+    "inherited_teacher": "ops/folder_engine_package_upload_receipt_20261119.json",
+    "sequence_after_all_gates_pass": [
+      "REHASH_EXACT_FORMAL_MSIX",
+      "BIND_STORE_ID_AND_DRAFT_ID",
+      "VERIFY_IDENTITY_PUBLISHER_VERSION_ARCHITECTURE",
+      "UPLOAD_ONCE",
+      "RECONCILE_UPLOADING_ANALYZING_VALIDATED",
+      "CLASSIFY_KNOWN_AND_UNKNOWN_WARNINGS",
+      "PACKAGES_SAVE",
+      "RELOAD_AND_VERIFY_RETENTION",
+      "COMPLETE_REMAINING_SECTIONS",
+      "OVERVIEW_RECONCILE"
+    ],
+    "current_action": "HOLD_BEFORE_PACKAGE_UPLOAD",
+    "product_specific_values_must_not_be_inherited": true
+  },
+  "safety": {
+    "qa_unsigned_uploaded": false,
+    "package_uploaded": false,
+    "package_save_performed": false,
+    "certification_executed": false,
+    "publish_executed": false
+  },
+  "current_state": "HOLD_FORMAL_VERSION_ASSETS_UI_QA",
+  "next_state_after_owner_inputs_and_qa": "READY_FOR_FORMAL_STORE_MSIX"
+}
