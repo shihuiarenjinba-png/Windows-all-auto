@@ -175,9 +175,13 @@ class TransportRegression(unittest.TestCase):
         self.path.write_bytes(b"exe")
         self.assertEqual(self.check()["status"], "HOLD")
     def test_manifest_mismatch(self):
+        with zipfile.ZipFile(self.path, "r") as z:
+            entries = [(i.filename, z.read(i.filename)) for i in z.infolist()]
         with zipfile.ZipFile(self.path, "w") as z:
-            z.writestr("[Content_Types].xml", "<Types/>")
-            z.writestr("AppxManifest.xml", '<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"><Identity Name="wrong" Publisher="wrong" Version="1.2.3.4"/></Package>')
+            for name, data in entries:
+                if name == "AppxManifest.xml":
+                    data = b'<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"><Identity Name="wrong" Publisher="wrong" Version="1.2.3.4"/></Package>'
+                z.writestr(name, data)
         digest = hashlib.sha256(self.path.read_bytes()).hexdigest()
         self.approval["msix_sha256"] = digest
         self.receipt["msix_sha256"] = self.receipt["local_sha256"] = digest
