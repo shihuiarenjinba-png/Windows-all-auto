@@ -1,6 +1,8 @@
 """Offline fail-closed tests of independent artifact API + local byte custody."""
 import hashlib
 import io
+import struct
+import zlib
 import tempfile
 import unittest
 import zipfile
@@ -85,6 +87,13 @@ class CustodyTests(unittest.TestCase):
             signature_status="SIGNED")
         version = "1.2.3.4"  # Synthetic fixture only; NOT an approved product version.
         with zipfile.ZipFile(self.local, "w") as z:
+            # Synthetic assets exercise the transport gate without claiming production readiness.
+            for asset, size in (("StoreLogo.png", 50), ("Square150.png", 150), ("Square44.png", 44)):
+                ihdr = struct.pack(">IIBBBBB", size, size, 8, 6, 0, 0, 0)
+                chunk = b"IHDR" + ihdr
+                png = (b"\x89PNG\r\n\x1a\n" + struct.pack(">I", 13) + chunk
+                       + struct.pack(">I", zlib.crc32(chunk)))
+                z.writestr("Assets/" + asset, png + b"synthetic-fixture-not-production")
             z.writestr("[Content_Types].xml", "<Types/>")
             z.writestr("AppxManifest.xml",
                 '<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10">'
