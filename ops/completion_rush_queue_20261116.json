@@ -1,0 +1,135 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-11-16",
+  "policy": "COMPLETION_RUSH_EXISTING_PRODUCTS_ONLY",
+  "new_product_generation_allowed": false,
+  "rules": {
+    "functional_hold": "Improve product only when paid value, core functionality, beginner UX, safety, or stability is deficient.",
+    "delivery_hold": "Do not add features. Advance authoritative Version/Identity binding, real package, artifact custody, checker, Windows QA, and Store Draft readiness.",
+    "freeze_for_package": "When no FUNCTIONAL_HOLD remains, product code is frozen except package-blocking defects.",
+    "never_guess": [
+      "Identity",
+      "Publisher",
+      "PFN",
+      "SID",
+      "Package Version"
+    ]
+  },
+  "priority": [
+    {
+      "rank": 1,
+      "product": "Focus Session Desk",
+      "lane": "APP",
+      "state": "POST_IDENTITY_UPGRADE",
+      "hold_class": "DELIVERY_HOLD",
+      "functional_hold": false,
+      "product_frozen_for_package": true,
+      "identity_return": "VERIFIED",
+      "store_id": "9P6452C61N7B",
+      "source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+      "package_version": null,
+      "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
+      "real_msix": false,
+      "next_action": "DELIVERY_HOLD: authoritative Version and exact current-source/request/Identity revalidation; PNG exists in PR head but embedded MSIX bytes remain unverified. After gates, build real MSIX and verify custody/backlog/local checker/GUI. Never infer Version or promote E2E.",
+      "store_assets_status": "REAL_PNG_COMMITTED_AND_TESTED__MSIX_EMBED_NOT_VERIFIED",
+      "required_store_assets": [
+        "StoreLogo.png",
+        "Square150.png",
+        "Square44.png"
+      ],
+      "store_assets_branch_head": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+      "package_blockers": [
+        {
+          "field": "package_version",
+          "status": "AUTHORITATIVE_VALUE_REQUIRED"
+        },
+        {
+          "field": "required_store_assets",
+          "status": "REAL_PNG_VERIFIED_PRE_MSIX__MSIX_EMBED_NOT_VERIFIED"
+        }
+      ],
+      "store_assets_evidence": {
+        "pr": 94,
+        "head_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+        "png_ci_run_id": "44779287751",
+        "native_exe_gui_ci_run_id": "44779287840",
+        "evidence_scope": "PR94 raw-head PNG and native EXE CI reported SUCCESS; progress visual review pending. New source HEAD differs from approved source_sha; current-source Identity rebind and authoritative Version still required."
+      },
+      "current_source_identity_binding_status": "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE"
+    },
+    {
+      "rank": 2,
+      "product": "File Integrity Ledger",
+      "lane": "APP",
+      "state": "POST_IDENTITY_UPGRADE",
+      "hold_class": "DELIVERY_HOLD",
+      "functional_hold": false,
+      "product_frozen_for_package": true,
+      "identity_return": "VERIFIED",
+      "store_id": "9PGZ445SR5GM",
+      "source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
+      "package_version": null,
+      "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
+      "real_msix": false,
+      "next_action": "DELIVERY_HOLD: authoritative Version and exact current-source/request/Identity revalidation; PNG exists in PR head but embedded MSIX bytes remain unverified. After gates, build real MSIX and verify custody/backlog/local checker/GUI. Never infer Version or promote E2E.",
+      "store_assets_status": "REAL_PNG_COMMITTED_AND_TESTED_ON_PR_MERGE_REF__MSIX_EMBED_NOT_VERIFIED",
+      "required_store_assets": [
+        "StoreLogo.png",
+        "Square150.png",
+        "Square44.png"
+      ],
+      "store_assets_branch_head": "338b5f72b7ebb799348cae7405fca28f4ac67a9d",
+      "package_blockers": [
+        {
+          "field": "package_version",
+          "status": "AUTHORITATIVE_VALUE_REQUIRED"
+        },
+        {
+          "field": "required_store_assets",
+          "status": "REAL_PNG_VERIFIED_PRE_MSIX__MSIX_EMBED_NOT_VERIFIED"
+        }
+      ],
+      "store_assets_evidence": {
+        "pr": 95,
+        "head_sha": "338b5f72b7ebb799348cae7405fca28f4ac67a9d",
+        "png_ci_run_id": "44426098722",
+        "evidence_scope": "PR95 three PNG assets tested in merge-ref CI, not raw-head exact checkout. No MSIX or native GUI receipt; current-source Identity rebind and authoritative Version required."
+      },
+      "current_source_identity_binding_status": "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE"
+    },
+    {
+      "rank": 3,
+      "product": "Prism Route 3D",
+      "lane": "3D",
+      "state": "POST_IDENTITY_UPGRADE",
+      "hold_class": "DELIVERY_AND_PHYSICAL_QA_HOLD",
+      "functional_hold": false,
+      "product_frozen_for_package": true,
+      "factory_source_sha": "4c22875c5ed79d393516c6a7a95361b9e9ed1950",
+      "independent_qa_head": "5884955f855e379cb16568de8b516a24475404c0",
+      "real_export_verified": true,
+      "independent_cloud_qa_verified": true,
+      "physical_windows_6_condition_pass": false,
+      "package_version": null,
+      "real_msix": false,
+      "next_action": "Complete JA/EN x DPI100/125/150 physical Windows evidence, exact current-source Identity rebind, authoritative Package Version, then real MSIX."
+    },
+    {
+      "rank": 4,
+      "product": "Signal Sprint",
+      "lane": "GAME",
+      "state": "POST_IDENTITY_UPGRADE",
+      "hold_class": "FUNCTIONAL_QA_THEN_DELIVERY_HOLD",
+      "functional_hold": true,
+      "product_frozen_for_package": false,
+      "gdk_identity_return": "VERIFIED",
+      "current_uia_fixture_head": "d0607bd7dcb9076cc3d6414205d628db63503fb7",
+      "fixture_ci_verified": true,
+      "real_windows_uia_pass": false,
+      "real_msixvc": false,
+      "next_action": "Prove real Windows JA/EN five controls and LOST UIA; once PASS, freeze product and advance GDK Version/SDK/assets/CAS/MSIXVC."
+    }
+  ],
+  "last_reconciled_at_utc": "2026-11-21",
+  "last_reconciled_basis": "APP PR94 fb629383 / PR95 338b5f72 PR bodies; no independent downloaded PNG byte SHA verification"
+}
