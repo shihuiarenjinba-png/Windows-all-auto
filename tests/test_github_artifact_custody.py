@@ -131,5 +131,30 @@ class CustodyTests(unittest.TestCase):
         self.assertEqual(authorize_transport(identity, approval, self.local, receipt, custody)["reason"],
                          "VERSION_NOT_APPROVED")
 
+
+    def test_current_completion_queue_cannot_promote_without_authoritative_version(self):
+        """Live queue is a HOLD fixture; synthetic custody cannot authorize a product."""
+        import json
+        root = Path(__file__).resolve().parents[1]
+        queue = json.loads((root / "ops/completion_rush_queue_20261116.json").read_text(encoding="utf-8"))
+        ledger = json.loads((root / "ops/active_e2e_handoff.json").read_text(encoding="utf-8"))
+        self.assertEqual(ledger["e2e_status"], "HOLD")
+        self.assertIs(ledger["e2e_pass"], False)
+        for product in ("Focus Session Desk", "File Integrity Ledger"):
+            item = next(p for p in queue["priority"] if p["product"] == product)
+            self.assertEqual(item["hold_class"], "DELIVERY_HOLD")
+            self.assertEqual(item["state"], "POST_IDENTITY_UPGRADE")
+            self.assertIsNone(item["package_version"])
+            self.assertIs(item["real_msix"], False)
+            self.assertEqual(item["current_source_identity_binding_status"],
+                             "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE")
+            self.assertNotEqual(item["source_sha"], item["store_assets_branch_head"])
+            identity = dict(request_id="unapproved-request", source_sha=item["source_sha"],
+                            verified_source_sha=item["store_assets_branch_head"],
+                            expected_head_sha=item["source_sha"], package_version_gate="HOLD")
+            rejected = authorize_transport(identity, {}, self.local, {}, None)
+            self.assertEqual(rejected["status"], "HOLD")
+            self.assertEqual(rejected["reason"], "SOURCE_DRIFT")
+
 if __name__ == "__main__":
     unittest.main()
