@@ -71,14 +71,14 @@
       "package_version": null,
       "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
       "real_msix": false,
-      "next_action": "DELIVERY_HOLD: authoritative Version and exact current-source/request/Identity revalidation; PNG exists in PR head but embedded MSIX bytes remain unverified. After gates, build real MSIX and verify custody/backlog/local checker/GUI. Never infer Version or promote E2E.",
+      "next_action": "DELIVERY_HOLD: current source 4474af31 differs from approved d1108d12; authoritative Version and exact current-source/request/Identity revalidation required. APP owner handles native first-use GUI smoke FAIL run 44938245049. Independent PNG SHA and MSIX embed remain unverified; no CAS/MSIX/backlog/checker promotion.",
       "store_assets_status": "REAL_PNG_COMMITTED_AND_TESTED_ON_PR_MERGE_REF__MSIX_EMBED_NOT_VERIFIED",
       "required_store_assets": [
         "StoreLogo.png",
         "Square150.png",
         "Square44.png"
       ],
-      "store_assets_branch_head": "338b5f72b7ebb799348cae7405fca28f4ac67a9d",
+      "store_assets_branch_head": "4474af31b35afc7c3608a5b6a6f833597001fdf7",
       "package_blockers": [
         {
           "field": "package_version",
@@ -91,9 +91,9 @@
       ],
       "store_assets_evidence": {
         "pr": 95,
-        "head_sha": "338b5f72b7ebb799348cae7405fca28f4ac67a9d",
+        "head_sha": "4474af31b35afc7c3608a5b6a6f833597001fdf7",
         "png_ci_run_id": "44426098722",
-        "evidence_scope": "PR95 three PNG assets tested in merge-ref CI, not raw-head exact checkout. No MSIX or native GUI receipt; current-source Identity rebind and authoritative Version required."
+        "evidence_scope": "PR95 current HEAD 4474af31 includes subsequent native GUI changes; prior PNG merge-ref CI is historical and does not certify current exact HEAD. Independent PNG bytes SHA and MSIX embed unverified; native first-use GUI smoke run 44938245049 FAIL. No approved current-source Identity rebind or Version."
       },
       "current_source_identity_binding_status": "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE"
     },
@@ -130,6 +130,6 @@
       "next_action": "Prove real Windows JA/EN five controls and LOST UIA; once PASS, freeze product and advance GDK Version/SDK/assets/CAS/MSIXVC."
     }
   ],
-  "last_reconciled_at_utc": "2026-11-21",
-  "last_reconciled_basis": "APP PR94 fb629383 / PR95 338b5f72 PR bodies; no independent downloaded PNG byte SHA verification"
+  "last_reconciled_at_utc": "2026-11-22",
+  "last_reconciled_basis": "Direct GitHub PR94 HEAD fb629383 and PR95 HEAD 4474af31; PR165 09528c69 CI 3 SUCCESS (transport only); PR95 native GUI smoke 44938245049 FAIL (prior observation), no independent PNG byte SHA"
 }
