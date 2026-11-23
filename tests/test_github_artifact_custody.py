@@ -297,12 +297,12 @@ class CustodyTests(unittest.TestCase):
         ledger = json.loads((root / "ops/active_e2e_handoff.json").read_text(encoding="utf-8"))
         recon = json.loads((root / "ops/focus_file_transport_reconciliation_20261123.json").read_text(encoding="utf-8"))
         latest = ledger["latest_transport_reconciliation"]
-        self.assertEqual(latest["central_tested_head_sha"], "5580ad0d49a770cc2ed2cc70aeef7b2e64f8d903")
-        self.assertEqual(latest["previous_central_head_sha"], "c35de586e9005aad3113d8ae04ff107f2c6944d2")
-        self.assertEqual(latest["ledger_followup_head_sha"], "5580ad0d49a770cc2ed2cc70aeef7b2e64f8d903")
+        self.assertEqual(latest["central_tested_head_sha"], "5ef5cdc47293d39b954eb309715b790b5987ada4")
+        self.assertEqual(latest["previous_central_head_sha"], "8413635f5687cee7f440c00b6fcc45c24f86b362")
+        self.assertEqual(latest["ledger_followup_head_sha"], "5ef5cdc47293d39b954eb309715b790b5987ada4")
         self.assertEqual(latest["ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual([x["run_id"] for x in latest["exact_head_ci"]],
-                         [45241836950, 45241836778, 45241836796])
+                         [45252282976, 45252282960, 45252283104])
         self.assertEqual(latest["status"], "HOLD")
         self.assertIs(latest["e2e_pass"], False)
         self.assertIs(latest["real_msix"], False)
@@ -321,10 +321,11 @@ class CustodyTests(unittest.TestCase):
         queue_latest = queue["latest_transport_reconciliation"]
         self.assertEqual(queue_latest["central_head"], latest["central_tested_head_sha"])
         self.assertEqual(recon["central_head"], latest["central_tested_head_sha"])
-        self.assertEqual(queue_latest["immediate_parent_ci_status"], "NOT_OBSERVED")
+        self.assertEqual(queue_latest["immediate_parent_ci_status"], "PARTIAL_UPDATE_INTERMEDIATE_FAILURES__SUPERSEDED_BY_FINAL_PASS")
+        self.assertEqual(queue_latest["immediate_parent_ci"][1]["conclusion"], "failure")
         self.assertEqual(queue_latest["failed_intermediate_ci"][0]["conclusion"], "failure")
         self.assertEqual(queue_latest["failed_intermediate_head_sha"], "76557ce00def85849aed05585e293c77d6c81d12")
-        self.assertEqual(queue_latest["last_verified_predecessor_head_sha"], "a4a753215f8c40cccdaf178d5f8f3aea1bfce735")
+        self.assertEqual(queue_latest["last_verified_predecessor_head_sha"], "5580ad0d49a770cc2ed2cc70aeef7b2e64f8d903")
         self.assertEqual([x["run_id"] for x in queue_latest["exact_head_ci"]],
                          [x["run_id"] for x in latest["exact_head_ci"]])
         file_item = next(p for p in queue["priority"] if p["product"] == "File Integrity Ledger")
