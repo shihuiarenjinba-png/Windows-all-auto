@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-23T19:50:00Z",
+  "updated_at_utc": "2026-11-23T20:40:41Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -16898,11 +16898,11 @@
     "base_branch": "codex/e2e-artifact-custody-20261114",
     "base_sha": "c6f30824196e90c03837e0636d7557a79fad92af",
     "compare_to_current_pr165_head": {
-      "current_pr165_head_sha": "5ef5cdc47293d39b954eb309715b790b5987ada4",
+      "current_pr165_head_sha": "db707178e477fedcaeb73b7fa15d3f46aaa35c50",
       "merge_base_sha": "c6f30824196e90c03837e0636d7557a79fad92af",
       "status": "diverged",
       "ahead_by": 6,
-      "behind_by": 47,
+      "behind_by": 52,
       "changed_files": [
         "ops/active_e2e_handoff.json",
         "ops/completion_rush_queue_20261116.json",
@@ -16944,6 +16944,91 @@
     "unique_changes_to_restack": [],
     "decision": "DO_NOT_RESTACK",
     "merge_allowed": false,
-    "reason": "All six commits are operations-only updates to three JSON records. Current PR165 contains newer exact-head CI, Focus PR102 GUI evidence, product/Identity-drift status, and current queue data. The 2026-11-20 reconciliation is historical and superseded by the 2026-11-23 record. No unique code or product change is missing."
+    "reason": "Compared directly against current PR165 live head db707178e477fedcaeb73b7fa15d3f46aaa35c50: PR174 is six commits ahead and 52 behind, and all six changes are operations-only updates to three JSON records. No unique code or product change is missing. Keep PR174 Draft and do not restack or merge."
+  },
+  "pr165_live_head_observation_20261124": {
+    "observed_at_utc": "2026-11-23T20:40:41Z",
+    "pull_request": 165,
+    "head_ref": "refs/pull/165/head",
+    "head_sha": "db707178e477fedcaeb73b7fa15d3f46aaa35c50",
+    "exact_head_workflows": [
+      {
+        "run_id": 45252775417,
+        "conclusion": "success",
+        "scope": "Windows E2E transport fail-closed regression"
+      },
+      {
+        "run_id": 45252775411,
+        "conclusion": "success",
+        "scope": "GitHub artifact custody fail-closed regression"
+      },
+      {
+        "run_id": 45252775422,
+        "conclusion": "success",
+        "scope": "Windows-all-auto Offline QA"
+      }
+    ],
+    "status": "PASS_EXACT_HEAD_CI",
+    "prior_central_tested_head_sha": "5ef5cdc47293d39b954eb309715b790b5987ada4",
+    "prior_central_tested_head_ci_status": "PASS_EXACT_HEAD_CI",
+    "product_e2e_status": "HOLD",
+    "e2e_pass": false,
+    "real_msix": false,
+    "github_backlog_receipt": false,
+    "local_pull_receipt": false,
+    "local_checker_receipt": false,
+    "local_gui_install_receipt": false,
+    "store_upload_test_eligible_products": 0,
+    "partner_center_authenticated_readback": "NOT_OBSERVED",
+    "authoritative_package_version": "NOT_FOUND__KEEP_HOLD",
+    "product_snapshot": {
+      "focus_session_desk": {
+        "current_source_head": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+        "approved_identity_source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+        "current_source_identity_binding": "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE",
+        "package_version": null,
+        "raw_png_bytes_sha256": "VERIFIED",
+        "msix_asset_embedding": "NOT_VERIFIED",
+        "real_msix": false
+      },
+      "file_integrity_ledger": {
+        "current_source_head": "4474af31b35afc7c3608a5b6a6f833597001fdf7",
+        "current_gui_head": "081fc168544022c401ce95a0f481644568912337",
+        "approved_identity_commit": "db9a57af822788af4c8384499a6e343ec7b0353d",
+        "approved_identity_source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
+        "approved_identity_present_on_current_pr95_pr100": false,
+        "current_source_identity_binding": "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE",
+        "package_version": null,
+        "raw_png_bytes_sha256": "VERIFIED",
+        "msix_asset_embedding": "NOT_VERIFIED",
+        "real_msix": false
+      }
+    },
+    "related_pull_requests": {
+      "pr161": {
+        "head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
+        "workflow_runs": [
+          {
+            "run_id": 42712757936,
+            "conclusion": "success",
+            "scope": "Windows-all-auto Offline QA"
+          }
+        ]
+      },
+      "pr171": {
+        "head_sha": "764721021f13be96364529650b44fb439770bac9",
+        "workflow_runs": [
+          {
+            "run_id": 44437197470,
+            "conclusion": "success",
+            "scope": "Windows-all-auto Offline QA"
+          }
+        ],
+        "windows_automator_pin_sha": "d3b8ed4ae7762a69d3fe2a90b64aa86ee938259b",
+        "windows_automator_pin_ci_run": 44319200630,
+        "fresh_unsold_store_dry_run": "NOT_RUN_NO_PRODUCT_MEETS_ALL_GATES"
+      }
+    },
+    "note": "Direct live PR ref reads confirm PR165 head db707178 and all three exact-head workflows SUCCESS. This is repository regression/Offline QA evidence only, not a real product MSIX or local product E2E. The latest central product reconciliation remains 5ef5cdc; this separate field records the newer live PR head. No Identity reuse, Version inference, Partner Center write, Store submission, certification, publish, merge, main/release change, or force push."
   }
 }
