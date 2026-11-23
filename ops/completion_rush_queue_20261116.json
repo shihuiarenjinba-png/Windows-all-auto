@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-11-23T19:34:36Z",
+  "generated_at": "2026-11-23T19:50:00Z",
   "policy": "COMPLETION_RUSH_EXISTING_PRODUCTS_ONLY",
   "new_product_generation_allowed": false,
   "rules": {
@@ -629,9 +629,193 @@
       "required_revision_in_frozen_source": false
     }
   ],
-  "last_reconciled_at_utc": "2026-11-23T19:34:36Z",
-  "last_reconciled_basis": "Direct GitHub reconciliation at 2026-11-23T19:34:36Z: PR165 exact tested HEAD 5580ad0d49a770cc2ed2cc70aeef7b2e64f8d903 has transport 45241836950, custody 45241836778 and Windows/Ubuntu Offline QA 45241836796 all SUCCESS. PR161 exact HEAD 71d9c212 has Offline QA 42712757936 SUCCESS; PR171 exact HEAD 764721021f has Offline QA 44437197470 SUCCESS only, not Store dry-run. Focus PR102 test-only GUI follow-up has artifact ZIP SHA independently rehashed and 100% completion/cold-restart screenshots visually reviewed. Focus current Identity still binds 8b00bc4e, Version remains null/HOLD; no real MSIX or local checker. PNG ownership unchanged; no assets generated. PR174 six operations-only commits are superseded and will not be restacked. E2E remains HOLD.",
+  "last_reconciled_at_utc": "2026-11-23T19:50:00Z",
+  "last_reconciled_basis": "PR165 tested HEAD 5ef5cdc47293d39b954eb309715b790b5987ada4: transport 45252282976, custody 45252282960, Windows/Ubuntu Offline QA 45252283104 all SUCCESS. Immediate parent 8413635f5687cee7f440c00b6fcc45c24f86b362 had partial-update CI failures (custody/Offline QA) before test synchronization; final head is green. Last fully verified predecessor 5580ad0d49a770cc2ed2cc70aeef7b2e64f8d903 and older failed intermediate 76557ce00def85849aed05585e293c77d6c81d12 remain preserved. Focus PR102 100%/cold-restart GUI evidence and 54/100 provisional no-sale score are recorded. Current-source Identity/Version, real MSIX, backlog, local checker/install remain HOLD. PR174 six commits are superseded; no restack.",
   "latest_transport_reconciliation": {
+    "checked_at_utc": "2026-11-23T19:50:00Z",
+    "central_pr": 165,
+    "central_head": "5ef5cdc47293d39b954eb309715b790b5987ada4",
+    "central_base_sha": "145cd1f44bdec9e584eb0f045dd139ef330c6321",
+    "previous_central_head_sha": "8413635f5687cee7f440c00b6fcc45c24f86b362",
+    "exact_head_ci": [
+      {
+        "run_id": 45252282976,
+        "conclusion": "success",
+        "scope": "Exact-head Windows E2E transport fail-closed regression"
+      },
+      {
+        "run_id": 45252282960,
+        "conclusion": "success",
+        "scope": "Exact-head independent GitHub artifact custody regression"
+      },
+      {
+        "run_id": 45252283104,
+        "conclusion": "success",
+        "scope": "Exact-head Windows-all-auto Offline QA (Windows and Ubuntu)"
+      }
+    ],
+    "status": "HOLD",
+    "ci_status": "PASS_EXACT_HEAD_CI",
+    "e2e_pass": false,
+    "real_msix": false,
+    "github_backlog_receipt": false,
+    "local_checker_receipt": false,
+    "local_gui_install_receipt": false,
+    "local_code_sync": "CLOUD_PASS_ONLY",
+    "store_upload_test_eligible_products": 0,
+    "store_submission_allowed": false,
+    "certification_allowed": false,
+    "publish_allowed": false,
+    "note": "PR165 exact tested HEAD 5ef5cdc47293d39b954eb309715b790b5987ada4 has all three associated workflows SUCCESS: transport 45252282976, artifact custody 45252282960, and Windows/Ubuntu Offline QA 45252283104. Immediate parent 8413635f5687cee7f440c00b6fcc45c24f86b362 was a sequential partial-update commit: transport 45252276088 succeeded, custody 45252276166 and Offline QA 45252276459 failed because the multi-file ledger/test update had not yet completed; the final HEAD corrected the assertions and all three lanes pass. Last fully verified predecessor 5580ad0d49a770cc2ed2cc70aeef7b2e64f8d903 retains all three SUCCESS runs. Earlier failed intermediate 76557ce00def85849aed05585e293c77d6c81d12 remains separately preserved. Focus PR102 test-only hosted GUI evidence is independently reviewed; current-source Identity and authoritative Version remain HOLD. No real MSIX, backlog, local pull/checker/install or physical user-PC receipt is proven. E2E remains HOLD.",
+    "previous_ledger_followup_head_sha": "5580ad0d49a770cc2ed2cc70aeef7b2e64f8d903",
+    "previous_ledger_followup_exact_head_ci": [
+      {
+        "run_id": 45241836950,
+        "conclusion": "success",
+        "scope": "Exact-head Windows E2E transport fail-closed regression"
+      },
+      {
+        "run_id": 45241836778,
+        "conclusion": "success",
+        "scope": "Exact-head independent GitHub artifact custody regression"
+      },
+      {
+        "run_id": 45241836796,
+        "conclusion": "success",
+        "scope": "Exact-head Windows-all-auto Offline QA (Windows and Ubuntu)"
+      }
+    ],
+    "ledger_followup_head_sha": "5ef5cdc47293d39b954eb309715b790b5987ada4",
+    "ledger_followup_exact_head_ci": [
+      {
+        "run_id": 45252282976,
+        "conclusion": "success",
+        "scope": "Exact-head Windows E2E transport fail-closed regression"
+      },
+      {
+        "run_id": 45252282960,
+        "conclusion": "success",
+        "scope": "Exact-head independent GitHub artifact custody regression"
+      },
+      {
+        "run_id": 45252283104,
+        "conclusion": "success",
+        "scope": "Exact-head Windows-all-auto Offline QA (Windows and Ubuntu)"
+      }
+    ],
+    "latest_exact_head_ci_tested_sha": "5ef5cdc47293d39b954eb309715b790b5987ada4",
+    "previous_central_head": "8413635f5687cee7f440c00b6fcc45c24f86b362",
+    "older_previous_ledger_followup_head_sha": "6ac7c7f0fef32682bb5d8b0d19c59bd174482926",
+    "older_previous_ledger_followup_exact_head_ci": [
+      {
+        "run_id": 45219717898,
+        "conclusion": "success",
+        "scope": "Exact-head Windows E2E transport fail-closed regression"
+      },
+      {
+        "run_id": 45219717804,
+        "conclusion": "success",
+        "scope": "Exact-head independent GitHub artifact custody regression"
+      },
+      {
+        "run_id": 45219718041,
+        "conclusion": "success",
+        "scope": "Exact-head Windows-all-auto Offline QA (Windows and Ubuntu)"
+      }
+    ],
+    "last_verified_predecessor_head_sha": "5580ad0d49a770cc2ed2cc70aeef7b2e64f8d903",
+    "last_verified_predecessor_exact_head_ci": [
+      {
+        "run_id": 45241836950,
+        "conclusion": "success",
+        "scope": "Exact-head Windows E2E transport fail-closed regression"
+      },
+      {
+        "run_id": 45241836778,
+        "conclusion": "success",
+        "scope": "Exact-head independent GitHub artifact custody regression"
+      },
+      {
+        "run_id": 45241836796,
+        "conclusion": "success",
+        "scope": "Exact-head Windows-all-auto Offline QA (Windows and Ubuntu)"
+      }
+    ],
+    "older_older_previous_ledger_followup_head_sha": "3cb242653cfc92917b374f82f1d6adb6994100f9",
+    "older_older_previous_ledger_followup_exact_head_ci": [
+      {
+        "run_id": 45208102791,
+        "conclusion": "success",
+        "scope": "Exact-head Windows E2E transport fail-closed regression"
+      },
+      {
+        "run_id": 45208102718,
+        "conclusion": "success",
+        "scope": "Exact-head independent GitHub artifact custody regression"
+      },
+      {
+        "run_id": 45208102802,
+        "conclusion": "success",
+        "scope": "Exact-head Windows-all-auto Offline QA (Windows and Ubuntu)"
+      }
+    ],
+    "immediate_parent_head_sha": "8413635f5687cee7f440c00b6fcc45c24f86b362",
+    "immediate_parent_ci_status": "PARTIAL_UPDATE_INTERMEDIATE_FAILURES__SUPERSEDED_BY_FINAL_PASS",
+    "immediate_parent_ci": [
+      {
+        "run_id": 45252276088,
+        "conclusion": "success",
+        "scope": "Partial-update parent transport regression"
+      },
+      {
+        "run_id": 45252276166,
+        "conclusion": "failure",
+        "scope": "Partial-update parent artifact custody regression; test assertions not yet synchronized"
+      },
+      {
+        "run_id": 45252276459,
+        "conclusion": "failure",
+        "scope": "Partial-update parent Windows/Ubuntu Offline QA; test assertions not yet synchronized"
+      }
+    ],
+    "failed_intermediate_head_sha": "76557ce00def85849aed05585e293c77d6c81d12",
+    "failed_intermediate_ci": [
+      {
+        "run_id": 45241393643,
+        "conclusion": "failure",
+        "scope": "Earlier exact-head Windows E2E transport regression; stale parent/run assertions"
+      },
+      {
+        "run_id": 45241393641,
+        "conclusion": "success",
+        "scope": "Earlier exact-head independent GitHub artifact custody regression"
+      },
+      {
+        "run_id": 45241393704,
+        "conclusion": "failure",
+        "scope": "Earlier exact-head Windows/Ubuntu Offline QA; transport assertion failures"
+      }
+    ],
+    "partial_update_intermediate_head_sha": "8413635f5687cee7f440c00b6fcc45c24f86b362",
+    "partial_update_intermediate_ci": [
+      {
+        "run_id": 45252276088,
+        "conclusion": "success",
+        "scope": "Partial-update parent transport regression"
+      },
+      {
+        "run_id": 45252276166,
+        "conclusion": "failure",
+        "scope": "Partial-update parent artifact custody regression; test assertions not yet synchronized"
+      },
+      {
+        "run_id": 45252276459,
+        "conclusion": "failure",
+        "scope": "Partial-update parent Windows/Ubuntu Offline QA; test assertions not yet synchronized"
+      }
+    ]
+  },
+  "previous_latest_transport_reconciliation": {
     "checked_at_utc": "2026-11-23T19:34:36Z",
     "central_pr": 165,
     "central_head": "5580ad0d49a770cc2ed2cc70aeef7b2e64f8d903",
@@ -781,152 +965,6 @@
       }
     ]
   },
-  "previous_latest_transport_reconciliation": {
-    "checked_at_utc": "2026-11-23T18:45:40.829Z",
-    "central_pr": 165,
-    "central_head": "a4a753215f8c40cccdaf178d5f8f3aea1bfce735",
-    "central_base_sha": "145cd1f44bdec9e584eb0f045dd139ef330c6321",
-    "previous_central_head_sha": "76557ce00def85849aed05585e293c77d6c81d12",
-    "exact_head_ci": [
-      {
-        "run_id": 45241501939,
-        "conclusion": "success",
-        "scope": "Exact-head Windows E2E transport fail-closed regression"
-      },
-      {
-        "run_id": 45241501982,
-        "conclusion": "success",
-        "scope": "Exact-head independent GitHub artifact custody regression"
-      },
-      {
-        "run_id": 45241501968,
-        "conclusion": "success",
-        "scope": "Exact-head Windows-all-auto Offline QA (Windows and Ubuntu)"
-      }
-    ],
-    "status": "HOLD",
-    "ci_status": "PASS_EXACT_HEAD_CI",
-    "e2e_pass": false,
-    "real_msix": false,
-    "github_backlog_receipt": false,
-    "local_checker_receipt": false,
-    "local_gui_install_receipt": false,
-    "local_code_sync": "CLOUD_PASS_ONLY",
-    "store_upload_test_eligible_products": 0,
-    "store_submission_allowed": false,
-    "certification_allowed": false,
-    "publish_allowed": false,
-    "note": "PR165 exact current HEAD a4a753215f8c40cccdaf178d5f8f3aea1bfce735 is 1 commit ahead of immediate parent 76557ce00def85849aed05585e293c77d6c81d12; exact-head transport 45241501939, artifact custody 45241501982, and Windows/Ubuntu Offline QA 45241501968 all SUCCESS. Parent 76557ce00def85849aed05585e293c77d6c81d12 is preserved as a failed intermediate: transport 45241393643 and Offline QA 45241393704 failed on stale assertions; custody 45241393641 succeeded. The regression assertions were corrected without relaxing production gates. Last fully green predecessor 41f74a28e8aac9356279349343f1dbe0d251800a and its three runs remain in history. Focus current PR94 fb629383 still has approved Identity bound to 8b00bc4e and package_version_gate=HOLD. File Integrity product source PR95 4474af31 remains divergent; GUI-only PR100 081fc168 artifact ZIP and EXE bytes were independently rehashed and first-use/open/MODIFIED/MISSING screenshots visually reviewed. File historical Identity d1108d12 is absent on PR100 and Version remains null. No real MSIX, backlog, local pull/checker/install or physical user-PC receipt is proven. E2E remains HOLD.",
-    "previous_ledger_followup_head_sha": "41f74a28e8aac9356279349343f1dbe0d251800a",
-    "previous_ledger_followup_exact_head_ci": [
-      {
-        "run_id": 45230271440,
-        "conclusion": "success",
-        "scope": "Exact-head Windows E2E transport fail-closed regression"
-      },
-      {
-        "run_id": 45230271518,
-        "conclusion": "success",
-        "scope": "Exact-head independent GitHub artifact custody regression"
-      },
-      {
-        "run_id": 45230271524,
-        "conclusion": "success",
-        "scope": "Exact-head Windows-all-auto Offline QA (Windows and Ubuntu)"
-      }
-    ],
-    "ledger_followup_head_sha": "a4a753215f8c40cccdaf178d5f8f3aea1bfce735",
-    "ledger_followup_exact_head_ci": [
-      {
-        "run_id": 45241501939,
-        "conclusion": "success",
-        "scope": "Exact-head Windows E2E transport fail-closed regression"
-      },
-      {
-        "run_id": 45241501982,
-        "conclusion": "success",
-        "scope": "Exact-head independent GitHub artifact custody regression"
-      },
-      {
-        "run_id": 45241501968,
-        "conclusion": "success",
-        "scope": "Exact-head Windows-all-auto Offline QA (Windows and Ubuntu)"
-      }
-    ],
-    "latest_exact_head_ci_tested_sha": "a4a753215f8c40cccdaf178d5f8f3aea1bfce735",
-    "previous_central_head": "76557ce00def85849aed05585e293c77d6c81d12",
-    "older_previous_ledger_followup_head_sha": "6ac7c7f0fef32682bb5d8b0d19c59bd174482926",
-    "older_previous_ledger_followup_exact_head_ci": [
-      {
-        "run_id": 45219717898,
-        "conclusion": "success",
-        "scope": "Exact-head Windows E2E transport fail-closed regression"
-      },
-      {
-        "run_id": 45219717804,
-        "conclusion": "success",
-        "scope": "Exact-head independent GitHub artifact custody regression"
-      },
-      {
-        "run_id": 45219718041,
-        "conclusion": "success",
-        "scope": "Exact-head Windows-all-auto Offline QA (Windows and Ubuntu)"
-      }
-    ],
-    "previous_central_head_ci": [
-      {
-        "run_id": 45241393643,
-        "conclusion": "failure",
-        "scope": "Exact-head Windows E2E transport regression; two stale parent/run assertions failed"
-      },
-      {
-        "run_id": 45241393641,
-        "conclusion": "success",
-        "scope": "Exact-head independent GitHub artifact custody regression"
-      },
-      {
-        "run_id": 45241393704,
-        "conclusion": "failure",
-        "scope": "Exact-head Windows/Ubuntu Offline QA; transport regression assertion failures"
-      }
-    ],
-    "last_verified_predecessor_head_sha": "41f74a28e8aac9356279349343f1dbe0d251800a",
-    "last_verified_predecessor_exact_head_ci": [
-      {
-        "run_id": 45230271440,
-        "conclusion": "success",
-        "scope": "Exact-head Windows E2E transport fail-closed regression"
-      },
-      {
-        "run_id": 45230271518,
-        "conclusion": "success",
-        "scope": "Exact-head independent GitHub artifact custody regression"
-      },
-      {
-        "run_id": 45230271524,
-        "conclusion": "success",
-        "scope": "Exact-head Windows-all-auto Offline QA (Windows and Ubuntu)"
-      }
-    ],
-    "older_older_previous_ledger_followup_head_sha": "3cb242653cfc92917b374f82f1d6adb6994100f9",
-    "older_older_previous_ledger_followup_exact_head_ci": [
-      {
-        "run_id": 45208102791,
-        "conclusion": "success",
-        "scope": "Exact-head Windows E2E transport fail-closed regression"
-      },
-      {
-        "run_id": 45208102718,
-        "conclusion": "success",
-        "scope": "Exact-head independent GitHub artifact custody regression"
-      },
-      {
-        "run_id": 45208102802,
-        "conclusion": "success",
-        "scope": "Exact-head Windows-all-auto Offline QA (Windows and Ubuntu)"
-      }
-    ]
-  },
   "store_upload_test_eligibility": {
     "bridge_pr": 171,
     "bridge_head": "764721021f13be96364529650b44fb439770bac9",
@@ -1026,11 +1064,11 @@
     "base_branch": "codex/e2e-artifact-custody-20261114",
     "base_sha": "c6f30824196e90c03837e0636d7557a79fad92af",
     "compare_to_current_pr165_head": {
-      "current_pr165_head_sha": "5580ad0d49a770cc2ed2cc70aeef7b2e64f8d903",
+      "current_pr165_head_sha": "5ef5cdc47293d39b954eb309715b790b5987ada4",
       "merge_base_sha": "c6f30824196e90c03837e0636d7557a79fad92af",
       "status": "diverged",
       "ahead_by": 6,
-      "behind_by": 41,
+      "behind_by": 47,
       "changed_files": [
         "ops/active_e2e_handoff.json",
         "ops/completion_rush_queue_20261116.json",
@@ -1040,37 +1078,31 @@
     "commits": [
       {
         "sha": "c2f94429c0c4f4f9d9830cff1f917666a61c0b07",
-        "message": "chore(e2e): reconcile current PR165 head and Focus/File evidence",
         "file": "ops/active_e2e_handoff.json",
         "disposition": "SUPERSEDED_BY_LATER_PR165_LEDGER"
       },
       {
         "sha": "f8aae6f6e243dae34b1cc29d4ef5e49b47555727",
-        "message": "chore(e2e): refresh completion queue from current product heads",
         "file": "ops/completion_rush_queue_20261116.json",
         "disposition": "SUPERSEDED_BY_LATER_PR165_QUEUE"
       },
       {
         "sha": "c0685ba0dce13b33a8d3dc804af80a36ae620aaf",
-        "message": "chore(e2e): sync Focus/File transport reconciliation",
         "file": "ops/focus_file_transport_reconciliation_20261120.json",
         "disposition": "SUPERSEDED_BY_20261123_RECONCILIATION"
       },
       {
         "sha": "98b1a385cba69e0b145bfed7f0e1fdff5eb8a367",
-        "message": "chore(e2e): align ledger update timestamp with observation",
         "file": "ops/active_e2e_handoff.json",
         "disposition": "SUPERSEDED_BY_LATER_TIMESTAMP_AND_EVIDENCE"
       },
       {
         "sha": "634b6de30402207783908fe579fa1b1261e4691f",
-        "message": "chore(e2e): normalize current Identity drift status",
         "file": "ops/active_e2e_handoff.json",
         "disposition": "STATUS_NORMALIZATION_RETAINED_IN_CURRENT_PR165"
       },
       {
         "sha": "69e7b7c8a7b1ecdaea42e6f03644a8cd549dfaee",
-        "message": "chore(e2e): align previous central head in reconciliation",
         "file": "ops/focus_file_transport_reconciliation_20261120.json",
         "disposition": "SUPERSEDED_BY_LATER_PR165_PARENT_AND_HEAD_RECONCILIATION"
       }
@@ -1078,6 +1110,6 @@
     "unique_changes_to_restack": [],
     "decision": "DO_NOT_RESTACK",
     "merge_allowed": false,
-    "reason": "All six commits are operations-only updates to three JSON records. Current PR165 already contains newer exact-head CI, queue, product and Identity-drift evidence. The 20261120 reconciliation is historical and superseded by the 20261123 record. No unique code or product change is missing; restacking would regress the ledger."
+    "reason": "All six commits are operations-only updates to three JSON records. Current PR165 contains newer exact-head CI, Focus PR102 GUI evidence, product/Identity-drift status, and current queue data. The 2026-11-20 reconciliation is historical and superseded by the 2026-11-23 record. No unique code or product change is missing."
   }
 }
