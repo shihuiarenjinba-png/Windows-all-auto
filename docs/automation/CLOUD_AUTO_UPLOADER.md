@@ -46,7 +46,9 @@ Errors have stable codes such as `AUTH_FAILED`, `PERMISSION_DENIED`, `FILE_NOT_F
 
 ## History and monitoring
 
-The workflow saves each per-product SQLite ledger in the Actions cache and uploads a run artifact. GitHub Actions/cache retention is not a transactional durable database; Partner Center remains the live source of truth and the run receipt is retained as evidence. Add an operational dashboard and tested long-term receipt store before declaring a contractual zero-backlog service-level objective.
+The SQLite file is a retry/idempotency cache, not the durable source of truth. Each run writes a structured JSON receipt with Product ID, Submission ID, package filename, local SHA-256, UTC execution time, result, and Partner Center confirmation state. A short-lived Actions artifact (30 days) is only run evidence. The workflow separately appends receipts to the data-only `store-uploader-ledger` branch using a writer job with `contents:write`; that branch is restored before processing and is the durable idempotency journal. The writer is globally serialized and uses non-force ref updates. The Partner Center UI does not expose the uploaded binary SHA, so a prior receipt can bind the SHA sent by the automation to the same Product/Draft/filename, but the receipt never claims Microsoft independently computed that SHA.
+
+If the durable ledger cannot be read completely, the worker fails closed. If the Actions cache is evicted but the durable receipt exists, the exact job is treated as already confirmed and is not uploaded again. If the UI shows an existing filename but no matching SHA-bound receipt exists, reconciliation stops rather than treating the UI as proof of binary identity. A contractual zero-backlog service objective still requires an operational monitor and an available authenticated browser endpoint.
 
 ## Tests
 
@@ -59,4 +61,4 @@ The workflow saves each per-product SQLite ledger in the Actions cache and uploa
 - Creating a Store product or a Submission.
 - Certification, publishing, price or market edits.
 - Guaranteed always-zero backlog; GitHub Actions queued/running jobs are not an always-on daemon.
-- Cross-run SQLite persistence beyond archived workflow artifacts.
+- A verified GitHub Actions CDP connection or live Data Contract Auditor upload.

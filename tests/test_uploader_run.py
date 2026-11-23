@@ -2,12 +2,15 @@ from __future__ import annotations
 
 import tempfile
 import unittest
+import contextlib
+import io
+import json
 from pathlib import Path
 from unittest.mock import patch
 import urllib.error
 
 from uploader.core import UploadError
-from uploader.run import github_download, resolve_job_config
+from uploader.run import github_download, main, resolve_job_config
 
 
 class Response:
@@ -59,6 +62,37 @@ class UploaderRunTests(unittest.TestCase):
             with self.assertRaisesRegex(UploadError, "GitHub download HTTP 404") as caught:
                 github_download("owner/repo", "ref", "a.msix", None, Path(tmp) / "a.msix")
             self.assertEqual(caught.exception.code, "FILE_NOT_FOUND")
+
+    def test_failed_download_still_writes_complete_execution_receipt_without_sha_claim(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            with patch("sys.argv", ["uploader.run", "--product", "data-contract-auditor", "--workdir", tmp]), \
+                 patch("uploader.run.github_download", side_effect=UploadError("FILE_NOT_FOUND", "missing")), \
+                 contextlib.redirect_stdout(io.StringIO()):
+                code = main()
+            self.assertEqual(code, 2)
+            receipt = json.loads((Path(tmp) / "receipt.json").read_text(encoding="utf-8"))
+            self.assertEqual(receipt["product_id"], "9PDL4ZWSB45P")
+            self.assertEqual(receipt["submission_id"], "1152921505702212222")
+            self.assertEqual(receipt["package_file_name"], "DataContractSchemaDrift_1.0.0.0_x64.msix")
+            self.assertIsNone(receipt["sha256"])
+            self.assertIsNone(receipt["partner_center_sha256"])
+            self.assertEqual(receipt["result"], "FAILED")
+            self.assertEqual(receipt["partner_center_confirmation"], "NOT_CONFIRMED")
+            durable = list((Path(tmp) / "durable-ledger" / "receipts").rglob("*.json"))
+            self.assertEqual(len(durable), 1)
+
+    def test_unapproved_live_run_stops_before_download_and_writes_receipt(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            with patch("sys.argv", ["uploader.run", "--product", "data-contract-auditor", "--workdir", tmp, "--execute"]), \
+                 patch("uploader.run.github_download") as download, \
+                 contextlib.redirect_stdout(io.StringIO()):
+                code = main()
+            self.assertEqual(code, 2)
+            download.assert_not_called()
+            receipt = json.loads((Path(tmp) / "receipt.json").read_text(encoding="utf-8"))
+            self.assertEqual(receipt["result"], "FAILED")
+            self.assertEqual(receipt["details"]["error_code"], "UPLOAD_NOT_APPROVED")
+            self.assertIsNone(receipt["sha256"])
 
 
 if __name__ == "__main__": unittest.main()

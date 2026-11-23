@@ -11,6 +11,8 @@ import zipfile
 import xml.etree.ElementTree as ET
 from typing import Any, Callable
 
+from uploader.receipts import ReceiptJournal, ReceiptJournalError, new_execution_receipt, receipt_matches_job
+
 
 class UploadError(RuntimeError):
     def __init__(self, code: str, message: str):
@@ -19,7 +21,7 @@ class UploadError(RuntimeError):
 
 
 REQUIRED = ("product_name", "product_id", "submission_id", "repository", "ref", "path", "version", "destination")
-SAFE_ID = re.compile(r"^[A-Za-z0-9._-]{1,128}$")
+SAFE_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
 
 
 @dataclass(frozen=True)
@@ -133,8 +135,12 @@ class JobLedger:
         self.db.execute("PRAGMA journal_mode=WAL")
         self.db.execute("""CREATE TABLE IF NOT EXISTS uploads (
             job_key TEXT PRIMARY KEY, product_id TEXT NOT NULL, submission_id TEXT NOT NULL,
-            sha256 TEXT NOT NULL, status TEXT NOT NULL, attempts INTEGER NOT NULL,
+            package_file_name TEXT NOT NULL DEFAULT '', sha256 TEXT NOT NULL, status TEXT NOT NULL, attempts INTEGER NOT NULL,
             error_code TEXT NOT NULL DEFAULT '', receipt_json TEXT NOT NULL DEFAULT '')""")
+        columns = {row[1] for row in self.db.execute("PRAGMA table_info(uploads)")}
+        if "package_file_name" not in columns:
+            # Old cache rows lack the filename binding; they cannot prove identity.
+            self.db.execute("ALTER TABLE uploads ADD COLUMN package_file_name TEXT NOT NULL DEFAULT ''")
 
     def close(self):
         self.db.close()
@@ -144,7 +150,7 @@ class JobLedger:
 
     @staticmethod
     def key(job: VerifiedJob) -> str:
-        return sha256(f"{job.product_id}:{job.submission_id}:{job.sha256}".encode()).hexdigest()
+        return sha256(f"{job.product_id}:{job.submission_id}:{job.file_name}:{job.sha256}".encode()).hexdigest()
 
     def begin(self, job: VerifiedJob, *, dry_run: bool = False) -> tuple[str, int]:
         key = self.key(job)
@@ -157,15 +163,46 @@ class JobLedger:
             if attempts >= 3: return "RETRY_LIMIT", attempts
             self.db.execute("UPDATE uploads SET status='UPLOADING',attempts=?,error_code='' WHERE job_key=?", (attempts + 1, key))
             return "READY", attempts + 1
-        self.db.execute("INSERT INTO uploads(job_key,product_id,submission_id,sha256,status,attempts) VALUES(?,?,?,?,?,1)",
-                         (key, job.product_id, job.submission_id, job.sha256, "UPLOADING"))
+        legacy = self.db.execute("SELECT status,attempts FROM uploads WHERE product_id=? AND submission_id=? AND sha256=? AND package_file_name='' ORDER BY attempts DESC LIMIT 1",
+                                 (job.product_id, job.submission_id, job.sha256)).fetchone()
+        if legacy and legacy[0] in {"SUCCEEDED", "UPLOADING", "UNKNOWN"}:
+            return "RECONCILE_REQUIRED", int(legacy[1])
+        self.db.execute("INSERT INTO uploads(job_key,product_id,submission_id,package_file_name,sha256,status,attempts) VALUES(?,?,?,?,?,?,1)",
+                         (key, job.product_id, job.submission_id, job.file_name, job.sha256, "UPLOADING"))
         return "READY", 1
 
     def finish(self, job: VerifiedJob, status: str, *, error_code: str = "", receipt: dict[str, Any] | None = None):
         if status not in {"SUCCEEDED", "FAILED", "UNKNOWN", "DRY_RUN"}:
             raise ValueError("illegal terminal status")
+        details = dict(receipt or {})
+        confirmation = details.get("partner_center_confirmation")
+        if confirmation is None:
+            if status == "SUCCEEDED" and details.get("partner_center_confirmed") is True:
+                confirmation = "UI_VALIDATED_SHA_UNOBSERVABLE"
+            elif status == "UNKNOWN":
+                confirmation = "UNKNOWN"
+            elif status == "DRY_RUN":
+                confirmation = "NOT_ATTEMPTED"
+            else:
+                confirmation = "NOT_CONFIRMED"
+        normalized = new_execution_receipt(
+            product_id=job.product_id, submission_id=job.submission_id,
+            package_file_name=job.file_name, sha256=job.sha256, result=status,
+            partner_center_confirmation=confirmation, details=details,
+        )
+        normalized.update({key: value for key, value in details.items() if key not in normalized})
         self.db.execute("UPDATE uploads SET status=?,error_code=?,receipt_json=? WHERE job_key=?",
-                        (status, error_code, json.dumps(receipt or {}, sort_keys=True), self.key(job)))
+                        (status, error_code, json.dumps(normalized, sort_keys=True), self.key(job)))
+
+    def get_receipt(self, job: VerifiedJob) -> dict[str, Any] | None:
+        row = self.db.execute("SELECT receipt_json FROM uploads WHERE job_key=?", (self.key(job),)).fetchone()
+        if not row or not row[0]:
+            return None
+        try:
+            value = json.loads(row[0])
+        except json.JSONDecodeError:
+            return None
+        return value if isinstance(value, dict) else None
 
     def mark_reconciled_not_written(self, job: VerifiedJob) -> None:
         self.db.execute("UPDATE uploads SET status='FAILED',error_code='RECONCILED_NOT_WRITTEN' WHERE job_key=?",
@@ -175,36 +212,53 @@ class JobLedger:
 def process_job(config: dict[str, Any], package_path: Path, ledger: JobLedger, *,
                 expected_sha256: str | None = None, dry_run: bool = True,
                 live_adapter: Callable[[VerifiedJob, Path], dict[str, Any]] | None = None,
-                reconcile_adapter: Callable[[VerifiedJob, Path], dict[str, Any]] | None = None) -> dict[str, Any]:
+                reconcile_adapter: Callable[[VerifiedJob, Path, dict[str, Any] | None], dict[str, Any]] | None = None,
+                receipt_journal: ReceiptJournal | None = None) -> dict[str, Any]:
     job = verify_file(config, package_path, expected_sha256=expected_sha256,
                       max_bytes=int(config.get("max_bytes", 4_000_000_000)))
+    if receipt_journal is not None and not dry_run:
+        try:
+            prior_state = receipt_journal.classify(job)
+        except ReceiptJournalError as exc:
+            raise UploadError("DURABLE_LEDGER_INVALID", "Durable receipt ledger is unreadable; refusing a Store write") from exc
+        if prior_state == "EXACT_SUCCESS":
+            return {"status": "DUPLICATE_CONFIRMED", "attempts": 0, "product_id": job.product_id,
+                    "submission_id": job.submission_id, "package_file_name": job.file_name, "sha256": job.sha256}
+        if prior_state == "IDENTITY_CONFLICT":
+            return {"status": "RECONCILE_REQUIRED", "attempts": 0, "product_id": job.product_id,
+                    "submission_id": job.submission_id, "package_file_name": job.file_name, "sha256": job.sha256,
+                    "reason": "A prior successful receipt has the same filename or hash with a different tuple"}
     status, attempts = ledger.begin(job, dry_run=dry_run)
     if status == "RECONCILE_REQUIRED" and not dry_run and reconcile_adapter is not None:
+        previous_receipt = ledger.get_receipt(job)
+        if not receipt_matches_job(previous_receipt, job) and receipt_journal is not None:
+            previous_receipt = next((receipt for receipt in receipt_journal.records()
+                                     if receipt_matches_job(receipt, job)), None)
         try:
-            reconciliation = reconcile_adapter(job, package_path)
+            reconciliation = reconcile_adapter(job, package_path, previous_receipt)
         except Exception as exc:
             ledger.finish(job, "UNKNOWN", error_code="RECONCILE_UNRESOLVED",
                           receipt={"error_type": type(exc).__name__})
             return {"status": "RECONCILE_REQUIRED", "attempts": attempts, "product_id": job.product_id,
                     "submission_id": job.submission_id, "sha256": job.sha256}
-        if reconciliation.get("partner_center_confirmed") is True:
+        if reconciliation.get("partner_center_confirmed") is True and receipt_matches_job(previous_receipt, job):
             ledger.finish(job, "SUCCEEDED", receipt=reconciliation)
             return {"status": "SUCCEEDED_RECONCILED", "attempts": attempts, "product_id": job.product_id,
-                    "submission_id": job.submission_id, "sha256": job.sha256}
+                    "submission_id": job.submission_id, "package_file_name": job.file_name, "sha256": job.sha256}
         if reconciliation.get("safe_to_retry") is True:
             ledger.mark_reconciled_not_written(job)
             status, attempts = ledger.begin(job, dry_run=False)
         else:
             ledger.finish(job, "UNKNOWN", error_code="RECONCILE_UNRESOLVED", receipt=reconciliation)
             return {"status": "RECONCILE_REQUIRED", "attempts": attempts, "product_id": job.product_id,
-                    "submission_id": job.submission_id, "sha256": job.sha256}
+                    "submission_id": job.submission_id, "package_file_name": job.file_name, "sha256": job.sha256}
     if status != "READY":
         return {"status": status, "attempts": attempts, "product_id": job.product_id,
-                "submission_id": job.submission_id, "sha256": job.sha256}
+                "submission_id": job.submission_id, "package_file_name": job.file_name, "sha256": job.sha256}
     if dry_run:
         ledger.finish(job, "DRY_RUN", receipt={"verified": True, "remote_write": False})
         return {"status": "DRY_RUN", "attempts": attempts, "product_id": job.product_id,
-                "submission_id": job.submission_id, "sha256": job.sha256}
+                "submission_id": job.submission_id, "package_file_name": job.file_name, "sha256": job.sha256}
     if config.get("upload_approved") is not True:
         ledger.finish(job, "FAILED", error_code="UPLOAD_NOT_APPROVED")
         raise UploadError("UPLOAD_NOT_APPROVED", "This product job is not approved for a live package write")
@@ -220,8 +274,12 @@ def process_job(config: dict[str, Any], package_path: Path, ledger: JobLedger, *
             ledger.finish(job, "UNKNOWN", error_code="UPLOAD_RESULT_UNCONFIRMED", receipt=receipt)
             raise UploadError("UPLOAD_RESULT_UNCONFIRMED", "Partner Center did not confirm completion")
         ledger.finish(job, "SUCCEEDED", receipt=receipt)
+        if receipt_journal is not None:
+            durable_receipt = ledger.get_receipt(job)
+            if durable_receipt is not None:
+                receipt_journal.append(durable_receipt)
         return {"status": "SUCCEEDED", "attempts": attempts, "product_id": job.product_id,
-                "submission_id": job.submission_id, "sha256": job.sha256}
+                "submission_id": job.submission_id, "package_file_name": job.file_name, "sha256": job.sha256}
     except UploadError as exc:
         ambiguous = {"UPLOAD_RESULT_UNKNOWN", "UPLOAD_RESULT_UNCONFIRMED", "RECONCILE_REQUIRED",
                      "UNKNOWN_WARNING", "PARTNER_CENTER_VALIDATION_FAILED", "PACKAGE_METADATA_MISMATCH",

@@ -2,8 +2,10 @@ from __future__ import annotations
 import argparse, json, os, re, urllib.error, urllib.request
 from pathlib import Path
 from urllib.parse import quote
-from uploader.core import JobLedger, UploadError, process_job, validate_config
+from uuid import uuid4
+from uploader.core import JobLedger, UploadError, process_job, validate_config, verify_file
 from uploader.partner_center_browser import PartnerCenterCDPConnection
+from uploader.receipts import ReceiptJournal, new_execution_receipt
 
 CONFIG_ROOT = Path(__file__).parent / "config"
 
@@ -52,10 +54,13 @@ def github_download(repository, ref, path, token, target, max_bytes=4_000_000_00
         raise UploadError("DOWNLOAD_FAILED", "GitHub package download failed") from exc
 
 def main():
-    parser=argparse.ArgumentParser(); source=parser.add_mutually_exclusive_group(required=True); source.add_argument("--config",type=Path); source.add_argument("--product"); parser.add_argument("--workdir",type=Path,default=Path(".uploader-run")); parser.add_argument("--execute",action="store_true"); args=parser.parse_args()
+    parser=argparse.ArgumentParser(); source=parser.add_mutually_exclusive_group(required=True); source.add_argument("--config",type=Path); source.add_argument("--product"); parser.add_argument("--workdir",type=Path,default=Path(".uploader-run")); parser.add_argument("--receipt-ledger",type=Path); parser.add_argument("--execute",action="store_true"); args=parser.parse_args()
+    config={}; package=None; job=None; journal=None; outcome="FAILED"; detail={}; code=""
     try:
         config_file=resolve_job_config(config_path=args.config, product_key=args.product)
         config=validate_config(json.loads(config_file.read_text(encoding="utf-8")))
+        args.workdir.mkdir(parents=True, exist_ok=True)
+        journal=ReceiptJournal(args.receipt_ledger or (args.workdir/"durable-ledger"/"receipts"))
         if args.execute and config.get("upload_approved") is not True:
             raise UploadError("UPLOAD_NOT_APPROVED", "This product job is not approved for a live package write")
         if args.execute and not re.fullmatch(r"[0-9a-fA-F]{64}", str(config.get("expected_sha256", ""))):
@@ -66,20 +71,57 @@ def main():
         github_download(config["repository"],config["ref"],config["path"],os.environ.get("GH_READ_TOKEN"),package,
                         max_bytes=int(config.get("max_bytes",4_000_000_000)))
         expected=config.get("expected_sha256"); expected=None if not expected or expected.startswith("REPLACE_") else expected
+        job=verify_file(config,package,expected_sha256=expected,
+                        max_bytes=int(config.get("max_bytes",4_000_000_000)))
         with JobLedger(args.workdir/"ledger.sqlite3") as ledger:
             if args.execute:
-                def browser_operation(job, package_path, *, reconcile=False):
+                def browser_operation(job, package_path, previous_receipt=None, *, reconcile=False):
                     with PartnerCenterCDPConnection(os.environ["PARTNER_CENTER_CDP_URL"], config) as port:
                         if reconcile:
-                            return port.reconcile_ambiguous_upload(job, package_path)
+                            return port.reconcile_ambiguous_upload(job, package_path, previous_receipt)
                         return port.upload_save_and_reconcile(job, package_path)
                 result=process_job(config,package,ledger,expected_sha256=expected,dry_run=False,
                                    live_adapter=lambda job,path: browser_operation(job,path),
-                                   reconcile_adapter=lambda job,path: browser_operation(job,path,reconcile=True))
+                                   reconcile_adapter=lambda job,path,previous: browser_operation(job,path,previous,reconcile=True),
+                                   receipt_journal=journal)
             else:
-                result=process_job(config,package,ledger,expected_sha256=expected,dry_run=True)
-        print(json.dumps(result,sort_keys=True)); return 0
+                result=process_job(config,package,ledger,expected_sha256=expected,dry_run=True,receipt_journal=journal)
+        outcome=str(result.get("status","UNKNOWN")); detail=result
+        confirmation="UI_VALIDATED_SHA_UNOBSERVABLE" if outcome in {"SUCCEEDED","SUCCEEDED_RECONCILED"} else ("UNKNOWN" if outcome=="RECONCILE_REQUIRED" else "NOT_ATTEMPTED")
+        _save_run_receipt(args.workdir,config,job,outcome,confirmation,detail,journal)
+        print(json.dumps(result,sort_keys=True)); return 0 if outcome not in {"RECONCILE_REQUIRED","FAILED"} else 2
     except UploadError as exc:
+        code=exc.code; detail={"error_code":exc.code,"message":str(exc)}
+        if config:
+            args.workdir.mkdir(parents=True, exist_ok=True)
+            if journal is None:
+                journal=ReceiptJournal(args.receipt_ledger or (args.workdir/"durable-ledger"/"receipts"))
+            _save_run_receipt(args.workdir,config,job,"FAILED",_confirmation_for_error(exc.code),detail,journal)
         print(json.dumps({"status":"FAILED","error_code":exc.code,"message":str(exc)},sort_keys=True)); return 2
+
+def _confirmation_for_error(code: str) -> str:
+    if code in {"UPLOAD_RESULT_UNKNOWN","UPLOAD_RESULT_UNCONFIRMED","RECONCILE_REQUIRED","RECONCILE_UNRESOLVED"}:
+        return "UNKNOWN"
+    return "NOT_CONFIRMED"
+
+def _save_run_receipt(workdir: Path, config: dict, job, outcome: str, confirmation: str,
+                      details: dict, journal: ReceiptJournal | None) -> None:
+    receipt=new_execution_receipt(
+        product_id=str(config.get("product_id","")),
+        submission_id=str(config.get("submission_id","")),
+        package_file_name=job.file_name if job else Path(str(config.get("path","unknown.msix"))).name,
+        sha256=job.sha256 if job else None,
+        result=outcome, partner_center_confirmation=confirmation,
+        run_id=os.environ.get("GITHUB_RUN_ID"), run_attempt=os.environ.get("GITHUB_RUN_ATTEMPT"),
+        details=details,
+    )
+    receipt["receipt_id"]=uuid4().hex
+    receipt_path=workdir/"receipt.json"
+    temp=workdir/(".receipt."+uuid4().hex+".tmp")
+    with temp.open("x",encoding="utf-8",newline="\n") as stream:
+        json.dump(receipt,stream,ensure_ascii=False,sort_keys=True,indent=2); stream.write("\n")
+    os.replace(temp,receipt_path)
+    if journal is not None:
+        journal.append(receipt)
 
 if __name__ == "__main__": raise SystemExit(main())

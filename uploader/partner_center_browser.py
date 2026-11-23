@@ -10,6 +10,7 @@ from time import monotonic
 from typing import Any
 
 from uploader.core import UploadError, VerifiedJob
+from uploader.receipts import receipt_matches_job
 
 PARTNER_ORIGIN = "https://partner.microsoft.com"
 FILE_INPUT = "input[name='fileuploader'][type='file'][multiple]"
@@ -94,12 +95,13 @@ class PartnerCenterBrowserPort:
         if tuple(sorted(existing_rows)) not in {tuple(expected_old), tuple(exact_inflight)}:
             raise UploadError("RECONCILE_REQUIRED", "Draft already contains a package row; refusing a duplicate upload")
         already_uploaded = job.file_name in existing_rows
-        if not already_uploaded:
-            uploader = self._one(self.page.locator(FILE_INPUT), "verified MSIX file input")
-            try:
-                uploader.set_input_files(str(package_path.resolve()))
-            except Exception as exc:
-                raise UploadError("UPLOAD_RESULT_UNKNOWN", "File selection/upload outcome is ambiguous; reconcile before retry") from exc
+        if already_uploaded:
+            raise UploadError("RECONCILE_REQUIRED", "Partner Center already shows this filename; require the prior SHA-bound receipt before any Save")
+        uploader = self._one(self.page.locator(FILE_INPUT), "verified MSIX file input")
+        try:
+            uploader.set_input_files(str(package_path.resolve()))
+        except Exception as exc:
+            raise UploadError("UPLOAD_RESULT_UNKNOWN", "File selection/upload outcome is ambiguous; reconcile before retry") from exc
 
         deadline = monotonic() + self.timeout_seconds
         transitions: list[str] = ["PACKAGE_UPLOAD_REQUIRED"]
@@ -165,6 +167,8 @@ class PartnerCenterBrowserPort:
             "submission_id": job.submission_id,
             "package_file_name": job.file_name,
             "sha256": job.sha256,
+            "partner_center_sha256": None,
+            "partner_center_confirmation": "UI_VALIDATED_SHA_UNOBSERVABLE",
             "version": job.version,
             "architecture": job.architecture,
             "state_transitions": transitions + ["PACKAGES_SAVED", "OVERVIEW_RELOADED", "PACKAGES_REOPENED_RETAINED"],
@@ -191,8 +195,9 @@ class PartnerCenterBrowserPort:
             if self.page.get_by_text(old_name, exact=True).count():
                 raise UploadError("OLD_PACKAGE_RETAINED", "Overview still contains an expected-to-replace older package")
 
-    def reconcile_ambiguous_upload(self, job: VerifiedJob, package_path: Path) -> dict[str, Any]:
-        """Read Partner Center before retry; resume Save if the exact upload row exists."""
+    def reconcile_ambiguous_upload(self, job: VerifiedJob, package_path: Path,
+                                   previous_receipt: dict[str, Any] | None = None) -> dict[str, Any]:
+        """Read Partner Center; filename/UI state alone cannot establish binary identity."""
         overview_url = f"{PARTNER_ORIGIN}/en-us/dashboard/products/{job.product_id}/overview"
         self._goto(overview_url)
         self._one(self.page.get_by_role("heading", name=job.product_name, exact=True), "configured product Overview heading")
@@ -202,19 +207,29 @@ class PartnerCenterBrowserPort:
         if complete.count() == 1 and saved_name.count() == 1 and validated.count() == 1:
             href = complete.get_attribute("href") or ""
             if f"/products/{job.product_id}/submissions/{job.submission_id}/packages" in href:
-                return {"partner_center_confirmed": True, "reconciled_after_interruption": True,
-                        "method": "authenticated_playwright_cdp_overview_reconcile",
+                if receipt_matches_job(previous_receipt, job):
+                    return {"partner_center_confirmed": True, "reconciled_after_interruption": True,
+                            "method": "authenticated_playwright_cdp_overview_reconcile",
+                            "product_id": job.product_id, "submission_id": job.submission_id,
+                            "package_file_name": job.file_name, "sha256": job.sha256,
+                            "partner_center_sha256": None,
+                            "partner_center_confirmation": "UI_VALIDATED_SHA_UNOBSERVABLE",
+                            "prior_receipt_sha256_match": True,
+                            "partner_center_validation": "Validated", "no_reupload": True}
+                return {"safe_to_retry": False, "partner_center_confirmed": False,
                         "product_id": job.product_id, "submission_id": job.submission_id,
                         "package_file_name": job.file_name, "sha256": job.sha256,
-                        "partner_center_validation": "Validated", "no_reupload": True}
+                        "partner_center_sha256": None,
+                        "reason": "UI filename and Validated state do not expose package SHA; matching prior receipt is missing"}
         packages_url = self._assert_target(job.product_id, job.submission_id)
         rows = sorted(x.strip() for x in self.page.locator(PACKAGE_NAME_SELECTOR).all_text_contents() if x.strip())
         expected_old = sorted(self.config.get("expected_existing_package_names", []))
         if rows == sorted([*expected_old, job.file_name]):
-            # A previous attempt already placed the same frozen file in this exact Draft.
-            receipt = self.upload_save_and_reconcile(job, package_path)
-            receipt["reconciled_after_interruption"] = True
-            return receipt
+            return {"safe_to_retry": False, "partner_center_confirmed": False,
+                    "product_id": job.product_id, "submission_id": job.submission_id,
+                    "package_file_name": job.file_name, "sha256": job.sha256,
+                    "partner_center_sha256": None,
+                    "reason": "Package row exists but Overview did not prove saved state; UI cannot prove binary SHA"}
         if rows == expected_old:
             active = self.page.get_by_text("Uploading", exact=True).count() + self.page.get_by_text("Analyzing package", exact=True).count()
             if active == 0:

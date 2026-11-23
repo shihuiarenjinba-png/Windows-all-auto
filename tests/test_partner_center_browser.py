@@ -6,6 +6,7 @@ import zipfile
 from pathlib import Path
 
 from uploader.core import verify_file
+from uploader.receipts import new_execution_receipt
 from uploader.partner_center_browser import (
     FILE_INPUT, PACKAGES_COMPLETE, PACKAGE_NAME_SELECTOR, WARNING_SELECTOR,
     PartnerCenterBrowserPort,
@@ -133,7 +134,7 @@ class PartnerCenterBrowserTests(unittest.TestCase):
                 "PACKAGES_SAVED", "OVERVIEW_RELOADED", "PACKAGES_REOPENED_RETAINED",
             ])
 
-    def test_resumes_pending_exact_package_without_duplicate_file_write(self):
+    def test_existing_filename_is_not_saved_again_without_hash_bound_receipt(self):
         with tempfile.TemporaryDirectory() as tmp:
             package = Path(tmp) / "FolderAutomationEngine_1.0.0.0_x64_StoreDraft_UNSIGNED.msix"
             self.make_package(package)
@@ -148,11 +149,43 @@ class PartnerCenterBrowserTests(unittest.TestCase):
             page = FakePage(job)
             page.package_present = True
             from uploader.core import UploadError
-            result = PartnerCenterBrowserPort(page, CONFIG).upload_save_and_reconcile(job, package)
-            self.assertTrue(result["partner_center_confirmed"])
-            self.assertIn("PACKAGE_UPLOAD_RECONCILED_PRESENT", result["state_transitions"])
+            with self.assertRaisesRegex(UploadError, "prior SHA-bound receipt"):
+                PartnerCenterBrowserPort(page, CONFIG).upload_save_and_reconcile(job, package)
             self.assertEqual(page.upload_calls, 0)
-            self.assertEqual(page.save_calls, 1)
+            self.assertEqual(page.save_calls, 0)
+
+    def test_overview_filename_validated_and_complete_need_matching_prior_receipt(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            package = Path(tmp) / "FolderAutomationEngine_1.0.0.0_x64_StoreDraft_UNSIGNED.msix"
+            self.make_package(package)
+            job_config = {
+                "schema_version": 1, **CONFIG, "repository": "owner/repo", "ref": "a" * 40,
+                "path": package.name, "version": "1.0.0.0", "destination": "microsoft_partner_center_existing_draft",
+                "identity_name": "OkinawaDesktopTools.FolderAutomationEngine",
+                "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC", "architecture": "x64",
+                "upload_approved": False,
+            }
+            job = verify_file(job_config, package)
+            page = FakePage(job)
+            page.package_present = True
+            page.saved = True
+            port = PartnerCenterBrowserPort(page, CONFIG)
+            no_receipt = port.reconcile_ambiguous_upload(job, package)
+            self.assertFalse(no_receipt["partner_center_confirmed"])
+            self.assertFalse(no_receipt["safe_to_retry"])
+            self.assertIsNone(no_receipt["partner_center_sha256"])
+
+            prior = new_execution_receipt(
+                product_id=job.product_id, submission_id=job.submission_id,
+                package_file_name=job.file_name, sha256=job.sha256, result="SUCCEEDED",
+                partner_center_confirmation="UI_VALIDATED_SHA_UNOBSERVABLE",
+                details={"partner_center_confirmed": True, "partner_center_sha256": None},
+            )
+            confirmed = port.reconcile_ambiguous_upload(job, package, prior)
+            self.assertTrue(confirmed["partner_center_confirmed"])
+            self.assertTrue(confirmed["prior_receipt_sha256_match"])
+            self.assertTrue(confirmed["no_reupload"])
+            self.assertEqual(page.upload_calls, 0)
 
 
 if __name__ == "__main__":

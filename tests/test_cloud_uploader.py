@@ -5,6 +5,7 @@ import unittest
 import zipfile
 from pathlib import Path
 from uploader.core import JobLedger, UploadError, process_job, validate_config, verify_file
+from uploader.receipts import ReceiptJournal, new_execution_receipt
 
 CONFIG = {"schema_version":1,"product_name":"Data Contract Auditor","product_id":"9PDL4ZWSB45P","submission_id":"1152921505702212222","repository":"shihuiarenjinba-png/csv-import-validator","ref":"107e59f2cbcde9c6ca88cf1aaf3d52262004e6e0","path":"pkg.msix","version":"1.0.0.0","destination":"microsoft_partner_center_existing_draft","identity_name":"OkinawaDesktopTools.DataContractAuditor","publisher":"CN=46263F21-A700-41DB-8C9B-114C22FB82FC","architecture":"x64","upload_approved":False}
 
@@ -78,7 +79,63 @@ class CloudUploaderTests(unittest.TestCase):
                 result=process_job(config,p,ledger,expected_sha256=digest,dry_run=False,
                                    reconcile_adapter=lambda *_:{"partner_center_confirmed":True},
                                    live_adapter=lambda *_:self.fail("must not upload twice"))
-            self.assertEqual(result["status"],"SUCCEEDED_RECONCILED")
+            self.assertEqual(result["status"],"RECONCILE_REQUIRED")
+
+    def test_cache_loss_with_exact_durable_receipt_prevents_duplicate_upload(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp); p=root/"pkg.msix"; make_msix(p)
+            digest=hashlib.sha256(p.read_bytes()).hexdigest()
+            job=verify_file(CONFIG,p,expected_sha256=digest)
+            journal=ReceiptJournal(root/"durable-receipts")
+            receipt=new_execution_receipt(
+                product_id=job.product_id,submission_id=job.submission_id,
+                package_file_name=job.file_name,sha256=digest,result="SUCCEEDED",
+                partner_center_confirmation="UI_VALIDATED_SHA_UNOBSERVABLE",
+                details={"partner_center_confirmed":True,"partner_center_sha256":None},
+            )
+            journal.append(receipt)
+            called=[]
+            # New SQLite file simulates an evicted GitHub Actions cache.
+            with JobLedger(root/"new-empty-ledger.sqlite3") as ledger:
+                result=process_job({**CONFIG,"upload_approved":True},p,ledger,
+                    expected_sha256=digest,dry_run=False,receipt_journal=journal,
+                    live_adapter=lambda *_:(called.append(True) or {"partner_center_confirmed":True}))
+            self.assertEqual(result["status"],"DUPLICATE_CONFIRMED")
+            self.assertEqual(called,[])
+
+    def test_same_filename_different_sha_requires_reconciliation(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp); first=root/"pkg.msix"; make_msix(first,b"first")
+            digest=hashlib.sha256(first.read_bytes()).hexdigest()
+            first_job=verify_file(CONFIG,first,expected_sha256=digest)
+            journal=ReceiptJournal(root/"durable-receipts")
+            journal.append(new_execution_receipt(
+                product_id=first_job.product_id,submission_id=first_job.submission_id,
+                package_file_name=first_job.file_name,sha256=digest,result="SUCCEEDED",
+                partner_center_confirmation="UI_VALIDATED_SHA_UNOBSERVABLE"))
+            changed=root/"changed.msix"; make_msix(changed,b"different")
+            # Keep the same Store-visible name while changing package bytes.
+            renamed=root/"pkg.msix"; changed.replace(renamed)
+            changed_digest=hashlib.sha256(renamed.read_bytes()).hexdigest()
+            with JobLedger(root/"ledger.sqlite3") as ledger:
+                result=process_job({**CONFIG,"upload_approved":True},renamed,ledger,
+                    expected_sha256=changed_digest,dry_run=False,receipt_journal=journal,
+                    live_adapter=lambda *_:self.fail("must not upload a different binary under a reused filename"))
+            self.assertEqual(result["status"],"RECONCILE_REQUIRED")
+
+    def test_corrupt_durable_receipt_fails_closed_before_live_adapter(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp); p=root/"pkg.msix"; make_msix(p)
+            journal=ReceiptJournal(root/"durable-receipts")
+            bad=root/"durable-receipts"/CONFIG["product_id"]
+            bad.mkdir(parents=True)
+            (bad/"bad.json").write_text("{broken",encoding="utf-8")
+            called=[]
+            with JobLedger(root/"ledger.sqlite3") as ledger:
+                with self.assertRaisesRegex(UploadError,"receipt ledger is unreadable"):
+                    process_job({**CONFIG,"upload_approved":True},p,ledger,dry_run=False,
+                        receipt_journal=journal,live_adapter=lambda *_:(called.append(True) or {"partner_center_confirmed":True}))
+            self.assertEqual(called,[])
 
     def test_live_upload_requires_frozen_hash_and_exact_identity(self):
         with tempfile.TemporaryDirectory() as tmp:
