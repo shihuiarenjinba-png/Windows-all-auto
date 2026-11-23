@@ -220,5 +220,22 @@ class CurrentLedgerGateTests(unittest.TestCase):
         self.assertEqual(file_item["current_stack_revalidation"]["status"], "PASS_EXACT_HEAD_CI_AFTER_STACK")
 
 
+    def test_latest_reconciliation_keeps_focus_file_version_and_source_gates_held(self):
+        root = Path(__file__).resolve().parents[1]
+        ledger = json.loads((root / "ops/active_e2e_handoff.json").read_text(encoding="utf-8"))
+        recon = json.loads((root / "ops/focus_file_transport_reconciliation_20261123.json").read_text(encoding="utf-8"))
+        self.assertEqual(ledger["e2e_status"], "HOLD")
+        self.assertIs(ledger["e2e_pass"], False)
+        self.assertEqual(ledger["windows_e2e_custody_reconciliation"]["pr165_tested_head_sha"],
+                         "e37c234cae7902f985c2a60852ffd71865117bcf")
+        self.assertEqual(ledger["windows_e2e_custody_reconciliation"]["approved_version"], "UNVERIFIED")
+        self.assertEqual(recon["version_discovery"]["decision"],
+                         "KEEP_VERSION_HOLD__DO_NOT_INFER_OR_WRITE_VERSION")
+        self.assertEqual(recon["first_unconnected_interval"]["status"],
+                         "BLOCKED_BEFORE_REAL_MSIX_BUILD")
+        self.assertIs(ledger["store_submission_allowed"], False)
+        self.assertIs(ledger["certification_allowed"], False)
+        self.assertIs(ledger["publish_allowed"], False)
+
 if __name__ == "__main__":
     unittest.main()

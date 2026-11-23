@@ -292,5 +292,27 @@ class CustodyTests(unittest.TestCase):
         file_item = next(p for p in queue["priority"] if p["product"] == "File Integrity Ledger")
         self.assertEqual(file_item["current_stack_revalidation"]["status"], "PASS_EXACT_HEAD_CI_AFTER_STACK")
 
+    def test_current_focus_file_transport_reconciliation_stays_fail_closed(self):
+        root = Path(__file__).resolve().parents[1]
+        ledger = json.loads((root / "ops/active_e2e_handoff.json").read_text(encoding="utf-8"))
+        recon = json.loads((root / "ops/focus_file_transport_reconciliation_20261123.json").read_text(encoding="utf-8"))
+        latest = ledger["latest_transport_reconciliation"]
+        self.assertEqual(latest["central_tested_head_sha"], "e37c234cae7902f985c2a60852ffd71865117bcf")
+        self.assertEqual(latest["ci_status"], "PASS_EXACT_HEAD_CI")
+        self.assertEqual(latest["status"], "HOLD")
+        self.assertIs(latest["e2e_pass"], False)
+        self.assertIs(latest["real_msix"], False)
+        self.assertEqual(latest["store_upload_test_eligible_products"], 0)
+        self.assertIs(ledger["store_submission_allowed"], False)
+        self.assertIs(ledger["certification_allowed"], False)
+        self.assertIs(ledger["publish_allowed"], False)
+        for product in recon["products"]:
+            self.assertIsNone(product["package_version"])
+            self.assertEqual(product["current_source_identity_binding_status"],
+                             "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE")
+            self.assertIs(product["real_msix"], False)
+        self.assertEqual(recon["store_upload_test_eligibility"]["eligible_fresh_unsold_products"], 0)
+        self.assertFalse(recon["store_upload_test_eligibility"]["dry_run_started"])
+
 if __name__ == "__main__":
     unittest.main()
