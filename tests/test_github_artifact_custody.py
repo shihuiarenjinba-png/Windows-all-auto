@@ -289,6 +289,8 @@ class CustodyTests(unittest.TestCase):
         self.assertIs(ledger["certification_allowed"], False)
         self.assertIs(ledger["publish_allowed"], False)
         self.assertIs(queue["new_product_generation_allowed"], False)
+        file_item = next(p for p in queue["priority"] if p["product"] == "File Integrity Ledger")
+        self.assertEqual(file_item["current_stack_revalidation"]["status"], "PASS_EXACT_HEAD_CI_AFTER_STACK")
 
 if __name__ == "__main__":
     unittest.main()
