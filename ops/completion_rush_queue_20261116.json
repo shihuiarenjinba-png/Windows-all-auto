@@ -103,7 +103,8 @@
           "scope": "Hosted native EXE GUI evidence; not MSIX/install/local checker"
         }
       },
-      "current_source_identity_binding_status": "REVALIDATION_REQUIRED__APPROVED_IDENTITY_STILL_BOUND_TO_8B00__CURRENT_PR94_HEAD_FB629"
+      "current_source_identity_binding_status": "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE",
+      "current_source_identity_binding_detail": "REVALIDATION_REQUIRED__APPROVED_IDENTITY_STILL_BOUND_TO_8B00__CURRENT_PR94_HEAD_FB629"
     },
     {
       "rank": 2,
@@ -222,7 +223,8 @@
           }
         ]
       },
-      "current_source_identity_binding_status": "REVALIDATION_REQUIRED__APPROVED_IDENTITY_BOUND_TO_D1108__PR95_4474_AND_PR97_82AAFF_DIVERGED"
+      "current_source_identity_binding_status": "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE",
+      "current_source_identity_binding_detail": "REVALIDATION_REQUIRED__APPROVED_IDENTITY_BOUND_TO_D1108__PR95_4474_AND_PR97_82AAFF_DIVERGED"
     },
     {
       "rank": 3,
