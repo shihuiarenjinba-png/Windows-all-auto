@@ -300,5 +300,42 @@ class CurrentLedgerGateTests(unittest.TestCase):
         self.assertEqual(ledger["pr174_restack_assessment_20261124"]["decision"], "DO_NOT_RESTACK")
         self.assertEqual(len(ledger["pr174_restack_assessment_20261124"]["commits"]), 6)
 
+
+class LiveReconciliation20261124Tests(unittest.TestCase):
+    def test_live_pr165_head_ci_is_not_promoted_to_product_e2e(self):
+        root = Path(__file__).resolve().parents[1]
+        ledger = json.loads((root / "ops/active_e2e_handoff.json").read_text(encoding="utf-8"))
+        live = ledger["pr165_live_head_observation_20261124_latest"]
+        self.assertEqual(live["head_sha"], "f49e5ca9770a378f2cc51e70ef4ac2a934023578")
+        self.assertEqual([x["run_id"] for x in live["exact_head_workflows"]],
+                         [45275266839, 45275266812, 45275266866])
+        self.assertTrue(all(x["conclusion"] == "success" for x in live["exact_head_workflows"]))
+        self.assertEqual(live["status"], "PASS_EXACT_HEAD_CI")
+        self.assertIs(live["e2e_pass"], False)
+        self.assertEqual(live["product_e2e_status"], "HOLD")
+        self.assertIs(ledger["store_submission_allowed"], False)
+        self.assertIs(ledger["certification_allowed"], False)
+        self.assertIs(ledger["publish_allowed"], False)
+
+    def test_focus_file_current_source_and_version_gates_remain_held(self):
+        root = Path(__file__).resolve().parents[1]
+        recon = json.loads((root / "ops/focus_file_transport_reconciliation_20261124.json").read_text(encoding="utf-8"))
+        self.assertEqual(recon["status"], "HOLD")
+        self.assertIs(recon["e2e_pass"], False)
+        focus = next(p for p in recon["products"] if p["product"] == "Focus Session Desk")
+        file_product = next(p for p in recon["products"] if p["product"] == "File Integrity Ledger")
+        self.assertEqual(focus["current_source_identity_binding_status"], "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE")
+        self.assertEqual(file_product["source_selection_status"], "SOURCE_LINEAGE_DIVERGED__NO_PACKAGE_SOURCE_SELECTED")
+        for product in (focus, file_product):
+            self.assertIsNone(product["package_version"])
+            self.assertIs(product["real_msix"], False)
+            self.assertIs(product["github_backlog_receipt"], False)
+            self.assertIs(product["local_checker_receipt"], False)
+        self.assertEqual(file_product["pr95_latest_gui"]["conclusion"], "failure")
+        self.assertEqual(file_product["pr100_gui_candidate"]["conclusion"], "success")
+        self.assertEqual(recon["version_discovery"]["decision"], "KEEP_VERSION_HOLD__DO_NOT_INFER_OR_WRITE_VERSION")
+        self.assertEqual(recon["pr174"]["compare_to_pr165"]["behind_by"], 64)
+        self.assertEqual(recon["store_upload_test_eligibility"]["eligible_fresh_unsold_products"], 0)
+
 if __name__ == "__main__":
     unittest.main()
