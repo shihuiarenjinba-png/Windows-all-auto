@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "product_name": "Data Contract Auditor",
+  "product_id": "9PDL4ZWSB45P",
+  "submission_id": "1152921505702212222",
+  "repository": "shihuiarenjinba-png/csv-import-validator",
+  "ref": "107e59f2cbcde9c6ca88cf1aaf3d52262004e6e0",
+  "path": "store-output/DataContractSchemaDrift_1.0.0.0_x64.msix",
+  "version": "1.0.0.0",
+  "destination": "microsoft_partner_center_existing_draft",
+  "expected_sha256": "REPLACE_WITH_FORMAL_PACKAGE_SHA256",
+  "max_bytes": 4000000000,
+  "dry_run": true
+}

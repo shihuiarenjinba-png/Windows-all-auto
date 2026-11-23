@@ -1,0 +1,44 @@
+name: Store cloud uploader (dry-run default)
+on:
+  workflow_dispatch:
+    inputs:
+      product:
+        description: Registered product job
+        required: true
+        type: choice
+        options: [data-contract-auditor]
+      execute:
+        description: Live upload (MSIX adapter currently disabled)
+        required: true
+        type: boolean
+        default: false
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: store-upload-${{ inputs.product }}
+  cancel-in-progress: false
+jobs:
+  validate-and-stage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/msix-commercial-handoff-20261115
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Download configured package and validate
+        env:
+          GH_READ_TOKEN: ${{ secrets.GH_READ_TOKEN }}
+        run: python -m uploader.run --config uploader/config/data-contract-auditor.job.json
+      - name: Preserve run ledger
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: uploader-ledger-${{ github.run_id }}
+          path: .uploader-run/ledger.sqlite3
+          if-no-files-found: ignore
+          retention-days: 30
