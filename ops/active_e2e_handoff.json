@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-16T09:09:44Z",
+  "updated_at_utc": "2026-11-23T07:39:54Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -11127,26 +11127,26 @@
     }
   },
   "windows_e2e_custody_reconciliation": {
-    "checked_at_utc": "2026-11-16T09:09:44Z",
+    "checked_at_utc": "2026-11-23T07:39:54Z",
     "status": "HOLD",
     "pr161_head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
     "pr164_head_sha": "145cd1f44bdec9e584eb0f045dd139ef330c6321",
-    "pr165_tested_head_sha": "1e96f42031dedaced70f47a4a4fac8bbe9a687f0",
+    "pr165_tested_head_sha": "0945d72d792b77e99570134695ad03b20aaace7e",
     "pr165_ci": [
       {
-        "run_id": 43811116714,
+        "run_id": 44990236894,
         "conclusion": "success",
-        "scope": "Windows-all-auto Offline QA (synthetic fail-closed CI; no real MSIX evidence)"
+        "scope": "Exact-head Windows-all-auto Offline QA; regression only, no real product MSIX evidence"
       },
       {
-        "run_id": 43811116542,
+        "run_id": 44990236896,
         "conclusion": "success",
-        "scope": "Windows E2E transport fail-closed regression (synthetic fail-closed CI; no real MSIX evidence)"
+        "scope": "Exact-head Windows E2E transport fail-closed regression; synthetic fixture coverage only"
       },
       {
-        "run_id": 43811116695,
+        "run_id": 44990236908,
         "conclusion": "success",
-        "scope": "GitHub artifact custody fail-closed regression (synthetic fail-closed CI; no real MSIX evidence)"
+        "scope": "Exact-head GitHub artifact custody regression; authenticated metadata/archive-byte checks, no product MSIX handoff"
       }
     ],
     "approved_version": "UNVERIFIED",
@@ -11156,7 +11156,7 @@
     "checker_gui_e2e": "NOT_VERIFIED",
     "focus_file_integrity_phase": "POST_IDENTITY",
     "prism_revision": "HOLD_NO_OLD_SOURCE_CAS",
-    "note": "PR161 and PR165 exact heads checked 2026-11-16; three PR165 synthetic CI runs successful. Completion rush queue at same head retains two independent delivery blockers per Focus/File Integrity: authoritative Package Version and real Store PNG bytes/embedding verification. No real MSIX/backlog/local receipt/checker/GUI proof. Prism current 4c22875c must not reuse old 15fdcb52 Identity/CAS. E2E HOLD unchanged.",
+    "note": "PR165 exact HEAD 0945d72 and its three exact-head CI runs are green, but these are synthetic/transport regressions only. Focus/File now have independently read-back PNG SHA-256 and hosted native EXE GUI evidence. Focus approved identity remains bound to 8b00bc4e and package_version_gate=HOLD; File approved identity remains bound to d1108d12 and package_version_gate=HOLD. No authoritative Package Version, real MSIX, GitHub real-MSIX artifact receipt, local pull, Windows-checker, user-PC GUI/install receipt or E2E PASS is present. Do not CAS old source Identity, infer Version, or promote E2E.",
     "approved_identity_product_checks": [
       {
         "product": "Focus Session Desk",
@@ -11165,6 +11165,57 @@
         "approved_file_commit": "8a7139375524830bf823469526837259266172be",
         "approved_file_blob": "00c56e85ec7590783284e372ba100a3127614971",
         "version": "UNAPPROVED",
+        "package_version": null,
+        "package_version_gate": "HOLD",
+        "store_id": "9P6452C61N7B",
+        "identity_file_status": "FOUND__SOURCE_BOUND_TO_8B00__VERSION_GATE_HOLD",
+        "identity_file_ref": "AI-App-Factory@fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79:products/focus-session-desk/store/approved-identity.json",
+        "current_product_lane_pr": 94,
+        "current_product_lane_head": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+        "source_compare": {
+          "base": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+          "head": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+          "status": "ahead",
+          "ahead_by": 27,
+          "behind_by": 0,
+          "product_main_py_changed": true
+        },
+        "current_source_identity_binding_status": "REVALIDATION_REQUIRED__APPROVED_IDENTITY_STILL_BOUND_TO_8B00",
+        "signature_status": "PRE_IDENTITY_EXE_NOT_MSIX",
+        "store_assets_sha256": {
+          "StoreLogo_png": {
+            "sha256": "2c0460e0f2947ce975b7a6abbc607acaeea8a22bf9bcae984b420acedddc8e2f",
+            "bytes": 360393,
+            "dimensions": "300x300",
+            "git_blob_sha": "8017427aabf0e30168a88353588dc2ffdc2cba6d"
+          },
+          "Square150_png": {
+            "sha256": "9183aa4055ed453360b656b4fe291bf392413e04fab44048820ca4bcfa5d1d0c",
+            "bytes": 90223,
+            "dimensions": "150x150",
+            "git_blob_sha": "c6060306f202b662831039b95b1352689da023c7"
+          },
+          "Square44_png": {
+            "sha256": "3fbdcd610f6781b72308755c6f92b1fdaef0592bab51c612556e5b8b95c1ee46",
+            "bytes": 7856,
+            "dimensions": "44x44",
+            "git_blob_sha": "466a795ea01e34a28ac1db9aa7dcf3308464dbd0"
+          }
+        },
+        "store_assets_source_head": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+        "store_assets_sha256_independently_readback": true,
+        "native_exe_gui_evidence": {
+          "run_id": 44779287840,
+          "head_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+          "conclusion": "success",
+          "artifact_id": 14651506416,
+          "artifact_sha256": "c6cd277dda7a1e713754cf66c4321ce88ebbb217f4d497228dc559b335d5699b",
+          "artifact_sha256_matches_github_digest": true,
+          "exe_sha256_reported": "65f97c29809e5a0f10c2ed1fe8079d6a408f6844be8bc1589dec59506d37a009",
+          "result": "PASS",
+          "progress_visual_review_required": true,
+          "scope": "Hosted native Windows EXE GUI evidence only; no MSIX, install, local checker or user-PC receipt"
+        },
         "real_msix": "NOT_VERIFIED",
         "backlog": "NOT_VERIFIED",
         "checker_gui": "NOT_VERIFIED",
@@ -11177,6 +11228,95 @@
         "approved_file_commit": "db9a57af822788af4c8384499a6e343ec7b0353d",
         "approved_file_blob": "78034cf62be3479f9ed752a2585ab31bb24c49ff",
         "version": "UNAPPROVED",
+        "package_version": null,
+        "package_version_gate": "HOLD",
+        "store_id": "9PGZ445SR5GM",
+        "identity_file_status": "FOUND_AT_APPROVED_COMMIT__SOURCE_BOUND_TO_D1108__NOT_CURRENT_BRANCH_HEAD",
+        "identity_file_ref": "AI-App-Factory@db9a57af822788af4c8384499a6e343ec7b0353d:products/file-integrity-ledger/store/approved-identity.json",
+        "current_product_lane_pr": 95,
+        "current_product_lane_head": "4474af31b35afc7c3608a5b6a6f833597001fdf7",
+        "current_gui_test_pr": 97,
+        "current_gui_test_head": "82aaffc47257f13fd386345854a7fb9733727def",
+        "source_compare_to_pr95": {
+          "base": "d1108d12f7d1697af30400f97c7db39cba5e6791",
+          "head": "4474af31b35afc7c3608a5b6a6f833597001fdf7",
+          "status": "diverged",
+          "ahead_by": 6,
+          "behind_by": 8
+        },
+        "source_compare_to_pr97": {
+          "base": "d1108d12f7d1697af30400f97c7db39cba5e6791",
+          "head": "82aaffc47257f13fd386345854a7fb9733727def",
+          "status": "diverged",
+          "ahead_by": 29,
+          "behind_by": 8
+        },
+        "current_source_identity_binding_status": "REVALIDATION_REQUIRED__APPROVED_IDENTITY_BOUND_TO_D1108_NOT_4474_OR_82AAFF",
+        "signature_status": "PRE_IDENTITY_EXE_NOT_MSIX",
+        "store_assets_sha256": {
+          "StoreLogo_png": {
+            "sha256": "224fa777280cf61877c14146e920fca32bb90bff6f0cea3df4ed0ac77c0645a9",
+            "bytes": 360393,
+            "dimensions": "300x300",
+            "git_blob_sha": "e3c9a9426a1971f21175b9b045d4d5fef83f97d5"
+          },
+          "Square150_png": {
+            "sha256": "e00136c7a319756ccc48c2dc50136f5872e272e806cd592a6bebb8922bbb1742",
+            "bytes": 90223,
+            "dimensions": "150x150",
+            "git_blob_sha": "df892bd2fcf7b56f9facd94054b2b1385313b030"
+          },
+          "Square44_png": {
+            "sha256": "bd61099427a770f8ddf247f0f6928e5d50ba2cd8265797c7f13952e96147d70d",
+            "bytes": 7856,
+            "dimensions": "44x44",
+            "git_blob_sha": "d57e7a25d2a9eaa2b54d00c610f3a1ad7d4a4d49"
+          }
+        },
+        "store_assets_source_head": "4474af31b35afc7c3608a5b6a6f833597001fdf7",
+        "store_assets_identical_on_pr97_head": true,
+        "store_assets_sha256_independently_readback": true,
+        "native_exe_gui_evidence": {
+          "run_id": 45069504553,
+          "head_sha": "82aaffc47257f13fd386345854a7fb9733727def",
+          "conclusion": "success",
+          "artifact_id": 14772319387,
+          "artifact_sha256": "88b09aaa01ac7175cc97f2ca6f4d727c7b559e9aae2ebb10388f70a6222017a2",
+          "artifact_sha256_matches_github_digest": true,
+          "exe_sha256_reported": "4f2c8c9aa264f9a0030fa0915b71e763b6eda0c8b443f91b11b1406850e6f102",
+          "receipt_statuses": [
+            "UNCHANGED",
+            "MODIFIED",
+            "MISSING"
+          ],
+          "fixture_only_no_user_files_accessed": true,
+          "visual_review_required": true,
+          "result": "PASS",
+          "scope": "Hosted native Windows GUI fixture smoke; exact-head source/EXE/receipt evidence; not user-PC local QA or MSIX"
+        },
+        "previous_gui_attempts": [
+          {
+            "pr": 95,
+            "head": "4474af31b35afc7c3608a5b6a6f833597001fdf7",
+            "run_id": 44938245049,
+            "conclusion": "failure",
+            "reason": "English native Open-dialog title assumption"
+          },
+          {
+            "pr": 96,
+            "head": "321cc90ac8caac1ae2375ae202bffe2483e35f22",
+            "run_id": 44954830529,
+            "conclusion": "failure",
+            "reason": "localized picker visibility/title assumption"
+          },
+          {
+            "pr": 97,
+            "head": "82aaffc47257f13fd386345854a7fb9733727def",
+            "run_id": 45069504553,
+            "conclusion": "success",
+            "reason": "locale-independent Win32 #32770 discovery"
+          }
+        ],
         "real_msix": "NOT_VERIFIED",
         "backlog": "NOT_VERIFIED",
         "checker_gui": "NOT_VERIFIED",
@@ -11184,9 +11324,51 @@
       }
     ],
     "latest_head_ci_observation": {
-      "observed_at_jst": "2026-11-16 18:09",
-      "head_sha": "1e96f42031dedaced70f47a4a4fac8bbe9a687f0",
+      "observed_at_jst": "2026-11-23 16:39",
+      "head_sha": "0945d72d792b77e99570134695ad03b20aaace7e",
       "workflow_runs": [
+        {
+          "run_id": 44990236894,
+          "conclusion": "success",
+          "scope": "Windows-all-auto Offline QA; exact-head regression only"
+        },
+        {
+          "run_id": 44990236896,
+          "conclusion": "success",
+          "scope": "Windows E2E transport fail-closed regression; synthetic fixture only"
+        },
+        {
+          "run_id": 44990236908,
+          "conclusion": "success",
+          "scope": "GitHub artifact custody fail-closed regression; no real product artifact"
+        }
+      ],
+      "pr161_head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
+      "pr171_head_sha": "764721021f13be96364529650b44fb439770bac9",
+      "scope": "Exact-head CI green; real MSIX, signed package, backlog receipt, local pull, Windows-checker, local GUI/install and E2E remain unverified",
+      "status": "HOLD",
+      "blocker": "Focus and File Integrity both remain blocked by authoritative Package Version/current-source Identity binding. Focus approved identity remains source-bound to 8b00bc4e with package_version_gate=HOLD; File Integrity approved identity is source-bound to d1108d12 with package_version_gate=HOLD. Hosted EXE GUI/PNG evidence exists, but neither product has a real MSIX or local checker receipt.",
+      "implementation_status": "EXACT_HEAD_FAIL_CLOSED_CI_GREEN__REAL_PRODUCT_PACKAGE_TRANSPORT_NOT_VERIFIED"
+    },
+    "pr165_head_sha": "0945d72d792b77e99570134695ad03b20aaace7e",
+    "pr161_ci": [
+      {
+        "run_id": 42712757936,
+        "conclusion": "success",
+        "scope": "Exact-head Windows-all-auto Offline QA only"
+      }
+    ],
+    "pr171_head_sha": "764721021f13be96364529650b44fb439770bac9",
+    "pr171_ci": [
+      {
+        "run_id": 44437197470,
+        "conclusion": "success",
+        "scope": "Exact-head Windows-all-auto Offline QA; local QA supervisor regression, not Store upload dry-run"
+      }
+    ],
+    "historical_20261116_observation": {
+      "pr165_tested_head_sha": "1e96f42031dedaced70f47a4a4fac8bbe9a687f0",
+      "pr165_ci": [
         {
           "run_id": 43811116714,
           "conclusion": "success",
@@ -11203,11 +11385,36 @@
           "scope": "GitHub artifact custody fail-closed regression (synthetic fail-closed CI; no real MSIX evidence)"
         }
       ],
-      "pr161_head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
-      "scope": "Synthetic/offline CI only; real MSIX, local receipt, checker and physical GUI not verified",
-      "status": "HOLD",
-      "blocker": "Focus/File Integrity authoritative Package Version missing AND real StoreLogo.png/Square150.png/Square44.png embedding not independently verified; real MSIX/backlog/local SHA/checker/GUI unverified",
-      "implementation_status": "SYNTHETIC_CUSTODY_TRANSPORT_REGRESSION_GREEN__REAL_PACKAGE_TRANSPORT_NOT_VERIFIED"
+      "latest_head_ci_observation": {
+        "observed_at_jst": "2026-11-16 18:09",
+        "head_sha": "1e96f42031dedaced70f47a4a4fac8bbe9a687f0",
+        "workflow_runs": [
+          {
+            "run_id": 43811116714,
+            "conclusion": "success",
+            "scope": "Windows-all-auto Offline QA (synthetic fail-closed CI; no real MSIX evidence)"
+          },
+          {
+            "run_id": 43811116542,
+            "conclusion": "success",
+            "scope": "Windows E2E transport fail-closed regression (synthetic fail-closed CI; no real MSIX evidence)"
+          },
+          {
+            "run_id": 43811116695,
+            "conclusion": "success",
+            "scope": "GitHub artifact custody fail-closed regression (synthetic fail-closed CI; no real MSIX evidence)"
+          }
+        ],
+        "pr161_head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
+        "scope": "Synthetic/offline CI only; real MSIX, local receipt, checker and physical GUI not verified",
+        "status": "HOLD",
+        "blocker": "Focus/File Integrity authoritative Package Version missing AND real StoreLogo.png/Square150.png/Square44.png embedding not independently verified; real MSIX/backlog/local SHA/checker/GUI unverified",
+        "implementation_status": "SYNTHETIC_CUSTODY_TRANSPORT_REGRESSION_GREEN__REAL_PACKAGE_TRANSPORT_NOT_VERIFIED"
+      }
     }
-  }
+  },
+  "store_submission_allowed": false,
+  "certification_allowed": false,
+  "publish_allowed": false,
+  "live_partner_center_write_allowed": false
 }
