@@ -350,6 +350,16 @@ class CustodyTests(unittest.TestCase):
         self.assertEqual(focus_item["product_quality_assessment"]["decision"], "DO_NOT_SELL__BELOW_80")
         self.assertEqual(ledger["rotation_projection_status"]["status"], "HISTORICAL_NOT_CURRENT")
         self.assertEqual(ledger["pr174_restack_assessment_20261124"]["decision"], "DO_NOT_RESTACK")
+        live_head = ledger["pr165_live_head_observation_20261124"]
+        self.assertEqual(live_head["head_sha"], "db707178e477fedcaeb73b7fa15d3f46aaa35c50")
+        self.assertEqual([x["run_id"] for x in live_head["exact_head_workflows"]],
+                         [45252775417, 45252775411, 45252775422])
+        self.assertEqual(live_head["status"], "PASS_EXACT_HEAD_CI")
+        self.assertIs(live_head["e2e_pass"], False)
+        self.assertIs(live_head["real_msix"], False)
+        pr174_compare = ledger["pr174_restack_assessment_20261124"]["compare_to_current_pr165_head"]
+        self.assertEqual(pr174_compare["current_pr165_head_sha"], "db707178e477fedcaeb73b7fa15d3f46aaa35c50")
+        self.assertEqual(pr174_compare["behind_by"], 52)
 
 if __name__ == "__main__":
     unittest.main()
