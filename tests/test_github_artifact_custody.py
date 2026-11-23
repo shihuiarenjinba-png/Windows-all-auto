@@ -297,12 +297,12 @@ class CustodyTests(unittest.TestCase):
         ledger = json.loads((root / "ops/active_e2e_handoff.json").read_text(encoding="utf-8"))
         recon = json.loads((root / "ops/focus_file_transport_reconciliation_20261123.json").read_text(encoding="utf-8"))
         latest = ledger["latest_transport_reconciliation"]
-        self.assertEqual(latest["central_tested_head_sha"], "5ef5cdc47293d39b954eb309715b790b5987ada4")
-        self.assertEqual(latest["previous_central_head_sha"], "8413635f5687cee7f440c00b6fcc45c24f86b362")
-        self.assertEqual(latest["ledger_followup_head_sha"], "5ef5cdc47293d39b954eb309715b790b5987ada4")
+        self.assertEqual(latest["central_tested_head_sha"], "c97dde38d3e6f14a2d9a9ccd03f72b937aeb44da")
+        self.assertEqual(latest["previous_central_head_sha"], "b6ff9fdcea9b9db97ba3196052e5a8d90c8fcf5d")
+        self.assertEqual(latest["ledger_followup_head_sha"], "c97dde38d3e6f14a2d9a9ccd03f72b937aeb44da")
         self.assertEqual(latest["ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual([x["run_id"] for x in latest["exact_head_ci"]],
-                         [45252282976, 45252282960, 45252283104])
+                         [45262561305, 45262561306, 45262561558])
         self.assertEqual(latest["status"], "HOLD")
         self.assertIs(latest["e2e_pass"], False)
         self.assertIs(latest["real_msix"], False)
@@ -339,6 +339,13 @@ class CustodyTests(unittest.TestCase):
         self.assertFalse(file_item["approved_identity_file_present_on_current_pr100_head"])
         self.assertIsNone(file_item["package_version"])
         self.assertIs(file_item["real_msix"], False)
+        file_lineage = file_item["source_lineage_observation_20261124"]
+        self.assertEqual(file_lineage["pr95_current_head"]["head_sha"], "e2d44434233dd483f9ebc8c9e37fd365da415a39")
+        self.assertEqual(file_lineage["pr95_current_head"]["gui_failure"]["classification"], "GUI_TEST_HARNESS_DIALOG_DISCOVERY_FAILURE")
+        self.assertEqual(file_lineage["current_gui_candidate"]["head_sha"], "081fc168544022c401ce95a0f481644568912337")
+        self.assertEqual(file_lineage["source_selection_status"], "SOURCE_LINEAGE_DIVERGED__NO_PACKAGE_SOURCE_SELECTED")
+        self.assertTrue(file_lineage["asset_blob_sha_match_across_pr95_and_pr100"])
+        self.assertIsNone(file_lineage["package_version"])
         focus_item = next(p for p in queue["priority"] if p["product"] == "Focus Session Desk")
         focus_gui = focus_item["store_assets_evidence"]["native_exe_gui"]
         self.assertEqual(focus_gui["run_id"], 45234786152)
@@ -351,15 +358,15 @@ class CustodyTests(unittest.TestCase):
         self.assertEqual(ledger["rotation_projection_status"]["status"], "HISTORICAL_NOT_CURRENT")
         self.assertEqual(ledger["pr174_restack_assessment_20261124"]["decision"], "DO_NOT_RESTACK")
         live_head = ledger["pr165_live_head_observation_20261124"]
-        self.assertEqual(live_head["head_sha"], "db707178e477fedcaeb73b7fa15d3f46aaa35c50")
+        self.assertEqual(live_head["head_sha"], "c97dde38d3e6f14a2d9a9ccd03f72b937aeb44da")
         self.assertEqual([x["run_id"] for x in live_head["exact_head_workflows"]],
-                         [45252775417, 45252775411, 45252775422])
+                         [45262561305, 45262561306, 45262561558])
         self.assertEqual(live_head["status"], "PASS_EXACT_HEAD_CI")
         self.assertIs(live_head["e2e_pass"], False)
         self.assertIs(live_head["real_msix"], False)
         pr174_compare = ledger["pr174_restack_assessment_20261124"]["compare_to_current_pr165_head"]
-        self.assertEqual(pr174_compare["current_pr165_head_sha"], "db707178e477fedcaeb73b7fa15d3f46aaa35c50")
-        self.assertEqual(pr174_compare["behind_by"], 52)
+        self.assertEqual(pr174_compare["current_pr165_head_sha"], "c97dde38d3e6f14a2d9a9ccd03f72b937aeb44da")
+        self.assertEqual(pr174_compare["behind_by"], 54)
 
 if __name__ == "__main__":
     unittest.main()

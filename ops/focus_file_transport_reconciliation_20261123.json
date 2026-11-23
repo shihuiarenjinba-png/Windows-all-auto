@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "observed_date_utc": "2026-11-23T19:50:00Z",
-  "evidence_basis": "Direct GitHub read at 2026-11-23T19:34:36Z: PR165 exact tested HEAD 5580ad0d49a770cc2ed2cc70aeef7b2e64f8d903 has transport 45241836950, custody 45241836778 and Windows/Ubuntu Offline QA 45241836796 all SUCCESS; immediate parent c35de586e9005aad3113d8ae04ff107f2c6944d2 has no associated workflow run (NOT_OBSERVED), last verified predecessor a4a753215f8c40cccdaf178d5f8f3aea1bfce735 retains three SUCCESS runs, and failed intermediate 76557ce00def85849aed05585e293c77d6c81d12 is preserved separately. PR161 exact HEAD 71d9c212 / Offline QA 42712757936 SUCCESS. PR171 exact HEAD 764721021f / Offline QA 44437197470 SUCCESS only; no Store dry-run. Focus PR102 GUI follow-up is test-only and has independently rehashed artifact ZIP plus visually reviewed 100% completion/cold-restart evidence.",
+  "observed_date_utc": "2026-11-23T21:39:24Z",
+  "evidence_basis": "Direct GitHub read at 2026-11-23T21:39:24Z: PR165 exact current HEAD c97dde38 has three SUCCESS workflows (transport 45262561305, custody 45262561306, Offline QA 45262561558); direct parent b6ff9fd also has three SUCCESS workflows. PR161/171 current heads and CI were directly confirmed. Focus PR94/PR102 and File PR95/PR97/PR100 current heads, CI, artifacts, approved identity files and asset Git blob SHAs were reconciled.",
   "status": "HOLD",
   "e2e_pass": false,
   "priority_product": "Focus Session Desk",
   "ledger_active_product": "Signal Sprint historical active_product c058cbf7; retained for provenance and not treated as the current completion priority.",
-  "note": "2026-11-24 04:50 JST: PR165 exact tested HEAD 5ef5cdc47293d39b954eb309715b790b5987ada4 has all three workflows SUCCESS. Immediate parent 8413635f5687cee7f440c00b6fcc45c24f86b362 had sequential partial-update custody/Offline QA failures before test synchronization; final HEAD is green. Last fully verified predecessor 5580ad0d49a770cc2ed2cc70aeef7b2e64f8d903 and earlier failed intermediate 76557ce00def85849aed05585e293c77d6c81d12 remain separately preserved. Focus PR102 evidence is independently reviewed; product score is provisional 54/100, below sale threshold. Focus Identity remains bound to 8b00bc4e and Version is null/HOLD. No real MSIX, backlog, local checker/install or user-PC receipt. E2E remains HOLD.",
+  "note": "PR165 current exact-head CI is 3/3 SUCCESS, but E2E remains HOLD. Focus PR102 confirms 100% progress and cold-restart task/language persistence; approved Identity still binds old source 8b00bc4e and Package Version is null. File PR95 live HEAD e2d444 has a GUI test-harness dialog timeout; PR100 GUI candidate 081fc passes and assets match by Git blob SHA, but PR95 and PR100 source branches diverge. Historical File Identity remains bound to d1108d12 and is absent from current branches. No authoritative Partner Center Version, real MSIX, backlog, local pull/checker/install receipt exists. No Store dry-run eligible products.",
   "products": [
     {
       "product": "Focus Session Desk",
@@ -190,7 +190,7 @@
       "approved_identity_file_present_on_current_pr97_head": false,
       "current_factory_pr": 95,
       "current_factory_branch": "codex/integrity-store-assets-gate-20261119",
-      "current_factory_head": "4474af31b35afc7c3608a5b6a6f833597001fdf7",
+      "current_factory_head": "e2d44434233dd483f9ebc8c9e37d365da415a39",
       "source_compare_to_approved": {
         "status": "diverged",
         "ahead_by": 6,
@@ -216,7 +216,7 @@
       "current_gui_followup_mergeable": true,
       "current_gui_followup_draft": true,
       "current_source_identity_binding_status": "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE",
-      "current_source_identity_binding_detail": "Historical approved Identity at commit db9a57af/blob 78034cf6 is bound to d1108d12 and is absent at current product PR95 4474af31, GUI follow-up PR97 d09973e3, and PR100 081fc168. PR100 changes only products/file-integrity-ledger/main.py and products/file-integrity-ledger/tests/windows_exe_gui_smoke.py. PR95 remains diverged from the approved source. Do not reuse the old binding.",
+      "current_source_identity_binding_detail": "Historical approved Identity at db9a57af/blob 78034cf6 is bound to source d1108d12. It is absent on live PR95 HEAD e2d4443423 and GUI candidate PR100 HEAD 081fc168. PR95 and PR100 candidate branches diverge (PR100 is 27 commits ahead and 2 behind PR95 from merge base 4474af31). Do not reuse the historical binding or build until a single source lineage is selected and current-source Identity is revalidated.",
       "package_version": null,
       "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
       "package_version_gate": "HOLD",
@@ -384,7 +384,146 @@
       "current_gui_followup_exe_sha256": "5b788cdb0bc7c63d92956228358983fefc1352797fa5d7133ab365d2a7d774aa",
       "current_gui_followup_exe_sha256_independently_verified": true,
       "approved_identity_file_present_on_current_pr100_head": false,
-      "approved_identity_file_current_pr100_head_readback": "NOT_FOUND"
+      "approved_identity_file_current_pr100_head_readback": "NOT_FOUND",
+      "current_product_lane_head": "e2d44434233dd483f9ebc8c9e37fd365da415a39",
+      "current_product_lane_branch": "codex/integrity-store-assets-gate-20261119",
+      "current_product_lane_base_head": "deaa9f324326a1ee276596c325f7a360adf27877",
+      "source_compare": {
+        "status": "diverged",
+        "ahead_by": 8,
+        "behind_by": 8,
+        "merge_base": "deaa9f324326a1ee276596c325f7a360adf27877"
+      },
+      "current_gui_test_pr": 100,
+      "current_gui_test_head": "081fc168544022c401ce95a0f481644568912337",
+      "current_gui_test_base_sha": "d09973e33daa374dd5a3ba9b4f7a0fabd06987a3",
+      "current_gui_test_base_pr": 97,
+      "current_gui_test_compare": {
+        "status": "ahead",
+        "ahead_by": 2,
+        "behind_by": 0,
+        "changed_files": 2,
+        "files": [
+          "products/file-integrity-ledger/main.py",
+          "products/file-integrity-ledger/tests/windows_exe_gui_smoke.py"
+        ]
+      },
+      "current_gui_candidate_head": "081fc168544022c401ce95a0f481644568912337",
+      "pr95_current_head_sha": "e2d44434233dd483f9ebc8c9e37fd365da415a39",
+      "pr95_current_head_gui_run": 45266775948,
+      "pr95_current_head_gui_conclusion": "failure",
+      "pr95_current_head_gui_failure": {
+        "job_id": 138015663711,
+        "step": "Native first-use GUI smoke and receipt",
+        "function": "open_baseline()",
+        "file": "products/file-integrity-ledger/tests/windows_exe_gui_smoke.py",
+        "line": 61,
+        "error": "pywinauto.timings.TimeoutError: dialog.wait('visible', timeout=15)",
+        "classification": "GUI_TEST_HARNESS_DIALOG_DISCOVERY_FAILURE",
+        "artifact_id": 14861369959,
+        "artifact_sha256": "098bc708554e307573c37a249ff02ed46069e1601ddd1b7b25b049d87f423bc3"
+      },
+      "source_selection_status": "SOURCE_LINEAGE_DIVERGED__NO_PACKAGE_SOURCE_SELECTED",
+      "source_lineage_observation_20261124": {
+        "observed_at_utc": "2026-11-23T21:39:24Z",
+        "product": "File Integrity Ledger",
+        "store_id": "9PGZ445SR5GM",
+        "approved_source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
+        "approved_identity_commit": "db9a57af822788af4c8384499a6e343ec7b0353d",
+        "approved_identity_blob": "78034cf62be3479f9ed752a2585ab31bb24c49ff",
+        "approved_identity_file_present_on_current_pr95_head": false,
+        "approved_identity_file_present_on_current_pr100_head": false,
+        "pr95_current_head": {
+          "pr": 95,
+          "branch": "codex/integrity-store-assets-gate-20261119",
+          "head_sha": "e2d44434233dd483f9ebc8c9e37fd365da415a39",
+          "base_sha": "deaa9f324326a1ee276596c325f7a360adf27877",
+          "body_head_sha_stated": "338b5f72b7ebb799348cae7405fca28f4ac67a9d",
+          "body_head_is_stale": true,
+          "runs": [
+            {
+              "run_id": 45266775916,
+              "conclusion": "success",
+              "scope": "Factory core CI"
+            },
+            {
+              "run_id": 45266775901,
+              "conclusion": "success",
+              "scope": "File Integrity Store PNG delivery gate"
+            },
+            {
+              "run_id": 45266775948,
+              "conclusion": "failure",
+              "scope": "File Integrity native Windows EXE GUI evidence"
+            }
+          ],
+          "gui_failure": {
+            "job_id": 138015663711,
+            "step": "Native first-use GUI smoke and receipt",
+            "function": "open_baseline()",
+            "file": "products/file-integrity-ledger/tests/windows_exe_gui_smoke.py",
+            "line": 61,
+            "error": "pywinauto.timings.TimeoutError: dialog.wait('visible', timeout=15)",
+            "classification": "GUI_TEST_HARNESS_DIALOG_DISCOVERY_FAILURE",
+            "artifact_id": 14861369959,
+            "artifact_sha256": "098bc708554e307573c37a249ff02ed46069e1601ddd1b7b25b049d87f423bc3"
+          }
+        },
+        "pr97_gui_followup": {
+          "pr": 97,
+          "head_sha": "d09973e33daa374dd5a3ba9b4f7a0fabd06987a3",
+          "core_run_id": 45166383105,
+          "gui_run_id": 45166383111,
+          "gui_conclusion": "success",
+          "artifact_id": 14813448795,
+          "artifact_sha256": "b6ef57614e6cdf8efdf8314f43f5302dd526fd8c57a5baaef6f2b6de33e0e4a9"
+        },
+        "current_gui_candidate": {
+          "pr": 100,
+          "branch": "codex/integrity-workarea-safe-window-20261124",
+          "head_sha": "081fc168544022c401ce95a0f481644568912337",
+          "base_pr": 97,
+          "base_branch": "codex/integrity-dialog-locale-20261122",
+          "base_sha": "d09973e33daa374dd5a3ba9b4f7a0fabd06987a3",
+          "compare_to_pr95_current_head": {
+            "status": "diverged",
+            "pr100_ahead_by": 27,
+            "pr100_behind_by": 2,
+            "merge_base": "4474af31b35afc7c3608a5b6a6f833597001fdf7"
+          },
+          "core_run_id": 45224353582,
+          "gui_run_id": 45224353579,
+          "gui_conclusion": "success",
+          "artifact_id": 14840743814,
+          "artifact_bytes": 11444167,
+          "artifact_sha256": "bfb653798a47f14e036ad4ecc69a604b82b64b2df845b7c314c90f242ccdb3c9",
+          "artifact_digest_matches_github": true,
+          "artifact_bytes_independently_rehashed": true,
+          "exe_bytes": 11494247,
+          "exe_sha256": "5b788cdb0bc7c63d92956228358983fefc1352797fa5d7133ab365d2a7d774aa",
+          "exe_sha256_independently_verified": true,
+          "visual_review_required": false,
+          "visual_review_status": "PASS_36_VISUAL_REVIEW__FIRST_USE_OPEN_MODIFIED_MISSING_AND_WORK_AREA"
+        },
+        "asset_git_blob_sha_readback": {
+          "StoreLogo": "e3c9a9426a1971f21175b9b045d4d5fef83f97d5",
+          "Square150": "df892bd2fcf7b56f9facd94054b2b1385313b030",
+          "Square44": "d57e7a25d2a9eaa2b54d00c610f3a1ad7d4a4d49"
+        },
+        "asset_blob_sha_match_across_pr95_and_pr100": true,
+        "source_selection_status": "SOURCE_LINEAGE_DIVERGED__NO_PACKAGE_SOURCE_SELECTED",
+        "current_source_identity_binding_status": "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE",
+        "package_version": null,
+        "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
+        "partner_center_authenticated_readback": "NOT_OBSERVED",
+        "real_msix": false,
+        "github_backlog_receipt": false,
+        "local_pull_receipt": false,
+        "local_checker_receipt": false,
+        "local_gui_install_receipt": false,
+        "note": "PR95 live head e2d444 is 2 commits ahead of its asset base 4474af; its latest GUI workflow failed at native Open-dialog discovery in the test harness. PR97/PR100 provide a successful GUI path, and PR100 HEAD 081fc is the best reviewed GUI candidate, but it diverges from PR95 current HEAD (PR100 is 27 commits ahead and 2 behind). The three PNG Git blob SHAs are identical on PR95 and PR100. Historical Identity source d1108 is absent from current PR95/PR100; no authoritative Version or authenticated Partner Center readback is available. Do not build an MSIX until a single source lineage is selected and Identity/Version are revalidated."
+      },
+      "asset_blob_sha_match_across_pr95_and_pr100": true
     }
   ],
   "transport_contract": {
@@ -415,26 +554,26 @@
   "certification_allowed": false,
   "publish_allowed": false,
   "live_partner_center_write_allowed": false,
-  "pr165_head_sha": "5ef5cdc47293d39b954eb309715b790b5987ada4",
+  "pr165_head_sha": "c97dde38d3e6f14a2d9a9ccd03f72b937aeb44da",
   "latest_transport_reconciliation": {
-    "checked_at_utc": "2026-11-23T19:50:00Z",
+    "checked_at_utc": "2026-11-23T21:39:24Z",
     "central_pr": 165,
-    "central_head": "5ef5cdc47293d39b954eb309715b790b5987ada4",
+    "central_head": "c97dde38d3e6f14a2d9a9ccd03f72b937aeb44da",
     "central_base_sha": "145cd1f44bdec9e584eb0f045dd139ef330c6321",
-    "previous_central_head_sha": "8413635f5687cee7f440c00b6fcc45c24f86b362",
+    "previous_central_head_sha": "b6ff9fdcea9b9db97ba3196052e5a8d90c8fcf5d",
     "exact_head_ci": [
       {
-        "run_id": 45252282976,
+        "run_id": 45262561305,
         "conclusion": "success",
         "scope": "Exact-head Windows E2E transport fail-closed regression"
       },
       {
-        "run_id": 45252282960,
+        "run_id": 45262561306,
         "conclusion": "success",
         "scope": "Exact-head independent GitHub artifact custody regression"
       },
       {
-        "run_id": 45252283104,
+        "run_id": 45262561558,
         "conclusion": "success",
         "scope": "Exact-head Windows-all-auto Offline QA (Windows and Ubuntu)"
       }
@@ -451,7 +590,7 @@
     "store_submission_allowed": false,
     "certification_allowed": false,
     "publish_allowed": false,
-    "note": "PR165 exact tested HEAD 5ef5cdc47293d39b954eb309715b790b5987ada4 has all three associated workflows SUCCESS: transport 45252282976, artifact custody 45252282960, and Windows/Ubuntu Offline QA 45252283104. Immediate parent 8413635f5687cee7f440c00b6fcc45c24f86b362 was a sequential partial-update commit: transport 45252276088 succeeded, custody 45252276166 and Offline QA 45252276459 failed because the multi-file ledger/test update had not yet completed; the final HEAD corrected the assertions and all three lanes pass. Last fully verified predecessor 5580ad0d49a770cc2ed2cc70aeef7b2e64f8d903 retains all three SUCCESS runs. Earlier failed intermediate 76557ce00def85849aed05585e293c77d6c81d12 remains separately preserved. Focus PR102 test-only hosted GUI evidence is independently reviewed; current-source Identity and authoritative Version remain HOLD. No real MSIX, backlog, local pull/checker/install or physical user-PC receipt is proven. E2E remains HOLD.",
+    "note": "PR165 live HEAD c97dde38d3e6f14a2d9a9ccd03f72b937aeb44da has all three associated exact-head workflows SUCCESS: transport 45262561305, custody 45262561306, and Windows/Ubuntu Offline QA 45262561558. Its direct parent b6ff9fdcea9b9db97ba3196052e5a8d90c8fcf5d also has all three workflows SUCCESS (45262461733, 45262461839, 45262461756); the prior observed HEAD db707178 also has three SUCCESS runs. These are repository regression/Offline QA results only. Focus/File remain DELIVERY_HOLD: current-source Identity revalidation and authoritative Package Version are not complete; no real MSIX, GitHub backlog, local pull/checker/install or physical user-PC receipt is proven. E2E remains HOLD.",
     "previous_ledger_followup_head_sha": "5580ad0d49a770cc2ed2cc70aeef7b2e64f8d903",
     "previous_ledger_followup_exact_head_ci": [
       {
@@ -470,26 +609,26 @@
         "scope": "Exact-head Windows-all-auto Offline QA (Windows and Ubuntu)"
       }
     ],
-    "ledger_followup_head_sha": "5ef5cdc47293d39b954eb309715b790b5987ada4",
+    "ledger_followup_head_sha": "c97dde38d3e6f14a2d9a9ccd03f72b937aeb44da",
     "ledger_followup_exact_head_ci": [
       {
-        "run_id": 45252282976,
+        "run_id": 45262561305,
         "conclusion": "success",
         "scope": "Exact-head Windows E2E transport fail-closed regression"
       },
       {
-        "run_id": 45252282960,
+        "run_id": 45262561306,
         "conclusion": "success",
         "scope": "Exact-head independent GitHub artifact custody regression"
       },
       {
-        "run_id": 45252283104,
+        "run_id": 45262561558,
         "conclusion": "success",
         "scope": "Exact-head Windows-all-auto Offline QA (Windows and Ubuntu)"
       }
     ],
-    "latest_exact_head_ci_tested_sha": "5ef5cdc47293d39b954eb309715b790b5987ada4",
-    "previous_central_head": "8413635f5687cee7f440c00b6fcc45c24f86b362",
+    "latest_exact_head_ci_tested_sha": "c97dde38d3e6f14a2d9a9ccd03f72b937aeb44da",
+    "previous_central_head": "b6ff9fdcea9b9db97ba3196052e5a8d90c8fcf5d",
     "older_previous_ledger_followup_head_sha": "6ac7c7f0fef32682bb5d8b0d19c59bd174482926",
     "older_previous_ledger_followup_exact_head_ci": [
       {
@@ -598,6 +737,44 @@
         "conclusion": "failure",
         "scope": "Partial-update parent Windows/Ubuntu Offline QA; test assertions not yet synchronized"
       }
+    ],
+    "central_tested_head_sha": "c97dde38d3e6f14a2d9a9ccd03f72b937aeb44da",
+    "current_parent_head_sha": "b6ff9fdcea9b9db97ba3196052e5a8d90c8fcf5d",
+    "current_parent_ci_status": "PASS_EXACT_HEAD_CI",
+    "current_parent_exact_head_ci": [
+      {
+        "run_id": 45262461733,
+        "conclusion": "success",
+        "scope": "Immediate-parent exact-head Windows E2E transport fail-closed regression"
+      },
+      {
+        "run_id": 45262461839,
+        "conclusion": "success",
+        "scope": "Immediate-parent exact-head independent GitHub artifact custody regression"
+      },
+      {
+        "run_id": 45262461756,
+        "conclusion": "success",
+        "scope": "Immediate-parent exact-head Windows-all-auto Offline QA"
+      }
+    ],
+    "previous_observed_head_sha": "db707178e477fedcaeb73b7fa15d3f46aaa35c50",
+    "previous_observed_head_ci": [
+      {
+        "run_id": 45252775417,
+        "conclusion": "success",
+        "scope": "Prior observed HEAD Windows E2E transport fail-closed regression"
+      },
+      {
+        "run_id": 45252775411,
+        "conclusion": "success",
+        "scope": "Prior observed HEAD GitHub artifact custody fail-closed regression"
+      },
+      {
+        "run_id": 45252775422,
+        "conclusion": "success",
+        "scope": "Prior observed HEAD Windows-all-auto Offline QA"
+      }
     ]
   },
   "windows_checker_source": {
@@ -624,7 +801,7 @@
   },
   "previous_central_head_sha": "8413635f5687cee7f440c00b6fcc45c24f86b362",
   "previous_evidence_basis_central_head": "8413635f5687cee7f440c00b6fcc45c24f86b362",
-  "central_head": "5ef5cdc47293d39b954eb309715b790b5987ada4",
+  "central_head": "c97dde38d3e6f14a2d9a9ccd03f72b937aeb44da",
   "older_central_head_sha": "76557ce00def85849aed05585e293c77d6c81d12",
   "other_current_lanes": [
     {
@@ -752,7 +929,11 @@
       "PR94/PR95/PR97 discussions contained no authoritative approved Version readback",
       "Focus current PR94 products/focus-session-desk/store/approved-identity.json was read at fb629383; blob 00c56e85 binds request app-focus-session-desk-8b00bc4e9082 and source/expected_head_sha 8b00bc4e90828c4282463826873aa8dfd2eb93f4; package_version_gate=HOLD and no package_version field.",
       "File Integrity historical approved-identity.json blob 78034cf6 at commit db9a57af binds request app-file-integrity-ledger-d1108d12f7d1 and source/expected_head_sha d1108d12f7d1697af30400f97c7db39cba5e6791; package_version_gate=HOLD and no package_version field. Current PR100 path readback returned NOT_FOUND.",
-      "File Integrity PR100 081fc168 is a two-commit GUI-only follow-up to PR97 d09973e3; it does not change the product Identity. Current-source Identity remains unbound."
+      "File Integrity PR100 081fc168 is a two-commit GUI-only follow-up to PR97 d09973e3; it does not change the product Identity. Current-source Identity remains unbound.",
+      "Focus PR94 approved-identity.json at exact HEAD fb629383 binds source/expected_head_sha 8b00bc4e and package_version_gate=HOLD; package_version absent.",
+      "File historical approved-identity.json at db9a57af binds source/expected_head_sha d1108d12 and package_version_gate=HOLD; file is absent on live PR95 HEAD e2d444 and GUI candidate PR100 HEAD 081fc.",
+      "Focus and File product manifest.json files contain slug/kind/entry only; no Package Version.",
+      "PR95/PR97/PR100 discussions and repository code search yielded no authoritative Package Version. No authenticated Partner Center readback was observed."
     ],
     "partner_center_authenticated_readback": "NOT_OBSERVED",
     "decision": "KEEP_VERSION_HOLD__DO_NOT_INFER_OR_WRITE_VERSION"
@@ -896,46 +1077,23 @@
   },
   "local_code_sync_detail": "No physical user-PC exact-three-SHA receipt, idempotent reuse receipt, or scheduled-task receipt was observed; cloud Windows smoke is not a user-PC receipt.",
   "next_action": "Focus Session Desk remains rank 1: obtain authenticated read-only Partner Center current-source Identity revalidation and authoritative Package Version; if unavailable, keep HOLD. File Integrity PR100 hosted GUI/artifact evidence is independently rehashed and visually reviewed, but its historical Identity is absent and Version is null. Once a product has current-source approval and authoritative Version, build a real MSIX, then verify archive/package SHA custody, GitHub backlog, local pull, Windows-checker, and local GUI/install QA. No CAS reuse, Version inference, Store write, or product feature work.",
-  "latest_reconciliation_ci": {
-    "tested_head_sha": "a4a753215f8c40cccdaf178d5f8f3aea1bfce735",
-    "workflows": [
-      {
-        "run_id": 45241501939,
-        "conclusion": "success",
-        "scope": "Exact-head Windows E2E transport fail-closed regression"
-      },
-      {
-        "run_id": 45241501982,
-        "conclusion": "success",
-        "scope": "Exact-head independent GitHub artifact custody regression"
-      },
-      {
-        "run_id": 45241501968,
-        "conclusion": "success",
-        "scope": "Exact-head Windows-all-auto Offline QA (Windows and Ubuntu)"
-      }
-    ],
-    "status": "PASS_EXACT_HEAD_CI",
-    "ledger_followup_head_sha": "a4a753215f8c40cccdaf178d5f8f3aea1bfce735",
-    "ledger_followup_workflows": [
-      {
-        "run_id": 45241501939,
-        "conclusion": "success",
-        "scope": "Exact-head Windows E2E transport fail-closed regression"
-      },
-      {
-        "run_id": 45241501982,
-        "conclusion": "success",
-        "scope": "Exact-head independent GitHub artifact custody regression"
-      },
-      {
-        "run_id": 45241501968,
-        "conclusion": "success",
-        "scope": "Exact-head Windows-all-auto Offline QA (Windows and Ubuntu)"
-      }
-    ],
-    "ledger_followup_status": "PASS_EXACT_HEAD_CI"
-  },
+  "latest_reconciliation_ci": [
+    {
+      "run_id": 45262561305,
+      "conclusion": "success",
+      "scope": "Exact-head Windows E2E transport fail-closed regression"
+    },
+    {
+      "run_id": 45262561306,
+      "conclusion": "success",
+      "scope": "Exact-head independent GitHub artifact custody regression"
+    },
+    {
+      "run_id": 45262561558,
+      "conclusion": "success",
+      "scope": "Exact-head Windows-all-auto Offline QA (Windows and Ubuntu)"
+    }
+  ],
   "pr165_previous_ledger_followup_head_sha": "5580ad0d49a770cc2ed2cc70aeef7b2e64f8d903",
   "pr165_previous_ledger_followup_ci": [
     {
@@ -954,21 +1112,21 @@
       "scope": "Exact-head Windows-all-auto Offline QA (Windows and Ubuntu)"
     }
   ],
-  "pr165_current_head_sha": "5ef5cdc47293d39b954eb309715b790b5987ada4",
-  "pr165_current_head_parent_sha": "8413635f5687cee7f440c00b6fcc45c24f86b362",
+  "pr165_current_head_sha": "c97dde38d3e6f14a2d9a9ccd03f72b937aeb44da",
+  "pr165_current_head_parent_sha": "b6ff9fdcea9b9db97ba3196052e5a8d90c8fcf5d",
   "pr165_current_head_ci": [
     {
-      "run_id": 45252282976,
+      "run_id": 45262561305,
       "conclusion": "success",
       "scope": "Exact-head Windows E2E transport fail-closed regression"
     },
     {
-      "run_id": 45252282960,
+      "run_id": 45262561306,
       "conclusion": "success",
       "scope": "Exact-head independent GitHub artifact custody regression"
     },
     {
-      "run_id": 45252283104,
+      "run_id": 45262561558,
       "conclusion": "success",
       "scope": "Exact-head Windows-all-auto Offline QA (Windows and Ubuntu)"
     }
@@ -976,20 +1134,20 @@
   "pr165_current_head_ci_status": "PASS_EXACT_HEAD_CI",
   "pr165_previous_head_sha": "8413635f5687cee7f440c00b6fcc45c24f86b362",
   "pr165_previous_current_head_sha": "5580ad0d49a770cc2ed2cc70aeef7b2e64f8d903",
-  "pr165_ledger_followup_head_sha": "5ef5cdc47293d39b954eb309715b790b5987ada4",
+  "pr165_ledger_followup_head_sha": "c97dde38d3e6f14a2d9a9ccd03f72b937aeb44da",
   "pr165_ledger_followup_ci": [
     {
-      "run_id": 45252282976,
+      "run_id": 45262561305,
       "conclusion": "success",
       "scope": "Exact-head Windows E2E transport fail-closed regression"
     },
     {
-      "run_id": 45252282960,
+      "run_id": 45262561306,
       "conclusion": "success",
       "scope": "Exact-head independent GitHub artifact custody regression"
     },
     {
-      "run_id": 45252283104,
+      "run_id": 45262561558,
       "conclusion": "success",
       "scope": "Exact-head Windows-all-auto Offline QA (Windows and Ubuntu)"
     }
@@ -1273,11 +1431,11 @@
     "base_branch": "codex/e2e-artifact-custody-20261114",
     "base_sha": "c6f30824196e90c03837e0636d7557a79fad92af",
     "compare_to_current_pr165_head": {
-      "current_pr165_head_sha": "5ef5cdc47293d39b954eb309715b790b5987ada4",
+      "current_pr165_head_sha": "c97dde38d3e6f14a2d9a9ccd03f72b937aeb44da",
       "merge_base_sha": "c6f30824196e90c03837e0636d7557a79fad92af",
       "status": "diverged",
       "ahead_by": 6,
-      "behind_by": 47,
+      "behind_by": 54,
       "changed_files": [
         "ops/active_e2e_handoff.json",
         "ops/completion_rush_queue_20261116.json",
@@ -1319,7 +1477,7 @@
     "unique_changes_to_restack": [],
     "decision": "DO_NOT_RESTACK",
     "merge_allowed": false,
-    "reason": "All six commits are operations-only updates to three JSON records. Current PR165 contains newer exact-head CI, Focus PR102 GUI evidence, product/Identity-drift status, and current queue data. The 2026-11-20 reconciliation is historical and superseded by the 2026-11-23 record. No unique code or product change is missing."
+    "reason": "PR174 is six operations-only commits ahead and 54 behind current PR165 c97dde38; all six updates are superseded by current central ledger and queue."
   },
   "pr165_partial_update_intermediate_head_sha": "8413635f5687cee7f440c00b6fcc45c24f86b362",
   "pr165_partial_update_intermediate_ci": [
@@ -1339,5 +1497,42 @@
       "scope": "Partial-update parent Windows/Ubuntu Offline QA; test assertions not yet synchronized"
     }
   ],
-  "pr165_pr174_compare_behind_by": 47
+  "pr165_pr174_compare_behind_by": 47,
+  "pr165_current_head_parent_ci": [
+    {
+      "run_id": 45262461733,
+      "conclusion": "success",
+      "scope": "Immediate-parent exact-head Windows E2E transport fail-closed regression"
+    },
+    {
+      "run_id": 45262461839,
+      "conclusion": "success",
+      "scope": "Immediate-parent exact-head independent GitHub artifact custody regression"
+    },
+    {
+      "run_id": 45262461756,
+      "conclusion": "success",
+      "scope": "Immediate-parent exact-head Windows-all-auto Offline QA"
+    }
+  ],
+  "pr165_current_head_parent_ci_status": "PASS_EXACT_HEAD_CI",
+  "pr165_previous_observed_head_sha": "db707178e477fedcaeb73b7fa15d3f46aaa35c50",
+  "pr165_previous_observed_head_ci": [
+    {
+      "run_id": 45252775417,
+      "conclusion": "success",
+      "scope": "Prior observed HEAD Windows E2E transport fail-closed regression"
+    },
+    {
+      "run_id": 45252775411,
+      "conclusion": "success",
+      "scope": "Prior observed HEAD GitHub artifact custody fail-closed regression"
+    },
+    {
+      "run_id": 45252775422,
+      "conclusion": "success",
+      "scope": "Prior observed HEAD Windows-all-auto Offline QA"
+    }
+  ],
+  "pr174_pr165_compare_behind_by": 54
 }
