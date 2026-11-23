@@ -297,12 +297,12 @@ class CustodyTests(unittest.TestCase):
         ledger = json.loads((root / "ops/active_e2e_handoff.json").read_text(encoding="utf-8"))
         recon = json.loads((root / "ops/focus_file_transport_reconciliation_20261123.json").read_text(encoding="utf-8"))
         latest = ledger["latest_transport_reconciliation"]
-        self.assertEqual(latest["central_tested_head_sha"], "41f74a28e8aac9356279349343f1dbe0d251800a")
-        self.assertEqual(latest["previous_central_head_sha"], "6ac7c7f0fef32682bb5d8b0d19c59bd174482926")
-        self.assertEqual(latest["ledger_followup_head_sha"], "41f74a28e8aac9356279349343f1dbe0d251800a")
+        self.assertEqual(latest["central_tested_head_sha"], "a4a753215f8c40cccdaf178d5f8f3aea1bfce735")
+        self.assertEqual(latest["previous_central_head_sha"], "76557ce00def85849aed05585e293c77d6c81d12")
+        self.assertEqual(latest["ledger_followup_head_sha"], "a4a753215f8c40cccdaf178d5f8f3aea1bfce735")
         self.assertEqual(latest["ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual([x["run_id"] for x in latest["exact_head_ci"]],
-                         [45230271440, 45230271518, 45230271524])
+                         [45241501939, 45241501982, 45241501968])
         self.assertEqual(latest["status"], "HOLD")
         self.assertIs(latest["e2e_pass"], False)
         self.assertIs(latest["real_msix"], False)
@@ -321,6 +321,8 @@ class CustodyTests(unittest.TestCase):
         queue_latest = queue["latest_transport_reconciliation"]
         self.assertEqual(queue_latest["central_head"], latest["central_tested_head_sha"])
         self.assertEqual(recon["central_head"], latest["central_tested_head_sha"])
+        self.assertEqual(queue_latest["previous_central_head_ci"][0]["conclusion"], "failure")
+        self.assertEqual(queue_latest["last_verified_predecessor_head_sha"], "41f74a28e8aac9356279349343f1dbe0d251800a")
         self.assertEqual([x["run_id"] for x in queue_latest["exact_head_ci"]],
                          [x["run_id"] for x in latest["exact_head_ci"]])
         file_item = next(p for p in queue["priority"] if p["product"] == "File Integrity Ledger")
