@@ -416,5 +416,10 @@
     "store_submission_allowed": false,
     "certification_allowed": false,
     "publish_allowed": false
-  }
+  },
+  "record_status": "HISTORICAL_SUPERSEDED",
+  "superseded_by": "ops/focus_file_transport_reconciliation_20261123.json",
+  "superseded_at_utc": "2026-11-23T19:34:36Z",
+  "superseded_by_central_head": "5580ad0d49a770cc2ed2cc70aeef7b2e64f8d903",
+  "superseded_note": "This 2026-11-20 reconciliation is retained as a historical snapshot only. Current Focus/File and PR165 state must be read from ops/focus_file_transport_reconciliation_20261123.json and ops/active_e2e_handoff.json. PR174 updates to this older file are superseded; do not restack them."
 }
