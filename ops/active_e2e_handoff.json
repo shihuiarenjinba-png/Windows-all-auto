@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-23T16:39:12.000Z",
+  "updated_at_utc": "2026-11-23T17:35:20.000Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -11134,7 +11134,7 @@
     }
   },
   "windows_e2e_custody_reconciliation": {
-    "checked_at_utc": "2026-11-23T16:39:12.000Z",
+    "checked_at_utc": "2026-11-23T17:35:20.000Z",
     "status": "HOLD",
     "pr161_head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
     "pr161_ci": [
@@ -11145,21 +11145,21 @@
       }
     ],
     "pr164_head_sha": "145cd1f44bdec9e584eb0f045dd139ef330c6321",
-    "pr165_tested_head_sha": "3cb242653cfc92917b374f82f1d6adb6994100f9",
-    "pr165_reconciliation_parent_head_sha": "d5d937002f230da458e4d5356ab9529d50fb6d76",
+    "pr165_tested_head_sha": "6ac7c7f0fef32682bb5d8b0d19c59bd174482926",
+    "pr165_reconciliation_parent_head_sha": "3cb242653cfc92917b374f82f1d6adb6994100f9",
     "pr165_ci": [
       {
-        "run_id": 45208102791,
+        "run_id": 45219717898,
         "conclusion": "success",
         "scope": "Exact-head Windows E2E transport fail-closed regression"
       },
       {
-        "run_id": 45208102718,
+        "run_id": 45219717804,
         "conclusion": "success",
         "scope": "Exact-head independent GitHub artifact custody regression"
       },
       {
-        "run_id": 45208102802,
+        "run_id": 45219718041,
         "conclusion": "success",
         "scope": "Exact-head Windows-all-auto Offline QA (Windows and Ubuntu)"
       }
@@ -11176,7 +11176,7 @@
     "prism_revision": "HOLD_CURRENT_SOURCE_B03CE7__NO_OLD_SOURCE_CAS",
     "signal_sprint": "HOLD_GDK_BUILD_ARTIFACT_AND_UIA_NOT_VERIFIED",
     "local_code_sync": "CLOUD_PASS_ONLY",
-    "note": "PR165 exact current branch HEAD 3cb242653cfc92917b374f82f1d6adb6994100f9 has all three exact-head workflows SUCCESS: transport 45208102791, artifact custody 45208102718, and Windows/Ubuntu Offline QA 45208102802. These validate fail-closed contract/fixture CI only; no approved current-source Identity or Package Version, real product MSIX, GitHub backlog, local checker/install, local GUI E2E, or physical local code-sync receipt is proven. Focus/File remain DELIVERY_HOLD and E2E remains HOLD.",
+    "note": "PR165 exact current branch HEAD 6ac7c7f0fef32682bb5d8b0d19c59bd174482926 has all three exact-head workflows SUCCESS: transport 45219717898, artifact custody 45219717804, and Windows/Ubuntu Offline QA 45219718041. These validate fail-closed contract/fixture CI only; no approved current-source Identity or Package Version, real product MSIX, GitHub backlog, local checker/install, local GUI E2E, or physical local code-sync receipt is proven. Focus/File remain DELIVERY_HOLD and E2E remains HOLD.",
     "approved_identity_product_checks": [
       {
         "product": "Focus Session Desk",
@@ -14279,6 +14279,56 @@
       "certification_allowed": false,
       "publish_allowed": false,
       "note": "PR165 exact current branch HEAD 3cb242653cfc92917b374f82f1d6adb6994100f9 has all three exact-head workflows SUCCESS: transport 45208102791, artifact custody 45208102718, and Windows/Ubuntu Offline QA 45208102802. These validate fail-closed contract/fixture CI only; no approved current-source Identity or Package Version, real product MSIX, GitHub backlog, local checker/install, local GUI E2E, or physical local code-sync receipt is proven. Focus/File remain DELIVERY_HOLD and E2E remains HOLD."
+    },
+    {
+      "checked_at_utc": "2026-11-23T17:35:20.000Z",
+      "status": "HOLD",
+      "pr161_head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
+      "pr161_ci": [
+        {
+          "run_id": 42712757936,
+          "conclusion": "success",
+          "scope": "Exact-head Offline QA only; not product E2E"
+        }
+      ],
+      "pr164_head_sha": "145cd1f44bdec9e584eb0f045dd139ef330c6321",
+      "pr165_tested_head_sha": "6ac7c7f0fef32682bb5d8b0d19c59bd174482926",
+      "pr165_reconciliation_parent_head_sha": "3cb242653cfc92917b374f82f1d6adb6994100f9",
+      "pr165_ci": [
+        {
+          "run_id": 45219717898,
+          "conclusion": "success",
+          "scope": "Exact-head Windows E2E transport fail-closed regression"
+        },
+        {
+          "run_id": 45219717804,
+          "conclusion": "success",
+          "scope": "Exact-head independent GitHub artifact custody regression"
+        },
+        {
+          "run_id": 45219718041,
+          "conclusion": "success",
+          "scope": "Exact-head Windows-all-auto Offline QA (Windows and Ubuntu)"
+        }
+      ],
+      "scope": "Exact-head transport regression, independent GitHub artifact custody regression, and Windows/Ubuntu offline QA",
+      "approved_version": "UNVERIFIED",
+      "real_msix": false,
+      "github_real_msix_artifact_receipt": false,
+      "local_msix_sha_receipt": false,
+      "github_backlog_receipt": false,
+      "local_checker_execution": "NOT_RUN",
+      "checker_gui_e2e": "NOT_VERIFIED",
+      "local_gui_install_receipt": "NOT_VERIFIED",
+      "focus_file_integrity_phase": "POST_IDENTITY_DELIVERY_HOLD",
+      "prism_revision": "HOLD_CURRENT_SOURCE_B03CE7__NO_OLD_SOURCE_CAS",
+      "signal_sprint": "HOLD_GDK_BUILD_ARTIFACT_AND_UIA_NOT_VERIFIED",
+      "local_code_sync": "CLOUD_PASS_ONLY",
+      "e2e_pass": false,
+      "store_submission_allowed": false,
+      "certification_allowed": false,
+      "publish_allowed": false,
+      "note": "PR165 exact current branch HEAD 6ac7c7f0fef32682bb5d8b0d19c59bd174482926 has all three exact-head workflows SUCCESS: transport 45219717898, artifact custody 45219717804, and Windows/Ubuntu Offline QA 45219718041. These validate fail-closed contract/fixture CI only; no approved current-source Identity or Package Version, real product MSIX, GitHub backlog, local checker/install, local GUI E2E, or physical local code-sync receipt is proven. Focus/File remain DELIVERY_HOLD and E2E remains HOLD."
     }
   ],
   "active_product_is_historical": true,
@@ -14356,24 +14406,24 @@
     "note": "Cloud Windows smoke is not a physical user-PC local code sync receipt."
   },
   "latest_transport_reconciliation": {
-    "checked_at_utc": "2026-11-23T16:39:12.000Z",
+    "checked_at_utc": "2026-11-23T17:35:20.000Z",
     "central_pr": 165,
-    "central_tested_head_sha": "3cb242653cfc92917b374f82f1d6adb6994100f9",
+    "central_tested_head_sha": "6ac7c7f0fef32682bb5d8b0d19c59bd174482926",
     "central_base_sha": "145cd1f44bdec9e584eb0f045dd139ef330c6321",
-    "previous_central_head_sha": "dca99a1fe0160e77a53c02fa304d66597f5128f4",
+    "previous_central_head_sha": "3cb242653cfc92917b374f82f1d6adb6994100f9",
     "exact_head_ci": [
       {
-        "run_id": 45208102791,
+        "run_id": 45219717898,
         "conclusion": "success",
         "scope": "Exact-head Windows E2E transport fail-closed regression"
       },
       {
-        "run_id": 45208102718,
+        "run_id": 45219717804,
         "conclusion": "success",
         "scope": "Exact-head independent GitHub artifact custody regression"
       },
       {
-        "run_id": 45208102802,
+        "run_id": 45219718041,
         "conclusion": "success",
         "scope": "Exact-head Windows-all-auto Offline QA (Windows and Ubuntu)"
       }
@@ -14390,28 +14440,9 @@
     "store_submission_allowed": false,
     "certification_allowed": false,
     "publish_allowed": false,
-    "reconciliation_file": "ops/focus_file_transport_reconciliation_20261123.json",
-    "note": "PR165 exact current branch HEAD 3cb242653cfc92917b374f82f1d6adb6994100f9 has all three exact-head workflows SUCCESS: transport 45208102791, artifact custody 45208102718, and Windows/Ubuntu Offline QA 45208102802. These validate fail-closed contract/fixture CI only; no approved current-source Identity or Package Version, real product MSIX, GitHub backlog, local checker/install, local GUI E2E, or physical local code-sync receipt is proven. Focus/File remain DELIVERY_HOLD and E2E remains HOLD.",
-    "previous_ledger_followup_head_sha": "dca99a1fe0160e77a53c02fa304d66597f5128f4",
+    "note": "PR165 exact current branch HEAD 6ac7c7f0fef32682bb5d8b0d19c59bd174482926 has all three exact-head workflows SUCCESS: transport 45219717898, artifact custody 45219717804, and Windows/Ubuntu Offline QA 45219718041. These validate fail-closed contract/fixture CI only; no approved current-source Identity or Package Version, real product MSIX, GitHub backlog, local checker/install, local GUI E2E, or physical local code-sync receipt is proven. Focus/File remain DELIVERY_HOLD and E2E remains HOLD.",
+    "previous_ledger_followup_head_sha": "3cb242653cfc92917b374f82f1d6adb6994100f9",
     "previous_ledger_followup_exact_head_ci": [
-      {
-        "run_id": 45207877090,
-        "conclusion": "success",
-        "scope": "Exact-head Windows E2E transport fail-closed regression"
-      },
-      {
-        "run_id": 45207876908,
-        "conclusion": "success",
-        "scope": "Exact-head independent GitHub artifact custody regression"
-      },
-      {
-        "run_id": 45207876990,
-        "conclusion": "success",
-        "scope": "Exact-head Windows-all-auto Offline QA (Windows and Ubuntu)"
-      }
-    ],
-    "ledger_followup_head_sha": "3cb242653cfc92917b374f82f1d6adb6994100f9",
-    "ledger_followup_exact_head_ci": [
       {
         "run_id": 45208102791,
         "conclusion": "success",
@@ -14428,12 +14459,30 @@
         "scope": "Exact-head Windows-all-auto Offline QA (Windows and Ubuntu)"
       }
     ],
-    "latest_exact_head_ci_tested_sha": "3cb242653cfc92917b374f82f1d6adb6994100f9",
-    "previous_central_head": "dca99a1fe0160e77a53c02fa304d66597f5128f4"
+    "ledger_followup_head_sha": "6ac7c7f0fef32682bb5d8b0d19c59bd174482926",
+    "ledger_followup_exact_head_ci": [
+      {
+        "run_id": 45219717898,
+        "conclusion": "success",
+        "scope": "Exact-head Windows E2E transport fail-closed regression"
+      },
+      {
+        "run_id": 45219717804,
+        "conclusion": "success",
+        "scope": "Exact-head independent GitHub artifact custody regression"
+      },
+      {
+        "run_id": 45219718041,
+        "conclusion": "success",
+        "scope": "Exact-head Windows-all-auto Offline QA (Windows and Ubuntu)"
+      }
+    ],
+    "latest_exact_head_ci_tested_sha": "6ac7c7f0fef32682bb5d8b0d19c59bd174482926",
+    "previous_central_head": "3cb242653cfc92917b374f82f1d6adb6994100f9"
   },
   "focus_file_transport_reconciliation_20261123": {
     "path": "ops/focus_file_transport_reconciliation_20261123.json",
-    "observed_at_utc": "2026-11-23T16:39:12.000Z",
+    "observed_at_utc": "2026-11-23T17:35:20.000Z",
     "status": "HOLD",
     "focus_head": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
     "file_base_head": "4474af31b35afc7c3608a5b6a6f833597001fdf7",
@@ -14444,44 +14493,44 @@
     "reconciliation_commit_sha": "1f14fbe7963f048f8ead83de9a0d39298e04cf17",
     "exact_head_ci": [
       {
-        "run_id": 45208102791,
+        "run_id": 45219717898,
         "conclusion": "success",
         "scope": "Exact-head Windows E2E transport fail-closed regression"
       },
       {
-        "run_id": 45208102718,
+        "run_id": 45219717804,
         "conclusion": "success",
         "scope": "Exact-head independent GitHub artifact custody regression"
       },
       {
-        "run_id": 45208102802,
+        "run_id": 45219718041,
         "conclusion": "success",
         "scope": "Exact-head Windows-all-auto Offline QA (Windows and Ubuntu)"
       }
     ],
-    "ledger_followup_head_sha": "3cb242653cfc92917b374f82f1d6adb6994100f9",
+    "ledger_followup_head_sha": "6ac7c7f0fef32682bb5d8b0d19c59bd174482926",
     "ledger_followup_exact_head_ci": [
       {
-        "run_id": 45208102791,
+        "run_id": 45219717898,
         "conclusion": "success",
         "scope": "Exact-head Windows E2E transport fail-closed regression"
       },
       {
-        "run_id": 45208102718,
+        "run_id": 45219717804,
         "conclusion": "success",
         "scope": "Exact-head independent GitHub artifact custody regression"
       },
       {
-        "run_id": 45208102802,
+        "run_id": 45219718041,
         "conclusion": "success",
         "scope": "Exact-head Windows-all-auto Offline QA (Windows and Ubuntu)"
       }
     ],
-    "central_head": "3cb242653cfc92917b374f82f1d6adb6994100f9",
-    "previous_ledger_followup_head_sha": "89ada362a96087672da4897725f8362f84a98ac2",
+    "central_head": "6ac7c7f0fef32682bb5d8b0d19c59bd174482926",
+    "previous_ledger_followup_head_sha": "3cb242653cfc92917b374f82f1d6adb6994100f9",
     "current_head_ci_status": "PASS_EXACT_HEAD_CI",
-    "current_head_ci_tested_sha": "3cb242653cfc92917b374f82f1d6adb6994100f9",
-    "note": "PR165 exact current branch HEAD 3cb242653cfc92917b374f82f1d6adb6994100f9 has all three exact-head workflows SUCCESS: transport 45208102791, artifact custody 45208102718, and Windows/Ubuntu Offline QA 45208102802. These validate fail-closed contract/fixture CI only; no approved current-source Identity or Package Version, real product MSIX, GitHub backlog, local checker/install, local GUI E2E, or physical local code-sync receipt is proven. Focus/File remain DELIVERY_HOLD and E2E remains HOLD.",
-    "previous_central_head": "dca99a1fe0160e77a53c02fa304d66597f5128f4"
+    "current_head_ci_tested_sha": "6ac7c7f0fef32682bb5d8b0d19c59bd174482926",
+    "note": "PR165 exact current branch HEAD 6ac7c7f0fef32682bb5d8b0d19c59bd174482926 has all three exact-head workflows SUCCESS: transport 45219717898, artifact custody 45219717804, and Windows/Ubuntu Offline QA 45219718041. These validate fail-closed contract/fixture CI only; no approved current-source Identity or Package Version, real product MSIX, GitHub backlog, local checker/install, local GUI E2E, or physical local code-sync receipt is proven. Focus/File remain DELIVERY_HOLD and E2E remains HOLD.",
+    "previous_central_head": "3cb242653cfc92917b374f82f1d6adb6994100f9"
   }
 }
