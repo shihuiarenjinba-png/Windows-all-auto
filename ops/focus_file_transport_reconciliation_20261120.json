@@ -3,38 +3,39 @@
   "observed_date_utc": "2026-11-23",
   "evidence_basis": {
     "central_pr": 165,
-    "central_head": "04cb9bbef5945462a5b8ee74b494bad7f3c32500",
+    "central_head": "ee65a9cf410c3a07909847b81ddaee91d1d244c5",
     "ledger_path": "ops/active_e2e_handoff.json",
     "queue_path": "ops/completion_rush_queue_20261116.json",
     "pr161_head": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
     "pr171_head": "764721021f13be96364529650b44fb439770bac9",
     "exact_head_ci": [
       {
-        "run_id": 45134439345,
+        "run_id": 45141690596,
         "conclusion": "success",
-        "scope": "Transport fail-closed regression"
+        "scope": "Exact-head Windows E2E transport fail-closed regression"
       },
       {
-        "run_id": 45134439206,
+        "run_id": 45141690374,
         "conclusion": "success",
-        "scope": "Independent artifact custody regression"
+        "scope": "Exact-head independent GitHub artifact custody regression"
       },
       {
-        "run_id": 45134439373,
+        "run_id": 45141690255,
         "conclusion": "success",
-        "scope": "Windows and Ubuntu Offline QA"
+        "scope": "Exact-head Windows and Ubuntu Offline QA"
       }
     ],
     "pr161_ci_run": 42712757936,
     "pr171_ci_run": 44437197470,
     "product_repository": "shihuiarenjinba-png/AI-App-Factory",
-    "previous_tested_head": "b69c496aa2c25427e7449c856c1a3cf7d1431127"
+    "previous_tested_head": "b69c496aa2c25427e7449c856c1a3cf7d1431127",
+    "checked_at_jst": "2026-11-23T17:53:01+09:00"
   },
   "status": "HOLD",
   "e2e_pass": false,
   "priority_product": "Focus Session Desk",
   "ledger_active_product": "Signal Sprint",
-  "note": "Priority selection is not proof of local execution; preserve the historical active_product=Signal Sprint. Focus and File Integrity now have independently read-back PNG raw-byte SHA256 and hosted native EXE GUI evidence. Neither has an authoritative Package Version or current-source approved Identity binding, real MSIX, GitHub backlog receipt, local pull, Windows-checker receipt or user-PC local GUI/install receipt. PR165 exact-head CI is green but synthetic/transport-only. E2E remains HOLD. Latest central PR165 exact head 04cb9bb has transport, artifact-custody and Windows/Ubuntu Offline QA all SUCCESS; this remains CI-only and does not clear any product delivery or local E2E gate.",
+  "note": "PR165 exact tested HEAD ee65a9cf410c3a07909847b81ddaee91d1d244c5 has three associated workflows SUCCESS (transport fail-closed, independent artifact custody, Windows+Ubuntu Offline QA). Compare from 580eb93206d0755cd7a1d2a14b7e841da2337760 is two commits ahead/zero behind and changes only central ops JSON; no product code. Focus/File PNG Git blob SHAs were re-read from current product PR heads and match the previously independently verified raw-byte SHA256 records. Focus current approved Identity remains bound to old source 8b00bc4e, PR94 current head fb629383 is 27 commits ahead and main.py changed. File Integrity approved Identity remains at historical commit db9a57af bound to d1108d12, and the file is absent at PR97 current GUI head 82aaffc; PR95/PR97 diverge from approved source. Both approved identity records have package_version_gate=HOLD and no Version field. No authoritative Version readback, real MSIX, GitHub backlog receipt, local pull, Windows-checker or user-PC GUI/install receipt. E2E remains HOLD; no Store submission/certification/publish.",
   "products": [
     {
       "name": "Focus Session Desk",
@@ -95,7 +96,16 @@
       "real_msix_sha256": null,
       "github_backlog_receipt": null,
       "local_checker_receipt": null,
-      "local_gui_receipt": null
+      "local_gui_receipt": null,
+      "approved_identity_file_present_on_current_head": true,
+      "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
+      "package_version_evidence": "Approved identity JSON has no version field and package_version_gate=HOLD; authenticated Partner Center readback not observed.",
+      "store_assets_git_blob_sha_readback": {
+        "StoreLogo": "8017427aabf0e30168a88353588dc2ffdc2cba6d",
+        "Square150": "c6060306f202b662831039b95b1352689da023c7",
+        "Square44": "466a795ea01e34a28ac1db9aa7dcf3308464dbd0"
+      },
+      "store_assets_git_blob_sha_rechecked_this_run": true
     },
     {
       "name": "File Integrity Ledger",
@@ -185,7 +195,19 @@
       "real_msix_sha256": null,
       "github_backlog_receipt": null,
       "local_checker_receipt": null,
-      "local_gui_receipt": null
+      "local_gui_receipt": null,
+      "approved_identity_file_present_at_approved_commit": true,
+      "approved_identity_file_present_on_current_gui_head": false,
+      "approved_identity_file_current_gui_head_readback": "NOT_FOUND",
+      "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
+      "package_version_evidence": "Approved identity JSON at historical commit db9a57af has no version field and package_version_gate=HOLD; it is absent from PR97 current GUI head. Partner Center readback not observed.",
+      "store_assets_git_blob_sha_readback": {
+        "StoreLogo": "e3c9a9426a1971f21175b9b045d4d5fef83f97d5",
+        "Square150": "df892bd2fcf7b56f9facd94054b2b1385313b030",
+        "Square44": "d57e7a25d2a9eaa2b54d00c610f3a1ad7d4a4d49"
+      },
+      "store_assets_git_blob_sha_rechecked_this_run": true,
+      "store_assets_identical_on_pr97_head": true
     }
   ],
   "transport_contract": {
@@ -215,5 +237,36 @@
   "store_submission_allowed": false,
   "certification_allowed": false,
   "publish_allowed": false,
-  "live_partner_center_write_allowed": false
+  "live_partner_center_write_allowed": false,
+  "pr165_head_sha": "ee65a9cf410c3a07909847b81ddaee91d1d244c5",
+  "latest_transport_reconciliation": {
+    "checked_at_utc": "2026-11-23",
+    "central_pr": 165,
+    "central_head": "ee65a9cf410c3a07909847b81ddaee91d1d244c5",
+    "exact_head_ci": [
+      {
+        "run_id": 45141690596,
+        "conclusion": "success",
+        "scope": "Exact-head Windows E2E transport fail-closed regression"
+      },
+      {
+        "run_id": 45141690374,
+        "conclusion": "success",
+        "scope": "Exact-head independent GitHub artifact custody regression"
+      },
+      {
+        "run_id": 45141690255,
+        "conclusion": "success",
+        "scope": "Exact-head Windows and Ubuntu Offline QA"
+      }
+    ],
+    "status": "HOLD",
+    "e2e_pass": false,
+    "real_msix": false,
+    "github_backlog_receipt": false,
+    "local_checker_receipt": false,
+    "store_submission_allowed": false,
+    "certification_allowed": false,
+    "publish_allowed": false
+  }
 }
