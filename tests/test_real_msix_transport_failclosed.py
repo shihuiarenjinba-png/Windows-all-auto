@@ -217,7 +217,7 @@ class CurrentLedgerGateTests(unittest.TestCase):
         self.assertIs(ledger["certification_allowed"], False)
         self.assertIs(ledger["publish_allowed"], False)
         latest = ledger["latest_transport_reconciliation"]
-        self.assertEqual(latest["central_tested_head_sha"], "783c1480235dd6fc692d7a77fdbe789ad96bd796")
+        self.assertEqual(latest["central_tested_head_sha"], "f6ec0beaea5c2409bfdfd7290a3b35e914d51f5e")
         self.assertEqual([x["run_id"] for x in latest["exact_head_ci"]], [45178376984,45178376945,45178376816])
         self.assertTrue(all(x["conclusion"] == "success" for x in latest["exact_head_ci"]))
         self.assertTrue(ledger["active_product_is_historical"])
@@ -234,7 +234,7 @@ class CurrentLedgerGateTests(unittest.TestCase):
         self.assertEqual(ledger["e2e_status"], "HOLD")
         self.assertIs(ledger["e2e_pass"], False)
         self.assertEqual(ledger["windows_e2e_custody_reconciliation"]["pr165_tested_head_sha"],
-                         "783c1480235dd6fc692d7a77fdbe789ad96bd796")
+                         "f6ec0beaea5c2409bfdfd7290a3b35e914d51f5e")
         self.assertEqual(ledger["windows_e2e_custody_reconciliation"]["approved_version"], "UNVERIFIED")
         self.assertEqual(recon["version_discovery"]["decision"],
                          "KEEP_VERSION_HOLD__DO_NOT_INFER_OR_WRITE_VERSION")
