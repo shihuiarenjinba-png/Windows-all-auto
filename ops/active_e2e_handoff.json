@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-23",
+  "updated_at_utc": "2026-11-23T10:06:53Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -11127,24 +11127,24 @@
     }
   },
   "windows_e2e_custody_reconciliation": {
-    "checked_at_utc": "2026-11-23",
+    "checked_at_utc": "2026-11-23T10:06:53Z",
     "status": "HOLD",
     "pr161_head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
     "pr164_head_sha": "145cd1f44bdec9e584eb0f045dd139ef330c6321",
-    "pr165_tested_head_sha": "8554d7e624f3738e58f728aa08ab3559e04be2f2",
+    "pr165_tested_head_sha": "72556b852b80a1bb513ae091f0f7c2f195ce5f6e",
     "pr165_ci": [
       {
-        "run_id": 45150419049,
+        "run_id": 45153818427,
         "conclusion": "success",
         "scope": "Exact-head Windows E2E transport fail-closed regression"
       },
       {
-        "run_id": 45150419042,
+        "run_id": 45153818451,
         "conclusion": "success",
         "scope": "Exact-head independent GitHub artifact custody regression"
       },
       {
-        "run_id": 45150419242,
+        "run_id": 45153818461,
         "conclusion": "success",
         "scope": "Exact-head Windows and Ubuntu Offline QA"
       }
@@ -11156,7 +11156,7 @@
     "checker_gui_e2e": "NOT_VERIFIED",
     "focus_file_integrity_phase": "POST_IDENTITY_DELIVERY_HOLD",
     "prism_revision": "HOLD_NO_OLD_SOURCE_CAS",
-    "note": "PR165 exact tested HEAD 8554d7e624f3738e58f728aa08ab3559e04be2f2 has all three associated workflows SUCCESS: transport fail-closed, independent GitHub artifact custody, and Windows+Ubuntu Offline QA. Compare from prior tested HEAD 1eb134f2a2dae3647058d3357d634930f5bbaa23 is 3 commits ahead / 0 behind and changes only the three central ops JSON files; no product code. Focus current PR94 source remains fb629383 while approved Identity is bound to 8b00bc4e with package_version_gate=HOLD. File Integrity approved Identity remains bound to d1108d12 at historical commit db9a57af and is absent from current PR95 head 4474af31 and PR97 GUI head 82aaffc. Both products lack authoritative Version and real MSIX. Raw PNG bytes/SHA256 and Git blob SHAs were independently re-read at current product heads. Local checker source/CLI contract is pinned, but local checkout/execution and GUI receipt remain unobserved. E2E remains HOLD.",
+    "note": "PR165 exact current HEAD 72556b852b80a1bb513ae091f0f7c2f195ce5f6e has all three associated workflows SUCCESS: transport run 45153818427, independent artifact custody run 45153818451, and Windows+Ubuntu Offline QA run 45153818461. The immediately prior PR165 HEAD c644991065fdd092c97a1a72625ec09e205b6789 had custody/offline failures because test fixtures omitted GitHub artifact.digest and did not refresh the mocked digest after archive mutation; test-only commit 72556b fixes the fixtures without relaxing production checks. This is CI-only and does not prove real product MSIX, signature, backlog, local checker, or GUI. PR161 exact HEAD remains 71d9c2125b6aed44a86ca1872d48ad19963f3e63 with Offline QA run 42712757936 SUCCESS. Focus current PR94 source fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79 is 27 commits ahead of approved Identity source 8b00bc4e90828c4282463826873aa8dfd2eb93f4; products/focus-session-desk/main.py changed, so approved Identity cannot be CAS-reused. Its approved identity JSON remains package_version_gate=HOLD with package_version absent. File Integrity current PR95 source 4474af31b35afc7c3608a5b6a6f833597001fdf7 is diverged from approved source d1108d12f7d1697af30400f97c7db39cba5e6791 (6 ahead/8 behind), and the approved identity JSON is absent at the current head; its historical Identity is not reusable. Both current product heads have verified Store PNG Git blobs/raw SHA records, but neither has an authoritative approved Version or real MSIX. Both remain real_msix/backlog/checker_gui/local_receipt NOT_VERIFIED. Local checker source/CLI contract is pinned but local checkout/execution and GUI receipt remain unobserved. E2E remains HOLD; Prism old-source CAS prohibited; Store submission/certification/publish remain false.",
     "approved_identity_product_checks": [
       {
         "product": "Focus Session Desk",
@@ -11347,21 +11347,21 @@
       }
     ],
     "latest_head_ci_observation": {
-      "observed_at_jst": "2026-11-23 18:39:00 JST",
-      "head_sha": "8554d7e624f3738e58f728aa08ab3559e04be2f2",
+      "observed_at_jst": "2026-11-23 19:06:53 JST",
+      "head_sha": "72556b852b80a1bb513ae091f0f7c2f195ce5f6e",
       "workflow_runs": [
         {
-          "run_id": 45150419049,
+          "run_id": 45153818427,
           "conclusion": "success",
           "scope": "Exact-head Windows E2E transport fail-closed regression"
         },
         {
-          "run_id": 45150419042,
+          "run_id": 45153818451,
           "conclusion": "success",
           "scope": "Exact-head independent GitHub artifact custody regression"
         },
         {
-          "run_id": 45150419242,
+          "run_id": 45153818461,
           "conclusion": "success",
           "scope": "Exact-head Windows and Ubuntu Offline QA"
         }
@@ -11373,7 +11373,7 @@
       "backlog": false,
       "local_checker": false
     },
-    "pr165_head_sha": "8554d7e624f3738e58f728aa08ab3559e04be2f2",
+    "pr165_head_sha": "72556b852b80a1bb513ae091f0f7c2f195ce5f6e",
     "pr161_ci": [
       {
         "run_id": 42712757936,
@@ -11560,7 +11560,32 @@
     "store_submission_allowed": false,
     "certification_allowed": false,
     "publish_allowed": false,
-    "older_tested_head_sha": "b37343748ee2b3da1a7fb4ba7ed89b1ae31c84f8"
+    "older_tested_head_sha": "b37343748ee2b3da1a7fb4ba7ed89b1ae31c84f8",
+    "failed_intermediate_head_observation": {
+      "head_sha": "c644991065fdd092c97a1a72625ec09e205b6789",
+      "workflow_runs": [
+        {
+          "run_id": 45152506647,
+          "conclusion": "failure",
+          "scope": "Windows-all-auto Offline QA"
+        },
+        {
+          "run_id": 45152506565,
+          "conclusion": "failure",
+          "scope": "GitHub artifact custody fail-closed regression"
+        },
+        {
+          "run_id": 45152506702,
+          "conclusion": "success",
+          "scope": "Windows E2E transport fail-closed regression"
+        }
+      ],
+      "cause": "The stricter artifact archive digest check correctly returned HOLD because the synthetic fixtures omitted GitHub's sha256 archive digest. The mismatch fixtures also changed archive bytes without updating the mocked API digest.",
+      "fix_commit": "72556b852b80a1bb513ae091f0f7c2f195ce5f6e",
+      "fix": "Updated only tests/test_github_artifact_custody.py: fixture builder now computes and supplies artifact.digest from exact ZIP bytes; mutated-archive cases refresh the digest so tests reach the intended package-byte mismatch/content-validation assertions.",
+      "production_verifier_relaxed": false,
+      "status": "SUPERSEDED_BY_EXACT_HEAD_ALL_SUCCESS"
+    }
   },
   "store_submission_allowed": false,
   "certification_allowed": false,
