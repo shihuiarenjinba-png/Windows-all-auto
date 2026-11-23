@@ -218,7 +218,7 @@ class CurrentLedgerGateTests(unittest.TestCase):
         self.assertIs(ledger["publish_allowed"], False)
         latest = ledger["latest_transport_reconciliation"]
         self.assertEqual(latest["central_tested_head_sha"], "41f74a28e8aac9356279349343f1dbe0d251800a")
-        self.assertEqual(latest["previous_central_head_sha"], "3cb242653cfc92917b374f82f1d6adb6994100f9")
+        self.assertEqual(latest["previous_central_head_sha"], "6ac7c7f0fef32682bb5d8b0d19c59bd174482926")
         self.assertEqual(latest["ledger_followup_head_sha"], "41f74a28e8aac9356279349343f1dbe0d251800a")
         self.assertEqual([x["run_id"] for x in latest["exact_head_ci"]],
                          [45230271440, 45230271518, 45230271524])
@@ -239,7 +239,7 @@ class CurrentLedgerGateTests(unittest.TestCase):
         self.assertEqual(ledger["windows_e2e_custody_reconciliation"]["pr165_tested_head_sha"],
                          "41f74a28e8aac9356279349343f1dbe0d251800a")
         self.assertEqual([x["run_id"] for x in ledger["windows_e2e_custody_reconciliation"]["pr165_ci"]],
-                         [45219717898, 45219717804, 45219718041])
+                         [45230271440, 45230271518, 45230271524])
         self.assertEqual(ledger["windows_e2e_custody_reconciliation_history"][-1]["pr165_tested_head_sha"], "41f74a28e8aac9356279349343f1dbe0d251800a")
         self.assertEqual(ledger["windows_e2e_custody_reconciliation"]["pr165_reconciliation_parent_head_sha"],
                          "6ac7c7f0fef32682bb5d8b0d19c59bd174482926")
