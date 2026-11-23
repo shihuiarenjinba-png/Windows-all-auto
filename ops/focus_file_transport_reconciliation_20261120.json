@@ -138,7 +138,7 @@
       "hold_class": "DELIVERY_HOLD",
       "package_version": null,
       "version_gate": "AUTHORITATIVE_VALUE_REQUIRED",
-      "current_source_identity_binding": "REVALIDATION_REQUIRED__IDENTITY_BOUND_TO_D1108_NOT_4474_OR_3A7A00",
+      "current_source_identity_binding": "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE",
       "asset_gate": "RAW_PNG_BYTES_SHA256_VERIFIED__MSIX_EMBED_NOT_VERIFIED",
       "required_assets": [
         "StoreLogo.png",
@@ -233,7 +233,8 @@
         ],
         "fixture_only_no_user_files_accessed": true,
         "visual_review_required": true
-      }
+      },
+      "current_source_identity_binding_detail": "Approved Identity at historical commit db9a57af is bound to d1108d12 and absent at current PR95 HEAD 4474af31 and PR97 HEAD 3a7a00ce; PR95 is diverged 6 ahead/8 behind and PR97 is diverged 30 ahead/8 behind from the approved source."
     }
   ],
   "transport_contract": {
@@ -319,7 +320,7 @@
     "store_submission_allowed": false,
     "certification_allowed": false,
     "publish_allowed": false,
-    "previous_central_head": "1eb134f2a2dae3647058d3357d634930f5bbaa23"
+    "previous_central_head": "8554d7e624f3738e58f728aa08ab3559e04be2f2"
   },
   "windows_checker_source": {
     "repository": "shihuiarenjinba-png/Windows-checker",
