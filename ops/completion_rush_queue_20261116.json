@@ -284,9 +284,39 @@
       "next_action": "Prove real Windows JA/EN five controls and LOST UIA; once PASS, freeze product and advance GDK Version/SDK/assets/CAS/MSIXVC."
     }
   ],
-  "last_reconciled_at_utc": "2026-11-23T09:38:50Z",
-  "last_reconciled_basis": "PR165 current exact HEAD 1eb134f2a2dae3647058d3357d634930f5bbaa23 and its three associated Actions workflows were read directly from GitHub; all three succeeded. Compare from prior tested HEAD b37343748ee2b3da1a7fb4ba7ed89b1ae31c84f8 is 3 commits ahead / 0 behind and touches only central ops JSON. Focus/File product gates remain DELIVERY_HOLD; no Version inference or product-code changes.",
+  "last_reconciled_at_utc": "2026-11-23T09:39:00Z",
+  "last_reconciled_basis": "PR165 exact tested HEAD 8554d7e624f3738e58f728aa08ab3559e04be2f2 and its three associated Actions workflows were read directly from GitHub; all three succeeded. Compare from prior tested HEAD 1eb134f2a2dae3647058d3357d634930f5bbaa23 is 3 commits ahead / 0 behind and touches only central ops JSON. Focus/File remain DELIVERY_HOLD; no Version inference or product-code changes.",
   "latest_transport_reconciliation": {
+    "checked_at_utc": "2026-11-23T09:39:00Z",
+    "central_pr": 165,
+    "central_head": "8554d7e624f3738e58f728aa08ab3559e04be2f2",
+    "exact_head_ci": [
+      {
+        "run_id": 45150419049,
+        "conclusion": "success",
+        "scope": "Exact-head Windows E2E transport fail-closed regression"
+      },
+      {
+        "run_id": 45150419042,
+        "conclusion": "success",
+        "scope": "Exact-head independent GitHub artifact custody regression"
+      },
+      {
+        "run_id": 45150419242,
+        "conclusion": "success",
+        "scope": "Exact-head Windows and Ubuntu Offline QA"
+      }
+    ],
+    "status": "HOLD",
+    "e2e_pass": false,
+    "real_msix": false,
+    "github_backlog_receipt": false,
+    "local_checker_receipt": false,
+    "store_submission_allowed": false,
+    "certification_allowed": false,
+    "publish_allowed": false
+  },
+  "previous_latest_transport_reconciliation": {
     "checked_at_utc": "2026-11-23T09:38:50Z",
     "central_pr": 165,
     "central_head": "1eb134f2a2dae3647058d3357d634930f5bbaa23",
@@ -315,69 +345,5 @@
     "store_submission_allowed": false,
     "certification_allowed": false,
     "publish_allowed": false
-  },
-  "previous_latest_transport_reconciliation": {
-    "checked_at_utc": "2026-11-23",
-    "central_pr": 165,
-    "central_head": "b37343748ee2b3da1a7fb4ba7ed89b1ae31c84f8",
-    "exact_head_ci": [
-      {
-        "run_id": 45143926210,
-        "conclusion": "success",
-        "scope": "Exact-head Windows E2E transport fail-closed regression"
-      },
-      {
-        "run_id": 45143926027,
-        "conclusion": "success",
-        "scope": "Exact-head independent GitHub artifact custody regression"
-      },
-      {
-        "run_id": 45143926191,
-        "conclusion": "success",
-        "scope": "Exact-head Windows and Ubuntu Offline QA"
-      }
-    ],
-    "status": "HOLD",
-    "e2e_pass": false,
-    "real_msix": false,
-    "github_backlog_receipt": false,
-    "local_checker_receipt": false,
-    "store_submission_allowed": false,
-    "certification_allowed": false,
-    "publish_allowed": false,
-    "prior_metadata_regression": {
-      "tested_head": "4b1de5480d3a74808f35ac84e281045166691660",
-      "failed_runs": [
-        45133904841,
-        45133904859
-      ],
-      "cause": "Stable queue status string mismatch",
-      "fixed_in": "69b85182d918c97d6b8ea811f86dae03aeaa0edc"
-    },
-    "windows_checker_source": {
-      "repository": "shihuiarenjinba-png/Windows-checker",
-      "pr": 2,
-      "head_sha": "17cdc77c841ac5b9bdc673b08724cd3a47dd9203",
-      "branch": "codex/e2e-belt-connection-20261027",
-      "base_pr": 1,
-      "base_branch": "codex/store-readiness-checker-20261025",
-      "state": "OPEN",
-      "draft": true,
-      "ci_run_id": 41933149906,
-      "ci_conclusion": "SUCCESS",
-      "run_py_blob_sha": "007d1f264ddc3bb187ca1fd0447dbb3850c2e124",
-      "core_py_blob_sha": "9d101667fdc9e7028823c9025d837d1d353d1985",
-      "cli_contract": "python run.py --cli --type app|game --msix <package.msix> --report <report.json>",
-      "verdict_exit_codes": {
-        "0": "READY_CANDIDATE_NOT_CERTIFIED",
-        "1": "NEEDS_REVIEW",
-        "2": "BLOCKED"
-      },
-      "local_checkout_status": "NOT_OBSERVED",
-      "local_checker_execution": "NOT_RUN",
-      "local_gui_execution": "NOT_RUN",
-      "e2e_pass": false,
-      "scope": "Trusted checker source/CLI contract and exact-head CI verified; no real product MSIX or user-PC execution."
-    }
   }
 }
