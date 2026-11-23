@@ -297,12 +297,12 @@ class CustodyTests(unittest.TestCase):
         ledger = json.loads((root / "ops/active_e2e_handoff.json").read_text(encoding="utf-8"))
         recon = json.loads((root / "ops/focus_file_transport_reconciliation_20261123.json").read_text(encoding="utf-8"))
         latest = ledger["latest_transport_reconciliation"]
-        self.assertEqual(latest["central_tested_head_sha"], "6ac7c7f0fef32682bb5d8b0d19c59bd174482926")
-        self.assertEqual(latest["previous_central_head_sha"], "3cb242653cfc92917b374f82f1d6adb6994100f9")
-        self.assertEqual(latest["ledger_followup_head_sha"], "6ac7c7f0fef32682bb5d8b0d19c59bd174482926")
+        self.assertEqual(latest["central_tested_head_sha"], "41f74a28e8aac9356279349343f1dbe0d251800a")
+        self.assertEqual(latest["previous_central_head_sha"], "6ac7c7f0fef32682bb5d8b0d19c59bd174482926")
+        self.assertEqual(latest["ledger_followup_head_sha"], "41f74a28e8aac9356279349343f1dbe0d251800a")
         self.assertEqual(latest["ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual([x["run_id"] for x in latest["exact_head_ci"]],
-                         [45219717898, 45219717804, 45219718041])
+                         [45230271440, 45230271518, 45230271524])
         self.assertEqual(latest["status"], "HOLD")
         self.assertIs(latest["e2e_pass"], False)
         self.assertIs(latest["real_msix"], False)
@@ -317,6 +317,23 @@ class CustodyTests(unittest.TestCase):
             self.assertIs(product["real_msix"], False)
         self.assertEqual(recon["store_upload_test_eligibility"]["eligible_fresh_unsold_products"], 0)
         self.assertFalse(recon["store_upload_test_eligibility"]["dry_run_started"])
+        queue = json.loads((root / "ops/completion_rush_queue_20261116.json").read_text(encoding="utf-8"))
+        queue_latest = queue["latest_transport_reconciliation"]
+        self.assertEqual(queue_latest["central_head"], latest["central_tested_head_sha"])
+        self.assertEqual(recon["central_head"], latest["central_tested_head_sha"])
+        self.assertEqual([x["run_id"] for x in queue_latest["exact_head_ci"]],
+                         [x["run_id"] for x in latest["exact_head_ci"]])
+        file_item = next(p for p in queue["priority"] if p["product"] == "File Integrity Ledger")
+        self.assertEqual(file_item["current_gui_followup_pr"], 100)
+        self.assertEqual(file_item["current_gui_followup_head"], "081fc168544022c401ce95a0f481644568912337")
+        self.assertEqual(file_item["current_gui_followup"]["artifact_sha256"],
+                         "bfb653798a47f14e036ad4ecc69a604b82b64b2df845b7c314c90f242ccdb3c9")
+        self.assertEqual(file_item["current_gui_followup"]["exe_sha256"],
+                         "5b788cdb0bc7c63d92956228358983fefc1352797fa5d7133ab365d2a7d774aa")
+        self.assertFalse(file_item["current_gui_followup"]["visual_review_required"])
+        self.assertFalse(file_item["approved_identity_file_present_on_current_pr100_head"])
+        self.assertIsNone(file_item["package_version"])
+        self.assertIs(file_item["real_msix"], False)
 
 if __name__ == "__main__":
     unittest.main()
