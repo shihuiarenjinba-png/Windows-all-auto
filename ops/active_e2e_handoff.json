@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-23T07:55:00Z",
+  "updated_at_utc": "2026-11-23T07:58:00Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -11131,20 +11131,20 @@
     "status": "HOLD",
     "pr161_head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
     "pr164_head_sha": "145cd1f44bdec9e584eb0f045dd139ef330c6321",
-    "pr165_tested_head_sha": "86dcd61b6a515ce03d75f8fc7cbe6407586daae3",
+    "pr165_tested_head_sha": "b69c496aa2c25427e7449c856c1a3cf7d1431127",
     "pr165_ci": [
       {
-        "run_id": 45134183948,
+        "run_id": 45134305432,
         "conclusion": "success",
         "scope": "Exact-head Windows E2E transport fail-closed regression"
       },
       {
-        "run_id": 45134183873,
+        "run_id": 45134305865,
         "conclusion": "success",
         "scope": "Exact-head independent GitHub artifact custody regression"
       },
       {
-        "run_id": 45134184158,
+        "run_id": 45134305339,
         "conclusion": "success",
         "scope": "Exact-head Offline QA; Windows and Ubuntu"
       }
@@ -11156,7 +11156,7 @@
     "checker_gui_e2e": "NOT_VERIFIED",
     "focus_file_integrity_phase": "POST_IDENTITY",
     "prism_revision": "HOLD_NO_OLD_SOURCE_CAS",
-    "note": "PR165 exact HEAD 86dcd61 now has all three exact-head CI workflows SUCCESS (transport regression, independent artifact custody regression, Windows+Ubuntu Offline QA). The earlier 4b1de metadata-only attempt failed because a descriptive queue status value broke the stable schema; commit 69b851 restored the canonical value and preserved detail in a separate field, and the subsequent exact-head CI is green. This is CI-only evidence: Focus/File still lack authoritative Package Version and current-source approved Identity binding, real MSIX, GitHub backlog receipt, local pull, Windows-checker and local GUI/install receipt. E2E remains HOLD.",
+    "note": "PR165 exact HEAD b69c496 now has all three exact-head CI workflows SUCCESS: Windows E2E transport fail-closed regression, independent GitHub artifact custody regression, and Windows+Ubuntu Offline QA. The prior queue schema mismatch was corrected without changing product code or weakening the stable contract. This is CI-only evidence: Focus/File still lack authoritative Package Version and current-source approved Identity binding, real MSIX, GitHub backlog receipt, local pull, Windows-checker and local GUI/install receipt. E2E remains HOLD.",
     "approved_identity_product_checks": [
       {
         "product": "Focus Session Desk",
@@ -11324,19 +11324,19 @@
       }
     ],
     "latest_head_ci_observation": {
-      "observed_at_jst": "2026-11-23 16:55",
-      "head_sha": "86dcd61b6a515ce03d75f8fc7cbe6407586daae3",
+      "observed_at_jst": "2026-11-23 16:58",
+      "head_sha": "b69c496aa2c25427e7449c856c1a3cf7d1431127",
       "workflow_runs": [
         {
-          "run_id": 45134183948,
+          "run_id": 45134305432,
           "conclusion": "success"
         },
         {
-          "run_id": 45134183873,
+          "run_id": 45134305865,
           "conclusion": "success"
         },
         {
-          "run_id": 45134184158,
+          "run_id": 45134305339,
           "conclusion": "success",
           "platforms": [
             "windows-latest",
@@ -11351,7 +11351,7 @@
       "backlog": false,
       "local_checker": false
     },
-    "pr165_head_sha": "86dcd61b6a515ce03d75f8fc7cbe6407586daae3",
+    "pr165_head_sha": "b69c496aa2c25427e7449c856c1a3cf7d1431127",
     "pr161_ci": [
       {
         "run_id": 42712757936,
