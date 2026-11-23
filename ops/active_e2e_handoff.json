@@ -11131,20 +11131,20 @@
     "status": "HOLD",
     "pr161_head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
     "pr164_head_sha": "145cd1f44bdec9e584eb0f045dd139ef330c6321",
-    "pr165_tested_head_sha": "ee65a9cf410c3a07909847b81ddaee91d1d244c5",
+    "pr165_tested_head_sha": "9be96018d971a35f246665a6a66111b9b5b19c8c",
     "pr165_ci": [
       {
-        "run_id": 45141690596,
+        "run_id": 45143690518,
         "conclusion": "success",
         "scope": "Exact-head Windows E2E transport fail-closed regression"
       },
       {
-        "run_id": 45141690374,
+        "run_id": 45143690465,
         "conclusion": "success",
         "scope": "Exact-head independent GitHub artifact custody regression"
       },
       {
-        "run_id": 45141690255,
+        "run_id": 45143690743,
         "conclusion": "success",
         "scope": "Exact-head Windows and Ubuntu Offline QA"
       }
@@ -11156,7 +11156,7 @@
     "checker_gui_e2e": "NOT_VERIFIED",
     "focus_file_integrity_phase": "POST_IDENTITY_DELIVERY_HOLD",
     "prism_revision": "HOLD_NO_OLD_SOURCE_CAS",
-    "note": "PR165 exact tested HEAD ee65a9cf410c3a07909847b81ddaee91d1d244c5 has all three associated workflows SUCCESS: transport fail-closed, independent GitHub artifact custody, and Windows+Ubuntu Offline QA. Compare 580eb93206d0755cd7a1d2a14b7e841da2337760..ee65a9cf shows two commits ahead, zero behind, and only ops/active_e2e_handoff.json plus ops/completion_rush_queue_20261116.json changed; no product code. CI remains transport/offline evidence only. Focus current PR94 source is fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79 while its approved identity remains bound to 8b00bc4e90828c4282463826873aa8dfd2eb93f4 and package_version_gate=HOLD. File Integrity approved identity exists at historical commit db9a57af822788af4c8384499a6e343ec7b0353d bound to d1108d12f7d1697af30400f97c7db39cba5e6791, but the file is absent at current GUI source PR97 head 82aaffc47257f13fd386345854a7fb9733727def. Both products still have no authoritative Version, real MSIX, backlog receipt, local pull, checker or local GUI/install receipt. E2E remains HOLD.",
+    "note": "PR165 exact tested HEAD 9be96018d971a35f246665a6a66111b9b5b19c8c has all three associated workflows SUCCESS: transport fail-closed, independent GitHub artifact custody, and Windows+Ubuntu Offline QA. This head contains only three ops JSON reconciliation files beyond ee65a9cf; no product code. Focus current PR94 source remains fb629383 while its approved Identity remains bound to 8b00bc4e with package_version_gate=HOLD. File Integrity approved Identity remains bound to d1108d12 at historical commit db9a57af and is absent from current PR97 head 82aaffc. Both products lack authoritative Version, real MSIX, backlog receipt, local pull, checker and local GUI/install receipt. E2E remains HOLD.",
     "approved_identity_product_checks": [
       {
         "product": "Focus Session Desk",
@@ -11346,32 +11346,32 @@
     ],
     "latest_head_ci_observation": {
       "observed_at_jst": "2026-11-23 17:53",
-      "head_sha": "ee65a9cf410c3a07909847b81ddaee91d1d244c5",
+      "head_sha": "9be96018d971a35f246665a6a66111b9b5b19c8c",
       "workflow_runs": [
         {
-          "run_id": 45141690596,
+          "run_id": 45143690518,
           "conclusion": "success",
           "scope": "Exact-head Windows E2E transport fail-closed regression"
         },
         {
-          "run_id": 45141690374,
+          "run_id": 45143690465,
           "conclusion": "success",
           "scope": "Exact-head independent GitHub artifact custody regression"
         },
         {
-          "run_id": 45141690255,
+          "run_id": 45143690743,
           "conclusion": "success",
           "scope": "Exact-head Windows and Ubuntu Offline QA"
         }
       ],
-      "scope": "Exact-head CI green for transport/custody/offline regressions only; no real product MSIX, signing, local checker or product E2E",
+      "scope": "Exact-head transport/custody/offline CI green; no real product MSIX, signing, local checker or product E2E",
       "status": "PASS_CI_ONLY",
       "e2e_pass": false,
       "real_msix": false,
       "backlog": false,
       "local_checker": false
     },
-    "pr165_head_sha": "ee65a9cf410c3a07909847b81ddaee91d1d244c5",
+    "pr165_head_sha": "9be96018d971a35f246665a6a66111b9b5b19c8c",
     "pr161_ci": [
       {
         "run_id": 42712757936,
