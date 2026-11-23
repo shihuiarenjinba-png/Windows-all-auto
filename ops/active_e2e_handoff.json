@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-23T21:51:40Z",
+  "updated_at_utc": "2026-11-23T22:36:04Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -17820,5 +17820,177 @@
       }
     },
     "note": "Live PR165 HEAD and all three exact-head workflows were directly read. CI validates fail-closed repository regression only. Focus/File still have no real MSIX or authoritative current-source Identity/Package Version; Store dry-run has zero eligible products."
-  }
+  },
+  "pr165_live_head_observation_20261124_latest": {
+    "observed_at_utc": "2026-11-23T22:36:04Z",
+    "pull_request": 165,
+    "head_ref": "refs/pull/165/head",
+    "head_sha": "f49e5ca9770a378f2cc51e70ef4ac2a934023578",
+    "previous_tested_head_sha": "5296f5aea27b4931d0b8b3a2dae20146af489cd9",
+    "comparison_to_previous_tested_head": {
+      "status": "ahead",
+      "ahead_by": 8,
+      "behind_by": 0,
+      "total_commits": 8
+    },
+    "exact_head_workflows": [
+      {
+        "run_id": 45275266839,
+        "conclusion": "success",
+        "scope": "Exact-head Windows E2E transport fail-closed regression",
+        "job": "transport-regression"
+      },
+      {
+        "run_id": 45275266812,
+        "conclusion": "success",
+        "scope": "Exact-head independent GitHub artifact custody regression",
+        "job": "custody-regression"
+      },
+      {
+        "run_id": 45275266866,
+        "conclusion": "success",
+        "scope": "Exact-head Windows-all-auto Offline QA",
+        "jobs": [
+          "Offline preflight tests (windows-latest)",
+          "Offline preflight tests (ubuntu-latest)"
+        ]
+      }
+    ],
+    "status": "PASS_EXACT_HEAD_CI",
+    "scope": "Repository transport/custody regression and Windows/Ubuntu Offline QA only; not product E2E.",
+    "product_e2e_status": "HOLD",
+    "e2e_pass": false,
+    "real_msix": false,
+    "github_backlog_receipt": false,
+    "local_pull_receipt": false,
+    "local_checker_receipt": false,
+    "local_gui_install_receipt": false,
+    "partner_center_authenticated_readback": "NOT_OBSERVED",
+    "authoritative_package_version": "NOT_FOUND__KEEP_HOLD",
+    "related_pull_requests": {
+      "pr161": {
+        "head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
+        "workflow_runs": [
+          {
+            "run_id": 42712757936,
+            "conclusion": "success",
+            "scope": "Offline QA only; not product E2E"
+          }
+        ]
+      },
+      "pr171": {
+        "head_sha": "764721021f13be96364529650b44fb439770bac9",
+        "workflow_runs": [
+          {
+            "run_id": 44437197470,
+            "conclusion": "success",
+            "scope": "Offline QA only; not Store upload dry-run"
+          }
+        ],
+        "windows_automator_pin_sha": "d3b8ed4ae7762a69d3fe2a90b64aa86ee938259b",
+        "windows_automator_pin_ci_run": 44319200630
+      },
+      "pr174": {
+        "head_sha": "69e7b7c8a7b1ecdaea42e6f03644a8cd549dfaee",
+        "status": "diverged",
+        "ahead_by": 6,
+        "behind_by": 64,
+        "decision": "DO_NOT_RESTACK"
+      }
+    },
+    "reconciliation_file": "ops/focus_file_transport_reconciliation_20261124.json"
+  },
+  "focus_file_transport_reconciliation_20261124": {
+    "path": "ops/focus_file_transport_reconciliation_20261124.json",
+    "observed_at_utc": "2026-11-23T22:36:04Z",
+    "status": "HOLD",
+    "e2e_pass": false,
+    "priority_product": "Focus Session Desk",
+    "products": [
+      {
+        "product": "Focus Session Desk",
+        "current_source_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+        "approved_source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+        "current_source_identity_binding_status": "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE",
+        "package_version": null,
+        "real_msix": false,
+        "assets_sha_verified": true,
+        "gui_pr": 102,
+        "gui_run": 45234786152,
+        "gui_visual_review_status": "PASS_36_VISUAL_REVIEW__100_PERCENT_AND_COLD_RESTART_PERSISTENCE"
+      },
+      {
+        "product": "File Integrity Ledger",
+        "current_source_sha": "e2d44434233dd483f9ebc8c9e37fd365da415a39",
+        "approved_source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
+        "current_source_identity_binding_status": "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE",
+        "source_selection_status": "SOURCE_LINEAGE_DIVERGED__NO_PACKAGE_SOURCE_SELECTED",
+        "package_version": null,
+        "real_msix": false,
+        "assets_sha_verified": true,
+        "pr95_gui_run": 45266775948,
+        "pr95_gui_conclusion": "failure",
+        "pr100_gui_run": 45224353579,
+        "pr100_gui_conclusion": "success",
+        "pr100_is_separate_diverged_branch": true
+      }
+    ],
+    "first_unconnected_interval": "BLOCKED_BEFORE_REAL_MSIX_BUILD",
+    "partner_center_authenticated_readback": "NOT_OBSERVED",
+    "real_msix": false,
+    "github_backlog_receipt": false,
+    "local_pull_receipt": false,
+    "local_checker_receipt": false,
+    "local_gui_install_receipt": false,
+    "store_upload_test_eligible_products": 0
+  },
+  "current_priority_products_live_20261124": [
+    {
+      "rank": 1,
+      "product": "Focus Session Desk",
+      "state": "POST_IDENTITY_UPGRADE",
+      "hold_class": "DELIVERY_HOLD",
+      "current_source_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+      "approved_source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+      "current_source_identity_binding_status": "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE",
+      "package_version": null,
+      "real_msix": false
+    },
+    {
+      "rank": 2,
+      "product": "File Integrity Ledger",
+      "state": "POST_IDENTITY_UPGRADE",
+      "hold_class": "DELIVERY_HOLD",
+      "current_source_sha": "e2d44434233dd483f9ebc8c9e37fd365da415a39",
+      "approved_source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
+      "current_source_identity_binding_status": "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE",
+      "source_selection_status": "SOURCE_LINEAGE_DIVERGED__NO_PACKAGE_SOURCE_SELECTED",
+      "package_version": null,
+      "real_msix": false
+    }
+  ],
+  "pr174_restack_assessment_live_20261124": {
+    "state": "OPEN_DRAFT",
+    "head_sha": "69e7b7c8a7b1ecdaea42e6f03644a8cd549dfaee",
+    "compare_to_pr165": {
+      "status": "diverged",
+      "ahead_by": 6,
+      "behind_by": 64,
+      "changed_files": [
+        "ops/active_e2e_handoff.json",
+        "ops/completion_rush_queue_20261116.json",
+        "ops/focus_file_transport_reconciliation_20261120.json"
+      ]
+    },
+    "decision": "DO_NOT_RESTACK",
+    "reason": "Six operations-only commits are already superseded by PR165; no unique product or transport implementation is missing.",
+    "merge_allowed": false
+  },
+  "store_upload_test_eligibility_live_20261124": {
+    "eligible_fresh_unsold_products": 0,
+    "status": "NOT_RUN_NO_PRODUCT_MEETS_ALL_GATES",
+    "dry_run_started": false,
+    "live_partner_center_write_allowed": false
+  },
+  "local_code_sync_receipt_status_20261124": "NOT_OBSERVED__CLOUD_PASS_ONLY"
 }
