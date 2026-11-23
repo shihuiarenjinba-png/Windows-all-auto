@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-23T07:39:54Z",
+  "updated_at_utc": "2026-11-23T07:52:00Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -11131,22 +11131,17 @@
     "status": "HOLD",
     "pr161_head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
     "pr164_head_sha": "145cd1f44bdec9e584eb0f045dd139ef330c6321",
-    "pr165_tested_head_sha": "0945d72d792b77e99570134695ad03b20aaace7e",
+    "pr165_tested_head_sha": "4b1de5480d3a74808f35ac84e281045166691660",
     "pr165_ci": [
       {
-        "run_id": 44990236894,
-        "conclusion": "success",
-        "scope": "Exact-head Windows-all-auto Offline QA; regression only, no real product MSIX evidence"
+        "run_id": 45133904841,
+        "conclusion": "failure",
+        "scope": "Offline QA exact merge head; 529 tests, 1 failure due queue status field schema mismatch; Windows and Ubuntu"
       },
       {
-        "run_id": 44990236896,
-        "conclusion": "success",
-        "scope": "Exact-head Windows E2E transport fail-closed regression; synthetic fixture coverage only"
-      },
-      {
-        "run_id": 44990236908,
-        "conclusion": "success",
-        "scope": "Exact-head GitHub artifact custody regression; authenticated metadata/archive-byte checks, no product MSIX handoff"
+        "run_id": 45133904859,
+        "conclusion": "failure",
+        "scope": "Artifact custody regression exact merge head; 13/14 tests passed, one queue status field schema mismatch"
       }
     ],
     "approved_version": "UNVERIFIED",
@@ -11156,7 +11151,7 @@
     "checker_gui_e2e": "NOT_VERIFIED",
     "focus_file_integrity_phase": "POST_IDENTITY",
     "prism_revision": "HOLD_NO_OLD_SOURCE_CAS",
-    "note": "PR165 exact HEAD 0945d72 and its three exact-head CI runs are green, but these are synthetic/transport regressions only. Focus/File now have independently read-back PNG SHA-256 and hosted native EXE GUI evidence. Focus approved identity remains bound to 8b00bc4e and package_version_gate=HOLD; File approved identity remains bound to d1108d12 and package_version_gate=HOLD. No authoritative Package Version, real MSIX, GitHub real-MSIX artifact receipt, local pull, Windows-checker, user-PC GUI/install receipt or E2E PASS is present. Do not CAS old source Identity, infer Version, or promote E2E.",
+    "note": "PR165 exact head 0945d72 had all three CI workflows SUCCESS. The subsequent metadata reconciliation commit 4b1de exposed a queue-schema regression (stable status string mismatch) in both Offline QA and artifact-custody regression. Queue metadata was corrected in 69b851 by restoring the stable field and keeping detailed source drift in a separate field. Exact-head CI on the post-fix branch is pending; do not call PASS until it completes. Focus/File package gates remain HOLD: no authoritative Version, no current-source approved Identity binding, no real MSIX, backlog or local checker receipt.",
     "approved_identity_product_checks": [
       {
         "product": "Focus Session Desk",
@@ -11324,33 +11319,15 @@
       }
     ],
     "latest_head_ci_observation": {
-      "observed_at_jst": "2026-11-23 16:39",
-      "head_sha": "0945d72d792b77e99570134695ad03b20aaace7e",
-      "workflow_runs": [
-        {
-          "run_id": 44990236894,
-          "conclusion": "success",
-          "scope": "Windows-all-auto Offline QA; exact-head regression only"
-        },
-        {
-          "run_id": 44990236896,
-          "conclusion": "success",
-          "scope": "Windows E2E transport fail-closed regression; synthetic fixture only"
-        },
-        {
-          "run_id": 44990236908,
-          "conclusion": "success",
-          "scope": "GitHub artifact custody fail-closed regression; no real product artifact"
-        }
-      ],
-      "pr161_head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
-      "pr171_head_sha": "764721021f13be96364529650b44fb439770bac9",
-      "scope": "Exact-head CI green; real MSIX, signed package, backlog receipt, local pull, Windows-checker, local GUI/install and E2E remain unverified",
+      "observed_at_jst": "2026-11-23 16:52",
+      "head_sha": "4b1de5480d3a74808f35ac84e281045166691660",
+      "conclusion": "FAIL",
+      "reason": "Queue schema compatibility mismatch; corrected in follow-up commit 69b85182d918c97d6b8ea811f86dae03aeaa0edc.",
+      "next_exact_head_ci": "PENDING_ON_CURRENT_BRANCH_HEAD_AFTER_QUEUE_FIX",
       "status": "HOLD",
-      "blocker": "Focus and File Integrity both remain blocked by authoritative Package Version/current-source Identity binding. Focus approved identity remains source-bound to 8b00bc4e with package_version_gate=HOLD; File Integrity approved identity is source-bound to d1108d12 with package_version_gate=HOLD. Hosted EXE GUI/PNG evidence exists, but neither product has a real MSIX or local checker receipt.",
-      "implementation_status": "EXACT_HEAD_FAIL_CLOSED_CI_GREEN__REAL_PRODUCT_PACKAGE_TRANSPORT_NOT_VERIFIED"
+      "e2e_pass": false
     },
-    "pr165_head_sha": "0945d72d792b77e99570134695ad03b20aaace7e",
+    "pr165_head_sha": "69b85182d918c97d6b8ea811f86dae03aeaa0edc",
     "pr161_ci": [
       {
         "run_id": 42712757936,
@@ -11411,6 +11388,36 @@
         "blocker": "Focus/File Integrity authoritative Package Version missing AND real StoreLogo.png/Square150.png/Square44.png embedding not independently verified; real MSIX/backlog/local SHA/checker/GUI unverified",
         "implementation_status": "SYNTHETIC_CUSTODY_TRANSPORT_REGRESSION_GREEN__REAL_PACKAGE_TRANSPORT_NOT_VERIFIED"
       }
+    },
+    "historical_successful_exact_head": {
+      "head_sha": "0945d72d792b77e99570134695ad03b20aaace7e",
+      "runs": [
+        {
+          "run_id": 44990236894,
+          "conclusion": "success"
+        },
+        {
+          "run_id": 44990236896,
+          "conclusion": "success"
+        },
+        {
+          "run_id": 44990236908,
+          "conclusion": "success"
+        }
+      ],
+      "scope": "All three exact-head CI workflows green before ledger reconciliation metadata update"
+    },
+    "queue_contract_failure_observation": {
+      "tested_pr_head": "4b1de5480d3a74808f35ac84e281045166691660",
+      "workflow_runs": [
+        45133904841,
+        45133904859
+      ],
+      "failing_test": "tests/test_github_artifact_custody.py::test_current_completion_queue_cannot_promote_without_authoritative_version",
+      "cause": "The queue's current_source_identity_binding_status value was made more descriptive than the stable schema value expected by regression tests.",
+      "fix_commit": "69b85182d918c97d6b8ea811f86dae03aeaa0edc",
+      "fix": "Restored REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE as the stable field and moved exact source-specific detail to current_source_identity_binding_detail.",
+      "fix_scope": "Operations metadata only; no product code, identity, Version, Store, main/release or protected branch changes."
     }
   },
   "store_submission_allowed": false,
