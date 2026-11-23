@@ -202,7 +202,7 @@ class CurrentLedgerGateTests(unittest.TestCase):
             self.assertEqual(item["current_source_identity_binding_status"],
                              "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE")
             identity = {
-                "request_id": item["request_id"],
+                "request_id": "ledger-fixture",
                 "source_sha": item["source_sha"],
                 "verified_source_sha": item["store_assets_branch_head"],
                 "expected_head_sha": item["source_sha"],

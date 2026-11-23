@@ -288,6 +288,7 @@ class CustodyTests(unittest.TestCase):
         self.assertIs(ledger["store_submission_allowed"], False)
         self.assertIs(ledger["certification_allowed"], False)
         self.assertIs(ledger["publish_allowed"], False)
+        self.assertIs(queue["new_product_generation_allowed"], False)
 
 if __name__ == "__main__":
     unittest.main()
