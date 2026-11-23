@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-23T07:52:00Z",
+  "updated_at_utc": "2026-11-23T07:55:00Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -11131,17 +11131,22 @@
     "status": "HOLD",
     "pr161_head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
     "pr164_head_sha": "145cd1f44bdec9e584eb0f045dd139ef330c6321",
-    "pr165_tested_head_sha": "4b1de5480d3a74808f35ac84e281045166691660",
+    "pr165_tested_head_sha": "86dcd61b6a515ce03d75f8fc7cbe6407586daae3",
     "pr165_ci": [
       {
-        "run_id": 45133904841,
-        "conclusion": "failure",
-        "scope": "Offline QA exact merge head; 529 tests, 1 failure due queue status field schema mismatch; Windows and Ubuntu"
+        "run_id": 45134183948,
+        "conclusion": "success",
+        "scope": "Exact-head Windows E2E transport fail-closed regression"
       },
       {
-        "run_id": 45133904859,
-        "conclusion": "failure",
-        "scope": "Artifact custody regression exact merge head; 13/14 tests passed, one queue status field schema mismatch"
+        "run_id": 45134183873,
+        "conclusion": "success",
+        "scope": "Exact-head independent GitHub artifact custody regression"
+      },
+      {
+        "run_id": 45134184158,
+        "conclusion": "success",
+        "scope": "Exact-head Offline QA; Windows and Ubuntu"
       }
     ],
     "approved_version": "UNVERIFIED",
@@ -11151,7 +11156,7 @@
     "checker_gui_e2e": "NOT_VERIFIED",
     "focus_file_integrity_phase": "POST_IDENTITY",
     "prism_revision": "HOLD_NO_OLD_SOURCE_CAS",
-    "note": "PR165 exact head 0945d72 had all three CI workflows SUCCESS. The subsequent metadata reconciliation commit 4b1de exposed a queue-schema regression (stable status string mismatch) in both Offline QA and artifact-custody regression. Queue metadata was corrected in 69b851 by restoring the stable field and keeping detailed source drift in a separate field. Exact-head CI on the post-fix branch is pending; do not call PASS until it completes. Focus/File package gates remain HOLD: no authoritative Version, no current-source approved Identity binding, no real MSIX, backlog or local checker receipt.",
+    "note": "PR165 exact HEAD 86dcd61 now has all three exact-head CI workflows SUCCESS (transport regression, independent artifact custody regression, Windows+Ubuntu Offline QA). The earlier 4b1de metadata-only attempt failed because a descriptive queue status value broke the stable schema; commit 69b851 restored the canonical value and preserved detail in a separate field, and the subsequent exact-head CI is green. This is CI-only evidence: Focus/File still lack authoritative Package Version and current-source approved Identity binding, real MSIX, GitHub backlog receipt, local pull, Windows-checker and local GUI/install receipt. E2E remains HOLD.",
     "approved_identity_product_checks": [
       {
         "product": "Focus Session Desk",
@@ -11319,15 +11324,34 @@
       }
     ],
     "latest_head_ci_observation": {
-      "observed_at_jst": "2026-11-23 16:52",
-      "head_sha": "4b1de5480d3a74808f35ac84e281045166691660",
-      "conclusion": "FAIL",
-      "reason": "Queue schema compatibility mismatch; corrected in follow-up commit 69b85182d918c97d6b8ea811f86dae03aeaa0edc.",
-      "next_exact_head_ci": "PENDING_ON_CURRENT_BRANCH_HEAD_AFTER_QUEUE_FIX",
-      "status": "HOLD",
-      "e2e_pass": false
+      "observed_at_jst": "2026-11-23 16:55",
+      "head_sha": "86dcd61b6a515ce03d75f8fc7cbe6407586daae3",
+      "workflow_runs": [
+        {
+          "run_id": 45134183948,
+          "conclusion": "success"
+        },
+        {
+          "run_id": 45134183873,
+          "conclusion": "success"
+        },
+        {
+          "run_id": 45134184158,
+          "conclusion": "success",
+          "platforms": [
+            "windows-latest",
+            "ubuntu-latest"
+          ]
+        }
+      ],
+      "scope": "Exact-head CI green for fail-closed transport/custody and offline regression only; no real product MSIX or local E2E",
+      "status": "PASS_CI_ONLY",
+      "e2e_pass": false,
+      "real_msix": false,
+      "backlog": false,
+      "local_checker": false
     },
-    "pr165_head_sha": "69b85182d918c97d6b8ea811f86dae03aeaa0edc",
+    "pr165_head_sha": "86dcd61b6a515ce03d75f8fc7cbe6407586daae3",
     "pr161_ci": [
       {
         "run_id": 42712757936,
@@ -11417,7 +11441,14 @@
       "cause": "The queue's current_source_identity_binding_status value was made more descriptive than the stable schema value expected by regression tests.",
       "fix_commit": "69b85182d918c97d6b8ea811f86dae03aeaa0edc",
       "fix": "Restored REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE as the stable field and moved exact source-specific detail to current_source_identity_binding_detail.",
-      "fix_scope": "Operations metadata only; no product code, identity, Version, Store, main/release or protected branch changes."
+      "fix_scope": "Operations metadata only; no product code, identity, Version, Store, main/release or protected branch changes.",
+      "followup_exact_head": "86dcd61b6a515ce03d75f8fc7cbe6407586daae3",
+      "followup_ci_runs": [
+        45134183948,
+        45134183873,
+        45134184158
+      ],
+      "followup_conclusion": "ALL_SUCCESS"
     }
   },
   "store_submission_allowed": false,
