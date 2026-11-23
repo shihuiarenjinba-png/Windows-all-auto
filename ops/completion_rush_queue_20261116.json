@@ -135,7 +135,7 @@
       "package_version": null,
       "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
       "real_msix": false,
-      "next_action": "DELIVERY_HOLD: PR95 HEAD 4474af31 diverges from approved Identity source d1108d12; historical Identity is absent from current PR95/PR97 heads and Version remains null. PR97 is safely stacked on PR95 with exactly three changed files; exact-head Core #45166383105 and GUI #45166383111 both PASS. The hosted builder receipt, GUI receipt and uploaded EXE SHA match (ccc4fcd6...), with UNCHANGED/MODIFIED/MISSING fixture CSVs. This clears the GUI test-fix integration gate only; current-source Identity revalidation, authoritative Version, real MSIX, backlog and local checker remain HOLD.",
+      "next_action": "DELIVERY_HOLD: PR95 HEAD 4474af31 remains divergent from approved Identity source d1108d12; historical Identity is absent from current PR95/PR97 and authoritative Version remains null. PR97 current exact HEAD d09973e3 has Core #45166383105 and GUI #45166383111 SUCCESS; artifact #14813448795 (11297572 bytes, SHA256 b6ef5761...) is independently confirmed by GitHub artifact metadata. The EXE SHA 414e8c52... is reported by the PR body, not independently downloaded in this reconciliation. Keep visual_review_required=true and visual review pending. No real MSIX, backlog, local checker or install receipt; do not promote.",
       "store_assets_status": "RAW_PNG_BYTES_SHA256_VERIFIED__MSIX_EMBED_NOT_VERIFIED",
       "required_store_assets": [
         "StoreLogo.png",
@@ -203,16 +203,18 @@
         "pre_stack_png_ci_run_id": 45152244583,
         "pre_stack_core_ci_run_id": 45152244562,
         "native_exe_gui": {
-          "run_id": 45152244558,
-          "tested_head_sha": "3a7a00cec86dd9a319fde3cd9a2f1a14ee9f496f",
+          "run_id": 45166383111,
+          "tested_head_sha": "d09973e33daa374dd5a3ba9b4f7a0fabd06987a3",
           "conclusion": "success",
-          "artifact_id": 14806249226,
-          "artifact_bytes": 11298766,
-          "artifact_sha256": "91ba15e0da1afd80cd41516289a1de2521116166af7259791856d75c782ea2bc",
+          "artifact_id": 14813448795,
+          "artifact_bytes": 11297572,
+          "artifact_sha256": "b6ef57614e6cdf8efdf8314f43f5302dd526fd8c57a5baaef6f2b6de33e0e4a9",
           "artifact_digest_matches_github": true,
-          "exe_bytes": 11394014,
-          "exe_sha256": "ccc4fcd6a438644fb8a43d4a2af97bf56e014f8df2ec12ae564e40ab9ccec372",
-          "builder_gui_uploaded_exe_sha_match": true,
+          "artifact_metadata_verified_by_github_api": true,
+          "exe_bytes": 11394044,
+          "exe_sha256": "414e8c52b12e863fe03b071c477fabb9f86af3c325005c366ea9a06aedddf1f",
+          "exe_sha256_source": "PR97_BODY_REPORTED__NOT_INDEPENDENTLY_DOWNLOADED_IN_THIS_RECONCILIATION",
+          "builder_gui_uploaded_exe_sha_match": "PR_BODY_REPORTED_MATCH",
           "receipt_statuses": [
             "UNCHANGED",
             "MODIFIED",
@@ -220,7 +222,8 @@
           ],
           "fixture_only_no_user_files_accessed": true,
           "visual_review_required": true,
-          "scope": "Hosted native Windows EXE GUI fixture; shared builder receipt, GUI receipt and uploaded EXE SHA matched; not real MSIX, install, local checker or user-PC QA."
+          "visual_review_status": "NOT_INDEPENDENTLY_REVIEWED_FOR_THIS_EXACT_HEAD",
+          "scope": "Hosted unsigned Windows EXE GUI evidence only; not signed MSIX, installation, local checker or user-PC QA."
         },
         "identity_file_commit": "db9a57af822788af4c8384499a6e343ec7b0353d",
         "identity_file_blob": "78034cf62be3479f9ed752a2585ab31bb24c49ff",
@@ -259,6 +262,26 @@
             "MISSING"
           ],
           "status": "PASS_EXACT_HEAD_CI_AFTER_STACK"
+        },
+        "previous_pre_stack_gui_evidence": {
+          "run_id": 45152244558,
+          "tested_head_sha": "3a7a00cec86dd9a319fde3cd9a2f1a14ee9f496f",
+          "conclusion": "success",
+          "artifact_id": 14806249226,
+          "artifact_bytes": 11298766,
+          "artifact_sha256": "91ba15e0da1afd80cd41516289a1de2521116166af7259791856d75c782ea2bc",
+          "artifact_digest_matches_github": true,
+          "exe_bytes": 11394014,
+          "exe_sha256": "ccc4fcd6a438644fb8a43d4a2af97bf56e014f8df2ec12ae564e40ab9ccec372",
+          "builder_gui_uploaded_exe_sha_match": true,
+          "receipt_statuses": [
+            "UNCHANGED",
+            "MODIFIED",
+            "MISSING"
+          ],
+          "fixture_only_no_user_files_accessed": true,
+          "visual_review_required": true,
+          "scope": "Hosted native Windows EXE GUI fixture; shared builder receipt, GUI receipt and uploaded EXE SHA matched; not real MSIX, install, local checker or user-PC QA."
         }
       },
       "current_source_identity_binding_status": "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE",
@@ -412,7 +435,7 @@
       "required_revision_in_frozen_source": false
     }
   ],
-  "last_reconciled_at_utc": "2026-11-23T11:42:00Z",
+  "last_reconciled_at_utc": "2026-11-23T13:39:26.000Z",
   "last_reconciled_basis": "PR97 retargeted to PR95 exact HEAD; current PR97 Core/GUI CI and artifact SHA readback verified; PR165 exact-head transport/custody/offline CI all SUCCESS.",
   "latest_transport_reconciliation": {
     "checked_at_utc": "2026-11-23T11:42:00Z",
