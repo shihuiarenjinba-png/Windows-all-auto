@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-23T10:08:00Z",
+  "updated_at_utc": "2026-11-23T10:10:00Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -11127,24 +11127,24 @@
     }
   },
   "windows_e2e_custody_reconciliation": {
-    "checked_at_utc": "2026-11-23T10:08:00Z",
+    "checked_at_utc": "2026-11-23T10:10:00Z",
     "status": "HOLD",
     "pr161_head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
     "pr164_head_sha": "145cd1f44bdec9e584eb0f045dd139ef330c6321",
-    "pr165_tested_head_sha": "9c109ed70c12d45cd46abc2ef6619d2f9ca809a1",
+    "pr165_tested_head_sha": "2e28a6ad0e12762fb6ae932e3e57ec811c00a061",
     "pr165_ci": [
       {
-        "run_id": 45154376270,
+        "run_id": 45155881056,
         "conclusion": "success",
         "scope": "Exact-head Windows E2E transport fail-closed regression"
       },
       {
-        "run_id": 45154376075,
+        "run_id": 45155881096,
         "conclusion": "success",
-        "scope": "Exact-head independent GitHub artifact custody regression"
+        "scope": "Exact-head independent GitHub artifact custody CLI/regression"
       },
       {
-        "run_id": 45154376160,
+        "run_id": 45155881055,
         "conclusion": "success",
         "scope": "Exact-head Windows and Ubuntu Offline QA"
       }
@@ -11156,7 +11156,7 @@
     "checker_gui_e2e": "NOT_VERIFIED",
     "focus_file_integrity_phase": "POST_IDENTITY_DELIVERY_HOLD",
     "prism_revision": "HOLD_NO_OLD_SOURCE_CAS",
-    "note": "PR165 exact tested HEAD 9c109ed70c12d45cd46abc2ef6619d2f9ca809a1 has all three associated workflows SUCCESS: transport run 45154376270, independent artifact custody run 45154376075, and Windows+Ubuntu Offline QA run 45154376160. The code/test-only fix at 72556b852b80a1bb513ae091f0f7c2f195ce5f6e updates synthetic artifact fixtures to provide the exact GitHub sha256 archive digest and refresh it after archive mutation; no production verifier was relaxed. Commit 9c109ed is the subsequent ledger-only reconciliation, and its exact-head CI also passed. These are CI-only results and do not prove real product MSIX, signing, backlog, local checker, or GUI. PR161 exact HEAD remains 71d9c2125b6aed44a86ca1872d48ad19963f3e63 with Offline QA run 42712757936 SUCCESS. Focus current PR94 source fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79 is 27 commits ahead of approved Identity source 8b00bc4e90828c4282463826873aa8dfd2eb93f4; products/focus-session-desk/main.py changed, so approved Identity cannot be CAS-reused. Its approved identity JSON remains package_version_gate=HOLD with package_version absent. File Integrity current PR95 source 4474af31b35afc7c3608a5b6a6f833597001fdf7 is diverged from approved source d1108d12f7d1697af30400f97c7db39cba5e6791 (6 ahead/8 behind), and the approved identity JSON is absent at the current head; its historical Identity is not reusable. The three PNG Git blob SHAs were independently read back from each current product head and match the central asset records; no PNG files were generated or changed. Both products still lack an authoritative approved Version and real MSIX. Real MSIX/backlog/checker GUI/local receipt remain NOT_VERIFIED. Local checker source/CLI contract is pinned but local checkout/execution and GUI receipt remain unobserved. E2E remains HOLD; Prism old-source CAS prohibited; Store submission/certification/publish remain false.",
+    "note": "PR165 exact tested HEAD 2e28a6ad0e12762fb6ae932e3e57ec811c00a061 has all three associated workflows SUCCESS: Windows E2E transport 45155881056, GitHub artifact custody CLI/regression 45155881096, and Windows+Ubuntu Offline QA 45155881055. Added a read-only local CLI in scripts/github_artifact_custody.py: it authenticates via GITHUB_TOKEN/GH_TOKEN, reads GitHub run/artifact metadata and archive bytes, verifies the GitHub sha256 archive digest plus artifact/local MSIX bytes, then creates a create-only github-custody.json receipt. It never sets product E2E true and requires a separate source-bound transport_receipt.json for the existing handoff bridge. The custody CLI tests include success, missing-digest HOLD, token-missing HOLD, no-overwrite, and bundle-with-transport-receipt cases. This remains a transport/custody preflight only. PR161 exact HEAD 71d9c2125b6aed44a86ca1872d48ad19963f3e63 retains Offline QA run 42712757936 SUCCESS. Focus current PR94 source fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79 is 27 commits ahead of approved Identity source 8b00bc4e90828c4282463826873aa8dfd2eb93f4; products/focus-session-desk/main.py changed, so approved Identity cannot be CAS-reused. Its approved identity JSON remains package_version_gate=HOLD with package_version absent. File Integrity current PR95 source 4474af31b35afc7c3608a5b6a6f833597001fdf7 is diverged from approved source d1108d12f7d1697af30400f97c7db39cba5e6791 (6 ahead/8 behind), and the approved identity JSON is absent at the current head; its historical Identity is not reusable. The three PNG Git blob SHAs for each current product head were independently read back and match central records; no PNG files were generated or changed. Both products still lack an authoritative approved Version and real MSIX. Real MSIX/backlog/checker GUI/local receipt remain NOT_VERIFIED. The checker source/CLI contract is pinned but local checkout/execution and GUI receipt remain unobserved. E2E remains HOLD; Prism old-source CAS prohibited; Store submission/certification/publish remain false.",
     "approved_identity_product_checks": [
       {
         "product": "Focus Session Desk",
@@ -11347,33 +11347,33 @@
       }
     ],
     "latest_head_ci_observation": {
-      "observed_at_jst": "2026-11-23 19:08:00 JST",
-      "head_sha": "9c109ed70c12d45cd46abc2ef6619d2f9ca809a1",
+      "observed_at_jst": "2026-11-23 19:10:00 JST",
+      "head_sha": "2e28a6ad0e12762fb6ae932e3e57ec811c00a061",
       "workflow_runs": [
         {
-          "run_id": 45154376270,
+          "run_id": 45155881056,
           "conclusion": "success",
           "scope": "Exact-head Windows E2E transport fail-closed regression"
         },
         {
-          "run_id": 45154376075,
+          "run_id": 45155881096,
           "conclusion": "success",
-          "scope": "Exact-head independent GitHub artifact custody regression"
+          "scope": "Exact-head independent GitHub artifact custody CLI/regression"
         },
         {
-          "run_id": 45154376160,
+          "run_id": 45155881055,
           "conclusion": "success",
           "scope": "Exact-head Windows and Ubuntu Offline QA"
         }
       ],
-      "scope": "Exact-head transport/custody/offline CI green; no real product MSIX, signing, local checker execution or product E2E",
+      "scope": "Exact-head read-only GitHub artifact custody CLI, transport fail-closed regression, and Windows/Ubuntu offline QA; no real product MSIX, signing, local checker execution or product E2E",
       "status": "PASS_CI_ONLY",
       "e2e_pass": false,
       "real_msix": false,
       "backlog": false,
       "local_checker": false
     },
-    "pr165_head_sha": "9c109ed70c12d45cd46abc2ef6619d2f9ca809a1",
+    "pr165_head_sha": "2e28a6ad0e12762fb6ae932e3e57ec811c00a061",
     "pr161_ci": [
       {
         "run_id": 42712757936,
@@ -11586,8 +11586,29 @@
       "production_verifier_relaxed": false,
       "status": "SUPERSEDED_BY_EXACT_HEAD_ALL_SUCCESS"
     },
-    "ledger_reconciliation_parent_head_sha": "9c109ed70c12d45cd46abc2ef6619d2f9ca809a1",
-    "ledger_reconciliation_scope": "ops/active_e2e_handoff.json only; no product source, Identity, Version, package, Store or protected-branch changes"
+    "ledger_reconciliation_parent_head_sha": "2e28a6ad0e12762fb6ae932e3e57ec811c00a061",
+    "ledger_reconciliation_scope": "ops/active_e2e_handoff.json only; no product source, Identity, Version, package, Store or protected-branch changes",
+    "real_package_transport_preflight": {
+      "repository": "shihuiarenjinba-png/Windows-all-auto",
+      "script": "scripts/github_artifact_custody.py",
+      "tested_head_sha": "2e28a6ad0e12762fb6ae932e3e57ec811c00a061",
+      "status": "IMPLEMENTED_READ_ONLY_CUSTODY_RECEIPT_CLI__EXACT_HEAD_CI_PASS",
+      "behavior": [
+        "Read GitHub Actions run/artifact metadata and exact artifact ZIP through authenticated GitHub API",
+        "Require artifact API sha256 digest to match downloaded archive bytes",
+        "Compare archive MSIX SHA256 and local MSIX SHA256 to the pinned expected digest",
+        "Create github-custody.json only after CUSTODY_VERIFIED_ONLY; create-only and no overwrite",
+        "Accept a validated local transport_receipt.json alongside handoff.json and package.msix"
+      ],
+      "limits": [
+        "CUSTODY_VERIFIED_ONLY is not product E2E",
+        "Does not approve Identity or Version, sign/install MSIX, run Windows-checker, or perform GUI QA",
+        "Requires local operator-provided expected metadata, exact downloaded bundle, and GITHUB_TOKEN or GH_TOKEN with repository Actions read access"
+      ],
+      "store_submission_allowed": false,
+      "certification_allowed": false,
+      "publish_allowed": false
+    }
   },
   "store_submission_allowed": false,
   "certification_allowed": false,
