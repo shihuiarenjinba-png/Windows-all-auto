@@ -218,7 +218,7 @@ class CurrentLedgerGateTests(unittest.TestCase):
         self.assertIs(ledger["publish_allowed"], False)
         latest = ledger["latest_transport_reconciliation"]
         self.assertEqual(latest["central_tested_head_sha"], "5296f5aea27b4931d0b8b3a2dae20146af489cd9")
-        self.assertEqual(latest["previous_central_head_sha"], "5296f5aea27b4931d0b8b3a2dae20146af489cd9")
+        self.assertEqual(latest["previous_central_head_sha"], "c97dde38d3e6f14a2d9a9ccd03f72b937aeb44da")
         self.assertEqual(latest["ledger_followup_head_sha"], "5296f5aea27b4931d0b8b3a2dae20146af489cd9")
         self.assertEqual([x["run_id"] for x in latest["exact_head_ci"]],
                          [45273284167, 45273284213, 45273284166])
@@ -237,14 +237,14 @@ class CurrentLedgerGateTests(unittest.TestCase):
         self.assertEqual(ledger["e2e_status"], "HOLD")
         self.assertIs(ledger["e2e_pass"], False)
         self.assertEqual(ledger["windows_e2e_custody_reconciliation"]["pr165_tested_head_sha"],
-                         "c97dde38d3e6f14a2d9a9ccd03f72b937aeb44da")
+                         "5296f5aea27b4931d0b8b3a2dae20146af489cd9")
         self.assertEqual([x["run_id"] for x in ledger["windows_e2e_custody_reconciliation"]["pr165_ci"]],
                          [45262561305, 45262561306, 45262561558])
-        self.assertEqual(ledger["windows_e2e_custody_reconciliation_history"][-1]["pr165_tested_head_sha"], "c97dde38d3e6f14a2d9a9ccd03f72b937aeb44da")
+        self.assertEqual(ledger["windows_e2e_custody_reconciliation_history"][-1]["pr165_tested_head_sha"], "5296f5aea27b4931d0b8b3a2dae20146af489cd9")
         self.assertEqual(ledger["windows_e2e_custody_reconciliation"]["pr165_reconciliation_parent_head_sha"],
                          "babd8b2ef39e0e07472aa65d06c2134c06915fc3")
-        self.assertEqual(recon["pr165_current_head_sha"], "c97dde38d3e6f14a2d9a9ccd03f72b937aeb44da")
-        self.assertEqual(recon["pr165_current_head_parent_sha"], "b6ff9fdcea9b9db97ba3196052e5a8d90c8fcf5d")
+        self.assertEqual(recon["pr165_current_head_sha"], "5296f5aea27b4931d0b8b3a2dae20146af489cd9")
+        self.assertEqual(recon["pr165_current_head_parent_sha"], "babd8b2ef39e0e07472aa65d06c2134c06915fc3")
         self.assertEqual(recon["pr165_current_head_parent_ci_status"], "INTERMEDIATE_FAILED_STALE_EXPECTED_IDS__SUPERSEDED_BY_FINAL_PASS")
         self.assertEqual(recon["pr165_current_head_ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual(recon["pr165_previous_current_head_sha"], "c97dde38d3e6f14a2d9a9ccd03f72b937aeb44da")
