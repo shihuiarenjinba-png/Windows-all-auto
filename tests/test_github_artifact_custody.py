@@ -1,13 +1,17 @@
 """Offline fail-closed tests of independent artifact API + local byte custody."""
 import hashlib
 import io
+import json
+import os
 import struct
 import zlib
 import tempfile
 import unittest
 import zipfile
+from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
-from scripts.github_artifact_custody import verify_custody
+from unittest.mock import patch
+from scripts.github_artifact_custody import main, verify_custody
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from test_real_msix_transport_failclosed import authorize_transport
@@ -42,6 +46,119 @@ class CustodyTests(unittest.TestCase):
         self.assertEqual(result["status"], "CUSTODY_VERIFIED_ONLY")
         self.assertFalse(result["e2e_pass"])
         self.assertEqual(result["signature"], "NOT_VERIFIED")
+    def test_cli_writes_create_only_receipt_after_exact_custody(self):
+        expected_path = Path(self.tmp.name) / "expected.json"
+        expected_path.write_text(json.dumps(self.expected), encoding="utf-8")
+        output = Path(self.tmp.name) / "github-custody.json"
+        artifact = dict(self.artifact)
+        artifact["digest"] = "sha256:" + hashlib.sha256(self.zip).hexdigest()
+
+        def fake_clients(token):
+            self.assertEqual(token, "test-token")
+            def get_json(url):
+                return self.run if "/runs/" in url else artifact
+            return get_json, lambda url: self.zip
+
+        args = ["--expected", str(expected_path), "--local-bundle", str(self.local),
+                "--output", str(output)]
+        with patch("scripts.github_artifact_custody.github_clients", side_effect=fake_clients), \
+             patch.dict(os.environ, {"GITHUB_TOKEN": "test-token"}, clear=True), \
+             redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+            result = main(args)
+        self.assertEqual(result, 0)
+        receipt_text = output.read_text(encoding="utf-8")
+        receipt = json.loads(receipt_text)
+        self.assertEqual(receipt["status"], "CUSTODY_VERIFIED_ONLY")
+        self.assertFalse(receipt["e2e_pass"])
+        self.assertNotIn("test-token", receipt_text)
+
+        # A durable receipt is create-only; retries cannot overwrite it.
+        with patch("scripts.github_artifact_custody.github_clients", side_effect=AssertionError("must not call API")), \
+             patch.dict(os.environ, {"GITHUB_TOKEN": "test-token"}, clear=True), \
+             redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+            retry = main(args)
+        self.assertEqual(retry, 2)
+        self.assertEqual(output.read_text(encoding="utf-8"), receipt_text)
+
+    def test_cli_hold_never_writes_receipt_without_archive_digest(self):
+        expected_path = Path(self.tmp.name) / "expected.json"
+        expected_path.write_text(json.dumps(self.expected), encoding="utf-8")
+        output = Path(self.tmp.name) / "github-custody.json"
+        artifact = dict(self.artifact)
+        artifact.pop("digest", None)
+
+        def fake_clients(token):
+            def get_json(url):
+                return self.run if "/runs/" in url else artifact
+            return get_json, lambda url: self.zip
+
+        args = ["--expected", str(expected_path), "--local-bundle", str(self.local),
+                "--output", str(output)]
+        with patch("scripts.github_artifact_custody.github_clients", side_effect=fake_clients), \
+             patch.dict(os.environ, {"GITHUB_TOKEN": "test-token"}, clear=True), \
+             redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+            result = main(args)
+        self.assertEqual(result, 2)
+        self.assertFalse(output.exists())
+
+    def test_cli_accepts_transport_receipt_and_adds_custody_to_bundle(self):
+        package_bytes = self.local.read_bytes()
+        identity = {"name": "OkinawaDesktopTools.Test", "publisher": "CN=Test", "version": "1.0.0.0"}
+        handoff = {
+            "schema_version": 1, "package": "package.msix", "status": "QA_UNSIGNED",
+            "source_sha": "a" * 40, "package_sha256": self.digest,
+            "package_bytes": len(package_bytes), "identity": identity
+        }
+        handoff_bytes = json.dumps(handoff, separators=(",", ":")).encode("utf-8")
+        bundle = Path(self.tmp.name) / "bundle"
+        bundle.mkdir()
+        (bundle / "handoff.json").write_bytes(handoff_bytes)
+        (bundle / "package.msix").write_bytes(package_bytes)
+        (bundle / "transport_receipt.json").write_text('{"schema_version":1}', encoding="utf-8")
+
+        archive_buffer = io.BytesIO()
+        with zipfile.ZipFile(archive_buffer, "w") as z:
+            z.writestr("handoff.json", handoff_bytes)
+            z.writestr("package.msix", package_bytes)
+        archive = archive_buffer.getvalue()
+        artifact = dict(self.artifact)
+        artifact["digest"] = "sha256:" + hashlib.sha256(archive).hexdigest()
+        expected = dict(self.expected, identity=identity)
+        expected_path = Path(self.tmp.name) / "expected-bundle.json"
+        expected_path.write_text(json.dumps(expected), encoding="utf-8")
+        output = bundle / "github-custody.json"
+
+        def fake_clients(token):
+            def get_json(url):
+                return self.run if "/runs/" in url else artifact
+            return get_json, lambda url: archive
+
+        args = ["--expected", str(expected_path), "--local-bundle", str(bundle),
+                "--output", str(output)]
+        with patch("scripts.github_artifact_custody.github_clients", side_effect=fake_clients), \
+             patch.dict(os.environ, {"GITHUB_TOKEN": "test-token"}, clear=True), \
+             redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+            result = main(args)
+        self.assertEqual(result, 0)
+        self.assertTrue(output.is_file())
+        self.assertEqual({p.name for p in bundle.iterdir()},
+                         {"handoff.json", "package.msix", "transport_receipt.json", "github-custody.json"})
+        receipt = json.loads(output.read_text(encoding="utf-8"))
+        self.assertEqual(receipt["status"], "CUSTODY_VERIFIED_ONLY")
+        self.assertEqual(receipt["source_sha"], "a" * 40)
+        self.assertFalse(receipt["e2e_pass"])
+
+    def test_cli_requires_token_and_does_not_write(self):
+        expected_path = Path(self.tmp.name) / "expected.json"
+        expected_path.write_text(json.dumps(self.expected), encoding="utf-8")
+        output = Path(self.tmp.name) / "github-custody.json"
+        args = ["--expected", str(expected_path), "--local-bundle", str(self.local),
+                "--output", str(output)]
+        with patch.dict(os.environ, {}, clear=True), redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+            result = main(args)
+        self.assertEqual(result, 2)
+        self.assertFalse(output.exists())
+
     def test_run_head_drift(self):
         self.run["head_sha"] = "b"*40
         self.assertEqual(self.check()["status"], "HOLD")
