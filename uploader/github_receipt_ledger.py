@@ -13,7 +13,7 @@ import urllib.request
 from uploader.receipts import ReceiptJournalError, validate_receipt
 
 
-LEDGER_BRANCH = "store-uploader-ledger"
+LEDGER_BRANCH_PREFIX = "store-uploader-ledger-"
 REPOSITORY_RE = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
 SAFE_COMPONENT_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
 
@@ -56,8 +56,15 @@ class GitHubLedger:
         except (urllib.error.URLError, TimeoutError, json.JSONDecodeError) as exc:
             raise GitHubLedgerError("GitHub receipt ledger request failed") from exc
 
-    def _head(self) -> tuple[str, str] | None:
-        ref = self.request("GET", f"/git/ref/heads/{LEDGER_BRANCH}", missing_ok=True)
+    @staticmethod
+    def branch_for_product(product_id: str) -> str:
+        if not SAFE_COMPONENT_RE.fullmatch(product_id):
+            raise GitHubLedgerError("invalid Product ID for receipt branch")
+        return LEDGER_BRANCH_PREFIX + product_id
+
+    def _head(self, product_id: str) -> tuple[str, str] | None:
+        branch = self.branch_for_product(product_id)
+        ref = self.request("GET", f"/git/ref/heads/{branch}", missing_ok=True)
         if ref is None:
             return None
         commit_sha = ref.get("object", {}).get("sha")
@@ -82,7 +89,8 @@ class GitHubLedger:
     def load_product(self, product_id: str, destination: Path) -> int:
         if not SAFE_COMPONENT_RE.fullmatch(product_id):
             raise GitHubLedgerError("invalid Product ID for ledger restore")
-        head = self._head()
+        branch = self.branch_for_product(product_id)
+        head = self._head(product_id)
         if head is None:
             return 0
         _, tree_sha = head
@@ -133,7 +141,9 @@ class GitHubLedger:
         payload = json.dumps(receipt, ensure_ascii=False, sort_keys=True, indent=2) + "\n"
         content = payload.encode("utf-8")
 
-        existing_file = self.request("GET", f"/contents/{path}?ref={LEDGER_BRANCH}", missing_ok=True)
+        product_id = str(receipt["product_id"])
+        branch = self.branch_for_product(product_id)
+        existing_file = self.request("GET", f"/contents/{path}?ref={branch}", missing_ok=True)
         if existing_file is not None:
             try:
                 existing_content = base64.b64decode(existing_file["content"]).decode("utf-8")
@@ -143,7 +153,7 @@ class GitHubLedger:
                 return str(existing_file.get("sha", "already-present"))
             raise GitHubLedgerError("receipt id already exists with different content")
 
-        head = self._head()
+        head = self._head(product_id)
         entry = [{"path": path, "mode": "100644", "type": "blob", "content": payload}]
         tree_body = {"tree": entry}
         parents: list[str] = []
@@ -158,10 +168,10 @@ class GitHubLedger:
         })
         if head is None:
             self.request("POST", "/git/refs", {
-                "ref": f"refs/heads/{LEDGER_BRANCH}", "sha": new_commit["sha"],
+                "ref": f"refs/heads/{branch}", "sha": new_commit["sha"],
             })
         else:
-            self.request("PATCH", f"/git/refs/heads/{LEDGER_BRANCH}", {
+            self.request("PATCH", f"/git/refs/heads/{branch}", {
                 "sha": new_commit["sha"], "force": False,
             })
         return str(new_commit["sha"])

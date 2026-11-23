@@ -101,7 +101,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     concurrency:
-      group: store-uploader-durable-receipt-ledger
+      group: store-uploader-durable-receipt-ledger-${{ inputs.product || github.event.client_payload.product }}
       cancel-in-progress: false
     permissions:
       actions: read

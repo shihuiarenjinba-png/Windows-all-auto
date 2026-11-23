@@ -16,7 +16,7 @@ class CloudUploaderWorkflowTests(unittest.TestCase):
 
     def test_sqlite_and_artifact_are_not_the_durable_receipt_ledger(self):
         workflow = WORKFLOW.read_text(encoding="utf-8")
-        self.assertIn("group: store-uploader-durable-receipt-ledger", workflow)
+        self.assertIn("group: store-uploader-durable-receipt-ledger-${{ inputs.product || github.event.client_payload.product }}", workflow)
         self.assertIn("contents: write", workflow)
         self.assertIn("python -m uploader.github_receipt_ledger --receipt .uploader-run/receipt.json", workflow)
         self.assertIn("retention-days: 30", workflow)

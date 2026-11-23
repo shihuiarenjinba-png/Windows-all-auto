@@ -19,7 +19,7 @@ class FakeGitHubLedger(GitHubLedger):
         self.calls.append((method, path, body))
         if method == "GET" and path.startswith("/contents/"):
             return None
-        if method == "GET" and path == "/git/ref/heads/store-uploader-ledger":
+        if method == "GET" and path == "/git/ref/heads/store-uploader-ledger-9PDL4ZWSB45P":
             return None if self.head is None else {"object": {"sha": self.head}}
         if method == "GET" and path == f"/git/commits/{self.head}":
             return {"tree": {"sha": self.tree}}
@@ -33,7 +33,7 @@ class FakeGitHubLedger(GitHubLedger):
         if method == "POST" and path == "/git/refs":
             self.created_ref = body
             return {"ref": body["ref"]}
-        if method == "PATCH" and path == "/git/refs/heads/store-uploader-ledger":
+        if method == "PATCH" and path == "/git/refs/heads/store-uploader-ledger-9PDL4ZWSB45P":
             self.updated_ref = body
             return {"ref": path}
         raise AssertionError((method, path, body))
@@ -52,7 +52,7 @@ class GitHubReceiptLedgerTests(unittest.TestCase):
     def test_first_receipt_creates_orphan_data_branch(self):
         ledger = FakeGitHubLedger()
         ledger.append(self.receipt())
-        self.assertEqual(ledger.created_ref["ref"], "refs/heads/store-uploader-ledger")
+        self.assertEqual(ledger.created_ref["ref"], "refs/heads/store-uploader-ledger-9PDL4ZWSB45P")
         self.assertEqual(ledger.commit_body["parents"], [])
         body = next(call[2] for call in ledger.calls if call[0] == "POST" and call[1] == "/git/trees")
         self.assertTrue(body["tree"][0]["path"].startswith("receipts/9PDL4ZWSB45P/"))
@@ -74,6 +74,11 @@ class GitHubReceiptLedgerTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             with self.assertRaisesRegex(GitHubLedgerError, "truncated"):
                 ledger.load_product("9PDL4ZWSB45P", Path(tmp))
+
+    def test_product_receipts_use_isolated_branch_names(self):
+        self.assertEqual(GitHubLedger.branch_for_product("Product-A"), "store-uploader-ledger-Product-A")
+        with self.assertRaisesRegex(GitHubLedgerError, "invalid Product ID"):
+            GitHubLedger.branch_for_product("../other")
 
 
 if __name__ == "__main__":
