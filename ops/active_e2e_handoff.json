@@ -11131,20 +11131,20 @@
     "status": "HOLD",
     "pr161_head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
     "pr164_head_sha": "145cd1f44bdec9e584eb0f045dd139ef330c6321",
-    "pr165_tested_head_sha": "b37343748ee2b3da1a7fb4ba7ed89b1ae31c84f8",
+    "pr165_tested_head_sha": "1eb134f2a2dae3647058d3357d634930f5bbaa23",
     "pr165_ci": [
       {
-        "run_id": 45143926210,
+        "run_id": 45145359560,
         "conclusion": "success",
         "scope": "Exact-head Windows E2E transport fail-closed regression"
       },
       {
-        "run_id": 45143926027,
+        "run_id": 45145359602,
         "conclusion": "success",
         "scope": "Exact-head independent GitHub artifact custody regression"
       },
       {
-        "run_id": 45143926191,
+        "run_id": 45145359855,
         "conclusion": "success",
         "scope": "Exact-head Windows and Ubuntu Offline QA"
       }
@@ -11156,7 +11156,7 @@
     "checker_gui_e2e": "NOT_VERIFIED",
     "focus_file_integrity_phase": "POST_IDENTITY_DELIVERY_HOLD",
     "prism_revision": "HOLD_NO_OLD_SOURCE_CAS",
-    "note": "PR165 exact tested HEAD b37343748ee2b3da1a7fb4ba7ed89b1ae31c84f8 has all three associated workflows SUCCESS: transport fail-closed, independent GitHub artifact custody, and Windows+Ubuntu Offline QA. This head contains only ops JSON reconciliation changes; no product code. Focus current PR94 source remains fb629383 while approved Identity is bound to 8b00bc4e with package_version_gate=HOLD. File Integrity approved Identity remains bound to d1108d12 at historical commit db9a57af and is absent from current PR97 head 82aaffc. Both products lack authoritative Version and real MSIX. The local checker source is now pinned to Windows-checker PR2 head 17cdc77 (CI 41933149906 SUCCESS); its CLI and exit-code contract match scripts/local_checker_queue.py, but local checkout/execution and GUI receipt remain unobserved. E2E remains HOLD.",
+    "note": "PR165 current exact HEAD 1eb134f2a2dae3647058d3357d634930f5bbaa23 has all three associated workflows SUCCESS: transport fail-closed, independent GitHub artifact custody, and Windows+Ubuntu Offline QA. Compared with prior tested HEAD b37343748ee2b3da1a7fb4ba7ed89b1ae31c84f8, this head is 3 commits ahead / 0 behind and changes only the three central ops JSON files; no product code. Focus current PR94 source remains fb629383 while approved Identity is bound to 8b00bc4e with package_version_gate=HOLD. File Integrity approved Identity remains bound to d1108d12 at historical commit db9a57af and is absent from current PR95 head 4474af31 and PR97 GUI head 82aaffc. Both products lack authoritative Version and real MSIX. Raw PNG bytes/SHA256 and Git blob SHAs were independently re-read at the current product heads. The local checker source/CLI contract is pinned, but local checkout/execution and GUI receipt remain unobserved. E2E remains HOLD.",
     "approved_identity_product_checks": [
       {
         "product": "Focus Session Desk",
@@ -11221,7 +11221,7 @@
         "checker_gui": "NOT_VERIFIED",
         "local_receipt": "NOT_VERIFIED",
         "identity_file_present_on_current_pr_head": true,
-        "current_source_identity_binding_detail": "Current PR94 HEAD fb629383 is 27 commits ahead of approved source 8b00bc4e and changes products/focus-session-desk/main.py; old approved Identity cannot be CAS-reused on the current source.",
+        "current_source_identity_binding_detail": "Current PR94 HEAD fb629383 contains the approved-identity.json file, but its source_sha and expected_head_sha remain 8b00bc4e; current source is 27 commits ahead and products/focus-session-desk/main.py changed. Do not CAS-reuse this old source binding.",
         "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
         "package_version_evidence": "Approved identity JSON has package_version_gate=HOLD and no version value; authenticated Partner Center readback was not observed in this run.",
         "store_assets_git_blob_sha_verified": true,
@@ -11333,7 +11333,7 @@
         "local_receipt": "NOT_VERIFIED",
         "identity_file_present_on_current_gui_head": false,
         "identity_file_current_gui_head_readback": "NOT_FOUND",
-        "current_source_identity_binding_detail": "Approved Identity is present at historical commit db9a57af and bound to d1108d12; it is not present at PR97 HEAD 82aaffc, while PR95/PR97 source history diverges from the approved source.",
+        "current_source_identity_binding_detail": "Approved Identity is present only at historical commit db9a57af and bound to d1108d12; independently readback returned NOT_FOUND at current product PR95 HEAD 4474af31 and GUI follow-up PR97 HEAD 82aaffc. PR95 and PR97 histories diverge from the approved source.",
         "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
         "package_version_evidence": "Approved identity JSON has package_version_gate=HOLD and no version value; authenticated Partner Center readback was not observed in this run.",
         "store_assets_git_blob_sha_verified": true,
@@ -11341,25 +11341,27 @@
           "StoreLogo": "e3c9a9426a1971f21175b9b045d4d5fef83f97d5",
           "Square150": "df892bd2fcf7b56f9facd94054b2b1385313b030",
           "Square44": "d57e7a25d2a9eaa2b54d00c610f3a1ad7d4a4d49"
-        }
+        },
+        "identity_file_present_on_current_pr95_head": false,
+        "identity_file_current_pr95_head_readback": "NOT_FOUND"
       }
     ],
     "latest_head_ci_observation": {
-      "observed_at_jst": "2026-11-23 17:53",
-      "head_sha": "b37343748ee2b3da1a7fb4ba7ed89b1ae31c84f8",
+      "observed_at_jst": "2026-11-23 18:38:50 JST",
+      "head_sha": "1eb134f2a2dae3647058d3357d634930f5bbaa23",
       "workflow_runs": [
         {
-          "run_id": 45143926210,
+          "run_id": 45145359560,
           "conclusion": "success",
           "scope": "Exact-head Windows E2E transport fail-closed regression"
         },
         {
-          "run_id": 45143926027,
+          "run_id": 45145359602,
           "conclusion": "success",
           "scope": "Exact-head independent GitHub artifact custody regression"
         },
         {
-          "run_id": 45143926191,
+          "run_id": 45145359855,
           "conclusion": "success",
           "scope": "Exact-head Windows and Ubuntu Offline QA"
         }
@@ -11371,7 +11373,7 @@
       "backlog": false,
       "local_checker": false
     },
-    "pr165_head_sha": "b37343748ee2b3da1a7fb4ba7ed89b1ae31c84f8",
+    "pr165_head_sha": "1eb134f2a2dae3647058d3357d634930f5bbaa23",
     "pr161_ci": [
       {
         "run_id": 42712757936,
@@ -11508,7 +11510,56 @@
       "real_product_execution": "NOT_OBSERVED",
       "e2e_pass": false
     },
-    "local_code_sync_receipt_status": "NOT_OBSERVED"
+    "local_code_sync_receipt_status": "NOT_OBSERVED",
+    "previous_tested_head_sha": "b37343748ee2b3da1a7fb4ba7ed89b1ae31c84f8",
+    "previous_pr165_ci": [
+      {
+        "run_id": 45143926210,
+        "conclusion": "success",
+        "scope": "Exact-head Windows E2E transport fail-closed regression"
+      },
+      {
+        "run_id": 45143926027,
+        "conclusion": "success",
+        "scope": "Exact-head independent GitHub artifact custody regression"
+      },
+      {
+        "run_id": 45143926191,
+        "conclusion": "success",
+        "scope": "Exact-head Windows and Ubuntu Offline QA"
+      }
+    ],
+    "previous_head_ci_observation": {
+      "observed_at_jst": "2026-11-23 17:53",
+      "head_sha": "b37343748ee2b3da1a7fb4ba7ed89b1ae31c84f8",
+      "workflow_runs": [
+        {
+          "run_id": 45143926210,
+          "conclusion": "success",
+          "scope": "Exact-head Windows E2E transport fail-closed regression"
+        },
+        {
+          "run_id": 45143926027,
+          "conclusion": "success",
+          "scope": "Exact-head independent GitHub artifact custody regression"
+        },
+        {
+          "run_id": 45143926191,
+          "conclusion": "success",
+          "scope": "Exact-head Windows and Ubuntu Offline QA"
+        }
+      ],
+      "scope": "Exact-head transport/custody/offline CI green; no real product MSIX, signing, local checker execution or product E2E",
+      "status": "PASS_CI_ONLY",
+      "e2e_pass": false,
+      "real_msix": false,
+      "backlog": false,
+      "local_checker": false
+    },
+    "e2e_pass": false,
+    "store_submission_allowed": false,
+    "certification_allowed": false,
+    "publish_allowed": false
   },
   "store_submission_allowed": false,
   "certification_allowed": false,
