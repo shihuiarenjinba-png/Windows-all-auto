@@ -217,11 +217,11 @@ class CurrentLedgerGateTests(unittest.TestCase):
         self.assertIs(ledger["certification_allowed"], False)
         self.assertIs(ledger["publish_allowed"], False)
         latest = ledger["latest_transport_reconciliation"]
-        self.assertEqual(latest["central_tested_head_sha"], "6ac7c7f0fef32682bb5d8b0d19c59bd174482926")
+        self.assertEqual(latest["central_tested_head_sha"], "41f74a28e8aac9356279349343f1dbe0d251800a")
         self.assertEqual(latest["previous_central_head_sha"], "3cb242653cfc92917b374f82f1d6adb6994100f9")
-        self.assertEqual(latest["ledger_followup_head_sha"], "6ac7c7f0fef32682bb5d8b0d19c59bd174482926")
+        self.assertEqual(latest["ledger_followup_head_sha"], "41f74a28e8aac9356279349343f1dbe0d251800a")
         self.assertEqual([x["run_id"] for x in latest["exact_head_ci"]],
-                         [45219717898, 45219717804, 45219718041])
+                         [45230271440, 45230271518, 45230271524])
         self.assertTrue(all(x["conclusion"] == "success" for x in latest["exact_head_ci"]))
         self.assertTrue(ledger["active_product_is_historical"])
         self.assertEqual(ledger["current_priority_products"][0]["product"], "Focus Session Desk")
@@ -237,10 +237,25 @@ class CurrentLedgerGateTests(unittest.TestCase):
         self.assertEqual(ledger["e2e_status"], "HOLD")
         self.assertIs(ledger["e2e_pass"], False)
         self.assertEqual(ledger["windows_e2e_custody_reconciliation"]["pr165_tested_head_sha"],
-                         "6ac7c7f0fef32682bb5d8b0d19c59bd174482926")
+                         "41f74a28e8aac9356279349343f1dbe0d251800a")
         self.assertEqual([x["run_id"] for x in ledger["windows_e2e_custody_reconciliation"]["pr165_ci"]],
                          [45219717898, 45219717804, 45219718041])
-        self.assertEqual(ledger["windows_e2e_custody_reconciliation_history"][-1]["pr165_tested_head_sha"], "6ac7c7f0fef32682bb5d8b0d19c59bd174482926")
+        self.assertEqual(ledger["windows_e2e_custody_reconciliation_history"][-1]["pr165_tested_head_sha"], "41f74a28e8aac9356279349343f1dbe0d251800a")
+        self.assertEqual(ledger["windows_e2e_custody_reconciliation"]["pr165_reconciliation_parent_head_sha"],
+                         "6ac7c7f0fef32682bb5d8b0d19c59bd174482926")
+        self.assertEqual(recon["pr165_current_head_sha"], "41f74a28e8aac9356279349343f1dbe0d251800a")
+        self.assertEqual(recon["pr165_current_head_parent_sha"], "6ac7c7f0fef32682bb5d8b0d19c59bd174482926")
+        file_product = next(p for p in recon["products"] if p["product"] == "File Integrity Ledger")
+        self.assertEqual(file_product["current_gui_followup_pr"], 100)
+        self.assertEqual(file_product["current_gui_followup_head"], "081fc168544022c401ce95a0f481644568912337")
+        self.assertEqual(file_product["hosted_native_gui"]["artifact_sha256"],
+                         "bfb653798a47f14e036ad4ecc69a604b82b64b2df845b7c314c90f242ccdb3c9")
+        self.assertEqual(file_product["hosted_native_gui"]["exe_sha256"],
+                         "5b788cdb0bc7c63d92956228358983fefc1352797fa5d7133ab365d2a7d774aa")
+        self.assertFalse(file_product["hosted_native_gui"]["visual_review_required"])
+        self.assertEqual(file_product["approved_identity_file_current_pr100_head_readback"], "NOT_FOUND")
+        self.assertIsNone(file_product["package_version"])
+        self.assertIs(file_product["real_msix"], False)
         self.assertEqual(ledger["windows_e2e_custody_reconciliation"]["pr161_head_sha"],
                          "71d9c2125b6aed44a86ca1872d48ad19963f3e63")
         self.assertEqual([x["run_id"] for x in ledger["windows_e2e_custody_reconciliation"]["pr161_ci"]],
