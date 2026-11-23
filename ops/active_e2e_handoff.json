@@ -11241,7 +11241,7 @@
         "package_version": null,
         "package_version_gate": "HOLD",
         "store_id": "9PGZ445SR5GM",
-        "identity_file_status": "FOUND_AT_APPROVED_COMMIT__SOURCE_BOUND_TO_D1108__NOT_FOUND_AT_CURRENT_PR97_HEAD",
+        "identity_file_status": "FOUND_AT_APPROVED_COMMIT__SOURCE_BOUND_TO_D1108__NOT_FOUND_AT_CURRENT_PR95_AND_PR97_HEADS",
         "identity_file_ref": "AI-App-Factory@db9a57af822788af4c8384499a6e343ec7b0353d:products/file-integrity-ledger/store/approved-identity.json",
         "current_product_lane_pr": 95,
         "current_product_lane_head": "4474af31b35afc7c3608a5b6a6f833597001fdf7",
@@ -11261,7 +11261,7 @@
           "ahead_by": 30,
           "behind_by": 8
         },
-        "current_source_identity_binding_status": "REVALIDATION_REQUIRED__APPROVED_IDENTITY_BOUND_TO_D1108_NOT_4474_OR_82AAFF",
+        "current_source_identity_binding_status": "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE",
         "signature_status": "PRE_IDENTITY_EXE_NOT_MSIX",
         "store_assets_sha256": {
           "StoreLogo_png": {
