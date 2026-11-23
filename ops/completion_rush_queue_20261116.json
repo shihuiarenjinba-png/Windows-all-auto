@@ -284,9 +284,39 @@
       "next_action": "Prove real Windows JA/EN five controls and LOST UIA; once PASS, freeze product and advance GDK Version/SDK/assets/CAS/MSIXVC."
     }
   ],
-  "last_reconciled_at_utc": "2026-11-23",
-  "last_reconciled_basis": "PR165 exact tested head b37343748ee2b3da1a7fb4ba7ed89b1ae31c84f8: all three exact-head workflows SUCCESS. Focus/File current Identity and Version gates remain HOLD. Windows-checker PR2 exact head 17cdc77 is directly read and its CI 41933149906 is SUCCESS; local checkout and real package execution remain unobserved.",
+  "last_reconciled_at_utc": "2026-11-23T09:38:50Z",
+  "last_reconciled_basis": "PR165 current exact HEAD 1eb134f2a2dae3647058d3357d634930f5bbaa23 and its three associated Actions workflows were read directly from GitHub; all three succeeded. Compare from prior tested HEAD b37343748ee2b3da1a7fb4ba7ed89b1ae31c84f8 is 3 commits ahead / 0 behind and touches only central ops JSON. Focus/File product gates remain DELIVERY_HOLD; no Version inference or product-code changes.",
   "latest_transport_reconciliation": {
+    "checked_at_utc": "2026-11-23T09:38:50Z",
+    "central_pr": 165,
+    "central_head": "1eb134f2a2dae3647058d3357d634930f5bbaa23",
+    "exact_head_ci": [
+      {
+        "run_id": 45145359560,
+        "conclusion": "success",
+        "scope": "Exact-head Windows E2E transport fail-closed regression"
+      },
+      {
+        "run_id": 45145359602,
+        "conclusion": "success",
+        "scope": "Exact-head independent GitHub artifact custody regression"
+      },
+      {
+        "run_id": 45145359855,
+        "conclusion": "success",
+        "scope": "Exact-head Windows and Ubuntu Offline QA"
+      }
+    ],
+    "status": "HOLD",
+    "e2e_pass": false,
+    "real_msix": false,
+    "github_backlog_receipt": false,
+    "local_checker_receipt": false,
+    "store_submission_allowed": false,
+    "certification_allowed": false,
+    "publish_allowed": false
+  },
+  "previous_latest_transport_reconciliation": {
     "checked_at_utc": "2026-11-23",
     "central_pr": 165,
     "central_head": "b37343748ee2b3da1a7fb4ba7ed89b1ae31c84f8",
