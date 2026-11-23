@@ -1,7 +1,9 @@
 """Independent GitHub Actions artifact custody gate. Does not certify signing or E2E."""
+import argparse
 import hashlib
 import io
 import json
+import os
 import re
 import urllib.request
 import zipfile
@@ -10,6 +12,7 @@ from pathlib import Path
 HEX40 = re.compile(r"^[0-9a-f]{40}$")
 HEX64 = re.compile(r"^[0-9a-f]{64}$")
 ARTIFACT_DIGEST = re.compile(r"^sha256:([0-9a-f]{64})$")
+MAX_RESPONSE_BYTES = 320 * 1024 * 1024
 
 
 def hold(reason):
@@ -44,9 +47,19 @@ def verify_custody(expected, local_bundle, fetch_json, fetch_bytes):
         bundle_mode = local.is_dir()
         if bundle_mode:
             children = list(local.iterdir())
+            names = {p.name for p in children}
+            allowed = {"handoff.json", "package.msix", "transport_receipt.json"}
             if (any(p.is_symlink() or not p.is_file() for p in children)
-                    or {p.name for p in children} != {"handoff.json", "package.msix"}):
+                    or not {"handoff.json", "package.msix"}.issubset(names)
+                    or not names.issubset(allowed)):
                 return hold("LOCAL_BUNDLE_CONTENT_INVALID")
+            transport_path = local / "transport_receipt.json"
+            if transport_path.exists():
+                if transport_path.stat().st_size > 32 * 1024:
+                    return hold("LOCAL_TRANSPORT_RECEIPT_INVALID")
+                transport = json.loads(transport_path.read_text(encoding="utf-8"))
+                if not isinstance(transport, dict):
+                    return hold("LOCAL_TRANSPORT_RECEIPT_INVALID")
             local_handoff = (local / "handoff.json").read_bytes()
             local_path = local / "package.msix"
         else:
@@ -142,6 +155,103 @@ def github_clients(token):
             "X-GitHub-Api-Version": "2022-11-28",
             "User-Agent": "windows-e2e-custody-gate"})
         with urllib.request.urlopen(req, timeout=30) as response:
-            return response.read()
+            length = response.headers.get("Content-Length")
+            if length is not None:
+                try:
+                    if int(length) > MAX_RESPONSE_BYTES:
+                        raise ValueError("GitHub response exceeds custody size limit")
+                except ValueError as exc:
+                    if str(exc).startswith("GitHub response"):
+                        raise
+                    raise ValueError("Invalid GitHub response length") from exc
+            data = response.read(MAX_RESPONSE_BYTES + 1)
+            if len(data) > MAX_RESPONSE_BYTES:
+                raise ValueError("GitHub response exceeds custody size limit")
+            return data
 
     return lambda url: json.loads(request(url)), request
+
+
+def _read_expected(path: Path) -> dict:
+    if path.is_symlink() or not path.is_file() or path.stat().st_size > 32 * 1024:
+        raise ValueError("EXPECTED_METADATA_UNAVAILABLE")
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(data, dict):
+        raise ValueError("EXPECTED_METADATA_INVALID")
+    return data
+
+
+def _write_receipt_once(path: Path, data: dict) -> None:
+    if path.is_symlink() or path.exists():
+        raise ValueError("RECEIPT_EXISTS_OR_LINKED")
+    if path.parent.is_symlink() or not path.parent.is_dir():
+        raise ValueError("RECEIPT_PARENT_UNAVAILABLE")
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+    if hasattr(os, "O_NOFOLLOW"):
+        flags |= os.O_NOFOLLOW
+    fd = os.open(str(path), flags, 0o600)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as stream:
+            stream.write(json.dumps(data, ensure_ascii=False, sort_keys=True) + "\n")
+            stream.flush()
+            os.fsync(stream.fileno())
+    except BaseException:
+        try:
+            path.unlink()
+        except OSError:
+            pass
+        raise
+
+
+def main(argv=None) -> int:
+    parser = argparse.ArgumentParser(
+        description="Verify GitHub Actions artifact archive bytes against a local MSIX; never asserts product E2E."
+    )
+    parser.add_argument("--expected", required=True, type=Path,
+                        help="JSON with repository, run_id, artifact_id, source_sha, artifact_name and msix_sha256")
+    parser.add_argument("--local-bundle", required=True, type=Path,
+                        help="Downloaded handoff bundle directory or exact local .msix file")
+    parser.add_argument("--output", required=True, type=Path,
+                        help="New receipt path; for a bundle directory use github-custody.json inside that directory")
+    args = parser.parse_args(argv)
+    try:
+        expected = _read_expected(args.expected)
+        if args.output.is_symlink() or args.output.exists():
+            raise ValueError("RECEIPT_EXISTS_OR_LINKED")
+        if args.output.parent.is_symlink() or not args.output.parent.is_dir():
+            raise ValueError("RECEIPT_PARENT_UNAVAILABLE")
+        if args.local_bundle.is_dir():
+            if (args.output.name != "github-custody.json"
+                    or args.output.parent.resolve() != args.local_bundle.resolve()):
+                raise ValueError("BUNDLE_RECEIPT_PATH_INVALID")
+        token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
+        if not token:
+            raise ValueError("GITHUB_TOKEN_REQUIRED")
+        fetch_json, fetch_bytes = github_clients(token)
+        result = verify_custody(expected, args.local_bundle, fetch_json, fetch_bytes)
+        if result.get("status") != "CUSTODY_VERIFIED_ONLY":
+            print(json.dumps(result, ensure_ascii=False, sort_keys=True))
+            return 2
+        _write_receipt_once(args.output, result)
+        print(json.dumps(result, ensure_ascii=False, sort_keys=True))
+        return 0
+    except ValueError as exc:
+        reason = str(exc)
+        allowed = {
+            "EXPECTED_METADATA_UNAVAILABLE", "EXPECTED_METADATA_INVALID",
+            "RECEIPT_EXISTS_OR_LINKED", "RECEIPT_PARENT_UNAVAILABLE",
+            "BUNDLE_RECEIPT_PATH_INVALID", "GITHUB_TOKEN_REQUIRED",
+        }
+        if reason not in allowed:
+            reason = "CUSTODY_PREFLIGHT_INVALID"
+        print(json.dumps({"status": "HOLD", "reason": reason, "e2e_pass": False}),
+              file=sys.stderr)
+        return 2
+    except (OSError, TypeError, KeyError, json.JSONDecodeError):
+        print(json.dumps({"status": "HOLD", "reason": "CUSTODY_PREFLIGHT_UNAVAILABLE", "e2e_pass": False}),
+              file=sys.stderr)
+        return 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
