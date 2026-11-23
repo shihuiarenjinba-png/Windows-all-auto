@@ -239,7 +239,7 @@ class CurrentLedgerGateTests(unittest.TestCase):
         self.assertEqual(ledger["windows_e2e_custody_reconciliation"]["pr165_tested_head_sha"],
                          "c97dde38d3e6f14a2d9a9ccd03f72b937aeb44da")
         self.assertEqual([x["run_id"] for x in ledger["windows_e2e_custody_reconciliation"]["pr165_ci"]],
-                         [45252282976, 45252282960, 45252283104])
+                         [45262561305, 45262561306, 45262561558])
         self.assertEqual(ledger["windows_e2e_custody_reconciliation_history"][-1]["pr165_tested_head_sha"], "c97dde38d3e6f14a2d9a9ccd03f72b937aeb44da")
         self.assertEqual(ledger["windows_e2e_custody_reconciliation"]["pr165_reconciliation_parent_head_sha"],
                          "b6ff9fdcea9b9db97ba3196052e5a8d90c8fcf5d")
@@ -251,6 +251,9 @@ class CurrentLedgerGateTests(unittest.TestCase):
         self.assertEqual(recon["pr165_immediate_parent_ci_status"], "PARTIAL_UPDATE_INTERMEDIATE_FAILURES__SUPERSEDED_BY_FINAL_PASS")
         self.assertEqual(recon["pr165_last_verified_predecessor_head_sha"], "5580ad0d49a770cc2ed2cc70aeef7b2e64f8d903")
         file_product = next(p for p in recon["products"] if p["product"] == "File Integrity Ledger")
+        self.assertEqual(file_product["current_factory_head"], "e2d44434233dd483f9ebc8c9e37fd365da415a39")
+        self.assertEqual(file_product["current_product_lane_head"], "e2d44434233dd483f9ebc8c9e37fd365da415a39")
+        self.assertEqual(file_product["source_selection_status"], "SOURCE_LINEAGE_DIVERGED__NO_PACKAGE_SOURCE_SELECTED")
         self.assertEqual(file_product["current_gui_followup_pr"], 100)
         self.assertEqual(file_product["current_gui_followup_head"], "081fc168544022c401ce95a0f481644568912337")
         self.assertEqual(file_product["hosted_native_gui"]["artifact_sha256"],

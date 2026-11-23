@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-11-23T21:39:24Z",
+  "generated_at": "2026-11-23T21:46:20Z",
   "policy": "COMPLETION_RUSH_EXISTING_PRODUCTS_ONLY",
   "new_product_generation_allowed": false,
   "rules": {
@@ -279,7 +279,7 @@
         "Square150.png",
         "Square44.png"
       ],
-      "store_assets_branch_head": "e2d44434233dd483f9ebc8c9e37d365da415a39",
+      "store_assets_branch_head": "e2d44434233dd483f9ebc8c9e37fd365da415a39",
       "package_blockers": [
         {
           "field": "package_version",
@@ -428,7 +428,7 @@
       "approved_identity_file_current_gui_head_readback": "NOT_FOUND",
       "approved_identity_file_commit": "db9a57af822788af4c8384499a6e343ec7b0353d",
       "approved_identity_source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
-      "current_factory_head": "e2d44434233dd483f9ebc8c9e37d365da415a39",
+      "current_factory_head": "e2d44434233dd483f9ebc8c9e37fd365da415a39",
       "gui_followup_head": "d09973e33daa374dd5a3ba9b4f7a0fabd06987a3",
       "package_version_evidence": "Approved identity JSON at historical commit db9a57af has package_version_gate=HOLD and no version field; it is not present at PR97 current GUI head. Partner Center readback not observed.",
       "store_assets_git_blob_sha_verified": true,
@@ -730,7 +730,7 @@
       "required_revision_in_frozen_source": false
     }
   ],
-  "last_reconciled_at_utc": "2026-11-23T21:39:24Z",
+  "last_reconciled_at_utc": "2026-11-23T21:46:20Z",
   "last_reconciled_basis": "Direct live GitHub reads: PR165 c97dde38 exact-head CI 3/3 PASS; direct parent b6ff9fd exact-head CI 3/3 PASS; PR94/102 and PR95/97/100 product branches, workflow runs, artifacts, approved identity files and asset Git blobs reconciled.",
   "latest_transport_reconciliation": {
     "checked_at_utc": "2026-11-23T21:39:24Z",
@@ -767,7 +767,7 @@
     "store_submission_allowed": false,
     "certification_allowed": false,
     "publish_allowed": false,
-    "note": "PR165 live HEAD c97dde38d3e6f14a2d9a9ccd03f72b937aeb44da has all three associated exact-head workflows SUCCESS: transport 45262561305, custody 45262561306, and Windows/Ubuntu Offline QA 45262561558. Its direct parent b6ff9fdcea9b9db97ba3196052e5a8d90c8fcf5d also has all three workflows SUCCESS (45262461733, 45262461839, 45262461756); the prior observed HEAD db707178 also has three SUCCESS runs. These are repository regression/Offline QA results only. Focus/File remain DELIVERY_HOLD: current-source Identity revalidation and authoritative Package Version are not complete; no real MSIX, GitHub backlog, local pull/checker/install or physical user-PC receipt is proven. E2E remains HOLD.",
+    "note": "PR165 live HEAD c97dde38d3e6f14a2d9a9ccd03f72b937aeb44da has all three associated exact-head workflows SUCCESS: transport 45262561305, custody 45262561306, and Windows/Ubuntu Offline QA 45262561558. Its direct parent b6ff9fdcea9b9db97ba3196052e5a8d90c8fcf5d also has all three workflows SUCCESS (45262461733, 45262461839, 45262461756); the prior observed HEAD db707178 also has three SUCCESS runs. These are repository regression/Offline QA results only. Focus/File remain DELIVERY_HOLD: current-source Identity revalidation and authoritative Package Version are not complete; no real MSIX, GitHub backlog, local pull/checker/install or physical user-PC receipt is proven. E2E remains HOLD. Subsequent ledger-only head babd8b2ef39e0e07472aa65d06c2134c06915fc3 had a stale expected-run-ID assertion in test_real_msix_transport_failclosed.py (actual c97 run IDs were recorded correctly); artifact custody passed, transport/Offline QA failed only at that assertion. The following commit corrects the assertion and File source-head metadata.",
     "previous_ledger_followup_head_sha": "5580ad0d49a770cc2ed2cc70aeef7b2e64f8d903",
     "previous_ledger_followup_exact_head_ci": [
       {
@@ -952,7 +952,42 @@
         "conclusion": "success",
         "scope": "Prior observed HEAD Windows-all-auto Offline QA"
       }
-    ]
+    ],
+    "post_reconciliation_update_attempt": {
+      "head_sha": "babd8b2ef39e0e07472aa65d06c2134c06915fc3",
+      "exact_head_workflows": [
+        {
+          "run_id": 45273033945,
+          "conclusion": "failure",
+          "scope": "Windows E2E transport fail-closed regression"
+        },
+        {
+          "run_id": 45273033809,
+          "conclusion": "success",
+          "scope": "GitHub artifact custody fail-closed regression"
+        },
+        {
+          "run_id": 45273033841,
+          "conclusion": "failure",
+          "scope": "Windows-all-auto Offline QA"
+        }
+      ],
+      "failure_classification": "STALE_TEST_EXPECTED_RUN_IDS",
+      "failed_assertion": "tests/test_real_msix_transport_failclosed.py::CurrentLedgerGateTests.test_latest_reconciliation_keeps_focus_file_version_and_source_gates_held line 241",
+      "expected_run_ids": [
+        45252282976,
+        45252282960,
+        45252283104
+      ],
+      "actual_run_ids": [
+        45262561305,
+        45262561306,
+        45262561558
+      ],
+      "impact": "Ledger/test assertion mismatch only; synthetic transport behavior tests passed, artifact custody regression passed, no product package or E2E was promoted.",
+      "superseded_by_followup_fix": true,
+      "next_action": "Replace remaining stale exact-head run assertion and correct File Integrity source-head metadata, then rerun exact-head CI."
+    }
   },
   "previous_latest_transport_reconciliation": {
     "checked_at_utc": "2026-11-23T19:34:36Z",

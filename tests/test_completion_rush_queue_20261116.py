@@ -56,6 +56,9 @@ class CompletionRushQueueTests(unittest.TestCase):
     def test_file_integrity_live_source_lineage_divergence_is_not_package_ready(self):
         items = {x["product"]: x for x in self.data["priority"]}
         row = items["File Integrity Ledger"]
+        self.assertEqual(row["current_source_sha"], "e2d44434233dd483f9ebc8c9e37fd365da415a39")
+        self.assertEqual(row["store_assets_branch_head"], "e2d44434233dd483f9ebc8c9e37fd365da415a39")
+        self.assertEqual(row["current_factory_head"], "e2d44434233dd483f9ebc8c9e37fd365da415a39")
         observation = row["source_lineage_observation_20261124"]
         self.assertEqual(observation["pr95_current_head"]["head_sha"], "e2d44434233dd483f9ebc8c9e37fd365da415a39")
         self.assertEqual(observation["pr95_current_head"]["gui_failure"]["classification"], "GUI_TEST_HARNESS_DIALOG_DISCOVERY_FAILURE")
