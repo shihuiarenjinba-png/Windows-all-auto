@@ -363,7 +363,7 @@ class CustodyTests(unittest.TestCase):
         live_head = ledger["pr165_live_head_observation_20261124"]
         self.assertEqual(live_head["head_sha"], "5296f5aea27b4931d0b8b3a2dae20146af489cd9")
         self.assertEqual([x["run_id"] for x in live_head["exact_head_workflows"]],
-                         [45262561305, 45262561306, 45262561558])
+                         [45273284167, 45273284213, 45273284166])
         self.assertEqual(live_head["status"], "PASS_EXACT_HEAD_CI")
         self.assertIs(live_head["e2e_pass"], False)
         self.assertIs(live_head["real_msix"], False)
