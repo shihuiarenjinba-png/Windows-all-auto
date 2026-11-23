@@ -24,12 +24,15 @@ class CustodyTests(unittest.TestCase):
         self.run = dict(head_sha="a"*40, status="completed", conclusion="success")
         self.artifact = dict(id=456, name="actual-package", expired=False,
                              workflow_run=dict(id=123, head_sha="a"*40))
-        self.zip = self.archive(self.local.read_bytes())
+        self.set_archive(self.local.read_bytes())
     def archive(self, data):
         buf = io.BytesIO()
         with zipfile.ZipFile(buf, "w") as z:
             z.writestr("actual.msix", data)
         return buf.getvalue()
+    def set_archive(self, data):
+        self.zip = self.archive(data)
+        self.artifact["digest"] = "sha256:" + hashlib.sha256(self.zip).hexdigest()
     def check(self):
         def get_json(url):
             return self.run if "/runs/" in url else self.artifact
@@ -55,7 +58,7 @@ class CustodyTests(unittest.TestCase):
         self.artifact["id"] = 789
         self.assertEqual(self.check()["status"], "HOLD")
     def test_artifact_bytes_mismatch(self):
-        self.zip = self.archive(b"different")
+        self.set_archive(b"different")
         self.assertEqual(self.check()["reason"], "INDEPENDENT_BYTES_MISMATCH")
     def test_local_bytes_mismatch(self):
         self.local.write_bytes(b"changed")
@@ -74,6 +77,7 @@ class CustodyTests(unittest.TestCase):
             z.writestr("actual.msix", self.local.read_bytes())
             z.writestr("unexpected.txt", "x")
         self.zip = buf.getvalue()
+        self.artifact["digest"] = "sha256:" + hashlib.sha256(self.zip).hexdigest()
         self.assertEqual(self.check()["status"], "HOLD")
 
     def test_custody_to_transport_boundary_fail_closed(self):
@@ -110,7 +114,7 @@ class CustodyTests(unittest.TestCase):
         self.expected.update(source_sha=source, msix_sha256=digest)
         self.run["head_sha"] = source
         self.artifact["workflow_run"]["head_sha"] = source
-        self.zip = self.archive(self.local.read_bytes())
+        self.set_archive(self.local.read_bytes())
         custody = self.check()
         self.assertEqual(custody["status"], "CUSTODY_VERIFIED_ONLY")
         result = authorize_transport(identity, approval, self.local, receipt, custody)
@@ -121,12 +125,12 @@ class CustodyTests(unittest.TestCase):
         # Producer-controlled VERIFIED strings cannot replace independent custody.
         self.assertEqual(authorize_transport(identity, approval, self.local, receipt)["status"], "HOLD")
         # A changed downloaded artifact must not yield a usable custody receipt.
-        self.zip = self.archive(b"tampered")
+        self.set_archive(b"tampered")
         rejected = self.check()
         self.assertEqual(rejected["status"], "HOLD")
         self.assertEqual(authorize_transport(identity, approval, self.local, receipt, rejected)["status"], "HOLD")
         # Even valid custody must not override a missing official version approval.
-        self.zip = self.archive(self.local.read_bytes())
+        self.set_archive(self.local.read_bytes())
         approval["approved"] = False
         self.assertEqual(authorize_transport(identity, approval, self.local, receipt, custody)["reason"],
                          "VERSION_NOT_APPROVED")
