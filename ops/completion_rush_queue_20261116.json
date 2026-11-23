@@ -260,24 +260,24 @@
     }
   ],
   "last_reconciled_at_utc": "2026-11-23",
-  "last_reconciled_basis": "Latest PR165 exact HEAD 86dcd61b: transport regression 45134183948 SUCCESS, artifact custody regression 45134183873 SUCCESS, Windows+Ubuntu Offline QA 45134184158 SUCCESS. A prior metadata-only attempt 4b1de failed because a detailed source-binding value violated the stable queue contract; commit 69b851 restored the required stable value and retained details separately, and exact-head CI now passes. Focus PR94 and File PR95/PR97 have independently rehashed PNG bytes and hosted GUI evidence; neither has authoritative Version/current-source Identity binding or real MSIX/backlog/local checker receipt. E2E HOLD.",
+  "last_reconciled_basis": "Latest tested PR165 HEAD b69c496aa2c25427e7449c856c1a3cf7d1431127: transport fail-closed 45134305432 SUCCESS, artifact custody 45134305865 SUCCESS, Windows+Ubuntu Offline QA 45134305339 SUCCESS. Previous metadata-only schema mismatch was fixed in 69b851; no product code/Identity/Version was changed. Focus PR94 and File PR95/PR97 have independently rehashed PNG bytes and hosted GUI evidence, but authoritative Version/current-source Identity binding, real MSIX, backlog/local pull and Windows-checker receipts remain missing. E2E HOLD.",
   "latest_transport_reconciliation": {
-    "checked_at_utc": "2026-11-23T07:55:00Z",
+    "checked_at_utc": "2026-11-23T07:58:00Z",
     "central_pr": 165,
-    "central_head": "86dcd61b6a515ce03d75f8fc7cbe6407586daae3",
+    "central_head": "b69c496aa2c25427e7449c856c1a3cf7d1431127",
     "exact_head_ci": [
       {
-        "run_id": 45134183948,
+        "run_id": 45134305432,
         "conclusion": "success",
         "scope": "Transport fail-closed regression"
       },
       {
-        "run_id": 45134183873,
+        "run_id": 45134305865,
         "conclusion": "success",
         "scope": "Independent artifact custody regression"
       },
       {
-        "run_id": 45134184158,
+        "run_id": 45134305339,
         "conclusion": "success",
         "scope": "Windows and Ubuntu Offline QA"
       }
