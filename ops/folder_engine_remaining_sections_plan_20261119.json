@@ -1,0 +1,53 @@
+{
+  "schema_version": "folder-store-remaining-sections-plan/1",
+  "recorded_date_jst": "2026-11-19",
+  "product": {
+    "name": "Folder Automation Engine",
+    "store_id": "9P99MJX1R4V6",
+    "draft_id": "1152921505702423660",
+    "route": "msix_pwa_app"
+  },
+  "immutable_binding": {
+    "source_sha": "adfc0d08efb0a94602d5286557d399f9cb28b9dd",
+    "package_sha256": "3C6BC8C1291450905AE71834F2704A59325D1AAA1C9DE3F064BCB8C7EBCA9FB9",
+    "exe_sha256": "DE6894AE39CBE0FBE1889B4AA005E500F30A2EF95EE67403DDFB210DBCFB9F18",
+    "identity_name": "OkinawaDesktopTools.FolderAutomationEngine",
+    "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+    "version": "1.0.0.0",
+    "architecture": "X64"
+  },
+  "completed_sections": {
+    "pricing_availability": "Complete",
+    "packages": "Complete"
+  },
+  "live_distribution": {
+    "audience": "PRIVATE_AUDIENCE_TEST",
+    "known_user_group_name": "Folder Automation Engine Private QA",
+    "known_user_group_member_count": 1
+  },
+  "commercial": {
+    "model": "paid_one_time",
+    "currency": "JPY",
+    "price_confirmed": true,
+    "free_trial": "none",
+    "trial_confirmed": true
+  },
+  "security": {
+    "owner_confirmation_complete": true,
+    "package_sha256": "3C6BC8C1291450905AE71834F2704A59325D1AAA1C9DE3F064BCB8C7EBCA9FB9",
+    "known_restricted_capability": "runFullTrust"
+  },
+  "remaining_sections": [
+    "properties",
+    "age_ratings",
+    "store_listings",
+    "submission_options"
+  ],
+  "safety": {
+    "start_submission_repeated": false,
+    "package_reupload_allowed": false,
+    "certification_executed": false,
+    "publish_executed": false
+  },
+  "target_state": "STORE_DRAFT_COMPLETE"
+}
