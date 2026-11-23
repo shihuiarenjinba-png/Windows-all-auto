@@ -277,5 +277,17 @@ class CustodyTests(unittest.TestCase):
             self.assertEqual(rejected["status"], "HOLD")
             self.assertEqual(rejected["reason"], "SOURCE_DRIFT")
 
+        prism = next(p for p in queue["priority"] if p["product"] == "Prism Route 3D")
+        self.assertEqual(prism["factory_source_sha"], "b03ce7b16c3f75c04fe20fdda224c45849eeba0d")
+        self.assertEqual(prism["historical_factory_source_sha"], "4c22875c5ed79d393516c6a7a95361b9e9ed1950")
+        self.assertEqual(prism["physical_qa_sessions"], "0/6")
+        signal = next(p for p in queue["priority"] if p["product"] == "Signal Sprint")
+        self.assertEqual(signal["historical_source_sha"], "c058cbf7fe38e02d929c67d047d717ff74bd522e")
+        self.assertEqual(signal["current_candidate_source_sha"], "1a349faa41663c417c40710140a4d50c79b62b78")
+        self.assertEqual(signal["build_artifact_status"], "HOLD_BUILD_ARTIFACT_NOT_CONFIGURED")
+        self.assertIs(ledger["store_submission_allowed"], False)
+        self.assertIs(ledger["certification_allowed"], False)
+        self.assertIs(ledger["publish_allowed"], False)
+
 if __name__ == "__main__":
     unittest.main()

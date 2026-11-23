@@ -189,5 +189,34 @@ class TransportRegression(unittest.TestCase):
         # Otherwise the digest gate correctly rejects before manifest validation is reached.
         self.custody["msix_sha256"] = digest
         self.assertEqual(self.check()["reason"], "MANIFEST_IDENTITY_MISMATCH")
+class CurrentLedgerGateTests(unittest.TestCase):
+    def test_current_delivery_queue_cannot_enter_transport_without_binding_and_version(self):
+        root = Path(__file__).resolve().parents[1]
+        queue = json.loads((root / "ops/completion_rush_queue_20261116.json").read_text(encoding="utf-8"))
+        ledger = json.loads((root / "ops/active_e2e_handoff.json").read_text(encoding="utf-8"))
+        for product in ("Focus Session Desk", "File Integrity Ledger"):
+            item = next(p for p in queue["priority"] if p["product"] == product)
+            self.assertEqual(item["hold_class"], "DELIVERY_HOLD")
+            self.assertIsNone(item["package_version"])
+            self.assertIs(item["real_msix"], False)
+            self.assertEqual(item["current_source_identity_binding_status"],
+                             "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE")
+            identity = {
+                "request_id": item["request_id"],
+                "source_sha": item["source_sha"],
+                "verified_source_sha": item["store_assets_branch_head"],
+                "expected_head_sha": item["source_sha"],
+                "package_version_gate": "HOLD",
+            }
+            result = authorize_transport(identity, {}, Path("unused.msix"), {}, None)
+            self.assertEqual(result["status"], "HOLD")
+            self.assertEqual(result["reason"], "SOURCE_DRIFT")
+        self.assertEqual(ledger["e2e_status"], "HOLD")
+        self.assertIs(ledger["e2e_pass"], False)
+        self.assertIs(ledger["store_submission_allowed"], False)
+        self.assertIs(ledger["certification_allowed"], False)
+        self.assertIs(ledger["publish_allowed"], False)
+
+
 if __name__ == "__main__":
     unittest.main()
