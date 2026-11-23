@@ -259,25 +259,25 @@
       "next_action": "Prove real Windows JA/EN five controls and LOST UIA; once PASS, freeze product and advance GDK Version/SDK/assets/CAS/MSIXVC."
     }
   ],
-  "last_reconciled_at_utc": "2026-11-23T08:39:41Z",
-  "last_reconciled_basis": "PR165 exact current head and associated Actions runs read directly from GitHub; compare from prior tested head proves ops-only metadata commits",
+  "last_reconciled_at_utc": "2026-11-23",
+  "last_reconciled_basis": "PR165 exact tested HEAD 580eb93206d0755cd7a1d2a14b7e841da2337760 and associated Actions runs read directly from GitHub; compare from 626c79c confirms two ops-only metadata commits",
   "latest_transport_reconciliation": {
-    "checked_at_utc": "2026-11-23T08:39:41Z",
+    "checked_at_utc": "2026-11-23",
     "central_pr": 165,
-    "central_head": "626c79c88a0ee23d92fa60618ed915ac5196639f",
+    "central_head": "580eb93206d0755cd7a1d2a14b7e841da2337760",
     "exact_head_ci": [
       {
-        "run_id": 45134682879,
+        "run_id": 45141091903,
         "conclusion": "success",
         "scope": "Transport fail-closed regression"
       },
       {
-        "run_id": 45134683000,
+        "run_id": 45141091861,
         "conclusion": "success",
         "scope": "Independent artifact custody regression"
       },
       {
-        "run_id": 45134682927,
+        "run_id": 45141091833,
         "conclusion": "success",
         "scope": "Windows and Ubuntu Offline QA"
       }
