@@ -18,7 +18,7 @@ permissions:
   contents: read
   actions: read
 concurrency:
-  group: store-upload-${{ inputs.product }}
+  group: store-upload-${{ inputs.product || github.event.client_payload.product }}
   cancel-in-progress: false
 jobs:
   validate-and-stage:
