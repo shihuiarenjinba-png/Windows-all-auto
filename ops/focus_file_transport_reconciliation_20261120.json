@@ -3,37 +3,38 @@
   "observed_date_utc": "2026-11-23",
   "evidence_basis": {
     "central_pr": 165,
-    "central_head": "0945d72d792b77e99570134695ad03b20aaace7e",
+    "central_head": "04cb9bbef5945462a5b8ee74b494bad7f3c32500",
     "ledger_path": "ops/active_e2e_handoff.json",
     "queue_path": "ops/completion_rush_queue_20261116.json",
     "pr161_head": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
     "pr171_head": "764721021f13be96364529650b44fb439770bac9",
     "exact_head_ci": [
       {
-        "run_id": 44990236894,
+        "run_id": 45134439345,
         "conclusion": "success",
-        "scope": "Windows-all-auto Offline QA"
+        "scope": "Transport fail-closed regression"
       },
       {
-        "run_id": 44990236896,
+        "run_id": 45134439206,
         "conclusion": "success",
-        "scope": "Windows E2E transport fail-closed regression"
+        "scope": "Independent artifact custody regression"
       },
       {
-        "run_id": 44990236908,
+        "run_id": 45134439373,
         "conclusion": "success",
-        "scope": "GitHub artifact custody fail-closed regression"
+        "scope": "Windows and Ubuntu Offline QA"
       }
     ],
     "pr161_ci_run": 42712757936,
     "pr171_ci_run": 44437197470,
-    "product_repository": "shihuiarenjinba-png/AI-App-Factory"
+    "product_repository": "shihuiarenjinba-png/AI-App-Factory",
+    "previous_tested_head": "b69c496aa2c25427e7449c856c1a3cf7d1431127"
   },
   "status": "HOLD",
   "e2e_pass": false,
   "priority_product": "Focus Session Desk",
   "ledger_active_product": "Signal Sprint",
-  "note": "Priority selection is not proof of local execution; preserve the historical active_product=Signal Sprint. Focus and File Integrity now have independently read-back PNG raw-byte SHA256 and hosted native EXE GUI evidence. Neither has an authoritative Package Version or current-source approved Identity binding, real MSIX, GitHub backlog receipt, local pull, Windows-checker receipt or user-PC local GUI/install receipt. PR165 exact-head CI is green but synthetic/transport-only. E2E remains HOLD.",
+  "note": "Priority selection is not proof of local execution; preserve the historical active_product=Signal Sprint. Focus and File Integrity now have independently read-back PNG raw-byte SHA256 and hosted native EXE GUI evidence. Neither has an authoritative Package Version or current-source approved Identity binding, real MSIX, GitHub backlog receipt, local pull, Windows-checker receipt or user-PC local GUI/install receipt. PR165 exact-head CI is green but synthetic/transport-only. E2E remains HOLD. Latest central PR165 exact head 04cb9bb has transport, artifact-custody and Windows/Ubuntu Offline QA all SUCCESS; this remains CI-only and does not clear any product delivery or local E2E gate.",
   "products": [
     {
       "name": "Focus Session Desk",
