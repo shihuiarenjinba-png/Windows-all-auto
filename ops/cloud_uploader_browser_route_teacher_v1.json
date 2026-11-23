@@ -1,0 +1,39 @@
+{
+  "schema_version": "store-upload-browser-teacher/1",
+  "route": "msix_pwa_app",
+  "source_of_truth": "prior live Partner Center receipts plus the verified Windows-Automator Playwright selector map",
+  "historical_live_product_count": 5,
+  "historical_products": [
+    {"product": "Folio AI", "store_id": "9P0VNLJ5FPF5", "draft_id": "1152921505702219486", "evidence": "Windows-Automator/docs/PARTNER_CENTER_MSIX_APP_FOLIO_UPLOAD_20261112.md"},
+    {"product": "Daymark AI", "store_id": "9PKJ9KMJZBC0", "draft_id": "1152921505702220032", "evidence": "Windows-Automator/docs/PARTNER_CENTER_MAP.json:msix_pwa_app.observation_scope"},
+    {"product": "STRATEGY MARKET US", "store_id": "9PJCWW6G6D42", "draft_id": "1152921505702134687", "evidence": "Windows-Automator/docs/PARTNER_CENTER_MAP.json:msix_pwa_game"},
+    {"product": "STRATEGY MARKET JP", "store_id": "9PM2R3N22JX8", "draft_id": "1152921505702134539", "evidence": "Windows-Automator/docs/PARTNER_CENTER_MAP.json:msix_pwa_game"},
+    {"product": "Folder Automation Engine", "store_id": "9P99MJX1R4V6", "draft_id": "1152921505702423660", "evidence": "ops/folder_engine_package_upload_receipt_20261119.json"}
+  ],
+  "automated_method": {
+    "browser": "Playwright connected by CDP to one already-authenticated Partner Center tab",
+    "packages_url": "https://partner.microsoft.com/en-us/dashboard/products/{product_id}/submissions/{submission_id}/packages",
+    "file_input_selector": "input[name='fileuploader'][type='file'][multiple]",
+    "package_row_selector": "table.package-table .package-name .text-base",
+    "known_warning_selector": ".alert.alert-warning .alert-string",
+    "save_button": {"role": "button", "name": "Save", "exact": true},
+    "overview_packages_complete_selector": "a[name='packages'][aria-label='Packages Status:  - Complete']",
+    "success_postconditions": [
+      "same configured Product ID and existing Submission ID",
+      "exact package filename, configured version and architecture",
+      "warning allowlist exact or no warning plus explicit Validated state",
+      "Windows 10/11 Desktop checked without changing it",
+      "Packages Save completed",
+      "Overview shows package filename, Validated and Packages Complete",
+      "Overview reload retains those values and its Packages link points to the same Draft",
+      "Packages reopen retains package metadata and warning state"
+    ],
+    "ambiguous_write_rule": "read-only reconcile before retry; resume Save if the same target package is present; retry only if observed rows exactly equal configured pre-upload package rows and no upload/analysis is active",
+    "forbidden_controls": ["Start submission", "Start update", "Submit for certification", "Publish", "price", "markets"]
+  },
+  "local_replay_tests": "tests/test_partner_center_browser.py",
+  "replay_result": "MOCKED_UI_CONTRACT_PASS",
+  "data_contract_auditor_live_upload": "BLOCKED_FORMAL_PACKAGE_SHA_AND_UPLOAD_APPROVAL_MISSING",
+  "certification_executed": false,
+  "publish_executed": false
+}

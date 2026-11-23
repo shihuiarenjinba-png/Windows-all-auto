@@ -1,9 +1,4 @@
-"""Validate, deduplicate and dispatch configured Store upload jobs.
-
-The current API adapter intentionally refuses live MSIX writes until the
-specific existing-draft API contract is verified. It never submits for
-certification or publishes.
-"""
+"""Validate, deduplicate and dispatch configured Store upload jobs."""
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -12,6 +7,8 @@ import json
 from pathlib import Path
 import re
 import sqlite3
+import zipfile
+import xml.etree.ElementTree as ET
 from typing import Any, Callable
 
 
@@ -38,11 +35,14 @@ class VerifiedJob:
     file_name: str
     size: int
     sha256: str
+    identity_name: str = ""
+    publisher: str = ""
+    architecture: str = ""
 
 
 def validate_config(config: dict[str, Any]) -> dict[str, Any]:
     if config.get("schema_version") != 1:
-        raise UploadError("API_SCHEMA_CHANGED", "Unsupported job config schema")
+        raise UploadError("CONFIG_SCHEMA_UNSUPPORTED", "Unsupported job config schema")
     missing = [key for key in REQUIRED if not isinstance(config.get(key), str) or not config[key].strip()]
     if missing:
         raise UploadError("INVALID_JOB", "Missing required fields: " + ", ".join(missing))
@@ -50,9 +50,41 @@ def validate_config(config: dict[str, Any]) -> dict[str, Any]:
         raise UploadError("INVALID_JOB", "Product ID or Submission ID has invalid characters")
     if not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", config["repository"]):
         raise UploadError("INVALID_JOB", "repository must be owner/name")
+    if (not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._/-]{0,254}", config["ref"])
+            or ".." in config["ref"].split("/") or "?" in config["ref"] or "#" in config["ref"]):
+        raise UploadError("INVALID_JOB", "ref must identify a safe branch, tag, or commit")
+    if config["path"].startswith(("/", "\\")) or ".." in Path(config["path"]).parts or "\\" in config["path"]:
+        raise UploadError("INVALID_JOB", "path must be a safe repository-relative path")
+    if not re.fullmatch(r"\d+\.\d+\.\d+\.\d+", config["version"]):
+        raise UploadError("INVALID_JOB", "version must be four numeric MSIX components")
     if config["destination"] != "microsoft_partner_center_existing_draft":
         raise UploadError("DESTINATION_MISMATCH", "Unsupported upload destination")
+    if config.get("submission_route", "msix_pwa_app") not in {"msix_pwa_app", "msix_pwa_game"}:
+        raise UploadError("ROUTE_UNSUPPORTED", "Only previously verified MSIX/PWA app or game Packages routes are enabled")
+    if config.get("upload_approved") not in (True, False):
+        raise UploadError("INVALID_JOB", "upload_approved must be a boolean")
+    if not isinstance(config.get("max_bytes", 4_000_000_000), int) or config.get("max_bytes", 4_000_000_000) <= 0:
+        raise UploadError("INVALID_JOB", "max_bytes must be a positive integer")
+    for field in ("known_warnings", "expected_existing_package_names", "expected_replaced_package_names"):
+        values = config.get(field, [])
+        if not isinstance(values, list) or any(not isinstance(value, str) or not value.strip() for value in values):
+            raise UploadError("INVALID_JOB", f"{field} must be a list of exact non-empty strings")
     return config
+
+
+def read_msix_identity(path: Path) -> dict[str, str]:
+    """Read the manifest identity from the exact MSIX bytes before a Store write."""
+    try:
+        with zipfile.ZipFile(path) as package:
+            xml = package.read("AppxManifest.xml")
+        root = ET.fromstring(xml)
+        identity = next(node for node in root.iter() if node.tag.rsplit("}", 1)[-1] == "Identity")
+        values = {key: identity.attrib.get(key, "") for key in ("Name", "Publisher", "Version", "ProcessorArchitecture")}
+    except (OSError, KeyError, StopIteration, ET.ParseError, zipfile.BadZipFile) as exc:
+        raise UploadError("INVALID_FILE_FORMAT", "MSIX manifest could not be read") from exc
+    if not all(values.values()):
+        raise UploadError("INVALID_FILE_FORMAT", "MSIX manifest Identity is incomplete")
+    return values
 
 
 def verify_file(config: dict[str, Any], path: Path, *, expected_sha256: str | None = None,
@@ -65,13 +97,30 @@ def verify_file(config: dict[str, Any], path: Path, *, expected_sha256: str | No
     size = path.stat().st_size
     if size <= 0 or size > max_bytes:
         raise UploadError("FILE_SIZE_LIMIT", "Package size is empty or exceeds configured limit")
-    digest = sha256(path.read_bytes()).hexdigest()
+    hasher = sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            hasher.update(chunk)
+    digest = hasher.hexdigest()
     if expected_sha256 and digest.lower() != expected_sha256.lower():
         raise UploadError("HASH_MISMATCH", "SHA-256 does not match registered artifact")
+    manifest = read_msix_identity(path)
+    expected_manifest = {
+        "Name": config.get("identity_name"),
+        "Publisher": config.get("publisher"),
+        "Version": config["version"],
+        "ProcessorArchitecture": config.get("architecture", "x64"),
+    }
+    if expected_sha256 and any(not value for value in expected_manifest.values()):
+        raise UploadError("INVALID_JOB", "Live upload requires exact Identity, Publisher, Version and Architecture")
+    mismatches = [key for key, expected in expected_manifest.items() if expected and manifest[key].casefold() != str(expected).casefold()]
+    if mismatches:
+        raise UploadError("PACKAGE_IDENTITY_MISMATCH", "MSIX manifest does not match configured " + ", ".join(mismatches))
     return VerifiedJob(
         config["product_name"], config["product_id"], config["submission_id"],
         config["repository"], config["ref"], config["path"], config["version"],
         config["destination"], path.name, size, digest,
+        manifest["Name"], manifest["Publisher"], manifest["ProcessorArchitecture"],
     )
 
 
@@ -97,12 +146,12 @@ class JobLedger:
     def key(job: VerifiedJob) -> str:
         return sha256(f"{job.product_id}:{job.submission_id}:{job.sha256}".encode()).hexdigest()
 
-    def begin(self, job: VerifiedJob) -> tuple[str, int]:
+    def begin(self, job: VerifiedJob, *, dry_run: bool = False) -> tuple[str, int]:
         key = self.key(job)
         row = self.db.execute("SELECT status,attempts FROM uploads WHERE job_key=?", (key,)).fetchone()
         if row:
             if row[0] == "SUCCEEDED": return "DUPLICATE", row[1]
-            if row[0] == "DRY_RUN": return "DRY_RUN_ALREADY_DONE", row[1]
+            if row[0] == "DRY_RUN" and dry_run: return "DRY_RUN_ALREADY_DONE", row[1]
             if row[0] in {"UPLOADING", "UNKNOWN"}: return "RECONCILE_REQUIRED", row[1]
             attempts = int(row[1])
             if attempts >= 3: return "RETRY_LIMIT", attempts
@@ -118,12 +167,37 @@ class JobLedger:
         self.db.execute("UPDATE uploads SET status=?,error_code=?,receipt_json=? WHERE job_key=?",
                         (status, error_code, json.dumps(receipt or {}, sort_keys=True), self.key(job)))
 
+    def mark_reconciled_not_written(self, job: VerifiedJob) -> None:
+        self.db.execute("UPDATE uploads SET status='FAILED',error_code='RECONCILED_NOT_WRITTEN' WHERE job_key=?",
+                        (self.key(job),))
+
 
 def process_job(config: dict[str, Any], package_path: Path, ledger: JobLedger, *,
                 expected_sha256: str | None = None, dry_run: bool = True,
-                live_adapter: Callable[[VerifiedJob, Path], dict[str, Any]] | None = None) -> dict[str, Any]:
-    job = verify_file(config, package_path, expected_sha256=expected_sha256)
-    status, attempts = ledger.begin(job)
+                live_adapter: Callable[[VerifiedJob, Path], dict[str, Any]] | None = None,
+                reconcile_adapter: Callable[[VerifiedJob, Path], dict[str, Any]] | None = None) -> dict[str, Any]:
+    job = verify_file(config, package_path, expected_sha256=expected_sha256,
+                      max_bytes=int(config.get("max_bytes", 4_000_000_000)))
+    status, attempts = ledger.begin(job, dry_run=dry_run)
+    if status == "RECONCILE_REQUIRED" and not dry_run and reconcile_adapter is not None:
+        try:
+            reconciliation = reconcile_adapter(job, package_path)
+        except Exception as exc:
+            ledger.finish(job, "UNKNOWN", error_code="RECONCILE_UNRESOLVED",
+                          receipt={"error_type": type(exc).__name__})
+            return {"status": "RECONCILE_REQUIRED", "attempts": attempts, "product_id": job.product_id,
+                    "submission_id": job.submission_id, "sha256": job.sha256}
+        if reconciliation.get("partner_center_confirmed") is True:
+            ledger.finish(job, "SUCCEEDED", receipt=reconciliation)
+            return {"status": "SUCCEEDED_RECONCILED", "attempts": attempts, "product_id": job.product_id,
+                    "submission_id": job.submission_id, "sha256": job.sha256}
+        if reconciliation.get("safe_to_retry") is True:
+            ledger.mark_reconciled_not_written(job)
+            status, attempts = ledger.begin(job, dry_run=False)
+        else:
+            ledger.finish(job, "UNKNOWN", error_code="RECONCILE_UNRESOLVED", receipt=reconciliation)
+            return {"status": "RECONCILE_REQUIRED", "attempts": attempts, "product_id": job.product_id,
+                    "submission_id": job.submission_id, "sha256": job.sha256}
     if status != "READY":
         return {"status": status, "attempts": attempts, "product_id": job.product_id,
                 "submission_id": job.submission_id, "sha256": job.sha256}
@@ -131,9 +205,15 @@ def process_job(config: dict[str, Any], package_path: Path, ledger: JobLedger, *
         ledger.finish(job, "DRY_RUN", receipt={"verified": True, "remote_write": False})
         return {"status": "DRY_RUN", "attempts": attempts, "product_id": job.product_id,
                 "submission_id": job.submission_id, "sha256": job.sha256}
+    if config.get("upload_approved") is not True:
+        ledger.finish(job, "FAILED", error_code="UPLOAD_NOT_APPROVED")
+        raise UploadError("UPLOAD_NOT_APPROVED", "This product job is not approved for a live package write")
+    if not expected_sha256 or not re.fullmatch(r"[0-9a-fA-F]{64}", expected_sha256):
+        ledger.finish(job, "FAILED", error_code="EXPECTED_SHA_REQUIRED")
+        raise UploadError("EXPECTED_SHA_REQUIRED", "Live upload requires a frozen 64-character SHA-256")
     if live_adapter is None:
-        ledger.finish(job, "FAILED", error_code="API_UNSUPPORTED")
-        raise UploadError("API_UNSUPPORTED", "Existing MSIX draft upload adapter is not enabled")
+        ledger.finish(job, "FAILED", error_code="BROWSER_ADAPTER_UNSUPPORTED")
+        raise UploadError("BROWSER_ADAPTER_UNSUPPORTED", "Existing MSIX Draft browser adapter is not enabled")
     try:
         receipt = live_adapter(job, package_path)
         if receipt.get("partner_center_confirmed") is not True:
@@ -142,7 +222,12 @@ def process_job(config: dict[str, Any], package_path: Path, ledger: JobLedger, *
         ledger.finish(job, "SUCCEEDED", receipt=receipt)
         return {"status": "SUCCEEDED", "attempts": attempts, "product_id": job.product_id,
                 "submission_id": job.submission_id, "sha256": job.sha256}
-    except UploadError:
+    except UploadError as exc:
+        ambiguous = {"UPLOAD_RESULT_UNKNOWN", "UPLOAD_RESULT_UNCONFIRMED", "RECONCILE_REQUIRED",
+                     "UNKNOWN_WARNING", "PARTNER_CENTER_VALIDATION_FAILED", "PACKAGE_METADATA_MISMATCH",
+                     "DEVICE_FAMILY_MISMATCH", "OLD_PACKAGE_RETAINED", "AUTH_FAILED",
+                     "PARTNER_CENTER_UI_CHANGED", "SUBMISSION_MISMATCH", "PRODUCT_MISMATCH"}
+        ledger.finish(job, "UNKNOWN" if exc.code in ambiguous else "FAILED", error_code=exc.code)
         raise
     except Exception as exc:
         ledger.finish(job, "UNKNOWN", error_code="UPLOAD_RESULT_UNKNOWN", receipt={"error_type": type(exc).__name__})

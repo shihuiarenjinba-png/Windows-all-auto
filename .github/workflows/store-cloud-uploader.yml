@@ -1,17 +1,19 @@
-name: Store cloud uploader (dry-run default)
+name: Store cloud uploader (previous browser route)
 on:
   workflow_dispatch:
     inputs:
       product:
         description: Registered product job
         required: true
-        type: choice
-        options: [data-contract-auditor]
+        type: string
+        default: data-contract-auditor
       execute:
-        description: Live upload (MSIX adapter currently disabled)
+        description: Execute the exact authenticated-browser existing-Draft upload route
         required: true
         type: boolean
         default: false
+  repository_dispatch:
+    types: [store-package-ready]
 permissions:
   contents: read
   actions: read
@@ -30,10 +32,35 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Restore product idempotency ledger
+        uses: actions/cache/restore@v4
+        with:
+          path: .uploader-run/ledger.sqlite3
+          key: store-uploader-ledger-${{ inputs.product || github.event.client_payload.product }}-${{ github.run_id }}
+          restore-keys: |
+            store-uploader-ledger-${{ inputs.product || github.event.client_payload.product }}-
+      - name: Install Playwright client
+        if: ${{ inputs.execute == true || github.event_name == 'repository_dispatch' }}
+        run: python -m pip install playwright==1.56.0
       - name: Download configured package and validate
         env:
           GH_READ_TOKEN: ${{ secrets.GH_READ_TOKEN }}
-        run: python -m uploader.run --config uploader/config/data-contract-auditor.job.json
+          PARTNER_CENTER_CDP_URL: ${{ secrets.PARTNER_CENTER_CDP_URL }}
+          PRODUCT_KEY: ${{ inputs.product || github.event.client_payload.product }}
+          EXECUTE_UPLOAD: ${{ inputs.execute || (github.event_name == 'repository_dispatch') }}
+        shell: bash
+        run: |
+          if [ "$EXECUTE_UPLOAD" = "true" ]; then
+            python -m uploader.run --product "$PRODUCT_KEY" --execute
+          else
+            python -m uploader.run --product "$PRODUCT_KEY"
+          fi
+      - name: Save product idempotency ledger
+        if: always() && hashFiles('.uploader-run/ledger.sqlite3') != ''
+        uses: actions/cache/save@v4
+        with:
+          path: .uploader-run/ledger.sqlite3
+          key: store-uploader-ledger-${{ inputs.product || github.event.client_payload.product }}-${{ github.run_id }}
       - name: Preserve run ledger
         if: always()
         uses: actions/upload-artifact@v4

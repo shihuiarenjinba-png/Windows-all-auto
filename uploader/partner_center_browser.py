@@ -1,0 +1,258 @@
+"""Reuse the previously exercised authenticated-browser MSIX Packages route.
+
+This module deliberately has no controls for starting a submission,
+certification, pricing, markets, or publishing.
+"""
+from __future__ import annotations
+
+from pathlib import Path
+from time import monotonic
+from typing import Any
+
+from uploader.core import UploadError, VerifiedJob
+
+PARTNER_ORIGIN = "https://partner.microsoft.com"
+FILE_INPUT = "input[name='fileuploader'][type='file'][multiple]"
+WARNING_SELECTOR = ".alert.alert-warning .alert-string"
+ERROR_SELECTOR = ".alert.alert-danger .alert-string"
+PACKAGE_NAME_SELECTOR = "table.package-table .package-name .text-base"
+PACKAGES_COMPLETE = "a[name='packages'][aria-label='Packages Status:  - Complete']"
+
+
+class PartnerCenterBrowserPort:
+    def __init__(self, page: Any, config: dict[str, Any], *, timeout_seconds: int = 900):
+        self.page = page
+        self.config = config
+        self.timeout_seconds = timeout_seconds
+
+    def _one(self, locator: Any, label: str) -> Any:
+        count = locator.count()
+        if count != 1:
+            raise UploadError("PARTNER_CENTER_UI_CHANGED", f"Expected exactly one {label}; found {count}")
+        return locator
+
+    def _assert_session(self) -> None:
+        url = str(self.page.url)
+        if not url.startswith(PARTNER_ORIGIN + "/") or any(part in url.casefold() for part in ("login", "signin")):
+            raise UploadError("AUTH_FAILED", "Authenticated Partner Center browser session is unavailable")
+        if self.page.locator("input[type='password']").count():
+            raise UploadError("AUTH_FAILED", "Partner Center is requesting sign-in")
+
+    def _goto(self, url: str) -> None:
+        self.page.goto(url, wait_until="domcontentloaded", timeout=60_000)
+        self._assert_session()
+
+    def _exact_text(self, value: str, label: str) -> Any:
+        return self._one(self.page.get_by_text(value, exact=True), label)
+
+    def _assert_target(self, product_id: str, submission_id: str) -> str:
+        if not product_id or not submission_id:
+            raise UploadError("INVALID_JOB", "Product ID and existing Submission ID are required")
+        path = f"/en-us/dashboard/products/{product_id}/submissions/{submission_id}"
+        packages_url = f"{PARTNER_ORIGIN}{path}/packages"
+        identity_url = f"{PARTNER_ORIGIN}/en-us/dashboard/products/{product_id}/identity"
+        self._goto(identity_url)
+        self._exact_text(self.config["product_name"], "configured Product name")
+        self._exact_text(product_id, "configured Store ID")
+        self._exact_text(self.config["identity_name"], "configured Package Identity")
+        self._exact_text(self.config["publisher"], "configured Publisher")
+        self._goto(packages_url)
+        url = str(self.page.url)
+        if f"/products/{product_id}/submissions/{submission_id}/packages" not in url:
+            raise UploadError("SUBMISSION_MISMATCH", "Partner Center did not open the configured existing Draft")
+        self._one(self.page.get_by_role("link", name=self.config["product_name"], exact=True), "configured product breadcrumb")
+        # Product and Draft are bound by the exact route; no Start/Create action is present here.
+        return packages_url
+
+    def _read_validation(self, job: VerifiedJob) -> tuple[str, list[str], list[str]]:
+        errors = [text.strip() for text in self.page.locator(ERROR_SELECTOR).all_text_contents() if text.strip()]
+        if errors:
+            return "ERROR", [], errors
+        warnings = [text.strip() for text in self.page.locator(WARNING_SELECTOR).all_text_contents() if text.strip()]
+        known = self.config.get("known_warnings", [])
+        if any(text not in known for text in warnings):
+            return "UNKNOWN_WARNING", warnings, []
+        filename_matches = self.page.locator(PACKAGE_NAME_SELECTOR).all_text_contents()
+        rows = [text.strip() for text in filename_matches if text.strip()]
+        if job.file_name not in rows:
+            return "ANALYZING", warnings, []
+        table_text = " ".join(self.page.locator("table.package-table").all_text_contents())
+        expected_tokens = (job.version, job.architecture.upper())
+        if any(token.casefold() not in table_text.casefold() for token in expected_tokens):
+            return "PACKAGE_METADATA_MISMATCH", warnings, []
+        if warnings:
+            return "WARNING", warnings, []
+        if "validated" in table_text.casefold() or self.page.get_by_text("Validated", exact=True).count():
+            return "VALIDATED", [], []
+        return "ANALYZING", [], []
+
+    def upload_save_and_reconcile(self, job: VerifiedJob, package_path: Path) -> dict[str, Any]:
+        packages_url = self._assert_target(job.product_id, job.submission_id)
+        existing_rows = [x.strip() for x in self.page.locator(PACKAGE_NAME_SELECTOR).all_text_contents() if x.strip()]
+        expected_old = sorted(self.config.get("expected_existing_package_names", []))
+        exact_inflight = sorted([*expected_old, job.file_name])
+        if tuple(sorted(existing_rows)) not in {tuple(expected_old), tuple(exact_inflight)}:
+            raise UploadError("RECONCILE_REQUIRED", "Draft already contains a package row; refusing a duplicate upload")
+        already_uploaded = job.file_name in existing_rows
+        if not already_uploaded:
+            uploader = self._one(self.page.locator(FILE_INPUT), "verified MSIX file input")
+            try:
+                uploader.set_input_files(str(package_path.resolve()))
+            except Exception as exc:
+                raise UploadError("UPLOAD_RESULT_UNKNOWN", "File selection/upload outcome is ambiguous; reconcile before retry") from exc
+
+        deadline = monotonic() + self.timeout_seconds
+        transitions: list[str] = ["PACKAGE_UPLOAD_REQUIRED"]
+        if already_uploaded:
+            transitions.append("PACKAGE_UPLOAD_RECONCILED_PRESENT")
+        while monotonic() < deadline:
+            self._assert_session()
+            if self.page.get_by_text("Uploading", exact=True).count():
+                if "PACKAGE_UPLOAD_IN_PROGRESS" not in transitions:
+                    transitions.append("PACKAGE_UPLOAD_IN_PROGRESS")
+            if self.page.get_by_text("Analyzing package", exact=True).count():
+                if "PACKAGE_ANALYZING" not in transitions:
+                    transitions.append("PACKAGE_ANALYZING")
+            state, warnings, errors = self._read_validation(job)
+            if state == "ANALYZING":
+                self.page.wait_for_timeout(500)
+                continue
+            if state == "ERROR":
+                raise UploadError("PARTNER_CENTER_VALIDATION_FAILED", "; ".join(errors))
+            if state == "UNKNOWN_WARNING":
+                raise UploadError("UNKNOWN_WARNING", "; ".join(warnings))
+            if state == "PACKAGE_METADATA_MISMATCH":
+                raise UploadError("PACKAGE_METADATA_MISMATCH", "Partner Center parsed a different version or architecture")
+            if state not in {"WARNING", "VALIDATED"}:
+                self.page.wait_for_timeout(500)
+                continue
+            if warnings:
+                if "PACKAGE_WARNING_REVIEW" not in transitions:
+                    transitions.append("PACKAGE_WARNING_REVIEW")
+            transitions.append("PACKAGE_SAVE_REQUIRED")
+            break
+        else:
+            raise UploadError("UPLOAD_RESULT_UNKNOWN", "Partner Center package analysis timed out; reconcile before retry")
+
+        # Desktop was automatically selected in the proven App route; confirm it without changing it.
+        desktop = self.page.get_by_role("checkbox", name="Windows 10/11 Desktop", exact=True)
+        if desktop.count() != 1 or not desktop.is_checked():
+            raise UploadError("DEVICE_FAMILY_MISMATCH", "Expected Windows Desktop checkbox is missing or unchecked")
+        save = self._one(self.page.get_by_role("button", name="Save", exact=True), "Packages Save button")
+        if not save.is_enabled():
+            raise UploadError("PARTNER_CENTER_UI_CHANGED", "Packages Save is not enabled")
+        try:
+            save.click(timeout=30_000)
+            self._assert_session()
+            self._one(self.page.locator(PACKAGES_COMPLETE), "Packages Complete status").wait_for(state="visible", timeout=60_000)
+        except Exception as exc:
+            raise UploadError("UPLOAD_RESULT_UNKNOWN", "Packages Save outcome is ambiguous; reconcile the same Draft") from exc
+
+        self._verify_overview(job)
+        self.page.reload(wait_until="domcontentloaded", timeout=60_000)
+        self._assert_session()
+        self._verify_overview(job)
+        # The prior successful runs reopened Packages and verified retained package metadata.
+        self._goto(packages_url)
+        self._exact_text(job.file_name, "saved package filename")
+        state, warnings, errors = self._read_validation(job)
+        if errors or state not in {"WARNING", "VALIDATED"}:
+            raise UploadError("UPLOAD_RESULT_UNCONFIRMED", "Reloaded Packages page did not retain validated package")
+        return {
+            "partner_center_confirmed": True,
+            "method": "authenticated_playwright_cdp_existing_draft_packages",
+            "product_id": job.product_id,
+            "submission_id": job.submission_id,
+            "package_file_name": job.file_name,
+            "sha256": job.sha256,
+            "version": job.version,
+            "architecture": job.architecture,
+            "state_transitions": transitions + ["PACKAGES_SAVED", "OVERVIEW_RELOADED", "PACKAGES_REOPENED_RETAINED"],
+            "package_validation": state,
+            "warnings": warnings,
+            "errors": [],
+            "certification_executed": False,
+            "publish_executed": False,
+        }
+
+    def _verify_overview(self, job: VerifiedJob) -> None:
+        expected = f"{PARTNER_ORIGIN}/en-us/dashboard/products/{job.product_id}/overview"
+        self._goto(expected)
+        if str(self.page.url).rstrip("/") != expected:
+            raise UploadError("PRODUCT_MISMATCH", "Save did not return to the configured product Overview")
+        self._one(self.page.get_by_role("heading", name=job.product_name, exact=True), "configured product Overview heading")
+        self._exact_text(job.file_name, "saved package filename on Overview")
+        self._exact_text("Validated", "package validation state")
+        packages = self._one(self.page.locator(PACKAGES_COMPLETE), "Packages Complete status")
+        href = packages.get_attribute("href") or ""
+        if f"/products/{job.product_id}/submissions/{job.submission_id}/packages" not in href:
+            raise UploadError("SUBMISSION_MISMATCH", "Overview Packages section is bound to a different Draft")
+        for old_name in self.config.get("expected_replaced_package_names", []):
+            if self.page.get_by_text(old_name, exact=True).count():
+                raise UploadError("OLD_PACKAGE_RETAINED", "Overview still contains an expected-to-replace older package")
+
+    def reconcile_ambiguous_upload(self, job: VerifiedJob, package_path: Path) -> dict[str, Any]:
+        """Read Partner Center before retry; resume Save if the exact upload row exists."""
+        overview_url = f"{PARTNER_ORIGIN}/en-us/dashboard/products/{job.product_id}/overview"
+        self._goto(overview_url)
+        self._one(self.page.get_by_role("heading", name=job.product_name, exact=True), "configured product Overview heading")
+        complete = self.page.locator(PACKAGES_COMPLETE)
+        saved_name = self.page.get_by_text(job.file_name, exact=True)
+        validated = self.page.get_by_text("Validated", exact=True)
+        if complete.count() == 1 and saved_name.count() == 1 and validated.count() == 1:
+            href = complete.get_attribute("href") or ""
+            if f"/products/{job.product_id}/submissions/{job.submission_id}/packages" in href:
+                return {"partner_center_confirmed": True, "reconciled_after_interruption": True,
+                        "method": "authenticated_playwright_cdp_overview_reconcile",
+                        "product_id": job.product_id, "submission_id": job.submission_id,
+                        "package_file_name": job.file_name, "sha256": job.sha256,
+                        "partner_center_validation": "Validated", "no_reupload": True}
+        packages_url = self._assert_target(job.product_id, job.submission_id)
+        rows = sorted(x.strip() for x in self.page.locator(PACKAGE_NAME_SELECTOR).all_text_contents() if x.strip())
+        expected_old = sorted(self.config.get("expected_existing_package_names", []))
+        if rows == sorted([*expected_old, job.file_name]):
+            # A previous attempt already placed the same frozen file in this exact Draft.
+            receipt = self.upload_save_and_reconcile(job, package_path)
+            receipt["reconciled_after_interruption"] = True
+            return receipt
+        if rows == expected_old:
+            active = self.page.get_by_text("Uploading", exact=True).count() + self.page.get_by_text("Analyzing package", exact=True).count()
+            if active == 0:
+                return {"safe_to_retry": True, "same_product_and_draft": True,
+                        "existing_rows_match_config": True, "upload_row_present": False,
+                        "partner_center_confirmed": False}
+        return {"safe_to_retry": False, "partner_center_confirmed": False,
+                "product_id": job.product_id, "submission_id": job.submission_id,
+                "package_rows": rows, "packages_url": packages_url,
+                "reason": "Observed Partner Center state does not match a proven saved or not-written state"}
+
+
+class PartnerCenterCDPConnection:
+    """Attach to a remote browser that is already authenticated by its operator."""
+    def __init__(self, cdp_url: str, config: dict[str, Any]):
+        self.cdp_url = cdp_url
+        self.config = config
+        self.playwright = None
+        self.browser = None
+
+    def __enter__(self) -> PartnerCenterBrowserPort:
+        try:
+            from playwright.sync_api import sync_playwright
+        except ImportError as exc:
+            raise UploadError("BROWSER_RUNTIME_MISSING", "Install the optional Playwright package") from exc
+        try:
+            self.playwright = sync_playwright().start()
+            self.browser = self.playwright.chromium.connect_over_cdp(self.cdp_url)
+            pages = [page for context in self.browser.contexts for page in context.pages
+                     if str(page.url).startswith(PARTNER_ORIGIN + "/")]
+            if len(pages) != 1:
+                raise UploadError("PARTNER_CENTER_TAB_AMBIGUOUS", f"Expected one Partner Center tab; found {len(pages)}")
+            return PartnerCenterBrowserPort(pages[0], self.config)
+        except Exception:
+            self.__exit__(None, None, None)
+            raise UploadError("BROWSER_CONNECTION_FAILED", "Could not attach to the configured authenticated browser session")
+
+    def __exit__(self, exc_type: Any, exc: Any, tb: Any) -> None:
+        if self.playwright is not None:
+            self.playwright.stop()
+            self.playwright = None

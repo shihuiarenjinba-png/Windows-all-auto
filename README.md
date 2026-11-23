@@ -2,15 +2,24 @@
 
 WindowsアプリやゲームをMicrosoft Storeへ登録するときの **GitHub → Windowsビルド/MSIX → 提出前監査 → Partner Center下書き登録 → 結果集計** をつなぐ内部運用ツールです。一般ユーザーのPC操作自動化アプリではありません。
 
-## 現在の到達点（2026-10-26）
+## 現在の到達点（2026-11-23）
 - GitHubの作業ブランチのみで開発（main/release直接変更なし）。
 - オフライン事前検証コア、日英切替の試験的GUI、CLI、SQLiteの安全なキュー台帳を実装。
 - **自動テスト75件 / Windows・Ubuntuの両方でPASS**（オフライン検査のみ）。CI: https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/40284671809
 - Windows-data / Windows-checker / Windows-Automator の読取専用JSON契約アダプタを追加済み。未知schema/statusはfail-closedで停止し、Windows-Automatorの `DONE` は引き続き `DRY_RUN_DONE` として扱います。
 - Windows-Automator live v2 の `DRAFT_SAVED` は、execution_mode、Save後の再読込、package validation/section completion、全必須section、証拠、Store ID / package SHA / source SHA / Identity / Versionの期待値一致をすべて確認した場合だけ受理します。Submit/Certified/Publishedのclaimは拒否します。
 - Windows-Automator結果の `restricted_capability`、説明のconfirmed/saved、`certification_gate` を中央表示用に正規化します。Capability重複や、未確認なのに保存済みという矛盾はfail-closedです。
-- **未完成/未検証**: 3ツールのsubprocess実行アダプタ、実MSIXのPartner Center upload、Microsoft validation DOM、Save成功DOM、Windows実機GUI QA。contract追加はStore登録の実機完了を意味しません。
-- 全てのオンライン/高影響操作は未実装・停止状態。Submit for certification、公開、名前予約、Store商品ID/Identity推測は禁止。
+- **未完成/未検証**: 3ツールのsubprocess実行アダプタ、Cloud Actions上の実Partner Center session、Data Contract Auditorの正式MSIX、Windows実機GUI QA。contract追加やモック試験はStore登録の実機完了を意味しません。
+- Package upload adapterは下記のとおり実装済みですが、live uploadは製品ごとのSHA・Identity・Draft・認可・認証session gateが全てPASSするまで停止。Submit for certification、公開、名前予約、Store商品ID/Identity推測は禁止。
+
+## Cloud Auto Uploader（2026-11-23）
+- 過去のPartner Center実操作証跡を再利用し、認証済みPlaywright/CDPブラウザーによる既存Draft `Packages` upload → Microsoft analysis → Save → Overview reload/reconcileを実装。
+- 既知の成功画面マップを `uploader/partner_center_browser.py` に移植。設定ファイルにはProduct ID、Submission ID、MSIXのGitHub repo/ref/path、期待SHA、Identity/Publisher/Version/Architectureを保持する。
+- 実行例: `python -m uploader.run --product data-contract-auditor`（dry-run）、承認済みかつ凍結SHA・認証済みCDP sessionがある場合だけ `--execute`。
+- GitHub Actionsはworkflow dispatch / `repository_dispatch: store-package-ready`から実行可能。CDP endpointはGitHub Secret `PARTNER_CENTER_CDP_URL`。ログに接続URLを出さない。ログイン、MFA、CAPTCHAは自動化しない。
+- 現在のData Contract Auditorは正式MSIXが指定source SHAに存在せず、SHAも未確定、実機UI QAも未完了、`upload_approved=false`。Live package writeは意図どおりHOLD。QA_UNSIGNED packageは対象にしない。
+- CertificationとPublishの操作コードはない。公開実績とPackage Draft保存実績を混同しない。
+- 詳細は [Cloud Auto Uploader runbook](docs/automation/CLOUD_AUTO_UPLOADER.md) と [browser route teacher receipt](ops/cloud_uploader_browser_route_teacher_v1.json) を参照。
 
 ## 関連リポジトリ（役割を分離）
 | 内部ツール | 業務 | 運用上の位置付け |

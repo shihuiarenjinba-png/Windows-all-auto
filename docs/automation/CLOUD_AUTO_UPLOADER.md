@@ -1,38 +1,61 @@
-# Cloud Auto Uploader MVP
+# Cloud Auto Uploader — existing Partner Center browser route
 
 ## Current behavior
 
-The GitHub Actions workflow runs on Ubuntu and downloads one configured `.msix` from an exact Git ref. The worker checks repository, product ID, existing Submission ID, version, extension, size and SHA-256, then records an idempotency key in SQLite. Dry-run is the default. A Partner Center write is not enabled: the current API adapter intentionally fails closed for MSIX until an existing-draft API contract is confirmed. HTTP acceptance alone never counts as success; a live adapter must return `partner_center_confirmed: true`.
+The upload method is inherited from the successful Store Draft operations already recorded in this repository; it does **not** assume an API. The browser uploads the exact `.msix` through the Partner Center Packages file input, observes Microsoft analysis, presses Packages `Save`, and confirms Overview `Validated / Complete` after reload before it can report success.
 
-The official Microsoft Store Submission API uses Microsoft Entra ID. Microsoft's [current submission API reference](https://learn.microsoft.com/en-us/windows/apps/publish/store-submission-api) documents the newer API for MSI/EXE products; the UWP service API can create submissions and therefore is not used here because this job must bind to an existing draft and must not create or commit a submission. Microsoft also documents that the UWP API's create-submission call opens a new in-progress submission ([Create an app submission](https://learn.microsoft.com/en-us/windows/uwp/monetize/create-an-app-submission)). The exact API operation for an existing MSIX draft remains a compatibility gate.
+## Success evidence used as the implementation contract
+
+These are separate live Partner Center observations recorded by the existing automation project:
+
+| Product route | Evidence | Replayed behavior |
+|---|---|---|
+| Folio AI, `msix_pwa_app` | `docs/PARTNER_CENTER_MSIX_APP_FOLIO_UPLOAD_20261112.md`, `docs/PARTNER_CENTER_MAP.json`, and `tests/fixtures/partner_center_msix_pwa_app_folio_postupload_presave.json` in the `Windows-Automator` project | exact existing Product/Draft URL, `input[name='fileuploader'][type='file'][multiple]`, `Uploading` → `Analyzing package`, exact warning classification, `Save`, Overview `Validated / Complete`, reload/reopen retention |
+| Daymark AI, `msix_pwa_app` | `docs/PARTNER_CENTER_MAP.json` (`observation_scope` says 2 independent products) | Same App package route and warning state, separately bound Store ID, Draft ID, and package |
+| STRATEGY MARKET US and JP, `msix_pwa_game` | `docs/PARTNER_CENTER_MAP.json`, game observation/save docs and fixtures in `Windows-Automator` | Same high-level browser package flow, but product-specific Game route and full section completion; Game values are not copied into App jobs |
+| Folder Automation Engine, `msix_pwa_app` | `ops/folder_engine_partner_center_teacher_20261118.json` and `ops/folder_engine_package_upload_receipt_20261119.json` | One exact upload; Microsoft states `Uploading` → `Analyzing package` → `Validated`; known `runFullTrust` warning only; Save; same Draft reload; package/version/architecture/Desktop retained |
+
+The Folder receipt is the closest reusable template for this uploader and its observed control was the visible Browse link's file input. The older App route mapping records the exact CSS selector and post-save reconciliation. The new adapter combines these proven actions while binding every write to the configured Product ID, existing Submission ID, manifest Identity, Publisher, Version, Architecture, package SHA, and exact filename. A simulator test replays the Folder transition sequence and duplicate-write refusal.
+
+The historical receipts prove successful **package upload and draft save**, not by themselves Certification or public publication. Those remain separate workflow states and this uploader has no controls for either.
+
+## Browser authentication and cloud execution
+
+`uploader.partner_center_browser` connects Playwright to exactly one already-authenticated Partner Center tab over Chromium CDP, matching the prior automation route. It does not automate Microsoft login, MFA, CAPTCHA, or authentication challenges. GitHub Actions can run the worker on a hosted Ubuntu runner when `PARTNER_CENTER_CDP_URL` points to an operator-approved remote browser session; a compatible remote-browser endpoint may have its own cost and must be provisioned by the owner. No service is provisioned or billed by this repository. If the endpoint/session is absent or expired, the job fails closed.
+
+This is not yet an always-available unattended cloud service: GitHub Actions is event-driven and the configured browser endpoint must be online and authenticated when the event runs. Repository dispatch can enqueue a ready-product event; unsupported product keys are rejected. A strict zero-queue SLA requires the browser endpoint's availability and an operational monitor; neither is claimed by this MVP.
+
+An API is not used for this route. The proven browser interaction is the chosen compatibility path for existing MSIX app Drafts. An API can be evaluated later only if it reproduces the exact existing-Draft binding and observable postconditions without creating a new submission.
 
 ## Setup
 
 1. Configure the repository and product job JSON from the example.
 2. Pin `ref` to a full commit SHA for release uploads. Set an expected SHA-256 from the validated package receipt.
 3. For private GitHub source, add `GH_READ_TOKEN` as a fine-grained Actions secret with Contents: read on that one source repository. Public source needs no token.
-4. Do not add Entra client secrets until the existing-MSIX-draft API adapter is enabled and the Partner Center application permission has been verified. Never print or commit credentials.
-5. Run locally or dispatch `Store cloud uploader`; dispatch currently performs validation and dry-run only.
+4. For a cloud live run, configure `PARTNER_CENTER_CDP_URL` as a GitHub Actions secret containing the approved remote browser connection endpoint. Keep the browser session authenticated outside this code; do not store Microsoft username/password or MFA secrets here.
+5. Dry-run is default. A live write also requires a per-product frozen `expected_sha256`, exact Identity/Publisher/Version/Architecture, an exact existing Draft ID, and `upload_approved: true` in that product's job file. Product-specific approval must never be generalized to other products.
+6. Dispatch `Store cloud uploader` for the registered product. `repository_dispatch` accepts `store-package-ready` with `client_payload.product` set to an allowlisted key.
 
 ## Registering a job
 
-Add one JSON file under `uploader/config/`, use unique product and Submission IDs, set `destination` to `microsoft_partner_center_existing_draft`, and pin exact source ref and expected hash. Unknown fields and destinations fail closed. Do not register certification or publish operations.
+Add one `<product-key>.job.json` file under `uploader/config/`, use a lowercase hyphenated product key, unique Product and Submission IDs, set `destination` to `microsoft_partner_center_existing_draft`, choose the verified route, and pin an exact source ref and SHA-256. Provide the Identity, Publisher, Version, Architecture, and exact known warning allowlist for that product. The workflow resolves the key to that file without product-specific Python changes. Unknown destinations, route names, warnings and missing product files fail closed. Do not register certification or publish operations.
 
 ## Errors and retry
 
-Errors have stable codes such as `AUTH_FAILED`, `PERMISSION_DENIED`, `FILE_NOT_FOUND`, `INVALID_FILE_FORMAT`, `FILE_SIZE_LIMIT`, `HASH_MISMATCH`, `TIMEOUT`, `API_UNSUPPORTED`, and `UPLOAD_RESULT_UNKNOWN`. SQLite prevents duplicate attempts. A running or ambiguous operation becomes `RECONCILE_REQUIRED` / `UNKNOWN`; it is not retried automatically. The MVP caps safe retry starts at three. Exponential backoff belongs in the remote adapter after it classifies explicit transient responses; ambiguous writes must be reconciled first.
+Errors have stable codes such as `AUTH_FAILED`, `PERMISSION_DENIED`, `FILE_NOT_FOUND`, `INVALID_FILE_FORMAT`, `FILE_SIZE_LIMIT`, `HASH_MISMATCH`, `PACKAGE_IDENTITY_MISMATCH`, `UNKNOWN_WARNING`, `PARTNER_CENTER_VALIDATION_FAILED`, `RECONCILE_REQUIRED`, and `UPLOAD_RESULT_UNKNOWN`. SQLite plus a per-product Actions cache prevents ordinary duplicate attempts; Partner Center is also checked for existing package rows before writing. A non-empty or ambiguous Draft is never blindly retried. Explicit failed jobs are capped at three attempts. Microsoft validation errors, unknown warnings, login challenges, target mismatches and changed UI selectors are quarantined for reconciliation.
 
 ## History and monitoring
 
-The workflow emits a run artifact and SQLite ledger. For persistent multi-run history, use an external durable database or an immutable receipt artifact retention policy; the GitHub runner filesystem is ephemeral. The ledger exposes status, attempts and target identifiers; add operational dashboards before declaring a zero-backlog service-level objective.
+The workflow saves each per-product SQLite ledger in the Actions cache and uploads a run artifact. GitHub Actions/cache retention is not a transactional durable database; Partner Center remains the live source of truth and the run receipt is retained as evidence. Add an operational dashboard and tested long-term receipt store before declaring a contractual zero-backlog service-level objective.
 
 ## Tests
 
-`python -m unittest tests.test_cloud_uploader -v`
+`python -m unittest tests.test_cloud_uploader tests.test_partner_center_browser -v`
 
 ## Not supported yet
 
-- Live MSIX package writes to Partner Center.
+- A real cloud Partner Center write for Data Contract Auditor (formal package and local UI QA gates are not ready).
+- A managed or billed remote browser endpoint; `PARTNER_CENTER_CDP_URL` must point to one supplied by the operator.
 - Creating a Store product or a Submission.
 - Certification, publishing, price or market edits.
 - Guaranteed always-zero backlog; GitHub Actions queued/running jobs are not an always-on daemon.
