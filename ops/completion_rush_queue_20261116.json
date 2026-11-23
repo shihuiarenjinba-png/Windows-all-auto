@@ -260,15 +260,27 @@
     }
   ],
   "last_reconciled_at_utc": "2026-11-23",
-  "last_reconciled_basis": "PR165 exact HEAD 0945d72 exact-head CI runs 44990236894/44990236896/44990236908 SUCCESS (synthetic/transport only); PR161 71d9c212 CI 42712757936 SUCCESS; PR171 76472102 CI 44437197470 SUCCESS (local QA supervisor only, not Store dry-run). Focus AI-App-Factory PR94 HEAD fb629383: approved identity file still bound to 8b00bc4e with package_version_gate HOLD; current branch 27 commits ahead and product main.py changed. Focus PNG raw bytes SHA256 and hosted EXE GUI artifact independently read back. File approved identity commit db9a57 is bound to d1108d12 with package_version_gate HOLD; PR95 HEAD 4474af31 and GUI follow-up PR97 HEAD 82aaff are diverged; PR97 native GUI/UNCHANGED-MODIFIED-MISSING fixture receipt and PNG gate PASS, artifact independently read back. Both products still lack authoritative Version, real MSIX, backlog/local checker receipt; E2E remains HOLD.",
+  "last_reconciled_basis": "Latest PR165 exact HEAD 86dcd61b: transport regression 45134183948 SUCCESS, artifact custody regression 45134183873 SUCCESS, Windows+Ubuntu Offline QA 45134184158 SUCCESS. A prior metadata-only attempt 4b1de failed because a detailed source-binding value violated the stable queue contract; commit 69b851 restored the required stable value and retained details separately, and exact-head CI now passes. Focus PR94 and File PR95/PR97 have independently rehashed PNG bytes and hosted GUI evidence; neither has authoritative Version/current-source Identity binding or real MSIX/backlog/local checker receipt. E2E HOLD.",
   "latest_transport_reconciliation": {
-    "checked_at_utc": "2026-11-23T07:39:54Z",
+    "checked_at_utc": "2026-11-23T07:55:00Z",
     "central_pr": 165,
-    "central_head": "0945d72d792b77e99570134695ad03b20aaace7e",
+    "central_head": "86dcd61b6a515ce03d75f8fc7cbe6407586daae3",
     "exact_head_ci": [
-      44990236894,
-      44990236896,
-      44990236908
+      {
+        "run_id": 45134183948,
+        "conclusion": "success",
+        "scope": "Transport fail-closed regression"
+      },
+      {
+        "run_id": 45134183873,
+        "conclusion": "success",
+        "scope": "Independent artifact custody regression"
+      },
+      {
+        "run_id": 45134184158,
+        "conclusion": "success",
+        "scope": "Windows and Ubuntu Offline QA"
+      }
     ],
     "status": "HOLD",
     "e2e_pass": false,
@@ -277,6 +289,15 @@
     "local_checker_receipt": false,
     "store_submission_allowed": false,
     "certification_allowed": false,
-    "publish_allowed": false
+    "publish_allowed": false,
+    "prior_metadata_regression": {
+      "tested_head": "4b1de5480d3a74808f35ac84e281045166691660",
+      "failed_runs": [
+        45133904841,
+        45133904859
+      ],
+      "cause": "Stable queue status string mismatch",
+      "fixed_in": "69b85182d918c97d6b8ea811f86dae03aeaa0edc"
+    }
   }
 }
