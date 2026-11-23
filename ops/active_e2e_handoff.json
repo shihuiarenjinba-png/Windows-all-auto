@@ -11131,20 +11131,20 @@
     "status": "HOLD",
     "pr161_head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
     "pr164_head_sha": "145cd1f44bdec9e584eb0f045dd139ef330c6321",
-    "pr165_tested_head_sha": "9be96018d971a35f246665a6a66111b9b5b19c8c",
+    "pr165_tested_head_sha": "b37343748ee2b3da1a7fb4ba7ed89b1ae31c84f8",
     "pr165_ci": [
       {
-        "run_id": 45143690518,
+        "run_id": 45143926210,
         "conclusion": "success",
         "scope": "Exact-head Windows E2E transport fail-closed regression"
       },
       {
-        "run_id": 45143690465,
+        "run_id": 45143926027,
         "conclusion": "success",
         "scope": "Exact-head independent GitHub artifact custody regression"
       },
       {
-        "run_id": 45143690743,
+        "run_id": 45143926191,
         "conclusion": "success",
         "scope": "Exact-head Windows and Ubuntu Offline QA"
       }
@@ -11156,7 +11156,7 @@
     "checker_gui_e2e": "NOT_VERIFIED",
     "focus_file_integrity_phase": "POST_IDENTITY_DELIVERY_HOLD",
     "prism_revision": "HOLD_NO_OLD_SOURCE_CAS",
-    "note": "PR165 exact tested HEAD 9be96018d971a35f246665a6a66111b9b5b19c8c has all three associated workflows SUCCESS: transport fail-closed, independent GitHub artifact custody, and Windows+Ubuntu Offline QA. This head contains only three ops JSON reconciliation files beyond ee65a9cf; no product code. Focus current PR94 source remains fb629383 while its approved Identity remains bound to 8b00bc4e with package_version_gate=HOLD. File Integrity approved Identity remains bound to d1108d12 at historical commit db9a57af and is absent from current PR97 head 82aaffc. Both products lack authoritative Version, real MSIX, backlog receipt, local pull, checker and local GUI/install receipt. E2E remains HOLD.",
+    "note": "PR165 exact tested HEAD b37343748ee2b3da1a7fb4ba7ed89b1ae31c84f8 has all three associated workflows SUCCESS: transport fail-closed, independent GitHub artifact custody, and Windows+Ubuntu Offline QA. This head contains only ops JSON reconciliation changes; no product code. Focus current PR94 source remains fb629383 while approved Identity is bound to 8b00bc4e with package_version_gate=HOLD. File Integrity approved Identity remains bound to d1108d12 at historical commit db9a57af and is absent from current PR97 head 82aaffc. Both products lack authoritative Version and real MSIX. The local checker source is now pinned to Windows-checker PR2 head 17cdc77 (CI 41933149906 SUCCESS); its CLI and exit-code contract match scripts/local_checker_queue.py, but local checkout/execution and GUI receipt remain unobserved. E2E remains HOLD.",
     "approved_identity_product_checks": [
       {
         "product": "Focus Session Desk",
@@ -11346,32 +11346,32 @@
     ],
     "latest_head_ci_observation": {
       "observed_at_jst": "2026-11-23 17:53",
-      "head_sha": "9be96018d971a35f246665a6a66111b9b5b19c8c",
+      "head_sha": "b37343748ee2b3da1a7fb4ba7ed89b1ae31c84f8",
       "workflow_runs": [
         {
-          "run_id": 45143690518,
+          "run_id": 45143926210,
           "conclusion": "success",
           "scope": "Exact-head Windows E2E transport fail-closed regression"
         },
         {
-          "run_id": 45143690465,
+          "run_id": 45143926027,
           "conclusion": "success",
           "scope": "Exact-head independent GitHub artifact custody regression"
         },
         {
-          "run_id": 45143690743,
+          "run_id": 45143926191,
           "conclusion": "success",
           "scope": "Exact-head Windows and Ubuntu Offline QA"
         }
       ],
-      "scope": "Exact-head transport/custody/offline CI green; no real product MSIX, signing, local checker or product E2E",
+      "scope": "Exact-head transport/custody/offline CI green; no real product MSIX, signing, local checker execution or product E2E",
       "status": "PASS_CI_ONLY",
       "e2e_pass": false,
       "real_msix": false,
       "backlog": false,
       "local_checker": false
     },
-    "pr165_head_sha": "9be96018d971a35f246665a6a66111b9b5b19c8c",
+    "pr165_head_sha": "b37343748ee2b3da1a7fb4ba7ed89b1ae31c84f8",
     "pr161_ci": [
       {
         "run_id": 42712757936,
@@ -11469,7 +11469,46 @@
         45134184158
       ],
       "followup_conclusion": "ALL_SUCCESS"
-    }
+    },
+    "windows_checker_source": {
+      "repository": "shihuiarenjinba-png/Windows-checker",
+      "pr": 2,
+      "head_sha": "17cdc77c841ac5b9bdc673b08724cd3a47dd9203",
+      "branch": "codex/e2e-belt-connection-20261027",
+      "base_pr": 1,
+      "base_branch": "codex/store-readiness-checker-20261025",
+      "state": "OPEN",
+      "draft": true,
+      "ci_run_id": 41933149906,
+      "ci_conclusion": "SUCCESS",
+      "run_py_blob_sha": "007d1f264ddc3bb187ca1fd0447dbb3850c2e124",
+      "core_py_blob_sha": "9d101667fdc9e7028823c9025d837d1d353d1985",
+      "cli_contract": "python run.py --cli --type app|game --msix <package.msix> --report <report.json>",
+      "verdict_exit_codes": {
+        "0": "READY_CANDIDATE_NOT_CERTIFIED",
+        "1": "NEEDS_REVIEW",
+        "2": "BLOCKED"
+      },
+      "local_checkout_status": "NOT_OBSERVED",
+      "local_checker_execution": "NOT_RUN",
+      "local_gui_execution": "NOT_RUN",
+      "e2e_pass": false,
+      "scope": "Trusted checker source/CLI contract and exact-head CI verified; no real product MSIX or user-PC execution."
+    },
+    "local_checker_queue_contract": {
+      "script": "scripts/local_checker_queue.py",
+      "runner": "Windows-checker/run.py",
+      "verdict_exit_codes": {
+        "0": "READY_CANDIDATE_NOT_CERTIFIED",
+        "1": "NEEDS_REVIEW",
+        "2": "BLOCKED"
+      },
+      "report_scope": "Preflight only; receipt status HOLD, local_gui_qa NOT_RUN, official_identity_provenance NOT_INDEPENDENTLY_VERIFIED",
+      "offline_fixture_test": "tests/test_local_checker_queue.py",
+      "real_product_execution": "NOT_OBSERVED",
+      "e2e_pass": false
+    },
+    "local_code_sync_receipt_status": "NOT_OBSERVED"
   },
   "store_submission_allowed": false,
   "certification_allowed": false,
