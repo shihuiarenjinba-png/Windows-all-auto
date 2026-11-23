@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "observed_date_utc": "2026-11-23T12:36:46Z",
-  "evidence_basis": "Read-only exact PR94/95/97 heads, source ancestry, approved-identity JSON, six current PNG Git blob SHA readbacks, PR97 exact-head CI/artifact metadata, PR161/165 exact-head workflow runs, PR171 Store bridge and Windows-Automator pin CI. Partner Center Version readback was not observed.",
+  "observed_date_utc": "2026-11-23T12:50:10.842Z",
+  "evidence_basis": "Read-only exact PR94/95/97 heads, source ancestry, approved-identity JSON, six current PNG Git blob SHA readbacks, PR97 exact-head CI/artifact metadata, PR161/165 exact-head workflow runs, PR171 Store bridge and Windows-Automator pin CI. Partner Center Version readback was not observed. Follow-up reconciliation commit 1f14fbe exact-head CI now verified: transport 45177818057, custody 45177818394, Windows+Ubuntu Offline QA 45177818173 all SUCCESS.",
   "status": "HOLD",
   "e2e_pass": false,
   "priority_product": "Focus Session Desk",
@@ -528,7 +528,25 @@
         "conclusion": "success"
       }
     ],
-    "state": "DRAFT"
+    "state": "DRAFT",
+    "reconciliation_commit_sha": "1f14fbe7963f048f8ead83de9a0d39298e04cf17",
+    "reconciliation_commit_exact_head_ci": [
+      {
+        "run_id": 45177818057,
+        "conclusion": "success",
+        "scope": "Exact-head Windows E2E transport fail-closed regression"
+      },
+      {
+        "run_id": 45177818394,
+        "conclusion": "success",
+        "scope": "Exact-head independent GitHub artifact custody regression"
+      },
+      {
+        "run_id": 45177818173,
+        "conclusion": "success",
+        "scope": "Exact-head Windows and Ubuntu Offline QA"
+      }
+    ]
   },
   "real_package_transport": {
     "implementation": "scripts/github_artifact_custody.py",
@@ -543,5 +561,26 @@
     "product_execution": "NOT_RUN__NO_APPROVED_VERSION_OR_CURRENT_SOURCE_IDENTITY_BINDING"
   },
   "local_code_sync_detail": "No physical user-PC exact-three-SHA receipt, idempotent reuse receipt, or scheduled-task receipt was observed; cloud Windows smoke is not a user-PC receipt.",
-  "next_action": "Keep Focus/File DELIVERY_HOLD. Do not CAS-reuse historical Identity. Obtain an authenticated current-source Identity revalidation and approved Package Version for Focus first; if unavailable, remain HOLD. Once both exist, build a real MSIX and immediately run exact archive/package SHA custody, backlog, local pull, Windows-checker, then local GUI/install QA. Do not touch PNG assets or product features in this lane."
+  "next_action": "Keep Focus/File DELIVERY_HOLD. Do not CAS-reuse historical Identity. Obtain an authenticated current-source Identity revalidation and approved Package Version for Focus first; if unavailable, remain HOLD. Once both exist, build a real MSIX and immediately run exact archive/package SHA custody, backlog, local pull, Windows-checker, then local GUI/install QA. Do not touch PNG assets or product features in this lane.",
+  "latest_reconciliation_ci": {
+    "tested_head_sha": "1f14fbe7963f048f8ead83de9a0d39298e04cf17",
+    "workflows": [
+      {
+        "run_id": 45177818057,
+        "conclusion": "success",
+        "scope": "Exact-head Windows E2E transport fail-closed regression"
+      },
+      {
+        "run_id": 45177818394,
+        "conclusion": "success",
+        "scope": "Exact-head independent GitHub artifact custody regression"
+      },
+      {
+        "run_id": 45177818173,
+        "conclusion": "success",
+        "scope": "Exact-head Windows and Ubuntu Offline QA"
+      }
+    ],
+    "status": "PASS_EXACT_HEAD_CI"
+  }
 }
