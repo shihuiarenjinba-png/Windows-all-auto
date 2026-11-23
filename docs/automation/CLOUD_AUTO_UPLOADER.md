@@ -4,7 +4,7 @@
 
 The GitHub Actions workflow runs on Ubuntu and downloads one configured `.msix` from an exact Git ref. The worker checks repository, product ID, existing Submission ID, version, extension, size and SHA-256, then records an idempotency key in SQLite. Dry-run is the default. A Partner Center write is not enabled: the current API adapter intentionally fails closed for MSIX until an existing-draft API contract is confirmed. HTTP acceptance alone never counts as success; a live adapter must return `partner_center_confirmed: true`.
 
-The official Microsoft Store Submission API uses Microsoft Entra ID. Microsoft's current submission API reference documents the newer API for MSI/EXE products; the UWP service API can create submissions and therefore is not used here because this job must bind to an existing draft and must not create or commit a submission. The exact API operation for an existing MSIX draft remains a compatibility gate.
+The official Microsoft Store Submission API uses Microsoft Entra ID. Microsoft's [current submission API reference](https://learn.microsoft.com/en-us/windows/apps/publish/store-submission-api) documents the newer API for MSI/EXE products; the UWP service API can create submissions and therefore is not used here because this job must bind to an existing draft and must not create or commit a submission. Microsoft also documents that the UWP API's create-submission call opens a new in-progress submission ([Create an app submission](https://learn.microsoft.com/en-us/windows/uwp/monetize/create-an-app-submission)). The exact API operation for an existing MSIX draft remains a compatibility gate.
 
 ## Setup
 
