@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-23T08:39:41Z",
+  "updated_at_utc": "2026-11-23",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -11127,24 +11127,24 @@
     }
   },
   "windows_e2e_custody_reconciliation": {
-    "checked_at_utc": "2026-11-23T08:39:41Z",
+    "checked_at_utc": "2026-11-23",
     "status": "HOLD",
     "pr161_head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
     "pr164_head_sha": "145cd1f44bdec9e584eb0f045dd139ef330c6321",
-    "pr165_tested_head_sha": "626c79c88a0ee23d92fa60618ed915ac5196639f",
+    "pr165_tested_head_sha": "580eb93206d0755cd7a1d2a14b7e841da2337760",
     "pr165_ci": [
       {
-        "run_id": 45134682879,
+        "run_id": 45141091903,
         "conclusion": "success",
         "scope": "Exact-head Windows E2E transport fail-closed regression"
       },
       {
-        "run_id": 45134683000,
+        "run_id": 45141091861,
         "conclusion": "success",
         "scope": "Exact-head independent GitHub artifact custody regression"
       },
       {
-        "run_id": 45134682927,
+        "run_id": 45141091833,
         "conclusion": "success",
         "scope": "Exact-head Offline QA; Windows and Ubuntu"
       }
@@ -11156,7 +11156,7 @@
     "checker_gui_e2e": "NOT_VERIFIED",
     "focus_file_integrity_phase": "POST_IDENTITY",
     "prism_revision": "HOLD_NO_OLD_SOURCE_CAS",
-    "note": "PR165 current exact HEAD 626c79c88a0ee23d92fa60618ed915ac5196639f has all three associated CI workflows SUCCESS: Windows E2E transport fail-closed regression, independent GitHub artifact custody regression, and Windows+Ubuntu Offline QA. Compare 04cb9bb..626c79c confirms the three intervening commits changed only the three ops reconciliation JSON files; no product code changed. This is CI-only evidence: Focus/File still lack authoritative Package Version and current-source approved Identity binding, real MSIX, GitHub backlog receipt, local pull, Windows-checker and local GUI/install receipt. E2E remains HOLD.",
+    "note": "PR165 exact tested HEAD 580eb93206d0755cd7a1d2a14b7e841da2337760 has all three associated CI workflows SUCCESS: Windows E2E transport fail-closed regression, independent GitHub artifact custody regression, and Windows+Ubuntu Offline QA. GitHub compare 626c79c..580eb shows only two ops JSON files changed; no product code changed. This is CI-only evidence: Focus/File still lack authoritative Package Version and current-source approved Identity binding, real MSIX, GitHub backlog receipt, local pull, Windows-checker and local GUI/install receipt. E2E remains HOLD.",
     "approved_identity_product_checks": [
       {
         "product": "Focus Session Desk",
@@ -11324,19 +11324,19 @@
       }
     ],
     "latest_head_ci_observation": {
-      "observed_at_jst": "2026-11-23 17:39",
-      "head_sha": "626c79c88a0ee23d92fa60618ed915ac5196639f",
+      "observed_at_jst": "2026-11-23",
+      "head_sha": "580eb93206d0755cd7a1d2a14b7e841da2337760",
       "workflow_runs": [
         {
-          "run_id": 45134682879,
+          "run_id": 45141091903,
           "conclusion": "success"
         },
         {
-          "run_id": 45134683000,
+          "run_id": 45141091861,
           "conclusion": "success"
         },
         {
-          "run_id": 45134682927,
+          "run_id": 45141091833,
           "conclusion": "success",
           "platforms": [
             "windows-latest",
@@ -11351,7 +11351,7 @@
       "backlog": false,
       "local_checker": false
     },
-    "pr165_head_sha": "626c79c88a0ee23d92fa60618ed915ac5196639f",
+    "pr165_head_sha": "580eb93206d0755cd7a1d2a14b7e841da2337760",
     "pr161_ci": [
       {
         "run_id": 42712757936,
