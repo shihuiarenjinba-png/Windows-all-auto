@@ -217,8 +217,9 @@ class CurrentLedgerGateTests(unittest.TestCase):
         self.assertIs(ledger["certification_allowed"], False)
         self.assertIs(ledger["publish_allowed"], False)
         latest = ledger["latest_transport_reconciliation"]
-        self.assertEqual(latest["central_tested_head_sha"], "dca99a1fe0160e77a53c02fa304d66597f5128f4")
-        self.assertEqual(len(latest["exact_head_ci"]), 3)
+        self.assertEqual(latest["central_tested_head_sha"], "3cb242653cfc92917b374f82f1d6adb6994100f9")
+        self.assertEqual([x["run_id"] for x in latest["exact_head_ci"]],
+                         [45208102791, 45208102718, 45208102802])
         self.assertTrue(all(x["conclusion"] == "success" for x in latest["exact_head_ci"]))
         self.assertTrue(ledger["active_product_is_historical"])
         self.assertEqual(ledger["current_priority_products"][0]["product"], "Focus Session Desk")
@@ -234,7 +235,13 @@ class CurrentLedgerGateTests(unittest.TestCase):
         self.assertEqual(ledger["e2e_status"], "HOLD")
         self.assertIs(ledger["e2e_pass"], False)
         self.assertEqual(ledger["windows_e2e_custody_reconciliation"]["pr165_tested_head_sha"],
-                         "dca99a1fe0160e77a53c02fa304d66597f5128f4")
+                         "3cb242653cfc92917b374f82f1d6adb6994100f9")
+        self.assertEqual([x["run_id"] for x in ledger["windows_e2e_custody_reconciliation"]["pr165_ci"]],
+                         [45208102791, 45208102718, 45208102802])
+        self.assertEqual(ledger["windows_e2e_custody_reconciliation"]["pr161_head_sha"],
+                         "71d9c2125b6aed44a86ca1872d48ad19963f3e63")
+        self.assertEqual([x["run_id"] for x in ledger["windows_e2e_custody_reconciliation"]["pr161_ci"]],
+                         [42712757936])
         self.assertEqual(ledger["windows_e2e_custody_reconciliation"]["approved_version"], "UNVERIFIED")
         self.assertEqual(recon["version_discovery"]["decision"],
                          "KEEP_VERSION_HOLD__DO_NOT_INFER_OR_WRITE_VERSION")
