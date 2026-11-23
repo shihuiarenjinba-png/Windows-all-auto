@@ -3,24 +3,24 @@
   "observed_date_utc": "2026-11-23",
   "evidence_basis": {
     "central_pr": 165,
-    "central_head": "ee65a9cf410c3a07909847b81ddaee91d1d244c5",
+    "central_head": "9be96018d971a35f246665a6a66111b9b5b19c8c",
     "ledger_path": "ops/active_e2e_handoff.json",
     "queue_path": "ops/completion_rush_queue_20261116.json",
     "pr161_head": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
     "pr171_head": "764721021f13be96364529650b44fb439770bac9",
     "exact_head_ci": [
       {
-        "run_id": 45141690596,
+        "run_id": 45143690518,
         "conclusion": "success",
         "scope": "Exact-head Windows E2E transport fail-closed regression"
       },
       {
-        "run_id": 45141690374,
+        "run_id": 45143690465,
         "conclusion": "success",
         "scope": "Exact-head independent GitHub artifact custody regression"
       },
       {
-        "run_id": 45141690255,
+        "run_id": 45143690743,
         "conclusion": "success",
         "scope": "Exact-head Windows and Ubuntu Offline QA"
       }
@@ -242,20 +242,20 @@
   "latest_transport_reconciliation": {
     "checked_at_utc": "2026-11-23",
     "central_pr": 165,
-    "central_head": "ee65a9cf410c3a07909847b81ddaee91d1d244c5",
+    "central_head": "9be96018d971a35f246665a6a66111b9b5b19c8c",
     "exact_head_ci": [
       {
-        "run_id": 45141690596,
+        "run_id": 45143690518,
         "conclusion": "success",
         "scope": "Exact-head Windows E2E transport fail-closed regression"
       },
       {
-        "run_id": 45141690374,
+        "run_id": 45143690465,
         "conclusion": "success",
         "scope": "Exact-head independent GitHub artifact custody regression"
       },
       {
-        "run_id": 45141690255,
+        "run_id": 45143690743,
         "conclusion": "success",
         "scope": "Exact-head Windows and Ubuntu Offline QA"
       }
