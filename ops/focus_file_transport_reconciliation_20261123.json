@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "observed_date_utc": "2026-11-23T14:32:50.000Z",
-  "evidence_basis": "Read-only exact PR94/95/97 heads, source ancestry, approved-identity JSON, six current PNG Git blob SHA readbacks, PR97 exact-head CI/artifact metadata, PR161/165 exact-head workflow runs, PR171 Store bridge and Windows-Automator pin CI. Partner Center Version readback was not observed. Follow-up reconciliation commit 1f14fbe exact-head CI now verified: transport 45177818057, custody 45177818394, Windows+Ubuntu Offline QA 45177818173 all SUCCESS. The subsequent ledger-only follow-up head 52cbb9b also passed exact-head transport, custody and Windows/Ubuntu Offline QA (45178090430, 45178090219, 45178090153). Raw PNG SHA256 values are retained from prior independent byte verification; this run independently re-read all six current-head Git blob SHAs and each matched. Current PR165 branch HEAD 783c1480235dd6fc692d7a77fdbe789ad96bd796 was directly read from GitHub; exact-head run metadata confirms transport 45178376984, custody 45178376945, and Windows/Ubuntu Offline QA 45178376816 all SUCCESS. Final exact PR165 branch HEAD f6ec0beaea5c2409bfdfd7290a3b35e914d51f5e passed transport 45187099007, artifact custody 45187099022, and Windows/Ubuntu Offline QA 45187099033 (537 tests per job; Windows 2 skipped). A stale test-only SHA assertion from the previous ledger update was corrected; no product code changed. Final current PR165 exact HEAD fe6e654ceb85f6168732b6960088941068b26882 passed transport 45187549682, artifact custody 45187549657, and Windows/Ubuntu Offline QA 45187549703 (537 tests per job; Windows 2 skipped). Latest PR165 branch HEAD 6cdde02db4cce115c8b61c8601abc529caef8870 was directly read from GitHub; exact-head transport 45188122697, artifact custody 45188122825, and Windows/Ubuntu Offline QA 45188122717 all SUCCESS. These validate fail-closed contracts only; no real Focus/File MSIX or local product E2E exists.",
+  "observed_date_utc": "2026-11-23T15:36:13.000Z",
+  "evidence_basis": "Read-only exact PR94/95/97 heads, source ancestry, approved-identity JSON, six current PNG Git blob SHA readbacks, PR97 exact-head CI/artifact metadata, PR161/165 exact-head workflow runs, PR171 Store bridge and Windows-Automator pin CI. Partner Center Version readback was not observed. Follow-up reconciliation commit 1f14fbe exact-head CI now verified: transport 45177818057, custody 45177818394, Windows+Ubuntu Offline QA 45177818173 all SUCCESS. The subsequent ledger-only follow-up head 52cbb9b also passed exact-head transport, custody and Windows/Ubuntu Offline QA (45178090430, 45178090219, 45178090153). Raw PNG SHA256 values are retained from prior independent byte verification; this run independently re-read all six current-head Git blob SHAs and each matched. Current PR165 branch HEAD 783c1480235dd6fc692d7a77fdbe789ad96bd796 was directly read from GitHub; exact-head run metadata confirms transport 45178376984, custody 45178376945, and Windows/Ubuntu Offline QA 45178376816 all SUCCESS. Final exact PR165 branch HEAD f6ec0beaea5c2409bfdfd7290a3b35e914d51f5e passed transport 45187099007, artifact custody 45187099022, and Windows/Ubuntu Offline QA 45187099033 (537 tests per job; Windows 2 skipped). A stale test-only SHA assertion from the previous ledger update was corrected; no product code changed. Final current PR165 exact HEAD fe6e654ceb85f6168732b6960088941068b26882 passed transport 45187549682, artifact custody 45187549657, and Windows/Ubuntu Offline QA 45187549703 (537 tests per job; Windows 2 skipped). Latest PR165 branch HEAD 6cdde02db4cce115c8b61c8601abc529caef8870 was directly read from GitHub; exact-head transport 45188122697, artifact custody 45188122825, and Windows/Ubuntu Offline QA 45188122717 all SUCCESS. These validate fail-closed contracts only; no real Focus/File MSIX or local product E2E exists. Latest PR165 current branch HEAD 89ada362a96087672da4897725f8362f84a98ac2 was directly read from GitHub; exact-head transport 45196117854, artifact custody 45196117967, and Windows/Ubuntu Offline QA 45196117925 all completed SUCCESS. PR161 HEAD 71d9c2125b6aed44a86ca1872d48ad19963f3e63 Offline QA run 42712757936 completed SUCCESS on Windows and Ubuntu. Current PR94/95/97 heads, approved Identity file bindings/absence, and all six Store PNG Git blob SHA readbacks were rechecked; all six PNG blob SHAs match. Authenticated Partner Center Version readback remains unobserved.",
   "status": "HOLD",
   "e2e_pass": false,
   "priority_product": "Focus Session Desk",
@@ -291,24 +291,24 @@
   "certification_allowed": false,
   "publish_allowed": false,
   "live_partner_center_write_allowed": false,
-  "pr165_head_sha": "6cdde02db4cce115c8b61c8601abc529caef8870",
+  "pr165_head_sha": "89ada362a96087672da4897725f8362f84a98ac2",
   "latest_transport_reconciliation": {
-    "checked_at_utc": "2026-11-23T14:32:50.000Z",
+    "checked_at_utc": "2026-11-23T15:36:13.000Z",
     "central_pr": 165,
-    "central_head": "6cdde02db4cce115c8b61c8601abc529caef8870",
+    "central_head": "89ada362a96087672da4897725f8362f84a98ac2",
     "exact_head_ci": [
       {
-        "run_id": 45188122697,
+        "run_id": 45196117854,
         "conclusion": "success",
         "scope": "Exact-head Windows E2E transport fail-closed regression"
       },
       {
-        "run_id": 45188122825,
+        "run_id": 45196117967,
         "conclusion": "success",
         "scope": "Exact-head independent GitHub artifact custody regression"
       },
       {
-        "run_id": 45188122717,
+        "run_id": 45196117925,
         "conclusion": "success",
         "scope": "Exact-head Windows-all-auto Offline QA (Windows and Ubuntu)"
       }
@@ -325,28 +325,10 @@
     "store_submission_allowed": false,
     "certification_allowed": false,
     "publish_allowed": false,
-    "note": "PR165 exact current branch HEAD 6cdde02db4cce115c8b61c8601abc529caef8870 has all three exact-head workflows SUCCESS: transport 45188122697, artifact custody 45188122825, and Windows/Ubuntu Offline QA 45188122717. This is fail-closed contract/fixture CI only; no approved current-source Identity or Package Version, real product MSIX, backlog, local checker/install, or local GUI E2E is proven. Focus/File remain DELIVERY_HOLD and E2E remains HOLD.",
-    "previous_central_head": "fe6e654ceb85f6168732b6960088941068b26882",
-    "previous_ledger_followup_head_sha": "fe6e654ceb85f6168732b6960088941068b26882",
+    "note": "PR165 exact current branch HEAD 89ada362a96087672da4897725f8362f84a98ac2 has all three exact-head workflows SUCCESS: transport 45196117854, artifact custody 45196117967, and Windows/Ubuntu Offline QA 45196117925. This is fail-closed contract/fixture CI only; no approved current-source Identity or Package Version, real product MSIX, backlog, local checker/install, or local GUI E2E is proven. Focus/File remain DELIVERY_HOLD and E2E remains HOLD.",
+    "previous_central_head": "6cdde02db4cce115c8b61c8601abc529caef8870",
+    "previous_ledger_followup_head_sha": "6cdde02db4cce115c8b61c8601abc529caef8870",
     "previous_ledger_followup_exact_head_ci": [
-      {
-        "run_id": 45187549682,
-        "conclusion": "success",
-        "scope": "Exact-head Windows E2E transport fail-closed regression"
-      },
-      {
-        "run_id": 45187549657,
-        "conclusion": "success",
-        "scope": "Exact-head independent GitHub artifact custody regression"
-      },
-      {
-        "run_id": 45187549703,
-        "conclusion": "success",
-        "scope": "Exact-head Windows and Ubuntu Offline QA; 537 tests per job (Windows 2 skipped)"
-      }
-    ],
-    "ledger_followup_head_sha": "6cdde02db4cce115c8b61c8601abc529caef8870",
-    "ledger_followup_exact_head_ci": [
       {
         "run_id": 45188122697,
         "conclusion": "success",
@@ -362,7 +344,27 @@
         "conclusion": "success",
         "scope": "Exact-head Windows-all-auto Offline QA (Windows and Ubuntu)"
       }
-    ]
+    ],
+    "ledger_followup_head_sha": "89ada362a96087672da4897725f8362f84a98ac2",
+    "ledger_followup_exact_head_ci": [
+      {
+        "run_id": 45196117854,
+        "conclusion": "success",
+        "scope": "Exact-head Windows E2E transport fail-closed regression"
+      },
+      {
+        "run_id": 45196117967,
+        "conclusion": "success",
+        "scope": "Exact-head independent GitHub artifact custody regression"
+      },
+      {
+        "run_id": 45196117925,
+        "conclusion": "success",
+        "scope": "Exact-head Windows-all-auto Offline QA (Windows and Ubuntu)"
+      }
+    ],
+    "previous_central_head_sha": "6cdde02db4cce115c8b61c8601abc529caef8870",
+    "latest_exact_head_ci_tested_sha": "89ada362a96087672da4897725f8362f84a98ac2"
   },
   "windows_checker_source": {
     "repository": "shihuiarenjinba-png/Windows-checker",
@@ -388,7 +390,7 @@
   },
   "previous_central_head_sha": "7425d55581ae4495a794f7f27687e0d11cffb197",
   "previous_evidence_basis_central_head": "1eb134f2a2dae3647058d3357d634930f5bbaa23",
-  "central_head": "6cdde02db4cce115c8b61c8601abc529caef8870",
+  "central_head": "89ada362a96087672da4897725f8362f84a98ac2",
   "older_central_head_sha": null,
   "other_current_lanes": [
     {
@@ -551,21 +553,21 @@
   },
   "pr165": {
     "base_sha": "145cd1f44bdec9e584eb0f045dd139ef330c6321",
-    "tested_head_sha": "6cdde02db4cce115c8b61c8601abc529caef8870",
-    "parent_before_tested_head": "fe6e654ceb85f6168732b6960088941068b26882",
+    "tested_head_sha": "89ada362a96087672da4897725f8362f84a98ac2",
+    "parent_before_tested_head": "6cdde02db4cce115c8b61c8601abc529caef8870",
     "exact_head_ci": [
       {
-        "run_id": 45188122697,
+        "run_id": 45196117854,
         "name": "Exact-head Windows E2E transport fail-closed regression",
         "conclusion": "success"
       },
       {
-        "run_id": 45188122825,
+        "run_id": 45196117967,
         "name": "Exact-head independent GitHub artifact custody regression",
         "conclusion": "success"
       },
       {
-        "run_id": 45188122717,
+        "run_id": 45196117925,
         "name": "Exact-head Windows-all-auto Offline QA (Windows and Ubuntu)",
         "conclusion": "success"
       }
@@ -589,20 +591,20 @@
         "scope": "Exact-head Windows and Ubuntu Offline QA"
       }
     ],
-    "ledger_followup_head_sha": "6cdde02db4cce115c8b61c8601abc529caef8870",
+    "ledger_followup_head_sha": "89ada362a96087672da4897725f8362f84a98ac2",
     "ledger_followup_exact_head_ci": [
       {
-        "run_id": 45188122697,
+        "run_id": 45196117854,
         "conclusion": "success",
         "scope": "Exact-head Windows E2E transport fail-closed regression"
       },
       {
-        "run_id": 45188122825,
+        "run_id": 45196117967,
         "conclusion": "success",
         "scope": "Exact-head independent GitHub artifact custody regression"
       },
       {
-        "run_id": 45188122717,
+        "run_id": 45196117925,
         "conclusion": "success",
         "scope": "Exact-head Windows-all-auto Offline QA (Windows and Ubuntu)"
       }
@@ -623,39 +625,39 @@
   "local_code_sync_detail": "No physical user-PC exact-three-SHA receipt, idempotent reuse receipt, or scheduled-task receipt was observed; cloud Windows smoke is not a user-PC receipt.",
   "next_action": "Keep Focus/File DELIVERY_HOLD. Do not CAS-reuse historical Identity. Obtain an authenticated current-source Identity revalidation and approved Package Version for Focus first; if unavailable, remain HOLD. Once both exist, build a real MSIX and immediately run exact archive/package SHA custody, backlog, local pull, Windows-checker, then local GUI/install QA. Do not touch PNG assets or product features in this lane.",
   "latest_reconciliation_ci": {
-    "tested_head_sha": "6cdde02db4cce115c8b61c8601abc529caef8870",
+    "tested_head_sha": "89ada362a96087672da4897725f8362f84a98ac2",
     "workflows": [
       {
-        "run_id": 45188122697,
+        "run_id": 45196117854,
         "conclusion": "success",
         "scope": "Exact-head Windows E2E transport fail-closed regression"
       },
       {
-        "run_id": 45188122825,
+        "run_id": 45196117967,
         "conclusion": "success",
         "scope": "Exact-head independent GitHub artifact custody regression"
       },
       {
-        "run_id": 45188122717,
+        "run_id": 45196117925,
         "conclusion": "success",
         "scope": "Exact-head Windows-all-auto Offline QA (Windows and Ubuntu)"
       }
     ],
     "status": "PASS_EXACT_HEAD_CI",
-    "ledger_followup_head_sha": "6cdde02db4cce115c8b61c8601abc529caef8870",
+    "ledger_followup_head_sha": "89ada362a96087672da4897725f8362f84a98ac2",
     "ledger_followup_workflows": [
       {
-        "run_id": 45188122697,
+        "run_id": 45196117854,
         "conclusion": "success",
         "scope": "Exact-head Windows E2E transport fail-closed regression"
       },
       {
-        "run_id": 45188122825,
+        "run_id": 45196117967,
         "conclusion": "success",
         "scope": "Exact-head independent GitHub artifact custody regression"
       },
       {
-        "run_id": 45188122717,
+        "run_id": 45196117925,
         "conclusion": "success",
         "scope": "Exact-head Windows-all-auto Offline QA (Windows and Ubuntu)"
       }
@@ -680,26 +682,26 @@
       "scope": "Exact-head Windows and Ubuntu Offline QA; 537 tests per job (Windows 2 skipped)"
     }
   ],
-  "pr165_current_head_sha": "6cdde02db4cce115c8b61c8601abc529caef8870",
-  "pr165_current_head_parent_sha": "fe6e654ceb85f6168732b6960088941068b26882",
+  "pr165_current_head_sha": "89ada362a96087672da4897725f8362f84a98ac2",
+  "pr165_current_head_parent_sha": "6cdde02db4cce115c8b61c8601abc529caef8870",
   "pr165_current_head_ci": [
     {
-      "run_id": 45188122697,
+      "run_id": 45196117854,
       "conclusion": "success",
       "scope": "Exact-head Windows E2E transport fail-closed regression"
     },
     {
-      "run_id": 45188122825,
+      "run_id": 45196117967,
       "conclusion": "success",
       "scope": "Exact-head independent GitHub artifact custody regression"
     },
     {
-      "run_id": 45188122717,
+      "run_id": 45196117925,
       "conclusion": "success",
       "scope": "Exact-head Windows-all-auto Offline QA (Windows and Ubuntu)"
     }
   ],
   "pr165_current_head_ci_status": "PASS_EXACT_HEAD_CI",
-  "pr165_previous_head_sha": "fe6e654ceb85f6168732b6960088941068b26882",
-  "pr165_previous_current_head_sha": "fe6e654ceb85f6168732b6960088941068b26882"
+  "pr165_previous_head_sha": "6cdde02db4cce115c8b61c8601abc529caef8870",
+  "pr165_previous_current_head_sha": "6cdde02db4cce115c8b61c8601abc529caef8870"
 }
