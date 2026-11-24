@@ -220,7 +220,7 @@ class CurrentLedgerGateTests(unittest.TestCase):
         self.assertEqual(latest["central_tested_head_sha"], "834be04ba0a39c0e4222d3b07187f935c1b88dc7")
         self.assertEqual(latest["previous_central_head_sha"], "f440ca91c1a9ed6413c8e42e9c0611f174f81a19")
         self.assertEqual([x["run_id"] for x in latest["exact_head_ci"]],
-                         [45503167380, 45503167391, 45503167397])
+                         [45503470284, 45503470123, 45503470076])
         self.assertEqual(latest["ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual(latest["status"], "HOLD")
         self.assertIs(latest["e2e_pass"], False)
@@ -229,7 +229,7 @@ class CurrentLedgerGateTests(unittest.TestCase):
         current = ledger["windows_e2e_custody_reconciliation"]
         self.assertEqual(current["pr165_tested_head_sha"], "834be04ba0a39c0e4222d3b07187f935c1b88dc7")
         self.assertEqual([x["run_id"] for x in current["pr165_ci"]],
-                         [45503167380, 45503167391, 45503167397])
+                         [45503470284, 45503470123, 45503470076])
         self.assertEqual(current["pr161_head_sha"], "71d9c2125b6aed44a86ca1872d48ad19963f3e63")
         self.assertEqual([x["run_id"] for x in current["pr161_ci"]], [42712757936])
         self.assertEqual(ledger["store_upload_test_bridge"]["bridge_head"], "764721021f13be96364529650b44fb439770bac9")
@@ -246,9 +246,11 @@ class CurrentLedgerGateTests(unittest.TestCase):
         self.assertIs(recon["e2e_pass"], False)
         self.assertEqual(recon["pr165_current_head_sha"], "834be04ba0a39c0e4222d3b07187f935c1b88dc7")
         self.assertEqual([x["run_id"] for x in recon["pr165_current_head_ci"]],
-                         [45503167380, 45503167391, 45503167397])
+                         [45503470284, 45503470123, 45503470076])
         focus = next(p for p in recon["products"] if p["product"] == "Focus Session Desk")
         file_product = next(p for p in recon["products"] if p["product"] == "File Integrity Ledger")
+        self.assertEqual(current["first_unconnected_interval"], recon["first_unconnected_interval"])
+        self.assertIn("CURRENT_SOURCE_REQUEST_BINDING_NOT_OBSERVED", current["first_unconnected_interval"]["focus_session_desk"])
         self.assertEqual(focus["current_source_identity_binding_status"], "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE")
         self.assertEqual(focus["current_source_request_status"], "NOT_OBSERVED__HISTORICAL_REQUEST_BINDS_8B00_ONLY")
         self.assertIsNone(focus["package_version"])

@@ -300,7 +300,7 @@ class CustodyTests(unittest.TestCase):
         self.assertEqual(latest["central_tested_head_sha"], "834be04ba0a39c0e4222d3b07187f935c1b88dc7")
         self.assertEqual(latest["previous_central_head_sha"], "f440ca91c1a9ed6413c8e42e9c0611f174f81a19")
         self.assertEqual([x["run_id"] for x in latest["exact_head_ci"]],
-                         [45503167380, 45503167391, 45503167397])
+                         [45503470284, 45503470123, 45503470076])
         self.assertEqual(latest["ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual(latest["status"], "HOLD")
         self.assertIs(latest["e2e_pass"], False)
@@ -346,7 +346,7 @@ class CustodyTests(unittest.TestCase):
                          "NOT_OBSERVED__HISTORICAL_REQUEST_BINDS_8B00_ONLY")
         self.assertEqual(focus_item["store_assets_evidence"]["native_exe_gui"]["run_id"], 45234786152)
         self.assertEqual(focus_item["product_quality_assessment"]["score"]["total"], 54)
-        self.assertEqual(ledger["pr174_restack_assessment_live_20261125"]["compare_to_current_pr165_head"]["behind_by"], 78)
+        self.assertEqual(ledger["pr174_restack_assessment_live_20261125"]["compare_to_current_pr165_head"]["behind_by"], 79)
         self.assertEqual(ledger["store_upload_test_bridge"]["eligible_fresh_unsold_products"], 0)
 
 if __name__ == "__main__":
