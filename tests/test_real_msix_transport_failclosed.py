@@ -217,19 +217,19 @@ class CurrentLedgerGateTests(unittest.TestCase):
         self.assertIs(ledger["certification_allowed"], False)
         self.assertIs(ledger["publish_allowed"], False)
         latest = ledger["latest_transport_reconciliation"]
-        self.assertEqual(latest["central_tested_head_sha"], "a206f17636327e6afb55d94b019bc76a5d230b65")
-        self.assertEqual(latest["previous_central_head_sha"], "619d41f87074caedd46f7ac4563c007d10439da0")
+        self.assertEqual(latest["central_tested_head_sha"], "f440ca91c1a9ed6413c8e42e9c0611f174f81a19")
+        self.assertEqual(latest["previous_central_head_sha"], "a206f17636327e6afb55d94b019bc76a5d230b65")
         self.assertEqual([x["run_id"] for x in latest["exact_head_ci"]],
-                         [45483439901, 45483439741, 45483439906])
+                         [45483789841, 45483789765, 45483789759])
         self.assertEqual(latest["ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual(latest["status"], "HOLD")
         self.assertIs(latest["e2e_pass"], False)
         self.assertIs(latest["real_msix"], False)
         self.assertEqual(latest["store_upload_test_eligible_products"], 0)
         current = ledger["windows_e2e_custody_reconciliation"]
-        self.assertEqual(current["pr165_tested_head_sha"], "a206f17636327e6afb55d94b019bc76a5d230b65")
+        self.assertEqual(current["pr165_tested_head_sha"], "f440ca91c1a9ed6413c8e42e9c0611f174f81a19")
         self.assertEqual([x["run_id"] for x in current["pr165_ci"]],
-                         [45483439901, 45483439741, 45483439906])
+                         [45483789841, 45483789765, 45483789759])
         self.assertEqual(current["pr161_head_sha"], "71d9c2125b6aed44a86ca1872d48ad19963f3e63")
         self.assertEqual([x["run_id"] for x in current["pr161_ci"]], [42712757936])
         self.assertEqual(ledger["store_upload_test_bridge"]["bridge_head"], "764721021f13be96364529650b44fb439770bac9")
@@ -244,9 +244,9 @@ class CurrentLedgerGateTests(unittest.TestCase):
         self.assertIs(ledger["e2e_pass"], False)
         self.assertEqual(recon["status"], "HOLD")
         self.assertIs(recon["e2e_pass"], False)
-        self.assertEqual(recon["pr165_current_head_sha"], "a206f17636327e6afb55d94b019bc76a5d230b65")
+        self.assertEqual(recon["pr165_current_head_sha"], "f440ca91c1a9ed6413c8e42e9c0611f174f81a19")
         self.assertEqual([x["run_id"] for x in recon["pr165_current_head_ci"]],
-                         [45483439901, 45483439741, 45483439906])
+                         [45483789841, 45483789765, 45483789759])
         focus = next(p for p in recon["products"] if p["product"] == "Focus Session Desk")
         file_product = next(p for p in recon["products"] if p["product"] == "File Integrity Ledger")
         self.assertEqual(focus["current_source_identity_binding_status"], "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE")
@@ -277,3 +277,45 @@ class CurrentLedgerGateTests(unittest.TestCase):
         self.assertIs(ledger["certification_allowed"], False)
         self.assertIs(ledger["publish_allowed"], False)
 
+
+
+class CurrentLaneTransportBoundaryTests(unittest.TestCase):
+    def test_current_lane_source_and_request_mismatch_stays_fail_closed(self):
+        root = Path(__file__).resolve().parents[1]
+        queue = json.loads((root / "ops/completion_rush_queue_20261116.json").read_text(encoding="utf-8"))
+        ledger = json.loads((root / "ops/active_e2e_handoff.json").read_text(encoding="utf-8"))
+        rows = {p["product"]: p for p in queue["priority"]}
+
+        for name in ("Focus Session Desk", "File Integrity Ledger"):
+            item = rows[name]
+            self.assertEqual(item["hold_class"], "DELIVERY_HOLD")
+            self.assertIsNone(item["package_version"])
+            self.assertFalse(item["real_msix"])
+            self.assertFalse(item["github_backlog_receipt"])
+            self.assertFalse(item["local_checker_receipt"])
+            identity = {
+                "request_id": item.get("current_source_request_id") or "current-source-request-not-observed",
+                "source_sha": item["current_source_sha"],
+                "verified_source_sha": item["source_sha"],
+                "expected_head_sha": item["current_source_sha"],
+                "package_version_gate": "HOLD",
+            }
+            result = authorize_transport(identity, {}, Path("unused.msix"), {}, None)
+            self.assertEqual(result["status"], "HOLD")
+            self.assertIn(result["reason"], ("SOURCE_DRIFT", "VERSION_NOT_APPROVED"))
+
+        signal = rows["Signal Sprint"]
+        self.assertEqual(signal["current_candidate_source_sha"], "1a349faa41663c417c40710140a4d50c79b62b78")
+        self.assertEqual(signal["historical_source_sha"], "c058cbf7fe38e02d929c67d047d717ff74bd522e")
+        self.assertFalse(signal["cas_applied"])
+        self.assertFalse(signal["real_msixvc"])
+        prism = rows["Prism Route 3D"]
+        self.assertEqual(prism["factory_source_sha"], "b03ce7b16c3f75c04fe20fdda224c45849eeba0d")
+        self.assertEqual(prism["approved_identity_source_sha"], "15fdcb52e46e35e6de8e87c55af99719c21e09b9")
+        self.assertFalse(prism["real_msix"])
+
+        self.assertEqual(ledger["e2e_status"], "HOLD")
+        self.assertIs(ledger["e2e_pass"], False)
+        self.assertIs(ledger["store_submission_allowed"], False)
+        self.assertIs(ledger["certification_allowed"], False)
+        self.assertIs(ledger["publish_allowed"], False)

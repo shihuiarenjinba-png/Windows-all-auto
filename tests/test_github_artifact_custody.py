@@ -284,7 +284,7 @@ class CustodyTests(unittest.TestCase):
         signal = next(p for p in queue["priority"] if p["product"] == "Signal Sprint")
         self.assertEqual(signal["historical_source_sha"], "c058cbf7fe38e02d929c67d047d717ff74bd522e")
         self.assertEqual(signal["current_candidate_source_sha"], "1a349faa41663c417c40710140a4d50c79b62b78")
-        self.assertEqual(signal["build_artifact_status"], "HOLD_BUILD_ARTIFACT_NOT_CONFIGURED")
+        self.assertEqual(signal["build_artifact_status"], "VERIFIED_UNSIGNED_EXE_AND_COMPLETED_ATTESTATION__NOT_GDK_MSIXVC2")
         self.assertIs(ledger["store_submission_allowed"], False)
         self.assertIs(ledger["certification_allowed"], False)
         self.assertIs(ledger["publish_allowed"], False)
@@ -297,10 +297,10 @@ class CustodyTests(unittest.TestCase):
         ledger = json.loads((root / "ops/active_e2e_handoff.json").read_text(encoding="utf-8"))
         recon = json.loads((root / "ops/focus_file_transport_reconciliation_20261125.json").read_text(encoding="utf-8"))
         latest = ledger["latest_transport_reconciliation"]
-        self.assertEqual(latest["central_tested_head_sha"], "a206f17636327e6afb55d94b019bc76a5d230b65")
-        self.assertEqual(latest["previous_central_head_sha"], "619d41f87074caedd46f7ac4563c007d10439da0")
+        self.assertEqual(latest["central_tested_head_sha"], "f440ca91c1a9ed6413c8e42e9c0611f174f81a19")
+        self.assertEqual(latest["previous_central_head_sha"], "a206f17636327e6afb55d94b019bc76a5d230b65")
         self.assertEqual([x["run_id"] for x in latest["exact_head_ci"]],
-                         [45483439901, 45483439741, 45483439906])
+                         [45483789841, 45483789765, 45483789759])
         self.assertEqual(latest["ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual(latest["status"], "HOLD")
         self.assertIs(latest["e2e_pass"], False)
@@ -346,8 +346,68 @@ class CustodyTests(unittest.TestCase):
                          "NOT_OBSERVED__HISTORICAL_REQUEST_BINDS_8B00_ONLY")
         self.assertEqual(focus_item["store_assets_evidence"]["native_exe_gui"]["run_id"], 45234786152)
         self.assertEqual(focus_item["product_quality_assessment"]["score"]["total"], 54)
-        self.assertEqual(ledger["pr174_restack_assessment_live_20261125"]["compare_to_current_pr165_head"]["behind_by"], 76)
+        self.assertEqual(ledger["pr174_restack_assessment_live_20261125"]["compare_to_current_pr165_head"]["behind_by"], 77)
         self.assertEqual(ledger["store_upload_test_bridge"]["eligible_fresh_unsold_products"], 0)
+
+
+
+class CurrentLaneSourceIsolationTests(unittest.TestCase):
+    def test_current_lane_sources_requests_and_package_gates_are_isolated(self):
+        root = Path(__file__).resolve().parents[1]
+        queue = json.loads((root / "ops/completion_rush_queue_20261116.json").read_text(encoding="utf-8"))
+        ledger = json.loads((root / "ops/active_e2e_handoff.json").read_text(encoding="utf-8"))
+        rows = {p["product"]: p for p in queue["priority"]}
+
+        focus = rows["Focus Session Desk"]
+        self.assertEqual(focus["current_source_sha"], "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79")
+        self.assertEqual(focus["approved_identity_source_sha"], "8b00bc4e90828c4282463826873aa8dfd2eb93f4")
+        self.assertNotEqual(focus["current_source_sha"], focus["approved_identity_source_sha"])
+        self.assertIsNone(focus["current_source_request_id"])
+        self.assertEqual(focus["expected_current_source_request_id"], "app-focus-session-desk-fb6293839bc7")
+        self.assertIsNone(focus["package_version"])
+        self.assertFalse(focus["real_msix"])
+
+        file_row = rows["File Integrity Ledger"]
+        self.assertEqual(file_row["current_source_sha"], "33d612be2774ac155ea3d85289ec5cb7981c81c1")
+        self.assertEqual(file_row["approved_identity_source_sha"], "d1108d12f7d1697af30400f97c7db39cba5e6791")
+        self.assertEqual(file_row["current_source_request"]["request_id"], "app-file-integrity-ledger-33d612be2774")
+        self.assertEqual(file_row["current_source_request"]["source_sha"], file_row["current_source_sha"])
+        self.assertEqual(file_row["current_source_request"]["status"], "DRY_RUN")
+        self.assertEqual(file_row["current_source_request"]["route"], "MSIX_OR_PWA_APP")
+        self.assertEqual(file_row["current_source_request"]["official_identity_status"], "NOT_COLLECTED")
+        self.assertIsNone(file_row["package_version"])
+        self.assertFalse(file_row["real_msix"])
+
+        prism = rows["Prism Route 3D"]
+        self.assertEqual(prism["factory_source_sha"], "b03ce7b16c3f75c04fe20fdda224c45849eeba0d")
+        self.assertEqual(prism["approved_identity_source_sha"], "15fdcb52e46e35e6de8e87c55af99719c21e09b9")
+        self.assertNotEqual(prism["factory_source_sha"], prism["approved_identity_source_sha"])
+        self.assertEqual(prism["independent_qa_head"], "9b90bfc9dfa6ded9699c3f22df45390be909dae8")
+        self.assertEqual(prism["physical_qa_sessions"], "0/6")
+        self.assertFalse(prism["real_msix"])
+
+        signal = rows["Signal Sprint"]
+        self.assertEqual(signal["historical_source_sha"], "c058cbf7fe38e02d929c67d047d717ff74bd522e")
+        self.assertEqual(signal["current_candidate_source_sha"], "1a349faa41663c417c40710140a4d50c79b62b78")
+        self.assertEqual(signal["current_request_id"], "game-signal-sprint-1a349faa41663c417c40710140a4d50c79b62b78")
+        self.assertFalse(signal["cas_applied"])
+        self.assertFalse(signal["real_msixvc"])
+        self.assertEqual(signal["gdk_sdk_status"], "HOLD_GDK_SDK_ROOT_NOT_FOUND")
+        self.assertFalse(signal["required_revision_in_frozen_source"])
+
+        routes = {e["product"]: e.get("registration_type") for e in ledger["registration_router"]["entries"]}
+        self.assertEqual(routes["Focus Session Desk"], "MSIX_OR_PWA_APP")
+        self.assertEqual(routes["File Integrity Ledger"], "MSIX_OR_PWA_APP")
+        self.assertEqual(routes["Offline Notes Canary"], "MSIX_OR_PWA_APP")
+        self.assertEqual(routes["Signal Sprint"], "GDK_GAME")
+        self.assertEqual(routes["Prism Route 3D"], "MSIX_OR_PWA_GAME")
+        self.assertIsNone(routes["Offline Text Diff Desk"])
+        self.assertIsNone(routes["Offline Image Inventory Desk"])
+        self.assertEqual(ledger["e2e_status"], "HOLD")
+        self.assertIs(ledger["e2e_pass"], False)
+        self.assertIs(ledger["store_submission_allowed"], False)
+        self.assertIs(ledger["certification_allowed"], False)
+        self.assertIs(ledger["publish_allowed"], False)
 
 if __name__ == "__main__":
     unittest.main()
