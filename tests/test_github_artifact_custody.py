@@ -297,8 +297,8 @@ class CustodyTests(unittest.TestCase):
         ledger = json.loads((root / "ops/active_e2e_handoff.json").read_text(encoding="utf-8"))
         recon = json.loads((root / "ops/focus_file_transport_reconciliation_20261125.json").read_text(encoding="utf-8"))
         latest = ledger["latest_transport_reconciliation"]
-        self.assertEqual(latest["central_tested_head_sha"], "834be04ba0a39c0e4222d3b07187f935c1b88dc7")
-        self.assertEqual(latest["previous_central_head_sha"], "f440ca91c1a9ed6413c8e42e9c0611f174f81a19")
+        self.assertEqual(latest["central_tested_head_sha"], "92a5d65670e20545e8bc5f7c00e239268d38781e")
+        self.assertEqual(latest["previous_central_head_sha"], "834be04ba0a39c0e4222d3b07187f935c1b88dc7")
         self.assertEqual([x["run_id"] for x in latest["exact_head_ci"]],
                          [45503470284, 45503470123, 45503470076])
         self.assertEqual(latest["ci_status"], "PASS_EXACT_HEAD_CI")

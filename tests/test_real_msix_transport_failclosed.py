@@ -217,8 +217,8 @@ class CurrentLedgerGateTests(unittest.TestCase):
         self.assertIs(ledger["certification_allowed"], False)
         self.assertIs(ledger["publish_allowed"], False)
         latest = ledger["latest_transport_reconciliation"]
-        self.assertEqual(latest["central_tested_head_sha"], "834be04ba0a39c0e4222d3b07187f935c1b88dc7")
-        self.assertEqual(latest["previous_central_head_sha"], "f440ca91c1a9ed6413c8e42e9c0611f174f81a19")
+        self.assertEqual(latest["central_tested_head_sha"], "92a5d65670e20545e8bc5f7c00e239268d38781e")
+        self.assertEqual(latest["previous_central_head_sha"], "834be04ba0a39c0e4222d3b07187f935c1b88dc7")
         self.assertEqual([x["run_id"] for x in latest["exact_head_ci"]],
                          [45503470284, 45503470123, 45503470076])
         self.assertEqual(latest["ci_status"], "PASS_EXACT_HEAD_CI")
@@ -227,7 +227,7 @@ class CurrentLedgerGateTests(unittest.TestCase):
         self.assertIs(latest["real_msix"], False)
         self.assertEqual(latest["store_upload_test_eligible_products"], 0)
         current = ledger["windows_e2e_custody_reconciliation"]
-        self.assertEqual(current["pr165_tested_head_sha"], "834be04ba0a39c0e4222d3b07187f935c1b88dc7")
+        self.assertEqual(current["pr165_tested_head_sha"], "92a5d65670e20545e8bc5f7c00e239268d38781e")
         self.assertEqual([x["run_id"] for x in current["pr165_ci"]],
                          [45503470284, 45503470123, 45503470076])
         self.assertEqual(current["pr161_head_sha"], "71d9c2125b6aed44a86ca1872d48ad19963f3e63")
@@ -244,7 +244,7 @@ class CurrentLedgerGateTests(unittest.TestCase):
         self.assertIs(ledger["e2e_pass"], False)
         self.assertEqual(recon["status"], "HOLD")
         self.assertIs(recon["e2e_pass"], False)
-        self.assertEqual(recon["pr165_current_head_sha"], "834be04ba0a39c0e4222d3b07187f935c1b88dc7")
+        self.assertEqual(recon["pr165_current_head_sha"], "92a5d65670e20545e8bc5f7c00e239268d38781e")
         self.assertEqual([x["run_id"] for x in recon["pr165_current_head_ci"]],
                          [45503470284, 45503470123, 45503470076])
         focus = next(p for p in recon["products"] if p["product"] == "Focus Session Desk")
