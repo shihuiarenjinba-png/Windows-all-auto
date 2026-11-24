@@ -218,7 +218,7 @@ class CurrentLedgerGateTests(unittest.TestCase):
         self.assertIs(ledger["publish_allowed"], False)
         latest = ledger["latest_transport_reconciliation"]
         self.assertEqual(latest["central_tested_head_sha"], "619d41f87074caedd46f7ac4563c007d10439da0")
-        self.assertEqual(latest["previous_central_head_sha"], "9e535e98b14b0740ded8658330de5ed597888be3")
+        self.assertEqual(latest["previous_central_head_sha"], "437312f8147b30e41e2abe35499bd11dbd955a77")
         self.assertEqual([x["run_id"] for x in latest["exact_head_ci"]],
                          [45477517563, 45477517765, 45477517428])
         self.assertEqual(latest["ci_status"], "PASS_EXACT_HEAD_CI")

@@ -963,7 +963,7 @@
     "pr174_restack_assessment": {
       "status": "diverged",
       "ahead_by": 6,
-      "behind_by": 71,
+      "behind_by": 74,
       "decision": "DO_NOT_RESTACK"
     },
     "store_submission_allowed": false,
