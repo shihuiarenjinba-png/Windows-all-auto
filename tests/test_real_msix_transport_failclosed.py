@@ -268,7 +268,7 @@ class CurrentLedgerGateTests(unittest.TestCase):
         self.assertEqual(file_product["msix_export"]["status"], "SKIPPED_NO_ARTIFACT")
         self.assertIsNone(file_product["package_version"])
         self.assertIs(file_product["real_msix"], False)
-        self.assertIs(recon["version_discovery"]["status"], "NO_AUTHORITATIVE_VERSION_FOUND_IN_REVIEWED_EVIDENCE")
+        self.assertEqual(recon["version_discovery"]["status"], "NO_AUTHORITATIVE_VERSION_FOUND_IN_REVIEWED_EVIDENCE")
         self.assertEqual(recon["version_discovery"]["decision"], "KEEP_VERSION_HOLD__DO_NOT_INFER_OR_WRITE_VERSION")
         self.assertEqual(recon["first_unconnected_interval"]["status"], "BLOCKED_BEFORE_REAL_MSIX_BUILD")
         self.assertEqual(recon["store_upload_test_eligibility"]["eligible_fresh_unsold_products"], 0)
