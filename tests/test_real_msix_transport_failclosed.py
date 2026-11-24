@@ -217,125 +217,63 @@ class CurrentLedgerGateTests(unittest.TestCase):
         self.assertIs(ledger["certification_allowed"], False)
         self.assertIs(ledger["publish_allowed"], False)
         latest = ledger["latest_transport_reconciliation"]
-        self.assertEqual(latest["central_tested_head_sha"], "5296f5aea27b4931d0b8b3a2dae20146af489cd9")
-        self.assertEqual(latest["previous_central_head_sha"], "c97dde38d3e6f14a2d9a9ccd03f72b937aeb44da")
-        self.assertEqual(latest["ledger_followup_head_sha"], "5296f5aea27b4931d0b8b3a2dae20146af489cd9")
+        self.assertEqual(latest["central_tested_head_sha"], "5cceb57f9b3141c7e136b13053ddd297554ce189")
+        self.assertEqual(latest["previous_central_head_sha"], "f49e5ca9770a378f2cc51e70ef4ac2a934023578")
         self.assertEqual([x["run_id"] for x in latest["exact_head_ci"]],
-                         [45273284167, 45273284213, 45273284166])
-        self.assertTrue(all(x["conclusion"] == "success" for x in latest["exact_head_ci"]))
-        self.assertTrue(ledger["active_product_is_historical"])
-        self.assertEqual(ledger["current_priority_products"][0]["product"], "Focus Session Desk")
-        self.assertEqual(ledger["current_priority_products"][1]["product"], "File Integrity Ledger")
-        file_item = next(p for p in queue["priority"] if p["product"] == "File Integrity Ledger")
-        self.assertEqual(file_item["current_stack_revalidation"]["status"], "PASS_EXACT_HEAD_CI_AFTER_STACK")
-
+                         [45281949671, 45281949365, 45281949579])
+        self.assertEqual(latest["ci_status"], "PASS_EXACT_HEAD_CI")
+        self.assertEqual(latest["status"], "HOLD")
+        self.assertIs(latest["e2e_pass"], False)
+        self.assertIs(latest["real_msix"], False)
+        self.assertEqual(latest["store_upload_test_eligible_products"], 0)
+        current = ledger["windows_e2e_custody_reconciliation"]
+        self.assertEqual(current["pr165_tested_head_sha"], "5cceb57f9b3141c7e136b13053ddd297554ce189")
+        self.assertEqual([x["run_id"] for x in current["pr165_ci"]],
+                         [45281949671, 45281949365, 45281949579])
+        self.assertEqual(current["pr161_head_sha"], "71d9c2125b6aed44a86ca1872d48ad19963f3e63")
+        self.assertEqual([x["run_id"] for x in current["pr161_ci"]], [42712757936])
+        self.assertEqual(ledger["store_upload_test_bridge"]["bridge_head"], "764721021f13be96364529650b44fb439770bac9")
+        self.assertEqual(ledger["store_upload_test_bridge"]["eligible_fresh_unsold_products"], 0)
+        self.assertFalse(ledger["store_upload_test_bridge"]["dry_run_started"])
 
     def test_latest_reconciliation_keeps_focus_file_version_and_source_gates_held(self):
         root = Path(__file__).resolve().parents[1]
         ledger = json.loads((root / "ops/active_e2e_handoff.json").read_text(encoding="utf-8"))
-        recon = json.loads((root / "ops/focus_file_transport_reconciliation_20261123.json").read_text(encoding="utf-8"))
+        recon = json.loads((root / "ops/focus_file_transport_reconciliation_20261125.json").read_text(encoding="utf-8"))
         self.assertEqual(ledger["e2e_status"], "HOLD")
         self.assertIs(ledger["e2e_pass"], False)
-        self.assertEqual(ledger["windows_e2e_custody_reconciliation"]["pr165_tested_head_sha"],
-                         "5296f5aea27b4931d0b8b3a2dae20146af489cd9")
-        self.assertEqual([x["run_id"] for x in ledger["windows_e2e_custody_reconciliation"]["pr165_ci"]],
-                         [45273284167, 45273284213, 45273284166])
-        self.assertEqual(ledger["windows_e2e_custody_reconciliation_history"][-1]["pr165_tested_head_sha"], "5296f5aea27b4931d0b8b3a2dae20146af489cd9")
-        self.assertEqual(ledger["windows_e2e_custody_reconciliation"]["pr165_reconciliation_parent_head_sha"],
-                         "babd8b2ef39e0e07472aa65d06c2134c06915fc3")
-        self.assertEqual(recon["pr165_current_head_sha"], "5296f5aea27b4931d0b8b3a2dae20146af489cd9")
-        self.assertEqual(recon["pr165_current_head_parent_sha"], "babd8b2ef39e0e07472aa65d06c2134c06915fc3")
-        self.assertEqual(recon["pr165_current_head_parent_ci_status"], "INTERMEDIATE_FAILED_STALE_EXPECTED_IDS__SUPERSEDED_BY_FINAL_PASS")
-        self.assertEqual(recon["pr165_current_head_ci_status"], "PASS_EXACT_HEAD_CI")
-        self.assertEqual(recon["pr165_previous_current_head_sha"], "c97dde38d3e6f14a2d9a9ccd03f72b937aeb44da")
-        self.assertEqual([x["run_id"] for x in recon["pr165_previous_current_head_ci"]], [45262561305, 45262561306, 45262561558])
-        self.assertEqual(recon["pr174_restack_assessment_20261124"]["compare_to_current_pr165_head"]["behind_by"], 56)
-        self.assertEqual([x["run_id"] for x in recon["pr165_current_head_parent_ci"]],
-                         [45273033945, 45273033809, 45273033841])
-        self.assertEqual(recon["pr165_immediate_parent_ci_status"], "PARTIAL_UPDATE_INTERMEDIATE_FAILURES__SUPERSEDED_BY_FINAL_PASS")
-        self.assertEqual(recon["pr165_last_verified_predecessor_head_sha"], "5580ad0d49a770cc2ed2cc70aeef7b2e64f8d903")
-        file_product = next(p for p in recon["products"] if p["product"] == "File Integrity Ledger")
-        self.assertEqual(file_product["current_factory_head"], "e2d44434233dd483f9ebc8c9e37fd365da415a39")
-        self.assertEqual(file_product["current_product_lane_head"], "e2d44434233dd483f9ebc8c9e37fd365da415a39")
-        self.assertEqual(file_product["source_selection_status"], "SOURCE_LINEAGE_DIVERGED__NO_PACKAGE_SOURCE_SELECTED")
-        self.assertEqual(file_product["current_gui_followup_pr"], 100)
-        self.assertEqual(file_product["current_gui_followup_head"], "081fc168544022c401ce95a0f481644568912337")
-        self.assertEqual(file_product["hosted_native_gui"]["artifact_sha256"],
-                         "bfb653798a47f14e036ad4ecc69a604b82b64b2df845b7c314c90f242ccdb3c9")
-        self.assertEqual(file_product["hosted_native_gui"]["exe_sha256"],
-                         "5b788cdb0bc7c63d92956228358983fefc1352797fa5d7133ab365d2a7d774aa")
-        self.assertFalse(file_product["hosted_native_gui"]["visual_review_required"])
-        self.assertEqual(file_product["approved_identity_file_current_pr100_head_readback"], "NOT_FOUND")
-        self.assertIsNone(file_product["package_version"])
-        self.assertIs(file_product["real_msix"], False)
-        self.assertEqual(ledger["windows_e2e_custody_reconciliation"]["pr161_head_sha"],
-                         "71d9c2125b6aed44a86ca1872d48ad19963f3e63")
-        self.assertEqual([x["run_id"] for x in ledger["windows_e2e_custody_reconciliation"]["pr161_ci"]],
-                         [42712757936])
-        self.assertEqual(ledger["windows_e2e_custody_reconciliation"]["approved_version"], "UNVERIFIED")
-        self.assertEqual(recon["version_discovery"]["decision"],
-                         "KEEP_VERSION_HOLD__DO_NOT_INFER_OR_WRITE_VERSION")
-        self.assertEqual(recon["first_unconnected_interval"]["status"],
-                         "BLOCKED_BEFORE_REAL_MSIX_BUILD")
-        self.assertIs(ledger["store_submission_allowed"], False)
-        self.assertIs(ledger["certification_allowed"], False)
-        self.assertIs(ledger["publish_allowed"], False)
-        self.assertEqual(recon["pr165_failed_intermediate_head_sha"], "76557ce00def85849aed05585e293c77d6c81d12")
-        self.assertEqual(recon["pr165_partial_update_intermediate_head_sha"], "8413635f5687cee7f440c00b6fcc45c24f86b362")
-        self.assertEqual(recon["pr165_immediate_parent_ci"][1]["conclusion"], "failure")
-        focus_product = next(p for p in recon["products"] if p["product"] == "Focus Session Desk")
-        focus_gui = focus_product["hosted_native_gui"]
-        self.assertEqual(focus_gui["run_id"], 45234786152)
-        self.assertEqual(focus_gui["artifact_sha256"], "0e3291ac4798d61f83bb9d3a2544eab67a69f384e5c17909ff98028f77929d45")
-        self.assertEqual(focus_gui["progress_expected_text"], "Progress: 1/1 complete (100%)")
-        self.assertTrue(focus_gui["restart_task_done_observed"])
-        self.assertEqual(focus_gui["visual_review_status"], "PASS_36_VISUAL_REVIEW__100_PERCENT_AND_COLD_RESTART_PERSISTENCE")
-        self.assertFalse(focus_gui["exe_bytes_independently_rehashed"])
-        self.assertIsNone(focus_product["package_version"])
-        self.assertIs(focus_product["real_msix"], False)
-        self.assertEqual(focus_product["product_quality_assessment"]["score"]["total"], 54)
-        self.assertEqual(focus_product["product_quality_assessment"]["decision"], "DO_NOT_SELL__BELOW_80")
-        self.assertEqual(ledger["rotation_projection_status"]["status"], "HISTORICAL_NOT_CURRENT")
-        self.assertFalse(ledger["rotation_projection_status"]["current_projection_recomputed_this_run"])
-        self.assertEqual(ledger["pr174_restack_assessment_20261124"]["decision"], "DO_NOT_RESTACK")
-        self.assertEqual(len(ledger["pr174_restack_assessment_20261124"]["commits"]), 6)
-
-
-class LiveReconciliation20261124Tests(unittest.TestCase):
-    def test_live_pr165_head_ci_is_not_promoted_to_product_e2e(self):
-        root = Path(__file__).resolve().parents[1]
-        ledger = json.loads((root / "ops/active_e2e_handoff.json").read_text(encoding="utf-8"))
-        live = ledger["pr165_live_head_observation_20261124_latest"]
-        self.assertEqual(live["head_sha"], "f49e5ca9770a378f2cc51e70ef4ac2a934023578")
-        self.assertEqual([x["run_id"] for x in live["exact_head_workflows"]],
-                         [45275266839, 45275266812, 45275266866])
-        self.assertTrue(all(x["conclusion"] == "success" for x in live["exact_head_workflows"]))
-        self.assertEqual(live["status"], "PASS_EXACT_HEAD_CI")
-        self.assertIs(live["e2e_pass"], False)
-        self.assertEqual(live["product_e2e_status"], "HOLD")
-        self.assertIs(ledger["store_submission_allowed"], False)
-        self.assertIs(ledger["certification_allowed"], False)
-        self.assertIs(ledger["publish_allowed"], False)
-
-    def test_focus_file_current_source_and_version_gates_remain_held(self):
-        root = Path(__file__).resolve().parents[1]
-        recon = json.loads((root / "ops/focus_file_transport_reconciliation_20261124.json").read_text(encoding="utf-8"))
         self.assertEqual(recon["status"], "HOLD")
         self.assertIs(recon["e2e_pass"], False)
+        self.assertEqual(recon["pr165_current_head_sha"], "5cceb57f9b3141c7e136b13053ddd297554ce189")
+        self.assertEqual([x["run_id"] for x in recon["pr165_current_head_ci"]],
+                         [45281949671, 45281949365, 45281949579])
         focus = next(p for p in recon["products"] if p["product"] == "Focus Session Desk")
         file_product = next(p for p in recon["products"] if p["product"] == "File Integrity Ledger")
         self.assertEqual(focus["current_source_identity_binding_status"], "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE")
-        self.assertEqual(file_product["source_selection_status"], "SOURCE_LINEAGE_DIVERGED__NO_PACKAGE_SOURCE_SELECTED")
-        for product in (focus, file_product):
-            self.assertIsNone(product["package_version"])
-            self.assertIs(product["real_msix"], False)
-            self.assertIs(product["github_backlog_receipt"], False)
-            self.assertIs(product["local_checker_receipt"], False)
-        self.assertEqual(file_product["pr95_latest_gui"]["conclusion"], "failure")
-        self.assertEqual(file_product["pr100_gui_candidate"]["conclusion"], "success")
+        self.assertEqual(focus["current_source_request_status"], "NOT_OBSERVED__HISTORICAL_REQUEST_BINDS_8B00_ONLY")
+        self.assertIsNone(focus["package_version"])
+        self.assertIs(focus["real_msix"], False)
+        self.assertEqual(file_product["current_source_sha"], "33d612be2774ac155ea3d85289ec5cb7981c81c1")
+        self.assertEqual(file_product["current_source_pr"], 115)
+        self.assertEqual(file_product["source_selection_status"],
+                         "INTEGRATED_CANDIDATE_PR115__AWAITING_HUMAN_VISUAL_REVIEW_AND_IDENTITY_REVALIDATION")
+        self.assertEqual(file_product["current_source_request"]["status"], "DRY_RUN")
+        self.assertEqual(file_product["current_source_request"]["source_sha"], file_product["current_source_sha"])
+        self.assertEqual(file_product["current_source_request"]["route"], "MSIX_OR_PWA_APP")
+        self.assertEqual(file_product["current_source_identity_binding_status"], "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE")
+        self.assertFalse(file_product["historical_approved_identity_file_present_on_current_source"])
+        self.assertTrue(file_product["gui"]["visual_review_required"])
+        self.assertEqual(file_product["gui"]["visual_review_status"],
+                         "36_SCREENSHOT_INSPECTION_PASS__HUMAN_OWNER_REVIEW_REQUIRED")
+        self.assertEqual(file_product["msix_export"]["status"], "SKIPPED_NO_ARTIFACT")
+        self.assertIsNone(file_product["package_version"])
+        self.assertIs(file_product["real_msix"], False)
+        self.assertIs(recon["version_discovery"]["status"], "NO_AUTHORITATIVE_VERSION_FOUND_IN_REVIEWED_EVIDENCE")
         self.assertEqual(recon["version_discovery"]["decision"], "KEEP_VERSION_HOLD__DO_NOT_INFER_OR_WRITE_VERSION")
-        self.assertEqual(recon["pr174"]["compare_to_pr165"]["behind_by"], 64)
+        self.assertEqual(recon["first_unconnected_interval"]["status"], "BLOCKED_BEFORE_REAL_MSIX_BUILD")
         self.assertEqual(recon["store_upload_test_eligibility"]["eligible_fresh_unsold_products"], 0)
+        self.assertFalse(recon["store_upload_test_eligibility"]["dry_run_started"])
+        self.assertIs(ledger["store_submission_allowed"], False)
+        self.assertIs(ledger["certification_allowed"], False)
+        self.assertIs(ledger["publish_allowed"], False)
 
-if __name__ == "__main__":
-    unittest.main()

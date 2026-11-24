@@ -15,7 +15,7 @@ class CompletionRushQueueTests(unittest.TestCase):
     def test_new_products_are_disabled_during_completion_rush(self):
         self.assertFalse(self.data["new_product_generation_allowed"])
 
-    def test_focus_and_file_integrity_are_delivery_only(self):
+    def test_focus_and_file_integrity_remain_delivery_only_and_version_held(self):
         items = {x["product"]: x for x in self.data["priority"]}
         for name in ("Focus Session Desk", "File Integrity Ledger"):
             row = items[name]
@@ -24,22 +24,61 @@ class CompletionRushQueueTests(unittest.TestCase):
             self.assertFalse(row["functional_hold"])
             self.assertTrue(row["product_frozen_for_package"])
             self.assertEqual(row["identity_return"], "VERIFIED")
+            self.assertEqual(row["identity_return_scope"], "HISTORICAL_SOURCE_ONLY")
             self.assertIsNone(row["package_version"])
             self.assertEqual(row["package_version_status"], "AUTHORITATIVE_VALUE_REQUIRED")
             self.assertFalse(row["real_msix"])
 
-    def test_file_integrity_current_gui_candidate_is_pinned_and_not_visually_promoted(self):
+    def test_focus_identity_is_not_reused_for_current_source(self):
+        row = next(x for x in self.data["priority"] if x["product"] == "Focus Session Desk")
+        self.assertEqual(row["source_sha"], "8b00bc4e90828c4282463826873aa8dfd2eb93f4")
+        self.assertEqual(row["current_source_sha"], "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79")
+        self.assertEqual(row["current_source_identity_binding_status"], "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE")
+        self.assertEqual(row["current_source_request_status"], "NOT_OBSERVED__HISTORICAL_REQUEST_BINDS_8B00_ONLY")
+        self.assertEqual(row["identity_package_version_gate"], "HOLD")
+        self.assertEqual(row["store_assets_evidence"]["native_exe_gui"]["run_id"], 45234786152)
+        self.assertEqual(row["store_assets_evidence"]["native_exe_gui"]["visual_review_status"],
+                         "PASS_36_VISUAL_REVIEW__100_PERCENT_AND_COLD_RESTART_PERSISTENCE")
+        self.assertEqual(row["product_quality_assessment"]["score"]["total"], 54)
+        self.assertEqual(row["product_quality_assessment"]["decision"], "DO_NOT_SELL__BELOW_80")
+
+    def test_file_integrity_pr115_is_integrated_candidate_not_package_ready(self):
         row = next(x for x in self.data["priority"] if x["product"] == "File Integrity Ledger")
-        evidence = row["store_assets_evidence"]
-        gui = evidence["native_exe_gui"]
-        self.assertEqual(gui["run_id"], 45166383111)
-        self.assertEqual(gui["tested_head_sha"], "d09973e33daa374dd5a3ba9b4f7a0fabd06987a3")
-        self.assertEqual(gui["artifact_id"], 14813448795)
-        self.assertEqual(gui["artifact_sha256"], "b6ef57614e6cdf8efdf8314f43f5302dd526fd8c57a5baaef6f2b6de33e0e4a9")
-        self.assertTrue(gui["artifact_metadata_verified_by_github_api"])
-        self.assertTrue(gui["visual_review_required"])
-        self.assertEqual(gui["visual_review_status"], "NOT_INDEPENDENTLY_REVIEWED_FOR_THIS_EXACT_HEAD")
-        self.assertEqual(evidence["previous_pre_stack_gui_evidence"]["artifact_id"], 14806249226)
+        self.assertEqual(row["current_factory_pr"], 115)
+        self.assertEqual(row["current_factory_head"], "33d612be2774ac155ea3d85289ec5cb7981c81c1")
+        self.assertEqual(row["current_source_sha"], "33d612be2774ac155ea3d85289ec5cb7981c81c1")
+        self.assertEqual(row["source_selection_status"],
+                         "INTEGRATED_CANDIDATE_PR115__AWAITING_HUMAN_VISUAL_REVIEW_AND_IDENTITY_REVALIDATION")
+        self.assertEqual(row["current_factory_compare"], {
+            "status": "ahead", "ahead_by": 2, "behind_by": 0, "total_commits": 2, "changed_files": 8
+        })
+        self.assertEqual(row["current_gui_followup"]["run_id"], 45422895435)
+        self.assertEqual(row["current_gui_followup"]["artifact_id"], 14934752145)
+        self.assertEqual(row["current_gui_followup"]["artifact_sha256"],
+                         "6faa6db6d0e05b6baa71347c31b6f4d871fedcf35e28b787a7fbdb99816ab04c")
+        self.assertEqual(row["current_gui_followup"]["exe_sha256"],
+                         "425e8f03397fc00a7b1442d58cc99d460fea53238e83c5b96500ac450bab85c6")
+        self.assertTrue(row["current_gui_followup"]["artifact_bytes_independently_downloaded_and_rehashed"])
+        self.assertTrue(row["current_gui_followup"]["exe_sha256_independently_rehashed"])
+        self.assertEqual(row["current_gui_followup"]["receipt_statuses"], ["UNCHANGED", "MODIFIED", "MISSING"])
+        self.assertTrue(row["current_gui_followup"]["visual_review_required"])
+        self.assertEqual(row["current_gui_followup_visual_review_status"],
+                         "36_SCREENSHOT_INSPECTION_PASS__HUMAN_OWNER_REVIEW_REQUIRED")
+        self.assertEqual(row["current_source_request_id"], "app-file-integrity-ledger-33d612be2774")
+        self.assertEqual(row["current_source_request"]["status"], "DRY_RUN")
+        self.assertEqual(row["current_source_request"]["source_sha"], row["current_source_sha"])
+        self.assertEqual(row["current_source_request"]["route"], "MSIX_OR_PWA_APP")
+        self.assertFalse(row["approved_identity_file_present_on_current_pr115_head"])
+        self.assertEqual(row["approved_identity_file_current_pr115_head_readback"], "NOT_FOUND")
+        self.assertEqual(row["source_lineage_observation_20261125"]["historical_approved_source_sha"],
+                         "d1108d12f7d1697af30400f97c7db39cba5e6791")
+        self.assertEqual(row["source_lineage_observation_20261125"]["msix_export"]["status"], "SKIPPED_NO_ARTIFACT")
+        self.assertEqual(row["msix_export"]["run_id"], 45422811552)
+        self.assertIsNone(row["package_version"])
+        self.assertFalse(row["real_msix"])
+        self.assertFalse(row["github_backlog_receipt"])
+        self.assertFalse(row["local_checker_receipt"])
+        self.assertTrue(row["store_assets_git_blob_sha_verified"])
 
     def test_no_version_is_invented(self):
         for row in self.data["priority"]:
@@ -52,21 +91,19 @@ class CompletionRushQueueTests(unittest.TestCase):
         self.assertEqual(ranks, list(range(1, len(ranks) + 1)))
         self.assertEqual(len(products), len(set(products)))
 
+    def test_latest_transport_and_store_gate_stay_held(self):
+        latest = self.data["latest_transport_reconciliation"]
+        self.assertEqual(latest["central_head"], "5cceb57f9b3141c7e136b13053ddd297554ce189")
+        self.assertEqual([x["run_id"] for x in latest["exact_head_ci"]],
+                         [45281949671, 45281949365, 45281949579])
+        self.assertEqual(latest["status"], "HOLD")
+        self.assertFalse(latest["e2e_pass"])
+        self.assertEqual(self.data["store_upload_test_eligibility_live_20261125"]["eligible_fresh_unsold_products"], 0)
+        self.assertFalse(self.data["store_upload_test_eligibility_live_20261125"]["dry_run_started"])
+        self.assertFalse(self.data["store_submission_allowed"])
+        self.assertFalse(self.data["certification_allowed"])
+        self.assertFalse(self.data["publish_allowed"])
 
-    def test_file_integrity_live_source_lineage_divergence_is_not_package_ready(self):
-        items = {x["product"]: x for x in self.data["priority"]}
-        row = items["File Integrity Ledger"]
-        self.assertEqual(row["current_source_sha"], "e2d44434233dd483f9ebc8c9e37fd365da415a39")
-        self.assertEqual(row["store_assets_branch_head"], "e2d44434233dd483f9ebc8c9e37fd365da415a39")
-        self.assertEqual(row["current_factory_head"], "e2d44434233dd483f9ebc8c9e37fd365da415a39")
-        observation = row["source_lineage_observation_20261124"]
-        self.assertEqual(observation["pr95_current_head"]["head_sha"], "e2d44434233dd483f9ebc8c9e37fd365da415a39")
-        self.assertEqual(observation["pr95_current_head"]["gui_failure"]["classification"], "GUI_TEST_HARNESS_DIALOG_DISCOVERY_FAILURE")
-        self.assertEqual(observation["current_gui_candidate"]["head_sha"], "081fc168544022c401ce95a0f481644568912337")
-        self.assertEqual(observation["source_selection_status"], "SOURCE_LINEAGE_DIVERGED__NO_PACKAGE_SOURCE_SELECTED")
-        self.assertTrue(observation["asset_blob_sha_match_across_pr95_and_pr100"])
-        self.assertIsNone(row["package_version"])
-        self.assertFalse(row["real_msix"])
 
 if __name__ == "__main__":
     unittest.main()
