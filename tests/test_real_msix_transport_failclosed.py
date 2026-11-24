@@ -277,3 +277,45 @@ class CurrentLedgerGateTests(unittest.TestCase):
         self.assertIs(ledger["certification_allowed"], False)
         self.assertIs(ledger["publish_allowed"], False)
 
+
+
+class CurrentLaneTransportBoundaryTests(unittest.TestCase):
+    def test_current_lane_source_and_request_mismatch_stays_fail_closed(self):
+        root = Path(__file__).resolve().parents[1]
+        queue = json.loads((root / "ops/completion_rush_queue_20261116.json").read_text(encoding="utf-8"))
+        ledger = json.loads((root / "ops/active_e2e_handoff.json").read_text(encoding="utf-8"))
+        rows = {p["product"]: p for p in queue["priority"]}
+
+        for name in ("Focus Session Desk", "File Integrity Ledger"):
+            item = rows[name]
+            self.assertEqual(item["hold_class"], "DELIVERY_HOLD")
+            self.assertIsNone(item["package_version"])
+            self.assertFalse(item["real_msix"])
+            self.assertFalse(item["github_backlog_receipt"])
+            self.assertFalse(item["local_checker_receipt"])
+            identity = {
+                "request_id": item.get("current_source_request_id") or "current-source-request-not-observed",
+                "source_sha": item["current_source_sha"],
+                "verified_source_sha": item["source_sha"],
+                "expected_head_sha": item["current_source_sha"],
+                "package_version_gate": "HOLD",
+            }
+            result = authorize_transport(identity, {}, Path("unused.msix"), {}, None)
+            self.assertEqual(result["status"], "HOLD")
+            self.assertIn(result["reason"], ("SOURCE_DRIFT", "VERSION_NOT_APPROVED"))
+
+        signal = rows["Signal Sprint"]
+        self.assertEqual(signal["current_candidate_source_sha"], "1a349faa41663c417c40710140a4d50c79b62b78")
+        self.assertEqual(signal["historical_source_sha"], "c058cbf7fe38e02d929c67d047d717ff74bd522e")
+        self.assertFalse(signal["cas_applied"])
+        self.assertFalse(signal["real_msixvc"])
+        prism = rows["Prism Route 3D"]
+        self.assertEqual(prism["factory_source_sha"], "b03ce7b16c3f75c04fe20fdda224c45849eeba0d")
+        self.assertEqual(prism["approved_identity_source_sha"], "15fdcb52e46e35e6de8e87c55af99719c21e09b9")
+        self.assertFalse(prism["real_msix"])
+
+        self.assertEqual(ledger["e2e_status"], "HOLD")
+        self.assertIs(ledger["e2e_pass"], False)
+        self.assertIs(ledger["store_submission_allowed"], False)
+        self.assertIs(ledger["certification_allowed"], False)
+        self.assertIs(ledger["publish_allowed"], False)
