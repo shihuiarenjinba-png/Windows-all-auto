@@ -284,7 +284,7 @@ class CustodyTests(unittest.TestCase):
         signal = next(p for p in queue["priority"] if p["product"] == "Signal Sprint")
         self.assertEqual(signal["historical_source_sha"], "c058cbf7fe38e02d929c67d047d717ff74bd522e")
         self.assertEqual(signal["current_candidate_source_sha"], "1a349faa41663c417c40710140a4d50c79b62b78")
-        self.assertEqual(signal["build_artifact_status"], "HOLD_BUILD_ARTIFACT_NOT_CONFIGURED")
+        self.assertEqual(signal["build_artifact_status"], "CURRENT_GDK_EXE_ARTIFACT_PRESENT__SDK_ROOT_UNAVAILABLE__MSIXVC2_NOT_BUILT")
         self.assertIs(ledger["store_submission_allowed"], False)
         self.assertIs(ledger["certification_allowed"], False)
         self.assertIs(ledger["publish_allowed"], False)
@@ -297,10 +297,10 @@ class CustodyTests(unittest.TestCase):
         ledger = json.loads((root / "ops/active_e2e_handoff.json").read_text(encoding="utf-8"))
         recon = json.loads((root / "ops/focus_file_transport_reconciliation_20261125.json").read_text(encoding="utf-8"))
         latest = ledger["latest_transport_reconciliation"]
-        self.assertEqual(latest["central_tested_head_sha"], "9e535e98b14b0740ded8658330de5ed597888be3")
-        self.assertEqual(latest["previous_central_head_sha"], "5cceb57f9b3141c7e136b13053ddd297554ce189")
+        self.assertEqual(latest["central_tested_head_sha"], "437312f8147b30e41e2abe35499bd11dbd955a77")
+        self.assertEqual(latest["previous_central_head_sha"], "9e535e98b14b0740ded8658330de5ed597888be3")
         self.assertEqual([x["run_id"] for x in latest["exact_head_ci"]],
-                         [45464147168, 45464147309, 45464147179])
+                         [45464844123, 45464844201, 45464844107])
         self.assertEqual(latest["ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual(latest["status"], "HOLD")
         self.assertIs(latest["e2e_pass"], False)
