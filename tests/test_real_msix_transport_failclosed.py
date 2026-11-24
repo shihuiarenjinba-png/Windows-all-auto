@@ -246,7 +246,7 @@ class CurrentLedgerGateTests(unittest.TestCase):
         self.assertIs(recon["e2e_pass"], False)
         self.assertEqual(recon["pr165_current_head_sha"], "437312f8147b30e41e2abe35499bd11dbd955a77")
         self.assertEqual([x["run_id"] for x in recon["pr165_current_head_ci"]],
-                         [45464147168, 45464147309, 45464147179])
+                         [45464844123, 45464844201, 45464844107])
         focus = next(p for p in recon["products"] if p["product"] == "Focus Session Desk")
         file_product = next(p for p in recon["products"] if p["product"] == "File Integrity Ledger")
         self.assertEqual(focus["current_source_identity_binding_status"], "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE")
