@@ -1,28 +1,28 @@
 {
   "path": "ops/focus_file_transport_reconciliation_20261125.json",
-  "observed_at_utc": "2026-11-24T22:36:02Z",
+  "observed_at_utc": "2026-11-24T22:41:07Z",
   "status": "HOLD",
   "e2e_pass": false,
   "priority_product": "Focus Session Desk",
-  "central_head": "f440ca91c1a9ed6413c8e42e9c0611f174f81a19",
-  "pr165_current_head_sha": "f440ca91c1a9ed6413c8e42e9c0611f174f81a19",
-  "pr165_current_head_parent_sha": "a206f17636327e6afb55d94b019bc76a5d230b65",
+  "central_head": "834be04ba0a39c0e4222d3b07187f935c1b88dc7",
+  "pr165_current_head_sha": "834be04ba0a39c0e4222d3b07187f935c1b88dc7",
+  "pr165_current_head_parent_sha": "f440ca91c1a9ed6413c8e42e9c0611f174f81a19",
   "pr165_current_head_ci_status": "PASS_EXACT_HEAD_CI",
   "pr165_current_head_ci": [
     {
-      "run_id": 45483789841,
+      "run_id": 45503167380,
       "conclusion": "success",
       "scope": "Exact-head Windows E2E transport fail-closed regression",
       "job": "transport-regression"
     },
     {
-      "run_id": 45483789765,
+      "run_id": 45503167391,
       "conclusion": "success",
       "scope": "Exact-head independent GitHub artifact custody regression",
       "job": "custody-regression"
     },
     {
-      "run_id": 45483789759,
+      "run_id": 45503167397,
       "conclusion": "success",
       "scope": "Exact-head Windows-all-auto Offline QA",
       "jobs": [
@@ -31,22 +31,22 @@
       ]
     }
   ],
-  "pr165_previous_current_head_sha": "a206f17636327e6afb55d94b019bc76a5d230b65",
+  "pr165_previous_current_head_sha": "f440ca91c1a9ed6413c8e42e9c0611f174f81a19",
   "pr165_previous_current_head_ci": [
     {
-      "run_id": 45483439901,
+      "run_id": 45483789841,
       "conclusion": "success",
       "scope": "Immediate previous exact-head Windows E2E transport fail-closed regression",
       "job": "transport-regression"
     },
     {
-      "run_id": 45483439741,
+      "run_id": 45483789765,
       "conclusion": "success",
       "scope": "Immediate previous exact-head independent GitHub artifact custody regression",
       "job": "custody-regression"
     },
     {
-      "run_id": 45483439906,
+      "run_id": 45483789759,
       "conclusion": "success",
       "scope": "Immediate previous exact-head Windows-all-auto Offline QA",
       "jobs": [
@@ -73,11 +73,11 @@
     "branch": "codex/36-e2e-ledger-reconcile-20261123-1937",
     "head_sha": "69e7b7c8a7b1ecdaea42e6f03644a8cd549dfaee",
     "compare_to_current_pr165_head": {
-      "current_pr165_head_sha": "f440ca91c1a9ed6413c8e42e9c0611f174f81a19",
+      "current_pr165_head_sha": "834be04ba0a39c0e4222d3b07187f935c1b88dc7",
       "merge_base_sha": "c6f30824196e90c03837e0636d7557a79fad92af",
       "status": "diverged",
       "ahead_by": 6,
-      "behind_by": 77,
+      "behind_by": 78,
       "changed_files": [
         "ops/active_e2e_handoff.json",
         "ops/completion_rush_queue_20261116.json",
@@ -326,11 +326,11 @@
     "branch": "codex/36-e2e-ledger-reconcile-20261123-1937",
     "head_sha": "69e7b7c8a7b1ecdaea42e6f03644a8cd549dfaee",
     "compare_to_current_pr165_head": {
-      "current_pr165_head_sha": "f440ca91c1a9ed6413c8e42e9c0611f174f81a19",
+      "current_pr165_head_sha": "834be04ba0a39c0e4222d3b07187f935c1b88dc7",
       "merge_base_sha": "c6f30824196e90c03837e0636d7557a79fad92af",
       "status": "diverged",
       "ahead_by": 6,
-      "behind_by": 77,
+      "behind_by": 78,
       "changed_files": [
         "ops/active_e2e_handoff.json",
         "ops/completion_rush_queue_20261116.json",
@@ -344,19 +344,19 @@
   },
   "pr165_current_head_parent_ci": [
     {
-      "run_id": 45483439901,
+      "run_id": 45483789841,
       "conclusion": "success",
       "scope": "Immediate previous exact-head Windows E2E transport fail-closed regression",
       "job": "transport-regression"
     },
     {
-      "run_id": 45483439741,
+      "run_id": 45483789765,
       "conclusion": "success",
       "scope": "Immediate previous exact-head independent GitHub artifact custody regression",
       "job": "custody-regression"
     },
     {
-      "run_id": 45483439906,
+      "run_id": 45483789759,
       "conclusion": "success",
       "scope": "Immediate previous exact-head Windows-all-auto Offline QA",
       "jobs": [
