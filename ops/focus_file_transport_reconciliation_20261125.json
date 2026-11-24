@@ -1,28 +1,28 @@
 {
   "path": "ops/focus_file_transport_reconciliation_20261125.json",
-  "observed_at_utc": "2026-11-24T18:52:15Z",
+  "observed_at_utc": "2026-11-24T19:58:35Z",
   "status": "HOLD",
   "e2e_pass": false,
   "priority_product": "Focus Session Desk",
-  "central_head": "9e535e98b14b0740ded8658330de5ed597888be3",
-  "pr165_current_head_sha": "9e535e98b14b0740ded8658330de5ed597888be3",
-  "pr165_current_head_parent_sha": "61385f753987cc74079a6ef6270afbb5cb3c7558",
+  "central_head": "437312f8147b30e41e2abe35499bd11dbd955a77",
+  "pr165_current_head_sha": "437312f8147b30e41e2abe35499bd11dbd955a77",
+  "pr165_current_head_parent_sha": "ac3708b9b68a3d4c613d32117332eb245ff9ff69",
   "pr165_current_head_ci_status": "PASS_EXACT_HEAD_CI",
   "pr165_current_head_ci": [
     {
-      "run_id": 45464147168,
+      "run_id": 45464844123,
       "conclusion": "success",
       "scope": "Exact-head Windows E2E transport fail-closed regression",
       "job": "transport-regression"
     },
     {
-      "run_id": 45464147309,
+      "run_id": 45464844201,
       "conclusion": "success",
       "scope": "Exact-head independent GitHub artifact custody regression",
       "job": "custody-regression"
     },
     {
-      "run_id": 45464147179,
+      "run_id": 45464844107,
       "conclusion": "success",
       "scope": "Exact-head Windows-all-auto Offline QA (539 tests on Ubuntu and Windows; Windows skipped 2)",
       "jobs": [
@@ -31,27 +31,27 @@
       ]
     }
   ],
-  "pr165_previous_current_head_sha": "5cceb57f9b3141c7e136b13053ddd297554ce189",
+  "pr165_previous_current_head_sha": "9e535e98b14b0740ded8658330de5ed597888be3",
   "pr165_previous_current_head_ci": [
     {
-      "run_id": 45281949671,
+      "run_id": 45464147168,
       "conclusion": "success",
       "scope": "Previous exact-head Windows E2E transport fail-closed regression",
       "job": "transport-regression"
     },
     {
-      "run_id": 45281949365,
+      "run_id": 45464147309,
       "conclusion": "success",
       "scope": "Previous exact-head independent GitHub artifact custody regression",
       "job": "custody-regression"
     },
     {
-      "run_id": 45281949579,
+      "run_id": 45464147179,
       "conclusion": "success",
-      "scope": "Previous exact-head Windows-all-auto Offline QA",
+      "scope": "Previous exact-head Windows-all-auto Offline QA (539 tests on Ubuntu and Windows; Windows skipped 2)",
       "jobs": [
-        "Offline preflight tests (windows-latest)",
-        "Offline preflight tests (ubuntu-latest)"
+        "Offline preflight tests (ubuntu-latest)",
+        "Offline preflight tests (windows-latest)"
       ]
     }
   ],
@@ -87,7 +87,10 @@
     "unique_changes_to_restack": [],
     "decision": "DO_NOT_RESTACK",
     "merge_allowed": false,
-    "reason": "Six operations-only commits are superseded by PR165; no unique product code or transport implementation is missing."
+    "reason": "Six operations-only commits are superseded by PR165; no unique product code or transport implementation is missing.",
+    "status": "diverged",
+    "ahead_by": 6,
+    "behind_by": 73
   },
   "products": [
     {
@@ -275,7 +278,7 @@
     "force_push_allowed": false
   },
   "next_action": "Focus remains rank 1: current-source request/Identity revalidation and authoritative Partner Center Version are required. File Integrity PR115 is now one integrated current-source candidate with exact-head CI and a DRY_RUN request; complete human visual review, current-source Identity revalidation and authoritative Version before MSIX. After gates pass, build real MSIX and proceed through independent SHA custody, backlog, local pull, checker and local GUI/install QA. No Version inference, old-source CAS, Store write, merge, or product code changes.",
-  "pr165_current_head_parent_ci_status": "INTERMEDIATE_TEST_ASSERTION_FAILURE__SUPERSEDED_BY_FINAL_EXACT_HEAD_PASS",
+  "pr165_current_head_parent_ci_status": "PARTIAL_FAIL_STALE_PR174_BEHIND_COUNT_ASSERTION__FIXED_BY_437312F__CURRENT_EXACT_HEAD_PASS",
   "pr165_intermediate_test_failures": [
     {
       "head_sha": "bd941a25ee2c698eaaca993fbe2cef85fb688668",
@@ -296,6 +299,16 @@
       ],
       "status": "FAIL__STRING_ASSERTION_USED_IDENTITY_COMPARISON",
       "resolution": "Changed version-discovery string assertion from assertIs to assertEqual; custody workflow already passed."
+    },
+    {
+      "head_sha": "ac3708b9b68a3d4c613d32117332eb245ff9ff69",
+      "runs": [
+        45464748648,
+        45464748603,
+        45464748519
+      ],
+      "status": "PARTIAL_FAIL__STALE_PR174_BEHIND_COUNT_ASSERTION",
+      "resolution": "Transport regression passed. Custody and Windows/Ubuntu Offline QA failed only because test_github_artifact_custody.py expected PR174 behind_by=68 while live compare returned 71. Commit 437312f updated the assertion to 71; all three exact-head workflows on 437312f then passed."
     }
   ],
   "pr174_restack_assessment_20261125": {
@@ -304,11 +317,11 @@
     "branch": "codex/36-e2e-ledger-reconcile-20261123-1937",
     "head_sha": "69e7b7c8a7b1ecdaea42e6f03644a8cd549dfaee",
     "compare_to_current_pr165_head": {
-      "current_pr165_head_sha": "9e535e98b14b0740ded8658330de5ed597888be3",
+      "current_pr165_head_sha": "437312f8147b30e41e2abe35499bd11dbd955a77",
       "merge_base_sha": "c6f30824196e90c03837e0636d7557a79fad92af",
       "status": "diverged",
       "ahead_by": 6,
-      "behind_by": 71,
+      "behind_by": 73,
       "changed_files": [
         "ops/active_e2e_handoff.json",
         "ops/completion_rush_queue_20261116.json",
