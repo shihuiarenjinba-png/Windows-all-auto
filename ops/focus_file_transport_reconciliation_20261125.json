@@ -105,7 +105,11 @@
       "gui_visual_review_status": "PASS_36_VISUAL_REVIEW__100_PERCENT_AND_COLD_RESTART_PERSISTENCE",
       "exe_bytes_independently_rehashed": false,
       "product_quality_score": 54,
-      "product_quality_decision": "DO_NOT_SELL__BELOW_80"
+      "product_quality_decision": "DO_NOT_SELL__BELOW_80",
+      "github_backlog_receipt": false,
+      "local_pull_receipt": false,
+      "local_checker_receipt": false,
+      "local_gui_install_receipt": false
     },
     {
       "product": "File Integrity Ledger",
@@ -194,7 +198,21 @@
       "github_backlog_receipt": false,
       "local_pull_receipt": false,
       "local_checker_receipt": false,
-      "local_gui_install_receipt": false
+      "local_gui_install_receipt": false,
+      "current_source_request": {
+        "request_id": "app-file-integrity-ledger-33d612be2774",
+        "source_sha": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
+        "request_sha256": "dc477b03dd8eb024dd4145fb56cace5d57531a9ae3bbba74a487631f823b2557",
+        "idempotency_key": "a1bb56ad8ec3fcebf8c4d6ee5b9b96bbbc64e6ac4c6a481b73810f3ed0f03df2",
+        "run_id": 45422895649,
+        "artifact_id": 14934034365,
+        "artifact_sha256": "697528b3b0769e3962eebfa0efcdcb026618cd378d97fc60c4f234017882527e",
+        "status": "DRY_RUN",
+        "route": "MSIX_OR_PWA_APP",
+        "live_source_head_verification": "VERIFIED",
+        "official_identity_status": "NOT_COLLECTED",
+        "package_version": null
+      }
     }
   ],
   "version_discovery": {

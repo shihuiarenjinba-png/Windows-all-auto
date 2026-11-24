@@ -35,7 +35,7 @@ class CompletionRushQueueTests(unittest.TestCase):
         self.assertEqual(row["current_source_sha"], "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79")
         self.assertEqual(row["current_source_identity_binding_status"], "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE")
         self.assertEqual(row["current_source_request_status"], "NOT_OBSERVED__HISTORICAL_REQUEST_BINDS_8B00_ONLY")
-        self.assertEqual(row["identity_package_version_gate"], "HOLD")
+        self.assertEqual(row["package_version_status"], "AUTHORITATIVE_VALUE_REQUIRED")
         self.assertEqual(row["store_assets_evidence"]["native_exe_gui"]["run_id"], 45234786152)
         self.assertEqual(row["store_assets_evidence"]["native_exe_gui"]["visual_review_status"],
                          "PASS_36_VISUAL_REVIEW__100_PERCENT_AND_COLD_RESTART_PERSISTENCE")
