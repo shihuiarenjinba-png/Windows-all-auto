@@ -240,6 +240,7 @@ class CurrentLedgerGateTests(unittest.TestCase):
         root = Path(__file__).resolve().parents[1]
         ledger = json.loads((root / "ops/active_e2e_handoff.json").read_text(encoding="utf-8"))
         recon = json.loads((root / "ops/focus_file_transport_reconciliation_20261125.json").read_text(encoding="utf-8"))
+        current = ledger["windows_e2e_custody_reconciliation"]
         self.assertEqual(ledger["e2e_status"], "HOLD")
         self.assertIs(ledger["e2e_pass"], False)
         self.assertEqual(recon["status"], "HOLD")
