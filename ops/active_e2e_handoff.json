@@ -18871,7 +18871,18 @@
         "ops/focus_file_transport_reconciliation_20261120.json"
       ]
     },
-    "decision": "DO_NOT_MERGE__DO_NOT_RESTACK__DO_NOT_CHERRY_PICK_BLINDLY"
+    "decision": "DO_NOT_MERGE__DO_NOT_RESTACK__DO_NOT_CHERRY_PICK_BLINDLY",
+    "compare_to_current_pr165_head": {
+      "current_pr165_head_sha": "437312f8147b30e41e2abe35499bd11dbd955a77",
+      "status": "diverged",
+      "ahead_by": 6,
+      "behind_by": 73,
+      "changed_files": [
+        "ops/active_e2e_handoff.json",
+        "ops/completion_rush_queue_20261116.json",
+        "ops/focus_file_transport_reconciliation_20261120.json"
+      ]
+    }
   },
   "first_unconnected_interval": {
     "status": "BLOCKED_BEFORE_REAL_MSIX_BUILD",
