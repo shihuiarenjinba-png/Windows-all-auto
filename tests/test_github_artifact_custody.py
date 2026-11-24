@@ -297,10 +297,10 @@ class CustodyTests(unittest.TestCase):
         ledger = json.loads((root / "ops/active_e2e_handoff.json").read_text(encoding="utf-8"))
         recon = json.loads((root / "ops/focus_file_transport_reconciliation_20261125.json").read_text(encoding="utf-8"))
         latest = ledger["latest_transport_reconciliation"]
-        self.assertEqual(latest["central_tested_head_sha"], "a206f17636327e6afb55d94b019bc76a5d230b65")
-        self.assertEqual(latest["previous_central_head_sha"], "619d41f87074caedd46f7ac4563c007d10439da0")
+        self.assertEqual(latest["central_tested_head_sha"], "f440ca91c1a9ed6413c8e42e9c0611f174f81a19")
+        self.assertEqual(latest["previous_central_head_sha"], "a206f17636327e6afb55d94b019bc76a5d230b65")
         self.assertEqual([x["run_id"] for x in latest["exact_head_ci"]],
-                         [45483439901, 45483439741, 45483439906])
+                         [45483789841, 45483789765, 45483789759])
         self.assertEqual(latest["ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual(latest["status"], "HOLD")
         self.assertIs(latest["e2e_pass"], False)
@@ -346,7 +346,7 @@ class CustodyTests(unittest.TestCase):
                          "NOT_OBSERVED__HISTORICAL_REQUEST_BINDS_8B00_ONLY")
         self.assertEqual(focus_item["store_assets_evidence"]["native_exe_gui"]["run_id"], 45234786152)
         self.assertEqual(focus_item["product_quality_assessment"]["score"]["total"], 54)
-        self.assertEqual(ledger["pr174_restack_assessment_live_20261125"]["compare_to_current_pr165_head"]["behind_by"], 76)
+        self.assertEqual(ledger["pr174_restack_assessment_live_20261125"]["compare_to_current_pr165_head"]["behind_by"], 77)
         self.assertEqual(ledger["store_upload_test_bridge"]["eligible_fresh_unsold_products"], 0)
 
 if __name__ == "__main__":
