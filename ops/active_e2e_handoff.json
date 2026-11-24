@@ -16892,7 +16892,12 @@
       "physical_bilingual_uia": "SKIPPED_NOT_PASS",
       "package_version": null,
       "real_msix": false,
-      "msixvc2_built": false
+      "msixvc2_built": false,
+      "build_artifact_status": "CURRENT_GDK_EXE_ARTIFACT_PRESENT__SDK_ROOT_UNAVAILABLE__MSIXVC2_NOT_BUILT",
+      "build_artifact_id": 14946655071,
+      "build_artifact_sha256": "dade8f0f99d731e792401cb8adeb092b4a754c27cd1a107182d89243560570e7",
+      "build_exe_sha256": "66fe8111a17da1fc5dd25d5b755284c2cf11b4468757865afd78bf141c5b96fa",
+      "current_provisioner_preview_stale": true
     }
   ],
   "local_code_sync_current_observation": {
