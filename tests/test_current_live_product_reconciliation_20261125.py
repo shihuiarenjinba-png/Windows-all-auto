@@ -15,19 +15,24 @@ class CurrentLiveProductReconciliationTests(unittest.TestCase):
 
     def test_pr165_exact_head_ci_is_not_product_e2e(self):
         latest = self.ledger["latest_transport_reconciliation"]
+        self.assertEqual(latest["central_head"], "e410c81a0048c845173f9825f11443d8aa55a06d")
         self.assertEqual(latest["central_tested_head_sha"], "108f34f4b972835159f905a9b2d6294b9e6c2451")
+        self.assertEqual(latest["previous_central_head_sha"], "3334b5c7db5f6207552b2b49641c3d275d35f922")
+        self.assertEqual(latest["current_branch_head_ci_status"], "PARTIAL_FAIL_STALE_SNAPSHOT_ASSERTIONS")
+        self.assertEqual([x["run_id"] for x in latest["current_branch_head_ci"]], [45572082130, 45572082140, 45572082143])
         self.assertEqual(latest["previous_central_head_sha"], "7d2b256511e3eaa932b1847b990824aed1e4696f")
         self.assertEqual([x["run_id"] for x in latest["exact_head_ci"]],
                          [45563567815, 45563567925, 45563567897])
         self.assertEqual(latest["ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual(self.ledger["pr165_current_head_parent_ci_status"],
-                         "PASS_EXACT_HEAD_CI")
+                         "PARTIAL_FAIL_STALE_LIVE_HEAD_ASSERTIONS")
         self.assertEqual([x["run_id"] for x in self.ledger["pr165_current_head_parent_ci"]],
-                         [45563567815, 45563567925, 45563567897])
+                         [45571260661, 45571260623, 45571260642])
         observation = self.ledger["pr165_live_head_observation_20261125_latest"]
-        self.assertEqual(observation["head_sha"], "3334b5c7db5f6207552b2b49641c3d275d35f922")
-        self.assertEqual(observation["comparison_to_previous_tested_head"]["ahead_by"], 1)
-        self.assertEqual(observation["status"], "PARTIAL_FAIL_STALE_PREVIOUS_CENTRAL_HEAD_ASSERTION")
+        self.assertEqual(observation["head_sha"], "e410c81a0048c845173f9825f11443d8aa55a06d")
+        self.assertEqual(observation["parent_sha"], "3334b5c7db5f6207552b2b49641c3d275d35f922")
+        self.assertEqual(observation["comparison_to_previous_tested_head"]["ahead_by"], 2)
+        self.assertEqual(observation["status"], "PARTIAL_FAIL_STALE_SNAPSHOT_ASSERTIONS")
         self.assertEqual(self.ledger["e2e_status"], "HOLD")
         self.assertIs(self.ledger["e2e_pass"], False)
         self.assertIs(latest["real_msix"], False)
@@ -94,13 +99,13 @@ class CurrentLiveProductReconciliationTests(unittest.TestCase):
         self.assertEqual(routes["source_ci_run_id"], 40638938248)
 
     def test_pr174_and_store_safety_remain_fail_closed(self):
-        self.assertEqual(self.recon["pr174"]["compare_to_current_pr165_head"]["behind_by"], 107)
+        self.assertEqual(self.recon["pr174"]["compare_to_current_pr165_head"]["behind_by"], 108)
         self.assertEqual(self.recon["pr174"]["decision"], "DO_NOT_RESTACK")
         self.assertEqual(self.ledger["parallel_draft_branch_assessment_20261125_0635"]["decision"],
                          "NO_BLIND_RESTACK__SELECTIVELY_PORT_ONLY_CURRENT_PRODUCT_REGRESSION")
         parallel = self.ledger["parallel_draft_branch_assessment_20261125_0635"]
-        self.assertEqual(parallel["current_pr165_head_sha"], "108f34f4b972835159f905a9b2d6294b9e6c2451")
-        self.assertEqual([x["behind_by"] for x in parallel["branches"]], [23, 23, 23])
+        self.assertEqual(parallel["current_pr165_head_sha"], "e410c81a0048c845173f9825f11443d8aa55a06d")
+        self.assertEqual([x["behind_by"] for x in parallel["branches"]], [24, 24, 24])
         self.assertEqual(self.ledger["store_upload_test_bridge"]["eligible_fresh_unsold_products"], 0)
         self.assertFalse(self.ledger["store_upload_test_bridge"]["dry_run_started"])
         self.assertEqual(self.ledger["local_code_sync_receipt_status_20261125"],
