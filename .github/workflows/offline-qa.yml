@@ -41,6 +41,58 @@ jobs:
             }
           }
           Write-Host "Parsed $($files.Count) PowerShell scripts successfully."
+      - name: Test DCA wrapper parameter forwarding (mock target; no Partner Center)
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          $testRoot = Join-Path $env:TEMP ([Guid]::NewGuid().ToString('N'))
+          $scriptDir = Join-Path $testRoot 'scripts'
+          $packageRoot = Join-Path $testRoot 'packages'
+          New-Item -ItemType Directory -Path $scriptDir, $packageRoot -Force | Out-Null
+          $wrapper = Join-Path $scriptDir 'upload_authorized_dca_package.ps1'
+          Copy-Item 'scripts/upload_authorized_dca_package.ps1' $wrapper
+          $stub = @'
+          [CmdletBinding()]
+          param(
+            [Parameter(Mandatory = $true)]
+            [ValidatePattern('^[a-z0-9][a-z0-9-]{0,63}$')]
+            [string]$Product,
+            [Parameter(Mandatory = $true)]
+            [string]$Package,
+            [string]$CdpUrl = 'http://127.0.0.1:9223',
+            [switch]$Execute
+          )
+          $global:LASTEXITCODE = 0
+          [pscustomobject]@{
+            Product = $Product
+            Package = $Package
+            CdpUrl = $CdpUrl
+            Execute = [bool]$Execute
+          } | ConvertTo-Json -Compress
+          '@
+          Set-Content -LiteralPath (Join-Path $scriptDir 'upload_store_msix.ps1') -Value $stub -Encoding UTF8
+          $dummyPackage = Join-Path $packageRoot 'DataContractSchemaDrift_1.0.0.0_x64.msix'
+          Set-Content -LiteralPath $dummyPackage -Value 'test-only-placeholder' -NoNewline
+          try {
+            $dryOutput = & $wrapper -PackageRoot $packageRoot
+            if ($LASTEXITCODE -ne 0) { throw 'DCA wrapper dry-run mock returned a nonzero exit code.' }
+            $dryPayload = ($dryOutput | Select-Object -Last 1) | ConvertFrom-Json
+            if ($dryPayload.Product -ne 'data-contract-auditor') { throw 'DCA wrapper did not forward Product by name.' }
+            if ($dryPayload.Package -ne [IO.Path]::GetFullPath($dummyPackage)) { throw 'DCA wrapper did not forward the exact package path.' }
+            if ($dryPayload.CdpUrl -ne 'http://127.0.0.1:9223') { throw 'DCA wrapper did not forward CdpUrl.' }
+            if ($dryPayload.Execute) { throw 'DCA dry-run unexpectedly enabled Execute.' }
+
+            $liveOutput = & $wrapper -PackageRoot $packageRoot -Execute
+            if ($LASTEXITCODE -ne 0) { throw 'DCA wrapper Execute-flag mock returned a nonzero exit code.' }
+            $livePayload = ($liveOutput | Select-Object -Last 1) | ConvertFrom-Json
+            if (-not $livePayload.Execute) { throw 'DCA wrapper did not forward Execute when explicitly requested.' }
+            Write-Host 'DCA wrapper parameter forwarding passed with a mock target; no Partner Center calls were made.'
+          }
+          finally {
+            if (Test-Path -LiteralPath $testRoot) {
+              Remove-Item -LiteralPath $testRoot -Recurse -Force
+            }
+          }
       - name: Validate Store uploader bootstrap (no browser or Partner Center)
         if: runner.os == 'Windows'
         shell: powershell
