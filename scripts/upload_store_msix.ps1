@@ -16,6 +16,7 @@ param(
 $ErrorActionPreference = 'Stop'
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 Set-Location -LiteralPath $repoRoot
+if ($Workdir -eq '.uploader-run') { $Workdir = Join-Path '.uploader-run' $Product }
 
 $packageItem = Get-Item -LiteralPath $Package -ErrorAction Stop
 if ($packageItem.PSIsContainer -or $packageItem.Extension -ine '.msix') {
