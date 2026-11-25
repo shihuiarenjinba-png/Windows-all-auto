@@ -9,6 +9,7 @@ import sys
 import urllib.request
 import zipfile
 from pathlib import Path
+from urllib.parse import urlparse
 
 HEX40 = re.compile(r"^[0-9a-f]{40}$")
 HEX64 = re.compile(r"^[0-9a-f]{64}$")
@@ -49,18 +50,78 @@ def verify_custody(expected, local_bundle, fetch_json, fetch_bytes):
         if bundle_mode:
             children = list(local.iterdir())
             names = {p.name for p in children}
-            allowed = {"handoff.json", "package.msix", "transport_receipt.json"}
+            allowed = {"handoff.json", "package.msix", "transport_receipt.json", "approved-identity.json"}
             if (any(p.is_symlink() or not p.is_file() for p in children)
                     or not {"handoff.json", "package.msix"}.issubset(names)
                     or not names.issubset(allowed)):
                 return hold("LOCAL_BUNDLE_CONTENT_INVALID")
             transport_path = local / "transport_receipt.json"
+            identity_path = local / "approved-identity.json"
+            if transport_path.exists() != identity_path.exists():
+                return hold("LOCAL_APPROVED_IDENTITY_RECEIPTS_UNPAIRED")
+            transport = None
+            approved_identity = None
             if transport_path.exists():
-                if transport_path.stat().st_size > 32 * 1024:
+                if (transport_path.stat().st_size > 32 * 1024
+                        or identity_path.stat().st_size > 32 * 1024):
                     return hold("LOCAL_TRANSPORT_RECEIPT_INVALID")
                 transport = json.loads(transport_path.read_text(encoding="utf-8"))
-                if not isinstance(transport, dict):
+                approved_identity = json.loads(identity_path.read_text(encoding="utf-8"))
+                if not isinstance(transport, dict) or not isinstance(approved_identity, dict):
                     return hold("LOCAL_TRANSPORT_RECEIPT_INVALID")
+                identity_bytes = identity_path.read_bytes()
+                identity_git_blob_sha = hashlib.sha1(
+                    b"blob " + str(len(identity_bytes)).encode("ascii") + b"\\0" + identity_bytes
+                ).hexdigest()
+                transport_identity = transport.get("identity")
+                evidence = transport.get("evidence_url")
+                parsed = urlparse(evidence) if isinstance(evidence, str) else None
+                store_id = transport.get("store_id")
+                expected_identity_path = "/products/" + store_id + "/identity" if isinstance(store_id, str) else ""
+                source_repository = transport.get("source_repository")
+                expected_identity_repository = (
+                    source_repository.removeprefix("https://github.com/")
+                    if isinstance(source_repository, str) else None
+                )
+                if (transport.get("status") != "SOURCE_BOUND_VERSION_APPROVED"
+                        or transport.get("approval_source") != "partner_center"
+                        or transport.get("source_sha") != head
+                        or transport.get("expected_head_sha") != head
+                        or transport.get("factory_head_sha") != head
+                        or transport.get("package_sha256") != digest
+                        or transport.get("package_version_gate") != "PASS"
+                        or transport.get("operator_verified") is not True
+                        or transport.get("store_submission_allowed") is not False
+                        or transport.get("certification_allowed") is not False
+                        or transport.get("publish_allowed") is not False
+                        or not isinstance(transport_identity, dict)
+                        or transport.get("package_version") != transport_identity.get("version")
+                        or transport.get("approved_identity_file_sha") != identity_git_blob_sha
+                        or not isinstance(transport.get("verified_by"), str)
+                        or not 3 <= len(transport.get("verified_by")) <= 100
+                        or parsed is None or parsed.scheme != "https"
+                        or parsed.hostname not in ("partner.microsoft.com", "partnercenter.microsoft.com")
+                        or parsed.username or parsed.password or parsed.fragment
+                        or not expected_identity_path
+                        or expected_identity_path.casefold() not in parsed.path.casefold()
+                        or approved_identity.get("reviewed") is not True
+                        or approved_identity.get("source") != "partner_center"
+                        or approved_identity.get("request_id") != transport.get("request_id")
+                        or approved_identity.get("product_type") != "APP"
+                        or approved_identity.get("source_factory") != "AI-App-Factory"
+                        or approved_identity.get("source_repository") != expected_identity_repository
+                        or approved_identity.get("source_branch") != transport.get("source_branch")
+                        or approved_identity.get("source_sha") != head
+                        or approved_identity.get("expected_head_sha") != head
+                        or approved_identity.get("store_id") != store_id
+                        or approved_identity.get("name") != transport_identity.get("name")
+                        or approved_identity.get("publisher") != transport_identity.get("publisher")
+                        or approved_identity.get("version") != transport.get("package_version")
+                        or approved_identity.get("package_version_gate") != "PASS"
+                        or approved_identity.get("operator_verified") is not True
+                        or approved_identity.get("verified_by") != transport.get("verified_by")
+                        or approved_identity.get("evidence_url") != evidence):
+                    return hold("LOCAL_APPROVED_IDENTITY_BINDING_INVALID")
             local_handoff = (local / "handoff.json").read_bytes()
             local_path = local / "package.msix"
         else:
@@ -119,6 +180,16 @@ def verify_custody(expected, local_bundle, fetch_json, fetch_bytes):
                 for key in ("slug", "type", "source_repository", "identity"):
                     if key in expected and handoff.get(key) != expected[key]:
                         return hold("HANDOFF_EXPECTED_MISMATCH_" + key)
+                if transport is not None:
+                    for key in ("source_repository", "request_id", "product_type", "source_factory",
+                                "source_branch", "expected_head_sha", "factory_head_sha", "store_id",
+                                "display_name", "prebuilt_exe_sha256", "identity"):
+                        if handoff.get(key) != transport.get(key):
+                            return hold("LOCAL_TRANSPORT_HANDOFF_MISMATCH")
+                    if (transport.get("source_sha") != handoff.get("source_sha")
+                            or transport.get("package_sha256") != handoff.get("package_sha256")
+                            or transport.get("package_bytes") != len(artifact_msix)):
+                        return hold("LOCAL_TRANSPORT_HANDOFF_MISMATCH")
             else:
                 if len(members) != 1 or members[0].is_dir() or not names[0].lower().endswith(".msix"):
                     return hold("ARTIFACT_CONTENT_INVALID")
