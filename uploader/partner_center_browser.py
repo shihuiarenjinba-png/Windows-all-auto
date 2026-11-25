@@ -6,7 +6,6 @@ certification, pricing, markets, or publishing.
 from __future__ import annotations
 
 from pathlib import Path
-import re
 from time import monotonic
 from typing import Any
 
@@ -279,7 +278,8 @@ class PartnerCenterCDPConnection:
             # Keep the useful Playwright/CDP exception while removing local
             # WebSocket endpoint identifiers and any query-string material.
             detail = f"{type(exc).__name__}: {exc}"
-            detail = re.sub(r"wss?://\\S+", "<CDP WebSocket URL redacted>", detail)
+            if "ws://" in detail or "wss://" in detail:
+                detail = detail.split("://", 1)[0] + "://<CDP WebSocket URL redacted>"
             detail = detail.replace(self.cdp_url, "<CDP endpoint>")
             detail = " ".join(detail.split())[:600]
             raise UploadError(
