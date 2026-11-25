@@ -153,3 +153,13 @@ Partner Center was not live-rechecked in this local verification phase. Existing
 ## Safety boundary
 
 No Product or Submission was created. No package was uploaded or saved in Partner Center. No price or market settings were changed. No Certification or Publish action was performed. Artifact discovery does not equal Store authorization.
+
+
+### DCA formal candidate — independent archive inspection (2026-11-25)
+
+Artifact `15005358857` was independently downloaded and inspected during this follow-up. The exact package SHA-256 recomputed from the archive is `e2ca6fd81720dc270667e65db05404b6efdde5b2c0712bee2853e0608767db05`, matching the builder report and local operator-reported value. The manifest reports Identity `OkinawaDesktopTools.DataContractAuditor`, Publisher `CN=46263F21-A700-41DB-8C9B-114C22FB82FC`, Version `1.0.0.0`, x64.
+
+The same artifact's `STORE_PREFLIGHT.json` says `WINDOWS_REAL_DEVICE_QA_PASS`, while the later operator-reported local attempt for the exact package says install `ACCESS_DENIED` and EXE launch `TIMEOUT`. These records conflict and have not been reconciled. The package remains held; neither status is silently substituted for the other.
+
+The StoreLogo / Square150x150Logo / Wide310x150Logo were visually inspected. They show generated generic document/check artwork with the product name. `artwork_source: APPROVED_GENERATOR` in the builder JSON is not independent evidence of the owner's final brand approval. Treat owner visual approval as still unverified.
+
