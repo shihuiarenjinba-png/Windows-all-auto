@@ -71,6 +71,12 @@ def main():
         journal=ReceiptJournal(args.receipt_ledger or (args.workdir/"durable-ledger"/"receipts"))
         if args.execute and config.get("upload_approved") is not True:
             raise UploadError("UPLOAD_NOT_APPROVED", "This product job is not approved for a live package write")
+        if args.execute and config.get("upload_scope") != "ONE_EXACT_MSIX_TO_EXISTING_DRAFT_PACKAGES_ONLY":
+            raise UploadError("UPLOAD_SCOPE_NOT_APPROVED", "Live execution is restricted to one exact MSIX package upload/Save in an existing Draft")
+        if args.execute and config.get("certification_submission_authorized") is not False:
+            raise UploadError("CERTIFICATION_SCOPE_FORBIDDEN", "This uploader never submits for Certification")
+        if args.execute and config.get("publish_authorized") is not False:
+            raise UploadError("PUBLISH_SCOPE_FORBIDDEN", "This uploader never publishes")
         if args.execute and not re.fullmatch(r"[0-9a-fA-F]{64}", str(config.get("expected_sha256", ""))):
             raise UploadError("EXPECTED_SHA_REQUIRED", "Live upload requires a frozen 64-character SHA-256")
         if args.execute and not os.environ.get("PARTNER_CENTER_CDP_URL"):
