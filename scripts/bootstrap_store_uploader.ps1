@@ -18,9 +18,12 @@ if (-not (Test-Path -LiteralPath $venvPython -PathType Leaf)) {
 & $venvPython -m pip install -r (Join-Path $repoRoot 'requirements-store-uploader.txt')
 if ($LASTEXITCODE -ne 0) { throw 'Local Store uploader dependency installation failed.' }
 
-& $venvPython -c 'from playwright.sync_api import sync_playwright; print("Playwright import: PASS")'
+# Keep the -c payload whitespace- and quote-free. This avoids native argument
+# parsing differences in Windows PowerShell 5.1 when forwarding embedded quotes.
+& $venvPython -c 'import playwright.sync_api;assert callable(playwright.sync_api.sync_playwright)'
 if ($LASTEXITCODE -ne 0) { throw 'Playwright runtime validation failed.' }
 
+Write-Host 'Playwright runtime validation passed.' -ForegroundColor Green
 Write-Host 'Store uploader Python environment is ready.' -ForegroundColor Green
 Write-Host "Python: $venvPython"
 Write-Host 'No browser binary was downloaded. The uploader attaches to the installed Microsoft Edge through local CDP.'
