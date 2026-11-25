@@ -139,21 +139,7 @@ class PartnerCenterFleetObservationTests(unittest.TestCase):
             with self.subTest(product=key):
                 self.assertTrue(artifact["qa_unsigned_msix_artifact_available"])
                 self.assertEqual(artifact["classification"], "QA_UNSIGNED_VALIDATION_ONLY")
-                if key == "data-contract-auditor":
-                    self.assertTrue(artifact["uploadable"])
-                    self.assertEqual(
-                        artifact["classification"],
-                        "ONE_TIME_DRAFT_PACKAGE_UPLOAD_AUTHORIZED_PACKAGED_EXE_RUNTIME_UNVERIFIED_CERTIFICATION_HOLD",
-                    )
-                else:
-                    if key == "data-contract-auditor":
-                    self.assertTrue(artifact["uploadable"])
-                    self.assertEqual(
-                        artifact["classification"],
-                        "ONE_TIME_DRAFT_PACKAGE_UPLOAD_AUTHORIZED_PACKAGED_EXE_RUNTIME_UNVERIFIED_CERTIFICATION_HOLD",
-                    )
-                else:
-                    self.assertFalse(artifact["uploadable"])
+                self.assertFalse(artifact["uploadable"])
                 self.assertRegex(artifact["qa_unsigned_msix_sha256"], r"^[A-F0-9]{64}$")
                 self.assertEqual(artifact["sha256_evidence"]["evidence_level"], "LOCAL_BINARY_REHASH_MATCHED_BUILDER_HASH")
                 self.assertTrue(artifact["sha256_evidence"]["binary_downloaded_and_rehashed_locally"])
