@@ -265,7 +265,7 @@ class CurrentLedgerGateTests(unittest.TestCase):
         self.assertEqual(recon["pr165_current_head_parent_sha"], "c2a99c0e4c7d7bc7c122e3b28daf3c0b0106974f")
         self.assertEqual(recon["pr165_current_head_ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual([x["run_id"] for x in recon["pr165_current_head_ci"]],
-                         [45701952640, 45701953080, 45701952665, 45701935988])
+                         [45693434942, 45693434744, 45693434955, 45693426272])
         self.assertEqual(recon["pr165_current_head_parent_ci_status"], "PARTIAL_FAIL_STALE_TEST_EXPECTATIONS")
         self.assertEqual([x["run_id"] for x in recon["pr165_current_head_parent_ci"]],
                          [45692928621, 45692928974, 45692928577, 45692921822])
