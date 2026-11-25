@@ -18,7 +18,9 @@ NEW_3D_SOURCE = "da6f7c129687922c58c43496da4667ecef903e17"
 
 def active_product_record(data):
     # The former active pointer is retained only as a historical evidence record.
-    return data.get("historical_active_product_20261125") or data["active_product"]
+    # active_product remains a backwards-compatible historical evidence object,
+    # explicitly not a current request pointer.
+    return data["active_product"]
 
 
 def validate_live_review_evidence(data):

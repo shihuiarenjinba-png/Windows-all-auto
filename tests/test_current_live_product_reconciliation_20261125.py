@@ -74,14 +74,18 @@ class CurrentLiveProductReconciliationTests(unittest.TestCase):
         self.assertIs(file_row["real_msix"], False)
 
     def test_signal_current_tuple_is_separate_from_historical_c058(self):
-        self.assertIsNone(self.ledger["active_product"])
+        self.assertIsNone(self.ledger["current_active_product"])
         self.assertTrue(self.ledger["active_product_is_historical"])
+        self.assertEqual(self.ledger["active_product_record_status"], "HISTORICAL_ONLY_NOT_CURRENT_REQUEST")
         self.assertEqual(self.ledger["active_product_pointer_status"],
-                         "NO_ACTIVE_REQUEST_POINTER__HISTORICAL_SIGNAL_ARCHIVED__USE_PRIORITY_QUEUE")
-        historical = self.ledger["historical_active_product_20261125"]
+                         "HISTORICAL_RECORD_ONLY__NO_ACTIVE_REQUEST_POINTER__USE_PRIORITY_QUEUE")
+        historical = self.ledger["active_product"]
+        self.assertFalse(historical["current_request_pointer"])
         self.assertEqual(historical["source_sha"], "c058cbf7fe38e02d929c67d047d717ff74bd522e")
         self.assertEqual(historical["request_id"],
                          "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e")
+        self.assertEqual(self.ledger["historical_active_product_20261125"]["source_sha"],
+                         "c058cbf7fe38e02d929c67d047d717ff74bd522e")
         self.assertEqual(self.ledger["current_completion_priority"]["product"], "Focus Session Desk")
         signal = self.ledger["current_signal_sprint_live_20261125"]
         self.assertEqual(signal["current_candidate_source_sha"],
