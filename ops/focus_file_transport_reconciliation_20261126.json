@@ -63,7 +63,17 @@
       "0120c786fb2f008cac095ee3a24568ba3f754842",
       "1ddc1d67636b0a02a8a751a5e9ca352ddd555f9f"
     ],
-    "record_revision_commit_sha": "1ddc1d67636b0a02a8a751a5e9ca352ddd555f9f"
+    "record_revision_commit_sha": "1ddc1d67636b0a02a8a751a5e9ca352ddd555f9f",
+    "latest_verified_code_head_sha": "7a97147335c5294057fbe341a7b41df3e40e1efa",
+    "latest_exact_head_ci_status": "PASS_EXACT_HEAD_CI",
+    "latest_exact_head_ci_run_ids": [
+      45701740182,
+      45701740172,
+      45701740318,
+      45701728845
+    ],
+    "latest_offline_qa_tests_run": 563,
+    "latest_product_e2e_status": "HOLD"
   },
   "pr161": {
     "number": 161,
@@ -92,7 +102,13 @@
       "ahead_by": 89,
       "behind_by": 6
     },
-    "decision": "DO_NOT_RESTACK"
+    "decision": "DO_NOT_RESTACK",
+    "latest_compare_to_latest_pr165": {
+      "status": "diverged",
+      "ahead_by": 95,
+      "behind_by": 6,
+      "decision": "DO_NOT_RESTACK"
+    }
   },
   "products": {
     "focus_session_desk": {
@@ -281,7 +297,7 @@
   },
   "ledger_reconciliation": {
     "prior_overlay_head": "5ad2cf093539739f1a2af7e67c8c83f7c1960825",
-    "latest_pr165_head": "a6b9d2b1db3033d5846e136400d2fe67dede554d",
+    "latest_pr165_head": "7a97147335c5294057fbe341a7b41df3e40e1efa",
     "active_ledger_blob_sha": "6e98ae17f0d67d1f3e6c3b5eaedf4115d1ed4f5c",
     "active_ledger_direct_content_available": false,
     "active_ledger_content_fetch_status": "EMPTY_RESPONSE_FOR_UTF8_AND_BASE64__NOT_TREATED_AS_EMPTY_FILE",
@@ -301,5 +317,49 @@
     "twentyfour_repo_touched": false,
     "png_generation_or_modification": false
   },
-  "next_action": "Keep both APP lanes DELIVERY_HOLD. Obtain authenticated read-only Partner Center current-source Identity and authoritative Package Version. Do not build or transport a product MSIX until source/request/Identity/Version are aligned. Once those gates and existing PNG bytes are verified, build Focus first and continue custody/backlog/local checker/GUI. Do not start Store dry-run while eligible fresh unsold product count is zero."
+  "next_action": "Keep both APP lanes DELIVERY_HOLD. Obtain authenticated read-only Partner Center current-source Identity and authoritative Package Version. Do not build or transport a product MSIX until source/request/Identity/Version are aligned. Once those gates and existing PNG bytes are verified, build Focus first and continue custody/backlog/local checker/GUI. Do not start Store dry-run while eligible fresh unsold product count is zero.",
+  "latest_observation": {
+    "observed_at_utc": "2026-11-25T21:09:54Z",
+    "pr165_head_sha": "7a97147335c5294057fbe341a7b41df3e40e1efa",
+    "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
+    "exact_head_ci": [
+      {
+        "run_id": 45701740182,
+        "event": "pull_request",
+        "workflow": "Windows E2E transport fail-closed regression",
+        "conclusion": "success",
+        "head_sha": "7a97147335c5294057fbe341a7b41df3e40e1efa"
+      },
+      {
+        "run_id": 45701740172,
+        "event": "pull_request",
+        "workflow": "GitHub artifact custody fail-closed regression",
+        "conclusion": "success",
+        "head_sha": "7a97147335c5294057fbe341a7b41df3e40e1efa"
+      },
+      {
+        "run_id": 45701740318,
+        "event": "pull_request",
+        "workflow": "Windows-all-auto Offline QA",
+        "conclusion": "success",
+        "head_sha": "7a97147335c5294057fbe341a7b41df3e40e1efa"
+      },
+      {
+        "run_id": 45701728845,
+        "event": "push",
+        "workflow": "Windows-all-auto Offline QA",
+        "conclusion": "success",
+        "head_sha": "7a97147335c5294057fbe341a7b41df3e40e1efa"
+      }
+    ],
+    "offline_qa": {
+      "ubuntu_conclusion": "success",
+      "windows_conclusion": "success",
+      "tests_run": 563,
+      "windows_skipped": 2
+    },
+    "product_e2e_status": "HOLD",
+    "real_msix": false,
+    "downstream_receipts": false
+  }
 }
