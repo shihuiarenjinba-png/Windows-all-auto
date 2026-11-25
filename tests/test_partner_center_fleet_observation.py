@@ -153,8 +153,14 @@ class PartnerCenterFleetObservationTests(unittest.TestCase):
         self.assertEqual(dca["candidate_source_sha"], "5a09d81955e25664761ea25ecfb4ebf8d24cea6d")
         self.assertEqual(dca["required_source_sha"], "5a09d81955e25664761ea25ecfb4ebf8d24cea6d")
         self.assertTrue(dca["source_match"])
-        self.assertEqual(dca["package_sha256"], "80cd02c0df8e75d1962d03ce63c1ba72d9a8f67e8056f43718ffc5bd8d3f3279")
+        self.assertEqual(dca["package_sha256"], "e2ca6fd81720dc270667e65db05404b6efdde5b2c0712bee2853e0608767db05")
+        self.assertEqual(dca["candidate_msix_version"], "1.0.0.0")
         self.assertEqual(dca["current_branch_head_sha"], "722ec7a077d2c6109e657c4ee661c9f3d06a4506")
+        self.assertEqual(dca["current_branch_latest_ci"]["conclusion"], "success")
+        self.assertEqual(dca["build_result"]["signature_status"], "UNSIGNED_STORE_CANDIDATE")
+        self.assertEqual(dca["build_result"]["pack_unpack_verification"], "PASS")
+        self.assertEqual(dca["unsigned_msix_candidate_artifact_id"], 15005358857)
+        self.assertFalse(dca["artifact_downloaded_and_rehashed_locally"])
         self.assertEqual(
             dca["current_branch_head_relation"]["application_runtime_source_changed_after_formal_candidate"],
             False,
