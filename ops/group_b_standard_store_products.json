@@ -213,9 +213,18 @@
         "version_approval": "TECHNICAL_DRAFT_ONLY_PUBLIC_RELEASE_HOLD",
         "package_signature": "UNSIGNED",
         "partner_center_submission": "NO_SUBMISSION_OBSERVED",
-        "package_sha256": "NOT_FETCHED_BINARY_NOT_CLAIMED",
+        "package_sha256": "512da1ab4449a69b02901baf9c8eaff6577f1e58d336f43ef608f4fbc3892a97",
         "uploadable": false,
-        "classification": "SOURCE_BOUND_UNSIGNED_TECHNICAL_DRAFT"
+        "classification": "SOURCE_BOUND_UNSIGNED_TECHNICAL_DRAFT",
+        "package_file_name": "WorkflowAutomationHub_1.0.0.0_x64_StoreDraft_UNSIGNED.msix",
+        "sha256_evidence": {
+          "source": "GitHub Actions generated exact-package handoff log",
+          "workflow_run_id": 44093505473,
+          "workflow_job_id": 134074500405,
+          "evidence_level": "GENERATED_HANDOFF_PACKAGE_SHA",
+          "binary_downloaded_and_rehashed_locally": false
+        },
+        "artifact_downloaded_and_rehashed_locally": false
       },
       "source_revision_binding": {
         "branch": "codex/hub-standard-consumer-ui-20261113",
