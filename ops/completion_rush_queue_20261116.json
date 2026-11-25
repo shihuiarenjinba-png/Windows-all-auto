@@ -266,7 +266,12 @@
       "current_source_request_status": "GENERATED__DRY_RUN_ARTIFACT_VERIFIED__IDENTITY_READBACK_PENDING",
       "msix_export": {
         "run_id": 44779273420,
+        "workflow_conclusion": "failure",
         "status": "FAILED_MISSING_VERIFIED_VERSION",
+        "artifact_id": null,
+        "artifacts": [],
+        "build_step": "Build MSIX on Windows with approved package identity",
+        "reason": "MSIX_BUILD_HOLD: Missing verified version",
         "artifact_count": 0
       },
       "approved_identity_file_path": "products/focus-session-desk/store/approved-identity.json",
@@ -988,6 +993,19 @@
       "msix_export": {
         "run_id": 45422811552,
         "status": "SKIPPED_NO_ARTIFACT",
+        "artifact_id": null,
+        "msix_status": "NOT_BUILT",
+        "workflow_conclusion": "success",
+        "artifacts": [],
+        "selection_gate_output": "MSIX_SELECTION_HOLD: approved Identity absent; do not invent Store IDs",
+        "build_step": "Build MSIX on Windows with approved package identity",
+        "build_steps_skipped": [
+          "Run factory regression tests",
+          "Build Windows executable dependencies",
+          "Build MSIX on Windows with approved package identity",
+          "Assemble verified MSIX handoff",
+          "Export package and checksum for Windows-all-auto"
+        ],
         "artifact_count": 0
       },
       "github_backlog_receipt": false,
