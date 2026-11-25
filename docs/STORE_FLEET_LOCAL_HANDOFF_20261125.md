@@ -109,9 +109,21 @@ The source marks 1.0.0.0 technical-only, not owner-approved, uses temporary tech
 
 ### Data Contract Auditor
 
-The required registered source SHA is `107e59f2cbcde9c6ca88cf1aaf3d52262004e6e0`. An unsigned candidate from `5a09d81955e25664761ea25ecfb4ebf8d24cea6d` was built; its logged package SHA is `80cd02c0df8e75d1962d03ce63c1ba72d9a8f67e8056f43718ffc5bd8d3f3279`. It does not match the required source SHA.
+The QA baseline source is `107e59f2cbcde9c6ca88cf1aaf3d52262004e6e0`. This is **not** the formal candidate source requirement. The formal candidate gate records `formal_source_sha=5a09d81955e25664761ea25ecfb4ebf8d24cea6d`, 40 commits after the QA baseline. The successful run `45103784990` built `DataContractSchemaDrift_1.0.0.0_x64.msix` from the formal source SHA and the builder logged package SHA `80cd02c0df8e75d1962d03ce63c1ba72d9a8f67e8056f43718ffc5bd8d3f3279`.
 
-The current source branch head is `0c73a746bcec9ded702567768d5c04f4240a12a9`; CI run `45107287117` fails in test `test_product_profile_matches_live_entrypoint_and_formal_build_gate` before compile, readiness preflight, and packaging. Fix the product profile / readiness-state contract and rebuild from the approved source revision before considering reuse.
+The current branch HEAD at this handoff is `722ec7a077d2c6109e657c4ee661c9f3d06a4506`; the commits after `5a09...` change only the formal gate, product profile, and post-build profile test. No app runtime or packaging script changes were found in that range.
+
+The failed CI run `45107287117` was caused by a stale test expecting pre-build status `READY_FOR_FORMAL_MSIX_BUILD`; the actual profile/gate had advanced to `READY_FOR_PARTNER_CENTER_READONLY` and `FORMAL_UNSIGNED_MSIX_CREATED_AND_VERIFIED`. The test was corrected in commit `722ec7a077d2c6109e657c4ee661c9f3d06a4506`.
+
+Current workflow run `45580565845`:
+- source tests passed;
+- compile passed;
+- Store package readiness preflight passed;
+- the formal unsigned candidate and QA structural jobs are running.
+
+Wait for the build jobs to finish and record the newly generated package filename, exact source SHA, MSIX SHA-256, and artifact ID. The prior candidate from run `45103784990` remains available and source-bound to `5a09...`; new run output should supersede it only after its SHA is independently verified locally.
+
+The current Partner Center read-only observation showed Draft `1152921505702212222` with Packages `Incomplete`. That must be re-read immediately before any upload. An unsigned candidate build is not authorization to upload, certify, or publish.
 
 ### Web Evidence Archiver
 
