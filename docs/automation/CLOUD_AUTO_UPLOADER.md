@@ -43,7 +43,15 @@ python scripts/preflight_store_fleet.py `
 
 The preflight recursively locates each exact registered filename and requires exactly one match. It verifies the package SHA-256 and manifest Identity, Publisher, Version, and Architecture. A missing or duplicated filename is a HOLD, never an arbitrary selection. It does not open Partner Center, upload, Save, start certification, or publish. Workflow Automation Hub is separately reported as `NO_EXISTING_SUBMISSION` because it has no existing Draft in the recorded snapshot.
 
-### 2. Start or connect to local Edge CDP
+### 2. Prepare the isolated Python runtime
+
+```powershell
+.\scripts\bootstrap_store_uploader.ps1
+```
+
+This creates `.venv-store-uploader` in the repository and installs the pinned Playwright Python client from `requirements-store-uploader.txt`. It does not install another browser; the uploader attaches to the installed Microsoft Edge by local CDP. The upload wrapper prefers this isolated environment when present.
+
+### 3. Start or connect to local Edge CDP
 
 ```powershell
 .\scripts\start_partner_center_edge_cdp.ps1
@@ -51,7 +59,7 @@ The preflight recursively locates each exact registered filename and requires ex
 
 If Edge CDP was already active on port 9223, the script reuses it and does not launch another window. Otherwise it opens a dedicated local Edge profile at `%LOCALAPPDATA%\\PartnerCenterUploaderEdge`. Sign in to Partner Center manually in that window and complete MFA there. Keep exactly one Partner Center tab open in that CDP session. The script does not read credentials or automate sign-in.
 
-### 3. One product dry run
+### 4. One product dry run
 
 ```powershell
 .\scripts\upload_store_msix.ps1 `
@@ -61,7 +69,7 @@ If Edge CDP was already active on port 9223, the script reuses it and does not l
 
 Dry-run is the default. It verifies the exact configured filename, SHA-256, and manifest and writes a product-isolated execution receipt under `.uploader-run\\<product-key>` without touching Partner Center.
 
-### 4. Existing-Draft package upload and Save
+### 5. Existing-Draft package upload and Save
 
 ```powershell
 .\scripts\upload_store_msix.ps1 `
