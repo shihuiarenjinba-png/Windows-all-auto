@@ -50,6 +50,32 @@
         "observation_id": "partner-center-fleet-20261125T075209Z",
         "observed_at_utc": "2026-11-25T07:52:09Z",
         "promotion_rule": "filled only absent static fields; existing non-null values had to match the read-only observation"
+      },
+      "remote_package_artifact_discovery": {
+        "repository_full_name": "shihuiarenjinba-png/csv-import-validator",
+        "source_branch": "candidate branch / run source head",
+        "candidate_source_sha": "5a09d81955e25664761ea25ecfb4ebf8d24cea6d",
+        "required_source_branch": "codex/store-p0-data-contract-20261023",
+        "required_source_sha": "107e59f2cbcde9c6ca88cf1aaf3d52262004e6e0",
+        "workflow_run_id": 45103784990,
+        "workflow_run_url": "https://github.com/shihuiarenjinba-png/csv-import-validator/actions/runs/45103784990",
+        "unsigned_msix_candidate_artifact_id": 14787075908,
+        "unsigned_msix_candidate_artifact_name": "data-contract-QA_UNSIGNED-msix-45103784990",
+        "unsigned_msix_candidate_artifact_size_bytes": 55190196,
+        "qa_unsigned_validation_artifact_id": 14787095933,
+        "qa_unsigned_validation_artifact_name": "data-contract-QA_UNSIGNED-validation-msix-45103784990-1",
+        "qa_unsigned_validation_artifact_size_bytes": 55176827,
+        "artifact_available": true,
+        "package_sha256": "NOT_FETCHED_BINARY_NOT_CLAIMED",
+        "build_job": "SUCCESS",
+        "source_match": false,
+        "uploadable": false,
+        "classification": "UNSIGNED_CANDIDATE_SOURCE_REVISION_MISMATCH",
+        "blockers": [
+          "candidate source SHA differs from required registered source SHA",
+          "QA_UNSIGNED package is not Store upload authorization",
+          "source/package-bound owner security and QA gates remain incomplete"
+        ]
       }
     },
     "web-evidence-archiver": {
@@ -288,7 +314,7 @@
       "name": "AI Upload Guard",
       "repository_full_name": "shihuiarenjinba-png/-AI-Upload-Guard-AI-",
       "source_branch": "codex/store-p1-ai-upload-guard-20261023",
-      "source_sha": "5e9b3b7805193fdefc903c6310245f9586732ae4",
+      "source_sha": "fcb0e5793cef78d974e71fef8169c9f7d626257e",
       "submission_route": "msix_pwa_app",
       "store_id": "9PDJ1T5BQ4P1",
       "draft_id": "1152921505702212224",
@@ -325,6 +351,29 @@
         "observation_id": "partner-center-fleet-20261125T075209Z",
         "observed_at_utc": "2026-11-25T07:52:09Z",
         "promotion_rule": "filled only absent static fields; existing non-null values had to match the read-only observation"
+      },
+      "remote_package_artifact_discovery": {
+        "repository_full_name": "shihuiarenjinba-png/-AI-Upload-Guard-AI-",
+        "source_branch": "codex/store-p1-ai-upload-guard-20261023",
+        "source_sha": "fcb0e5793cef78d974e71fef8169c9f7d626257e",
+        "builder": "store/build-msix.ps1",
+        "workflow": ".github/workflows/group-c-portable-prerequisite.yml",
+        "workflow_run_id": 44687824883,
+        "workflow_run_url": "https://github.com/shihuiarenjinba-png/-AI-Upload-Guard-AI-/actions/runs/44687824883",
+        "qa_unsigned_msix_artifact_id": 14607745398,
+        "qa_unsigned_msix_artifact_name": "group-c-QA_UNSIGNED-validation-msix-44687824883-1",
+        "qa_unsigned_msix_artifact_size_bytes": 21569997,
+        "qa_unsigned_msix_artifact_available": true,
+        "qa_unsigned_msix_sha256": "NOT_FETCHED_BINARY_NOT_CLAIMED",
+        "formal_store_msix_build": "SKIPPED_STORE_READINESS_GATE",
+        "blockers": [
+          "approved_store_version is null",
+          "package_version_approval is UNKNOWN",
+          "brand_assets_approval is UNKNOWN",
+          "owner-approved store-assets/approval.json is unavailable or not approved"
+        ],
+        "uploadable": false,
+        "classification": "QA_UNSIGNED_VALIDATION_ONLY"
       }
     },
     "pdf-privacy": {
