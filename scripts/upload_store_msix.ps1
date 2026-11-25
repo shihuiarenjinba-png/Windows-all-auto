@@ -52,6 +52,12 @@ if ($Execute) {
     if ($jobConfig.upload_approved -ne $true) {
         throw "Live package write is disabled for '$Product'. Resolve the product-specific hold reasons and explicitly approve this exact job first."
     }
+    if ($jobConfig.upload_scope -cne 'ONE_EXACT_MSIX_TO_EXISTING_DRAFT_PACKAGES_ONLY') {
+        throw 'This uploader is restricted to one exact MSIX package upload/Save in an existing Draft.'
+    }
+    if ($jobConfig.certification_submission_authorized -ne $false -or $jobConfig.publish_authorized -ne $false) {
+        throw 'Certification and Publish are outside this script. Both authorization fields must remain false.'
+    }
     if ([string]$jobConfig.expected_sha256 -notmatch '^[0-9a-fA-F]{64}$') {
         throw 'Live package write requires an exact 64-character expected_sha256 in the product job config.'
     }
