@@ -152,7 +152,7 @@ class CustodyTests(unittest.TestCase):
     def test_bundle_transport_receipt_requires_approved_identity_file(self):
         bundle = Path(self.tmp.name) / "unpaired-bundle"
         bundle.mkdir()
-        (bundle / "handoff.json").write_text("{}", encoding="utf-8")
+        (bundle / "handoff.json").write_text('{"schema_version": 1}', encoding="utf-8")
         (bundle / "package.msix").write_bytes(self.local.read_bytes())
         (bundle / "transport_receipt.json").write_text("{}", encoding="utf-8")
         with self.assertRaisesRegex(ValueError, "central identity and custody receipts must be paired"):
