@@ -304,10 +304,10 @@ class CurrentObservationOverlayTests(unittest.TestCase):
         self.assertEqual(overlay["status"], "HOLD")
         self.assertIs(overlay["e2e_pass"], False)
         self.assertEqual(overlay["pr165"]["head_sha"],
-                         "c307b29af3ff0f3fb1a9f73814d5e9955e68024c")
+                         "2cd008a63a97018b1acba4951528f9cdff3b52bd")
         self.assertEqual(
             [item["run_id"] for item in overlay["pr165"]["exact_head_ci"]],
-            [45653273056, 45653273551, 45653273553],
+            [45656584514, 45656584507, 45656584747],
         )
         self.assertTrue(overlay["pr165"]["repository_ci_is_not_product_e2e"])
         ledger = overlay["ledger_reconciliation"]
@@ -316,6 +316,7 @@ class CurrentObservationOverlayTests(unittest.TestCase):
         self.assertEqual(ledger["actual_pr165_head"],
                          "2cd008a63a97018b1acba4951528f9cdff3b52bd")
         self.assertIs(ledger["active_ledger_reconciled"], True)
+        self.assertEqual(ledger["status"], "RECONCILED_TO_PR165_2CD_OBSERVATION")
         focus = overlay["products"]["focus_session_desk"]
         self.assertEqual(focus["current_source_sha"],
                          "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79")
