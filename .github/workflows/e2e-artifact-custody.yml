@@ -1,4 +1,5 @@
 name: GitHub artifact custody fail-closed regression
+# Current-head transport and local-pull checks are synthetic fixtures only.
 on:
   pull_request:
     paths:
