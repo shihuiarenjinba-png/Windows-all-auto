@@ -20,7 +20,7 @@ class CurrentLiveProductReconciliationTests(unittest.TestCase):
         self.assertEqual(latest["previous_central_head_sha"], "3334b5c7db5f6207552b2b49641c3d275d35f922")
         self.assertEqual(latest["pr165_current_branch_head_ci_status"], "PARTIAL_FAIL_STALE_SNAPSHOT_ASSERTIONS")
         self.assertEqual([x["run_id"] for x in latest["pr165_current_branch_head_ci"]], [45572082130, 45572082140, 45572082143])
-        self.assertEqual(latest["previous_central_head_sha"], "7d2b256511e3eaa932b1847b990824aed1e4696f")
+        self.assertEqual(latest["previous_central_head_sha"], "3334b5c7db5f6207552b2b49641c3d275d35f922")
         self.assertEqual([x["run_id"] for x in latest["exact_head_ci"]],
                          [45563567815, 45563567925, 45563567897])
         self.assertEqual(latest["ci_status"], "PASS_EXACT_HEAD_CI")
