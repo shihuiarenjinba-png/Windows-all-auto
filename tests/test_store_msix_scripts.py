@@ -51,8 +51,9 @@ class StoreMsixScriptTests(unittest.TestCase):
         self.assertIn("DataContractSchemaDrift_1.0.0.0_x64.msix", script)
         self.assertIn("$packageMatches.Count -ne 1", script)
         self.assertIn("if ($Execute)", script)
-        self.assertIn("-Execute", script)
-        self.assertIn("-Product', 'data-contract-auditor", script)
+        self.assertIn("$uploadParameters['Execute'] = $true", script)
+        self.assertIn("Product = 'data-contract-auditor'", script)
+        self.assertIn("& $uploadScript @uploadParameters", script)
         self.assertNotIn("Submit to the Store", script)
         self.assertNotIn("Publish now", script)
 
