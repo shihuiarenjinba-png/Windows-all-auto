@@ -217,24 +217,25 @@ class CurrentLedgerGateTests(unittest.TestCase):
         self.assertIs(ledger["certification_allowed"], False)
         self.assertIs(ledger["publish_allowed"], False)
         latest = ledger["latest_transport_reconciliation"]
-        self.assertEqual(latest["central_tested_head_sha"], "77068e3d1f67e2ce1a2ea09ffb9e38684cc7de0c")
-        self.assertEqual(latest["central_head"], "77068e3d1f67e2ce1a2ea09ffb9e38684cc7de0c")
-        self.assertEqual(latest["previous_central_head_sha"], "90d49f0ac6c2eaccda6b625517f5c3520d171402")
+        self.assertEqual(latest["central_tested_head_sha"], "2cd008a63a97018b1acba4951528f9cdff3b52bd")
+        self.assertEqual(latest["central_head"], "2cd008a63a97018b1acba4951528f9cdff3b52bd")
+        self.assertEqual(latest["previous_central_head_sha"], "3eb938e353f5840acf5c4a98c6887ff2a54dd6af")
         self.assertEqual([x["run_id"] for x in latest["exact_head_ci"]],
-                         [45628378645, 45628378619, 45628378632])
+                         [45656584514, 45656584507, 45656584747])
         self.assertEqual(latest["ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual(latest["status"], "HOLD")
         self.assertIs(latest["e2e_pass"], False)
         self.assertIs(latest["real_msix"], False)
         self.assertEqual(latest["store_upload_test_eligible_products"], 0)
         current = ledger["windows_e2e_custody_reconciliation"]
-        self.assertEqual(current["pr165_tested_head_sha"], "77068e3d1f67e2ce1a2ea09ffb9e38684cc7de0c")
+        self.assertEqual(current["pr165_tested_head_sha"], "2cd008a63a97018b1acba4951528f9cdff3b52bd")
         self.assertEqual([x["run_id"] for x in current["pr165_ci"]],
-                         [45628378645, 45628378619, 45628378632])
-        self.assertEqual(ledger["pr165_current_head_parent_ci_status"], "PASS_EXACT_HEAD_CI")
-        self.assertEqual([x["run_id"] for x in ledger["pr165_current_head_parent_ci"]],
-                         [45622784037, 45622783900, 45622784356])
-        self.assertEqual(current["pr165_reconciliation_parent_head_sha"], "90d49f0ac6c2eaccda6b625517f5c3520d171402")
+                         [45656584514, 45656584507, 45656584747])
+        self.assertEqual(ledger["pr165_current_head_parent_ci_status"], "NOT_OBSERVED")
+        self.assertEqual(ledger["pr165_current_head_parent_ci"], [])
+        self.assertEqual(current["pr165_reconciliation_parent_head_sha"], "3eb938e353f5840acf5c4a98c6887ff2a54dd6af")
+        self.assertEqual(current["pr165_immediate_parent_head_sha"], "6cb4e147544910bc4d74e1e983abacf4ecf1bd81")
+        self.assertEqual(current["pr165_immediate_parent_ci_status"], "NOT_OBSERVED")
         self.assertEqual(current["pr161_head_sha"], "71d9c2125b6aed44a86ca1872d48ad19963f3e63")
         self.assertEqual([x["run_id"] for x in current["pr161_ci"]], [42712757936])
         self.assertEqual(ledger["store_upload_test_bridge"]["bridge_head"], "764721021f13be96364529650b44fb439770bac9")
@@ -250,9 +251,9 @@ class CurrentLedgerGateTests(unittest.TestCase):
         self.assertIs(ledger["e2e_pass"], False)
         self.assertEqual(recon["status"], "HOLD")
         self.assertIs(recon["e2e_pass"], False)
-        self.assertEqual(recon["pr165_current_head_sha"], "77068e3d1f67e2ce1a2ea09ffb9e38684cc7de0c")
+        self.assertEqual(recon["pr165_current_head_sha"], "2cd008a63a97018b1acba4951528f9cdff3b52bd")
         self.assertEqual([x["run_id"] for x in recon["pr165_current_head_ci"]],
-                         [45628378645, 45628378619, 45628378632])
+                         [45656584514, 45656584507, 45656584747])
         focus = next(p for p in recon["products"] if p["product"] == "Focus Session Desk")
         file_product = next(p for p in recon["products"] if p["product"] == "File Integrity Ledger")
         self.assertEqual(current["first_unconnected_interval"], recon["first_unconnected_interval"])
@@ -311,10 +312,10 @@ class CurrentObservationOverlayTests(unittest.TestCase):
         self.assertTrue(overlay["pr165"]["repository_ci_is_not_product_e2e"])
         ledger = overlay["ledger_reconciliation"]
         self.assertEqual(ledger["active_ledger_recorded_pr165_head"],
-                         "77068e3d1f67e2ce1a2ea09ffb9e38684cc7de0c")
+                         "2cd008a63a97018b1acba4951528f9cdff3b52bd")
         self.assertEqual(ledger["actual_pr165_head"],
-                         "c307b29af3ff0f3fb1a9f73814d5e9955e68024c")
-        self.assertIs(ledger["active_ledger_reconciled"], False)
+                         "2cd008a63a97018b1acba4951528f9cdff3b52bd")
+        self.assertIs(ledger["active_ledger_reconciled"], True)
         focus = overlay["products"]["focus_session_desk"]
         self.assertEqual(focus["current_source_sha"],
                          "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79")
