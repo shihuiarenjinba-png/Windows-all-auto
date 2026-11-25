@@ -54,7 +54,15 @@ def github_download(repository, ref, path, token, target, max_bytes=4_000_000_00
         raise UploadError("DOWNLOAD_FAILED", "GitHub package download failed") from exc
 
 def main():
-    parser=argparse.ArgumentParser(); source=parser.add_mutually_exclusive_group(required=True); source.add_argument("--config",type=Path); source.add_argument("--product"); parser.add_argument("--workdir",type=Path,default=Path(".uploader-run")); parser.add_argument("--receipt-ledger",type=Path); parser.add_argument("--execute",action="store_true"); args=parser.parse_args()
+    parser = argparse.ArgumentParser(description="Validate or upload one exact MSIX to an existing Microsoft Store Draft.")
+    source = parser.add_mutually_exclusive_group(required=True)
+    source.add_argument("--config", type=Path, help="Exact product job JSON")
+    source.add_argument("--product", help="Registered product key under uploader/config")
+    parser.add_argument("--package", type=Path, help="Use an already-downloaded local MSIX instead of downloading from GitHub")
+    parser.add_argument("--workdir", type=Path, default=Path(".uploader-run"))
+    parser.add_argument("--receipt-ledger", type=Path)
+    parser.add_argument("--execute", action="store_true", help="Upload to the configured existing Draft, Save Packages, and verify after reload")
+    args = parser.parse_args()
     config={}; package=None; job=None; journal=None; outcome="FAILED"; detail={}; code=""
     try:
         config_file=resolve_job_config(config_path=args.config, product_key=args.product)
@@ -67,10 +75,22 @@ def main():
             raise UploadError("EXPECTED_SHA_REQUIRED", "Live upload requires a frozen 64-character SHA-256")
         if args.execute and not os.environ.get("PARTNER_CENTER_CDP_URL"):
             raise UploadError("BROWSER_SESSION_UNAVAILABLE", "Set the authenticated remote browser CDP secret before live execution")
-        package=args.workdir/Path(config["path"]).name
-        github_download(config["repository"],config["ref"],config["path"],os.environ.get("GH_READ_TOKEN"),package,
-                        max_bytes=int(config.get("max_bytes",4_000_000_000)))
         expected=config.get("expected_sha256"); expected=None if not expected or expected.startswith("REPLACE_") else expected
+        if args.package is not None:
+            try:
+                package = args.package.expanduser().resolve(strict=True)
+            except OSError as exc:
+                raise UploadError("FILE_NOT_FOUND", "The supplied local MSIX path does not exist") from exc
+            if not package.is_file():
+                raise UploadError("FILE_NOT_FOUND", "The supplied local package path is not a file")
+            configured_name = Path(config["path"]).name
+            if package.name.casefold() != configured_name.casefold():
+                raise UploadError("PACKAGE_FILENAME_MISMATCH",
+                                  f"Expected the exact configured filename: {configured_name}")
+        else:
+            package=args.workdir/Path(config["path"]).name
+            github_download(config["repository"],config["ref"],config["path"],os.environ.get("GH_READ_TOKEN"),package,
+                            max_bytes=int(config.get("max_bytes",4_000_000_000)))
         job=verify_file(config,package,expected_sha256=expected,
                         max_bytes=int(config.get("max_bytes",4_000_000_000)))
         with JobLedger(args.workdir/"ledger.sqlite3") as ledger:
