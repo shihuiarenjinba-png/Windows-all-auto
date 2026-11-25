@@ -210,7 +210,7 @@ class PartnerCenterFleetObservationTests(unittest.TestCase):
                 self.assertTrue(artifact["artifact_downloaded_and_rehashed_locally"])
                 self.assertFalse(artifact["uploadable"])
 
-    def test_web_evidence_archiver_artifact_waits_for_branch_integration(self):
+    def test_web_evidence_archiver_local_integration_is_unpushed_and_capture_is_blocked(self):
         group_c = json.loads(
             (ROOT / "ops" / "group_c_store_products.json").read_text(encoding="utf-8")
         )
@@ -226,6 +226,9 @@ class PartnerCenterFleetObservationTests(unittest.TestCase):
         self.assertEqual(wea["source_reconciliation"]["remote_ci_status"], "NOT_RUN")
         self.assertEqual(wea["source_reconciliation"]["actual_example_capture"], "TIMEOUT")
         self.assertFalse(wea["source_reconciliation"]["capture_output_created"])
+        self.assertEqual(wea["source_reconciliation"]["formal_preflight"], "HOLD")
+        self.assertEqual(wea["remote_package_artifact_discovery"]["local_package_note"][:30],
+                         "This verified QA_UNSIGNED p")
         self.assertEqual(wea["remote_package_artifact_discovery"]["local_integration_commit_sha"],
                          "2516feedd5b10990fbe5c8184587e3b69214648d")
         self.assertEqual(
@@ -257,6 +260,11 @@ class PartnerCenterFleetObservationTests(unittest.TestCase):
         self.assertEqual(artifact["package_signature"], "UNSIGNED")
         self.assertEqual(artifact["package_sha256"], "512da1ab4449a69b02901baf9c8eaff6577f1e58d336f43ef608f4fbc3892a97")
         self.assertEqual(artifact["version_approval"], "TECHNICAL_DRAFT_ONLY_PUBLIC_RELEASE_HOLD")
+        self.assertTrue(artifact["local_verification_20261125"]["local_sha256_matches_builder"])
+        self.assertEqual(artifact["local_verification_20261125"]["signature_status"], "NotSigned")
+        self.assertEqual(artifact["partner_center_live_recheck_20261125"], "NOT_PERFORMED")
+        self.assertEqual(artifact["current_submission_status"], "NOT_LIVE_VERIFIED")
+        self.assertFalse(artifact["submission_created_in_this_phase"])
         self.assertFalse(artifact["uploadable"])
 
 
