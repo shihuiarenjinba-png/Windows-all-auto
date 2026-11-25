@@ -20,19 +20,21 @@ if ($packageMatches.Count -ne 1) {
 }
 
 $uploadScript = Join-Path $PSScriptRoot 'upload_store_msix.ps1'
-$arguments = @(
-    '-Product', 'data-contract-auditor',
-    '-Package', $packageMatches[0].FullName,
-    '-CdpUrl', $CdpUrl
-)
+# Use hashtable splatting so PowerShell binds Product, Package, and CdpUrl
+# by parameter name instead of treating the -Product token as a positional value.
+$uploadParameters = @{
+    Product = 'data-contract-auditor'
+    Package = $packageMatches[0].FullName
+    CdpUrl = $CdpUrl
+}
 if ($Execute) {
-    $arguments += '-Execute'
+    $uploadParameters['Execute'] = $true
     Write-Host 'Executing the owner-authorized single DCA package upload/Save to the existing Draft only.' -ForegroundColor Yellow
 } else {
     Write-Host 'Dry-run only: no Partner Center write will occur.'
 }
 
-& $uploadScript @arguments
+& $uploadScript @uploadParameters
 if ($LASTEXITCODE -ne 0) {
     throw "DCA Store package operation failed. Inspect .uploader-run\data-contract-auditor\receipt.json before retrying."
 }
