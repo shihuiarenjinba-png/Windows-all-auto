@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
   "path": "ops/active_e2e_handoff_overlay_20261126.json",
-  "observed_at_utc": "2026-11-25T16:34:52Z",
+  "observed_at_utc": "2026-11-25T16:41:42Z",
   "status": "HOLD",
   "e2e_pass": false,
   "record_type": "APPEND_ONLY_CURRENT_OBSERVATION",
-  "note": "This overlay records the latest directly observed PR/lane state. It does not replace or silently rewrite ops/active_e2e_handoff.json. The active ledger still points at PR165 HEAD 77068e3; the live branch is now c307b29. Do not claim the central ledger is fully reconciled until its canonical file is safely updated.",
+  "note": "Current observation is reconciled into the canonical active ledger. Repository CI is PASS; product E2E remains HOLD. The current package blocker remains upstream of real MSIX build.",
   "priority_order": [
     "Focus Session Desk",
     "File Integrity Ledger"
@@ -15,34 +15,62 @@
     "number": 165,
     "state": "OPEN_DRAFT",
     "branch": "codex/e2e-artifact-custody-20261114",
-    "head_sha": "c307b29af3ff0f3fb1a9f73814d5e9955e68024c",
-    "parent_sha": "bc9568ab7bd1c982bb560db9f40183434220f322",
-    "observed_updated_at_utc": "2026-11-25T16:23:03Z",
+    "head_sha": "2cd008a63a97018b1acba4951528f9cdff3b52bd",
+    "parent_sha": "6cb4e147544910bc4d74e1e983abacf4ecf1bd81",
+    "observed_updated_at_utc": "2026-11-25T16:41:42Z",
     "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
     "exact_head_ci": [
       {
-        "run_id": 45653273056,
+        "run_id": 45656584514,
         "workflow": "Windows E2E transport fail-closed regression",
         "conclusion": "success",
-        "head_sha": "c307b29af3ff0f3fb1a9f73814d5e9955e68024c",
+        "head_sha": "2cd008a63a97018b1acba4951528f9cdff3b52bd",
         "scope": "repository regression only"
       },
       {
-        "run_id": 45653273551,
+        "run_id": 45656584507,
         "workflow": "GitHub artifact custody fail-closed regression",
         "conclusion": "success",
-        "head_sha": "c307b29af3ff0f3fb1a9f73814d5e9955e68024c",
+        "head_sha": "2cd008a63a97018b1acba4951528f9cdff3b52bd",
         "scope": "independent artifact custody regression only"
       },
       {
-        "run_id": 45653273553,
+        "run_id": 45656584747,
         "workflow": "Windows-all-auto Offline QA",
         "conclusion": "success",
-        "head_sha": "c307b29af3ff0f3fb1a9f73814d5e9955e68024c",
+        "head_sha": "2cd008a63a97018b1acba4951528f9cdff3b52bd",
         "scope": "Windows/Ubuntu offline QA only"
       }
     ],
-    "repository_ci_is_not_product_e2e": true
+    "repository_ci_is_not_product_e2e": true,
+    "immediate_parent_ci_status": "NOT_OBSERVED",
+    "immediate_parent_head_sha": "6cb4e147544910bc4d74e1e983abacf4ecf1bd81",
+    "previous_tested_head_sha": "3eb938e353f5840acf5c4a98c6887ff2a54dd6af",
+    "previous_tested_head_ci": [
+      {
+        "run_id": 45656523423,
+        "conclusion": "success",
+        "head_sha": "3eb938e353f5840acf5c4a98c6887ff2a54dd6af",
+        "scope": "transport-regression"
+      },
+      {
+        "run_id": 45656523493,
+        "conclusion": "success",
+        "head_sha": "3eb938e353f5840acf5c4a98c6887ff2a54dd6af",
+        "scope": "custody-regression"
+      },
+      {
+        "run_id": 45656523484,
+        "conclusion": "success",
+        "head_sha": "3eb938e353f5840acf5c4a98c6887ff2a54dd6af",
+        "scope": "Windows/Ubuntu Offline QA"
+      }
+    ],
+    "push_offline_qa": {
+      "run_id": 45656574786,
+      "conclusion": "success",
+      "head_sha": "2cd008a63a97018b1acba4951528f9cdff3b52bd"
+    }
   },
   "pr161": {
     "number": 161,
@@ -275,32 +303,21 @@
     "local_windows_receipt_verified": false
   },
   "ledger_reconciliation": {
-    "status": "STALE__CURRENT_HEAD_NOT_REFLECTED",
+    "status": "RECONCILED_TO_PR165_2CD_OBSERVATION",
     "active_ledger_path": "ops/active_e2e_handoff.json",
-    "active_ledger_blob_sha": "35efe60eae506372725ca7b502923aa72a57ef33",
-    "active_ledger_updated_at_utc": "2026-11-25T16:02:02Z",
-    "active_ledger_recorded_pr165_head": "77068e3d1f67e2ce1a2ea09ffb9e38684cc7de0c",
-    "actual_pr165_head": "c307b29af3ff0f3fb1a9f73814d5e9955e68024c",
+    "active_ledger_blob_sha": "4626859d68870c1a89cb866d117153ca6093ff32",
+    "active_ledger_updated_at_utc": "2026-11-25T16:41:42Z",
+    "active_ledger_recorded_pr165_head": "2cd008a63a97018b1acba4951528f9cdff3b52bd",
+    "actual_pr165_head": "2cd008a63a97018b1acba4951528f9cdff3b52bd",
     "comparison": {
-      "status": "ahead",
-      "ahead_by": 2,
+      "status": "equal_at_observation",
+      "ahead_by": 0,
       "behind_by": 0,
-      "commits": [
-        "bc9568ab7bd1c982bb560db9f40183434220f322",
-        "c307b29af3ff0f3fb1a9f73814d5e9955e68024c"
-      ],
-      "changed_files": [
-        "ops/active_e2e_handoff.json",
-        "ops/completion_rush_queue_20261116.json",
-        "ops/focus_file_transport_reconciliation_20261125.json",
-        "tests/test_completion_rush_queue_20261116.py",
-        "tests/test_current_live_product_reconciliation_20261125.py",
-        "tests/test_github_artifact_custody.py",
-        "tests/test_real_msix_transport_failclosed.py"
-      ]
+      "commits": []
     },
-    "active_ledger_reconciled": false,
-    "note": "The active ledger was last updated against PR165 HEAD 77068e3 and does not record the actual branch HEAD c307b29 or its exact-head CI runs. This overlay is supplemental and explicitly does not claim the canonical ledger is reconciled."
+    "active_ledger_reconciled": true,
+    "note": "Canonical ops/active_e2e_handoff.json was updated in commit 8d32abd830361fae9fdca756bcaf2c5c666b84d0 to record PR165 HEAD 2cd008a and its 3/3 exact-head CI. The active ledger still remains E2E HOLD because neither Focus nor File Integrity has a current-source approved Identity plus authoritative Package Version and real MSIX.",
+    "active_ledger_update_commit_sha": "8d32abd830361fae9fdca756bcaf2c5c666b84d0"
   },
   "safety": {
     "e2e_pass": false,
@@ -313,5 +330,5 @@
     "main_release_write_allowed": false,
     "prism_legacy_identity_cas_allowed": false
   },
-  "next_action": "Keep Focus/File in DELIVERY_HOLD. The next real-package gate is still upstream of MSIX: Focus current-source request/Identity revalidation plus an authoritative Package Version; File current-source Identity revalidation plus official Version and owner visual sign-off. Do not build MSIX, claim custody/backlog/checker/GUI, start Store dry-run, or infer Version before those inputs exist. The canonical active ledger still requires a safe update to the c307b29 observation."
+  "next_action": "Keep Focus/File DELIVERY_HOLD. Focus current-source request/Identity revalidation and authoritative Package Version remain absent. File current request is DRY_RUN, official Identity UNVERIFIED/NOT_COLLECTED, owner visual review required, and Package Version null. Do not build MSIX or advance backlog/local checker until current-source Identity and official Version are independently present. Store dry-run remains ineligible."
 }
