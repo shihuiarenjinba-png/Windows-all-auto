@@ -93,19 +93,19 @@ class CompletionRushQueueTests(unittest.TestCase):
 
     def test_latest_transport_and_store_gate_stay_held(self):
         latest = self.data["latest_transport_reconciliation"]
-        self.assertEqual(latest["central_head"], "237e78c83082a092a45fc9a2b9ca95101611a6f5")
-        self.assertEqual(latest["central_tested_head_sha"], "237e78c83082a092a45fc9a2b9ca95101611a6f5")
-        self.assertEqual(latest["previous_central_head_sha"], "a15a4577f88ccd7d9e02ab93f838c1a04c1bfd1e")
-        self.assertEqual(latest["previous_tested_head_sha"], "5ad2cf093539739f1a2af7e67c8c83f7c1960825")
+        self.assertEqual(latest["central_head"], "6ff05c0a3b682ade5016894c08c9edfbdf75e375")
+        self.assertEqual(latest["central_tested_head_sha"], "6ff05c0a3b682ade5016894c08c9edfbdf75e375")
+        self.assertEqual(latest["previous_central_head_sha"], "dbd714347c198e6922ac6596b64240c61c7d4db4")
+        self.assertEqual(latest["previous_tested_head_sha"], "237e78c83082a092a45fc9a2b9ca95101611a6f5")
         self.assertEqual([x["run_id"] for x in latest["exact_head_ci"]],
-                         [45701952640, 45701953080, 45701952665, 45701935988])
-        self.assertEqual(latest["pr165_current_head_parent_ci_status"], "PARTIAL_FAIL_STALE_LEDGER_OBSERVATION_ASSERTION")
-        self.assertEqual([x["run_id"] for x in latest["pr165_current_head_parent_ci"]], [45701932152, 45701931523, 45701931460, 45701918375])
+                         [45707767241, 45707766948, 45707766837])
+        self.assertEqual(latest["pr165_current_head_parent_ci_status"], "PASS_EXACT_HEAD_CI")
+        self.assertEqual([x["run_id"] for x in latest["pr165_current_head_parent_ci"]], [45707537431, 45707537270, 45707537321])
         observation = self.data["pr165_live_head_observation_20261126_latest"]
-        self.assertEqual(observation["head_sha"], "237e78c83082a092a45fc9a2b9ca95101611a6f5")
-        self.assertEqual(observation["parent_sha"], "a15a4577f88ccd7d9e02ab93f838c1a04c1bfd1e")
+        self.assertEqual(observation["head_sha"], "6ff05c0a3b682ade5016894c08c9edfbdf75e375")
+        self.assertEqual(observation["parent_sha"], "dbd714347c198e6922ac6596b64240c61c7d4db4")
         self.assertEqual(observation["status"], "PASS_EXACT_HEAD_CI")
-        self.assertEqual(observation["last_verified_head_sha"], "237e78c83082a092a45fc9a2b9ca95101611a6f5")
+        self.assertEqual(observation["last_verified_head_sha"], "6ff05c0a3b682ade5016894c08c9edfbdf75e375")
         self.assertFalse(observation["e2e_pass"])
         self.assertEqual(latest["status"], "HOLD")
         self.assertFalse(latest["e2e_pass"])

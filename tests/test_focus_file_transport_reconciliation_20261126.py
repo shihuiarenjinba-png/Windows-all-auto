@@ -15,10 +15,10 @@ class FocusFileTransportReconciliation20261126(unittest.TestCase):
         d = self.data
         p = d["pr165"]
         head = p["tested_code_head_sha"]
-        self.assertEqual(head, "a6b9d2b1db3033d5846e136400d2fe67dede554d")
-        self.assertEqual(p["latest_verified_code_head_sha"], "7a97147335c5294057fbe341a7b41df3e40e1efa")
+        self.assertEqual(head, "6ff05c0a3b682ade5016894c08c9edfbdf75e375")
+        self.assertEqual(p["latest_verified_code_head_sha"], "6ff05c0a3b682ade5016894c08c9edfbdf75e375")
         self.assertEqual(p["latest_exact_head_ci_status"], "PASS_EXACT_HEAD_CI")
-        self.assertEqual(p["latest_exact_head_ci_run_ids"], [45701740182, 45701740172, 45701740318, 45701728845])
+        self.assertEqual(p["latest_exact_head_ci_run_ids"], [45707767241, 45707766948, 45707766837])
         self.assertEqual(p["latest_offline_qa_tests_run"], 563)
         self.assertEqual(p["latest_product_e2e_status"], "HOLD")
         latest = self.data["latest_observation"]
@@ -28,13 +28,13 @@ class FocusFileTransportReconciliation20261126(unittest.TestCase):
         self.assertEqual(p["exact_head_ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual(
             [r["run_id"] for r in p["exact_head_ci"]],
-            [45701014660, 45701014598, 45701014777],
+            [45707767241, 45707766948, 45707766837],
         )
         self.assertTrue(all(r["head_sha"] == head and r["conclusion"] == "success"
                             for r in p["exact_head_ci"]))
         self.assertEqual(p["offline_qa"]["ubuntu_conclusion"], "success")
         self.assertEqual(p["offline_qa"]["windows_conclusion"], "success")
-        self.assertEqual(p["offline_qa"]["tests_run"], 556)
+        self.assertEqual(p["offline_qa"]["tests_run"], 563)
         self.assertEqual(p["product_e2e_status"], "HOLD")
         self.assertIs(p["real_msix"], False)
         self.assertIs(p["downstream_receipts"], False)
@@ -113,11 +113,11 @@ class FocusFileTransportReconciliation20261126(unittest.TestCase):
         self.assertEqual(d["pr177"]["latest_compare_to_latest_pr165"]["behind_by"], 6)
         self.assertEqual(d["pr177"]["latest_compare_to_latest_pr165"]["decision"], "DO_NOT_RESTACK")
 
-    def test_active_ledger_unavailable_is_not_treated_as_an_empty_file(self):
+    def test_active_ledger_direct_blob_readback_is_reconciled(self):
         l = self.data["ledger_reconciliation"]
-        self.assertIs(l["active_ledger_direct_content_available"], False)
+        self.assertIs(l["active_ledger_direct_content_available"], True)
         self.assertIn("NOT_TREATED_AS_EMPTY_FILE", l["active_ledger_content_fetch_status"])
-        self.assertIs(l["active_ledger_direct_update_performed"], False)
+        self.assertIs(l["active_ledger_direct_update_performed"], True)
         self.assertEqual(l["latest_pr165_head"], self.data["pr165"]["latest_verified_code_head_sha"])
 
     def test_store_and_repository_safety_flags_remain_closed(self):
