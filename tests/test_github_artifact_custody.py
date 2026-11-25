@@ -136,8 +136,8 @@ class CustodyTests(unittest.TestCase):
 
         args = ["--expected", str(expected_path), "--local-bundle", str(bundle),
                 "--output", str(output)]
-        with patch("scripts.github_artifact_custody.github_clients", side_effect=fake_clients), \\
-             patch.dict(os.environ, {"GITHUB_TOKEN": "test-token"}, clear=True), \\
+        with patch("scripts.github_artifact_custody.github_clients", side_effect=fake_clients), \
+             patch.dict(os.environ, {"GITHUB_TOKEN": "test-token"}, clear=True), \
              redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
             result = main(args)
         self.assertEqual(result, 0)
