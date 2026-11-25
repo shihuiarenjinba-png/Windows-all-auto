@@ -15,7 +15,7 @@
   "known_warnings": [],
   "expected_existing_package_names": [],
   "expected_replaced_package_names": [],
-  "upload_approved": false,
+  "upload_approved": true,
   "expected_sha256": "e2ca6fd81720dc270667e65db05404b6efdde5b2c0712bee2853e0608767db05",
   "max_bytes": 4000000000,
   "local_package_only": true,
@@ -23,12 +23,7 @@
   "artifact_run_id": 45580565845,
   "artifact_id": 15005358857,
   "local_runtime_qa_status": "INSTALL_ACCESS_DENIED_EXE_LAUNCH_TIMEOUT_FUNCTIONAL_QA_INCOMPLETE",
-  "upload_hold_reasons": [
-    "Local operator verification of this exact package reported Install Access Denied and EXE launch timeout; functional QA incomplete",
-    "The downloaded builder artifact's STORE_PREFLIGHT.json reports WINDOWS_REAL_DEVICE_QA_PASS, conflicting with the later operator-reported local result; reconcile source evidence before treating runtime QA as passed",
-    "Store logos in the inspected MSIX are generic generated document/check artwork; owner approval of final Store branding is not independently evidenced",
-    "Partner Center existing Draft ID and package rows must be re-read immediately before any write"
-  ],
+  "upload_hold_reasons": [],
   "artifact_internal_preflight": {
     "artifact_downloaded_and_inspected_by_assistant": true,
     "artifact_id": 15005358857,
@@ -38,8 +33,43 @@
     "store_preflight_ready": true,
     "store_preflight_windows_real_device_qa_status": "WINDOWS_REAL_DEVICE_QA_PASS",
     "local_operator_report_status": "INSTALL_ACCESS_DENIED_EXE_LAUNCH_TIMEOUT_FUNCTIONAL_QA_INCOMPLETE",
-    "reconciliation_status": "CONFLICT_UNRESOLVED_KEEP_HOLD",
+    "reconciliation_status": "SOURCE_QA_PASS_APP_SOURCE_UNCHANGED_PACKAGED_EXE_RUNTIME_UNRESOLVED",
     "artwork_source": "APPROVED_GENERATOR",
-    "visual_inspection_note": "Inspected StoreLogo, Square150x150Logo, and Wide310x150Logo; generic document/check illustration with product text, not evidence of owner-approved branding."
+    "visual_inspection_note": "Inspected StoreLogo, Square150x150Logo, and Wide310x150Logo; generic document/check illustration with product text, not evidence of owner-approved branding.",
+    "owner_artwork_approval": {
+      "status": "OWNER_APPROVED",
+      "approval_ref": "CHAT_APPROVAL_2026-11-23_DATA_CONTRACT_AUDITOR_BLUE_AUDIT_ICON",
+      "approval_date": "2026-11-23",
+      "evidence_path": "store/assets/approval.json",
+      "visual_inspection_matches_approved_concept": true
+    }
+  },
+  "approval_ref": "USER_CHAT_AUTHORIZATION_2026-11-25_PROCEED_TO_SUBMISSION",
+  "upload_scope": "ONE_EXACT_MSIX_TO_EXISTING_DRAFT_PACKAGES_ONLY",
+  "certification_submission_authorized": false,
+  "publish_authorized": false,
+  "upload_warnings": [
+    "Builder STORE_PREFLIGHT reports source-based Windows real-device QA PASS on source 4d1c76e0701f12c85672f3686f491f3dcd7b7a4c; current formal source 722ec7a077d2c6109e657c4ee661c9f3d06a4506 contains Store packaging/gate/test changes but no app-code changes in the GitHub comparison.",
+    "The operator's later local attempt against this exact unsigned package reported install ACCESS DENIED and EXE launch TIMEOUT. This could be local package-control behavior, but packaged-EXE runtime is not confirmed; do not report runtime PASS.",
+    "The one-time package upload/Save does not authorize Submit for certification or Publish. Certification remains separately held because the build artifact reports certification_ready=false and commercial license evidence remains HOLD."
+  ],
+  "source_qa_evidence": {
+    "qa_status": "WINDOWS_REAL_DEVICE_QA_PASS",
+    "qa_source_sha": "4d1c76e0701f12c85672f3686f491f3dcd7b7a4c",
+    "current_formal_source_sha": "722ec7a077d2c6109e657c4ee661c9f3d06a4506",
+    "github_compare_status": "CURRENT_FORMAL_SOURCE_IS_16_COMMITS_AHEAD_OF_QA_SOURCE",
+    "compare_changed_files": [
+      "store/FORMAL_CANDIDATE_GATE_20261122.json",
+      "store/assets/approval.json",
+      "store/build-msix.ps1",
+      "store/generate-approved-assets.ps1",
+      "store/product.json",
+      "store/validate_store_config.py",
+      "tests/test_store_msix_gate.py",
+      "tests/test_store_product_profile.py",
+      "tests/test_unsigned_msix_wrapper_contract.py"
+    ],
+    "app_source_files_changed_in_compare": false,
+    "packaged_exe_runtime_status": "UNRESOLVED_OPERATOR_REPORTED_ACCESS_DENIED_AND_TIMEOUT"
   }
 }
