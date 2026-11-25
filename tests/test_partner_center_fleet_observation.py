@@ -227,8 +227,10 @@ class PartnerCenterFleetObservationTests(unittest.TestCase):
         self.assertEqual(wea["source_reconciliation"]["actual_example_capture"], "TIMEOUT")
         self.assertFalse(wea["source_reconciliation"]["capture_output_created"])
         self.assertEqual(wea["source_reconciliation"]["formal_preflight"], "HOLD")
-        self.assertEqual(wea["remote_package_artifact_discovery"]["local_package_note"][:30],
-                         "This verified QA_UNSIGNED p")
+        self.assertIn(
+            "pre-integration Store packaging revision",
+            wea["remote_package_artifact_discovery"]["local_package_note"],
+        )
         self.assertEqual(wea["remote_package_artifact_discovery"]["local_integration_commit_sha"],
                          "2516feedd5b10990fbe5c8184587e3b69214648d")
         self.assertEqual(
