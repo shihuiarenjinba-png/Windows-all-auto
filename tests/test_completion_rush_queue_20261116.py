@@ -93,10 +93,10 @@ class CompletionRushQueueTests(unittest.TestCase):
 
     def test_latest_transport_and_store_gate_stay_held(self):
         latest = self.data["latest_transport_reconciliation"]
-        self.assertEqual(latest["central_head"], "e410c81a0048c845173f9825f11443d8aa55a06d")
-        self.assertEqual(latest["central_tested_head_sha"], "108f34f4b972835159f905a9b2d6294b9e6c2451")
+        self.assertEqual(latest["central_head"], "b6e8b506060a770ee5fa29a407240656ef8cd8d3")
+        self.assertEqual(latest["central_tested_head_sha"], "b6e8b506060a770ee5fa29a407240656ef8cd8d3")
         self.assertEqual([x["run_id"] for x in latest["exact_head_ci"]],
-                         [45563567815, 45563567925, 45563567897])
+                         [45575064424, 45575064363, 45575064234])
         self.assertEqual(latest["status"], "HOLD")
         self.assertFalse(latest["e2e_pass"])
         self.assertEqual(self.data["store_upload_test_eligibility_live_20261125"]["eligible_fresh_unsold_products"], 0)

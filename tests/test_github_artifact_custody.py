@@ -297,10 +297,10 @@ class CustodyTests(unittest.TestCase):
         ledger = json.loads((root / "ops/active_e2e_handoff.json").read_text(encoding="utf-8"))
         recon = json.loads((root / "ops/focus_file_transport_reconciliation_20261125.json").read_text(encoding="utf-8"))
         latest = ledger["latest_transport_reconciliation"]
-        self.assertEqual(latest["central_tested_head_sha"], "108f34f4b972835159f905a9b2d6294b9e6c2451")
-        self.assertEqual(latest["previous_central_head_sha"], "3334b5c7db5f6207552b2b49641c3d275d35f922")
+        self.assertEqual(latest["central_tested_head_sha"], "b6e8b506060a770ee5fa29a407240656ef8cd8d3")
+        self.assertEqual(latest["previous_central_head_sha"], "91a5fbb0ec2231cb5143193d2bcc26e36add33cd")
         self.assertEqual([x["run_id"] for x in latest["exact_head_ci"]],
-                         [45563567815, 45563567925, 45563567897])
+                         [45575064424, 45575064363, 45575064234])
         self.assertEqual(latest["ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual(latest["status"], "HOLD")
         self.assertIs(latest["e2e_pass"], False)
@@ -309,7 +309,7 @@ class CustodyTests(unittest.TestCase):
         self.assertIs(ledger["store_submission_allowed"], False)
         self.assertIs(ledger["certification_allowed"], False)
         self.assertIs(ledger["publish_allowed"], False)
-        self.assertEqual(latest["central_head"], "e410c81a0048c845173f9825f11443d8aa55a06d")
+        self.assertEqual(latest["central_head"], "b6e8b506060a770ee5fa29a407240656ef8cd8d3")
         self.assertEqual(recon["central_head"], latest["central_head"])
         self.assertEqual(recon["status"], "HOLD")
         self.assertIs(recon["e2e_pass"], False)
@@ -360,7 +360,7 @@ class CustodyTests(unittest.TestCase):
                          "NOT_OBSERVED__HISTORICAL_REQUEST_BINDS_8B00_ONLY")
         self.assertEqual(focus_item["store_assets_evidence"]["native_exe_gui"]["run_id"], 45234786152)
         self.assertEqual(focus_item["product_quality_assessment"]["score"]["total"], 54)
-        self.assertEqual(ledger["pr174_restack_assessment_live_20261125"]["compare_to_current_pr165_head"]["behind_by"], 108)
+        self.assertEqual(ledger["pr174_restack_assessment_live_20261125"]["compare_to_current_pr165_head"]["behind_by"], 111)
         self.assertEqual(ledger["store_upload_test_bridge"]["eligible_fresh_unsold_products"], 0)
 
 if __name__ == "__main__":

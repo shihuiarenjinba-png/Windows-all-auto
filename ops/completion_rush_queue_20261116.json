@@ -975,56 +975,56 @@
       "physical_windows_uia_pass": false
     }
   ],
-  "last_reconciled_at_utc": "2026-11-25T08:04:13Z",
-  "last_reconciled_basis": "Live PR165 HEAD e410c81a (parent 3334b5c7) and exact-head runs directly read. e410 transport passed; custody and Windows/Ubuntu Offline QA failed on stale snapshot assertions. Parent 3334b5c7 had three prior stale previous-central-head assertion failures. Last fully verified transport/custody/Offline QA remains 108f34f4. Current PR174 compare is ahead 6/behind 108; PR177/179 are ahead 6/behind 24; PR178 is ahead 16/behind 24. Focus/File source and Version gates remain HOLD.",
+  "last_reconciled_at_utc": "2026-11-25T08:25:44.483Z",
+  "last_reconciled_basis": "PR165 live HEAD b6e8b506 passed exact-head transport, artifact custody, Windows Offline QA and Ubuntu Offline QA; parent 91a5fbb0 had only a stale previous-central-head assertion failure in Offline QA. PR174 compare is ahead 6/behind 111; PR177/179 ahead 6/behind 27; PR178 ahead 16/behind 27. Focus/File identity and authoritative Version gates remain HOLD.",
   "latest_transport_reconciliation": {
-    "checked_at_utc": "2026-11-25T08:04:13Z",
+    "checked_at_utc": "2026-11-25T08:25:44.483Z",
     "central_pr": 165,
-    "central_head": "e410c81a0048c845173f9825f11443d8aa55a06d",
-    "central_tested_head_sha": "108f34f4b972835159f905a9b2d6294b9e6c2451",
-    "previous_central_head_sha": "3334b5c7db5f6207552b2b49641c3d275d35f922",
-    "previous_central_head": "3334b5c7db5f6207552b2b49641c3d275d35f922",
+    "central_head": "b6e8b506060a770ee5fa29a407240656ef8cd8d3",
+    "central_tested_head_sha": "b6e8b506060a770ee5fa29a407240656ef8cd8d3",
+    "previous_central_head_sha": "91a5fbb0ec2231cb5143193d2bcc26e36add33cd",
+    "previous_central_head": "91a5fbb0ec2231cb5143193d2bcc26e36add33cd",
     "previous_exact_head_ci": [
       {
-        "run_id": 45571260661,
-        "conclusion": "failure",
-        "scope": "Immediate parent 3334b5c7 transport regression; stale previous_central_head_sha assertion",
+        "run_id": 45574883226,
+        "conclusion": "success",
+        "scope": "Immediate parent 91a5fbb0 transport regression",
         "job": "transport-regression"
       },
       {
-        "run_id": 45571260623,
-        "conclusion": "failure",
-        "scope": "Immediate parent 3334b5c7 artifact custody regression; stale previous_central_head_sha assertion",
+        "run_id": 45574883271,
+        "conclusion": "success",
+        "scope": "Immediate parent 91a5fbb0 artifact custody regression",
         "job": "custody-regression"
       },
       {
-        "run_id": 45571260642,
+        "run_id": 45574883193,
         "conclusion": "failure",
-        "scope": "Immediate parent 3334b5c7 Windows/Ubuntu Offline QA; stale previous_central_head_sha assertion",
+        "scope": "Immediate parent 91a5fbb0 Windows/Ubuntu Offline QA; stale previous_central_head_sha assertion",
         "jobs": [
           "Offline preflight tests (windows-latest)",
           "Offline preflight tests (ubuntu-latest)"
         ]
       }
     ],
-    "previous_tested_head_sha": "93e2c687b6cd97b88e88137654c0f6611ef1d434",
+    "previous_tested_head_sha": "108f34f4b972835159f905a9b2d6294b9e6c2451",
     "previous_tested_exact_head_ci": [
       {
-        "run_id": 45563199592,
+        "run_id": 45563567815,
         "conclusion": "success",
-        "scope": "Previous tested HEAD 93e2c687 exact-head transport regression",
+        "scope": "Previous verified HEAD 108f34f4 exact-head transport regression",
         "job": "transport-regression"
       },
       {
-        "run_id": 45563199585,
+        "run_id": 45563567925,
         "conclusion": "success",
-        "scope": "Previous tested HEAD 93e2c687 exact-head artifact custody regression",
+        "scope": "Previous verified HEAD 108f34f4 exact-head artifact custody regression",
         "job": "custody-regression"
       },
       {
-        "run_id": 45563199749,
+        "run_id": 45563567897,
         "conclusion": "success",
-        "scope": "Previous tested HEAD 93e2c687 Windows/Ubuntu Offline QA",
+        "scope": "Previous verified HEAD 108f34f4 Windows/Ubuntu Offline QA",
         "jobs": [
           "Offline preflight tests (windows-latest)",
           "Offline preflight tests (ubuntu-latest)"
@@ -1033,21 +1033,21 @@
     ],
     "exact_head_ci": [
       {
-        "run_id": 45563567815,
+        "run_id": 45575064424,
         "conclusion": "success",
-        "scope": "Last verified HEAD 108f34f4 exact-head Windows E2E transport fail-closed regression",
+        "scope": "Current verified HEAD b6e8b506 exact-head Windows E2E transport fail-closed regression",
         "job": "transport-regression"
       },
       {
-        "run_id": 45563567925,
+        "run_id": 45575064363,
         "conclusion": "success",
-        "scope": "Last verified HEAD 108f34f4 exact-head independent GitHub artifact custody regression",
+        "scope": "Current verified HEAD b6e8b506 exact-head independent GitHub artifact custody regression",
         "job": "custody-regression"
       },
       {
-        "run_id": 45563567897,
+        "run_id": 45575064234,
         "conclusion": "success",
-        "scope": "Last verified HEAD 108f34f4 exact-head Windows-all-auto Offline QA",
+        "scope": "Current verified HEAD b6e8b506 exact-head Windows-all-auto Offline QA",
         "jobs": [
           "Offline preflight tests (windows-latest)",
           "Offline preflight tests (ubuntu-latest)"
@@ -1056,9 +1056,9 @@
     ],
     "additional_push_ci": [
       {
-        "run_id": 45563559463,
+        "run_id": 45575055318,
         "conclusion": "success",
-        "scope": "Push-triggered Windows-all-auto Offline QA on last fully verified HEAD 108f34f4"
+        "scope": "Push-triggered Windows-all-auto Offline QA on exact verified HEAD b6e8b506"
       }
     ],
     "status": "HOLD",
@@ -1074,21 +1074,21 @@
     "immediate_parent_ci_status": "PARTIAL_FAIL_STALE_LIVE_HEAD_ASSERTIONS",
     "immediate_parent_exact_head_ci": [
       {
-        "run_id": 45571260661,
-        "conclusion": "failure",
-        "scope": "Immediate parent 3334b5c7 transport regression; stale previous_central_head_sha assertion",
+        "run_id": 45574883226,
+        "conclusion": "success",
+        "scope": "Immediate parent 91a5fbb0 transport regression",
         "job": "transport-regression"
       },
       {
-        "run_id": 45571260623,
-        "conclusion": "failure",
-        "scope": "Immediate parent 3334b5c7 artifact custody regression; stale previous_central_head_sha assertion",
+        "run_id": 45574883271,
+        "conclusion": "success",
+        "scope": "Immediate parent 91a5fbb0 artifact custody regression",
         "job": "custody-regression"
       },
       {
-        "run_id": 45571260642,
+        "run_id": 45574883193,
         "conclusion": "failure",
-        "scope": "Immediate parent 3334b5c7 Windows/Ubuntu Offline QA; stale previous_central_head_sha assertion",
+        "scope": "Immediate parent 91a5fbb0 Windows/Ubuntu Offline QA; stale previous_central_head_sha assertion",
         "jobs": [
           "Offline preflight tests (windows-latest)",
           "Offline preflight tests (ubuntu-latest)"
@@ -1098,21 +1098,21 @@
     "pr165_current_head_parent_ci_status": "PARTIAL_FAIL_STALE_LIVE_HEAD_ASSERTIONS",
     "pr165_current_head_parent_ci": [
       {
-        "run_id": 45571260661,
-        "conclusion": "failure",
-        "scope": "Immediate parent 3334b5c7 transport regression; stale previous_central_head_sha assertion",
+        "run_id": 45574883226,
+        "conclusion": "success",
+        "scope": "Immediate parent 91a5fbb0 transport regression",
         "job": "transport-regression"
       },
       {
-        "run_id": 45571260623,
-        "conclusion": "failure",
-        "scope": "Immediate parent 3334b5c7 artifact custody regression; stale previous_central_head_sha assertion",
+        "run_id": 45574883271,
+        "conclusion": "success",
+        "scope": "Immediate parent 91a5fbb0 artifact custody regression",
         "job": "custody-regression"
       },
       {
-        "run_id": 45571260642,
+        "run_id": 45574883193,
         "conclusion": "failure",
-        "scope": "Immediate parent 3334b5c7 Windows/Ubuntu Offline QA; stale previous_central_head_sha assertion",
+        "scope": "Immediate parent 91a5fbb0 Windows/Ubuntu Offline QA; stale previous_central_head_sha assertion",
         "jobs": [
           "Offline preflight tests (windows-latest)",
           "Offline preflight tests (ubuntu-latest)"
@@ -1122,13 +1122,13 @@
     "pr174_restack_assessment": {
       "status": "diverged",
       "ahead_by": 6,
-      "behind_by": 108,
+      "behind_by": 111,
       "decision": "DO_NOT_RESTACK"
     },
     "store_submission_allowed": false,
     "certification_allowed": false,
     "publish_allowed": false,
-    "note": "Live PR165 HEAD e410c81a is two commits after last fully verified HEAD 108f34f4. The immediate parent 3334b5c7 has three failed exact-head workflows from the prior-central-head fixture. On e410c81a transport passed, while custody and Windows/Ubuntu Offline QA failed on two stale snapshot assertions; the fixes in this commit separate current central_head from central_tested_head_sha and refresh live parallel-branch counts. Product E2E remains HOLD: Focus current-source Identity/request and authoritative Version are absent; File PR115 request is DRY_RUN, official Identity UNVERIFIED and Version null. Real MSIX, backlog, local pull, checker, install and GUI-install receipts remain absent. PR161/171 are Offline QA only; PR171 Store bridge dry-run has not started; local code sync is CLOUD_PASS_ONLY; fresh unsold Store eligibility is 0; Store writes remain disabled.",
+    "note": "PR165 live HEAD b6e8b506 passed exact-head transport 45575064424, artifact custody 45575064363, Windows/Ubuntu Offline QA 45575064234, and push Offline QA 45575055318. Its immediate parent 91a5fbb0 passed transport/custody but failed Offline QA only on a stale previous_central_head_sha assertion. Previous failed heads 3334b5c7 and e410c81a remain recorded as historical snapshot-fixture failures. Product E2E remains HOLD: Focus current-source request/Identity and authoritative Version are absent; File PR115 request is DRY_RUN, official Identity UNVERIFIED and Version null. Real MSIX, backlog, local pull, checker, install and GUI-install receipts remain absent. PR161/171 are Offline QA only; PR171 Store bridge dry-run has not started; local code sync is CLOUD_PASS_ONLY; fresh unsold Store eligibility is 0; Store writes remain disabled.",
     "intermediate_test_failures": [
       {
         "head_sha": "1d280ece8ef6ff3eaa10fc5669e65012b6b00263",
@@ -1182,35 +1182,59 @@
         "status": "PARTIAL_FAIL_STALE_SNAPSHOT_ASSERTIONS",
         "cause": "Transport regression passed. Artifact custody and Windows/Ubuntu Offline QA failed on two stale snapshot assertions: the parallel-branch test expected 108f34f4 instead of the observed 3334b5c7 snapshot, and custody compared live central_head with central_tested_head_sha.",
         "resolution": "Separate live central_head from last fully tested central_tested_head_sha; refresh parallel-branch counts; rerun exact-head transport, custody, and Windows/Ubuntu Offline QA."
+      },
+      {
+        "head_sha": "a384db39d51eb5b552c39f924f37406ebc6b0a42",
+        "runs": [
+          45574711408,
+          45574711602,
+          45574711413,
+          45574700251
+        ],
+        "status": "PARTIAL_FAIL_STALE_PARALLEL_BRANCH_ASSERTION",
+        "cause": "On a384db39, transport passed, but custody and Windows/Ubuntu Offline QA failed because the PR174 live behind_by assertion still expected 99 instead of 108.",
+        "resolution": "Updated the live compare fixture to the current PR165 head; retained this as a historical intermediate failure."
+      },
+      {
+        "head_sha": "91a5fbb0ec2231cb5143193d2bcc26e36add33cd",
+        "runs": [
+          45574883226,
+          45574883271,
+          45574883193,
+          45574876718
+        ],
+        "status": "PARTIAL_FAIL_STALE_PREVIOUS_CENTRAL_HEAD_ASSERTION",
+        "cause": "On 91a5fbb0, transport and artifact custody passed; Windows/Ubuntu Offline QA failed because the test still expected previous_central_head_sha=7d2b2565 instead of the immediate parent 3334b5c7.",
+        "resolution": "Updated the assertion to the immediate parent and reran all exact-head workflows on b6e8b506; transport, custody, Windows and Ubuntu now pass."
       }
     ],
-    "pr165_current_branch_head_sha": "e410c81a0048c845173f9825f11443d8aa55a06d",
-    "pr165_current_branch_head_parent_sha": "3334b5c7db5f6207552b2b49641c3d275d35f922",
+    "pr165_current_branch_head_sha": "b6e8b506060a770ee5fa29a407240656ef8cd8d3",
+    "pr165_current_branch_head_parent_sha": "91a5fbb0ec2231cb5143193d2bcc26e36add33cd",
     "pr165_current_branch_head_ci": [
       {
-        "run_id": 45572082130,
+        "run_id": 45575064424,
         "conclusion": "success",
-        "scope": "Current observed HEAD e410c81a transport regression",
+        "scope": "Current verified HEAD b6e8b506 exact-head Windows E2E transport fail-closed regression",
         "job": "transport-regression"
       },
       {
-        "run_id": 45572082140,
-        "conclusion": "failure",
-        "scope": "Current observed HEAD e410c81a artifact custody regression; stale live-head/snapshot assertions",
+        "run_id": 45575064363,
+        "conclusion": "success",
+        "scope": "Current verified HEAD b6e8b506 exact-head independent GitHub artifact custody regression",
         "job": "custody-regression"
       },
       {
-        "run_id": 45572082143,
-        "conclusion": "failure",
-        "scope": "Current observed HEAD e410c81a Windows/Ubuntu Offline QA; same stale live-head/snapshot assertions",
+        "run_id": 45575064234,
+        "conclusion": "success",
+        "scope": "Current verified HEAD b6e8b506 exact-head Windows-all-auto Offline QA",
         "jobs": [
           "Offline preflight tests (windows-latest)",
           "Offline preflight tests (ubuntu-latest)"
         ]
       }
     ],
-    "pr165_current_branch_head_ci_status": "PARTIAL_FAIL_STALE_SNAPSHOT_ASSERTIONS",
-    "pr165_current_branch_head_observed_at_utc": "2026-11-25T08:04:13Z"
+    "pr165_current_branch_head_ci_status": "PASS_EXACT_HEAD_CI",
+    "pr165_current_branch_head_observed_at_utc": "2026-11-25T08:25:44.483Z"
   },
   "previous_latest_transport_reconciliation": {
     "checked_at_utc": "2026-11-23T19:34:36Z",
@@ -2036,42 +2060,42 @@
     "publish_allowed": false
   },
   "pr165_live_head_observation_20261125_latest": {
-    "observed_at_utc": "2026-11-25T08:04:13Z",
+    "observed_at_utc": "2026-11-25T08:25:44.483Z",
     "pull_request": 165,
     "head_ref": "refs/pull/165/head",
-    "head_sha": "e410c81a0048c845173f9825f11443d8aa55a06d",
-    "parent_sha": "3334b5c7db5f6207552b2b49641c3d275d35f922",
+    "head_sha": "b6e8b506060a770ee5fa29a407240656ef8cd8d3",
+    "parent_sha": "91a5fbb0ec2231cb5143193d2bcc26e36add33cd",
     "comparison_to_previous_tested_head": {
       "status": "ahead",
-      "ahead_by": 2,
+      "ahead_by": 3,
       "behind_by": 0,
-      "total_commits": 2
+      "total_commits": 3
     },
     "exact_head_workflows": [
       {
-        "run_id": 45572082130,
+        "run_id": 45575064424,
         "conclusion": "success",
-        "scope": "Current observed HEAD e410c81a transport regression",
+        "scope": "Current verified HEAD b6e8b506 exact-head Windows E2E transport fail-closed regression",
         "job": "transport-regression"
       },
       {
-        "run_id": 45572082140,
-        "conclusion": "failure",
-        "scope": "Current observed HEAD e410c81a artifact custody regression; stale live-head/snapshot assertions",
+        "run_id": 45575064363,
+        "conclusion": "success",
+        "scope": "Current verified HEAD b6e8b506 exact-head independent GitHub artifact custody regression",
         "job": "custody-regression"
       },
       {
-        "run_id": 45572082143,
-        "conclusion": "failure",
-        "scope": "Current observed HEAD e410c81a Windows/Ubuntu Offline QA; same stale live-head/snapshot assertions",
+        "run_id": 45575064234,
+        "conclusion": "success",
+        "scope": "Current verified HEAD b6e8b506 exact-head Windows-all-auto Offline QA",
         "jobs": [
           "Offline preflight tests (windows-latest)",
           "Offline preflight tests (ubuntu-latest)"
         ]
       }
     ],
-    "status": "PARTIAL_FAIL_STALE_SNAPSHOT_ASSERTIONS",
-    "scope": "Current branch exact-head CI only: transport regression passed; custody and Windows/Ubuntu Offline QA failed on stale snapshot assertions. Not product E2E.",
+    "status": "PASS_EXACT_HEAD_CI",
+    "scope": "Current branch exact-head CI: transport, independent artifact custody, Windows Offline QA and Ubuntu Offline QA all passed. Repository checks only; not product E2E.",
     "product_e2e_status": "HOLD",
     "e2e_pass": false,
     "real_msix": false,
@@ -2081,24 +2105,24 @@
     "local_gui_install_receipt": false,
     "authoritative_package_version": "NOT_FOUND__KEEP_HOLD",
     "partner_center_authenticated_readback": "NOT_OBSERVED",
-    "immediate_parent_ci_status": "PARTIAL_FAIL_STALE_PREVIOUS_CENTRAL_HEAD_ASSERTION",
+    "immediate_parent_ci_status": "PARTIAL_FAIL_STALE_LIVE_HEAD_ASSERTIONS",
     "immediate_parent_exact_head_workflows": [
       {
-        "run_id": 45571260661,
-        "conclusion": "failure",
-        "scope": "Immediate parent 3334b5c7 transport regression; stale previous_central_head_sha assertion",
+        "run_id": 45574883226,
+        "conclusion": "success",
+        "scope": "Immediate parent 91a5fbb0 transport regression",
         "job": "transport-regression"
       },
       {
-        "run_id": 45571260623,
-        "conclusion": "failure",
-        "scope": "Immediate parent 3334b5c7 artifact custody regression; stale previous_central_head_sha assertion",
+        "run_id": 45574883271,
+        "conclusion": "success",
+        "scope": "Immediate parent 91a5fbb0 artifact custody regression",
         "job": "custody-regression"
       },
       {
-        "run_id": 45571260642,
+        "run_id": 45574883193,
         "conclusion": "failure",
-        "scope": "Immediate parent 3334b5c7 Windows/Ubuntu Offline QA; stale previous_central_head_sha assertion",
+        "scope": "Immediate parent 91a5fbb0 Windows/Ubuntu Offline QA; stale previous_central_head_sha assertion",
         "jobs": [
           "Offline preflight tests (windows-latest)",
           "Offline preflight tests (ubuntu-latest)"
@@ -2110,19 +2134,19 @@
       {
         "run_id": 45563567815,
         "conclusion": "success",
-        "scope": "Last verified HEAD 108f34f4 exact-head Windows E2E transport fail-closed regression",
+        "scope": "Previous verified HEAD 108f34f4 exact-head transport regression",
         "job": "transport-regression"
       },
       {
         "run_id": 45563567925,
         "conclusion": "success",
-        "scope": "Last verified HEAD 108f34f4 exact-head independent GitHub artifact custody regression",
+        "scope": "Previous verified HEAD 108f34f4 exact-head artifact custody regression",
         "job": "custody-regression"
       },
       {
         "run_id": 45563567897,
         "conclusion": "success",
-        "scope": "Last verified HEAD 108f34f4 exact-head Windows-all-auto Offline QA",
+        "scope": "Previous verified HEAD 108f34f4 Windows/Ubuntu Offline QA",
         "jobs": [
           "Offline preflight tests (windows-latest)",
           "Offline preflight tests (ubuntu-latest)"
@@ -2131,12 +2155,12 @@
     ],
     "additional_push_workflows": [
       {
-        "run_id": 45563559463,
+        "run_id": 45575055318,
         "conclusion": "success",
-        "scope": "Push-triggered Offline QA on last fully verified HEAD 108f34f4"
+        "scope": "Push-triggered Windows-all-auto Offline QA on exact verified HEAD b6e8b506"
       }
     ],
-    "note": "Live PR165 HEAD is e410c81a with parent 3334b5c7. The 3334 parent has three recorded stale previous-central-head assertion failures. On e410c81a, transport passed while custody and Windows/Ubuntu Offline QA failed only on two stale snapshot assertions; no package/product E2E gate changed. Last fully verified transport/custody/Offline QA remains 108f34f4. Focus and File remain DELIVERY_HOLD with no authoritative Version, real MSIX, backlog, local pull, checker, or install receipt."
+    "note": "PR165 live HEAD b6e8b506 passed exact-head transport 45575064424, independent artifact custody 45575064363, and Windows/Ubuntu Offline QA 45575064234; push-triggered Offline QA 45575055318 also passed. Immediate parent 91a5fbb0 had transport/custody success but Offline QA failed only on a stale previous_central_head_sha assertion. Product E2E remains HOLD: Focus current-source request/Identity and authoritative Version are absent; File PR115 request remains DRY_RUN with official Identity UNVERIFIED and Version null. No real MSIX, backlog, local pull, checker or install receipt."
   },
   "pr174_restack_assessment_live_20261125": {
     "pr": 174,
@@ -2144,11 +2168,11 @@
     "branch": "codex/36-e2e-ledger-reconcile-20261123-1937",
     "head_sha": "69e7b7c8a7b1ecdaea42e6f03644a8cd549dfaee",
     "compare_to_current_pr165_head": {
-      "current_pr165_head_sha": "e410c81a0048c845173f9825f11443d8aa55a06d",
+      "current_pr165_head_sha": "b6e8b506060a770ee5fa29a407240656ef8cd8d3",
       "merge_base_sha": "c6f30824196e90c03837e0636d7557a79fad92af",
       "status": "diverged",
       "ahead_by": 6,
-      "behind_by": 108,
+      "behind_by": 111,
       "changed_files": [
         "ops/active_e2e_handoff.json",
         "ops/completion_rush_queue_20261116.json",
@@ -2161,15 +2185,15 @@
     "reason": "Six operations-only commits are superseded by the live PR165 lineage; no unique product or transport implementation is missing."
   },
   "parallel_draft_branch_assessment_20261125_0635": {
-    "checked_at_utc": "2026-11-25T08:04:13Z",
-    "current_pr165_head_sha": "e410c81a0048c845173f9825f11443d8aa55a06d",
+    "checked_at_utc": "2026-11-25T08:25:44.483Z",
+    "current_pr165_head_sha": "b6e8b506060a770ee5fa29a407240656ef8cd8d3",
     "branches": [
       {
         "pr": 177,
         "head_sha": "44c1607fee25e57ea09d2e1b5ca6e223129da47d",
         "status": "diverged",
         "ahead_by": 6,
-        "behind_by": 24,
+        "behind_by": 27,
         "changed_files": [
           "ops/active_e2e_handoff.json",
           "ops/completion_rush_queue_20261116.json",
@@ -2185,7 +2209,7 @@
         "head_sha": "bf9c5f2045c66cee295382421c98fe9141783e6e",
         "status": "diverged",
         "ahead_by": 16,
-        "behind_by": 24,
+        "behind_by": 27,
         "changed_files": [
           "ops/active_e2e_handoff.json",
           "ops/completion_rush_queue_20261116.json",
@@ -2203,7 +2227,7 @@
         "head_sha": "b90b9350873a51a05523f959285c845ee306473c",
         "status": "diverged",
         "ahead_by": 6,
-        "behind_by": 24,
+        "behind_by": 27,
         "changed_files": [
           "ops/active_e2e_handoff.json",
           "ops/completion_rush_queue_20261116.json",
@@ -2364,5 +2388,5 @@
     ],
     "unresolved_policy": "HOLD_REGISTRATION_TYPE_UNRESOLVED"
   },
-  "next_action": "Fix the two stale snapshot assertions in tests/test_current_live_product_reconciliation_20261125.py, tests/test_github_artifact_custody.py, tests/test_real_msix_transport_failclosed.py and tests/test_completion_rush_queue_20261116.py; keep central_head=e410c81a separate from central_tested_head_sha=108f34f4, parent=3334b5c7, and all product/store gates HOLD. Then rerun exact-head transport, custody and Windows/Ubuntu Offline QA. Do not infer Version, generate PNGs, touch product code, CAS, submit, certify, publish, merge or force-push."
+  "next_action": "PR165 transport/custody/Windows/Ubuntu CI is green at b6e8b506. Next unblock products, not central code: Focus Session Desk needs a new current-source request/approved Identity for fb629383 plus authoritative Partner Center Package Version; historical 8b00 Identity must not be reused. File Integrity Ledger needs owner visual sign-off and current-source approved Identity (PR115 request remains DRY_RUN/UNVERIFIED) plus authoritative Version. Only after approved Identity, Version and existing assets are verified, build real MSIX, then exact SHA custody, GitHub backlog, local pull, Windows-checker and GUI/install QA. No product code changes or Store writes."
 }
