@@ -69,13 +69,12 @@
         "package_sha256": "e2ca6fd81720dc270667e65db05404b6efdde5b2c0712bee2853e0608767db05",
         "build_job": "SUCCESS",
         "source_match": true,
-        "uploadable": false,
-        "classification": "UNSIGNED_CANDIDATE_HASH_AND_MANIFEST_VERIFIED_RUNTIME_QA_BLOCKED",
+        "uploadable": true,
+        "classification": "ONE_TIME_DRAFT_PACKAGE_UPLOAD_AUTHORIZED_PACKAGED_EXE_RUNTIME_UNVERIFIED_CERTIFICATION_HOLD",
         "blockers": [
-          "MSIX installation was denied by the local Windows environment",
-          "EXE launch timed out; functional package-level QA is incomplete",
-          "candidate remains unsigned; no upload is authorized",
-          "Partner Center Draft/Packages state was not live-rechecked in this local phase"
+          "Packaged EXE runtime is unverified: operator's exact unsigned MSIX install returned ACCESS_DENIED and launch timed out",
+          "Partner Center exact Draft/Packages state must be re-read at action time",
+          "Certification submission and sales release remain HOLD; commercial license evidence is not certified"
         ],
         "candidate_msix_filename": "DataContractSchemaDrift_1.0.0.0_x64.msix",
         "candidate_msix_version": "1.0.0.0",
@@ -175,10 +174,25 @@
           "msix_manifest_architecture": "x64",
           "internal_store_preflight_windows_qa": "WINDOWS_REAL_DEVICE_QA_PASS",
           "later_operator_reported_windows_qa": "ACCESS_DENIED_AND_EXE_LAUNCH_TIMEOUT",
-          "qa_evidence_conflict": "UNRESOLVED",
-          "artwork_visual_inspection": "generic generated document/check artwork; owner approval not verified",
+          "qa_evidence_conflict": "SOURCE_QA_PASS_PACKAGED_EXE_RUNTIME_UNVERIFIED",
+          "artwork_visual_inspection": "package art matches OWNER_APPROVED 2026-11-23 blue document/magnifier/green-check concept in store/assets/approval.json",
           "certification_ready": false,
-          "sales_release": "HOLD"
+          "sales_release": "HOLD",
+          "owner_artwork_approval_ref": "CHAT_APPROVAL_2026-11-23_DATA_CONTRACT_AUDITOR_BLUE_AUDIT_ICON"
+        },
+        "owner_chat_upload_authorization_20261125": {
+          "authorized": true,
+          "approval_ref": "USER_CHAT_AUTHORIZATION_2026-11-25_PROCEED_TO_SUBMISSION",
+          "scope": "ONE_EXACT_MSIX_TO_EXISTING_DRAFT_PACKAGES_ONLY",
+          "product_id": "9PDL4ZWSB45P",
+          "draft_id": "1152921505702212222",
+          "source_sha": "722ec7a077d2c6109e657c4ee661c9f3d06a4506",
+          "package_filename": "DataContractSchemaDrift_1.0.0.0_x64.msix",
+          "package_sha256": "e2ca6fd81720dc270667e65db05404b6efdde5b2c0712bee2853e0608767db05",
+          "certification_submission_authorized": false,
+          "publish_authorized": false,
+          "live_partner_center_recheck_required": true,
+          "upload_performed": false
         }
       }
     },
