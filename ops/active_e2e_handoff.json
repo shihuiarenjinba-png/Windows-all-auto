@@ -17394,9 +17394,9 @@
       "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
       "store_assets_git_blob_sha_verified": true,
       "store_assets_git_blob_sha_readback": {
-        "StoreLogo": "",
-        "Square150": "",
-        "Square44": ""
+        "StoreLogo": "8017427aabf0e30168a88353588dc2ffdc2cba6d",
+        "Square150": "c6060306f202b662831039b95b1352689da023c7",
+        "Square44": "466a795ea01e34a28ac1db9aa7dcf3308464dbd0"
       },
       "current_gui_test_pr": 102,
       "current_gui_test_head": "3f2eb8b579bb19716590be4b5d6536db789742af",
@@ -17436,7 +17436,29 @@
       "functional_hold": false,
       "product_frozen_for_package": true,
       "identity_return_scope": "HISTORICAL_SOURCE_ONLY",
-      "next_action": "Do not reuse the 8b00 Identity on fb629. Obtain an exact fb629 source-bound request and revalidate Identity/current source, then an authenticated Partner Center Version readback. Keep package and sale HOLD; current internal quality score is 54 (<80)."
+      "next_action": "Do not reuse the 8b00 Identity on fb629. Obtain an exact fb629 source-bound request and revalidate Identity/current source, then an authenticated Partner Center Version readback. Keep package and sale HOLD; current internal quality score is 54 (<80).",
+      "approved_identity_file_commit": "8a7139375524830bf823469526837259266172be",
+      "store_assets_raw_sha256": {
+        "StoreLogo": {
+          "sha256": "2c0460e0f2947ce975b7a6abbc607acaeea8a22bf9bcae984b420acedddc8e2f",
+          "bytes": 360393,
+          "dimensions": "300x300",
+          "git_blob_sha": "8017427aabf0e30168a88353588dc2ffdc2cba6d"
+        },
+        "Square150": {
+          "sha256": "9183aa4055ed453360b656b4fe291bf392413e04fab44048820ca4bcfa5d1d0c",
+          "bytes": 90223,
+          "dimensions": "150x150",
+          "git_blob_sha": "c6060306f202b662831039b95b1352689da023c7"
+        },
+        "Square44": {
+          "sha256": "3fbdcd610f6781b72308755c6f92b1fdaef0592bab51c612556e5b8b95c1ee46",
+          "bytes": 7856,
+          "dimensions": "44x44",
+          "git_blob_sha": "466a795ea01e34a28ac1db9aa7dcf3308464dbd0"
+        }
+      },
+      "store_assets_raw_sha256_independently_verified": true
     },
     {
       "rank": 2,
@@ -19687,9 +19709,9 @@
       "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
       "store_assets_git_blob_sha_verified": true,
       "store_assets_git_blob_sha_readback": {
-        "StoreLogo": "",
-        "Square150": "",
-        "Square44": ""
+        "StoreLogo": "8017427aabf0e30168a88353588dc2ffdc2cba6d",
+        "Square150": "c6060306f202b662831039b95b1352689da023c7",
+        "Square44": "466a795ea01e34a28ac1db9aa7dcf3308464dbd0"
       },
       "current_gui_test_pr": 102,
       "current_gui_test_head": "3f2eb8b579bb19716590be4b5d6536db789742af",
@@ -19729,7 +19751,29 @@
       "functional_hold": false,
       "product_frozen_for_package": true,
       "identity_return_scope": "HISTORICAL_SOURCE_ONLY",
-      "next_action": "Do not reuse the 8b00 Identity on fb629. Obtain an exact fb629 source-bound request and revalidate Identity/current source, then an authenticated Partner Center Version readback. Keep package and sale HOLD; current internal quality score is 54 (<80)."
+      "next_action": "Do not reuse the 8b00 Identity on fb629. Obtain an exact fb629 source-bound request and revalidate Identity/current source, then an authenticated Partner Center Version readback. Keep package and sale HOLD; current internal quality score is 54 (<80).",
+      "approved_identity_file_commit": "8a7139375524830bf823469526837259266172be",
+      "store_assets_raw_sha256": {
+        "StoreLogo": {
+          "sha256": "2c0460e0f2947ce975b7a6abbc607acaeea8a22bf9bcae984b420acedddc8e2f",
+          "bytes": 360393,
+          "dimensions": "300x300",
+          "git_blob_sha": "8017427aabf0e30168a88353588dc2ffdc2cba6d"
+        },
+        "Square150": {
+          "sha256": "9183aa4055ed453360b656b4fe291bf392413e04fab44048820ca4bcfa5d1d0c",
+          "bytes": 90223,
+          "dimensions": "150x150",
+          "git_blob_sha": "c6060306f202b662831039b95b1352689da023c7"
+        },
+        "Square44": {
+          "sha256": "3fbdcd610f6781b72308755c6f92b1fdaef0592bab51c612556e5b8b95c1ee46",
+          "bytes": 7856,
+          "dimensions": "44x44",
+          "git_blob_sha": "466a795ea01e34a28ac1db9aa7dcf3308464dbd0"
+        }
+      },
+      "store_assets_raw_sha256_independently_verified": true
     },
     {
       "rank": 2,
@@ -20132,9 +20176,9 @@
       "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
       "store_assets_git_blob_sha_verified": true,
       "store_assets_git_blob_sha_readback": {
-        "StoreLogo": "",
-        "Square150": "",
-        "Square44": ""
+        "StoreLogo": "8017427aabf0e30168a88353588dc2ffdc2cba6d",
+        "Square150": "c6060306f202b662831039b95b1352689da023c7",
+        "Square44": "466a795ea01e34a28ac1db9aa7dcf3308464dbd0"
       },
       "current_gui_test_pr": 102,
       "current_gui_test_head": "3f2eb8b579bb19716590be4b5d6536db789742af",
@@ -20174,7 +20218,29 @@
       "functional_hold": false,
       "product_frozen_for_package": true,
       "identity_return_scope": "HISTORICAL_SOURCE_ONLY",
-      "next_action": "Do not reuse the 8b00 Identity on fb629. Obtain an exact fb629 source-bound request and revalidate Identity/current source, then an authenticated Partner Center Version readback. Keep package and sale HOLD; current internal quality score is 54 (<80)."
+      "next_action": "Do not reuse the 8b00 Identity on fb629. Obtain an exact fb629 source-bound request and revalidate Identity/current source, then an authenticated Partner Center Version readback. Keep package and sale HOLD; current internal quality score is 54 (<80).",
+      "approved_identity_file_commit": "8a7139375524830bf823469526837259266172be",
+      "store_assets_raw_sha256": {
+        "StoreLogo": {
+          "sha256": "2c0460e0f2947ce975b7a6abbc607acaeea8a22bf9bcae984b420acedddc8e2f",
+          "bytes": 360393,
+          "dimensions": "300x300",
+          "git_blob_sha": "8017427aabf0e30168a88353588dc2ffdc2cba6d"
+        },
+        "Square150": {
+          "sha256": "9183aa4055ed453360b656b4fe291bf392413e04fab44048820ca4bcfa5d1d0c",
+          "bytes": 90223,
+          "dimensions": "150x150",
+          "git_blob_sha": "c6060306f202b662831039b95b1352689da023c7"
+        },
+        "Square44": {
+          "sha256": "3fbdcd610f6781b72308755c6f92b1fdaef0592bab51c612556e5b8b95c1ee46",
+          "bytes": 7856,
+          "dimensions": "44x44",
+          "git_blob_sha": "466a795ea01e34a28ac1db9aa7dcf3308464dbd0"
+        }
+      },
+      "store_assets_raw_sha256_independently_verified": true
     },
     {
       "rank": 2,
