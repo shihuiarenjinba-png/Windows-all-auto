@@ -46,6 +46,16 @@ class StoreMsixScriptTests(unittest.TestCase):
         self.assertIn("Sign in to Partner Center manually", script)
         self.assertNotIn("password", script.casefold())
 
+    def test_dca_shortcut_selects_one_exact_filename_and_is_dry_run_by_default(self):
+        script = (ROOT / "scripts" / "upload_authorized_dca_package.ps1").read_text(encoding="utf-8")
+        self.assertIn("DataContractSchemaDrift_1.0.0.0_x64.msix", script)
+        self.assertIn("$matches.Count -ne 1", script)
+        self.assertIn("if ($Execute)", script)
+        self.assertIn("-Execute", script)
+        self.assertIn("-Product', 'data-contract-auditor", script)
+        self.assertNotIn("Submit to the Store", script)
+        self.assertNotIn("Publish now", script)
+
 
 if __name__ == "__main__":
     unittest.main()
