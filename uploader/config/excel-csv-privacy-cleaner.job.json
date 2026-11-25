@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "product_name": "Excel / CSV Privacy Cleaner",
+  "product_id": "9P3Z36J7PSFC",
+  "submission_id": "1152921505702213008",
+  "repository": "shihuiarenjinba-png/-Excel-CSV-Privacy-Cleaner",
+  "ref": "f715ce0e6f5d3eee8e483137fb42d41cb6e4ec20",
+  "path": "store-output/ExcelCSVPrivacyCleaner_QA_UNSIGNED_1.0.57.0_x64.msix",
+  "version": "1.0.57.0",
+  "destination": "microsoft_partner_center_existing_draft",
+  "submission_route": "msix_pwa_app",
+  "identity_name": "OkinawaDesktopTools.ExcelCSVPrivacyCleaner",
+  "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+  "architecture": "x64",
+  "known_warnings": [],
+  "expected_existing_package_names": [],
+  "expected_replaced_package_names": [],
+  "upload_approved": false,
+  "expected_sha256": "18c4f841df4c3daffeebd068d001287baa4bfc2876ce1c2558eab258351cc79d",
+  "max_bytes": 4000000000,
+  "local_package_only": true,
+  "source_sha": "f715ce0e6f5d3eee8e483137fb42d41cb6e4ec20",
+  "artifact_run_id": 44687814041,
+  "artifact_id": 14607382071,
+  "local_runtime_qa_status": "QA_UNSIGNED_OWNER_VERSION_AND_ARTWORK_APPROVAL_MISSING",
+  "upload_hold_reasons": [
+    "QA artifact only; formal Store candidate build was skipped",
+    "Owner-approved Store version missing",
+    "Owner-approved brand artwork approval missing"
+  ]
+}
