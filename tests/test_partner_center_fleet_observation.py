@@ -124,7 +124,7 @@ class PartnerCenterFleetObservationTests(unittest.TestCase):
                     "EXACT_REGISTRY_MATCH",
                 )
 
-    def test_qa_unsigned_artifacts_are_recorded_but_never_uploadable(self):
+    def test_qa_unsigned_artifacts_stay_blocked_and_dca_formal_candidate_is_separately_approved(self):
         group_c = json.loads(
             (ROOT / "ops" / "group_c_store_products.json").read_text(encoding="utf-8")
         )
@@ -139,7 +139,14 @@ class PartnerCenterFleetObservationTests(unittest.TestCase):
             with self.subTest(product=key):
                 self.assertTrue(artifact["qa_unsigned_msix_artifact_available"])
                 self.assertEqual(artifact["classification"], "QA_UNSIGNED_VALIDATION_ONLY")
-                self.assertFalse(artifact["uploadable"])
+                if key == "data-contract-auditor":
+                    self.assertTrue(artifact["uploadable"])
+                    self.assertEqual(
+                        artifact["classification"],
+                        "ONE_TIME_DRAFT_PACKAGE_UPLOAD_AUTHORIZED_PACKAGED_EXE_RUNTIME_UNVERIFIED_CERTIFICATION_HOLD",
+                    )
+                else:
+                    self.assertFalse(artifact["uploadable"])
                 self.assertRegex(artifact["qa_unsigned_msix_sha256"], r"^[A-F0-9]{64}$")
                 self.assertEqual(artifact["sha256_evidence"]["evidence_level"], "LOCAL_BINARY_REHASH_MATCHED_BUILDER_HASH")
                 self.assertTrue(artifact["sha256_evidence"]["binary_downloaded_and_rehashed_locally"])
@@ -172,7 +179,13 @@ class PartnerCenterFleetObservationTests(unittest.TestCase):
             dca["current_branch_head_relation"]["application_runtime_source_changed_after_formal_candidate"],
             False,
         )
-        self.assertFalse(dca["uploadable"])
+        self.assertTrue(dca["uploadable"])
+        approval = dca["owner_chat_upload_authorization_20261125"]
+        self.assertTrue(approval["authorized"])
+        self.assertEqual(approval["scope"], "ONE_EXACT_MSIX_TO_EXISTING_DRAFT_PACKAGES_ONLY")
+        self.assertFalse(approval["certification_submission_authorized"])
+        self.assertFalse(approval["publish_authorized"])
+        self.assertFalse(approval["upload_performed"])
 
     def test_all_seven_local_package_hashes_and_manifest_fields_match(self):
         expected_hashes = {
