@@ -18,7 +18,31 @@
       "store_id": "9PDL4ZWSB45P",
       "draft_id": "1152921505702212222",
       "teacher_level": "GROUP_C_TEACHER_1",
-      "receipt": "ops/data_contract_auditor_group_c_teacher_20261120.json"
+      "receipt": "ops/data_contract_auditor_group_c_teacher_20261120.json",
+      "partner_center_live_observation": {
+        "snapshot_file": "ops/partner_center_fleet_observation_20261125.json",
+        "observation_id": "partner-center-fleet-20261125T075209Z",
+        "observed_at_utc": "2026-11-25T07:52:09Z",
+        "source_evidence_status": "TRANSCRIBED_FROM_USER_SUPPLIED_FINAL_REPORT",
+        "store_id": "9PDL4ZWSB45P",
+        "identity_name": "OkinawaDesktopTools.DataContractAuditor",
+        "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+        "submission_id": "1152921505702212222",
+        "submission_state": "In draft",
+        "packages_status": "Incomplete",
+        "start_submission_available": false,
+        "package_row_present": false,
+        "package_version": null,
+        "architecture": null,
+        "package_binary_sha256_observable": false,
+        "registry_reconciliation": {
+          "store_id": "MATCH",
+          "identity_name": "NOT_STORED",
+          "publisher": "NOT_STORED",
+          "submission_id": "MATCH"
+        },
+        "overall_status": "LIVE_OBSERVATION_RECORDED_REGISTRY_ENRICHMENT_REQUIRED"
+      }
     },
     "web-evidence-archiver": {
       "name": "Web Evidence Archiver",
@@ -29,7 +53,31 @@
       "store_id": null,
       "draft_id": null,
       "teacher_level": "GROUP_C_DIFFERENCE_ONLY",
-      "receipt": null
+      "receipt": null,
+      "partner_center_live_observation": {
+        "snapshot_file": "ops/partner_center_fleet_observation_20261125.json",
+        "observation_id": "partner-center-fleet-20261125T075209Z",
+        "observed_at_utc": "2026-11-25T07:52:09Z",
+        "source_evidence_status": "TRANSCRIBED_FROM_USER_SUPPLIED_FINAL_REPORT",
+        "store_id": "9NNT1B142ZWV",
+        "identity_name": "OkinawaDesktopTools.WebEvidenceArchiver",
+        "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+        "submission_id": "1152921505702212223",
+        "submission_state": "In draft",
+        "packages_status": "Not started",
+        "start_submission_available": false,
+        "package_row_present": false,
+        "package_version": null,
+        "architecture": null,
+        "package_binary_sha256_observable": false,
+        "registry_reconciliation": {
+          "store_id": "NOT_STORED",
+          "identity_name": "NOT_STORED",
+          "publisher": "NOT_STORED",
+          "submission_id": "NOT_STORED"
+        },
+        "overall_status": "LIVE_OBSERVATION_RECORDED_REGISTRY_ENRICHMENT_REQUIRED"
+      }
     },
     "excel-csv-privacy-cleaner": {
       "name": "Excel / CSV Privacy Cleaner",
@@ -40,7 +88,31 @@
       "store_id": "9P3Z36J7PSFC",
       "draft_id": null,
       "teacher_level": "GROUP_C_SCRIPT_FIRST",
-      "receipt": null
+      "receipt": null,
+      "partner_center_live_observation": {
+        "snapshot_file": "ops/partner_center_fleet_observation_20261125.json",
+        "observation_id": "partner-center-fleet-20261125T075209Z",
+        "observed_at_utc": "2026-11-25T07:52:09Z",
+        "source_evidence_status": "TRANSCRIBED_FROM_USER_SUPPLIED_FINAL_REPORT",
+        "store_id": "9P3Z36J7PSFC",
+        "identity_name": "OkinawaDesktopTools.ExcelCSVPrivacyCleaner",
+        "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+        "submission_id": "1152921505702213008",
+        "submission_state": "In draft",
+        "packages_status": "Not started",
+        "start_submission_available": false,
+        "package_row_present": false,
+        "package_version": null,
+        "architecture": null,
+        "package_binary_sha256_observable": false,
+        "registry_reconciliation": {
+          "store_id": "MATCH",
+          "identity_name": "NOT_STORED",
+          "publisher": "NOT_STORED",
+          "submission_id": "NOT_STORED"
+        },
+        "overall_status": "LIVE_OBSERVATION_RECORDED_REGISTRY_ENRICHMENT_REQUIRED"
+      }
     },
     "image-privacy-cleaner": {
       "name": "Image Privacy Cleaner",
@@ -51,7 +123,31 @@
       "store_id": "9PNSPFBKBBTQ",
       "draft_id": null,
       "teacher_level": "GROUP_C_SCRIPT_FIRST",
-      "receipt": null
+      "receipt": null,
+      "partner_center_live_observation": {
+        "snapshot_file": "ops/partner_center_fleet_observation_20261125.json",
+        "observation_id": "partner-center-fleet-20261125T075209Z",
+        "observed_at_utc": "2026-11-25T07:52:09Z",
+        "source_evidence_status": "TRANSCRIBED_FROM_USER_SUPPLIED_FINAL_REPORT",
+        "store_id": "9PNSPFBKBBTQ",
+        "identity_name": "OkinawaDesktopTools.ImagePrivacyCleaner",
+        "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+        "submission_id": "1152921505702212225",
+        "submission_state": "In draft",
+        "packages_status": "Not started",
+        "start_submission_available": false,
+        "package_row_present": false,
+        "package_version": null,
+        "architecture": null,
+        "package_binary_sha256_observable": false,
+        "registry_reconciliation": {
+          "store_id": "MATCH",
+          "identity_name": "NOT_STORED",
+          "publisher": "NOT_STORED",
+          "submission_id": "NOT_STORED"
+        },
+        "overall_status": "LIVE_OBSERVATION_RECORDED_REGISTRY_ENRICHMENT_REQUIRED"
+      }
     },
     "ai-upload-guard": {
       "name": "AI Upload Guard",
@@ -62,7 +158,31 @@
       "store_id": "9PDJ1T5BQ4P1",
       "draft_id": null,
       "teacher_level": "GROUP_C_SCRIPT_FIRST",
-      "receipt": null
+      "receipt": null,
+      "partner_center_live_observation": {
+        "snapshot_file": "ops/partner_center_fleet_observation_20261125.json",
+        "observation_id": "partner-center-fleet-20261125T075209Z",
+        "observed_at_utc": "2026-11-25T07:52:09Z",
+        "source_evidence_status": "TRANSCRIBED_FROM_USER_SUPPLIED_FINAL_REPORT",
+        "store_id": "9PDJ1T5BQ4P1",
+        "identity_name": "OkinawaDesktopTools.AIUploadGuard",
+        "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+        "submission_id": "1152921505702212224",
+        "submission_state": "In draft",
+        "packages_status": "Not started",
+        "start_submission_available": false,
+        "package_row_present": false,
+        "package_version": null,
+        "architecture": null,
+        "package_binary_sha256_observable": false,
+        "registry_reconciliation": {
+          "store_id": "MATCH",
+          "identity_name": "NOT_STORED",
+          "publisher": "NOT_STORED",
+          "submission_id": "NOT_STORED"
+        },
+        "overall_status": "LIVE_OBSERVATION_RECORDED_REGISTRY_ENRICHMENT_REQUIRED"
+      }
     },
     "pdf-privacy": {
       "name": "PDF Privacy",
@@ -73,7 +193,37 @@
       "store_id": null,
       "draft_id": null,
       "teacher_level": "GROUP_C_SCRIPT_FIRST",
-      "receipt": null
+      "receipt": null,
+      "partner_center_live_observation": {
+        "snapshot_file": "ops/partner_center_fleet_observation_20261125.json",
+        "observation_id": "partner-center-fleet-20261125T075209Z",
+        "observed_at_utc": "2026-11-25T07:52:09Z",
+        "source_evidence_status": "TRANSCRIBED_FROM_USER_SUPPLIED_FINAL_REPORT",
+        "store_id": "9PD1RXLFWPBC",
+        "identity_name": "OkinawaDesktopTools.PDFPrivacy",
+        "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+        "submission_id": "1152921505702212497",
+        "submission_state": "In draft",
+        "packages_status": "Not started",
+        "start_submission_available": false,
+        "package_row_present": false,
+        "package_version": null,
+        "architecture": null,
+        "package_binary_sha256_observable": false,
+        "registry_reconciliation": {
+          "store_id": "NOT_STORED",
+          "identity_name": "NOT_STORED",
+          "publisher": "NOT_STORED",
+          "submission_id": "NOT_STORED"
+        },
+        "overall_status": "LIVE_OBSERVATION_RECORDED_REGISTRY_ENRICHMENT_REQUIRED"
+      }
     }
+  },
+  "partner_center_observation_snapshot": {
+    "path": "ops/partner_center_fleet_observation_20261125.json",
+    "observation_id": "partner-center-fleet-20261125T075209Z",
+    "observed_at_utc": "2026-11-25T07:52:09Z",
+    "evidence_status": "TRANSCRIBED_FROM_USER_SUPPLIED_FINAL_REPORT"
   }
 }
