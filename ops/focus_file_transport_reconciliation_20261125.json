@@ -386,7 +386,11 @@
       "functional_hold": true,
       "product_frozen_for_package": false,
       "registration_type": "GDK_GAME",
-      "next_action": "Keep c058 historical. Complete exact-source JA/EN Windows UIA and the required revision gap, independently reobserve the frozen source branch, then review the 1a349 dry-run Identity preview for explicit CAS authorization. GDK SDK/Version/assets and MSIXVC remain HOLD."
+      "next_action": "Keep c058 historical. Complete exact-source JA/EN Windows UIA and the required revision gap, independently reobserve the frozen source branch, then review the 1a349 dry-run Identity preview for explicit CAS authorization. GDK SDK/Version/assets and MSIXVC remain HOLD.",
+      "package_version": null,
+      "package_version_status": "AUTHORITATIVE_GDK_VERSION_REQUIRED",
+      "real_msix": false,
+      "msix_status": "NOT_BUILT"
     },
     "registration_routing": {
       "observed_at_utc": "2026-11-25T02:36:02Z",
