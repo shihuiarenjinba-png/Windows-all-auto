@@ -71,6 +71,30 @@ Dry-run is the default. It verifies the exact configured filename, SHA-256, and 
 
 ### 5. Existing-Draft package upload and Save
 
+**One currently authorized live package write:** Data Contract Auditor only. Its job file binds the 1.0.0.0 candidate to SHA-256 `e2ca6fd81720dc270667e65db05404b6efdde5b2c0712bee2853e0608767db05`, Product `9PDL4ZWSB45P`, and the historical existing Draft `1152921505702212222`. The script rechecks the current Partner Center Identity and exact Draft route before it will write.
+
+Locate the exact local binary without guessing a directory:
+
+```powershell
+Get-ChildItem `
+  -Path "C:\Users\aaron\Desktop\portfolio-audit\_runtime\store-fleet-sync\attempt-20261125" `
+  -Filter "DataContractSchemaDrift_1.0.0.0_x64.msix" `
+  -File -Recurse | Select-Object -ExpandProperty FullName
+```
+
+After confirming the single returned path, sign in to the dedicated local Edge window, then run:
+
+```powershell
+.\scripts\upload_store_msix.ps1 `
+  -Product data-contract-auditor `
+  -Package "<the exact full path returned above>" `
+  -Execute
+```
+
+This authorization is limited to one SHA-bound package upload/Save/reload against the existing Draft. It does not authorize certification or publication. The artifact currently reports `certification_ready: false` and `sales_release: HOLD`, with a commercial-license evidence warning. Other five products remain dry-run only until their owner-approved version/artwork or runtime/source integration blockers are resolved.
+
+
+
 ```powershell
 .\scripts\upload_store_msix.ps1 `
   -Product <registered-product-key> `
