@@ -148,7 +148,7 @@ WEA's local integration commit is `2516feedd5b10990fbe5c8184587e3b69214648d`. Lo
 
 ## Partner Center and release boundary
 
-Partner Center was not live-rechecked in this local verification phase. Existing Product/Draft information is only the historical read-only snapshot from `2026-11-25T07:52:09Z`. No package upload, Packages Save, Certification, Publish, or Submission start occurred. All seven packages are unsigned, so none is ready for commercial upload.
+Partner Center was not live-rechecked in this local verification phase. Existing Product/Draft information is only the historical read-only snapshot from `2026-11-25T07:52:09Z`. No package upload, Packages Save, Certification, Publish, or Submission start occurred. For Store-distributed MSIX/AppX, `NotSigned` is an expected pre-submission state and is not a blocker; Microsoft re-signs packages after certification during publishing. The seven current artifacts remain on hold for their separate product-specific QA, version/artwork, source-integration, or initial-Submission issues.
 
 ## Safety boundary
 
