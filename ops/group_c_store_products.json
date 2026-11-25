@@ -186,7 +186,7 @@
         "qa_unsigned_msix_artifact_name": "web-evidence-QA_UNSIGNED-validation-msix-44687808856-1",
         "qa_unsigned_msix_artifact_size_bytes": 415899027,
         "qa_unsigned_msix_artifact_available": true,
-        "qa_unsigned_msix_sha256": "NOT_FETCHED_BINARY_NOT_CLAIMED",
+        "qa_unsigned_msix_sha256": "91fae107652539bad0c0bdc30e9ae1891542c1a92f2460218e1be24af987cebe",
         "formal_store_msix_build": "SKIPPED_INPUT_GATE",
         "blockers": [
           "approvedStoreVersion is null",
@@ -194,7 +194,19 @@
           "browserBundleApproval is null"
         ],
         "uploadable": false,
-        "classification": "QA_UNSIGNED_VALIDATION_ONLY"
+        "classification": "QA_UNSIGNED_VALIDATION_ONLY",
+        "qa_unsigned_msix_filename": "WebEvidenceArchiver_QA_UNSIGNED_1.0.55.0_x64.msix",
+        "qa_unsigned_msix_version": "1.0.55.0",
+        "qa_unsigned_exe_sha256": "a243aa2a5aaf9c067f4f550621d26ae013301a3c90f329eeca004deecef8fa99",
+        "browser_bundle_tree_sha256": "751c3f638d890a1764badfa234a40ae4f2db348ad57bbf032ceb14b3d0b3c921",
+        "sha256_evidence": {
+          "source": "GitHub Actions QA structural MSIX job log",
+          "workflow_run_id": 44687808856,
+          "workflow_job_id": 136126413961,
+          "evidence_level": "BUILDER_REPORTED_HASH",
+          "binary_downloaded_and_rehashed_locally": false
+        },
+        "artifact_downloaded_and_rehashed_locally": false
       }
     },
     "excel-csv-privacy-cleaner": {
