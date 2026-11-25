@@ -24,3 +24,20 @@ jobs:
         run: python -m compileall -q all_auto tests
       - name: Test (no Partner Center, no credentials)
         run: python -m unittest discover -s tests -v
+      - name: Parse PowerShell scripts
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          $files = Get-ChildItem -Path scripts -Filter '*.ps1' -Recurse
+          foreach ($file in $files) {
+            $tokens = $null
+            $errors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile(
+              $file.FullName, [ref]$tokens, [ref]$errors
+            ) | Out-Null
+            if ($errors.Count -gt 0) {
+              $errors | ForEach-Object { Write-Error $_.Message }
+              throw "PowerShell syntax errors in $($file.FullName)"
+            }
+          }
+          Write-Host "Parsed $($files.Count) PowerShell scripts successfully."
