@@ -10,14 +10,19 @@ if (-not $uri.IsLoopback -or $uri.Scheme -ne 'http') {
     throw 'CDP must use an HTTP loopback address such as http://127.0.0.1:9223.'
 }
 $endpoint = $CdpUrl.TrimEnd('/') + '/json/version'
+$existingVersion = $null
 try {
-    $version = Invoke-RestMethod -Uri $endpoint -TimeoutSec 2
-    if ([string]$version.Browser -notmatch 'Edg/') { throw "Port 9223 is responding, but it is not Microsoft Edge: $($version.Browser)" }
-    Write-Host "Local Edge CDP is already available: $($version.Browser)"
+    $existingVersion = Invoke-RestMethod -Uri $endpoint -TimeoutSec 2
+} catch {
+    $existingVersion = $null
+}
+if ($existingVersion) {
+    if ([string]$existingVersion.Browser -notmatch 'Edg/') {
+        throw "Port 9223 is responding, but it is not Microsoft Edge: $($existingVersion.Browser)"
+    }
+    Write-Host "Local Edge CDP is already available: $($existingVersion.Browser)"
     Write-Host 'Use the single Partner Center tab in that session. No new browser was launched.'
     return
-} catch {
-    # Start a dedicated local profile below; no existing Edge process is terminated.
 }
 
 $edgeCandidates = @(
@@ -46,6 +51,7 @@ $available = $false
 for ($i = 0; $i -lt 15; $i++) {
     try {
         $version = Invoke-RestMethod -Uri $endpoint -TimeoutSec 2
+        if ([string]$version.Browser -notmatch 'Edg/') { throw "Port 9223 is not Microsoft Edge: $($version.Browser)" }
         $available = $true
         break
     } catch {
