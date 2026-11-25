@@ -21,6 +21,9 @@ class StoreMsixScriptTests(unittest.TestCase):
         self.assertLess(cdp, execute)
         self.assertIn("$uri.IsLoopback", script)
         self.assertIn("^Edg/", script)
+        self.assertIn("ONE_EXACT_MSIX_TO_EXISTING_DRAFT_PACKAGES_ONLY", script)
+        self.assertIn("certification_submission_authorized", script)
+        self.assertIn("publish_authorized", script)
 
     def test_upload_script_has_no_certification_or_publish_action(self):
         script = (ROOT / "scripts" / "upload_store_msix.ps1").read_text(encoding="utf-8").casefold()
