@@ -229,7 +229,7 @@ class CurrentLedgerGateTests(unittest.TestCase):
         current = ledger["windows_e2e_custody_reconciliation"]
         self.assertEqual(current["pr165_tested_head_sha"], "60ab8183a05f248972bf227d6059671f5f0532ac")
         self.assertEqual([x["run_id"] for x in current["pr165_ci"]],
-                         [45504316528, 45504315490, 45504315581])
+                         [45504775685, 45504775807, 45504775632])
         self.assertEqual(current["pr161_head_sha"], "71d9c2125b6aed44a86ca1872d48ad19963f3e63")
         self.assertEqual([x["run_id"] for x in current["pr161_ci"]], [42712757936])
         self.assertEqual(ledger["store_upload_test_bridge"]["bridge_head"], "764721021f13be96364529650b44fb439770bac9")
@@ -247,7 +247,7 @@ class CurrentLedgerGateTests(unittest.TestCase):
         self.assertIs(recon["e2e_pass"], False)
         self.assertEqual(recon["pr165_current_head_sha"], "60ab8183a05f248972bf227d6059671f5f0532ac")
         self.assertEqual([x["run_id"] for x in recon["pr165_current_head_ci"]],
-                         [45504316528, 45504315490, 45504315581])
+                         [45504775685, 45504775807, 45504775632])
         focus = next(p for p in recon["products"] if p["product"] == "Focus Session Desk")
         file_product = next(p for p in recon["products"] if p["product"] == "File Integrity Ledger")
         self.assertEqual(current["first_unconnected_interval"], recon["first_unconnected_interval"])
