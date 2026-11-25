@@ -50,25 +50,25 @@ Workflow: https://github.com/shihuiarenjinba-png/workflow-automation-hub/actions
 
 ### Data Contract Auditor
 
-The formal candidate gate records:
-- QA baseline source SHA: `107e59f2cbcde9c6ca88cf1aaf3d52262004e6e0`;
-- formal candidate source SHA: `5a09d81955e25664761ea25ecfb4ebf8d24cea6d`.
+The QA baseline source SHA is `107e59f2cbcde9c6ca88cf1aaf3d52262004e6e0`; it is not the formal candidate source requirement. A formal unsigned candidate was successfully built from the exact current source branch HEAD `722ec7a077d2c6109e657c4ee661c9f3d06a4506` in run `45580565845`.
 
-The 107e commit is the QA baseline, not the required formal package revision. The formal source is 40 commits after that baseline. Run `45103784990` used the exact formal candidate source SHA `5a09...` and built the unsigned Store candidate.
+The previous formal candidate run `45103784990` used source `5a09d81955e25664761ea25ecfb4ebf8d24cea6d`; the current branch added only product/formal-gate metadata and a post-build test update after that source. The new build at `722ec...` passed unit tests, compile, Store readiness preflight, pack, unpack, and MSIX verification.
 
-Artifacts:
-- `data-contract-QA_UNSIGNED-msix-45103784990` — ID `14787075908`, 55,190,196 bytes;
-- `data-contract-QA_UNSIGNED-validation-msix-45103784990-1` — ID `14787095933`, 55,176,827 bytes.
+Latest formal candidate:
+- Artifact: `data-contract-QA_UNSIGNED-msix-45580565845` — ID `15005358857`, 55,210,542 bytes.
+- Package filename: `DataContractSchemaDrift_1.0.0.0_x64.msix`.
+- Version: `1.0.0.0`; Architecture: x64.
+- Source SHA: `722ec7a077d2c6109e657c4ee661c9f3d06a4506`.
+- EXE SHA-256: `b47219821bdaa9d3138b49dc4a00645190b6f6f3e7f90fa9e014fb5b93f7c1f5`.
+- MSIX SHA-256: `e2ca6fd81720dc270667e65db05404b6efdde5b2c0712bee2853e0608767db05`.
+- Signature: `UNSIGNED_STORE_CANDIDATE`; Pack/unpack verification: PASS.
+- QA-only structural artifact: ID `15006701456`, `DataContractSchemaDrift_QA_UNSIGNED_1.0.106.0_x64.msix`, builder-reported SHA `23903c03a560e428dd27fe79cbbd7868cb3bb26a311f5a41d7e1ee15579d0e3d`.
 
-The candidate file was `DataContractSchemaDrift_1.0.0.0_x64.msix`; the builder log emitted SHA `80cd02c0df8e75d1962d03ce63c1ba72d9a8f67e8056f43718ffc5bd8d3f3279`.
+The post-build profile test had been stale: it expected `READY_FOR_FORMAL_MSIX_BUILD` after the product profile advanced to `READY_FOR_PARTNER_CENTER_READONLY` and `FORMAL_UNSIGNED_MSIX_CREATED_AND_VERIFIED`. It was corrected in test commit `722ec7a077d2c6109e657c4ee661c9f3d06a4506`; run `45580565845` then passed source tests, compile, preflight, formal build and QA structural build.
 
-The current source branch HEAD at the time of this update was `0c73a746bcec9ded702567768d5c04f4240a12a9`, two metadata-only commits after the formal build source. The app runtime and packaging scripts did not change after `5a09...`. The failed CI run `45107287117` was caused by a stale product-profile test: it expected pre-build state `READY_FOR_FORMAL_MSIX_BUILD` after the profile had advanced to `READY_FOR_PARTNER_CENTER_READONLY` and `FORMAL_UNSIGNED_MSIX_CREATED_AND_VERIFIED`.
+The hashes are builder-reported from Actions logs, not independently recomputed from downloaded binaries. Download artifact ID `15005358857`, recompute SHA-256 locally, inspect the manifest and source receipt, and run package-level local QA against the exact hash. The Partner Center snapshot records Draft `1152921505702212222` with Packages `Incomplete`; re-read this live state immediately before any upload. The unsigned build is not upload authorization.
 
-That stale test has been corrected on the DCA source branch to assert the recorded post-build read-only state and bind it to the formal candidate gate. New CI run `45580565845` is testing the correction.
-
-The candidate is still unsigned and is not upload authorization. The exact artifact must be downloaded and independently re-hashed, its manifest/source receipt inspected, and package-level local QA bound to that exact binary SHA. Re-read the current Partner Center Draft and Packages state before any upload.
-
-Workflow: https://github.com/shihuiarenjinba-png/csv-import-validator/actions/runs/45103784990
+Workflow: https://github.com/shihuiarenjinba-png/csv-import-validator/actions/runs/45580565845
 
 ### AI Upload Guard, Image Privacy Cleaner, Excel / CSV Privacy Cleaner, and PDF Privacy
 
