@@ -24,6 +24,12 @@ if ($packageItem.PSIsContainer -or $packageItem.Extension -ine '.msix') {
 }
 
 $python = Get-Command python -ErrorAction Stop
+$venvPython = Join-Path $repoRoot '.venv-store-uploader\Scripts\python.exe'
+if (Test-Path -LiteralPath $venvPython -PathType Leaf) {
+    $pythonPath = $venvPython
+} else {
+    $pythonPath = $python.Source
+}
 $arguments = @(
     '-m', 'uploader.run',
     '--product', $Product,
@@ -60,7 +66,7 @@ if ($Execute) {
     Write-Host 'DRY RUN: package hash and manifest are checked; Partner Center is not contacted.'
 }
 
-& $python.Source @arguments
+& $pythonPath @arguments
 $exitCode = $LASTEXITCODE
 if ($exitCode -ne 0) {
     throw "Store package operation failed with exit code $exitCode. Inspect $Workdir/receipt.json before retrying."
