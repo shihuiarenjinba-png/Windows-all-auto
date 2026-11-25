@@ -204,8 +204,18 @@ The following changes are now present on the review branch:
 - `scripts/upload_store_msix.ps1` performs a per-product dry run by default. `-Execute` is fail-closed unless that product's job has `upload_approved: true`, a pinned SHA-256, and the exact registered filename. It then invokes the existing Draft upload/Save/reload route.
 - The upload script has no operation for starting a Submission, submitting for Certification, changing pricing/markets, or publishing.
 
-All six current job configs deliberately retain `upload_approved: false` with explicit hold reasons. The present QA-only artifacts are not promoted to commercial packages. WAH remains outside this existing-Draft uploader because the 2026-11-25 observation showed no Submission for Product `9P6SXJNNB5KK`.
+Five job configs deliberately retain `upload_approved: false` with explicit product-specific hold reasons. Data Contract Auditor is separately approved by the owner's 2026-11-25 instruction for exactly one SHA-bound package upload/Save to its existing Draft; it is not approved for Certification or Publish. DCA's Store version `1.0.0.0` and generated blue audit artwork were already owner-approved in the product repository on 2026-11-22/23. The exact package SHA is independently confirmed. Source-based Windows 11 functional QA passed on `4d1c76...` and no app-source files changed through the formal source `722ec7...`; nevertheless the operator's later unsigned MSIX install attempt returned Access Denied and the packaged EXE launch timed out, so packaged runtime remains unconfirmed. The upload can be used to test Store package analysis in the existing Draft; it must not be represented as certification-ready. WAH remains outside this existing-Draft uploader because the 2026-11-25 observation showed no Submission for Product `9P6SXJNNB5KK`.
 
 Latest workflow verification at this follow-up: commit `31c5161fa6651dea40fc170bfcc4bd79a8558f85`, Windows and Ubuntu both PASS, 386 tests each (Windows 2 existing skips), compile PASS. Run: https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/45616011224.
 
 No Partner Center write was performed during this implementation. The Partner Center browser/CDP session was not available to this GitHub-side operation, so package upload, Packages Save, Certification, and Publish remain not performed.
+
+
+## 2026-11-25 DCA package upload authorization
+
+The owner authorized progress toward submission in chat on 2026-11-25. The central job `uploader/config/data-contract-auditor.job.json` now records that authorization for exactly one package SHA `e2ca6fd81720dc270667e65db05404b6efdde5b2c0712bee2853e0608767db05`, version `1.0.0.0`, source `722ec7a077d2c6109e657c4ee661c9f3d06a4506`, to existing Product `9PDL4ZWSB45P` / historical Draft `1152921505702212222` only. The uploader still rechecks the live Product/Draft before writing and refuses an unexpected package row.
+
+This authorization covers only Packages upload, Microsoft package analysis, Packages Save, Overview reload, and package-retention verification. It does not authorize Submit for Certification or Publish. Certification remains held because the artifact has `certification_ready:false` and reports commercial-license evidence incomplete. Before any future certification submission, manual publishing hold must be selected so certification success cannot automatically publish the app.
+
+Other five product jobs remain disabled pending their owner-approved Store Version/artwork or runtime/source-integration gates. Workflow Automation Hub remains a no-existing-submission product and requires a separate initial-submission workflow.
+
