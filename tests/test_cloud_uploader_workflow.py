@@ -25,7 +25,8 @@ class CloudUploaderWorkflowTests(unittest.TestCase):
         config = ROOT / "uploader" / "config" / "data-contract-auditor.job.json"
         values = json.loads(config.read_text(encoding="utf-8"))
         self.assertIs(values["upload_approved"], False)
-        self.assertIn("REPLACE_", values["expected_sha256"])
+        self.assertEqual(values["expected_sha256"], "e2ca6fd81720dc270667e65db05404b6efdde5b2c0712bee2853e0608767db05")
+        self.assertEqual(values["ref"], "722ec7a077d2c6109e657c4ee661c9f3d06a4506")
 
 
 if __name__ == "__main__":
