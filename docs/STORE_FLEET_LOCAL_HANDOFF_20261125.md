@@ -46,6 +46,35 @@ git merge-base cb6406f5fe51386ddd2ede1ab3a07b62ac3bb5d1 origin/codex/local-store
 
 If the commit is based on the Windows-Automator PR #3 head, create a follow-up branch/PR that targets `codex/local-store-uploader-forensics-20261124`. Otherwise, create a clean branch from the current PR #3 head and port only the reviewed fleet-sync changes. Resolve conflicts deliberately; keep the local 219-test implementation and the existing uploader contracts. Do not merge any PR.
 
+## Three missing local source clones
+
+The three products that were not present as local clones have existing GitHub repositories and exact Store packaging branches. Search the existing worktree roots first; clone only when the repository is genuinely absent. Use the Store branch, not the sparse default `main`.
+
+```powershell
+$Base = "C:\Users\aaron\Desktop\portfolio-audit\_task_worktrees"
+New-Item -ItemType Directory -Force -Path $Base | Out-Null
+
+git clone --branch codex/store-p1-image-privacy-20261023 --single-branch https://github.com/shihuiarenjinba-png/-Screenshot-Image-Privacy-Cleaner.git (Join-Path $Base "image-privacy-cleaner")
+
+git clone --branch codex/store-p1-excel-csv-privacy-20261023 --single-branch https://github.com/shihuiarenjinba-png/-Excel-CSV-Privacy-Cleaner.git (Join-Path $Base "excel-csv-privacy-cleaner")
+
+git clone --branch codex/store-p1-pdf-privacy-20261023 --single-branch https://github.com/shihuiarenjinba-png/-PDF-Privacy-Toolkit.git (Join-Path $Base "pdf-privacy-toolkit")
+```
+
+Pinned Store branch heads at discovery time:
+- Image Privacy Cleaner: `b73f2dadd63843cadb9c1a779a87ef2045516af5`
+- Excel / CSV Privacy Cleaner: `f715ce0e6f5d3eee8e483137fb42d41cb6e4ec20`
+- PDF Privacy Toolkit: `891dad28b15b5c1c7dd743e6cbe442809ecb41`
+
+After clone, record `git rev-parse HEAD`, `git remote -v`, source tree status, builder script path, Package Identity fields, approval file, and CI run corresponding to that exact head. Do not cherry-pick a main branch or default branch over these Store-specific branches.
+
+Each Store branch contains its own builder:
+- Image: `store/build-msix.ps1`
+- Excel/CSV: `store/build-store-msix.ps1`
+- PDF: `store/build-msix.ps1`
+
+The QA-only unsigned artifacts from their CI workflows were created with temporary/placeholder package artwork. Their formal Store-candidate build steps were skipped because version and asset approvals are missing. Do not promote these artifacts to Store upload candidates.
+
 ## Restore local GitHub connectivity
 
 The previous local run reported DNS failures for `github.com`, a failed TCP 443 probe, and invalid configured GitHub CLI credentials. This GitHub-side connection could read/write the authorized PR branch, but it does not fix the local Windows machine's DNS or `gh` authentication.
