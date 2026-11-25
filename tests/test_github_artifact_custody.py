@@ -291,6 +291,8 @@ class CustodyTests(unittest.TestCase):
         self.assertEqual(signal["current_request_id"], "game-signal-sprint-1a349faa41663c417c40710140a4d50c79b62b78")
         self.assertEqual(signal["cas_status"], "NOT_APPLIED")
         self.assertEqual(signal["build_artifact_id"], 14931068646)
+        self.assertIsNone(signal["package_version"])
+        self.assertIs(signal["real_msix"], False)
         self.assertFalse(signal["real_msixvc"])
         self.assertIs(ledger["store_submission_allowed"], False)
         self.assertIs(ledger["certification_allowed"], False)
