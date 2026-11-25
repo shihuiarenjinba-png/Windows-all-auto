@@ -190,6 +190,40 @@ class LocalPullTests(unittest.TestCase):
             self.pull_fake(target,clients_side_effect=bad_clients)
         self.assertEqual(list(target.iterdir()),[])
 
+    def test_duplicate_archive_path_rejected_before_staging(self):
+        def duplicate_clients(token):
+            self.build_artifact()
+            source_archive = io.BytesIO(self.archive_bytes)
+            duplicate_archive = io.BytesIO()
+            with zipfile.ZipFile(source_archive) as source, \
+                 zipfile.ZipFile(duplicate_archive, "w", zipfile.ZIP_DEFLATED) as target:
+                for info in source.infolist():
+                    target.writestr(info.filename, source.read(info.filename))
+                # A matching GitHub digest must not make duplicate archive paths acceptable.
+                target.writestr("queue.json", (self.artifact_dir / "queue.json").read_bytes())
+            duplicate_bytes = duplicate_archive.getvalue()
+            artifact = dict(self.artifact_response)
+            artifact["digest"] = "sha256:" + hashlib.sha256(duplicate_bytes).hexdigest()
+
+            def fetch_json(url):
+                if url.endswith("/runs/" + str(self.run_id)):
+                    return self.run_response
+                if url.endswith("/artifacts/" + str(self.artifact_id)):
+                    return artifact
+                raise AssertionError("unexpected GitHub API URL")
+
+            def fetch_bytes(url):
+                if url.endswith("/artifacts/" + str(self.artifact_id) + "/zip"):
+                    return duplicate_bytes
+                raise AssertionError("unexpected GitHub artifact URL")
+
+            return fetch_json, fetch_bytes
+
+        target = self.root / "inbox"
+        with self.assertRaisesRegex(ValueError, "ARTIFACT_DUPLICATE_PATH"):
+            self.pull_fake(target, clients_side_effect=duplicate_clients)
+        self.assertEqual(list(target.iterdir()), [])
+
     def test_local_extracted_bytes_must_match_archived_bytes(self):
         def tampered_gh(*args):
             result=self.fake_gh(*args)
