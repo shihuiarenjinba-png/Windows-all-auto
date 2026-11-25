@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-11-24T18:36:02Z",
+  "generated_at": "2026-11-25T02:36:02Z",
   "policy": "COMPLETION_RUSH_EXISTING_PRODUCTS_ONLY",
   "new_product_generation_allowed": false,
   "rules": {
@@ -30,8 +30,8 @@
       "package_version": null,
       "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
       "real_msix": false,
-      "next_action": "Keep product frozen. The approved Identity/request remains bound to historical source 8b00bc4e, while current PR94 source is fb629383 and main.py changed. A current-source request artifact was not observed in the reviewed live PRs. Obtain a source-bound request and current-source Identity revalidation plus authenticated Partner Center Package Version readback before real MSIX. PNG bytes/blob SHAs are verified; do not regenerate. Product score remains 54/100, below the sale threshold.",
-      "store_assets_status": "RAW_PNG_SHA256_VERIFIED__CURRENT_GIT_BLOB_SHA_READBACK_MATCHES__MSIX_EMBED_NOT_VERIFIED",
+      "next_action": "Do not reuse the 8b00 Identity on fb629. Obtain an exact fb629 source-bound request and revalidate Identity/current source, then an authenticated Partner Center Version readback. Keep package and sale HOLD; current internal quality score is 54 (<80).",
+      "store_assets_status": "THREE_PNG_FILES_VERIFIED__MSIX_EMBED_NOT_VERIFIED",
       "required_store_assets": [
         "StoreLogo.png",
         "Square150.png",
@@ -39,22 +39,10 @@
       ],
       "store_assets_branch_head": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
       "package_blockers": [
-        {
-          "field": "current_source_request_binding",
-          "status": "NOT_OBSERVED__HISTORICAL_REQUEST_BINDS_8B00_ONLY"
-        },
-        {
-          "field": "current_source_identity_binding",
-          "status": "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE"
-        },
-        {
-          "field": "package_version",
-          "status": "AUTHORITATIVE_VALUE_REQUIRED"
-        },
-        {
-          "field": "real_msix_transport",
-          "status": "NOT_VERIFIED"
-        }
+        "CURRENT_SOURCE_REQUEST_BINDING_NOT_OBSERVED",
+        "CURRENT_SOURCE_IDENTITY_REVALIDATION_REQUIRED",
+        "AUTHORITATIVE_PACKAGE_VERSION_REQUIRED",
+        "PRODUCT_QUALITY_SCORE_54_BELOW_SALE_THRESHOLD_80"
       ],
       "store_assets_evidence": {
         "pr": 94,
@@ -173,64 +161,19 @@
       "current_gui_followup_head": "3f2eb8b579bb19716590be4b5d6536db789742af",
       "current_gui_followup_base_head": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
       "current_gui_followup": {
-        "pr": 102,
         "run_id": 45234786152,
         "core_run_id": 45234786160,
-        "tested_head_sha": "3f2eb8b579bb19716590be4b5d6536db789742af",
-        "base_pr": 94,
-        "base_head_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
-        "changed_files": [
-          "products/focus-session-desk/tests/windows_exe_gui_smoke.py"
-        ],
-        "product_code_changed": false,
-        "identity_changed": false,
-        "version_changed": false,
-        "gui_conclusion": "success",
-        "core_conclusion": "success",
         "artifact_id": 14849620327,
         "artifact_bytes": 187951,
         "artifact_sha256": "0e3291ac4798d61f83bb9d3a2544eab67a69f384e5c17909ff98028f77929d45",
-        "artifact_digest_matches_github": true,
-        "artifact_downloaded_and_rehashed": true,
-        "receipt_sha256": "cb25d8903d891bbb849785dcf8b4060d9509cf74637990852291f8a526c96f81",
-        "source_sha_file_sha256": "58f370231223df1bd552fff9dc5d283cfe648724f1846545c0e3a58c592a5437",
-        "exe_sha256_file_sha256": "3abb40e18fe9109a42d17a4aff167064586daa25cfc339e24bddee4519209634",
-        "receipt_result": "PASS",
-        "receipt_source_sha": "3f2eb8b579bb19716590be4b5d6536db789742af",
-        "source_sha_matches_pr102_head": true,
-        "exe_sha256_reported": "5367eeb9296525fe8c51abb28b94476bc672e0f7b55d9d656a9eed9d5bc2daab",
-        "exe_sha256_file_matches_receipt": true,
-        "exe_bytes_independently_rehashed": false,
-        "progress_expected_text": "Progress: 1/1 complete (100%)",
-        "progress_evidence": "05-progress-100.png",
-        "restart_persistence_evidence": "06-restart-persistence-100.png",
-        "restart_language_observed": "en",
-        "restart_task_done_observed": true,
-        "restart_session_state": "idle",
-        "first_process_normal_exit": true,
-        "restarted_process_normal_exit": true,
-        "screenshots_reviewed": [
-          "01-first-launch.png",
-          "02-task-added.png",
-          "03-english.png",
-          "04-reset.png",
-          "05-progress-100.png",
-          "06-restart-persistence-100.png"
-        ],
+        "artifact_bytes_independently_verified": true,
         "visual_review_required": false,
         "visual_review_status": "PASS_36_VISUAL_REVIEW__100_PERCENT_AND_COLD_RESTART_PERSISTENCE",
-        "scope": "Hosted native Windows unsigned EXE GUI smoke on test-only PR102. Confirms 1/1 task completion and English/task/idle persistence after cold restart. Artifact ZIP and receipt independently checked; the EXE itself was not included for independent byte rehash. Not MSIX, install, local checker or user-PC E2E."
+        "exe_sha256_reported": "5367eeb9296525fe8c51abb28b94476bc672e0f7b55d9d656a9eed9d5bc2daab",
+        "exe_sha256_independently_rehashed": false
       },
       "product_quality_assessment": {
         "assessment_type": "PROVISIONAL_INTERNAL_100_POINT_PRODUCT_REVIEW",
-        "scoring_model": {
-          "product_value": 30,
-          "ui": 20,
-          "features": 20,
-          "stability": 15,
-          "windows_store_evidence": 15,
-          "total": 100
-        },
         "score": {
           "product_value": 12,
           "ui": 14,
@@ -240,26 +183,58 @@
           "total": 54
         },
         "decision": "DO_NOT_SELL__BELOW_80",
-        "evidence_basis": [
-          "Current PR94 source fb629383; README and main.py feature/limitation review",
-          "PR102 hosted native Windows GUI receipt and six screenshots independently downloaded and visually reviewed",
-          "Current approved-identity.json still binds source 8b00bc4e and package_version_gate=HOLD",
-          "No real MSIX, signed package, local checker, local install or Partner Center Version readback"
-        ],
-        "buying_reason": "A narrow buyer may value one local-only Japanese/English window combining a focus countdown and checklist, with no account, cloud, network or background service and automatic local backup/recovery.",
-        "free_alternative_losses": "The differentiation is weak: Windows Clock Focus sessions plus Microsoft To Do already provide timed focus and task integration; the product lacks scheduled breaks, notifications, reports, recurring tasks, sync and integrations. Free Focus To-Do/Pomofocus options also offer richer task/timer workflows.",
         "market_fit_gate": "HOLD",
-        "market_fit_evidence_verified": false,
-        "external_references": [
-          "https://www.microsoft.com/en-us/windows/learning-center/best-productivity-apps-in-windows",
-          "https://www.microsoft.com/en-gb/windows/tips/focus-sessions",
-          "https://dev.to/liza_18827c15bdd387c4cd9c/best-free-pomodoro-app-for-windows-11-5-options-compared-by-what-they-actually-do-39m0"
-        ],
-        "caveat": "The score is an internal provisional rubric assessment, not a measured conversion or user study. Re-score after substantive differentiation and real Windows/Store evidence."
+        "market_fit_evidence_verified": false
       },
       "identity_return_scope": "HISTORICAL_SOURCE_ONLY",
       "current_source_request_id": null,
-      "current_source_request_status": "NOT_OBSERVED__HISTORICAL_REQUEST_BINDS_8B00_ONLY"
+      "current_source_request_status": "NOT_OBSERVED__HISTORICAL_REQUEST_BINDS_8B00_ONLY",
+      "current_source_pr": 94,
+      "current_source_branch": "codex/focus-store-assets-gate-20261118",
+      "approved_source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+      "historical_request_id": "app-focus-session-desk-8b00bc4e9082",
+      "approved_identity_file_blob_sha": "00c56e85ec7590783284e372ba100a3127614971",
+      "approved_identity_package_version_gate": "HOLD",
+      "package_version_gate": "HOLD",
+      "current_gui_test_pr": 102,
+      "current_gui_test_head": "3f2eb8b579bb19716590be4b5d6536db789742af",
+      "current_gui_test_base_head": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+      "current_gui_core_run": 45234786160,
+      "current_gui_run": 45234786152,
+      "current_gui_artifact_id": 14849620327,
+      "current_gui_artifact_bytes": 187951,
+      "current_gui_artifact_sha256": "0e3291ac4798d61f83bb9d3a2544eab67a69f384e5c17909ff98028f77929d45",
+      "current_gui_artifact_bytes_independently_verified": true,
+      "current_gui_visual_review_required": false,
+      "current_gui_visual_review_status": "PASS_36_VISUAL_REVIEW__100_PERCENT_AND_COLD_RESTART_PERSISTENCE",
+      "current_gui_exe_sha256_reported": "5367eeb9296525fe8c51abb28b94476bc672e0f7b55d9d656a9eed9d5bc2daab",
+      "current_gui_exe_sha256_independently_rehashed": false,
+      "msix_asset_embedding": "NOT_VERIFIED",
+      "github_backlog_receipt": false,
+      "local_pull_receipt": false,
+      "local_checker_receipt": false,
+      "local_gui_install_receipt": false,
+      "store_assets_raw_sha256": {
+        "StoreLogo": {
+          "sha256": "2c0460e0f2947ce975b7a6abbc607acaeea8a22bf9bcae984b420acedddc8e2f",
+          "bytes": 360393,
+          "dimensions": "300x300",
+          "git_blob_sha": "8017427aabf0e30168a88353588dc2ffdc2cba6d"
+        },
+        "Square150": {
+          "sha256": "9183aa4055ed453360b656b4fe291bf392413e04fab44048820ca4bcfa5d1d0c",
+          "bytes": 90223,
+          "dimensions": "150x150",
+          "git_blob_sha": "c6060306f202b662831039b95b1352689da023c7"
+        },
+        "Square44": {
+          "sha256": "3fbdcd610f6781b72308755c6f92b1fdaef0592bab51c612556e5b8b95c1ee46",
+          "bytes": 7856,
+          "dimensions": "44x44",
+          "git_blob_sha": "466a795ea01e34a28ac1db9aa7dcf3308464dbd0"
+        }
+      },
+      "store_assets_raw_sha256_independently_verified": true
     },
     {
       "rank": 2,
@@ -275,8 +250,8 @@
       "package_version": null,
       "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
       "real_msix": false,
-      "next_action": "Keep PR115 Draft and product frozen. PR115 is the first coherent integrated File Integrity source candidate (2 commits ahead/0 behind PR95) with exact-head Core/PNG/GUI/request CI 4/4 SUCCESS and a source-bound DRY_RUN request. 36 downloaded the GUI artifact, rehashed ZIP/EXE/receipts, independently parsed the three CSVs, and inspected screenshots; human owner visual sign-off remains required. Historical approved Identity d1108 is absent from PR115; request is not an Identity return. Obtain current-source Identity revalidation and authoritative Partner Center Package Version before real MSIX. The MSIX export run 45422811552 skipped all build/export steps and produced no artifact. Do not regenerate PNGs or infer Version.",
-      "store_assets_status": "RAW_PNG_SHA256_VERIFIED__PR115_GIT_BLOB_SHAS_PRESERVED__MSIX_EMBED_NOT_VERIFIED",
+      "next_action": "Complete human owner visual sign-off for PR115, obtain current-source Identity revalidation and authenticated Partner Center Version, then build a real MSIX. Current DRY_RUN request and unsigned EXE GUI evidence are not package or E2E proof.",
+      "store_assets_status": "THREE_PNG_FILES_VERIFIED__MSIX_EMBED_NOT_VERIFIED",
       "required_store_assets": [
         "StoreLogo.png",
         "Square150.png",
@@ -284,22 +259,9 @@
       ],
       "store_assets_branch_head": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
       "package_blockers": [
-        {
-          "field": "human_visual_review",
-          "status": "HUMAN_OWNER_REVIEW_REQUIRED"
-        },
-        {
-          "field": "current_source_identity_binding",
-          "status": "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE"
-        },
-        {
-          "field": "package_version",
-          "status": "AUTHORITATIVE_VALUE_REQUIRED"
-        },
-        {
-          "field": "real_msix_transport",
-          "status": "NOT_VERIFIED"
-        }
+        "PR115_INTEGRATED_SOURCE_CANDIDATE__HUMAN_OWNER_VISUAL_SIGNOFF_REQUIRED",
+        "CURRENT_SOURCE_IDENTITY_REVALIDATION_REQUIRED",
+        "AUTHORITATIVE_PACKAGE_VERSION_REQUIRED"
       ],
       "store_assets_evidence": {
         "pr": 115,
@@ -480,54 +442,24 @@
         "changed_files": 8
       },
       "current_gui_followup": {
-        "pr": 115,
         "run_id": 45422895435,
         "core_run_id": 45422895558,
         "png_gate_run_id": 45422895476,
         "request_run_id": 45422895649,
-        "tested_head_sha": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
-        "conclusion": "success",
         "artifact_id": 14934752145,
         "artifact_bytes": 11422614,
         "artifact_sha256": "6faa6db6d0e05b6baa71347c31b6f4d871fedcf35e28b787a7fbdb99816ab04c",
-        "artifact_digest_matches_github": true,
-        "artifact_bytes_independently_downloaded_and_rehashed": true,
         "exe_bytes": 11494118,
         "exe_sha256": "425e8f03397fc00a7b1442d58cc99d460fea53238e83c5b96500ac450bab85c6",
+        "artifact_bytes_independently_downloaded_and_rehashed": true,
         "exe_sha256_independently_rehashed": true,
-        "builder_receipt_sha256": "0b26620e02e5073ee6e55621f982631fa35d7c80fe5d9ed0893f0ecb2ff93578",
-        "gui_receipt_sha256": "444791c700b994f899b450f713a9f85782fa361bfdbfedb4e2c6a56e05f9bec4",
-        "receipt_result": "PASS",
         "receipt_statuses": [
           "UNCHANGED",
           "MODIFIED",
           "MISSING"
         ],
-        "csv_exports": 3,
-        "csv_independently_parsed": true,
-        "fixture_only_no_user_files_accessed": true,
-        "window_rectangle": [
-          32,
-          48,
-          1008,
-          711
-        ],
-        "work_area": [
-          0,
-          0,
-          1024,
-          720
-        ],
-        "screenshots": [
-          "01-first-use.png",
-          "02-after-open.png",
-          "02-unchanged.png",
-          "03-modified.png",
-          "04-missing.png"
-        ],
         "visual_review_required": true,
-        "visual_review_status": "36_SCREENSHOT_INSPECTION_PASS__HUMAN_OWNER_REVIEW_REQUIRED",
-        "scope": "Hosted native Windows unsigned EXE GUI evidence only; screenshots inspected by 36 and ZIP/EXE/receipt bytes independently rehashed. Human owner visual sign-off remains required. Not MSIX, installation, local checker or user-PC E2E."
+        "visual_review_status": "36_SCREENSHOT_INSPECTION_PASS__HUMAN_OWNER_REVIEW_REQUIRED"
       },
       "approved_identity_file_present_on_current_pr100_head": false,
       "approved_identity_file_current_pr100_head_readback": "NOT_FOUND",
@@ -807,7 +739,29 @@
         "local_checker_receipt": false,
         "local_gui_install_receipt": false,
         "source_selection_status": "INTEGRATED_CANDIDATE_PR115__AWAITING_HUMAN_VISUAL_REVIEW_AND_IDENTITY_REVALIDATION"
-      }
+      },
+      "current_source_pr": 115,
+      "current_source_branch": "codex/integrity-pr95-source-request-integration-20261125",
+      "approved_source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
+      "historical_approved_identity_commit": "db9a57af822788af4c8384499a6e343ec7b0353d",
+      "historical_approved_identity_blob_sha": "78034cf62be3479f9ed752a2585ab31bb24c49ff",
+      "package_version_gate": "HOLD",
+      "current_gui_test_pr": 115,
+      "current_gui_test_head": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
+      "current_gui_core_run": 45422895558,
+      "current_gui_run": 45422895435,
+      "png_gate_run": 45422895476,
+      "request_run": 45422895649,
+      "current_gui_artifact_id": 14934752145,
+      "current_gui_artifact_bytes": 11422614,
+      "current_gui_artifact_sha256": "6faa6db6d0e05b6baa71347c31b6f4d871fedcf35e28b787a7fbdb99816ab04c",
+      "current_gui_exe_bytes": 11494118,
+      "current_gui_exe_sha256": "425e8f03397fc00a7b1442d58cc99d460fea53238e83c5b96500ac450bab85c6",
+      "current_gui_artifact_bytes_independently_verified": true,
+      "current_gui_exe_sha256_independently_rehashed": true,
+      "current_gui_visual_review_required": true,
+      "current_gui_visual_review_status": "36_SCREENSHOT_INSPECTION_PASS__HUMAN_OWNER_REVIEW_REQUIRED",
+      "msix_asset_embedding": "NOT_VERIFIED"
     },
     {
       "rank": 3,
@@ -818,13 +772,13 @@
       "functional_hold": false,
       "product_frozen_for_package": true,
       "factory_source_sha": "b03ce7b16c3f75c04fe20fdda224c45849eeba0d",
-      "independent_qa_head": "75a369d42629b956f0b2c15b0509b7b4038bf709",
+      "independent_qa_head": "0878f48c79073596e30fed37a5703e0826389862",
       "real_export_verified": true,
-      "independent_cloud_qa_verified": true,
+      "independent_cloud_qa_verified": false,
       "physical_windows_6_condition_pass": false,
       "package_version": null,
       "real_msix": false,
-      "next_action": "Current Factory source is b03ce7b (not historical 4c22875). PR19 exact current QA has 7/7 CI PASS and exact EXE/PCK byte custody, but physical Windows sessions remain 0/6 and screenshots 0/36. Rebind Identity to current source and obtain authoritative Version only after physical QA; no old-source CAS.",
+      "next_action": "Keep the 4c22875 Identity separate. Complete six-condition physical QA for current source b03ce7, then obtain current-source Identity approval/rebind and authoritative Version; only then package.",
       "historical_factory_source_sha": "4c22875c5ed79d393516c6a7a95361b9e9ed1950",
       "current_factory_pr": 25,
       "current_factory_head": "b03ce7b16c3f75c04fe20fdda224c45849eeba0d",
@@ -866,7 +820,17 @@
       "qa_physical_handoff_artifact_id": 14803939341,
       "physical_qa_sessions": "0/6",
       "physical_qa_screenshots": "0/36",
-      "current_source_identity_rebind": "PENDING_CURRENT_SOURCE_APPROVAL"
+      "current_source_identity_rebind": "PENDING_CURRENT_SOURCE_APPROVAL",
+      "current_factory_branch": "codex/prism-tower1-hud-clearance-fix-20261103",
+      "current_source_sha": "b03ce7b16c3f75c04fe20fdda224c45849eeba0d",
+      "historical_identity_cas_reuse_allowed": false,
+      "export_run_id": 43794658086,
+      "factory_export_artifact_status": "SUCCESS_REAL_GODOT_4_3_WINDOWS_EXE_PCK_EXPORT",
+      "independent_qa_run_id": 41444886971,
+      "independent_qa_run_conclusion": "success",
+      "independent_qa_source_binding_status": "NOT_BOUND_TO_CURRENT_PR25_SOURCE",
+      "package_version_gate": "HOLD",
+      "msix_status": "NOT_BUILT"
     },
     {
       "rank": 4,
@@ -876,89 +840,116 @@
       "hold_class": "FUNCTIONAL_QA_THEN_DELIVERY_HOLD",
       "functional_hold": true,
       "product_frozen_for_package": false,
-      "gdk_identity_return": "VERIFIED",
+      "gdk_identity_return": "DRY_RUN_PREVIEW_ONLY__CAS_NOT_APPLIED",
       "current_uia_fixture_head": "d0607bd7dcb9076cc3d6414205d628db63503fb7",
       "fixture_ci_verified": true,
       "real_windows_uia_pass": false,
       "real_msixvc": false,
-      "next_action": "Keep historical c058 Identity/request separate from PR32's frozen product source 1a349faa. PR32 core CI is green but no build artifact is configured; required revision 9ccd7ff is absent. GDK Version/SDK/assets and real Windows UIA remain HOLD.",
+      "next_action": "Keep c058 historical. Complete exact-source JA/EN Windows UIA and the required revision gap, independently reobserve the frozen source branch, then review the 1a349 dry-run Identity preview for explicit CAS authorization. GDK SDK/Version/assets and MSIXVC remain HOLD.",
       "historical_source_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
       "current_candidate_source_sha": "1a349faa41663c417c40710140a4d50c79b62b78",
       "current_qa_pr": 32,
-      "current_qa_head": "38835291bbbb2e0a6608388928456b5b4ab41c8b",
-      "current_qa_run_id": 45164579182,
+      "current_qa_head": "b2bbb7d56c56daace86d929656e82301feb25f4d",
+      "current_qa_run_id": 45446404070,
       "current_qa_run_conclusion": "SUCCESS",
-      "current_qa_run_scope": "Factory core CI only",
-      "build_artifact_status": "HOLD_BUILD_ARTIFACT_NOT_CONFIGURED",
-      "current_request_mapping": "PENDING_INDEPENDENT_FACTORY_CONFIRMATION",
+      "current_qa_run_scope": "Factory core CI only; not physical Windows UIA or package evidence",
+      "build_artifact_status": "VERIFIED_UNSIGNED_EXE__NOT_GDK_PACKAGE",
+      "current_request_mapping": "VERIFIED_SOURCE_BOUND_DRY_RUN_ONLY__NOT_SUBMITTED",
       "required_revision": "9ccd7ff4389b3ca0e45c8407d7369a00f4302cf2",
-      "required_revision_in_frozen_source": false
+      "required_revision_in_frozen_source": false,
+      "historical_request_id": "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e",
+      "current_source_branch": "codex/signal-sprint-frozen-source-ref-20261124",
+      "current_source_head_status": "PREVIEW_EXPECTED_HEAD_1A349__LIVE_REF_NOT_REOBSERVED",
+      "current_request_id": "game-signal-sprint-1a349faa41663c417c40710140a4d50c79b62b78",
+      "provisioner_pr": 54,
+      "provisioner_head": "b8baa6ac332a677d540c116192dc761814519906",
+      "provisioner_ci_run_id": 45423675016,
+      "provisioner_ci_conclusion": "success",
+      "identity_preview_path": "evidence/signal-sprint-gdk-identity-return-preview.json",
+      "identity_preview_blob_sha": "f802c006fd762ae363676ef47cb58733739416c9",
+      "identity_preview_receipt_sha256": "ae0e8ecad3368ede9ef6727aa777f2ddf6ce7db88bee1c57c3bc9c04521ba38a",
+      "identity_reference_fingerprint_sha256": "3c5a100f6d9f123e43b18b060e017d2fae3cbabd2d0c9ef55fa9492a8919b3a0",
+      "store_id": "9N21MJM7S57P",
+      "package_family_name": "OkinawaDesktopTools.SignalSprint_j8yefg9jgfh58",
+      "identity_reference_status": "USER_PROVIDED_REFERENCE__NOT_CAS_APPLIED",
+      "request_payload_sha256": "4cdeeb786dc1508785eb3d41356b8f2ad15c33355ec2db22a3298d2c60b51a3b",
+      "request_dry_run": true,
+      "request_submitted": false,
+      "cas_status": "NOT_APPLIED",
+      "cas_write_performed": false,
+      "build_run_id": 45418088785,
+      "build_workflow_head_sha": "90728ddb99303736c97bc95a8c019796601b1a2a",
+      "build_artifact_id": 14931068646,
+      "build_artifact_zip_sha256": "3b76321df9f8b1c4a9883d8bade57f0e33a232e18b989cf2e0bba057dafcdba1",
+      "exe_sha256": "4b08ff7caa4a76852bbfe47a69c1ceb70fbf7cecfaf4cfade82e2b882959bd06",
+      "exe_bytes": 11453716,
+      "attestation_artifact_id": 14932802178,
+      "gdk_readiness_artifact_id": 14933406309,
+      "gdk_sdk_version_assets_status": "NOT_VERIFIED",
+      "physical_windows_uia_pass": false,
+      "gdk_package_verified": false,
+      "ordinary_msix_allowed": false,
+      "product_acceptance": false,
+      "registration_type": "GDK_GAME",
+      "package_version": null,
+      "package_version_status": "AUTHORITATIVE_GDK_VERSION_REQUIRED",
+      "real_msix": false,
+      "msix_status": "NOT_BUILT"
     }
   ],
-  "last_reconciled_at_utc": "2026-11-24T22:48:42Z",
-  "last_reconciled_basis": "Direct reconciliation at 2026-11-24T22:48:42Z: PR165 tested head 98953c5a9815a4ff30dfd82564a1672b7992a2bd exact-head transport/custody/Windows+Ubuntu Offline QA all SUCCESS. Parent 858945fd00c407163500e139deea32d087ec5827 test NameError was corrected in 98953c5a9815a4ff30dfd82564a1672b7992a2bd. PR174 diverged ahead 6 / behind 83; DO_NOT_RESTACK. Focus/File current-source identity/request binding and authoritative Package Version remain unresolved; no real MSIX/backlog/local/checker/install receipts; Store eligibility 0.",
+  "last_reconciled_at_utc": "2026-11-25T02:36:02Z",
+  "last_reconciled_basis": "Live GitHub PR and exact-head workflow readback: PR165 60ab8183; Focus PR94 fb629383 and Identity blob 00c56e85; File PR115 33d612be/request 45422895649; Prism PR25 b03ce7 export 43794658086; Signal PR32 b2bbb7 and Provisioner PR54 b8baa6 preview; PR161/171 exact heads; PR174 compare to current PR165.",
   "latest_transport_reconciliation": {
-    "checked_at_utc": "2026-11-24T22:48:42Z",
+    "checked_at_utc": "2026-11-25T02:36:02Z",
     "central_pr": 165,
-    "central_head": "98953c5a9815a4ff30dfd82564a1672b7992a2bd",
-    "central_tested_head_sha": "98953c5a9815a4ff30dfd82564a1672b7992a2bd",
-    "previous_central_head_sha": "858945fd00c407163500e139deea32d087ec5827",
-    "exact_head_ci": [
+    "central_head": "60ab8183a05f248972bf227d6059671f5f0532ac",
+    "central_tested_head_sha": "60ab8183a05f248972bf227d6059671f5f0532ac",
+    "previous_central_head_sha": "98953c5a9815a4ff30dfd82564a1672b7992a2bd",
+    "previous_central_head": "98953c5a9815a4ff30dfd82564a1672b7992a2bd",
+    "previous_exact_head_ci": [
       {
         "run_id": 45504316528,
         "conclusion": "success",
-        "scope": "Exact-head Windows E2E transport fail-closed regression",
+        "scope": "Immediate parent exact-head Windows E2E transport fail-closed regression",
         "job": "transport-regression"
       },
       {
         "run_id": 45504315490,
         "conclusion": "success",
-        "scope": "Exact-head independent GitHub artifact custody regression",
+        "scope": "Immediate parent exact-head independent GitHub artifact custody regression",
         "job": "custody-regression"
       },
       {
         "run_id": 45504315581,
         "conclusion": "success",
-        "scope": "Exact-head Windows-all-auto Offline QA",
+        "scope": "Immediate parent exact-head Windows-all-auto Offline QA",
         "jobs": [
           "Offline preflight tests (windows-latest)",
           "Offline preflight tests (ubuntu-latest)"
         ]
       }
     ],
-    "previous_exact_head_ci": [
+    "exact_head_ci": [
       {
-        "run_id": 45504218568,
-        "conclusion": "failure",
-        "scope": "Immediate previous exact-head Windows E2E transport fail-closed regression",
-        "job": "transport-regression",
-        "reason": "TEST_VARIABLE_UNDEFINED"
+        "run_id": 45504775685,
+        "conclusion": "success",
+        "scope": "Exact-head Windows E2E transport fail-closed regression",
+        "job": "transport-regression"
       },
       {
-        "run_id": 45504218632,
+        "run_id": 45504775807,
         "conclusion": "success",
-        "scope": "Immediate previous exact-head independent GitHub artifact custody regression",
+        "scope": "Exact-head independent GitHub artifact custody regression",
         "job": "custody-regression"
       },
       {
-        "run_id": 45504218494,
-        "conclusion": "failure",
-        "scope": "Immediate previous exact-head Windows-all-auto Offline QA",
+        "run_id": 45504775632,
+        "conclusion": "success",
+        "scope": "Exact-head Windows-all-auto Offline QA",
         "jobs": [
           "Offline preflight tests (windows-latest)",
           "Offline preflight tests (ubuntu-latest)"
-        ],
-        "reason": "TEST_VARIABLE_UNDEFINED"
-      },
-      {
-        "run_id": 45504208868,
-        "conclusion": "failure",
-        "scope": "Immediate previous exact-head push Offline QA",
-        "jobs": [
-          "Offline preflight tests (windows-latest)",
-          "Offline preflight tests (ubuntu-latest)"
-        ],
-        "reason": "TEST_VARIABLE_UNDEFINED"
+        ]
       }
     ],
     "status": "HOLD",
@@ -971,44 +962,12 @@
     "local_gui_install_receipt": false,
     "local_code_sync": "CLOUD_PASS_ONLY",
     "store_upload_test_eligible_products": 0,
-    "immediate_parent_ci_status": "PARTIAL_FAIL_PARENT_CI__CURRENT_HEAD_PASS",
-    "pr174_restack_assessment": {
-      "status": "diverged",
-      "ahead_by": 6,
-      "behind_by": 79,
-      "decision": "DO_NOT_RESTACK"
-    },
     "store_submission_allowed": false,
     "certification_allowed": false,
     "publish_allowed": false,
-    "intermediate_test_failures": [
-      {
-        "head_sha": "a812266e705e8ca74654505d93918f573281a881",
-        "runs": [
-          45483234542,
-          45483234713,
-          45483234548
-        ],
-        "status": "PARTIAL_FAIL_STALE_PREVIOUS_CENTRAL_HEAD_ASSERTION",
-        "resolution": "Transport and Offline QA failed because tests/test_real_msix_transport_failclosed.py still expected previous_central_head_sha=9e535e98 while the ledger correctly recorded 437312f; artifact custody passed. Updated the assertion to 437312f in a206f176; all three exact-head workflows then passed."
-      },
-      {
-        "head_sha": "858945fd00c407163500e139deea32d087ec5827",
-        "runs": [
-          45504218568,
-          45504218632,
-          45504218494,
-          45504208868
-        ],
-        "status": "PARTIAL_FAIL_TEST_VARIABLE_UNDEFINED",
-        "cause": "tests/test_real_msix_transport_failclosed.py referenced current without binding it inside test_latest_reconciliation_keeps_focus_file_version_and_source_gates_held; transport and Offline QA failed while independent custody passed.",
-        "resolution": "Bound current to ledger[\"windows_e2e_custody_reconciliation\"] in 98953c5a9815a4ff30dfd82564a1672b7992a2bd; current exact-head transport, custody and Windows/Ubuntu Offline QA all passed."
-      }
-    ],
-    "central_base_sha": "145cd1f44bdec9e584eb0f045dd139ef330c6321",
-    "previous_central_head": "858945fd00c407163500e139deea32d087ec5827",
-    "pr165_current_head_parent_ci_status": "PARTIAL_FAIL_PARENT_CI__CURRENT_HEAD_PASS",
-    "note": "PR165 exact current tested HEAD 98953c5a9815a4ff30dfd82564a1672b7992a2bd passed transport 45504316528, independent artifact custody 45504315490, and Windows/Ubuntu Offline QA 45504315581. Immediate parent 858945fd00c407163500e139deea32d087ec5827 had a test-fixture NameError (transport/offline failed; custody passed); fixed in the current head and recorded as resolved. This is repository CI only, not product E2E. Focus/File remain DELIVERY_HOLD: current-source Identity/request binding and authoritative Package Version are not verified; no real MSIX, GitHub backlog, local pull, checker, install, or local GUI-install receipt exists. PR174 remains diverged (ahead 6 / behind 83); DO_NOT_RESTACK. PR161 and PR171 runs remain Offline QA only. Fresh unsold Store-upload eligibility remains 0; Store writes, certification and publish remain disabled."
+    "pr165_current_head_parent_ci_status": "PASS_EXACT_HEAD_CI",
+    "intermediate_test_failures": [],
+    "note": "PR165 live exact HEAD 60ab8183 is one commit after 98953c5a. Exact-head transport 45504775685, artifact custody 45504775807, and Windows/Ubuntu Offline QA 45504775632 all completed SUCCESS; the immediate parent 98953c5a also passed all three runs 45504316528, 45504315490 and 45504315581. This is repository CI only, not product E2E. Focus/File remain DELIVERY_HOLD; no current-source Identity+Version package tuple, real MSIX, backlog, local pull, checker or install receipt. Prism export exists but physical QA is 0/6; Signal current 1a349 GDK preview is dry-run only with no CAS/UIA/MSIXVC. PR174 diverges 6 ahead / 84 behind; DO_NOT_RESTACK. PR161/PR171 CI are Offline QA only. Store upload dry-run eligibility is 0."
   },
   "previous_latest_transport_reconciliation": {
     "checked_at_utc": "2026-11-23T19:34:36Z",
@@ -1161,17 +1120,20 @@
     ]
   },
   "store_upload_test_eligibility": {
-    "bridge_pr": 171,
-    "bridge_head": "764721021f13be96364529650b44fb439770bac9",
-    "bridge_ci_run": 44437197470,
-    "bridge_ci_scope": "Offline QA only; not Store upload dry-run",
     "eligible_fresh_unsold_products": 0,
     "status": "NOT_RUN_NO_PRODUCT_MEETS_ALL_GATES",
+    "dry_run_started": false,
+    "live_started": false,
     "live_partner_center_write_allowed": false,
     "store_submission_allowed": false,
     "certification_allowed": false,
     "publish_allowed": false,
-    "dry_run_started": false
+    "bridge_pr": 171,
+    "bridge_head": "764721021f13be96364529650b44fb439770bac9",
+    "bridge_ci_run": 44437197470,
+    "bridge_ci_scope": "Offline QA only; bridge code exists but no Store upload dry-run was executed",
+    "windows_automator_pin_sha": "d3b8ed4ae7762a69d3fe2a90b64aa86ee938259b",
+    "windows_automator_pin_ci_run": 44319200630
   },
   "store_submission_allowed": false,
   "certification_allowed": false,
@@ -1723,33 +1685,168 @@
     {
       "rank": 1,
       "product": "Focus Session Desk",
-      "state": "POST_IDENTITY_UPGRADE",
-      "hold_class": "DELIVERY_HOLD",
+      "lane": "APP",
+      "current_source_pr": 94,
+      "current_source_branch": "codex/focus-store-assets-gate-20261118",
       "current_source_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
       "approved_source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+      "historical_request_id": "app-focus-session-desk-8b00bc4e9082",
+      "store_id": "9P6452C61N7B",
+      "approved_identity_file_present_on_current_pr_head": true,
+      "approved_identity_file_blob_sha": "00c56e85ec7590783284e372ba100a3127614971",
+      "approved_identity_source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+      "approved_identity_package_version_gate": "HOLD",
       "current_source_request_status": "NOT_OBSERVED__HISTORICAL_REQUEST_BINDS_8B00_ONLY",
       "current_source_identity_binding_status": "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE",
       "package_version": null,
-      "real_msix": false
+      "package_version_gate": "HOLD",
+      "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
+      "store_assets_git_blob_sha_verified": true,
+      "store_assets_git_blob_sha_readback": {
+        "StoreLogo": "8017427aabf0e30168a88353588dc2ffdc2cba6d",
+        "Square150": "c6060306f202b662831039b95b1352689da023c7",
+        "Square44": "466a795ea01e34a28ac1db9aa7dcf3308464dbd0"
+      },
+      "current_gui_test_pr": 102,
+      "current_gui_test_head": "3f2eb8b579bb19716590be4b5d6536db789742af",
+      "current_gui_test_base_head": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+      "current_gui_core_run": 45234786160,
+      "current_gui_run": 45234786152,
+      "current_gui_artifact_id": 14849620327,
+      "current_gui_artifact_bytes": 187951,
+      "current_gui_artifact_sha256": "0e3291ac4798d61f83bb9d3a2544eab67a69f384e5c17909ff98028f77929d45",
+      "current_gui_artifact_bytes_independently_verified": true,
+      "current_gui_visual_review_required": false,
+      "current_gui_visual_review_status": "PASS_36_VISUAL_REVIEW__100_PERCENT_AND_COLD_RESTART_PERSISTENCE",
+      "current_gui_exe_sha256_reported": "5367eeb9296525fe8c51abb28b94476bc672e0f7b55d9d656a9eed9d5bc2daab",
+      "current_gui_exe_sha256_independently_rehashed": false,
+      "product_quality_assessment": {
+        "assessment_type": "PROVISIONAL_INTERNAL_100_POINT_PRODUCT_REVIEW",
+        "score": {
+          "product_value": 12,
+          "ui": 14,
+          "features": 11,
+          "stability": 13,
+          "windows_store_evidence": 4,
+          "total": 54
+        },
+        "decision": "DO_NOT_SELL__BELOW_80",
+        "market_fit_gate": "HOLD",
+        "market_fit_evidence_verified": false
+      },
+      "real_msix": false,
+      "msix_asset_embedding": "NOT_VERIFIED",
+      "github_backlog_receipt": false,
+      "local_pull_receipt": false,
+      "local_checker_receipt": false,
+      "local_gui_install_receipt": false,
+      "state": "POST_IDENTITY_UPGRADE",
+      "hold_class": "DELIVERY_HOLD",
+      "functional_hold": false,
+      "product_frozen_for_package": true,
+      "identity_return_scope": "HISTORICAL_SOURCE_ONLY",
+      "next_action": "Do not reuse the 8b00 Identity on fb629. Obtain an exact fb629 source-bound request and revalidate Identity/current source, then an authenticated Partner Center Version readback. Keep package and sale HOLD; current internal quality score is 54 (<80).",
+      "approved_identity_file_commit": "8a7139375524830bf823469526837259266172be",
+      "store_assets_raw_sha256": {
+        "StoreLogo": {
+          "sha256": "2c0460e0f2947ce975b7a6abbc607acaeea8a22bf9bcae984b420acedddc8e2f",
+          "bytes": 360393,
+          "dimensions": "300x300",
+          "git_blob_sha": "8017427aabf0e30168a88353588dc2ffdc2cba6d"
+        },
+        "Square150": {
+          "sha256": "9183aa4055ed453360b656b4fe291bf392413e04fab44048820ca4bcfa5d1d0c",
+          "bytes": 90223,
+          "dimensions": "150x150",
+          "git_blob_sha": "c6060306f202b662831039b95b1352689da023c7"
+        },
+        "Square44": {
+          "sha256": "3fbdcd610f6781b72308755c6f92b1fdaef0592bab51c612556e5b8b95c1ee46",
+          "bytes": 7856,
+          "dimensions": "44x44",
+          "git_blob_sha": "466a795ea01e34a28ac1db9aa7dcf3308464dbd0"
+        }
+      },
+      "store_assets_raw_sha256_independently_verified": true
     },
     {
       "rank": 2,
       "product": "File Integrity Ledger",
-      "state": "POST_IDENTITY_UPGRADE",
-      "hold_class": "DELIVERY_HOLD",
+      "lane": "APP",
+      "current_source_pr": 115,
+      "current_source_branch": "codex/integrity-pr95-source-request-integration-20261125",
       "current_source_sha": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
       "approved_source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
-      "current_source_request_id": "app-file-integrity-ledger-33d612be2774",
-      "source_selection_status": "INTEGRATED_CANDIDATE_PR115__AWAITING_HUMAN_VISUAL_REVIEW_AND_IDENTITY_REVALIDATION",
+      "historical_approved_identity_commit": "db9a57af822788af4c8384499a6e343ec7b0353d",
+      "historical_approved_identity_blob_sha": "78034cf62be3479f9ed752a2585ab31bb24c49ff",
+      "approved_identity_file_present_on_current_pr115_head": false,
+      "approved_identity_file_current_pr115_head_readback": "NOT_FOUND",
       "current_source_identity_binding_status": "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE",
+      "current_source_request_id": "app-file-integrity-ledger-33d612be2774",
+      "current_source_request": {
+        "request_id": "app-file-integrity-ledger-33d612be2774",
+        "source_sha": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
+        "request_sha256": "dc477b03dd8eb024dd4145fb56cace5d57531a9ae3bbba74a487631f823b2557",
+        "idempotency_key": "a1bb56ad8ec3fcebf8c4d6ee5b9b96bbbc64e6ac4c6a481b73810f3ed0f03df2",
+        "run_id": 45422895649,
+        "artifact_id": 14934034365,
+        "artifact_sha256": "697528b3b0769e3962eebfa0efcdcb026618cd378d97fc60c4f234017882527e",
+        "status": "DRY_RUN",
+        "route": "MSIX_OR_PWA_APP",
+        "live_source_head_verification": "VERIFIED",
+        "official_identity_status": "NOT_COLLECTED",
+        "package_version": null
+      },
       "package_version": null,
-      "real_msix": false
+      "package_version_gate": "HOLD",
+      "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
+      "store_assets_git_blob_sha_verified": true,
+      "store_assets_git_blob_sha_readback": {
+        "StoreLogo": "e3c9a9426a1971f21175b9b045d4d5fef83f97d5",
+        "Square150": "df892bd2fcf7b56f9facd94054b2b1385313b030",
+        "Square44": "d57e7a25d2a9eaa2b54d00c610f3a1ad7d4a4d49"
+      },
+      "current_gui_test_pr": 115,
+      "current_gui_test_head": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
+      "current_gui_core_run": 45422895558,
+      "current_gui_run": 45422895435,
+      "png_gate_run": 45422895476,
+      "request_run": 45422895649,
+      "current_gui_artifact_id": 14934752145,
+      "current_gui_artifact_bytes": 11422614,
+      "current_gui_artifact_sha256": "6faa6db6d0e05b6baa71347c31b6f4d871fedcf35e28b787a7fbdb99816ab04c",
+      "current_gui_exe_bytes": 11494118,
+      "current_gui_exe_sha256": "425e8f03397fc00a7b1442d58cc99d460fea53238e83c5b96500ac450bab85c6",
+      "current_gui_artifact_bytes_independently_verified": true,
+      "current_gui_exe_sha256_independently_rehashed": true,
+      "current_gui_visual_review_required": true,
+      "current_gui_visual_review_status": "36_SCREENSHOT_INSPECTION_PASS__HUMAN_OWNER_REVIEW_REQUIRED",
+      "msix_export": {
+        "run_id": 45422811552,
+        "status": "SKIPPED_NO_ARTIFACT",
+        "artifact_id": null,
+        "msix_status": "NOT_BUILT"
+      },
+      "real_msix": false,
+      "msix_asset_embedding": "NOT_VERIFIED",
+      "github_backlog_receipt": false,
+      "local_pull_receipt": false,
+      "local_checker_receipt": false,
+      "local_gui_install_receipt": false,
+      "source_selection_status": "INTEGRATED_CANDIDATE_PR115__AWAITING_HUMAN_VISUAL_REVIEW_AND_IDENTITY_REVALIDATION",
+      "state": "POST_IDENTITY_UPGRADE",
+      "hold_class": "DELIVERY_HOLD",
+      "functional_hold": false,
+      "product_frozen_for_package": true,
+      "identity_return_scope": "HISTORICAL_SOURCE_ONLY",
+      "next_action": "Complete human owner visual sign-off for PR115, obtain current-source Identity revalidation and authenticated Partner Center Version, then build a real MSIX. Current DRY_RUN request and unsigned EXE GUI evidence are not package or E2E proof."
     }
   ],
   "store_upload_test_eligibility_live_20261125": {
     "eligible_fresh_unsold_products": 0,
     "status": "NOT_RUN_NO_PRODUCT_MEETS_ALL_GATES",
     "dry_run_started": false,
+    "live_started": false,
     "live_partner_center_write_allowed": false,
     "store_submission_allowed": false,
     "certification_allowed": false,
@@ -1757,6 +1854,7 @@
     "bridge_pr": 171,
     "bridge_head": "764721021f13be96364529650b44fb439770bac9",
     "bridge_ci_run": 44437197470,
+    "bridge_ci_scope": "Offline QA only; bridge code exists but no Store upload dry-run was executed",
     "windows_automator_pin_sha": "d3b8ed4ae7762a69d3fe2a90b64aa86ee938259b",
     "windows_automator_pin_ci_run": 44319200630
   },
@@ -1834,11 +1932,11 @@
     "publish_allowed": false
   },
   "pr165_live_head_observation_20261125_latest": {
-    "observed_at_utc": "2026-11-24T22:48:42Z",
+    "observed_at_utc": "2026-11-25T02:36:02Z",
     "pull_request": 165,
     "head_ref": "refs/pull/165/head",
-    "head_sha": "98953c5a9815a4ff30dfd82564a1672b7992a2bd",
-    "parent_sha": "858945fd00c407163500e139deea32d087ec5827",
+    "head_sha": "60ab8183a05f248972bf227d6059671f5f0532ac",
+    "parent_sha": "98953c5a9815a4ff30dfd82564a1672b7992a2bd",
     "comparison_to_previous_tested_head": {
       "status": "ahead",
       "ahead_by": 1,
@@ -1847,19 +1945,19 @@
     },
     "exact_head_workflows": [
       {
-        "run_id": 45504316528,
+        "run_id": 45504775685,
         "conclusion": "success",
         "scope": "Exact-head Windows E2E transport fail-closed regression",
         "job": "transport-regression"
       },
       {
-        "run_id": 45504315490,
+        "run_id": 45504775807,
         "conclusion": "success",
         "scope": "Exact-head independent GitHub artifact custody regression",
         "job": "custody-regression"
       },
       {
-        "run_id": 45504315581,
+        "run_id": 45504775632,
         "conclusion": "success",
         "scope": "Exact-head Windows-all-auto Offline QA",
         "jobs": [
@@ -1879,62 +1977,64 @@
     "local_gui_install_receipt": false,
     "authoritative_package_version": "NOT_FOUND__KEEP_HOLD",
     "partner_center_authenticated_readback": "NOT_OBSERVED",
-    "intermediate_test_failures": [
+    "pr165_previous_tested_head_sha": "98953c5a9815a4ff30dfd82564a1672b7992a2bd",
+    "pr165_previous_tested_head_ci": [
       {
-        "head_sha": "a812266e705e8ca74654505d93918f573281a881",
-        "runs": [
-          45483234542,
-          45483234713,
-          45483234548
-        ],
-        "status": "PARTIAL_FAIL_STALE_PREVIOUS_CENTRAL_HEAD_ASSERTION",
-        "resolution": "Transport and Offline QA failed because tests/test_real_msix_transport_failclosed.py still expected previous_central_head_sha=9e535e98 while the ledger correctly recorded 437312f; artifact custody passed. Updated the assertion to 437312f in a206f176; all three exact-head workflows then passed."
+        "run_id": 45504316528,
+        "conclusion": "success",
+        "scope": "Immediate parent exact-head Windows E2E transport fail-closed regression",
+        "job": "transport-regression"
       },
       {
-        "head_sha": "858945fd00c407163500e139deea32d087ec5827",
-        "runs": [
-          45504218568,
-          45504218632,
-          45504218494,
-          45504208868
-        ],
-        "status": "PARTIAL_FAIL_TEST_VARIABLE_UNDEFINED",
-        "cause": "tests/test_real_msix_transport_failclosed.py referenced current without binding it inside test_latest_reconciliation_keeps_focus_file_version_and_source_gates_held; transport and Offline QA failed while independent custody passed.",
-        "resolution": "Bound current to ledger[\"windows_e2e_custody_reconciliation\"] in 98953c5a9815a4ff30dfd82564a1672b7992a2bd; current exact-head transport, custody and Windows/Ubuntu Offline QA all passed."
+        "run_id": 45504315490,
+        "conclusion": "success",
+        "scope": "Immediate parent exact-head independent GitHub artifact custody regression",
+        "job": "custody-regression"
+      },
+      {
+        "run_id": 45504315581,
+        "conclusion": "success",
+        "scope": "Immediate parent exact-head Windows-all-auto Offline QA",
+        "jobs": [
+          "Offline preflight tests (windows-latest)",
+          "Offline preflight tests (ubuntu-latest)"
+        ]
       }
     ],
-    "related_pull_requests": {
-      "pr161": {
-        "head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
-        "workflow_runs": [
-          {
-            "run_id": 42712757936,
-            "conclusion": "success",
-            "scope": "Offline QA only; not product E2E"
-          }
-        ]
-      },
-      "pr171": {
-        "head_sha": "764721021f13be96364529650b44fb439770bac9",
-        "workflow_runs": [
-          {
-            "run_id": 44437197470,
-            "conclusion": "success",
-            "scope": "Offline QA only; not Store upload dry-run"
-          }
-        ],
-        "windows_automator_pin_sha": "d3b8ed4ae7762a69d3fe2a90b64aa86ee938259b",
-        "windows_automator_pin_ci_run": 44319200630
-      },
-      "pr174": {
-        "head_sha": "69e7b7c8a7b1ecdaea42e6f03644a8cd549dfaee",
+    "pr161": {
+      "head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
+      "run_id": 42712757936,
+      "conclusion": "success",
+      "scope": "Offline QA only"
+    },
+    "pr171": {
+      "head_sha": "764721021f13be96364529650b44fb439770bac9",
+      "run_id": 44437197470,
+      "conclusion": "success",
+      "scope": "Offline QA only; Store upload bridge dry-run not executed"
+    },
+    "pr174": {
+      "pr": 174,
+      "state": "OPEN_DRAFT",
+      "branch": "codex/36-e2e-ledger-reconcile-20261123-1937",
+      "head_sha": "69e7b7c8a7b1ecdaea42e6f03644a8cd549dfaee",
+      "compare_to_current_pr165_head": {
+        "current_pr165_head_sha": "60ab8183a05f248972bf227d6059671f5f0532ac",
+        "merge_base_sha": "c6f30824196e90c03837e0636d7557a79fad92af",
         "status": "diverged",
         "ahead_by": 6,
-        "behind_by": 83,
-        "decision": "DO_NOT_RESTACK"
-      }
-    },
-    "current_head_parent_ci_status": "PARTIAL_FAIL_PARENT_CI__CURRENT_HEAD_PASS"
+        "behind_by": 84,
+        "changed_files": [
+          "ops/active_e2e_handoff.json",
+          "ops/completion_rush_queue_20261116.json",
+          "ops/focus_file_transport_reconciliation_20261120.json"
+        ]
+      },
+      "unique_changes_to_restack": [],
+      "decision": "DO_NOT_RESTACK",
+      "merge_allowed": false,
+      "reason": "Six operations-only commits are superseded by current PR165; no unique product or transport implementation is missing."
+    }
   },
   "pr174_restack_assessment_live_20261125": {
     "pr": 174,
@@ -1942,11 +2042,11 @@
     "branch": "codex/36-e2e-ledger-reconcile-20261123-1937",
     "head_sha": "69e7b7c8a7b1ecdaea42e6f03644a8cd549dfaee",
     "compare_to_current_pr165_head": {
-      "current_pr165_head_sha": "98953c5a9815a4ff30dfd82564a1672b7992a2bd",
+      "current_pr165_head_sha": "60ab8183a05f248972bf227d6059671f5f0532ac",
       "merge_base_sha": "c6f30824196e90c03837e0636d7557a79fad92af",
       "status": "diverged",
       "ahead_by": 6,
-      "behind_by": 83,
+      "behind_by": 84,
       "changed_files": [
         "ops/active_e2e_handoff.json",
         "ops/completion_rush_queue_20261116.json",
@@ -1956,6 +2056,420 @@
     "unique_changes_to_restack": [],
     "decision": "DO_NOT_RESTACK",
     "merge_allowed": false,
-    "reason": "Six operations-only commits are superseded by PR165; no unique product or transport implementation is missing."
-  }
+    "reason": "Six operations-only commits are superseded by current PR165; no unique product or transport implementation is missing."
+  },
+  "current_signal_sprint_live_20261125": {
+    "rank": 4,
+    "product": "Signal Sprint",
+    "lane": "GAME",
+    "historical_source_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
+    "historical_request_id": "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e",
+    "current_candidate_source_sha": "1a349faa41663c417c40710140a4d50c79b62b78",
+    "current_source_branch": "codex/signal-sprint-frozen-source-ref-20261124",
+    "current_source_head_status": "PREVIEW_EXPECTED_HEAD_1A349__LIVE_REF_NOT_REOBSERVED",
+    "current_request_id": "game-signal-sprint-1a349faa41663c417c40710140a4d50c79b62b78",
+    "current_qa_pr": 32,
+    "current_qa_head": "b2bbb7d56c56daace86d929656e82301feb25f4d",
+    "current_qa_run_id": 45446404070,
+    "current_qa_run_conclusion": "success",
+    "current_qa_run_scope": "Factory core CI only; not physical Windows UIA or package evidence",
+    "provisioner_pr": 54,
+    "provisioner_head": "b8baa6ac332a677d540c116192dc761814519906",
+    "provisioner_ci_run_id": 45423675016,
+    "provisioner_ci_conclusion": "success",
+    "identity_preview_path": "evidence/signal-sprint-gdk-identity-return-preview.json",
+    "identity_preview_blob_sha": "f802c006fd762ae363676ef47cb58733739416c9",
+    "identity_preview_receipt_sha256": "ae0e8ecad3368ede9ef6727aa777f2ddf6ce7db88bee1c57c3bc9c04521ba38a",
+    "identity_reference_fingerprint_sha256": "3c5a100f6d9f123e43b18b060e017d2fae3cbabd2d0c9ef55fa9492a8919b3a0",
+    "store_id": "9N21MJM7S57P",
+    "package_family_name": "OkinawaDesktopTools.SignalSprint_j8yefg9jgfh58",
+    "identity_reference_status": "USER_PROVIDED_REFERENCE__NOT_CAS_APPLIED",
+    "request_payload_sha256": "4cdeeb786dc1508785eb3d41356b8f2ad15c33355ec2db22a3298d2c60b51a3b",
+    "request_dry_run": true,
+    "request_submitted": false,
+    "cas_status": "NOT_APPLIED",
+    "cas_write_performed": false,
+    "build_run_id": 45418088785,
+    "build_workflow_head_sha": "90728ddb99303736c97bc95a8c019796601b1a2a",
+    "build_artifact_id": 14931068646,
+    "build_artifact_zip_sha256": "3b76321df9f8b1c4a9883d8bade57f0e33a232e18b989cf2e0bba057dafcdba1",
+    "exe_sha256": "4b08ff7caa4a76852bbfe47a69c1ceb70fbf7cecfaf4cfade82e2b882959bd06",
+    "exe_bytes": 11453716,
+    "attestation_artifact_id": 14932802178,
+    "gdk_readiness_artifact_id": 14933406309,
+    "build_artifact_status": "VERIFIED_UNSIGNED_EXE__NOT_GDK_PACKAGE",
+    "gdk_sdk_version_assets_status": "NOT_VERIFIED",
+    "physical_windows_uia_pass": false,
+    "required_revision": "9ccd7ff4389b3ca0e45c8407d7369a00f4302cf2",
+    "required_revision_in_frozen_source": false,
+    "gdk_package_verified": false,
+    "real_msixvc": false,
+    "ordinary_msix_allowed": false,
+    "product_acceptance": false,
+    "state": "POST_IDENTITY_UPGRADE",
+    "hold_class": "FUNCTIONAL_QA_THEN_DELIVERY_HOLD",
+    "functional_hold": true,
+    "product_frozen_for_package": false,
+    "registration_type": "GDK_GAME",
+    "next_action": "Keep c058 historical. Complete exact-source JA/EN Windows UIA and the required revision gap, independently reobserve the frozen source branch, then review the 1a349 dry-run Identity preview for explicit CAS authorization. GDK SDK/Version/assets and MSIXVC remain HOLD.",
+    "package_version": null,
+    "package_version_status": "AUTHORITATIVE_GDK_VERSION_REQUIRED",
+    "real_msix": false,
+    "msix_status": "NOT_BUILT"
+  },
+  "current_prism_live_20261125": {
+    "rank": 3,
+    "product": "Prism Route 3D",
+    "lane": "3D",
+    "current_factory_pr": 25,
+    "current_factory_branch": "codex/prism-tower1-hud-clearance-fix-20261103",
+    "factory_source_sha": "b03ce7b16c3f75c04fe20fdda224c45849eeba0d",
+    "current_source_sha": "b03ce7b16c3f75c04fe20fdda224c45849eeba0d",
+    "historical_factory_source_sha": "4c22875c5ed79d393516c6a7a95361b9e9ed1950",
+    "historical_identity_cas_reuse_allowed": false,
+    "request_id": "3d-prism-route-3d-b03ce7b16c3f",
+    "real_export_verified": true,
+    "export_run_id": 43794658086,
+    "factory_export_artifact_id": 14797309778,
+    "factory_export_artifact_sha256": "e2573b9ab11afde6ab6ec7417c23438581620a08bb9dcff76d792a2b5592ccac",
+    "factory_export_artifact_status": "SUCCESS_REAL_GODOT_4_3_WINDOWS_EXE_PCK_EXPORT",
+    "independent_qa_pr": 19,
+    "independent_qa_head": "0878f48c79073596e30fed37a5703e0826389862",
+    "independent_qa_run_id": 41444886971,
+    "independent_qa_run_conclusion": "success",
+    "independent_qa_source_binding_status": "NOT_BOUND_TO_CURRENT_PR25_SOURCE",
+    "independent_cloud_qa_verified": false,
+    "physical_qa_sessions": "0/6",
+    "physical_qa_screenshots": "0/36",
+    "physical_windows_6_condition_pass": false,
+    "current_source_identity_rebind": "PENDING_CURRENT_SOURCE_APPROVAL",
+    "package_version": null,
+    "package_version_gate": "HOLD",
+    "real_msix": false,
+    "msix_status": "NOT_BUILT",
+    "state": "POST_IDENTITY_UPGRADE",
+    "hold_class": "DELIVERY_AND_PHYSICAL_QA_HOLD",
+    "functional_hold": false,
+    "product_frozen_for_package": true,
+    "next_action": "Keep the 4c22875 Identity separate. Complete six-condition physical QA for current source b03ce7, then obtain current-source Identity approval/rebind and authoritative Version; only then package."
+  },
+  "current_live_registration_routing_20261125": {
+    "observed_at_utc": "2026-11-25T02:36:02Z",
+    "status": "CURRENT_SOURCE_ROUTE_MAPPING_RECONCILED__ALL_PACKAGE_GATES_HOLD",
+    "entries": [
+      {
+        "product": "Focus Session Desk",
+        "repository": "shihuiarenjinba-png/AI-App-Factory",
+        "registration_type": "MSIX_OR_PWA_APP",
+        "source_pr": 94,
+        "source_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+        "identity_status": "HISTORICAL_8B00_ONLY__CURRENT_SOURCE_REVALIDATION_REQUIRED",
+        "request_status": "NOT_OBSERVED__HISTORICAL_REQUEST_BINDS_8B00_ONLY"
+      },
+      {
+        "product": "File Integrity Ledger",
+        "repository": "shihuiarenjinba-png/AI-App-Factory",
+        "registration_type": "MSIX_OR_PWA_APP",
+        "source_pr": 115,
+        "source_sha": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
+        "identity_status": "NOT_COLLECTED_FOR_CURRENT_SOURCE",
+        "request_status": "DRY_RUN_ONLY"
+      },
+      {
+        "product": "Offline Notes Canary",
+        "repository": "shihuiarenjinba-png/AI-App-Factory",
+        "registration_type": "MSIX_OR_PWA_APP",
+        "source_status": "NOT_OBSERVED",
+        "request_status": "UNBOUND",
+        "identity_status": "HOLD_SOURCE_REQUEST_UNBOUND"
+      },
+      {
+        "product": "Signal Sprint",
+        "repository": "shihuiarenjinba-png/AI-Game-Factory",
+        "registration_type": "GDK_GAME",
+        "source_sha": "1a349faa41663c417c40710140a4d50c79b62b78",
+        "request_id": "game-signal-sprint-1a349faa41663c417c40710140a4d50c79b62b78",
+        "identity_status": "DRY_RUN_PREVIEW_ONLY__CAS_NOT_APPLIED",
+        "request_status": "DRY_RUN_NOT_SUBMITTED"
+      },
+      {
+        "product": "Prism Route 3D",
+        "repository": "shihuiarenjinba-png/3d-game-factory",
+        "registration_type": "MSIX_OR_PWA_GAME",
+        "source_sha": "b03ce7b16c3f75c04fe20fdda224c45849eeba0d",
+        "request_id": "3d-prism-route-3d-b03ce7b16c3f",
+        "identity_status": "CURRENT_SOURCE_REBIND_PENDING",
+        "request_status": "SOURCE_BOUND_CANDIDATE"
+      },
+      {
+        "product": "Offline Text Diff Desk",
+        "repository": "shihuiarenjinba-png/AI-App-Factory",
+        "registration_type": "HOLD_REGISTRATION_TYPE_UNRESOLVED",
+        "source_status": "NO_LIVE_EXACT_SOURCE_PROOF"
+      },
+      {
+        "product": "Offline Image Inventory Desk",
+        "repository": "shihuiarenjinba-png/AI-App-Factory",
+        "registration_type": "HOLD_REGISTRATION_TYPE_UNRESOLVED",
+        "source_status": "NO_LIVE_EXACT_SOURCE_PROOF"
+      }
+    ],
+    "policy": "Registration route is determined by final packaging strategy, not intermediate EXE. No identity or Version is inferred from route."
+  },
+  "current_live_product_tuples_20261125": [
+    {
+      "rank": 1,
+      "product": "Focus Session Desk",
+      "lane": "APP",
+      "current_source_pr": 94,
+      "current_source_branch": "codex/focus-store-assets-gate-20261118",
+      "current_source_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+      "approved_source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+      "historical_request_id": "app-focus-session-desk-8b00bc4e9082",
+      "store_id": "9P6452C61N7B",
+      "approved_identity_file_present_on_current_pr_head": true,
+      "approved_identity_file_blob_sha": "00c56e85ec7590783284e372ba100a3127614971",
+      "approved_identity_source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+      "approved_identity_package_version_gate": "HOLD",
+      "current_source_request_status": "NOT_OBSERVED__HISTORICAL_REQUEST_BINDS_8B00_ONLY",
+      "current_source_identity_binding_status": "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE",
+      "package_version": null,
+      "package_version_gate": "HOLD",
+      "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
+      "store_assets_git_blob_sha_verified": true,
+      "store_assets_git_blob_sha_readback": {
+        "StoreLogo": "8017427aabf0e30168a88353588dc2ffdc2cba6d",
+        "Square150": "c6060306f202b662831039b95b1352689da023c7",
+        "Square44": "466a795ea01e34a28ac1db9aa7dcf3308464dbd0"
+      },
+      "current_gui_test_pr": 102,
+      "current_gui_test_head": "3f2eb8b579bb19716590be4b5d6536db789742af",
+      "current_gui_test_base_head": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+      "current_gui_core_run": 45234786160,
+      "current_gui_run": 45234786152,
+      "current_gui_artifact_id": 14849620327,
+      "current_gui_artifact_bytes": 187951,
+      "current_gui_artifact_sha256": "0e3291ac4798d61f83bb9d3a2544eab67a69f384e5c17909ff98028f77929d45",
+      "current_gui_artifact_bytes_independently_verified": true,
+      "current_gui_visual_review_required": false,
+      "current_gui_visual_review_status": "PASS_36_VISUAL_REVIEW__100_PERCENT_AND_COLD_RESTART_PERSISTENCE",
+      "current_gui_exe_sha256_reported": "5367eeb9296525fe8c51abb28b94476bc672e0f7b55d9d656a9eed9d5bc2daab",
+      "current_gui_exe_sha256_independently_rehashed": false,
+      "product_quality_assessment": {
+        "assessment_type": "PROVISIONAL_INTERNAL_100_POINT_PRODUCT_REVIEW",
+        "score": {
+          "product_value": 12,
+          "ui": 14,
+          "features": 11,
+          "stability": 13,
+          "windows_store_evidence": 4,
+          "total": 54
+        },
+        "decision": "DO_NOT_SELL__BELOW_80",
+        "market_fit_gate": "HOLD",
+        "market_fit_evidence_verified": false
+      },
+      "real_msix": false,
+      "msix_asset_embedding": "NOT_VERIFIED",
+      "github_backlog_receipt": false,
+      "local_pull_receipt": false,
+      "local_checker_receipt": false,
+      "local_gui_install_receipt": false,
+      "state": "POST_IDENTITY_UPGRADE",
+      "hold_class": "DELIVERY_HOLD",
+      "functional_hold": false,
+      "product_frozen_for_package": true,
+      "identity_return_scope": "HISTORICAL_SOURCE_ONLY",
+      "next_action": "Do not reuse the 8b00 Identity on fb629. Obtain an exact fb629 source-bound request and revalidate Identity/current source, then an authenticated Partner Center Version readback. Keep package and sale HOLD; current internal quality score is 54 (<80).",
+      "approved_identity_file_commit": "8a7139375524830bf823469526837259266172be",
+      "store_assets_raw_sha256": {
+        "StoreLogo": {
+          "sha256": "2c0460e0f2947ce975b7a6abbc607acaeea8a22bf9bcae984b420acedddc8e2f",
+          "bytes": 360393,
+          "dimensions": "300x300",
+          "git_blob_sha": "8017427aabf0e30168a88353588dc2ffdc2cba6d"
+        },
+        "Square150": {
+          "sha256": "9183aa4055ed453360b656b4fe291bf392413e04fab44048820ca4bcfa5d1d0c",
+          "bytes": 90223,
+          "dimensions": "150x150",
+          "git_blob_sha": "c6060306f202b662831039b95b1352689da023c7"
+        },
+        "Square44": {
+          "sha256": "3fbdcd610f6781b72308755c6f92b1fdaef0592bab51c612556e5b8b95c1ee46",
+          "bytes": 7856,
+          "dimensions": "44x44",
+          "git_blob_sha": "466a795ea01e34a28ac1db9aa7dcf3308464dbd0"
+        }
+      },
+      "store_assets_raw_sha256_independently_verified": true
+    },
+    {
+      "rank": 2,
+      "product": "File Integrity Ledger",
+      "lane": "APP",
+      "current_source_pr": 115,
+      "current_source_branch": "codex/integrity-pr95-source-request-integration-20261125",
+      "current_source_sha": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
+      "approved_source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
+      "historical_approved_identity_commit": "db9a57af822788af4c8384499a6e343ec7b0353d",
+      "historical_approved_identity_blob_sha": "78034cf62be3479f9ed752a2585ab31bb24c49ff",
+      "approved_identity_file_present_on_current_pr115_head": false,
+      "approved_identity_file_current_pr115_head_readback": "NOT_FOUND",
+      "current_source_identity_binding_status": "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE",
+      "current_source_request_id": "app-file-integrity-ledger-33d612be2774",
+      "current_source_request": {
+        "request_id": "app-file-integrity-ledger-33d612be2774",
+        "source_sha": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
+        "request_sha256": "dc477b03dd8eb024dd4145fb56cace5d57531a9ae3bbba74a487631f823b2557",
+        "idempotency_key": "a1bb56ad8ec3fcebf8c4d6ee5b9b96bbbc64e6ac4c6a481b73810f3ed0f03df2",
+        "run_id": 45422895649,
+        "artifact_id": 14934034365,
+        "artifact_sha256": "697528b3b0769e3962eebfa0efcdcb026618cd378d97fc60c4f234017882527e",
+        "status": "DRY_RUN",
+        "route": "MSIX_OR_PWA_APP",
+        "live_source_head_verification": "VERIFIED",
+        "official_identity_status": "NOT_COLLECTED",
+        "package_version": null
+      },
+      "package_version": null,
+      "package_version_gate": "HOLD",
+      "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
+      "store_assets_git_blob_sha_verified": true,
+      "store_assets_git_blob_sha_readback": {
+        "StoreLogo": "e3c9a9426a1971f21175b9b045d4d5fef83f97d5",
+        "Square150": "df892bd2fcf7b56f9facd94054b2b1385313b030",
+        "Square44": "d57e7a25d2a9eaa2b54d00c610f3a1ad7d4a4d49"
+      },
+      "current_gui_test_pr": 115,
+      "current_gui_test_head": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
+      "current_gui_core_run": 45422895558,
+      "current_gui_run": 45422895435,
+      "png_gate_run": 45422895476,
+      "request_run": 45422895649,
+      "current_gui_artifact_id": 14934752145,
+      "current_gui_artifact_bytes": 11422614,
+      "current_gui_artifact_sha256": "6faa6db6d0e05b6baa71347c31b6f4d871fedcf35e28b787a7fbdb99816ab04c",
+      "current_gui_exe_bytes": 11494118,
+      "current_gui_exe_sha256": "425e8f03397fc00a7b1442d58cc99d460fea53238e83c5b96500ac450bab85c6",
+      "current_gui_artifact_bytes_independently_verified": true,
+      "current_gui_exe_sha256_independently_rehashed": true,
+      "current_gui_visual_review_required": true,
+      "current_gui_visual_review_status": "36_SCREENSHOT_INSPECTION_PASS__HUMAN_OWNER_REVIEW_REQUIRED",
+      "msix_export": {
+        "run_id": 45422811552,
+        "status": "SKIPPED_NO_ARTIFACT",
+        "artifact_id": null,
+        "msix_status": "NOT_BUILT"
+      },
+      "real_msix": false,
+      "msix_asset_embedding": "NOT_VERIFIED",
+      "github_backlog_receipt": false,
+      "local_pull_receipt": false,
+      "local_checker_receipt": false,
+      "local_gui_install_receipt": false,
+      "source_selection_status": "INTEGRATED_CANDIDATE_PR115__AWAITING_HUMAN_VISUAL_REVIEW_AND_IDENTITY_REVALIDATION",
+      "state": "POST_IDENTITY_UPGRADE",
+      "hold_class": "DELIVERY_HOLD",
+      "functional_hold": false,
+      "product_frozen_for_package": true,
+      "identity_return_scope": "HISTORICAL_SOURCE_ONLY",
+      "next_action": "Complete human owner visual sign-off for PR115, obtain current-source Identity revalidation and authenticated Partner Center Version, then build a real MSIX. Current DRY_RUN request and unsigned EXE GUI evidence are not package or E2E proof."
+    },
+    {
+      "rank": 3,
+      "product": "Prism Route 3D",
+      "lane": "3D",
+      "current_factory_pr": 25,
+      "current_factory_branch": "codex/prism-tower1-hud-clearance-fix-20261103",
+      "factory_source_sha": "b03ce7b16c3f75c04fe20fdda224c45849eeba0d",
+      "current_source_sha": "b03ce7b16c3f75c04fe20fdda224c45849eeba0d",
+      "historical_factory_source_sha": "4c22875c5ed79d393516c6a7a95361b9e9ed1950",
+      "historical_identity_cas_reuse_allowed": false,
+      "request_id": "3d-prism-route-3d-b03ce7b16c3f",
+      "real_export_verified": true,
+      "export_run_id": 43794658086,
+      "factory_export_artifact_id": 14797309778,
+      "factory_export_artifact_sha256": "e2573b9ab11afde6ab6ec7417c23438581620a08bb9dcff76d792a2b5592ccac",
+      "factory_export_artifact_status": "SUCCESS_REAL_GODOT_4_3_WINDOWS_EXE_PCK_EXPORT",
+      "independent_qa_pr": 19,
+      "independent_qa_head": "0878f48c79073596e30fed37a5703e0826389862",
+      "independent_qa_run_id": 41444886971,
+      "independent_qa_run_conclusion": "success",
+      "independent_qa_source_binding_status": "NOT_BOUND_TO_CURRENT_PR25_SOURCE",
+      "independent_cloud_qa_verified": false,
+      "physical_qa_sessions": "0/6",
+      "physical_qa_screenshots": "0/36",
+      "physical_windows_6_condition_pass": false,
+      "current_source_identity_rebind": "PENDING_CURRENT_SOURCE_APPROVAL",
+      "package_version": null,
+      "package_version_gate": "HOLD",
+      "real_msix": false,
+      "msix_status": "NOT_BUILT",
+      "state": "POST_IDENTITY_UPGRADE",
+      "hold_class": "DELIVERY_AND_PHYSICAL_QA_HOLD",
+      "functional_hold": false,
+      "product_frozen_for_package": true,
+      "next_action": "Keep the 4c22875 Identity separate. Complete six-condition physical QA for current source b03ce7, then obtain current-source Identity approval/rebind and authoritative Version; only then package."
+    },
+    {
+      "rank": 4,
+      "product": "Signal Sprint",
+      "lane": "GAME",
+      "historical_source_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
+      "historical_request_id": "game-signal-sprint-c058cbf7fe38e02d929c67d047d717ff74bd522e",
+      "current_candidate_source_sha": "1a349faa41663c417c40710140a4d50c79b62b78",
+      "current_source_branch": "codex/signal-sprint-frozen-source-ref-20261124",
+      "current_source_head_status": "PREVIEW_EXPECTED_HEAD_1A349__LIVE_REF_NOT_REOBSERVED",
+      "current_request_id": "game-signal-sprint-1a349faa41663c417c40710140a4d50c79b62b78",
+      "current_qa_pr": 32,
+      "current_qa_head": "b2bbb7d56c56daace86d929656e82301feb25f4d",
+      "current_qa_run_id": 45446404070,
+      "current_qa_run_conclusion": "success",
+      "current_qa_run_scope": "Factory core CI only; not physical Windows UIA or package evidence",
+      "provisioner_pr": 54,
+      "provisioner_head": "b8baa6ac332a677d540c116192dc761814519906",
+      "provisioner_ci_run_id": 45423675016,
+      "provisioner_ci_conclusion": "success",
+      "identity_preview_path": "evidence/signal-sprint-gdk-identity-return-preview.json",
+      "identity_preview_blob_sha": "f802c006fd762ae363676ef47cb58733739416c9",
+      "identity_preview_receipt_sha256": "ae0e8ecad3368ede9ef6727aa777f2ddf6ce7db88bee1c57c3bc9c04521ba38a",
+      "identity_reference_fingerprint_sha256": "3c5a100f6d9f123e43b18b060e017d2fae3cbabd2d0c9ef55fa9492a8919b3a0",
+      "store_id": "9N21MJM7S57P",
+      "package_family_name": "OkinawaDesktopTools.SignalSprint_j8yefg9jgfh58",
+      "identity_reference_status": "USER_PROVIDED_REFERENCE__NOT_CAS_APPLIED",
+      "request_payload_sha256": "4cdeeb786dc1508785eb3d41356b8f2ad15c33355ec2db22a3298d2c60b51a3b",
+      "request_dry_run": true,
+      "request_submitted": false,
+      "cas_status": "NOT_APPLIED",
+      "cas_write_performed": false,
+      "build_run_id": 45418088785,
+      "build_workflow_head_sha": "90728ddb99303736c97bc95a8c019796601b1a2a",
+      "build_artifact_id": 14931068646,
+      "build_artifact_zip_sha256": "3b76321df9f8b1c4a9883d8bade57f0e33a232e18b989cf2e0bba057dafcdba1",
+      "exe_sha256": "4b08ff7caa4a76852bbfe47a69c1ceb70fbf7cecfaf4cfade82e2b882959bd06",
+      "exe_bytes": 11453716,
+      "attestation_artifact_id": 14932802178,
+      "gdk_readiness_artifact_id": 14933406309,
+      "build_artifact_status": "VERIFIED_UNSIGNED_EXE__NOT_GDK_PACKAGE",
+      "gdk_sdk_version_assets_status": "NOT_VERIFIED",
+      "physical_windows_uia_pass": false,
+      "required_revision": "9ccd7ff4389b3ca0e45c8407d7369a00f4302cf2",
+      "required_revision_in_frozen_source": false,
+      "gdk_package_verified": false,
+      "real_msixvc": false,
+      "ordinary_msix_allowed": false,
+      "product_acceptance": false,
+      "state": "POST_IDENTITY_UPGRADE",
+      "hold_class": "FUNCTIONAL_QA_THEN_DELIVERY_HOLD",
+      "functional_hold": true,
+      "product_frozen_for_package": false,
+      "registration_type": "GDK_GAME",
+      "next_action": "Keep c058 historical. Complete exact-source JA/EN Windows UIA and the required revision gap, independently reobserve the frozen source branch, then review the 1a349 dry-run Identity preview for explicit CAS authorization. GDK SDK/Version/assets and MSIXVC remain HOLD.",
+      "package_version": null,
+      "package_version_status": "AUTHORITATIVE_GDK_VERSION_REQUIRED",
+      "real_msix": false,
+      "msix_status": "NOT_BUILT"
+    }
+  ]
 }
