@@ -153,7 +153,31 @@
         "Windows Task Scheduler lifecycle"
       ],
       "workflow_name": "Windows build / Windowsビルド",
-      "source_ref": "codex/hub-standard-consumer-ui-20261113"
+      "source_ref": "codex/hub-standard-consumer-ui-20261113",
+      "partner_center_live_observation": {
+        "snapshot_file": "ops/partner_center_fleet_observation_20261125.json",
+        "observation_id": "partner-center-fleet-20261125T075209Z",
+        "observed_at_utc": "2026-11-25T07:52:09Z",
+        "source_evidence_status": "TRANSCRIBED_FROM_USER_SUPPLIED_FINAL_REPORT",
+        "store_id": "9P6SXJNNB5KK",
+        "identity_name": "OkinawaDesktopTools.WorkflowAutomationHub",
+        "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+        "submission_id": null,
+        "submission_state": "No submission shown",
+        "packages_status": null,
+        "start_submission_available": true,
+        "package_row_present": false,
+        "package_version": null,
+        "architecture": null,
+        "package_binary_sha256_observable": false,
+        "registry_reconciliation": {
+          "store_id": "MATCH",
+          "identity_name": "MATCH",
+          "publisher": "NOT_STORED",
+          "submission_id": "NOT_STORED"
+        },
+        "overall_status": "NO_SUBMISSION_OBSERVED_REGISTRY_FIELDS_PARTIAL"
+      }
     },
     "browser-automation-runner": {
       "name": "Browser Automation Runner",
@@ -173,5 +197,11 @@
       "workflow_name": "Windows desktop code build",
       "source_ref": "codex/browser-standard-consumer-ui-20261113"
     }
+  },
+  "partner_center_observation_snapshot": {
+    "path": "ops/partner_center_fleet_observation_20261125.json",
+    "observation_id": "partner-center-fleet-20261125T075209Z",
+    "observed_at_utc": "2026-11-25T07:52:09Z",
+    "evidence_status": "TRANSCRIBED_FROM_USER_SUPPLIED_FINAL_REPORT"
   }
 }
