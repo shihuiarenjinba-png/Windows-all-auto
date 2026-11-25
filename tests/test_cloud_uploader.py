@@ -39,8 +39,10 @@ class CloudUploaderTests(unittest.TestCase):
                 process_job(config,p,ledger,dry_run=True)
                 result=process_job(config,p,ledger,expected_sha256=digest,dry_run=False,
                                    live_adapter=lambda *_:(called.append(True) or {"partner_center_confirmed":True}))
+                attempts=ledger.db.execute("SELECT attempts FROM uploads").fetchone()[0]
             self.assertEqual(result["status"],"SUCCEEDED")
             self.assertEqual(called,[True])
+            self.assertEqual(attempts,1,"dry-run must not consume a remote upload attempt")
     def test_live_msix_fails_closed_without_adapter(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp); p=root/"pkg.msix"; make_msix(p)

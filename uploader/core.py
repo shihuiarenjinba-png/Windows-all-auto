@@ -171,6 +171,12 @@ class JobLedger:
             if row[0] == "DRY_RUN" and dry_run: return "DRY_RUN_ALREADY_DONE", row[1]
             if row[0] in {"UPLOADING", "UNKNOWN"}: return "RECONCILE_REQUIRED", row[1]
             attempts = int(row[1])
+            if row[0] == "DRY_RUN":
+                # A dry-run validates bytes but is not a remote write attempt.
+                # Reuse (or initialize) its row without consuming retry budget.
+                attempts = max(1, attempts)
+                self.db.execute("UPDATE uploads SET status='UPLOADING',attempts=?,error_code='' WHERE job_key=?", (attempts, key))
+                return "READY", attempts
             if attempts >= 3: return "RETRY_LIMIT", attempts
             self.db.execute("UPDATE uploads SET status='UPLOADING',attempts=?,error_code='' WHERE job_key=?", (attempts + 1, key))
             return "READY", attempts + 1
