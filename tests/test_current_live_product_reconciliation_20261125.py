@@ -15,15 +15,15 @@ class CurrentLiveProductReconciliationTests(unittest.TestCase):
 
     def test_pr165_exact_head_ci_is_not_product_e2e(self):
         latest = self.ledger["latest_transport_reconciliation"]
-        self.assertEqual(latest["central_tested_head_sha"], "a77384dbf1e830a76064d7210d07c7a30e75ec33")
-        self.assertEqual(latest["previous_central_head_sha"], "5491fc10f69c081af38031fc77b277114b1c1806")
+        self.assertEqual(latest["central_tested_head_sha"], "93e2c687b6cd97b88e88137654c0f6611ef1d434")
+        self.assertEqual(latest["previous_central_head_sha"], "e70f3872dd2f9af85826554f11b05dc495753187")
         self.assertEqual([x["run_id"] for x in latest["exact_head_ci"]],
-                         [45557387061, 45557387053, 45557387065])
+                         [45563199592, 45563199585, 45563199749])
         self.assertEqual(latest["ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual(self.ledger["pr165_current_head_parent_ci_status"],
-                         "PARTIAL_FAIL_SUPERSEDED_BY_CURRENT_HEAD_PASS")
+                         "PUSH_OFFLINE_QA_FAIL_SUPERSEDED_BY_CURRENT_HEAD_PASS")
         self.assertEqual([x["run_id"] for x in self.ledger["pr165_current_head_parent_ci"]],
-                         [45557112746, 45557112878, 45557112881])
+                         [45563190072])
         self.assertEqual(self.ledger["e2e_status"], "HOLD")
         self.assertIs(self.ledger["e2e_pass"], False)
         self.assertIs(latest["real_msix"], False)
@@ -90,7 +90,7 @@ class CurrentLiveProductReconciliationTests(unittest.TestCase):
         self.assertEqual(routes["source_ci_run_id"], 40638938248)
 
     def test_pr174_and_store_safety_remain_fail_closed(self):
-        self.assertEqual(self.recon["pr174"]["compare_to_current_pr165_head"]["behind_by"], 90)
+        self.assertEqual(self.recon["pr174"]["compare_to_current_pr165_head"]["behind_by"], 99)
         self.assertEqual(self.recon["pr174"]["decision"], "DO_NOT_RESTACK")
         self.assertEqual(self.ledger["parallel_draft_branch_assessment_20261125_0635"]["decision"],
                          "NO_BLIND_RESTACK__SELECTIVELY_PORT_ONLY_CURRENT_PRODUCT_REGRESSION")
