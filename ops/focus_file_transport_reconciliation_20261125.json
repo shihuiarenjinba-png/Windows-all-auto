@@ -1,6 +1,6 @@
 {
   "path": "ops/focus_file_transport_reconciliation_20261125.json",
-  "observed_at_utc": "2026-11-25T05:53:07Z",
+  "observed_at_utc": "2026-11-25T05:57:31Z",
   "status": "HOLD",
   "e2e_pass": false,
   "priority_product": "Focus Session Desk",
@@ -408,6 +408,18 @@
       "status": "PARTIAL_FAIL_STALE_CURRENT_RUN_ID_ASSERTIONS",
       "cause": "Two current pr165_ci/current-head reconciliation assertions in tests/test_real_msix_transport_failclosed.py still expected the prior parent run IDs 45504316528/45504315490/45504315581 after the ledger had advanced to the 60ab8183 head and current runs 45504775685/45504775807/45504775632. Transport and Windows/Ubuntu Offline QA failed; artifact custody passed.",
       "resolution": "Updated the remaining current run-ID assertions in 0473dd02bf45b40db531d8f2ac5e5991fe691929. Exact-head transport 45555969202, custody 45555969216, and Windows/Ubuntu Offline QA 45555969368 all passed."
+    },
+    {
+      "head_sha": "5491fc10f69c081af38031fc77b277114b1c1806",
+      "runs": [
+        45557112746,
+        45557112878,
+        45557112881,
+        45557106710
+      ],
+      "status": "PARTIAL_FAIL_STALE_PARENT_CI_AND_FIRST_INTERVAL_ASSERTIONS",
+      "cause": "tests/test_real_msix_transport_failclosed.py still expected immediate-parent CI run IDs from 0473dd02 (45555969202/45555969216/45555969368) instead of the actual parent 3612fca (45556284349/45556284364/45556284413). In addition, windows_e2e_custody_reconciliation.first_unconnected_interval was not synchronized with the updated focus_file_transport_reconciliation_20261125.first_unconnected_interval. Transport and Offline QA failed; artifact custody passed.",
+      "resolution": "Updated the immediate-parent run assertion to 45556284349/45556284364/45556284413 and synchronized the top-level and custody first_unconnected_interval with the exact product blockers. Added direct artifact assertions for the File Integrity DRY_RUN ZIP and selection hold. Current fix-head exact CI must pass before treating this regression as resolved."
     }
   ],
   "pr174_restack_assessment_20261125": {

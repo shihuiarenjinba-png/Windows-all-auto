@@ -962,8 +962,8 @@
       "required_revision_in_frozen_source": false
     }
   ],
-  "last_reconciled_at_utc": "2026-11-25T05:53:07Z",
-  "last_reconciled_basis": "Direct reconciliation at 2026-11-25T05:53:07Z: PR165 live head 8a0b60e6d6e29cfe0aab29049dace349a46f1baa exact-head transport/custody/Windows+Ubuntu Offline QA all SUCCESS (45556522939, 45556522923, 45556523074); parent 3612fcaad4edd47a833955b923f760ef89e175be also all SUCCESS. Focus MSIX export 44779273420 failed with MSIX_BUILD_HOLD: Missing verified version. File Integrity request artifact 14934034365 SHA-256 independently rehashed and matched GitHub metadata; request is DRY_RUN, package NOT_BUILT, official Identity UNVERIFIED, next stage LOCAL_WINDOWS_BUILD_NOT_IMPLEMENTED; export run 45422811552 held because approved Identity is absent. PR174 diverged ahead 6 / behind 88; DO_NOT_RESTACK.",
+  "last_reconciled_at_utc": "2026-11-25T05:57:31Z",
+  "last_reconciled_basis": "Direct reconciliation at 2026-11-25T05:53:07Z: PR165 live head 8a0b60e6d6e29cfe0aab29049dace349a46f1baa exact-head transport/custody/Windows+Ubuntu Offline QA all SUCCESS (45556522939, 45556522923, 45556523074); parent 3612fcaad4edd47a833955b923f760ef89e175be also all SUCCESS. Focus MSIX export 44779273420 failed with MSIX_BUILD_HOLD: Missing verified version. File Integrity request artifact 14934034365 SHA-256 independently rehashed and matched GitHub metadata; request is DRY_RUN, package NOT_BUILT, official Identity UNVERIFIED, next stage LOCAL_WINDOWS_BUILD_NOT_IMPLEMENTED; export run 45422811552 held because approved Identity is absent. PR174 diverged ahead 6 / behind 88; DO_NOT_RESTACK. The 5491fc10 evidence-update commit exposed stale parent-run assertions and a first-unconnected-interval mirror mismatch; corrected in the next fail-closed test/ledger commit.",
   "latest_transport_reconciliation": {
     "checked_at_utc": "2026-11-25T05:53:07Z",
     "central_pr": 165,
@@ -1070,6 +1070,18 @@
         "status": "PARTIAL_FAIL_STALE_CURRENT_RUN_ID_ASSERTIONS",
         "cause": "Two current pr165_ci/current-head reconciliation assertions in tests/test_real_msix_transport_failclosed.py still expected the prior parent run IDs 45504316528/45504315490/45504315581 after the ledger had advanced to the 60ab8183 head and current runs 45504775685/45504775807/45504775632. Transport and Windows/Ubuntu Offline QA failed; artifact custody passed.",
         "resolution": "Updated the remaining current run-ID assertions in 0473dd02bf45b40db531d8f2ac5e5991fe691929. Exact-head transport 45555969202, custody 45555969216, and Windows/Ubuntu Offline QA 45555969368 all passed."
+      },
+      {
+        "head_sha": "5491fc10f69c081af38031fc77b277114b1c1806",
+        "runs": [
+          45557112746,
+          45557112878,
+          45557112881,
+          45557106710
+        ],
+        "status": "PARTIAL_FAIL_STALE_PARENT_CI_AND_FIRST_INTERVAL_ASSERTIONS",
+        "cause": "tests/test_real_msix_transport_failclosed.py still expected immediate-parent CI run IDs from 0473dd02 (45555969202/45555969216/45555969368) instead of the actual parent 3612fca (45556284349/45556284364/45556284413). In addition, windows_e2e_custody_reconciliation.first_unconnected_interval was not synchronized with the updated focus_file_transport_reconciliation_20261125.first_unconnected_interval. Transport and Offline QA failed; artifact custody passed.",
+        "resolution": "Updated the immediate-parent run assertion to 45556284349/45556284364/45556284413 and synchronized the top-level and custody first_unconnected_interval with the exact product blockers. Added direct artifact assertions for the File Integrity DRY_RUN ZIP and selection hold. Current fix-head exact CI must pass before treating this regression as resolved."
       }
     ],
     "central_base_sha": "145cd1f44bdec9e584eb0f045dd139ef330c6321",

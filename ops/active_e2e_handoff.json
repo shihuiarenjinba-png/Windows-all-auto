@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-25T05:53:07Z",
+  "updated_at_utc": "2026-11-25T05:57:31Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -11928,12 +11928,17 @@
       "focus_session_desk": [
         "CURRENT_SOURCE_REQUEST_BINDING_NOT_OBSERVED",
         "CURRENT_SOURCE_IDENTITY_REVALIDATION_REQUIRED",
-        "AUTHORITATIVE_PACKAGE_VERSION_REQUIRED"
+        "AUTHORITATIVE_PACKAGE_VERSION_REQUIRED",
+        "MSIX_BUILD_HOLD_MISSING_VERIFIED_VERSION"
       ],
       "file_integrity_ledger": [
         "PR115_INTEGRATED_SOURCE_CANDIDATE__HUMAN_VISUAL_REVIEW_REQUIRED",
         "CURRENT_SOURCE_IDENTITY_REVALIDATION_REQUIRED",
-        "AUTHORITATIVE_PACKAGE_VERSION_REQUIRED"
+        "AUTHORITATIVE_PACKAGE_VERSION_REQUIRED",
+        "CURRENT_SOURCE_REQUEST_DRY_RUN_ONLY",
+        "OFFICIAL_IDENTITY_UNVERIFIED",
+        "LOCAL_WINDOWS_BUILD_NOT_IMPLEMENTED",
+        "MSIX_SELECTION_HOLD_APPROVED_IDENTITY_ABSENT"
       ],
       "next_after_resolution": [
         "REAL_MSIX_BUILD",
@@ -17984,9 +17989,21 @@
         "status": "PARTIAL_FAIL_STALE_CURRENT_RUN_ID_ASSERTIONS",
         "cause": "Two current pr165_ci/current-head reconciliation assertions in tests/test_real_msix_transport_failclosed.py still expected the prior parent run IDs 45504316528/45504315490/45504315581 after the ledger had advanced to the 60ab8183 head and current runs 45504775685/45504775807/45504775632. Transport and Windows/Ubuntu Offline QA failed; artifact custody passed.",
         "resolution": "Updated the remaining current run-ID assertions in 0473dd02bf45b40db531d8f2ac5e5991fe691929. Exact-head transport 45555969202, custody 45555969216, and Windows/Ubuntu Offline QA 45555969368 all passed."
+      },
+      {
+        "head_sha": "5491fc10f69c081af38031fc77b277114b1c1806",
+        "runs": [
+          45557112746,
+          45557112878,
+          45557112881,
+          45557106710
+        ],
+        "status": "PARTIAL_FAIL_STALE_PARENT_CI_AND_FIRST_INTERVAL_ASSERTIONS",
+        "cause": "tests/test_real_msix_transport_failclosed.py still expected immediate-parent CI run IDs from 0473dd02 (45555969202/45555969216/45555969368) instead of the actual parent 3612fca (45556284349/45556284364/45556284413). In addition, windows_e2e_custody_reconciliation.first_unconnected_interval was not synchronized with the updated focus_file_transport_reconciliation_20261125.first_unconnected_interval. Transport and Offline QA failed; artifact custody passed.",
+        "resolution": "Updated the immediate-parent run assertion to 45556284349/45556284364/45556284413 and synchronized the top-level and custody first_unconnected_interval with the exact product blockers. Added direct artifact assertions for the File Integrity DRY_RUN ZIP and selection hold. Current fix-head exact CI must pass before treating this regression as resolved."
       }
     ],
-    "note": "PR165 exact current tested HEAD 8a0b60e6d6e29cfe0aab29049dace349a46f1baa passed transport 45556522939, independent artifact custody 45556522923, and Windows/Ubuntu Offline QA 45556523074. Immediate parent 3612fcaad4edd47a833955b923f760ef89e175be also passed all three exact-head workflows (45556284349, 45556284364, 45556284413). These are repository CI results only, not product E2E. Focus Session Desk's exact MSIX export run 44779273420 failed at the Windows MSIX build step with \"MSIX_BUILD_HOLD: Missing verified version\" and produced no artifact. File Integrity's current-source request artifact 14934034365 is a verified 1,958-byte DRY_RUN archive; its receipt says package NOT_BUILT, official Identity UNVERIFIED, Version null, and next_stage LOCAL_WINDOWS_BUILD_NOT_IMPLEMENTED. Its MSIX export run 45422811552 stopped at \"MSIX_SELECTION_HOLD: approved Identity absent; do not invent Store IDs\" and produced no artifact. Focus/File remain DELIVERY_HOLD; no real MSIX, GitHub backlog, local pull, checker, install, or local GUI-install receipt exists. PR174 remains diverged (ahead 6 / behind 88); DO_NOT_RESTACK. PR161 and PR171 evidence remains Offline QA only. Fresh unsold Store-upload eligibility remains 0; Store writes, certification and publish remain disabled."
+    "note": "PR165 exact current tested HEAD 8a0b60e6d6e29cfe0aab29049dace349a46f1baa passed transport 45556522939, independent artifact custody 45556522923, and Windows/Ubuntu Offline QA 45556523074. Immediate parent 3612fcaad4edd47a833955b923f760ef89e175be also passed all three exact-head workflows (45556284349, 45556284364, 45556284413). These are repository CI results only, not product E2E. Focus Session Desk's exact MSIX export run 44779273420 failed at the Windows MSIX build step with \"MSIX_BUILD_HOLD: Missing verified version\" and produced no artifact. File Integrity's current-source request artifact 14934034365 is a verified 1,958-byte DRY_RUN archive; its receipt says package NOT_BUILT, official Identity UNVERIFIED, Version null, and next_stage LOCAL_WINDOWS_BUILD_NOT_IMPLEMENTED. Its MSIX export run 45422811552 stopped at \"MSIX_SELECTION_HOLD: approved Identity absent; do not invent Store IDs\" and produced no artifact. Focus/File remain DELIVERY_HOLD; no real MSIX, GitHub backlog, local pull, checker, install, or local GUI-install receipt exists. PR174 remains diverged (ahead 6 / behind 88); DO_NOT_RESTACK. PR161 and PR171 evidence remains Offline QA only. Fresh unsold Store-upload eligibility remains 0; Store writes, certification and publish remain disabled. The subsequent 5491fc10 ledger-evidence update exposed stale parent-run assertions and a first-unconnected-interval mirror mismatch; this is recorded as an intermediate failure and corrected in the follow-up."
   },
   "focus_file_transport_reconciliation_20261123": {
     "path": "ops/focus_file_transport_reconciliation_20261123.json",
@@ -19509,7 +19526,9 @@
           "Offline preflight tests (ubuntu-latest)"
         ]
       }
-    ]
+    ],
+    "latest_intermediate_failure_head_sha": "5491fc10f69c081af38031fc77b277114b1c1806",
+    "latest_intermediate_failure_status": "PARTIAL_FAIL_STALE_PARENT_CI_AND_FIRST_INTERVAL_ASSERTIONS"
   },
   "focus_file_transport_reconciliation_20261125": {
     "path": "ops/focus_file_transport_reconciliation_20261125.json",
@@ -20057,12 +20076,17 @@
     "focus_session_desk": [
       "CURRENT_SOURCE_REQUEST_BINDING_NOT_OBSERVED",
       "CURRENT_SOURCE_IDENTITY_REVALIDATION_REQUIRED",
-      "AUTHORITATIVE_PACKAGE_VERSION_REQUIRED"
+      "AUTHORITATIVE_PACKAGE_VERSION_REQUIRED",
+      "MSIX_BUILD_HOLD_MISSING_VERIFIED_VERSION"
     ],
     "file_integrity_ledger": [
       "PR115_INTEGRATED_SOURCE_CANDIDATE__HUMAN_VISUAL_REVIEW_REQUIRED",
       "CURRENT_SOURCE_IDENTITY_REVALIDATION_REQUIRED",
-      "AUTHORITATIVE_PACKAGE_VERSION_REQUIRED"
+      "AUTHORITATIVE_PACKAGE_VERSION_REQUIRED",
+      "CURRENT_SOURCE_REQUEST_DRY_RUN_ONLY",
+      "OFFICIAL_IDENTITY_UNVERIFIED",
+      "LOCAL_WINDOWS_BUILD_NOT_IMPLEMENTED",
+      "MSIX_SELECTION_HOLD_APPROVED_IDENTITY_ABSENT"
     ],
     "next_after_resolution": [
       "REAL_MSIX_BUILD",

@@ -332,6 +332,10 @@ class CustodyTests(unittest.TestCase):
         self.assertEqual(file_item["current_source_request"]["request_artifact"]["sha256"],
                          "697528b3b0769e3962eebfa0efcdcb026618cd378d97fc60c4f234017882527e")
         self.assertTrue(file_item["current_source_request"]["request_artifact"]["downloaded_and_rehashed"])
+        self.assertEqual(file_item["current_source_request"]["official_identity"]["status"], "UNVERIFIED")
+        self.assertIsNone(file_item["current_source_request"]["official_identity"]["store_id"])
+        self.assertIsNone(file_item["current_source_request"]["official_identity"]["version"])
+        self.assertEqual(file_item["current_source_request"]["registration_route"]["status"], "ROUTE_METADATA_ONLY")
         self.assertTrue(file_item["current_gui_followup"]["artifact_bytes_independently_downloaded_and_rehashed"])
         self.assertTrue(file_item["current_gui_followup"]["exe_sha256_independently_rehashed"])
         self.assertTrue(file_item["current_gui_followup"]["visual_review_required"])

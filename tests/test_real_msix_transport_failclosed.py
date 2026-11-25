@@ -232,7 +232,7 @@ class CurrentLedgerGateTests(unittest.TestCase):
                          [45556522939, 45556522923, 45556523074])
         self.assertEqual(ledger["pr165_current_head_parent_ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual([x["run_id"] for x in ledger["pr165_current_head_parent_ci"]],
-                         [45555969202, 45555969216, 45555969368])
+                         [45556284349, 45556284364, 45556284413])
         self.assertEqual(current["pr161_head_sha"], "71d9c2125b6aed44a86ca1872d48ad19963f3e63")
         self.assertEqual([x["run_id"] for x in current["pr161_ci"]], [42712757936])
         self.assertEqual(ledger["store_upload_test_bridge"]["bridge_head"], "764721021f13be96364529650b44fb439770bac9")
