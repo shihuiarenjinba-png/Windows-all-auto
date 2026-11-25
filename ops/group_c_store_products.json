@@ -56,7 +56,7 @@
         "source_branch": "candidate branch / run source head",
         "candidate_source_sha": "5a09d81955e25664761ea25ecfb4ebf8d24cea6d",
         "required_source_branch": "codex/store-p0-data-contract-20261023",
-        "required_source_sha": "107e59f2cbcde9c6ca88cf1aaf3d52262004e6e0",
+        "required_source_sha": "5a09d81955e25664761ea25ecfb4ebf8d24cea6d",
         "workflow_run_id": 45103784990,
         "workflow_run_url": "https://github.com/shihuiarenjinba-png/csv-import-validator/actions/runs/45103784990",
         "unsigned_msix_candidate_artifact_id": 14787075908,
@@ -68,15 +68,14 @@
         "artifact_available": true,
         "package_sha256": "80cd02c0df8e75d1962d03ce63c1ba72d9a8f67e8056f43718ffc5bd8d3f3279",
         "build_job": "SUCCESS",
-        "source_match": false,
+        "source_match": true,
         "uploadable": false,
-        "classification": "UNSIGNED_CANDIDATE_SOURCE_REVISION_MISMATCH_AND_CURRENT_BRANCH_CI_FAILURE",
+        "classification": "FORMAL_UNSIGNED_CANDIDATE_BUILT_FROM_FORMAL_SOURCE; CURRENT_CI_IN_PROGRESS",
         "blockers": [
-          "candidate source SHA differs from required registered source SHA",
-          "current branch HEAD differs from the required source SHA",
-          "latest current-branch source test fails before compile/preflight/package stages",
-          "QA_UNSIGNED package is not Store upload authorization",
-          "source/package-bound owner security and QA gates remain incomplete"
+          "builder-reported MSIX SHA must be independently re-hashed after downloading exact artifact",
+          "local Windows install/launch and package-level QA receipt must bind to exact binary SHA",
+          "current Partner Center Draft and Packages state must be read again before any upload",
+          "unsigned candidate is not a completed Store upload or certification"
         ],
         "candidate_msix_filename": "DataContractSchemaDrift_1.0.0.0_x64.msix",
         "candidate_msix_version": "1.0.0.0",
@@ -87,15 +86,29 @@
           "evidence_level": "BUILDER_REPORTED_HASH",
           "binary_downloaded_and_rehashed_locally": false
         },
-        "current_branch_head_sha": "0c73a746bcec9ded702567768d5c04f4240a12a9",
+        "current_branch_head_sha": "722ec7a077d2c6109e657c4ee661c9f3d06a4506",
         "current_branch_latest_ci": {
-          "workflow_run_id": 45107287117,
-          "workflow_run_url": "https://github.com/shihuiarenjinba-png/csv-import-validator/actions/runs/45107287117",
-          "head_sha": "0c73a746bcec9ded702567768d5c04f4240a12a9",
-          "conclusion": "failure",
-          "failed_test": "test_product_profile_matches_live_entrypoint_and_formal_build_gate",
-          "failure_summary": "Expected READY_FOR_FORMAL_MSIX_BUILD, but observed READY_FOR_PARTNER_CENTER_READONLY",
-          "build_and_package_steps": "SKIPPED"
+          "workflow_run_id": 45580565845,
+          "workflow_run_url": "https://github.com/shihuiarenjinba-png/csv-import-validator/actions/runs/45580565845",
+          "head_sha": "722ec7a077d2c6109e657c4ee661c9f3d06a4506",
+          "conclusion": "IN_PROGRESS",
+          "supersedes_failed_stale_profile_test_run": 45107287117,
+          "latest_expected_tests": "test profile against post-build read-only gate"
+        },
+        "formal_candidate_source_sha": "5a09d81955e25664761ea25ecfb4ebf8d24cea6d",
+        "qa_baseline_source_sha": "107e59f2cbcde9c6ca88cf1aaf3d52262004e6e0",
+        "current_branch_head_relation": {
+          "base_formal_candidate_source_sha": "5a09d81955e25664761ea25ecfb4ebf8d24cea6d",
+          "ahead_by": 3,
+          "behind_by": 0,
+          "changes_after_formal_source": [
+            "store/FORMAL_CANDIDATE_GATE_20261122.json",
+            "store/product.json",
+            "tests/test_store_product_profile.py"
+          ],
+          "application_runtime_source_changed_after_formal_candidate": false,
+          "packaging_script_changed_after_formal_candidate": false,
+          "interpretation": "The 107e... commit is the QA baseline, not the formal candidate source requirement. The formal candidate was built from 5a09..., which is 40 commits after that QA baseline. The current branch adds only metadata/test updates; no app runtime or packaging script changes are present after 5a09."
         }
       }
     },
