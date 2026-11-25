@@ -187,6 +187,41 @@
         "observation_id": "partner-center-fleet-20261125T075209Z",
         "observed_at_utc": "2026-11-25T07:52:09Z",
         "rule": "Store Product ID, Identity, and Publisher filled only after exact read-only match; draft_id explicitly null because no submission was shown"
+      },
+      "source_sha": "f2ba58895492f0c64da7676b17edfc97e98330e7",
+      "remote_package_artifact_discovery": {
+        "repository_full_name": "shihuiarenjinba-png/workflow-automation-hub",
+        "source_branch": "codex/hub-standard-consumer-ui-20261113",
+        "source_sha": "f2ba58895492f0c64da7676b17edfc97e98330e7",
+        "workflow": ".github/workflows/windows-build.yml",
+        "workflow_name": "Windows build / Windowsビルド",
+        "workflow_run_id": 44093505473,
+        "workflow_run_url": "https://github.com/shihuiarenjinba-png/workflow-automation-hub/actions/runs/44093505473",
+        "windows_msix_artifact_id": 14332647613,
+        "windows_msix_artifact_name": "WorkflowAutomationHub-Store-MSIX-UNSIGNED-DRAFT",
+        "windows_msix_artifact_size_bytes": 36603062,
+        "windows_exe_artifact_id": 14331959551,
+        "windows_exe_artifact_name": "WorkflowAutomationHub-Windows",
+        "gui_review_artifact_id": 14331614716,
+        "gui_review_artifact_name": "WorkflowAutomationHub-GUI-Review",
+        "artifact_available": true,
+        "workflow_run_head_verified": true,
+        "store_handoff_json_included": true,
+        "msix_validation_json_included": true,
+        "msix_sha256_text_included": true,
+        "technical_version": "1.0.0.0",
+        "version_approval": "TECHNICAL_DRAFT_ONLY_PUBLIC_RELEASE_HOLD",
+        "package_signature": "UNSIGNED",
+        "partner_center_submission": "NO_SUBMISSION_OBSERVED",
+        "package_sha256": "NOT_FETCHED_BINARY_NOT_CLAIMED",
+        "uploadable": false,
+        "classification": "SOURCE_BOUND_UNSIGNED_TECHNICAL_DRAFT"
+      },
+      "source_revision_binding": {
+        "branch": "codex/hub-standard-consumer-ui-20261113",
+        "sha": "f2ba58895492f0c64da7676b17edfc97e98330e7",
+        "verified_against_branch_head": true,
+        "workflow_run_id": 44093505473
       }
     },
     "browser-automation-runner": {
