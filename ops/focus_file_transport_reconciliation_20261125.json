@@ -1,28 +1,28 @@
 {
   "path": "ops/focus_file_transport_reconciliation_20261125.json",
-  "observed_at_utc": "2026-11-24T22:48:42Z",
+  "observed_at_utc": "2026-11-25T05:38:56Z",
   "status": "HOLD",
   "e2e_pass": false,
   "priority_product": "Focus Session Desk",
-  "central_head": "98953c5a9815a4ff30dfd82564a1672b7992a2bd",
-  "pr165_current_head_sha": "98953c5a9815a4ff30dfd82564a1672b7992a2bd",
-  "pr165_current_head_parent_sha": "858945fd00c407163500e139deea32d087ec5827",
+  "central_head": "60ab8183a05f248972bf227d6059671f5f0532ac",
+  "pr165_current_head_sha": "60ab8183a05f248972bf227d6059671f5f0532ac",
+  "pr165_current_head_parent_sha": "98953c5a9815a4ff30dfd82564a1672b7992a2bd",
   "pr165_current_head_ci_status": "PASS_EXACT_HEAD_CI",
   "pr165_current_head_ci": [
     {
-      "run_id": 45504316528,
+      "run_id": 45504775685,
       "conclusion": "success",
       "scope": "Exact-head Windows E2E transport fail-closed regression",
       "job": "transport-regression"
     },
     {
-      "run_id": 45504315490,
+      "run_id": 45504775807,
       "conclusion": "success",
       "scope": "Exact-head independent GitHub artifact custody regression",
       "job": "custody-regression"
     },
     {
-      "run_id": 45504315581,
+      "run_id": 45504775632,
       "conclusion": "success",
       "scope": "Exact-head Windows-all-auto Offline QA",
       "jobs": [
@@ -31,40 +31,28 @@
       ]
     }
   ],
-  "pr165_previous_current_head_sha": "858945fd00c407163500e139deea32d087ec5827",
+  "pr165_previous_current_head_sha": "98953c5a9815a4ff30dfd82564a1672b7992a2bd",
   "pr165_previous_current_head_ci": [
     {
-      "run_id": 45504218568,
-      "conclusion": "failure",
-      "scope": "Immediate previous exact-head Windows E2E transport fail-closed regression",
-      "job": "transport-regression",
-      "reason": "TEST_VARIABLE_UNDEFINED"
+      "run_id": 45504316528,
+      "conclusion": "success",
+      "scope": "Immediate parent exact-head Windows E2E transport fail-closed regression",
+      "job": "transport-regression"
     },
     {
-      "run_id": 45504218632,
+      "run_id": 45504315490,
       "conclusion": "success",
-      "scope": "Immediate previous exact-head independent GitHub artifact custody regression",
+      "scope": "Immediate parent exact-head independent GitHub artifact custody regression",
       "job": "custody-regression"
     },
     {
-      "run_id": 45504218494,
-      "conclusion": "failure",
-      "scope": "Immediate previous exact-head Windows-all-auto Offline QA",
+      "run_id": 45504315581,
+      "conclusion": "success",
+      "scope": "Immediate parent exact-head Windows-all-auto Offline QA",
       "jobs": [
         "Offline preflight tests (windows-latest)",
         "Offline preflight tests (ubuntu-latest)"
-      ],
-      "reason": "TEST_VARIABLE_UNDEFINED"
-    },
-    {
-      "run_id": 45504208868,
-      "conclusion": "failure",
-      "scope": "Immediate previous exact-head push Offline QA",
-      "jobs": [
-        "Offline preflight tests (windows-latest)",
-        "Offline preflight tests (ubuntu-latest)"
-      ],
-      "reason": "TEST_VARIABLE_UNDEFINED"
+      ]
     }
   ],
   "pr161": {
@@ -85,11 +73,11 @@
     "branch": "codex/36-e2e-ledger-reconcile-20261123-1937",
     "head_sha": "69e7b7c8a7b1ecdaea42e6f03644a8cd549dfaee",
     "compare_to_current_pr165_head": {
-      "current_pr165_head_sha": "98953c5a9815a4ff30dfd82564a1672b7992a2bd",
+      "current_pr165_head_sha": "60ab8183a05f248972bf227d6059671f5f0532ac",
       "merge_base_sha": "c6f30824196e90c03837e0636d7557a79fad92af",
       "status": "diverged",
       "ahead_by": 6,
-      "behind_by": 83,
+      "behind_by": 84,
       "changed_files": [
         "ops/active_e2e_handoff.json",
         "ops/completion_rush_queue_20261116.json",
@@ -236,7 +224,9 @@
       "File Integrity PR115 deterministic request is DRY_RUN only and does not constitute Identity approval or Version readback.",
       "Reviewed PR94/PR95/PR115 discussions and current product artifacts; no authenticated Partner Center Package Version readback.",
       "Fresh direct read at 2026-11-24T22:36:02Z: Focus PR94 remains at fb629383; its approved-identity.json still binds source/expected_head to historical 8b00bc4e, package_version_gate=HOLD, and contains no Package Version. The current-source request artifact requested in the latest PR94 handoff was not present in the reviewed PR set.",
-      "Fresh direct read at 2026-11-24T22:36:02Z: File Integrity PR115 remains at 33d612be; request artifact 14934034365 is DRY_RUN with official_identity_status=NOT_COLLECTED and package_version=null; MSIX export run 45422811552 is SKIPPED_NO_ARTIFACT. No authenticated Partner Center Version readback was observed."
+      "Fresh direct read at 2026-11-24T22:36:02Z: File Integrity PR115 remains at 33d612be; request artifact 14934034365 is DRY_RUN with official_identity_status=NOT_COLLECTED and package_version=null; MSIX export run 45422811552 is SKIPPED_NO_ARTIFACT. No authenticated Partner Center Version readback was observed.",
+      "Fresh direct read at 2026-11-25T05:38:56Z: AI-App-Factory PR94 HEAD fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79 contains products/focus-session-desk/store/approved-identity.json (blob 00c56e85ec7590783284e372ba100a3127614971); request app-focus-session-desk-8b00bc4e9082 and source_sha/verified_source_sha/expected_head_sha all bind historical source 8b00bc4e90828c4282463826873aa8dfd2eb93f4, package_version_gate=HOLD, with no package_version field. No current-source request/Identity binding was observed.",
+      "Fresh direct read at 2026-11-25T05:38:56Z: AI-App-Factory PR115 HEAD 33d612be2774ac155ea3d85289ec5cb7981c81c1 has no products/file-integrity-ledger/store/approved-identity.json; the historical file at commit db9a57af822788af4c8384499a6e343ec7b0353d (blob 78034cf62be3479f9ed752a2585ab31bb24c49ff) binds only source d1108d12f7d1697af30400f97c7db39cba5e6791 and package_version_gate=HOLD. Current PR115 request run 45422895649 / artifact 14934034365 is DRY_RUN with official_identity_status=NOT_COLLECTED and package_version=null; MSIX export run 45422811552 is SKIPPED_NO_ARTIFACT. No authenticated Partner Center Package Version readback was observed."
     ],
     "partner_center_authenticated_readback": "NOT_OBSERVED",
     "decision": "KEEP_VERSION_HOLD__DO_NOT_INFER_OR_WRITE_VERSION"
@@ -288,8 +278,8 @@
     "merge_allowed": false,
     "force_push_allowed": false
   },
-  "next_action": "Focus remains rank 1: obtain the exact current-source request and current-source Identity revalidation, plus authenticated Partner Center Package Version readback; do not reuse historical 8b00bc4e binding. File Integrity PR115 remains a current-source DRY_RUN candidate; complete human visual review and current-source Identity revalidation, then obtain authoritative Version. Only after all gates pass may a real MSIX be built and moved through independent SHA custody, backlog, local pull, checker and local GUI/install QA. No Version inference, old-source CAS, Store write, merge or product-code changes.",
-  "pr165_current_head_parent_ci_status": "PARTIAL_FAIL_PARENT_CI__CURRENT_HEAD_PASS",
+  "next_action": "Focus remains rank 1: current-source request/Identity revalidation and authenticated Partner Center Package Version readback are required; do not reuse historical 8b00bc4e binding. File Integrity PR115 remains a current-source DRY_RUN candidate; human visual review, current-source Identity revalidation and authoritative Version are still required. Only after all gates pass may a real MSIX be built and moved through independent SHA custody, backlog, local pull, checker and local GUI/install QA. No Version inference, old-source CAS, Store write, merge or product-code changes.",
+  "pr165_current_head_parent_ci_status": "PASS_EXACT_HEAD_CI",
   "pr165_intermediate_test_failures": [
     {
       "head_sha": "bd941a25ee2c698eaaca993fbe2cef85fb688668",
@@ -350,11 +340,11 @@
     "branch": "codex/36-e2e-ledger-reconcile-20261123-1937",
     "head_sha": "69e7b7c8a7b1ecdaea42e6f03644a8cd549dfaee",
     "compare_to_current_pr165_head": {
-      "current_pr165_head_sha": "98953c5a9815a4ff30dfd82564a1672b7992a2bd",
+      "current_pr165_head_sha": "60ab8183a05f248972bf227d6059671f5f0532ac",
       "merge_base_sha": "c6f30824196e90c03837e0636d7557a79fad92af",
       "status": "diverged",
       "ahead_by": 6,
-      "behind_by": 83,
+      "behind_by": 84,
       "changed_files": [
         "ops/active_e2e_handoff.json",
         "ops/completion_rush_queue_20261116.json",
@@ -368,37 +358,25 @@
   },
   "pr165_current_head_parent_ci": [
     {
-      "run_id": 45504218568,
-      "conclusion": "failure",
-      "scope": "Immediate previous exact-head Windows E2E transport fail-closed regression",
-      "job": "transport-regression",
-      "reason": "TEST_VARIABLE_UNDEFINED"
+      "run_id": 45504316528,
+      "conclusion": "success",
+      "scope": "Immediate parent exact-head Windows E2E transport fail-closed regression",
+      "job": "transport-regression"
     },
     {
-      "run_id": 45504218632,
+      "run_id": 45504315490,
       "conclusion": "success",
-      "scope": "Immediate previous exact-head independent GitHub artifact custody regression",
+      "scope": "Immediate parent exact-head independent GitHub artifact custody regression",
       "job": "custody-regression"
     },
     {
-      "run_id": 45504218494,
-      "conclusion": "failure",
-      "scope": "Immediate previous exact-head Windows-all-auto Offline QA",
+      "run_id": 45504315581,
+      "conclusion": "success",
+      "scope": "Immediate parent exact-head Windows-all-auto Offline QA",
       "jobs": [
         "Offline preflight tests (windows-latest)",
         "Offline preflight tests (ubuntu-latest)"
-      ],
-      "reason": "TEST_VARIABLE_UNDEFINED"
-    },
-    {
-      "run_id": 45504208868,
-      "conclusion": "failure",
-      "scope": "Immediate previous exact-head push Offline QA",
-      "jobs": [
-        "Offline preflight tests (windows-latest)",
-        "Offline preflight tests (ubuntu-latest)"
-      ],
-      "reason": "TEST_VARIABLE_UNDEFINED"
+      ]
     }
   ]
 }
