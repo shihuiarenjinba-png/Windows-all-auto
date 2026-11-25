@@ -4,7 +4,7 @@
   "product_id": "9PDL4ZWSB45P",
   "submission_id": "1152921505702212222",
   "repository": "shihuiarenjinba-png/csv-import-validator",
-  "ref": "107e59f2cbcde9c6ca88cf1aaf3d52262004e6e0",
+  "ref": "722ec7a077d2c6109e657c4ee661c9f3d06a4506",
   "path": "store-output/DataContractSchemaDrift_1.0.0.0_x64.msix",
   "version": "1.0.0.0",
   "destination": "microsoft_partner_center_existing_draft",
@@ -16,7 +16,16 @@
   "expected_existing_package_names": [],
   "expected_replaced_package_names": [],
   "upload_approved": false,
-  "expected_sha256": "REPLACE_WITH_FORMAL_PACKAGE_SHA256",
+  "expected_sha256": "e2ca6fd81720dc270667e65db05404b6efdde5b2c0712bee2853e0608767db05",
   "max_bytes": 4000000000,
-  "dry_run": true
+  "local_package_only": true,
+  "source_sha": "722ec7a077d2c6109e657c4ee661c9f3d06a4506",
+  "artifact_run_id": 45580565845,
+  "artifact_id": 15005358857,
+  "local_runtime_qa_status": "INSTALL_ACCESS_DENIED_EXE_LAUNCH_TIMEOUT_FUNCTIONAL_QA_INCOMPLETE",
+  "upload_hold_reasons": [
+    "Local MSIX install returned Access Denied",
+    "EXE launch timed out; functional QA incomplete",
+    "Partner Center Draft and current package rows must be re-read immediately before live upload"
+  ]
 }
