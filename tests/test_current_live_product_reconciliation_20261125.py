@@ -24,12 +24,12 @@ class CurrentLiveProductReconciliationTests(unittest.TestCase):
         self.assertEqual([x["run_id"] for x in latest["pr165_current_branch_head_ci"]],
                          [45658023381, 45658023247, 45658023444])
         self.assertEqual([x["run_id"] for x in latest["exact_head_ci"]],
-                         [45656584514, 45656584507, 45656584747])
+                         [45658023381, 45658023247, 45658023444])
         self.assertEqual([x["run_id"] for x in latest["previous_exact_head_ci"]],
                          [45656584514, 45656584507, 45656584747])
         self.assertEqual(latest["previous_tested_head_sha"], "2cd008a63a97018b1acba4951528f9cdff3b52bd")
         self.assertEqual([x["run_id"] for x in latest["previous_tested_exact_head_ci"]],
-                         [45656523423, 45656523493, 45656523484])
+                         [45656584514, 45656584507, 45656584747])
         self.assertEqual(latest["pr165_current_head_parent_ci_status"],
                          "PARTIAL_FAIL_SUPERSEDED_BY_CURRENT_HEAD_PASS")
         self.assertEqual([x["run_id"] for x in latest["pr165_current_head_parent_ci"]], [45657863801, 45657863814, 45657844131])
