@@ -148,10 +148,11 @@ class PartnerCenterFleetObservationTests(unittest.TestCase):
                 )
 
         dca = group_c["products"]["data-contract-auditor"]["remote_package_artifact_discovery"]
-        # 107e... is the QA baseline; the formal candidate source is 5a09...
+        # 107e... is the QA baseline; the latest formal candidate was rebuilt from 722ec...
         self.assertEqual(dca["qa_baseline_source_sha"], "107e59f2cbcde9c6ca88cf1aaf3d52262004e6e0")
-        self.assertEqual(dca["candidate_source_sha"], "5a09d81955e25664761ea25ecfb4ebf8d24cea6d")
-        self.assertEqual(dca["required_source_sha"], "5a09d81955e25664761ea25ecfb4ebf8d24cea6d")
+        self.assertEqual(dca["candidate_source_sha"], "722ec7a077d2c6109e657c4ee661c9f3d06a4506")
+        self.assertEqual(dca["formal_candidate_source_sha"], "722ec7a077d2c6109e657c4ee661c9f3d06a4506")
+        self.assertEqual(dca["required_source_sha"], "722ec7a077d2c6109e657c4ee661c9f3d06a4506")
         self.assertTrue(dca["source_match"])
         self.assertEqual(dca["package_sha256"], "e2ca6fd81720dc270667e65db05404b6efdde5b2c0712bee2853e0608767db05")
         self.assertEqual(dca["candidate_msix_version"], "1.0.0.0")
