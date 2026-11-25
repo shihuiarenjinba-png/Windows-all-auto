@@ -24,8 +24,22 @@
   "artifact_id": 15005358857,
   "local_runtime_qa_status": "INSTALL_ACCESS_DENIED_EXE_LAUNCH_TIMEOUT_FUNCTIONAL_QA_INCOMPLETE",
   "upload_hold_reasons": [
-    "Local MSIX install returned Access Denied",
-    "EXE launch timed out; functional QA incomplete",
-    "Partner Center Draft and current package rows must be re-read immediately before live upload"
-  ]
+    "Local operator verification of this exact package reported Install Access Denied and EXE launch timeout; functional QA incomplete",
+    "The downloaded builder artifact's STORE_PREFLIGHT.json reports WINDOWS_REAL_DEVICE_QA_PASS, conflicting with the later operator-reported local result; reconcile source evidence before treating runtime QA as passed",
+    "Store logos in the inspected MSIX are generic generated document/check artwork; owner approval of final Store branding is not independently evidenced",
+    "Partner Center existing Draft ID and package rows must be re-read immediately before any write"
+  ],
+  "artifact_internal_preflight": {
+    "artifact_downloaded_and_inspected_by_assistant": true,
+    "artifact_id": 15005358857,
+    "build_evidence_sha256": "e2ca6fd81720dc270667e65db05404b6efdde5b2c0712bee2853e0608767db05",
+    "build_evidence_source_sha": "722ec7a077d2c6109e657c4ee661c9f3d06a4506",
+    "msix_verification_valid": true,
+    "store_preflight_ready": true,
+    "store_preflight_windows_real_device_qa_status": "WINDOWS_REAL_DEVICE_QA_PASS",
+    "local_operator_report_status": "INSTALL_ACCESS_DENIED_EXE_LAUNCH_TIMEOUT_FUNCTIONAL_QA_INCOMPLETE",
+    "reconciliation_status": "CONFLICT_UNRESOLVED_KEEP_HOLD",
+    "artwork_source": "APPROVED_GENERATOR",
+    "visual_inspection_note": "Inspected StoreLogo, Square150x150Logo, and Wide310x150Logo; generic document/check illustration with product text, not evidence of owner-approved branding."
+  }
 }
