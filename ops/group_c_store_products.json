@@ -37,11 +37,19 @@
         "package_binary_sha256_observable": false,
         "registry_reconciliation": {
           "store_id": "MATCH",
-          "identity_name": "NOT_STORED",
-          "publisher": "NOT_STORED",
+          "identity_name": "MATCH",
+          "publisher": "MATCH",
           "submission_id": "MATCH"
         },
-        "overall_status": "LIVE_OBSERVATION_RECORDED_REGISTRY_ENRICHMENT_REQUIRED"
+        "overall_status": "EXACT_REGISTRY_MATCH"
+      },
+      "identity_name": "OkinawaDesktopTools.DataContractAuditor",
+      "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+      "partner_center_observation_promotion": {
+        "source_snapshot": "ops/partner_center_fleet_observation_20261125.json",
+        "observation_id": "partner-center-fleet-20261125T075209Z",
+        "observed_at_utc": "2026-11-25T07:52:09Z",
+        "promotion_rule": "filled only absent static fields; existing non-null values had to match the read-only observation"
       }
     },
     "web-evidence-archiver": {
@@ -283,7 +291,7 @@
       "source_sha": "5e9b3b7805193fdefc903c6310245f9586732ae4",
       "submission_route": "msix_pwa_app",
       "store_id": "9PDJ1T5BQ4P1",
-      "draft_id": null,
+      "draft_id": "1152921505702212224",
       "teacher_level": "GROUP_C_SCRIPT_FIRST",
       "receipt": null,
       "partner_center_live_observation": {
@@ -304,11 +312,19 @@
         "package_binary_sha256_observable": false,
         "registry_reconciliation": {
           "store_id": "MATCH",
-          "identity_name": "NOT_STORED",
-          "publisher": "NOT_STORED",
-          "submission_id": "NOT_STORED"
+          "identity_name": "MATCH",
+          "publisher": "MATCH",
+          "submission_id": "MATCH"
         },
-        "overall_status": "LIVE_OBSERVATION_RECORDED_REGISTRY_ENRICHMENT_REQUIRED"
+        "overall_status": "EXACT_REGISTRY_MATCH"
+      },
+      "identity_name": "OkinawaDesktopTools.AIUploadGuard",
+      "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+      "partner_center_observation_promotion": {
+        "source_snapshot": "ops/partner_center_fleet_observation_20261125.json",
+        "observation_id": "partner-center-fleet-20261125T075209Z",
+        "observed_at_utc": "2026-11-25T07:52:09Z",
+        "promotion_rule": "filled only absent static fields; existing non-null values had to match the read-only observation"
       }
     },
     "pdf-privacy": {
