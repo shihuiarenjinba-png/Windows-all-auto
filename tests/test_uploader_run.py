@@ -5,6 +5,8 @@ import unittest
 import contextlib
 import io
 import json
+import hashlib
+import zipfile
 from pathlib import Path
 from unittest.mock import patch
 import urllib.error
@@ -93,6 +95,98 @@ class UploaderRunTests(unittest.TestCase):
             self.assertEqual(receipt["result"], "FAILED")
             self.assertEqual(receipt["details"]["error_code"], "UPLOAD_NOT_APPROVED")
             self.assertIsNone(receipt["sha256"])
+
+
+    def test_local_package_dry_run_uses_exact_file_and_skips_github_download(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            package = root / "ExactCandidate_1.2.3.4_x64.msix"
+            with zipfile.ZipFile(package, "w") as archive:
+                archive.writestr(
+                    "AppxManifest.xml",
+                    '''<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10">
+                    <Identity Name="Example.Identity" Publisher="CN=Example" Version="1.2.3.4" ProcessorArchitecture="x64" />
+                    </Package>''',
+                )
+                archive.writestr("payload.bin", b"exact-package-bytes")
+            digest = hashlib.sha256(package.read_bytes()).hexdigest()
+            config = {
+                "schema_version": 1,
+                "product_name": "Example Product",
+                "product_id": "9P1234567890",
+                "submission_id": "1152921505700000000",
+                "repository": "owner/repo",
+                "ref": "a" * 40,
+                "path": "store-output/ExactCandidate_1.2.3.4_x64.msix",
+                "version": "1.2.3.4",
+                "destination": "microsoft_partner_center_existing_draft",
+                "submission_route": "msix_pwa_app",
+                "identity_name": "Example.Identity",
+                "publisher": "CN=Example",
+                "architecture": "x64",
+                "known_warnings": [],
+                "expected_existing_package_names": [],
+                "expected_replaced_package_names": [],
+                "upload_approved": False,
+                "expected_sha256": digest,
+                "max_bytes": 1000000,
+            }
+            config_path = root / "job.json"
+            config_path.write_text(json.dumps(config), encoding="utf-8")
+            workdir = root / "work"
+            stdout = io.StringIO()
+            with patch("sys.argv", [
+                "uploader.run", "--config", str(config_path),
+                "--package", str(package), "--workdir", str(workdir),
+            ]), patch("uploader.run.github_download") as download, contextlib.redirect_stdout(stdout):
+                code = main()
+            self.assertEqual(code, 0)
+            download.assert_not_called()
+            result = json.loads(stdout.getvalue())
+            self.assertEqual(result["status"], "DRY_RUN")
+            receipt = json.loads((workdir / "receipt.json").read_text(encoding="utf-8"))
+            self.assertEqual(receipt["sha256"], digest)
+            self.assertEqual(receipt["package_file_name"], package.name)
+            self.assertEqual(receipt["partner_center_confirmation"], "NOT_ATTEMPTED")
+
+    def test_local_package_rejects_a_filename_other_than_the_registered_package(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            package = root / "wrong-name.msix"
+            package.write_bytes(b"not-read-because-name-must-match")
+            config = {
+                "schema_version": 1,
+                "product_name": "Example Product",
+                "product_id": "9P1234567890",
+                "submission_id": "1152921505700000000",
+                "repository": "owner/repo",
+                "ref": "a" * 40,
+                "path": "store-output/ExactCandidate_1.2.3.4_x64.msix",
+                "version": "1.2.3.4",
+                "destination": "microsoft_partner_center_existing_draft",
+                "submission_route": "msix_pwa_app",
+                "identity_name": "Example.Identity",
+                "publisher": "CN=Example",
+                "architecture": "x64",
+                "known_warnings": [],
+                "expected_existing_package_names": [],
+                "expected_replaced_package_names": [],
+                "upload_approved": False,
+                "expected_sha256": "a" * 64,
+                "max_bytes": 1000000,
+            }
+            config_path = root / "job.json"
+            config_path.write_text(json.dumps(config), encoding="utf-8")
+            workdir = root / "work"
+            with patch("sys.argv", [
+                "uploader.run", "--config", str(config_path),
+                "--package", str(package), "--workdir", str(workdir),
+            ]), contextlib.redirect_stdout(io.StringIO()) as stdout:
+                code = main()
+            self.assertEqual(code, 2)
+            result = json.loads(stdout.getvalue())
+            self.assertEqual(result["error_code"], "PACKAGE_FILENAME_MISMATCH")
+            self.assertFalse((workdir / "ledger.sqlite3").exists())
 
 
 if __name__ == "__main__": unittest.main()
