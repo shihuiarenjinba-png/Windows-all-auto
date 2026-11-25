@@ -1,7 +1,7 @@
 """Strict factory MSIX handoff contract. Never executes a received package."""
 from __future__ import annotations
 import argparse
-from hashlib import sha256
+from hashlib import sha1, sha256
 import json
 from pathlib import Path
 import re
@@ -23,7 +23,7 @@ REPOSITORY_KINDS={
 }
 MAX_BYTES=300*1024*1024
 REQUIRED={"handoff.json","package.msix"}
-OPTIONAL={"transport_receipt.json","github-custody.json"}
+OPTIONAL={"transport_receipt.json","github-custody.json","approved-identity.json"}
 
 def fail(message):
     raise ValueError("HANDOFF_HOLD: "+message)
@@ -117,15 +117,27 @@ def validate_bundle(directory:Path,expected_run_sha:str|None=None)->dict:
     custody_receipt=None
     receipt_path=directory/"transport_receipt.json"
     custody_path=directory/"github-custody.json"
-    if receipt_path.exists() != custody_path.exists():
-        fail("central identity and custody receipts must be paired")
-    if receipt_path.exists():
-        if kind!="app" or receipt_path.stat().st_size>32*1024 or custody_path.stat().st_size>16*1024:
+    approved_identity_path=directory/"approved-identity.json"
+    receipt_exists=receipt_path.exists()
+    custody_exists=custody_path.exists()
+    approved_identity_exists=approved_identity_path.exists()
+    if not (receipt_exists == custody_exists == approved_identity_exists):
+        fail("central identity and custody receipts must be paired with approved-identity.json")
+    if receipt_exists:
+        if (kind!="app" or receipt_path.stat().st_size>32*1024
+                or custody_path.stat().st_size>16*1024
+                or approved_identity_path.stat().st_size>32*1024):
             fail("invalid or oversized APP transport receipts")
         transport_receipt=json.loads(receipt_path.read_text(encoding="utf-8"))
         custody_receipt=json.loads(custody_path.read_text(encoding="utf-8"))
-        if not isinstance(transport_receipt,dict) or not isinstance(custody_receipt,dict):
-            fail("transport receipts must be JSON objects")
+        approved_identity=json.loads(approved_identity_path.read_text(encoding="utf-8"))
+        if (not isinstance(transport_receipt,dict) or not isinstance(custody_receipt,dict)
+                or not isinstance(approved_identity,dict)):
+            fail("transport, custody and approved Identity receipts must be JSON objects")
+        approved_identity_bytes=approved_identity_path.read_bytes()
+        approved_identity_git_blob_sha=sha1(
+            b"blob "+str(len(approved_identity_bytes)).encode("ascii")+b"\\0"+approved_identity_bytes
+        ).hexdigest()
         source=data.get("source_sha")
         if (transport_receipt.get("schema_version")!=1
                 or transport_receipt.get("status")!="SOURCE_BOUND_VERSION_APPROVED"
@@ -140,6 +152,7 @@ def validate_bundle(directory:Path,expected_run_sha:str|None=None)->dict:
                 or transport_receipt.get("identity")!=data.get("identity")
                 or transport_receipt.get("approval_source")!="partner_center"
                 or transport_receipt.get("package_version_gate")!="PASS"
+                or transport_receipt.get("operator_verified") is not True
                 or transport_receipt.get("store_submission_allowed") is not False
                 or transport_receipt.get("certification_allowed") is not False
                 or transport_receipt.get("publish_allowed") is not False):
@@ -147,6 +160,12 @@ def validate_bundle(directory:Path,expected_run_sha:str|None=None)->dict:
         identity_file_sha=transport_receipt.get("approved_identity_file_sha")
         if not isinstance(identity_file_sha,str) or not SHA40.fullmatch(identity_file_sha):
             fail("approved Identity file SHA missing")
+        if identity_file_sha!=approved_identity_git_blob_sha:
+            fail("approved Identity file SHA mismatch")
+        transport_identity=transport_receipt.get("identity")
+        if (not isinstance(transport_identity,dict)
+                or transport_receipt.get("package_version")!=transport_identity.get("version")):
+            fail("source-bound Partner Center transport receipt mismatch")
         verifier=transport_receipt.get("verified_by")
         evidence=transport_receipt.get("evidence_url")
         parsed=urlparse(evidence) if isinstance(evidence,str) else None
@@ -156,6 +175,10 @@ def validate_bundle(directory:Path,expected_run_sha:str|None=None)->dict:
                 or parsed.hostname not in ("partner.microsoft.com","partnercenter.microsoft.com")
                 or parsed.username or parsed.password or parsed.fragment):
             fail("official Partner Center evidence invalid")
+        store_id=transport_receipt.get("store_id")
+        expected_identity_path="/products/"+store_id+"/identity" if isinstance(store_id,str) else ""
+        if not expected_identity_path or expected_identity_path.casefold() not in parsed.path.casefold():
+            fail("official Partner Center evidence does not identify this Store product")
         for key in ("request_id","product_type","source_factory","source_branch",
                     "expected_head_sha","factory_head_sha","store_id","display_name",
                     "prebuilt_exe_sha256"):
@@ -167,6 +190,30 @@ def validate_bundle(directory:Path,expected_run_sha:str|None=None)->dict:
         if (not isinstance(data.get("prebuilt_exe_sha256"),str)
                 or not SHA64.fullmatch(data["prebuilt_exe_sha256"])):
             fail("transport receipt executable SHA invalid")
+        identity_data=data.get("identity")
+        if not isinstance(identity_data,dict):
+            fail("APP approved identity missing")
+        approved_identity_expected={
+            "reviewed":True,
+            "source":"partner_center",
+            "request_id":data.get("request_id"),
+            "product_type":"APP",
+            "source_factory":"AI-App-Factory",
+            "source_repository":repo.removeprefix("https://github.com/"),
+            "source_branch":data.get("source_branch"),
+            "source_sha":source,
+            "expected_head_sha":source,
+            "store_id":data.get("store_id"),
+            "name":identity_data.get("name"),
+            "publisher":identity_data.get("publisher"),
+            "version":identity_data.get("version"),
+            "package_version_gate":"PASS",
+            "operator_verified":True,
+            "verified_by":verifier,
+            "evidence_url":evidence,
+        }
+        if any(approved_identity.get(key)!=value for key,value in approved_identity_expected.items()):
+            fail("approved Identity file does not bind current source/request/identity/version")
         if (custody_receipt.get("status")!="CUSTODY_VERIFIED_ONLY"
                 or custody_receipt.get("e2e_pass") is not False
                 or custody_receipt.get("source_sha")!=source
@@ -252,6 +299,7 @@ def validate_bundle(directory:Path,expected_run_sha:str|None=None)->dict:
     result.update(immutable)
     if transport_receipt is not None:
         result["transport_receipt_sha256"]=sha256(receipt_path.read_bytes()).hexdigest()
+        result["approved_identity_file_sha"]=approved_identity_git_blob_sha
         result["transport_receipt"]=transport_receipt
         result["github_artifact_custody"]=custody_receipt
     return result
@@ -276,7 +324,8 @@ def stage_bundle(source:Path,target:Path,expected_run_sha:str|None=None)->dict:
             "factory_head_sha", "expected_head_sha", "request_id",
             "product_type", "source_factory", "source_branch", "display_name",
             "prebuilt_exe_sha256", "claimed_store_id",
-            "transport_receipt_sha256", "transport_receipt", "github_artifact_custody",
+            "transport_receipt_sha256", "approved_identity_file_sha",
+            "transport_receipt", "github_artifact_custody",
         )
         if any(other.get(key)!=info.get(key) for key in provenance_fields):
             fail("existing target package or provenance changed")
@@ -287,7 +336,7 @@ def stage_bundle(source:Path,target:Path,expected_run_sha:str|None=None)->dict:
     try:
         shutil.copyfile(source/"handoff.json",dest/"handoff.json")
         shutil.copyfile(source/"package.msix",dest/"package.msix")
-        for receipt_name in ("transport_receipt.json","github-custody.json"):
+        for receipt_name in ("transport_receipt.json","github-custody.json","approved-identity.json"):
             receipt_source=source/receipt_name
             if receipt_source.exists():
                 shutil.copyfile(receipt_source,dest/receipt_name)
