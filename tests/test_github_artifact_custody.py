@@ -363,5 +363,28 @@ class CustodyTests(unittest.TestCase):
         self.assertEqual(ledger["pr174_restack_assessment_live_20261125"]["compare_to_current_pr165_head"]["behind_by"], 122)
         self.assertEqual(ledger["store_upload_test_bridge"]["eligible_fresh_unsold_products"], 0)
 
+
+class CurrentObservationOverlayCustodyTests(unittest.TestCase):
+    def test_20261126_overlay_keeps_synthetic_custody_separate_from_real_package(self):
+        root = Path(__file__).resolve().parents[1]
+        overlay = json.loads(
+            (root / "ops" / "active_e2e_handoff_overlay_20261126.json")
+            .read_text(encoding="utf-8")
+        )
+        self.assertEqual(overlay["transport_contract"]["implemented_in_pr165"], True)
+        self.assertFalse(overlay["downstream_receipts"]["real_msix"])
+        self.assertFalse(overlay["downstream_receipts"]["artifact_archive_and_package_sha_custody"])
+        self.assertFalse(overlay["downstream_receipts"]["github_backlog_receipt"])
+        self.assertFalse(overlay["downstream_receipts"]["local_pull_sha_receipt"])
+        self.assertFalse(overlay["downstream_receipts"]["windows_checker_receipt"])
+        self.assertFalse(overlay["downstream_receipts"]["local_gui_install_receipt"])
+        self.assertFalse(overlay["downstream_receipts"]["product_e2e_pass"])
+        self.assertEqual(overlay["store_upload_test"]["eligible_fresh_unsold_products"], 0)
+        self.assertFalse(overlay["store_upload_test"]["dry_run_started"])
+        self.assertFalse(overlay["safety"]["live_partner_center_write_allowed"])
+        self.assertFalse(overlay["safety"]["store_submission_allowed"])
+        self.assertFalse(overlay["safety"]["certification_allowed"])
+        self.assertFalse(overlay["safety"]["publish_allowed"])
+
 if __name__ == "__main__":
     unittest.main()
