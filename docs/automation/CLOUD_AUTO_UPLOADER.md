@@ -53,13 +53,22 @@ This creates `.venv-store-uploader` in the repository and installs the pinned Pl
 
 ### 3. Start or connect to local Edge CDP
 
+Run from the repository root:
+
 ```powershell
 .\scripts\start_partner_center_edge_cdp.ps1
 ```
 
-If Edge CDP was already active on port 9223, the script reuses it and does not launch another window. Otherwise it opens a dedicated local Edge profile at `%LOCALAPPDATA%\\PartnerCenterUploaderEdge`; sign in manually in that window and complete MFA there. The uploader selects the exact configured Product/Draft tab even when unrelated Partner Center tabs are open. The script does not read credentials or automate sign-in.
+The script is pinned to the approved DCA Packages route:
 
-Run the read-only Browser Doctor before any live write:
+`https://partner.microsoft.com/en-us/dashboard/products/9PDL4ZWSB45P/submissions/1152921505702212222/packages`
+
+- If no Edge CDP is listening, it starts a dedicated Edge profile under `%LOCALAPPDATA%\\PartnerCenterUploaderEdge`, binds CDP to `127.0.0.1:9223`, and opens that exact Draft URL.
+- If Edge CDP is already listening, it verifies that the endpoint is Microsoft Edge. When the exact DCA Draft tab is absent, it opens one new tab at that exact URL through the local CDP target endpoint. It does not close, replace, or navigate existing tabs.
+- If multiple exact DCA Draft tabs already exist, it does not create more tabs. Doctor must be allowed to report the ambiguity; remove the duplicate manually only after confirming which tab is safe to close.
+- The script never reads credentials, cookies, tokens, or local storage. Sign in and complete MFA manually in the Edge window associated with port 9223.
+
+After sign-in, run the read-only Browser Doctor:
 
 ```powershell
 & .\.venv-store-uploader\Scripts\python.exe scripts\partner_center_browser_doctor.py `
@@ -67,7 +76,7 @@ Run the read-only Browser Doctor before any live write:
   --cdp-url http://127.0.0.1:9223
 ```
 
-Proceed only for `READY_EXACT_DRAFT_TAB` (or another explicitly reviewed `READY_*` state). `HOLD_*` stops. Doctor prints the Edge version, context/page counts, safe host/path/title and the selected page. It never navigates, clicks, selects a file, saves, or closes browser pages. Query strings and fragments are omitted. The uploader uses the same selector and performs a read-only Product/Identity/Draft/package-row preflight before reserving an upload attempt.
+For this DCA operation, proceed only when the result is exactly `READY_EXACT_DRAFT_TAB`, with Product ID `9PDL4ZWSB45P` and Draft ID `1152921505702212222`. Do not treat a generic `READY_UNIQUE_PARTNER_CENTER_TAB` or `READY_UNIQUE_PRODUCT_TAB` as sufficient for this one-time operation. Any `HOLD_*`, authentication hold, or duplicate target stops the process. Doctor reports Edge version, context/page counts, sanitized page metadata and the selected page. It never navigates, clicks, selects a file, saves, or closes browser pages. The upload path uses the same selector and performs a read-only Product/Identity/Draft/package-row preflight before reserving an upload attempt.
 
 ### 4. One product dry run
 
