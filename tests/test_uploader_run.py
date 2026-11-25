@@ -125,5 +125,33 @@ class UploaderRunTests(unittest.TestCase):
             self.assertEqual(result["error_code"], "UPLOAD_SCOPE_NOT_APPROVED")
 
 
+    def test_live_execute_requires_explicit_existing_draft_only_scope(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            config = {
+                "schema_version": 1, "product_name": "Example Product",
+                "product_id": "9P1234567890", "submission_id": "1152921505700000000",
+                "repository": "owner/repo", "ref": "a" * 40,
+                "path": "store-output/Exact.msix", "version": "1.2.3.4",
+                "destination": "microsoft_partner_center_existing_draft",
+                "submission_route": "msix_pwa_app", "identity_name": "Example.Identity",
+                "publisher": "CN=Example", "architecture": "x64",
+                "known_warnings": [], "expected_existing_package_names": [],
+                "expected_replaced_package_names": [], "upload_approved": True,
+                "expected_sha256": "a" * 64, "max_bytes": 1000000,
+                "certification_submission_authorized": False, "publish_authorized": False,
+            }
+            config_path = root / "job.json"
+            config_path.write_text(json.dumps(config), encoding="utf-8")
+            workdir = root / "work"
+            with patch("sys.argv", ["uploader.run", "--config", str(config_path), "--workdir", str(workdir), "--execute"]), \
+                 patch("uploader.run.github_download") as download, \
+                 contextlib.redirect_stdout(io.StringIO()) as stdout:
+                code = main()
+            self.assertEqual(code, 2)
+            download.assert_not_called()
+            result = json.loads(stdout.getvalue())
+            self.assertEqual(result["error_code"], "UPLOAD_SCOPE_NOT_APPROVED")
+
 
 if __name__ == "__main__": unittest.main()
