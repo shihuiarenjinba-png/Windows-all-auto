@@ -219,3 +219,13 @@ This authorization covers only Packages upload, Microsoft package analysis, Pack
 
 Other five product jobs remain disabled pending their owner-approved Store Version/artwork or runtime/source-integration gates. Workflow Automation Hub remains a no-existing-submission product and requires a separate initial-submission workflow.
 
+
+
+## Latest script verification — 2026-11-25
+
+- Final central source HEAD: `0597a56fc54074c8e68524f3d5358cf44ae44870`.
+- Windows / Ubuntu: 391 tests PASS each; Windows 2 existing skips; compile PASS.
+- Windows PowerShell Parser: PASS across the PowerShell scripts.
+- Actions run: https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/45620671973
+- DCA convenience command: `scripts/upload_authorized_dca_package.ps1` (dry-run default, `-Execute` for the single owner-authorized package upload/Save only).
+- No Partner Center package upload/Save was executed by this implementation; the browser/CDP session was not controllable from this chat.
