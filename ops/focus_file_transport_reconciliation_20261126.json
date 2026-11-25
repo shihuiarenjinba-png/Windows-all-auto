@@ -18,7 +18,6 @@
     "number": 165,
     "state": "OPEN_DRAFT",
     "branch": "codex/e2e-artifact-custody-20261114",
-    "head_sha": "a6b9d2b1db3033d5846e136400d2fe67dede554d",
     "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
     "exact_head_ci": [
       {
@@ -58,28 +57,28 @@
     },
     "product_e2e_status": "HOLD",
     "real_msix": false,
-    "downstream_receipts": false
+    "downstream_receipts": false,
+    "tested_code_head_sha": "a6b9d2b1db3033d5846e136400d2fe67dede554d",
+    "metadata_reconciliation_commit_sha": "0120c786fb2f008cac095ee3a24568ba3f754842"
   },
   "pr161": {
     "number": 161,
     "head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
     "exact_head_run_id": 42712757936,
     "exact_head_conclusion": "success",
-    "push_run_id": 43403424936,
-    "push_conclusion": "success",
-    "scope": "Offline QA only; not product E2E"
+    "scope": "Offline QA only; not product E2E",
+    "exact_head_scope": "pull_request exact-head Offline QA"
   },
   "pr171": {
     "number": 171,
     "head_sha": "764721021f13be96364529650b44fb439770bac9",
     "exact_head_run_id": 44437197470,
     "exact_head_conclusion": "success",
-    "push_run_id": 44437190317,
-    "push_conclusion": "success",
     "store_upload_bridge_present": true,
     "store_upload_dry_run_started": false,
     "eligible_fresh_unsold_products": 0,
-    "scope": "Offline QA only; no Store upload dry-run"
+    "scope": "Offline QA only; no Store upload dry-run",
+    "exact_head_scope": "pull_request exact-head Offline QA"
   },
   "pr177": {
     "number": 177,
@@ -164,7 +163,6 @@
       "hold_class": "DELIVERY_HOLD",
       "product_frozen_for_package": true,
       "current_source_pr": 115,
-      "current_source_branch": "codex/integrity-pr95-source-request-integration-20261125",
       "current_source_sha": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
       "historical_approved_identity": {
         "source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
@@ -213,7 +211,7 @@
         },
         "Square44": {
           "blob_sha": "d57e7a25d2a9eaa2b54d00c610f3a1ad7d4a4d49",
-          "sha256": "bd61099427a770f8dff247f0f6928e5d50ba2cd8265797c7f13952e96147d70d"
+          "sha256": "bd61099427a770f8ddf247f0f6928e5d50ba2cd8265797c7f13952e96147d70d"
         }
       },
       "gui_evidence": {
@@ -284,7 +282,8 @@
     "active_ledger_direct_content_available": false,
     "active_ledger_content_fetch_status": "EMPTY_RESPONSE_FOR_UTF8_AND_BASE64__NOT_TREATED_AS_EMPTY_FILE",
     "active_ledger_direct_update_performed": false,
-    "note": "The large active_e2e_handoff.json body was not returned by the repository contents connector. This append-only observation supersedes the prior 5ad2cf overlay; the base file was not overwritten without readable contents."
+    "note": "The large active_e2e_handoff.json body was not returned by the repository contents connector. This append-only observation supersedes the prior 5ad2cf overlay; the base file was not overwritten without readable contents.",
+    "current_branch_head_after_reconciliation_append": "0120c786fb2f008cac095ee3a24568ba3f754842"
   },
   "safety": {
     "store_submission_allowed": false,
