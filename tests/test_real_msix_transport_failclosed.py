@@ -250,7 +250,7 @@ class CurrentLedgerGateTests(unittest.TestCase):
         self.assertIs(ledger["e2e_pass"], False)
         self.assertEqual(recon["status"], "HOLD")
         self.assertIs(recon["e2e_pass"], False)
-        self.assertEqual(recon["pr165_current_head_sha"], "2030227134c1a533295048c1af26f5c313b02")
+        self.assertEqual(recon["pr165_current_head_sha"], "2030227134c1a533295048c1af26f5c313b59b02")
         self.assertEqual([x["run_id"] for x in recon["pr165_current_head_ci"]],
                          [45621994281, 45621994321, 45621994397])
         focus = next(p for p in recon["products"] if p["product"] == "Focus Session Desk")
