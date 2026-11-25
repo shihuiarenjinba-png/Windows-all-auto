@@ -152,6 +152,17 @@ class JobLedger:
     def key(job: VerifiedJob) -> str:
         return sha256(f"{job.product_id}:{job.submission_id}:{job.file_name}:{job.sha256}".encode()).hexdigest()
 
+    def state_for(self, job: VerifiedJob) -> tuple[str, int] | None:
+        """Read current local attempt state without reserving or incrementing it."""
+        row = self.db.execute("SELECT status,attempts FROM uploads WHERE job_key=?", (self.key(job),)).fetchone()
+        if row:
+            return str(row[0]), int(row[1])
+        legacy = self.db.execute(
+            "SELECT status,attempts FROM uploads WHERE product_id=? AND submission_id=? AND sha256=? AND package_file_name='' ORDER BY attempts DESC LIMIT 1",
+            (job.product_id, job.submission_id, job.sha256),
+        ).fetchone()
+        return (str(legacy[0]), int(legacy[1])) if legacy else None
+
     def begin(self, job: VerifiedJob, *, dry_run: bool = False) -> tuple[str, int]:
         key = self.key(job)
         row = self.db.execute("SELECT status,attempts FROM uploads WHERE job_key=?", (key,)).fetchone()
@@ -212,6 +223,7 @@ class JobLedger:
 def process_job(config: dict[str, Any], package_path: Path, ledger: JobLedger, *,
                 expected_sha256: str | None = None, dry_run: bool = True,
                 live_adapter: Callable[[VerifiedJob, Path], dict[str, Any]] | None = None,
+                live_preflight_adapter: Callable[[VerifiedJob, Path], dict[str, Any]] | None = None,
                 reconcile_adapter: Callable[[VerifiedJob, Path, dict[str, Any] | None], dict[str, Any]] | None = None,
                 receipt_journal: ReceiptJournal | None = None) -> dict[str, Any]:
     job = verify_file(config, package_path, expected_sha256=expected_sha256,
@@ -228,6 +240,36 @@ def process_job(config: dict[str, Any], package_path: Path, ledger: JobLedger, *
             return {"status": "RECONCILE_REQUIRED", "attempts": 0, "product_id": job.product_id,
                     "submission_id": job.submission_id, "package_file_name": job.file_name, "sha256": job.sha256,
                     "reason": "A prior successful receipt has the same filename or hash with a different tuple"}
+    if dry_run:
+        status, attempts = ledger.begin(job, dry_run=True)
+        if status == "DRY_RUN_ALREADY_DONE":
+            return {"status": status, "attempts": attempts, "product_id": job.product_id,
+                    "submission_id": job.submission_id, "package_file_name": job.file_name, "sha256": job.sha256}
+        if status != "READY":
+            return {"status": status, "attempts": attempts, "product_id": job.product_id,
+                    "submission_id": job.submission_id, "package_file_name": job.file_name, "sha256": job.sha256}
+        ledger.finish(job, "DRY_RUN", receipt={"verified": True, "remote_write": False})
+        return {"status": "DRY_RUN", "attempts": attempts, "product_id": job.product_id,
+                "submission_id": job.submission_id, "package_file_name": job.file_name, "sha256": job.sha256}
+
+    # Check all static live gates and attach/resolve the exact existing Draft
+    # before reserving an upload attempt. Local CDP/tab failures therefore do
+    # not consume the remote-write retry budget.
+    if config.get("upload_approved") is not True:
+        raise UploadError("UPLOAD_NOT_APPROVED", "This product job is not approved for a live package write")
+    if not expected_sha256 or not re.fullmatch(r"[0-9a-fA-F]{64}", expected_sha256):
+        raise UploadError("EXPECTED_SHA_REQUIRED", "Live upload requires a frozen 64-character SHA-256")
+    if live_adapter is None and live_preflight_adapter is None:
+        raise UploadError("BROWSER_ADAPTER_UNSUPPORTED", "Existing MSIX Draft browser adapter is not enabled")
+    if live_preflight_adapter is not None:
+        prior_local_state = ledger.state_for(job)
+        recovery_required = bool(prior_local_state and prior_local_state[0] in {"UPLOADING", "UNKNOWN"})
+        prepared = live_preflight_adapter(job, package_path, recovery_required=recovery_required)
+        if not isinstance(prepared, dict) or not callable(prepared.get("live_adapter")):
+            raise UploadError("BROWSER_PREFLIGHT_INVALID", "Live browser preflight did not return a verified upload adapter")
+        live_adapter = prepared["live_adapter"]
+        if callable(prepared.get("reconcile_adapter")):
+            reconcile_adapter = prepared["reconcile_adapter"]
     status, attempts = ledger.begin(job, dry_run=dry_run)
     if status == "RECONCILE_REQUIRED" and not dry_run and reconcile_adapter is not None:
         previous_receipt = ledger.get_receipt(job)
@@ -255,16 +297,6 @@ def process_job(config: dict[str, Any], package_path: Path, ledger: JobLedger, *
     if status != "READY":
         return {"status": status, "attempts": attempts, "product_id": job.product_id,
                 "submission_id": job.submission_id, "package_file_name": job.file_name, "sha256": job.sha256}
-    if dry_run:
-        ledger.finish(job, "DRY_RUN", receipt={"verified": True, "remote_write": False})
-        return {"status": "DRY_RUN", "attempts": attempts, "product_id": job.product_id,
-                "submission_id": job.submission_id, "package_file_name": job.file_name, "sha256": job.sha256}
-    if config.get("upload_approved") is not True:
-        ledger.finish(job, "FAILED", error_code="UPLOAD_NOT_APPROVED")
-        raise UploadError("UPLOAD_NOT_APPROVED", "This product job is not approved for a live package write")
-    if not expected_sha256 or not re.fullmatch(r"[0-9a-fA-F]{64}", expected_sha256):
-        ledger.finish(job, "FAILED", error_code="EXPECTED_SHA_REQUIRED")
-        raise UploadError("EXPECTED_SHA_REQUIRED", "Live upload requires a frozen 64-character SHA-256")
     if live_adapter is None:
         ledger.finish(job, "FAILED", error_code="BROWSER_ADAPTER_UNSUPPORTED")
         raise UploadError("BROWSER_ADAPTER_UNSUPPORTED", "Existing MSIX Draft browser adapter is not enabled")

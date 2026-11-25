@@ -12,7 +12,7 @@ from unittest.mock import patch
 import urllib.error
 
 from uploader.core import UploadError
-from uploader.run import github_download, main, resolve_job_config
+from uploader.run import github_download, main, resolve_job_config, _save_run_receipt
 
 
 class Response:
@@ -152,6 +152,19 @@ class UploaderRunTests(unittest.TestCase):
             download.assert_not_called()
             result = json.loads(stdout.getvalue())
             self.assertEqual(result["error_code"], "UPLOAD_SCOPE_NOT_APPROVED")
+
+    def test_run_receipt_never_overwrites_existing_receipt_json(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp); legacy=root/"receipt.json"
+            legacy.write_text('{"prior":"preserve"}\n',encoding="utf-8")
+            job_config={"product_id":"9PDL4ZWSB45P","submission_id":"1152921505702212222",
+                        "path":"DataContractSchemaDrift_1.0.0.0_x64.msix"}
+            _save_run_receipt(root,job_config,None,"FAILED","NOT_CONFIRMED",{"error_code":"BROWSER_CONNECTION_FAILED"},None)
+            self.assertEqual(json.loads(legacy.read_text(encoding="utf-8")),{"prior":"preserve"})
+            new_receipts=list(root.glob("receipt-*.json"))
+            self.assertEqual(len(new_receipts),1)
+            saved=json.loads(new_receipts[0].read_text(encoding="utf-8"))
+            self.assertEqual(saved["result"],"FAILED")
 
 
 if __name__ == "__main__": unittest.main()

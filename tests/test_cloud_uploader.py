@@ -147,4 +147,37 @@ class CloudUploaderTests(unittest.TestCase):
             with self.assertRaisesRegex(UploadError,"manifest does not match"):
                 verify_file(wrong,p)
 
+    def test_cdp_preflight_failure_does_not_consume_remote_upload_attempt(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp); p=root/"pkg.msix"; make_msix(p)
+            digest=hashlib.sha256(p.read_bytes()).hexdigest()
+            adapter_calls=[]
+            with JobLedger(root/"ledger.sqlite3") as ledger:
+                with self.assertRaisesRegex(UploadError,"tab selection failed"):
+                    process_job({**CONFIG,"upload_approved":True},p,ledger,
+                        expected_sha256=digest,dry_run=False,
+                        live_adapter=lambda *_: adapter_calls.append("upload"),
+                        live_preflight_adapter=lambda *_, **__: (_ for _ in ()).throw(
+                            UploadError("HOLD_NO_MATCHING_PRODUCT_TAB","tab selection failed")))
+                rows=ledger.db.execute("SELECT attempts,status FROM uploads").fetchall()
+            self.assertEqual(rows,[])
+            self.assertEqual(adapter_calls,[])
+
+    def test_preflight_completes_before_upload_attempt_is_reserved(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp); p=root/"pkg.msix"; make_msix(p)
+            digest=hashlib.sha256(p.read_bytes()).hexdigest()
+            order=[]
+            def preflight(*_, **__):
+                order.append("preflight")
+                return {"live_adapter":lambda *_:(order.append("upload") or {"partner_center_confirmed":True})}
+            with JobLedger(root/"ledger.sqlite3") as ledger:
+                result=process_job({**CONFIG,"upload_approved":True},p,ledger,
+                    expected_sha256=digest,dry_run=False,live_adapter=lambda *_:None,
+                    live_preflight_adapter=preflight)
+                attempts=ledger.db.execute("SELECT attempts FROM uploads").fetchone()[0]
+            self.assertEqual(order,["preflight","upload"])
+            self.assertEqual(attempts,1)
+            self.assertEqual(result["status"],"SUCCEEDED")
+
 if __name__=="__main__": unittest.main()

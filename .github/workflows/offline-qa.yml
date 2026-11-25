@@ -21,7 +21,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Compile
-        run: python -m compileall -q all_auto tests
+        run: python -m compileall -q all_auto tests uploader scripts
       - name: Test (no Partner Center, no credentials)
         run: python -m unittest discover -s tests -v
       - name: Parse PowerShell scripts

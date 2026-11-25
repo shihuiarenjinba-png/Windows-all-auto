@@ -14,12 +14,14 @@ WindowsアプリやゲームをMicrosoft Storeへ登録するときの **GitHub 
 
 ## Cloud Auto Uploader（2026-11-23）
 - 過去のPartner Center実操作証跡を再利用し、認証済みPlaywright/CDPブラウザーによる既存Draft `Packages` upload → Microsoft analysis → Save → Overview reload/reconcileを実装。
-- 既知の成功画面マップを `uploader/partner_center_browser.py` に移植。設定ファイルにはProduct ID、Submission ID、MSIXのGitHub repo/ref/path、期待SHA、Identity/Publisher/Version/Architectureを保持する。
+- 既知の成功画面マップを `uploader/partner_center_browser.py` に移植。対象Draft URLを優先する同一selectorをBrowser Doctorと実行経路で共有し、CDP接続・認証・Draft行照合が終わるまでupload試行を予約しない。設定ファイルにはProduct ID、Submission ID、MSIXのGitHub repo/ref/path、期待SHA、Identity/Publisher/Version/Architectureを保持する。
 - 実行例: `python -m uploader.run --product data-contract-auditor`（dry-run）、承認済みかつ凍結SHA・認証済みCDP sessionがある場合だけ `--execute`。
 - GitHub Actionsはworkflow dispatch / `repository_dispatch: store-package-ready`から実行可能。CDP endpointはGitHub Secret `PARTNER_CENTER_CDP_URL`。ログに接続URLを出さない。ログイン、MFA、CAPTCHAは自動化しない。
-- 現在のData Contract Auditorは正式MSIXが指定source SHAに存在せず、SHAも未確定、実機UI QAも未完了、`upload_approved=false`。Live package writeは意図どおりHOLD。QA_UNSIGNED packageは対象にしない。
+- Data Contract Auditorは指定source SHAのSHA固定済みunsigned候補と既存Draft向けowner upload approvalを持つ。package固有のインストール/実行QAは未確認であり、CDP Doctorが`READY_*`になり、Product/Draftの実read-only照合を通るまでLive writeは停止する。QA_UNSIGNED packageは対象にしない。
 - CertificationとPublishの操作コードはない。公開実績とPackage Draft保存実績を混同しない。
 - 詳細は [Cloud Auto Uploader runbook](docs/automation/CLOUD_AUTO_UPLOADER.md) と [browser route teacher receipt](ops/cloud_uploader_browser_route_teacher_v1.json) を参照。
+
+ローカルCDPの読み取り専用診断: `python scripts/partner_center_browser_doctor.py --product data-contract-auditor --cdp-url http://127.0.0.1:9223`。`READY_EXACT_DRAFT_TAB` のときだけ、設定済みのProduct/Draft routeが一意です。Browser Doctorはページ遷移、クリック、ファイル選択、Saveを行いません。
 
 ## 関連リポジトリ（役割を分離）
 | 内部ツール | 業務 | 運用上の位置付け |

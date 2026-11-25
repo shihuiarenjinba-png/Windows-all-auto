@@ -5,7 +5,7 @@ import unittest
 import zipfile
 from pathlib import Path
 
-from uploader.core import verify_file
+from uploader.core import UploadError, verify_file
 from uploader.receipts import new_execution_receipt
 from uploader.partner_center_browser import (
     FILE_INPUT, PACKAGES_COMPLETE, PACKAGE_NAME_SELECTOR, WARNING_SELECTOR,
@@ -133,6 +133,28 @@ class PartnerCenterBrowserTests(unittest.TestCase):
                 "PACKAGE_UPLOAD_REQUIRED", "PACKAGE_WARNING_REVIEW", "PACKAGE_SAVE_REQUIRED",
                 "PACKAGES_SAVED", "OVERVIEW_RELOADED", "PACKAGES_REOPENED_RETAINED",
             ])
+
+    def test_preflight_allows_exact_existing_file_only_for_local_reconciliation(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            package = Path(tmp) / "FolderAutomationHub_1.0.0.0_x64_StoreDraft_UNSIGNED.msix"
+            self.make_package(package)
+            config = {
+                "schema_version": 1, **CONFIG, "repository": "owner/repo", "ref": "a" * 40,
+                "path": package.name, "version": "1.0.0.0", "destination": "microsoft_partner_center_existing_draft",
+                "identity_name": "OkinawaDesktopTools.FolderAutomationEngine",
+                "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC", "architecture": "x64",
+                "expected_existing_package_names": [], "upload_approved": False,
+            }
+            job = verify_file(config, package)
+            page = FakePage(job); page.package_present = True
+            port = PartnerCenterBrowserPort(page, config)
+            with self.assertRaisesRegex(UploadError, "package rows"):
+                port.preflight_target(job, recovery_required=False)
+            report = port.preflight_target(job, recovery_required=True)
+            self.assertEqual(report["status"], "READY_EXACT_DRAFT_TAB")
+            self.assertEqual(report["existing_package_rows"], [job.file_name])
+            self.assertEqual(page.upload_calls, 0)
+            self.assertEqual(page.save_calls, 0)
 
     def test_existing_filename_is_not_saved_again_without_hash_bound_receipt(self):
         with tempfile.TemporaryDirectory() as tmp:

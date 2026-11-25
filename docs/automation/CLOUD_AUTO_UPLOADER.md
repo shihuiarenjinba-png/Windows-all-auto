@@ -57,7 +57,17 @@ This creates `.venv-store-uploader` in the repository and installs the pinned Pl
 .\scripts\start_partner_center_edge_cdp.ps1
 ```
 
-If Edge CDP was already active on port 9223, the script reuses it and does not launch another window. Otherwise it opens a dedicated local Edge profile at `%LOCALAPPDATA%\\PartnerCenterUploaderEdge`. Sign in to Partner Center manually in that window and complete MFA there. Keep exactly one Partner Center tab open in that CDP session. The script does not read credentials or automate sign-in.
+If Edge CDP was already active on port 9223, the script reuses it and does not launch another window. Otherwise it opens a dedicated local Edge profile at `%LOCALAPPDATA%\\PartnerCenterUploaderEdge`; sign in manually in that window and complete MFA there. The uploader selects the exact configured Product/Draft tab even when unrelated Partner Center tabs are open. The script does not read credentials or automate sign-in.
+
+Run the read-only Browser Doctor before any live write:
+
+```powershell
+& .\.venv-store-uploader\Scripts\python.exe scripts\partner_center_browser_doctor.py `
+  --product data-contract-auditor `
+  --cdp-url http://127.0.0.1:9223
+```
+
+Proceed only for `READY_EXACT_DRAFT_TAB` (or another explicitly reviewed `READY_*` state). `HOLD_*` stops. Doctor prints the Edge version, context/page counts, safe host/path/title and the selected page. It never navigates, clicks, selects a file, saves, or closes browser pages. Query strings and fragments are omitted. The uploader uses the same selector and performs a read-only Product/Identity/Draft/package-row preflight before reserving an upload attempt.
 
 ### 4. One product dry run
 
@@ -85,7 +95,7 @@ After confirming the dry-run receipt and signing in to the dedicated local Edge 
 .\scripts\upload_authorized_dca_package.ps1 -Execute
 ```
 
-The shortcut uses the default package root `C:\Users\aaron\Desktop\portfolio-audit\_runtime\store-fleet-sync\attempt-20261125`. Use `-PackageRoot <path>` only if the current attempt directory is elsewhere.
+The shortcut uses the default package root `C:\Users\aaron\Desktop\portfolio-audit\_runtime\store-fleet-sync\attempt-20261125`. Use `-PackageRoot <path>` only if the current attempt directory is elsewhere. It requires exactly one file with the registered name and validates its frozen SHA/Manifest in dry-run first.
 
 This authorization is limited to one SHA-bound package upload/Save/reload against the existing Draft. It does not authorize certification or publication. The artifact currently reports `certification_ready: false` and `sales_release: HOLD`, with a commercial-license evidence warning. Other five products remain dry-run only until their owner-approved version/artwork or runtime/source integration blockers are resolved.
 
@@ -98,7 +108,7 @@ This authorization is limited to one SHA-bound package upload/Save/reload agains
   -Execute
 ```
 
-`-Execute` is only for a product whose job config has `upload_approved: true` and a pinned 64-character `expected_sha256`. The script checks that local Edge CDP is responding at `http://127.0.0.1:9223/json/version` before attaching. CDP is restricted to loopback addresses for this route. No Microsoft username, password, MFA code, browser cookie, or access token is placed in a command line or log.
+`-Execute` is only for a product whose job config has `upload_approved: true` and a pinned 64-character `expected_sha256`. The script checks that local Edge CDP is responding at `http://127.0.0.1:9223/json/version` before attaching. CDP is restricted to loopback addresses for this route. CDP connection, authenticated session, exact Product/Draft route and existing package rows are verified before the SQLite upload attempt counter is incremented. A local connection/tab/preflight failure writes a separate receipt but consumes no remote upload attempt. Existing `receipt.json` is never replaced; later runs get unique `receipt-<id>.json` files. No Microsoft username, password, MFA code, browser cookie, or access token is placed in a command line or log.
 
 The existing browser adapter then re-reads the exact Product Identity and configured Draft Packages route, checks existing package rows and Windows Desktop selection, uploads the exact MSIX, waits for Microsoft package validation, presses Packages `Save`, reloads Overview, and reopens Packages to confirm retention. Unknown warnings, validation errors, changed UI, ambiguous package rows, or timeouts stop for reconciliation; never blindly retry.
 
@@ -147,10 +157,9 @@ If the durable ledger cannot be read completely, the worker fails closed. If the
 - A verified GitHub Actions CDP connection or live Data Contract Auditor upload.
 
 
-## Latest verification checkpoint — 2026-11-25
+## Latest verification checkpoint — 2026-11-26
 
-- Central review branch HEAD: `0597a56fc54074c8e68524f3d5358cf44ae44870`.
-- Windows and Ubuntu CI: 391 tests PASS on each runner; Windows has 2 existing skips.
-- Windows PowerShell Parser: all `.ps1` entrypoints parsed successfully.
-- Workflow: https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/45620671973
-- Live Partner Center upload was not run by the GitHub-side implementation because the authenticated local Edge session was unavailable to this operation. Use the DCA shortcut only from the operator's local Windows checkout after updating it to this branch and signing in manually.
+- Base branch synchronized to `835f151942147a2a154eebfdf9a6952892646b2f`; local follow-up commit/CI URL will be recorded after verification.
+- Local unit tests, Windows PowerShell Parser and uploader Bootstrap were run in the operator environment; the current test count and result are in this task's execution report.
+- Browser Doctor was attempted at loopback port 9223. If it reports CDP unavailable or any `HOLD_*`, do not run the upload command. Start/activate the manually authenticated local Edge CDP session, then rerun Doctor.
+- The approved DCA MSIX still has package-specific install/runtime verification unresolved; do not claim Partner Center upload or Packages Save until the separate local run confirms it.

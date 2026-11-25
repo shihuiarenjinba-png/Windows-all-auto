@@ -63,7 +63,7 @@ def main():
     parser.add_argument("--receipt-ledger", type=Path)
     parser.add_argument("--execute", action="store_true", help="Upload to the configured existing Draft, Save Packages, and verify after reload")
     args = parser.parse_args()
-    config={}; package=None; job=None; journal=None; outcome="FAILED"; detail={}; code=""
+    config={}; package=None; job=None; journal=None; outcome="FAILED"; detail={}; code=""; browser_connection=None
     try:
         config_file=resolve_job_config(config_path=args.config, product_key=args.product)
         config=validate_config(json.loads(config_file.read_text(encoding="utf-8")))
@@ -101,14 +101,24 @@ def main():
                         max_bytes=int(config.get("max_bytes",4_000_000_000)))
         with JobLedger(args.workdir/"ledger.sqlite3") as ledger:
             if args.execute:
-                def browser_operation(job, package_path, previous_receipt=None, *, reconcile=False):
-                    with PartnerCenterCDPConnection(os.environ["PARTNER_CENTER_CDP_URL"], config) as port:
-                        if reconcile:
-                            return port.reconcile_ambiguous_upload(job, package_path, previous_receipt)
-                        return port.upload_save_and_reconcile(job, package_path)
+                def browser_preflight(job, package_path, *, recovery_required=False):
+                    nonlocal browser_connection
+                    browser_connection = PartnerCenterCDPConnection(os.environ["PARTNER_CENTER_CDP_URL"], config)
+                    port = browser_connection.__enter__()
+                    try:
+                        preflight = port.preflight_target(job, recovery_required=recovery_required)
+                    except Exception:
+                        browser_connection.__exit__(None, None, None)
+                        browser_connection = None
+                        raise
+                    return {
+                        "preflight": preflight,
+                        "live_adapter": lambda current_job, current_path: port.upload_save_and_reconcile(current_job, current_path),
+                        "reconcile_adapter": lambda current_job, current_path, previous: port.reconcile_ambiguous_upload(current_job, current_path, previous),
+                    }
                 result=process_job(config,package,ledger,expected_sha256=expected,dry_run=False,
-                                   live_adapter=lambda job,path: browser_operation(job,path),
-                                   reconcile_adapter=lambda job,path,previous: browser_operation(job,path,previous,reconcile=True),
+                                   live_preflight_adapter=browser_preflight,
+                                   live_adapter=lambda job,path: None,
                                    receipt_journal=journal)
             else:
                 result=process_job(config,package,ledger,expected_sha256=expected,dry_run=True,receipt_journal=journal)
@@ -124,6 +134,9 @@ def main():
                 journal=ReceiptJournal(args.receipt_ledger or (args.workdir/"durable-ledger"/"receipts"))
             _save_run_receipt(args.workdir,config,job,"FAILED",_confirmation_for_error(exc.code),detail,journal)
         print(json.dumps({"status":"FAILED","error_code":exc.code,"message":str(exc)},sort_keys=True)); return 2
+    finally:
+        if browser_connection is not None:
+            browser_connection.__exit__(None, None, None)
 
 def _confirmation_for_error(code: str) -> str:
     if code in {"UPLOAD_RESULT_UNKNOWN","UPLOAD_RESULT_UNCONFIRMED","RECONCILE_REQUIRED","RECONCILE_UNRESOLVED"}:
@@ -142,11 +155,13 @@ def _save_run_receipt(workdir: Path, config: dict, job, outcome: str, confirmati
         details=details,
     )
     receipt["receipt_id"]=uuid4().hex
+    # Preserve the historical receipt.json without replacing it. Every later
+    # run receives its own immutable execution receipt.
     receipt_path=workdir/"receipt.json"
-    temp=workdir/(".receipt."+uuid4().hex+".tmp")
-    with temp.open("x",encoding="utf-8",newline="\n") as stream:
+    if receipt_path.exists():
+        receipt_path=workdir/f"receipt-{receipt['receipt_id']}.json"
+    with receipt_path.open("x",encoding="utf-8",newline="\n") as stream:
         json.dump(receipt,stream,ensure_ascii=False,sort_keys=True,indent=2); stream.write("\n")
-    os.replace(temp,receipt_path)
     if journal is not None:
         journal.append(receipt)
 

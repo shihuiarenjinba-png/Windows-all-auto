@@ -18,7 +18,7 @@ class FakeChromium:
         self.contexts = contexts or []
         self.error = error
 
-    def connect_over_cdp(self, _url):
+    def connect_over_cdp(self, _url, **_kwargs):
         if self.error is not None:
             raise self.error
         return types.SimpleNamespace(contexts=self.contexts)
@@ -52,13 +52,14 @@ class PartnerCenterCDPConnectionDiagnosticsTests(unittest.TestCase):
     def test_tab_count_error_is_not_masked_as_browser_connection_failure(self):
         runtime = FakeRuntime(FakeChromium(contexts=[]))
         modules = self._playwright_modules(runtime)
-        connection = PartnerCenterCDPConnection("http://127.0.0.1:9223", {})
+        connection = PartnerCenterCDPConnection("http://127.0.0.1:9223", {
+            "product_id": "9PDL4ZWSB45P", "submission_id": "1152921505702212222"})
+        connection._fetch_cdp_version = lambda: {"Browser": "Edg/157.0.4341.46"}
         with patch.dict(sys.modules, modules):
             with self.assertRaises(UploadError) as caught:
                 connection.__enter__()
 
-        self.assertEqual(caught.exception.code, "PARTNER_CENTER_TAB_AMBIGUOUS")
-        self.assertIn("found 0", str(caught.exception))
+        self.assertEqual(caught.exception.code, "HOLD_NO_MATCHING_PRODUCT_TAB")
         self.assertTrue(runtime.stopped)
 
     def test_cdp_exception_is_included_but_websocket_identifier_is_redacted(self):
@@ -68,7 +69,9 @@ class PartnerCenterCDPConnectionDiagnosticsTests(unittest.TestCase):
         )
         runtime = FakeRuntime(FakeChromium(error=failure))
         modules = self._playwright_modules(runtime)
-        connection = PartnerCenterCDPConnection("http://127.0.0.1:9223", {})
+        connection = PartnerCenterCDPConnection("http://127.0.0.1:9223", {
+            "product_id": "9PDL4ZWSB45P", "submission_id": "1152921505702212222"})
+        connection._fetch_cdp_version = lambda: {"Browser": "Edg/157.0.4341.46"}
         with patch.dict(sys.modules, modules):
             with self.assertRaises(UploadError) as caught:
                 connection.__enter__()
@@ -88,7 +91,9 @@ class PartnerCenterCDPConnectionDiagnosticsTests(unittest.TestCase):
             contexts=[types.SimpleNamespace(pages=[page])]
         ))
         modules = self._playwright_modules(runtime)
-        connection = PartnerCenterCDPConnection("http://127.0.0.1:9223", {})
+        connection = PartnerCenterCDPConnection("http://127.0.0.1:9223", {
+            "product_id": "9PDL4ZWSB45P", "submission_id": "1152921505702212222"})
+        connection._fetch_cdp_version = lambda: {"Browser": "Edg/157.0.4341.46"}
         with patch.dict(sys.modules, modules):
             port = connection.__enter__()
 

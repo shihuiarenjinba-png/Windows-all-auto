@@ -1,6 +1,7 @@
 __pycache__/
 *.py[cod]
 .venv/
+.venv-store-uploader/
 .pytest_cache/
 qa/
 reports/
