@@ -40,11 +40,11 @@ Related artifacts:
 - `WorkflowAutomationHub-Windows` — ID `14331959551`, 36,410,296 bytes;
 - `WorkflowAutomationHub-GUI-Review` — ID `14331614716`, 212,696 bytes.
 
-The run log emitted generated handoff hash `512da1ab4449a69b02901baf9c8eaff6577f1e58d336f43ef608f4fbc3892a97` for `WorkflowAutomationHub_1.0.0.0_x64_StoreDraft_UNSIGNED.msix`. This is the hash stored in the generated handoff; download the artifact and independently recompute it locally.
+The run log emitted generated handoff hash `512da1ab4449a69b02901baf9c8eaff6577f1e58d336f43ef608f4fbc3892a97` for `WorkflowAutomationHub_1.0.0.0_x64_StoreDraft_UNSIGNED.msix`. The operator reports that the binary was downloaded and its local SHA matches this value; Manifest Identity, Publisher, Version, and Architecture checks also passed. Signature status is `NotSigned`.
 
-The source manifest explicitly labels version `1.0.0.0` as a technical draft only, states that the accepted Store version history is not verified, says temporary technical logos must be replaced, and sets `submission_allowed=false`. The current Partner Center observation shows no Submission and an available `Start submission` control; it was not clicked.
+The source manifest explicitly labels version `1.0.0.0` as a technical draft only, states that the accepted Store version history is not verified, says temporary technical logos must be replaced, and sets `submission_allowed=false`. The local verification phase did not live-recheck Partner Center, so current Submission state remains unverified. No Submission was started.
 
-This is the best-provenanced remote MSIX candidate found so far, but it is not a release package. Download the artifact locally, extract the handoff and SHA file, verify the binary digest, and keep it as a QA/inspection candidate only.
+This is an unsigned technical draft with its binary hash and manifest checked, not a commercial release package. Owner Version/asset approval and a fresh read-only Partner Center check are still required before any potential submission.
 
 Workflow: https://github.com/shihuiarenjinba-png/workflow-automation-hub/actions/runs/44093505473
 
