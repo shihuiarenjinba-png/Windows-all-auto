@@ -162,6 +162,23 @@
           "install_status": "ACCESS_DENIED",
           "exe_launch_status": "TIMEOUT",
           "functional_qa_completed": false
+        },
+        "artifact_inspection_20261125": {
+          "artifact_id": 15005358857,
+          "inspected_archive": "dca-formal-candidate-15005358857.zip",
+          "source_sha": "722ec7a077d2c6109e657c4ee661c9f3d06a4506",
+          "sha256_recomputed_by_assistant": "e2ca6fd81720dc270667e65db05404b6efdde5b2c0712bee2853e0608767db05",
+          "recomputed_sha_matches_builder": true,
+          "msix_manifest_identity": "OkinawaDesktopTools.DataContractAuditor",
+          "msix_manifest_publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+          "msix_manifest_version": "1.0.0.0",
+          "msix_manifest_architecture": "x64",
+          "internal_store_preflight_windows_qa": "WINDOWS_REAL_DEVICE_QA_PASS",
+          "later_operator_reported_windows_qa": "ACCESS_DENIED_AND_EXE_LAUNCH_TIMEOUT",
+          "qa_evidence_conflict": "UNRESOLVED",
+          "artwork_visual_inspection": "generic generated document/check artwork; owner approval not verified",
+          "certification_ready": false,
+          "sales_release": "HOLD"
         }
       }
     },
