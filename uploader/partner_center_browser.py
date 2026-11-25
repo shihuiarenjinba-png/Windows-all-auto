@@ -279,7 +279,7 @@ class PartnerCenterCDPConnection:
             # Keep the useful Playwright/CDP exception while removing local
             # WebSocket endpoint identifiers and any query-string material.
             detail = f"{type(exc).__name__}: {exc}"
-            detail = re.sub(r"wss?://[^\\s'\\"<>]+", "<CDP WebSocket URL redacted>", detail)
+            detail = re.sub(r"wss?://\\S+", "<CDP WebSocket URL redacted>", detail)
             detail = detail.replace(self.cdp_url, "<CDP endpoint>")
             detail = " ".join(detail.split())[:600]
             raise UploadError(
