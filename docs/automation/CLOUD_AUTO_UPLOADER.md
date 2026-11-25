@@ -159,7 +159,8 @@ If the durable ledger cannot be read completely, the worker fails closed. If the
 
 ## Latest verification checkpoint — 2026-11-26
 
-- Base branch synchronized to `835f151942147a2a154eebfdf9a6952892646b2f`; local follow-up commit/CI URL will be recorded after verification.
-- Local unit tests, Windows PowerShell Parser and uploader Bootstrap were run in the operator environment; the current test count and result are in this task's execution report.
-- Browser Doctor was attempted at loopback port 9223. If it reports CDP unavailable or any `HOLD_*`, do not run the upload command. Start/activate the manually authenticated local Edge CDP session, then rerun Doctor.
-- The approved DCA MSIX still has package-specific install/runtime verification unresolved; do not claim Partner Center upload or Packages Save until the separate local run confirms it.
+- Updated branch HEAD: `f582aebeca84db1296b35aa709bf6393856ea5da`.
+- Windows and Ubuntu Actions: 405 tests PASS on each runner; Windows also passed PowerShell parsing, wrapper forwarding, and Playwright bootstrap. Run: https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/45652446260
+- Local full suite: 405 tests PASS (2 existing skips); compileall PASS; PowerShell Parser PASS for all 8 scripts; pinned Playwright 1.56.0 Bootstrap PASS.
+- The exact DCA MSIX local hash and Manifest match the registered tuple; isolated dry-run returned `DRY_RUN`. Browser Doctor returned `HOLD_CDP_OR_CONFIG` because `127.0.0.1:9223` was unavailable. No upload attempt or Packages Save was performed.
+- Start/activate the manually authenticated local Edge CDP session and rerun Doctor. Package-specific install/runtime verification remains unresolved; do not claim Partner Center upload or Packages Save until a later local run confirms it.
