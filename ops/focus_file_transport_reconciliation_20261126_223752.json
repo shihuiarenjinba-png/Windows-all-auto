@@ -1,0 +1,309 @@
+{
+  "schema_version": 1,
+  "path": "ops/focus_file_transport_reconciliation_20261126_223752.json",
+  "observed_at_utc": "2026-11-25T22:37:52Z",
+  "status": "HOLD",
+  "e2e_pass": false,
+  "central_repository": "shihuiarenjinba-png/Windows-all-auto",
+  "central_pr": 165,
+  "central_branch": "codex/e2e-artifact-custody-20261114",
+  "central_head": "6ff05c0a3b682ade5016894c08c9edfbdf75e375",
+  "central_tested_head_sha": "6ff05c0a3b682ade5016894c08c9edfbdf75e375",
+  "previous_central_head_sha": "a49f1673308fa5ad1ed5671da3865d7d36c86733",
+  "pr165": {
+    "head_sha": "6ff05c0a3b682ade5016894c08c9edfbdf75e375",
+    "parent_sha": "dbd714347c198e6922ac6596b64240c61c7d4db4",
+    "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
+    "exact_head_ci": [
+      {
+        "run_id": 45707767241,
+        "event": "pull_request",
+        "conclusion": "success",
+        "head_sha": "6ff05c0a3b682ade5016894c08c9edfbdf75e375",
+        "workflow": "Windows E2E transport fail-closed regression",
+        "job": "transport-regression"
+      },
+      {
+        "run_id": 45707766948,
+        "event": "pull_request",
+        "conclusion": "success",
+        "head_sha": "6ff05c0a3b682ade5016894c08c9edfbdf75e375",
+        "workflow": "GitHub artifact custody fail-closed regression",
+        "job": "custody-regression"
+      },
+      {
+        "run_id": 45707766837,
+        "event": "pull_request",
+        "conclusion": "success",
+        "head_sha": "6ff05c0a3b682ade5016894c08c9edfbdf75e375",
+        "workflow": "Windows-all-auto Offline QA",
+        "jobs": [
+          "ubuntu-latest",
+          "windows-latest"
+        ]
+      }
+    ],
+    "parent_exact_head_ci_status": "PASS_EXACT_HEAD_CI",
+    "parent_exact_head_ci": [
+      {
+        "run_id": 45707537321,
+        "event": "pull_request",
+        "conclusion": "success",
+        "head_sha": "dbd714347c198e6922ac6596b64240c61c7d4db4",
+        "workflow": "Windows-all-auto Offline QA"
+      },
+      {
+        "run_id": 45707537431,
+        "event": "pull_request",
+        "conclusion": "success",
+        "head_sha": "dbd714347c198e6922ac6596b64240c61c7d4db4",
+        "workflow": "Windows E2E transport fail-closed regression"
+      },
+      {
+        "run_id": 45707537270,
+        "event": "pull_request",
+        "conclusion": "success",
+        "head_sha": "dbd714347c198e6922ac6596b64240c61c7d4db4",
+        "workflow": "GitHub artifact custody fail-closed regression"
+      }
+    ],
+    "repository_ci_is_not_product_e2e": true
+  },
+  "pr161": {
+    "number": 161,
+    "head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
+    "exact_head_ci_status": "PASS_OFFLINE_QA_ONLY",
+    "exact_head_ci": [
+      {
+        "run_id": 42712757936,
+        "conclusion": "success",
+        "head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
+        "workflow": "Windows-all-auto Offline QA"
+      }
+    ],
+    "product_e2e": false
+  },
+  "pr171": {
+    "number": 171,
+    "head_sha": "764721021f13be96364529650b44fb439770bac9",
+    "exact_head_ci_status": "PASS_OFFLINE_QA_ONLY",
+    "exact_head_ci": [
+      {
+        "run_id": 44437197470,
+        "conclusion": "success",
+        "head_sha": "764721021f13be96364529650b44fb439770bac9",
+        "workflow": "Windows-all-auto Offline QA"
+      }
+    ],
+    "store_upload_bridge_present": true,
+    "store_upload_dry_run_started": false,
+    "eligible_fresh_unsold_products": 0,
+    "product_e2e": false
+  },
+  "pr183": {
+    "number": 183,
+    "branch": "codex/36-local-pull-custody-restack-20261126",
+    "head_sha": "aec507cebf55f0eda95c735cc5fa1542f80d9a46",
+    "base_sha": "77068e3d1f67e2ce1a2ea09ffb9e38684cc7de0c",
+    "comparison_to_current_pr165_head": {
+      "status": "diverged",
+      "ahead_by": 12,
+      "behind_by": 64,
+      "total_commits": 12,
+      "merge_base_sha": "77068e3d1f67e2ce1a2ea09ffb9e38684cc7de0c"
+    },
+    "changed_files": 11,
+    "decision": "DO_NOT_RESTACK_WHOLE_PR__SELECTIVELY_REAPPLY_LOCAL_PULL_CUSTODY"
+  },
+  "products": {
+    "focus_session_desk": {
+      "product": "Focus Session Desk",
+      "lane": "APP",
+      "hold_class": "DELIVERY_HOLD",
+      "product_frozen_for_package": true,
+      "current_source_repository": "shihuiarenjinba-png/AI-App-Factory",
+      "current_source_pr": 94,
+      "current_source_branch": "codex/focus-store-assets-gate-20261118",
+      "current_source_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+      "approved_identity_path": "products/focus-session-desk/store/approved-identity.json",
+      "approved_identity_blob_sha": "00c56e85ec7590783284e372ba100a3127614971",
+      "approved_identity_request_id": "app-focus-session-desk-8b00bc4e9082",
+      "approved_identity_source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+      "current_source_identity_binding_status": "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE",
+      "current_source_request_id": "app-focus-session-desk-fb6293839bc7",
+      "current_source_request_status": "GENERATED__DRY_RUN_ARTIFACT_VERIFIED__IDENTITY_READBACK_PENDING",
+      "current_source_request_branch": "codex/focus-source-request-fb6293839bc7",
+      "current_source_request_branch_head_sha": "45560fb36eee3f2672ba1a1591f89edc6526865a",
+      "current_source_request_run_id": 45671921196,
+      "current_source_request_artifact_id": 15049692591,
+      "current_source_request_artifact_sha256": "c8b15058243982d90699dfb2a885a71b064a0a02b01dcb3c7492dec83ec3afae",
+      "current_source_request_artifact_bytes": 2687,
+      "current_source_request_artifact_verified": true,
+      "current_source_request_dry_run": true,
+      "request_submitted": false,
+      "partner_center_write": false,
+      "identity_write": false,
+      "msix_build": false,
+      "official_identity_status": "NOT_COLLECTED",
+      "package_version": null,
+      "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
+      "msix_export": {
+        "run_id": 44779273420,
+        "status": "FAILED_MISSING_VERIFIED_VERSION",
+        "artifact_count": 0,
+        "exact_blocker": "MSIX_BUILD_HOLD: Missing verified version"
+      },
+      "assets": {
+        "status": "COMMITTED_ON_CURRENT_PR94_HEAD",
+        "owner": "00",
+        "raw_png_bytes_rehashed_in_this_run": false,
+        "StoreLogo": {
+          "blob_sha": "8017427aabf0e30168a88353588dc2ffdc2cba6d",
+          "dimensions": "300x300"
+        },
+        "Square150": {
+          "blob_sha": "c6060306f202b662831039b95b1352689da023c7",
+          "dimensions": "150x150"
+        },
+        "Square44": {
+          "blob_sha": "466a795ea01e34a28ac1db9aa7dcf3308464dbd0",
+          "dimensions": "44x44"
+        }
+      },
+      "product_quality_score": 54,
+      "sale_decision": "DO_NOT_SELL_BELOW_80",
+      "real_msix": false,
+      "github_backlog_receipt": false,
+      "local_pull_receipt": false,
+      "local_checker_receipt": false,
+      "local_gui_install_receipt": false,
+      "product_e2e_status": "HOLD"
+    },
+    "file_integrity_ledger": {
+      "product": "File Integrity Ledger",
+      "lane": "APP",
+      "hold_class": "DELIVERY_HOLD",
+      "product_frozen_for_package": true,
+      "current_source_repository": "shihuiarenjinba-png/AI-App-Factory",
+      "current_source_pr": 115,
+      "current_source_branch": "codex/integrity-pr95-source-request-integration-20261125",
+      "current_source_sha": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
+      "current_source_identity_binding_status": "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE",
+      "historical_approved_identity_request_id": "app-file-integrity-ledger-d1108d12f7d1",
+      "historical_approved_identity_source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
+      "current_source_approved_identity_present": false,
+      "current_source_request_id": "app-file-integrity-ledger-33d612be2774",
+      "current_source_request_status": "DRY_RUN__OFFICIAL_IDENTITY_UNVERIFIED__PACKAGE_NOT_BUILT__LOCAL_WINDOWS_BUILD_NOT_IMPLEMENTED",
+      "current_source_request_run_id": 45422895649,
+      "current_source_request_artifact_id": 14934034365,
+      "current_source_request_artifact_sha256": "697528b3b0769e3962eebfa0efcdcb026618cd378d97fc60c4f234017882527e",
+      "current_source_request_sha256": "dc477b03dd8eb024dd4145fb56cace5d57531a9ae3bbba74a487631f823b2557",
+      "current_source_request_artifact_bytes": 1958,
+      "current_source_request_artifact_verified": true,
+      "current_source_request_dry_run": true,
+      "request_submitted": false,
+      "partner_center_write": false,
+      "identity_write": false,
+      "official_identity_status": "UNVERIFIED",
+      "package_status": "NOT_BUILT",
+      "package_version": null,
+      "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
+      "human_owner_visual_review_required": true,
+      "visual_review_status": "HUMAN_OWNER_REVIEW_REQUIRED",
+      "msix_export": {
+        "run_id": 45422811552,
+        "status": "SKIPPED_NO_ARTIFACT",
+        "artifact_count": 0,
+        "selection_gate_output": "MSIX_SELECTION_HOLD: approved Identity absent; do not invent Store IDs"
+      },
+      "assets": {
+        "status": "PRESERVED_FROM_PR95",
+        "owner": "00",
+        "regenerated": false,
+        "StoreLogo": {
+          "blob_sha": "e3c9a9426a1971f21175b9b045d4d5fef83f97d5",
+          "sha256": "224fa777280cf61877c14146e920fca32bb90bff6f0cea3df4ed0ac77c0645a9"
+        },
+        "Square150": {
+          "blob_sha": "df892bd2fcf7b56f9facd94054b2b1385313b030",
+          "sha256": "e00136c7a319756ccc48c2dc50136f5872e272e806cd592a6beb8922bbb1742"
+        },
+        "Square44": {
+          "blob_sha": "d57e7a25d2a9eaa2b54d00c610f3a1ad7d4a4d49",
+          "sha256": "bd61099427a770f8dff247f0f6928e5d50ba2cd8265797c7f13952e96147d70d"
+        }
+      },
+      "real_msix": false,
+      "github_backlog_receipt": false,
+      "local_pull_receipt": false,
+      "local_checker_receipt": false,
+      "local_gui_install_receipt": false,
+      "product_e2e_status": "HOLD"
+    }
+  },
+  "first_unconnected_interval": {
+    "status": "BLOCKED_BEFORE_REAL_MSIX_BUILD",
+    "focus_session_desk": [
+      "CURRENT_SOURCE_IDENTITY_REVALIDATION_REQUIRED",
+      "AUTHORITATIVE_PACKAGE_VERSION_REQUIRED",
+      "MSIX_BUILD_HOLD_MISSING_VERIFIED_VERSION"
+    ],
+    "file_integrity_ledger": [
+      "CURRENT_SOURCE_IDENTITY_REVALIDATION_REQUIRED",
+      "HUMAN_OWNER_VISUAL_REVIEW_REQUIRED",
+      "AUTHORITATIVE_PACKAGE_VERSION_REQUIRED",
+      "MSIX_SELECTION_HOLD_APPROVED_IDENTITY_ABSENT"
+    ],
+    "next_after_resolution": [
+      "READ_ONLY_CURRENT_SOURCE_IDENTITY_AND_VERSION_READBACK",
+      "REAL_MSIX_BUILD",
+      "GITHUB_ARTIFACT_ARCHIVE_AND_PACKAGE_SHA_CUSTODY",
+      "GITHUB_BACKLOG_RECEIPT",
+      "LOCAL_PULL_SHA_RECEIPT",
+      "WINDOWS_CHECKER",
+      "LOCAL_GUI_AND_INSTALL_QA"
+    ]
+  },
+  "downstream_receipts": {
+    "real_msix": false,
+    "artifact_archive_and_package_sha_custody": false,
+    "github_backlog_receipt": false,
+    "local_pull_sha_receipt": false,
+    "windows_checker_receipt": false,
+    "local_gui_install_receipt": false,
+    "product_e2e_pass": false
+  },
+  "version_discovery": {
+    "status": "NO_AUTHORITATIVE_VERSION_FOUND_IN_REVIEWED_GITHUB_EVIDENCE",
+    "last_checked_at_utc": "2026-11-25T22:37:52Z",
+    "partner_center_authenticated_readback": "NOT_OBSERVED__CONNECTED_BROWSER_CONTEXT_UNAVAILABLE",
+    "decision": "KEEP_VERSION_HOLD__DO_NOT_INFER_OR_WRITE_VERSION"
+  },
+  "local_code_sync": {
+    "receipt_status": "NOT_OBSERVED__CLOUD_PASS_ONLY",
+    "local_windows_receipt_verified": false
+  },
+  "store_upload_test_eligibility": {
+    "eligible_fresh_unsold_products": 0,
+    "dry_run_started": false,
+    "bridge_pr": 171,
+    "bridge_head": "764721021f13be96364529650b44fb439770bac9",
+    "status": "NOT_RUN_NO_PRODUCT_MEETS_ALL_GATES"
+  },
+  "safety": {
+    "e2e_pass": false,
+    "store_submission_allowed": false,
+    "certification_allowed": false,
+    "publish_allowed": false,
+    "live_partner_center_write_allowed": false,
+    "partner_center_write_allowed": false,
+    "identity_write_allowed": false,
+    "version_inference_allowed": false,
+    "cas_allowed": false,
+    "merge_allowed": false,
+    "force_push_allowed": false,
+    "main_release_write_allowed": false,
+    "prism_legacy_identity_cas_allowed": false
+  },
+  "note": "Current source/Identity/request/version was read directly from AI-App-Factory PR94 and PR115. Historical approved identities remain bound to old sources; no current-source Identity and no authoritative Package Version are available. No real MSIX exists, so artifact custody/backlog/local pull/checker/GUI cannot yet be product-tested."
+}
