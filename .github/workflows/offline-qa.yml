@@ -41,3 +41,16 @@ jobs:
             }
           }
           Write-Host "Parsed $($files.Count) PowerShell scripts successfully."
+      - name: Validate Store uploader bootstrap (no browser or Partner Center)
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          $validationVenv = '.store-uploader-ci'
+          try {
+            .\scripts\bootstrap_store_uploader.ps1 -VenvDirectory $validationVenv
+          }
+          finally {
+            if (Test-Path -LiteralPath $validationVenv) {
+              Remove-Item -LiteralPath $validationVenv -Recurse -Force
+            }
+          }
