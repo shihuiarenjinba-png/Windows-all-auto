@@ -363,7 +363,7 @@ class CustodyTests(unittest.TestCase):
         self.assertIs(ledger["certification_allowed"], False)
         self.assertIs(ledger["publish_allowed"], False)
         self.assertEqual(latest["central_head"], "6ff05c0a3b682ade5016894c08c9edfbdf75e375")
-        self.assertEqual(recon["central_head"], "237e78c83082a092a45fc9a2b9ca95101611a6f5")
+        self.assertEqual(recon["central_head"], "5ad2cf093539739f1a2af7e67c8c83f7c1960825")
         self.assertNotEqual(recon["central_head"], latest["central_head"])
         self.assertEqual(recon["status"], "HOLD")
         self.assertIs(recon["e2e_pass"], False)

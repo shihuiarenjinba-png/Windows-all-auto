@@ -4060,7 +4060,7 @@
   "latest_live_head_reconciliation": {
     "status": "RECONCILED_TO_PR165_6FF05C0_EXACT_HEAD_PASS",
     "active_ledger_path": "ops/active_e2e_handoff.json",
-    "active_ledger_blob_sha": "c1935f156c791c822bbb086a0098c73eb59ccf3a",
+    "active_ledger_blob_sha": "d0224aaa16256dc8ff6a48e47dae89b9071432af",
     "active_ledger_updated_at_utc": "2026-11-25T23:34:08Z",
     "active_ledger_recorded_pr165_head": "6ff05c0a3b682ade5016894c08c9edfbdf75e375",
     "actual_pr165_head": "6ff05c0a3b682ade5016894c08c9edfbdf75e375",
@@ -6149,6 +6149,12 @@
         45707766948,
         45707766837
       ],
+      "product_e2e_status": "HOLD"
+    },
+    {
+      "observed_at_utc": "2026-11-25T23:34:08Z",
+      "canonical_ledger_blob_sha": "d0224aaa16256dc8ff6a48e47dae89b9071432af",
+      "fix": "immediate-parent CI fields reconciled",
       "product_e2e_status": "HOLD"
     }
   ]
