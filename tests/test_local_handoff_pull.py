@@ -62,7 +62,7 @@ class LocalPullTests(unittest.TestCase):
         archive=io.BytesIO()
         with zipfile.ZipFile(archive,"w",zipfile.ZIP_DEFLATED) as z:
             z.write(self.artifact_dir/"queue.json","queue.json")
-            for path in sorted(self.artifact_dir.rglob("*")):
+            for path in sorted((self.artifact_dir/"packages").rglob("*")):
                 if path.is_file():
                     z.write(path,path.relative_to(self.artifact_dir).as_posix())
         self.archive_bytes=archive.getvalue()
