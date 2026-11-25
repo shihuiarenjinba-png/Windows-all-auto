@@ -118,7 +118,34 @@
         "visual_review_status": "PASS_36_VISUAL_REVIEW__100_PERCENT_AND_COLD_RESTART_PERSISTENCE"
       },
       "product_quality_score": 54,
-      "product_quality_decision": "DO_NOT_SELL__BELOW_80"
+      "product_quality_decision": "DO_NOT_SELL__BELOW_80",
+      "store_assets_git_blob_sha_readback": {
+        "StoreLogo": "8017427aabf0e30168a88353588dc2ffdc2cba6d",
+        "Square150": "c6060306f202b662831039b95b1352689da023c7",
+        "Square44": "466a795ea01e34a28ac1db9aa7dcf3308464dbd0"
+      },
+      "store_assets_raw_sha256": {
+        "StoreLogo": {
+          "sha256": "2c0460e0f2947ce975b7a6abbc607acaeea8a22bf9bcae984b420acedddc8e2f",
+          "bytes": 360393,
+          "dimensions": "300x300",
+          "git_blob_sha": "8017427aabf0e30168a88353588dc2ffdc2cba6d"
+        },
+        "Square150": {
+          "sha256": "9183aa4055ed453360b656b4fe291bf392413e04fab44048820ca4bcfa5d1d0c",
+          "bytes": 90223,
+          "dimensions": "150x150",
+          "git_blob_sha": "c6060306f202b662831039b95b1352689da023c7"
+        },
+        "Square44": {
+          "sha256": "3fbdcd610f6781b72308755c6f92b1fdaef0592bab51c612556e5b8b95c1ee46",
+          "bytes": 7856,
+          "dimensions": "44x44",
+          "git_blob_sha": "466a795ea01e34a28ac1db9aa7dcf3308464dbd0"
+        }
+      },
+      "store_assets_raw_sha256_independently_verified": true,
+      "approved_identity_file_commit": "8a7139375524830bf823469526837259266172be"
     },
     {
       "product": "File Integrity Ledger",
