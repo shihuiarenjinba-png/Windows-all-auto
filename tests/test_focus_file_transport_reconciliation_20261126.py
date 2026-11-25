@@ -15,10 +15,10 @@ class FocusFileTransportReconciliation20261126(unittest.TestCase):
         d = self.data
         p = d["pr165"]
         head = p["tested_code_head_sha"]
-        self.assertEqual(head, "6ff05c0a3b682ade5016894c08c9edfbdf75e375")
-        self.assertEqual(p["latest_verified_code_head_sha"], "6ff05c0a3b682ade5016894c08c9edfbdf75e375")
+        self.assertEqual(head, "0803ba70bae5c6fbd0cc00b17d31d53c2b6642a9")
+        self.assertEqual(p["latest_verified_code_head_sha"], "0803ba70bae5c6fbd0cc00b17d31d53c2b6642a9")
         self.assertEqual(p["latest_exact_head_ci_status"], "PASS_EXACT_HEAD_CI")
-        self.assertEqual(p["latest_exact_head_ci_run_ids"], [45707767241, 45707766948, 45707766837])
+        self.assertEqual(p["latest_exact_head_ci_run_ids"], [45724625846, 45724625924, 45724625860])
         self.assertEqual(p["latest_offline_qa_tests_run"], 563)
         self.assertEqual(p["latest_product_e2e_status"], "HOLD")
         latest = self.data["latest_observation"]
@@ -28,7 +28,7 @@ class FocusFileTransportReconciliation20261126(unittest.TestCase):
         self.assertEqual(p["exact_head_ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual(
             [r["run_id"] for r in p["exact_head_ci"]],
-            [45707767241, 45707766948, 45707766837],
+            [45724625846, 45724625924, 45724625860],
         )
         self.assertTrue(all(r["head_sha"] == head and r["conclusion"] == "success"
                             for r in p["exact_head_ci"]))
