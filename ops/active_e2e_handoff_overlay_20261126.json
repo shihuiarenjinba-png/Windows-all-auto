@@ -362,7 +362,39 @@
             "apply_authorized": false
           },
           "source_drift_policy": "Reject this request if the named source branch no longer points to source_sha or if products/focus-session-desk differs from that commit.",
-          "idempotency_key": "750bc660374613ddddb6303dea4ccb88b9f15d4b8854b543a8640aca5e059f55"
+          "idempotency_key": "750bc660374613ddddb6303dea4ccb88b9f15d4b8854b543a8640aca5e059f55",
+          "execution": {
+            "dry_run": true,
+            "identity_write": false,
+            "msix_build": false,
+            "partner_center_write": false,
+            "request_submitted": false,
+            "store_publication": false,
+            "store_submission": false
+          },
+          "action_scope": "READ_ONLY_IDENTITY_REVALIDATION",
+          "request_payload": {
+            "execution": {
+              "dry_run": true,
+              "identity_write": false,
+              "msix_build": false,
+              "partner_center_write": false,
+              "request_submitted": false,
+              "store_publication": false,
+              "store_submission": false
+            },
+            "idempotency_key": "750bc660374613ddddb6303dea4ccb88b9f15d4b8854b543a8640aca5e059f55",
+            "partner_center": {
+              "selection_code": "MSIX_OR_PWA_APP",
+              "selection_label": "MSIX or PWA app",
+              "action_scope": "READ_ONLY_IDENTITY_REVALIDATION",
+              "write_authorized": false
+            },
+            "package_version": {
+              "status": "HOLD_NOT_INFERRED",
+              "value": null
+            }
+          }
         },
         "verification": {
           "schema_version": "focus-source-request-verification/1",
@@ -383,7 +415,40 @@
           "identity_write": false,
           "msix_build": false,
           "store_submission": false,
-          "store_publication": false
+          "store_publication": false,
+          "execution": {
+            "dry_run": true,
+            "identity_write": false,
+            "msix_build": false,
+            "partner_center_write": false,
+            "request_submitted": false,
+            "store_publication": false,
+            "store_submission": false
+          },
+          "action_scope": "READ_ONLY_IDENTITY_REVALIDATION",
+          "operation": "PARTNER_CENTER_IDENTITY_REVALIDATION",
+          "request_payload": {
+            "execution": {
+              "dry_run": true,
+              "identity_write": false,
+              "msix_build": false,
+              "partner_center_write": false,
+              "request_submitted": false,
+              "store_publication": false,
+              "store_submission": false
+            },
+            "idempotency_key": "750bc660374613ddddb6303dea4ccb88b9f15d4b8854b543a8640aca5e059f55",
+            "partner_center": {
+              "selection_code": "MSIX_OR_PWA_APP",
+              "selection_label": "MSIX or PWA app",
+              "action_scope": "READ_ONLY_IDENTITY_REVALIDATION",
+              "write_authorized": false
+            },
+            "package_version": {
+              "status": "HOLD_NOT_INFERRED",
+              "value": null
+            }
+          }
         },
         "artifact": {
           "artifact_id": 15049692591,
@@ -413,7 +478,16 @@
         "package_version_value": null,
         "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
         "next_stage": "READ_ONLY_PARTNER_CENTER_IDENTITY_REVALIDATION",
-        "verified_at_utc": "2026-11-25T19:35:52Z"
+        "verified_at_utc": "2026-11-25T19:35:52Z",
+        "execution": {
+          "dry_run": true,
+          "identity_write": false,
+          "msix_build": false,
+          "partner_center_write": false,
+          "request_submitted": false,
+          "store_publication": false,
+          "store_submission": false
+        }
       },
       "current_source_request_artifact_id": 15049692591,
       "current_source_request_artifact_sha256": "c8b15058243982d90699dfb2a885a71b064a0a02b01dcb3c7492dec83ec3afae",
@@ -636,7 +710,7 @@
   "ledger_reconciliation": {
     "status": "RECONCILED_TO_PR165_ADDEFCB_OBSERVATION",
     "active_ledger_path": "ops/active_e2e_handoff.json",
-    "active_ledger_blob_sha": "8922f172331d16c23a07d5e3277766e5eede554b",
+    "active_ledger_blob_sha": "1192db29209fba3572308f0740e3a7f530e94b0b",
     "active_ledger_updated_at_utc": "2026-11-25T19:35:52Z",
     "active_ledger_recorded_pr165_head": "addefcb0303897c3ce25c0b54f5d43b9336232f9",
     "actual_pr165_head": "addefcb0303897c3ce25c0b54f5d43b9336232f9",
