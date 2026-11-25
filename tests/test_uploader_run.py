@@ -85,8 +85,8 @@ class UploaderRunTests(unittest.TestCase):
 
     def test_unapproved_live_run_stops_before_download_and_writes_receipt(self):
         with tempfile.TemporaryDirectory() as tmp:
-            with patch("sys.argv", ["uploader.run", "--product", "ai-upload-guard", "--workdir", tmp, "--execute"]), \\
-                 patch("uploader.run.github_download") as download, \\
+            with patch("sys.argv", ["uploader.run", "--product", "ai-upload-guard", "--workdir", tmp, "--execute"]), \
+                 patch("uploader.run.github_download") as download, \
                  contextlib.redirect_stdout(io.StringIO()):
                 code = main()
             self.assertEqual(code, 2)
@@ -115,8 +115,8 @@ class UploaderRunTests(unittest.TestCase):
             config_path = root / "job.json"
             config_path.write_text(json.dumps(config), encoding="utf-8")
             workdir = root / "work"
-            with patch("sys.argv", ["uploader.run", "--config", str(config_path), "--workdir", str(workdir), "--execute"]), \\
-                 patch("uploader.run.github_download") as download, \\
+            with patch("sys.argv", ["uploader.run", "--config", str(config_path), "--workdir", str(workdir), "--execute"]), \
+                 patch("uploader.run.github_download") as download, \
                  contextlib.redirect_stdout(io.StringIO()) as stdout:
                 code = main()
             self.assertEqual(code, 2)
