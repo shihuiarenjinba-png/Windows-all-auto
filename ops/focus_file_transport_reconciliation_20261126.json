@@ -59,7 +59,11 @@
     "real_msix": false,
     "downstream_receipts": false,
     "tested_code_head_sha": "a6b9d2b1db3033d5846e136400d2fe67dede554d",
-    "metadata_reconciliation_commit_sha": "0120c786fb2f008cac095ee3a24568ba3f754842"
+    "metadata_reconciliation_commits": [
+      "0120c786fb2f008cac095ee3a24568ba3f754842",
+      "1ddc1d67636b0a02a8a751a5e9ca352ddd555f9f"
+    ],
+    "record_revision_commit_sha": "1ddc1d67636b0a02a8a751a5e9ca352ddd555f9f"
   },
   "pr161": {
     "number": 161,
@@ -282,8 +286,7 @@
     "active_ledger_direct_content_available": false,
     "active_ledger_content_fetch_status": "EMPTY_RESPONSE_FOR_UTF8_AND_BASE64__NOT_TREATED_AS_EMPTY_FILE",
     "active_ledger_direct_update_performed": false,
-    "note": "The large active_e2e_handoff.json body was not returned by the repository contents connector. This append-only observation supersedes the prior 5ad2cf overlay; the base file was not overwritten without readable contents.",
-    "current_branch_head_after_reconciliation_append": "0120c786fb2f008cac095ee3a24568ba3f754842"
+    "note": "The large active_e2e_handoff.json body was not returned by the repository contents connector. This append-only observation supersedes the prior 5ad2cf overlay; the base file was not overwritten without readable contents."
   },
   "safety": {
     "store_submission_allowed": false,
