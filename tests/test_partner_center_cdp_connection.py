@@ -52,10 +52,10 @@ class PartnerCenterCDPConnectionDiagnosticsTests(unittest.TestCase):
     def test_tab_count_error_is_not_masked_as_browser_connection_failure(self):
         runtime = FakeRuntime(FakeChromium(contexts=[]))
         modules = self._playwright_modules(runtime)
+        connection = PartnerCenterCDPConnection("http://127.0.0.1:9223", {})
         with patch.dict(sys.modules, modules):
             with self.assertRaises(UploadError) as caught:
-                PartnerCenterCDPConnection("http://127.0.0.1:9223", {}).\
-                    __enter__()
+                connection.__enter__()
 
         self.assertEqual(caught.exception.code, "PARTNER_CENTER_TAB_AMBIGUOUS")
         self.assertIn("found 0", str(caught.exception))
@@ -68,10 +68,10 @@ class PartnerCenterCDPConnectionDiagnosticsTests(unittest.TestCase):
         )
         runtime = FakeRuntime(FakeChromium(error=failure))
         modules = self._playwright_modules(runtime)
+        connection = PartnerCenterCDPConnection("http://127.0.0.1:9223", {})
         with patch.dict(sys.modules, modules):
             with self.assertRaises(UploadError) as caught:
-                PartnerCenterCDPConnection("http://127.0.0.1:9223", {}).\
-                    __enter__()
+                connection.__enter__()
 
         self.assertEqual(caught.exception.code, "BROWSER_CONNECTION_FAILED")
         self.assertIn("RuntimeError", str(caught.exception))
@@ -81,13 +81,16 @@ class PartnerCenterCDPConnectionDiagnosticsTests(unittest.TestCase):
         self.assertTrue(runtime.stopped)
 
     def test_one_partner_center_tab_attaches_successfully(self):
-        page = types.SimpleNamespace(url=f"{PARTNER_ORIGIN}/en-us/dashboard/apps-and-games/overview")
+        page = types.SimpleNamespace(
+            url=f"{PARTNER_ORIGIN}/en-us/dashboard/apps-and-games/overview"
+        )
         runtime = FakeRuntime(FakeChromium(
             contexts=[types.SimpleNamespace(pages=[page])]
         ))
         modules = self._playwright_modules(runtime)
+        connection = PartnerCenterCDPConnection("http://127.0.0.1:9223", {})
         with patch.dict(sys.modules, modules):
-            port = PartnerCenterCDPConnection("http://127.0.0.1:9223", {}).__enter__()
+            port = connection.__enter__()
 
         self.assertIsInstance(port, PartnerCenterBrowserPort)
         self.assertIs(port.page, page)
