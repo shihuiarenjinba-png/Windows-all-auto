@@ -148,12 +148,17 @@ class PartnerCenterFleetObservationTests(unittest.TestCase):
                 )
 
         dca = group_c["products"]["data-contract-auditor"]["remote_package_artifact_discovery"]
+        # 107e... is the QA baseline; the formal candidate source is 5a09...
+        self.assertEqual(dca["qa_baseline_source_sha"], "107e59f2cbcde9c6ca88cf1aaf3d52262004e6e0")
         self.assertEqual(dca["candidate_source_sha"], "5a09d81955e25664761ea25ecfb4ebf8d24cea6d")
-        self.assertEqual(dca["required_source_sha"], "107e59f2cbcde9c6ca88cf1aaf3d52262004e6e0")
-        self.assertFalse(dca["source_match"])
+        self.assertEqual(dca["required_source_sha"], "5a09d81955e25664761ea25ecfb4ebf8d24cea6d")
+        self.assertTrue(dca["source_match"])
         self.assertEqual(dca["package_sha256"], "80cd02c0df8e75d1962d03ce63c1ba72d9a8f67e8056f43718ffc5bd8d3f3279")
-        self.assertEqual(dca["current_branch_head_sha"], "0c73a746bcec9ded702567768d5c04f4240a12a9")
-        self.assertEqual(dca["current_branch_latest_ci"]["conclusion"], "failure")
+        self.assertEqual(dca["current_branch_head_sha"], "722ec7a077d2c6109e657c4ee661c9f3d06a4506")
+        self.assertEqual(
+            dca["current_branch_head_relation"]["application_runtime_source_changed_after_formal_candidate"],
+            False,
+        )
         self.assertFalse(dca["uploadable"])
 
     def test_web_evidence_archiver_artifact_waits_for_branch_integration(self):
