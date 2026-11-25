@@ -104,8 +104,9 @@ class CurrentHeadReconciliationTests(unittest.TestCase):
             self.assertTrue(data["pr165"]["repository_ci_is_not_product_e2e"])
             self.assertEqual(data["first_unconnected_interval"]["status"], "BLOCKED_BEFORE_REAL_MSIX_BUILD")
             self.assertTrue(all(value is False for value in data["downstream_receipts"].values()))
-            self.assertEqual(data["store_upload_test"]["eligible_fresh_unsold_products"], 0)
-            self.assertIs(data["store_upload_test"]["dry_run_started"], False)
+            store = data.get("store_upload_test", data.get("store_upload_test_eligibility"))
+            self.assertEqual(store["eligible_fresh_unsold_products"], 0)
+            self.assertIs(store["dry_run_started"], False)
             for key in ("store_submission_allowed", "certification_allowed", "publish_allowed",
                         "live_partner_center_write_allowed", "merge_allowed", "force_push_allowed"):
                 self.assertIs(data["safety"][key], False)
