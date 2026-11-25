@@ -41,6 +41,12 @@ The Group B and Group C product registries reference the snapshot under `partner
 
 This update intentionally does not overwrite missing static Store IDs, draft IDs, or identity fields. A missing registry value is not the same as a confirmed absence in Partner Center. Each record carries a reconciliation status describing which static registry fields were present and matched.
 
+## Signing interpretation
+
+For Microsoft Store-distributed MSIX/AppX packages, an external CA-trusted code-signing certificate is not required. Microsoft Store re-signs the package with a Microsoft certificate after certification, during publishing. Therefore, the local `NotSigned` status of these seven MSIX files is not itself an upload blocker. See [Microsoft Store signing policy](MSIX_STORE_SIGNING_POLICY_20261125.md) and Microsoft's [Store FAQ](https://learn.microsoft.com/ja-jp/windows/apps/publish/faq/get-started-with-the-microsoft-store).
+
+This does not waive any product-specific upload approval, source/SHA/manifest, runtime QA, asset, or live Partner Center checks.
+
 ## Safety boundary
 
 The snapshot records these actions as not performed:
@@ -53,4 +59,4 @@ The snapshot records these actions as not performed:
 - Certification
 - Publish
 
-This snapshot must not be used by an uploader as standalone authorization. Before any upload, the authenticated Partner Center page must be re-read for the exact Store Product ID and current Draft ID, and the package must independently pass the exact Identity, Publisher, Version, Architecture, source-revision, signature, and SHA-256 gates.
+This snapshot must not be used by an uploader as standalone authorization. Before any upload, the authenticated Partner Center page must be re-read for the exact Store Product ID and current Draft ID. The package must independently pass the exact Identity, Publisher, Version, Architecture, source-revision, and SHA-256 checks, and the product-specific approval and runtime QA gates must be satisfied. A pre-submission Authenticode signature is not a gate for Store MSIX distribution.
