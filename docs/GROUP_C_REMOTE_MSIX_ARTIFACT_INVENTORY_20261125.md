@@ -4,7 +4,7 @@
 
 This inventory records GitHub Actions artifact metadata and exact workflow source revisions discovered from the product repositories. Artifact IDs, names, sizes, run URLs, source SHAs, and job-step outcomes were read from GitHub's Actions API.
 
-The MSIX binaries themselves were **not downloaded or hashed in this GitHub-side operation**. Every `package_sha256` field therefore remains unclaimed until the exact artifact is downloaded and inspected locally. The QA artifacts below are unsigned and/or use temporary placeholder logos; none is authorized for Partner Center upload.
+The MSIX binaries themselves were **not downloaded or independently re-hashed in this GitHub-side operation**. However, the exact MSIX SHA-256 values printed by the corresponding GitHub Actions builder logs or generated handoff were captured and recorded as `BUILDER_REPORTED_HASH`. These are provenance-linked hashes, not an independent local byte-for-byte verification. Re-download and re-hash the artifact locally before relying on the package. The QA artifacts below are unsigned and/or use temporary placeholder logos; none is authorized for Partner Center upload.
 
 The Group B/C registries are the machine-readable source of truth for these observations. This document explains why each artifact is or is not reusable.
 
@@ -12,13 +12,13 @@ The Group B/C registries are the machine-readable source of truth for these obse
 
 | Product | Run / source revision | Artifact | Current classification |
 |---|---|---|---|
-| Workflow Automation Hub | Run 44093505473; `f2ba58895492f0c64da7676b17edfc97e98330e7` | Artifact 14332647613; 36,603,062 bytes | Source-bound unsigned technical draft; version 1.0.0.0 is not owner-approved |
-| Data Contract Auditor | Run 45103784990; candidate source `5a09d81955e25664761ea25ecfb4ebf8d24cea6d` vs required `107e59f2cbcde9c6ca88cf1aaf3d52262004e6e0` | Artifact 14787075908; 55,190,196 bytes | Unsigned candidate build succeeded but source revision does not match required source |
-| AI Upload Guard | Run 44687824883; `fcb0e5793cef78d974e71fef8169c9f7d626257e` | Artifact 14607745398; 21,569,997 bytes | QA_UNSIGNED validation only; formal Store candidate step skipped |
-| Image Privacy Cleaner | Run 44687836979; `b73f2dadd63843cadb9c1a779a87ef2045516af5` | Artifact 14607755190; 21,824,223 bytes | QA_UNSIGNED validation only; formal Store candidate step skipped |
-| Excel / CSV Privacy Cleaner | Run 44687814041; `f715ce0e6f5d3eee8e483137fb42d41cb6e4ec20` | Artifact 14607382071; 13,194,740 bytes | QA_UNSIGNED validation only; formal Store candidate step skipped |
-| PDF Privacy | Run 44687829990; `891dad28b15b5c1c7dd743e6cbe44280959ecb41` | Artifact 14607132432; 17,722,226 bytes | QA_UNSIGNED validation only; formal Store candidate step skipped |
-| Web Evidence Archiver | Run 44687808856; Store packaging source `3f2de607d83f36abef6d9a87da1a1c8b3bca604a` | Artifact 14607965112; 415,899,027 bytes | QA_UNSIGNED structural/preflight artifact only; GUI and Store branches diverged |
+| Workflow Automation Hub | Run 44093505473; `f2ba58895492f0c64da7676b17edfc97e98330e7` | Artifact 14332647613; 36,603,062 bytes; MSIX 1.0.0.0; SHA `512da1ab4449a69b02901baf9c8eaff6577f1e58d336f43ef608f4fbc3892a97` | Source-bound unsigned technical draft; version 1.0.0.0 is not owner-approved |
+| Data Contract Auditor | Run 45103784990; candidate source `5a09d81955e25664761ea25ecfb4ebf8d24cea6d`; current branch head `0c73a746bcec9ded702567768d5c04f4240a12a9`; required `107e59f2cbcde9c6ca88cf1aaf3d52262004e6e0` | Artifact 14787075908; 55,190,196 bytes; MSIX 1.0.0.0; SHA `80cd02c0df8e75d1962d03ce63c1ba72d9a8f67e8056f43718ffc5bd8d3f3279` | Unsigned candidate build succeeded but source revision does not match required source; current branch CI fails before packaging |
+| AI Upload Guard | Run 44687824883; `fcb0e5793cef78d974e71fef8169c9f7d626257e` | Artifact 14607745398; 21,569,997 bytes; MSIX 1.0.60.0; SHA `1141D327F43EC0F846BF780D3D0C68B82AC261DD869A7A54FDBB31C70F8B6125` | QA_UNSIGNED validation only; formal Store candidate step skipped |
+| Image Privacy Cleaner | Run 44687836979; `b73f2dadd63843cadb9c1a779a87ef2045516af5` | Artifact 14607755190; 21,824,223 bytes; MSIX 1.0.50.0; SHA `90396A9097B1E7B570B5CFEF4B9A45A93958733636ADFE47C1AA71CDE7E29800` | QA_UNSIGNED validation only; formal Store candidate step skipped |
+| Excel / CSV Privacy Cleaner | Run 44687814041; `f715ce0e6f5d3eee8e483137fb42d41cb6e4ec20` | Artifact 14607382071; 13,194,740 bytes; MSIX 1.0.57.0; SHA `18C4F841DF4C3DAFFEEBD068D001287BAA4BFC2876CE1C2558EAB258351CC79D` | QA_UNSIGNED validation only; formal Store candidate step skipped |
+| PDF Privacy | Run 44687829990; `891dad28b15b5c1c7dd743e6cbe44280959ecb41` | Artifact 14607132432; 17,722,226 bytes; MSIX 1.0.54.0; SHA `3911348B502AFB133BEB07D3AB1C9070A7F68FE3ED05772D027C38C040678ED9` | QA_UNSIGNED validation only; formal Store candidate step skipped |
+| Web Evidence Archiver | Run 44687808856; Store packaging source `3f2de607d83f36abef6d9a87da1a1c8b3bca604a` | Artifact 14607965112; 415,899,027 bytes; MSIX 1.0.55.0; SHA `91fae107652539bad0c0bdc30e9ae1891542c1a92f2460218e1be24af987cebe` | QA_UNSIGNED structural/preflight artifact only; GUI and Store branches diverged |
 
 All seven artifact records are also reflected in `ops/group_b_standard_store_products.json` or `ops/group_c_store_products.json`.
 
@@ -40,6 +40,8 @@ Related artifacts:
 - `WorkflowAutomationHub-Windows` — ID `14331959551`, 36,410,296 bytes;
 - `WorkflowAutomationHub-GUI-Review` — ID `14331614716`, 212,696 bytes.
 
+The run log emitted generated handoff hash `512da1ab4449a69b02901baf9c8eaff6577f1e58d336f43ef608f4fbc3892a97` for `WorkflowAutomationHub_1.0.0.0_x64_StoreDraft_UNSIGNED.msix`. This is the hash stored in the generated handoff; download the artifact and independently recompute it locally.
+
 The source manifest explicitly labels version `1.0.0.0` as a technical draft only, states that the accepted Store version history is not verified, says temporary technical logos must be replaced, and sets `submission_allowed=false`. The current Partner Center observation shows no Submission and an available `Start submission` control; it was not clicked.
 
 This is the best-provenanced remote MSIX candidate found so far, but it is not a release package. Download the artifact locally, extract the handoff and SHA file, verify the binary digest, and keep it as a QA/inspection candidate only.
@@ -54,13 +56,23 @@ Artifacts:
 - `data-contract-QA_UNSIGNED-msix-45103784990` — ID `14787075908`, 55,190,196 bytes;
 - `data-contract-QA_UNSIGNED-validation-msix-45103784990-1` — ID `14787095933`, 55,176,827 bytes.
 
-The build job succeeded, but the candidate source revision is not the required registered source revision. The package is unsigned and remains blocked from upload. Compare the downloaded manifest, embedded source receipt, and package SHA to the required branch before deciding whether to rebuild.
+The candidate file was `DataContractSchemaDrift_1.0.0.0_x64.msix`; the builder log emitted SHA `80cd02c0df8e75d1962d03ce63c1ba72d9a8f67e8056f43718ffc5bd8d3f3279`.
+
+The build job succeeded at candidate source revision `5a09d81955e25664761ea25ecfb4ebf8d24cea6d`, but this does not match the required registered source `107e59f2cbcde9c6ca88cf1aaf3d52262004e6e0`. The current source branch head is `0c73a746bcec9ded702567768d5c04f4240a12a9`; its latest CI run `45107287117` failed in `test_product_profile_matches_live_entrypoint_and_formal_build_gate` before compile, Store preflight, or package build. The failure expected `READY_FOR_FORMAL_MSIX_BUILD` but observed `READY_FOR_PARTNER_CENTER_READONLY`.
+
+The package is unsigned and remains blocked from upload. Compare the downloaded manifest, embedded source receipt, and package SHA to the required branch before deciding whether to rebuild.
 
 Workflow: https://github.com/shihuiarenjinba-png/csv-import-validator/actions/runs/45103784990
 
 ### AI Upload Guard, Image Privacy Cleaner, Excel / CSV Privacy Cleaner, and PDF Privacy
 
 Each product has a successful Windows portable prerequisite and a QA-only unsigned MSIX artifact. The workflow generates temporary placeholder logos for this QA lane.
+
+The QA builder logs emitted these MSIX values:
+- AI Upload Guard — `AIUploadGuard_QA_UNSIGNED_1.0.60.0_x64.msix`; SHA `1141D327F43EC0F846BF780D3D0C68B82AC261DD869A7A54FDBB31C70F8B6125`.
+- Image Privacy Cleaner — `ImagePrivacyCleaner_QA_UNSIGNED_1.0.50.0_x64.msix`; SHA `90396A9097B1E7B570B5CFEF4B9A45A93958733636ADFE47C1AA71CDE7E29800`.
+- Excel / CSV Privacy Cleaner — `ExcelCSVPrivacyCleaner_QA_UNSIGNED_1.0.57.0_x64.msix`; SHA `18C4F841DF4C3DAFFEEBD068D001287BAA4BFC2876CE1C2558EAB258351CC79D`.
+- PDF Privacy — `PDFPrivacyToolkit_QA_UNSIGNED_1.0.54.0_x64.msix`; SHA `3911348B502AFB133BEB07D3AB1C9070A7F68FE3ED05772D027C38C040678ED9`.
 
 For Image, Excel/CSV, and PDF, the workflow's formal Store candidate steps were skipped because:
 - `approved_store_version` is null;
@@ -86,7 +98,9 @@ Store packaging branch:
 - workflow run `44687808856`
 - QA artifact `web-evidence-QA_UNSIGNED-validation-msix-44687808856-1`, ID `14607965112`, 415,899,027 bytes.
 
-The inspection and QA unsigned structural MSIX jobs succeeded, while the formal unsigned candidate job was skipped. Preflight blockers include missing approved Store version, empty manifest resources, and missing browser bundle approval.
+The inspection and QA unsigned structural MSIX jobs succeeded, while the formal unsigned candidate job was skipped. The builder emitted MSIX SHA `91fae107652539bad0c0bdc30e9ae1891542c1a92f2460218e1be24af987cebe` for `WebEvidenceArchiver_QA_UNSIGNED_1.0.55.0_x64.msix`, EXE SHA `a243aa2a5aaf9c067f4f550621d26ae013301a3c90f329eeca004deecef8fa99`, and browser bundle tree SHA `751c3f638d890a1764badfa234a40ae4f2db348ad57bbf032ceb14b3d0b3c921`.
+
+Preflight blockers include missing approved Store version, empty manifest resources, and missing browser bundle approval.
 
 The latest GUI branch is `codex/web-evidence-gui-progress-20261124` at `fd34b93068d5ea39e3a02e89dc1c8c3d9bcb0812`. The two branches diverged: GUI branch is 7 commits ahead and 76 behind the Store branch, with common ancestor `0f1537e33c6f5b3e79d034ad92865a162ee36275`.
 
@@ -115,7 +129,7 @@ gh run download 44687808856 -R shihuiarenjinba-png/web-evidence-archiver -n web-
 ```
 
 After downloading:
-1. Recompute SHA-256 for every MSIX; compare to any included `msix.sha256.txt` or validation receipt.
+1. Recompute SHA-256 for every MSIX; compare to the builder-reported value above and any included `msix.sha256.txt` or validation receipt. A mismatch must stop the candidate.
 2. Verify Package Identity, Publisher, Version, Architecture, and exact Source Revision from the embedded manifest/handoff.
 3. Distinguish the QA placeholder-logo artifacts from formal Store candidates.
 4. Do not upload unsigned/QA candidates. This is evidence collection and local verification only.
