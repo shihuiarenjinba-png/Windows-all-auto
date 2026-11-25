@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-11-25T21:11:30Z",
+  "generated_at": "2026-11-25T21:39:29Z",
   "policy": "COMPLETION_RUSH_EXISTING_PRODUCTS_ONLY",
   "new_product_generation_allowed": false,
   "rules": {
@@ -3865,7 +3865,7 @@
       ]
     }
   ],
-  "ledger_refresh_commit_parent_sha": "237e78c83082a092a45fc9a2b9ca95101611a6f5",
+  "ledger_refresh_commit_parent_sha": "5e28aa9b7d65aac6c87bf91b063225c89ec11fd4",
   "ledger_refresh_commit_scope": "metadata/test-only refresh; no product code or package changed",
   "previous_latest_transport_reconciliation_20261125_201712": {
     "checked_at_utc": "2026-11-25T19:35:52Z",
@@ -4555,5 +4555,22 @@
     "repository_ci_is_not_product_e2e": true,
     "product_e2e_status": "HOLD",
     "local_code_sync_receipt": "NOT_OBSERVED__CLOUD_PASS_ONLY"
+  },
+  "operations_only_refresh": {
+    "commit_sha": "5e28aa9b7d65aac6c87bf91b063225c89ec11fd4",
+    "observed_at_utc": "2026-11-25T21:39:29Z",
+    "scope": "operations ledger + regression test only",
+    "offline_qa_run_id": 45706283485,
+    "offline_qa_conclusion": "failure",
+    "failure_reason": "PARENT_PR_CI_ARRAY_EXPECTED_PUSH_RUN",
+    "latest_verified_transport_head_sha": "237e78c83082a092a45fc9a2b9ca95101611a6f5",
+    "latest_verified_transport_head_ci_run_ids": [
+      45701952640,
+      45701953080,
+      45701952665,
+      45701935988
+    ],
+    "product_e2e_status": "HOLD",
+    "product_code_changed": false
   }
 }

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "path": "ops/active_e2e_handoff_overlay_20261126.json",
-  "observed_at_utc": "2026-11-25T21:11:30Z",
+  "observed_at_utc": "2026-11-25T21:39:29Z",
   "status": "HOLD",
   "e2e_pass": false,
   "record_type": "APPEND_ONLY_CURRENT_OBSERVATION",
@@ -793,20 +793,22 @@
     "local_windows_receipt_verified": false
   },
   "ledger_reconciliation": {
-    "status": "RECONCILED_TO_PR165_237E78_EXACT_HEAD_PASS",
+    "status": "RECONCILED_TO_LAST_VERIFIED_237E78_WITH_5E28AA9_REFRESH_FAILURE_RECORDED",
     "active_ledger_path": "ops/active_e2e_handoff.json",
-    "active_ledger_blob_sha": "3b13b19dd99773502ca8d9a1bc2bb7c1d1646c67",
-    "active_ledger_updated_at_utc": "2026-11-25T21:11:30Z",
+    "active_ledger_blob_sha": "c04b0a4dc91083abbf2dfe48d0301cd88216f104",
+    "active_ledger_updated_at_utc": "2026-11-25T21:39:29Z",
     "active_ledger_recorded_pr165_head": "237e78c83082a092a45fc9a2b9ca95101611a6f5",
-    "actual_pr165_head": "237e78c83082a092a45fc9a2b9ca95101611a6f5",
+    "actual_pr165_head": "5e28aa9b7d65aac6c87bf91b063225c89ec11fd4",
     "comparison": {
-      "status": "equal_at_observation",
-      "ahead_by": 0,
+      "status": "ahead",
+      "ahead_by": 1,
       "behind_by": 0,
-      "commits": []
+      "commits": [
+        "5e28aa9b7d65aac6c87bf91b063225c89ec11fd4"
+      ]
     },
     "active_ledger_reconciled": true,
-    "note": "The central ledger now records PR165 237e78 and its four exact-head workflows PASS. This is repository CI only; Focus/File remain DELIVERY_HOLD and product E2E stays HOLD."
+    "note": "The ledger records 237e78 as the last verified transport head (4/4 exact-head CI PASS) and separately records 5e28aa9 as an operations-only refresh with a single test assertion failure. The test is being corrected; product E2E remains HOLD."
   },
   "safety": {
     "e2e_pass": false,
@@ -867,8 +869,34 @@
         45693426272
       ],
       "ledger_reconciliation_status": "RECONCILED_TO_PR165_5AD2CF_EXACT_HEAD_PASS"
+    },
+    {
+      "observed_at_utc": "2026-11-25T21:39:29Z",
+      "pr165_head_sha": "5e28aa9b7d65aac6c87bf91b063225c89ec11fd4",
+      "pr165_exact_head_ci_status": "FAIL_TEST_ASSERTION_ONLY",
+      "pr165_exact_head_ci_run_ids": [
+        45706283485
+      ],
+      "ledger_reconciliation_status": "LAST_VERIFIED_TRANSPORT_HEAD_237E78__OPS_REFRESH_FAILURE_RECORDED"
     }
   ],
-  "ledger_refresh_commit_parent_sha": "237e78c83082a092a45fc9a2b9ca95101611a6f5",
-  "ledger_refresh_commit_scope": "operations-ledger and regression-test reconciliation only; no APP/GAME/3D product code, PNG, Identity, Version, Store state, main/release or protected repositories changed"
+  "ledger_refresh_commit_parent_sha": "5e28aa9b7d65aac6c87bf91b063225c89ec11fd4",
+  "ledger_refresh_commit_scope": "operations-ledger and regression-test reconciliation only; no APP/GAME/3D product code, PNG, Identity, Version, Store state, main/release or protected repositories changed",
+  "operations_only_refresh": {
+    "commit_sha": "5e28aa9b7d65aac6c87bf91b063225c89ec11fd4",
+    "observed_at_utc": "2026-11-25T21:39:29Z",
+    "scope": "operations ledger + regression test only",
+    "offline_qa_run_id": 45706283485,
+    "offline_qa_conclusion": "failure",
+    "failure_reason": "PARENT_PR_CI_ARRAY_EXPECTED_PUSH_RUN",
+    "latest_verified_transport_head_sha": "237e78c83082a092a45fc9a2b9ca95101611a6f5",
+    "latest_verified_transport_head_ci_run_ids": [
+      45701952640,
+      45701953080,
+      45701952665,
+      45701935988
+    ],
+    "product_e2e_status": "HOLD",
+    "product_code_changed": false
+  }
 }
