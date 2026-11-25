@@ -1,6 +1,6 @@
 {
   "path": "ops/focus_file_transport_reconciliation_20261125.json",
-  "observed_at_utc": "2026-11-25T08:40:46Z",
+  "observed_at_utc": "2026-11-25T08:59:46.316Z",
   "status": "HOLD",
   "e2e_pass": false,
   "priority_product": "Focus Session Desk",
@@ -283,7 +283,7 @@
           "digest_matches_github_metadata": true
         }
       },
-      "current_source_request_status": "DRY_RUN",
+      "current_source_request_status": "DRY_RUN__OFFICIAL_IDENTITY_UNVERIFIED__PACKAGE_NOT_BUILT__LOCAL_WINDOWS_BUILD_NOT_IMPLEMENTED",
       "historical_approved_identity_file_path": "products/file-integrity-ledger/store/approved-identity.json",
       "historical_approved_identity_file_blob_sha": "78034cf62be3479f9ed752a2585ab31bb24c49ff",
       "historical_approved_identity_commit": "db9a57af822788af4c8384499a6e343ec7b0353d",
@@ -304,7 +304,8 @@
       "current_source_request_official_identity_status": "NOT_COLLECTED",
       "current_source_request_package_version": null,
       "current_source_request_package_status": "NOT_BUILT",
-      "human_visual_review_required": true
+      "human_visual_review_required": true,
+      "current_source_request_artifact_status": "DRY_RUN"
     }
   ],
   "version_discovery": {
@@ -388,7 +389,7 @@
     "merge_allowed": false,
     "force_push_allowed": false
   },
-  "next_action": "Focus Session Desk remains rank 1: obtain a source-bound request and current-source Identity revalidation for fb629383 before any CAS, then an authenticated Partner Center Package Version readback. File Integrity Ledger remains rank 2: complete human owner visual sign-off and current-source Identity revalidation for PR115 source 33d612be; its request remains DRY_RUN only. Keep Version gates HOLD. Once approved Identity, authoritative Version and existing PNG assets are verified, build the real MSIX, then exact SHA custody → GitHub backlog → local pull → Windows-checker → local GUI/install QA. No product-code edits, no Prism old-source CAS, no Store write.",
+  "next_action": "First rerun exact-head Offline QA after the central-ledger status-field collision fix. The last fully verified central head remains 844de6ae with transport, independent custody and Windows/Ubuntu Offline QA all green. Then continue product blockers: Focus current-source request/Identity revalidation plus authoritative Partner Center Version; File owner visual sign-off plus current-source Identity revalidation and authoritative Version. No Version inference, no product-code edits, no real MSIX until all gates pass, and no Store write.",
   "pr165_current_head_parent_ci_status": "PASS_EXACT_HEAD_CI",
   "pr165_intermediate_test_failures": [
     {
@@ -673,8 +674,8 @@
     "latest_branch_search_query": "focus-session-desk",
     "latest_branch_search_result_count": 0
   },
-  "last_reconciled_at_utc": "2026-11-25T08:40:46Z",
-  "last_reconciled_basis": "2026-11-25 live reread: PR165 HEAD 844de6ae (parent b6e8b506) passed exact-head transport 45576235053, artifact custody 45576234993, and Windows+Ubuntu Offline QA 45576235079. Parent b6e8b506 passed all three exact-head workflows 45575064424/45575064363/45575064234. PR161 remains 71d9c212 with Offline QA 42712757936 only; PR171 remains 76472102 with Offline QA 44437197470 only and no Store dry-run. PR174 compare is 6 ahead/112 behind; PR177 and PR179 are 6 ahead/28 behind; PR178 is 16 ahead/28 behind; no blind restack. Focus PR94 remains fb629383 with historical Identity bound to 8b00bc4e, no current-source request, Version gate HOLD. File PR115 remains 33d612be with DRY_RUN request, historical Identity bound to d1108d12 and absent from current head, Version null and owner visual review required. Product E2E and Store gates remain HOLD.",
+  "last_reconciled_at_utc": "2026-11-25T08:59:46.316Z",
+  "last_reconciled_basis": "PR165 latest branch commit 37c90cdff469704e062596292c5a59fcc7a5010f passed transport 45580803320 and artifact custody 45580803410, but Windows/Ubuntu Offline QA 45580803494 failed on a central-ledger test fixture collision: current_source_request_status was overwritten with the short DRY_RUN value. This fix restores the long product-lane status and stores the workflow value separately. Last fully verified central head remains 844de6ae with exact-head CI 45576235053/45576234993/45576235079. Product E2E, real MSIX, backlog, local pull, checker and install remain HOLD.",
   "current_signal_sprint_cross_lane_status": "RECORDED_IN_CENTRAL_LEDGER__GDK_ONLY__PREVIEW_STALE__NO_CAS",
   "pr165_additional_push_ci": [
     {
@@ -706,5 +707,40 @@
         "Offline preflight tests (ubuntu-latest)"
       ]
     }
-  ]
+  ],
+  "pr165_pending_branch_head_observation_20261125_latest": {
+    "observed_at_utc": "2026-11-25T08:59:46.316Z",
+    "pull_request": 165,
+    "head_sha": "37c90cdff469704e062596292c5a59fcc7a5010f",
+    "parent_sha": "844de6ae16d07211edbdd40085158517aa53041a",
+    "exact_head_workflows": [
+      {
+        "run_id": 45580803320,
+        "conclusion": "success",
+        "scope": "Transport fail-closed regression",
+        "job": "transport-regression"
+      },
+      {
+        "run_id": 45580803410,
+        "conclusion": "success",
+        "scope": "Independent GitHub artifact custody regression",
+        "job": "custody-regression"
+      },
+      {
+        "run_id": 45580803494,
+        "conclusion": "failure",
+        "scope": "Windows and Ubuntu Offline QA",
+        "jobs": [
+          "Offline preflight tests (windows-latest)",
+          "Offline preflight tests (ubuntu-latest)"
+        ]
+      }
+    ],
+    "status": "PARTIAL_FAIL_CENTRAL_LEDGER_TEST_FIXTURE",
+    "failure": "Both Offline QA jobs failed in test_focus_and_file_integrity_remain_source_and_version_held because the evidence merge overwrote the existing long current_source_request_status field with the short DRY_RUN artifact status.",
+    "resolution": "Restore current_source_request_status=DRY_RUN__OFFICIAL_IDENTITY_UNVERIFIED__PACKAGE_NOT_BUILT__LOCAL_WINDOWS_BUILD_NOT_IMPLEMENTED and record the short workflow value separately as current_source_request_artifact_status=DRY_RUN.",
+    "product_e2e_status": "HOLD",
+    "e2e_pass": false,
+    "real_msix": false
+  }
 }
