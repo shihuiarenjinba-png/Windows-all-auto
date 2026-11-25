@@ -27,6 +27,53 @@ This is not yet an always-available unattended cloud service: GitHub Actions is 
 
 An API is not used for this route. The proven browser interaction is the chosen compatibility path for existing MSIX app Drafts. An API can be evaluated later only if it reproduces the exact existing-Draft binding and observable postconditions without creating a new submission.
 
+## Local Windows execution — existing authenticated Edge session
+
+The local route is preferred when the owner already has Partner Center open in Edge. It does not require a billed remote-browser service or a Microsoft Store API. It uses the same proven Playwright/CDP browser adapter, but points it at the operator's local Edge debugging endpoint.
+
+### 1. Read-only preflight for the full fleet
+
+Run from the repository root after downloading the seven Actions artifacts:
+
+```powershell
+python scripts/preflight_store_fleet.py `
+  --package-root "C:\Users\aaron\Desktop\portfolio-audit\_runtime\store-fleet-sync" `
+  --output "C:\Users\aaron\Desktop\portfolio-audit\_runtime\store-fleet-sync\store-fleet-preflight.json"
+```
+
+The preflight recursively locates each exact registered filename and requires exactly one match. It verifies the package SHA-256 and manifest Identity, Publisher, Version, and Architecture. A missing or duplicated filename is a HOLD, never an arbitrary selection. It does not open Partner Center, upload, Save, start certification, or publish. Workflow Automation Hub is separately reported as `NO_EXISTING_SUBMISSION` because it has no existing Draft in the recorded snapshot.
+
+### 2. One product dry run
+
+```powershell
+.\scripts\upload_store_msix.ps1 `
+  -Product ai-upload-guard `
+  -Package "C:\path\to\AIUploadGuard_QA_UNSIGNED_1.0.60.0_x64.msix"
+```
+
+Dry-run is the default. It verifies the exact configured filename, SHA-256, and manifest and writes an execution receipt under `.uploader-run` without touching Partner Center.
+
+### 3. Existing-Draft package upload and Save
+
+```powershell
+.\scripts\upload_store_msix.ps1 `
+  -Product <registered-product-key> `
+  -Package "C:\path\to\exact-registered-package.msix" `
+  -Execute
+```
+
+`-Execute` is only for a product whose job config has `upload_approved: true` and a pinned 64-character `expected_sha256`. The script checks that local Edge CDP is responding at `http://127.0.0.1:9223/json/version` before attaching. CDP is restricted to loopback addresses for this route. No Microsoft username, password, MFA code, browser cookie, or access token is placed in a command line or log.
+
+The existing browser adapter then re-reads the exact Product Identity and configured Draft Packages route, checks existing package rows and Windows Desktop selection, uploads the exact MSIX, waits for Microsoft package validation, presses Packages `Save`, reloads Overview, and reopens Packages to confirm retention. Unknown warnings, validation errors, changed UI, ambiguous package rows, or timeouts stop for reconciliation; never blindly retry.
+
+**Important boundary:** this script only uploads/saves the package in the existing Draft. It does not click `Submit to the Store`, start Certification, create a new Submission, change price or markets, or publish. Microsoft Store signing of MSIX/AppX happens after certification during publishing; no pre-upload CA certificate is required. Certification and publishing must be handled as a distinct approval step.
+
+### Current registered-product holds
+
+The six existing-Draft job files are registered with exact package filenames and builder/local SHA values. All six currently have `upload_approved: false` because their product-specific release gates are not yet satisfied. The exact hold reasons are included in each `uploader/config/*.job.json` file. Do not change these flags just to bypass a hold.
+
+Workflow Automation Hub deliberately has no existing-Draft job file because the latest read-only Partner Center observation showed no Submission. It must follow an owner-approved initial-Submission route rather than the existing-Draft uploader.
+
 ## Setup
 
 1. Configure the repository and product job JSON from the example.
