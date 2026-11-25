@@ -101,22 +101,37 @@ class PartnerCenterFleetObservationTests(unittest.TestCase):
             self.assertEqual(
                 registry["partner_center_observation_snapshot"]["path"], SNAPSHOT_REF
             )
-        for key in ("ai-upload-guard", "image-privacy-cleaner", "excel-csv-privacy-cleaner"):
+        # All six existing Submission rows are now bound to the Group C registry.
+        for key in (
+            "ai-upload-guard",
+            "image-privacy-cleaner",
+            "excel-csv-privacy-cleaner",
+            "data-contract-auditor",
+            "pdf-privacy",
+            "web-evidence-archiver",
+        ):
             record = group_c["products"][key]
-            self.assertEqual(record["partner_center_live_observation"]["store_id"], EXPECTED[key][0])
+            self.assertEqual(record["store_id"], EXPECTED[key][0])
+            self.assertEqual(record["identity_name"], EXPECTED[key][1])
+            self.assertEqual(record["publisher"], PUBLISHER)
+            self.assertEqual(record["draft_id"], EXPECTED[key][2])
             self.assertEqual(record["partner_center_live_observation"]["submission_id"], EXPECTED[key][2])
-            self.assertEqual(record["partner_center_live_observation"]["overall_status"],
-                             "LIVE_OBSERVATION_RECORDED_REGISTRY_ENRICHMENT_REQUIRED")
-        dca = group_c["products"]["data-contract-auditor"]
-        self.assertEqual(dca["store_id"], "9PDL4ZWSB45P")
-        self.assertEqual(dca["draft_id"], "1152921505702212222")
-        self.assertEqual(dca["partner_center_live_observation"]["submission_id"], "1152921505702212222")
-        # These missing static fields remain untouched; the live values live in a separate observation.
-        for key in ("pdf-privacy", "web-evidence-archiver"):
+            self.assertEqual(record["partner_center_live_observation"]["overall_status"], "EXACT_REGISTRY_MATCH")
+
+        # Remote artifacts are explicitly QA-only and cannot be mistaken for upload candidates.
+        for key in ("image-privacy-cleaner", "excel-csv-privacy-cleaner", "pdf-privacy"):
             record = group_c["products"][key]
-            self.assertIsNone(record["store_id"])
-            self.assertIsNone(record["draft_id"])
-            self.assertEqual(record["partner_center_live_observation"]["store_id"], EXPECTED[key][0])
+            artifact = record["remote_package_artifact_discovery"]
+            self.assertTrue(artifact["qa_unsigned_msix_artifact_available"])
+            self.assertEqual(artifact["classification"], "QA_UNSIGNED_VALIDATION_ONLY")
+            self.assertFalse(artifact["uploadable"])
+            self.assertEqual(artifact["qa_unsigned_msix_sha256"], "NOT_FETCHED_BINARY_NOT_CLAIMED")
+            self.assertEqual(artifact["formal_store_msix_build"], "SKIPPED_STORE_READINESS_GATE")
+
+        wea = group_c["products"]["web-evidence-archiver"]
+        self.assertEqual(wea["source_reconciliation"]["status"], "HOLD_DIVERGED_BRANCHES")
+        self.assertEqual(wea["remote_package_artifact_discovery"]["classification"], "QA_UNSIGNED_VALIDATION_ONLY")
+        self.assertFalse(wea["remote_package_artifact_discovery"]["uploadable"])
         hub = group_b["products"]["workflow-automation-hub"]
         self.assertEqual(hub["partner_center_live_observation"]["submission_id"], None)
         self.assertEqual(hub["partner_center_live_observation"]["submission_state"], "No submission shown")
