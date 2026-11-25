@@ -21,8 +21,16 @@ class StoreFleetPreflightTests(unittest.TestCase):
             self.assertRegex(config["expected_sha256"], r"^[0-9a-f]{64}$")
             self.assertRegex(config["source_sha"], r"^[0-9a-f]{40}$")
             self.assertEqual(config["ref"], config["source_sha"])
-            self.assertFalse(config["upload_approved"])
-            self.assertTrue(config["upload_hold_reasons"])
+            if key == "data-contract-auditor":
+                self.assertTrue(config["upload_approved"])
+                self.assertEqual(config["upload_scope"], "ONE_EXACT_MSIX_TO_EXISTING_DRAFT_PACKAGES_ONLY")
+                self.assertFalse(config["certification_submission_authorized"])
+                self.assertFalse(config["publish_authorized"])
+                self.assertTrue(config["approval_ref"].startswith("USER_CHAT_AUTHORIZATION_"))
+                self.assertTrue(config["upload_warnings"])
+            else:
+                self.assertFalse(config["upload_approved"])
+                self.assertTrue(config["upload_hold_reasons"])
             self.assertNotIn(config["product_id"], store_ids)
             self.assertNotIn(config["submission_id"], submission_ids)
             store_ids.add(config["product_id"])
