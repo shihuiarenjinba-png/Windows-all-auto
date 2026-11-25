@@ -1,6 +1,6 @@
 {
   "path": "ops/focus_file_transport_reconciliation_20261125.json",
-  "observed_at_utc": "2026-11-25T08:59:46.316Z",
+  "observed_at_utc": "2026-11-25T09:01:24.936Z",
   "status": "HOLD",
   "e2e_pass": false,
   "priority_product": "Focus Session Desk",
@@ -301,11 +301,12 @@
       "current_source_request_id": "app-file-integrity-ledger-33d612be2774",
       "current_source_request_run_id": 45422895649,
       "current_source_request_artifact_id": 14934034365,
-      "current_source_request_official_identity_status": "NOT_COLLECTED",
+      "current_source_request_official_identity_status": "UNVERIFIED",
       "current_source_request_package_version": null,
       "current_source_request_package_status": "NOT_BUILT",
       "human_visual_review_required": true,
-      "current_source_request_artifact_status": "DRY_RUN"
+      "current_source_request_artifact_status": "DRY_RUN",
+      "current_source_request_identity_readback_status": "NOT_COLLECTED"
     }
   ],
   "version_discovery": {
@@ -389,7 +390,7 @@
     "merge_allowed": false,
     "force_push_allowed": false
   },
-  "next_action": "First rerun exact-head Offline QA after the central-ledger status-field collision fix. The last fully verified central head remains 844de6ae with transport, independent custody and Windows/Ubuntu Offline QA all green. Then continue product blockers: Focus current-source request/Identity revalidation plus authoritative Partner Center Version; File owner visual sign-off plus current-source Identity revalidation and authoritative Version. No Version inference, no product-code edits, no real MSIX until all gates pass, and no Store write.",
+  "next_action": "Correct the second central-ledger field collision, then rerun exact-head transport, artifact custody and Windows/Ubuntu Offline QA. The last fully verified central head remains 844de6ae (all three exact-head workflows passed). Preserve File Integrity's product-lane status as UNVERIFIED while separately recording that the request artifact says NOT_COLLECTED. Focus current-source request/Identity and authoritative Version remain missing; File owner visual sign-off, current-source Identity and Version remain required. No package build until all gates pass.",
   "pr165_current_head_parent_ci_status": "PASS_EXACT_HEAD_CI",
   "pr165_intermediate_test_failures": [
     {
@@ -674,8 +675,8 @@
     "latest_branch_search_query": "focus-session-desk",
     "latest_branch_search_result_count": 0
   },
-  "last_reconciled_at_utc": "2026-11-25T08:59:46.316Z",
-  "last_reconciled_basis": "PR165 latest branch commit 37c90cdff469704e062596292c5a59fcc7a5010f passed transport 45580803320 and artifact custody 45580803410, but Windows/Ubuntu Offline QA 45580803494 failed on a central-ledger test fixture collision: current_source_request_status was overwritten with the short DRY_RUN value. This fix restores the long product-lane status and stores the workflow value separately. Last fully verified central head remains 844de6ae with exact-head CI 45576235053/45576234993/45576235079. Product E2E, real MSIX, backlog, local pull, checker and install remain HOLD.",
+  "last_reconciled_at_utc": "2026-11-25T09:01:24.936Z",
+  "last_reconciled_basis": "PR165 exact-head follow-up: 37c90cd passed transport/custody but Offline QA failed because current_source_request_status was overwritten with DRY_RUN; c8a1268 restored that field but Offline QA again failed because current_source_request_official_identity_status was overwritten with NOT_COLLECTED instead of the required lane status UNVERIFIED. Both are central-ledger test-fixture collisions, not product E2E evidence. The fix keeps raw readback status in a separate field. Last fully verified central head remains 844de6ae with exact-head CI 45576235053/45576234993/45576235079. Product E2E and Store remain HOLD.",
   "current_signal_sprint_cross_lane_status": "RECORDED_IN_CENTRAL_LEDGER__GDK_ONLY__PREVIEW_STALE__NO_CAS",
   "pr165_additional_push_ci": [
     {
@@ -709,25 +710,25 @@
     }
   ],
   "pr165_pending_branch_head_observation_20261125_latest": {
-    "observed_at_utc": "2026-11-25T08:59:46.316Z",
+    "observed_at_utc": "2026-11-25T09:01:24.936Z",
     "pull_request": 165,
-    "head_sha": "37c90cdff469704e062596292c5a59fcc7a5010f",
-    "parent_sha": "844de6ae16d07211edbdd40085158517aa53041a",
+    "head_sha": "c8a1268bd34303cda449efe2ef579017b7c511e7",
+    "parent_sha": "37c90cdff469704e062596292c5a59fcc7a5010f",
     "exact_head_workflows": [
       {
-        "run_id": 45580803320,
+        "run_id": 45581237852,
         "conclusion": "success",
         "scope": "Transport fail-closed regression",
         "job": "transport-regression"
       },
       {
-        "run_id": 45580803410,
+        "run_id": 45581237174,
         "conclusion": "success",
         "scope": "Independent GitHub artifact custody regression",
         "job": "custody-regression"
       },
       {
-        "run_id": 45580803494,
+        "run_id": 45581237154,
         "conclusion": "failure",
         "scope": "Windows and Ubuntu Offline QA",
         "jobs": [
@@ -736,11 +737,94 @@
         ]
       }
     ],
+    "additional_push_workflows": [
+      {
+        "run_id": 45581222714,
+        "conclusion": "failure",
+        "scope": "Push-triggered Windows and Ubuntu Offline QA on this exact head"
+      }
+    ],
     "status": "PARTIAL_FAIL_CENTRAL_LEDGER_TEST_FIXTURE",
-    "failure": "Both Offline QA jobs failed in test_focus_and_file_integrity_remain_source_and_version_held because the evidence merge overwrote the existing long current_source_request_status field with the short DRY_RUN artifact status.",
-    "resolution": "Restore current_source_request_status=DRY_RUN__OFFICIAL_IDENTITY_UNVERIFIED__PACKAGE_NOT_BUILT__LOCAL_WINDOWS_BUILD_NOT_IMPLEMENTED and record the short workflow value separately as current_source_request_artifact_status=DRY_RUN.",
+    "failure": "Both Offline QA jobs failed because the evidence merge overwrote current_source_request_official_identity_status with NOT_COLLECTED, while the product-lane status must remain UNVERIFIED.",
+    "resolution": "Restore current_source_request_official_identity_status=UNVERIFIED and record the raw readback value separately as current_source_request_identity_readback_status=NOT_COLLECTED.",
     "product_e2e_status": "HOLD",
     "e2e_pass": false,
     "real_msix": false
-  }
+  },
+  "pr165_pending_branch_head_observations_20261125": [
+    {
+      "observed_at_utc": "2026-11-25T08:59:46.316Z",
+      "pull_request": 165,
+      "head_sha": "37c90cdff469704e062596292c5a59fcc7a5010f",
+      "parent_sha": "844de6ae16d07211edbdd40085158517aa53041a",
+      "exact_head_workflows": [
+        {
+          "run_id": 45580803320,
+          "conclusion": "success",
+          "scope": "Transport fail-closed regression",
+          "job": "transport-regression"
+        },
+        {
+          "run_id": 45580803410,
+          "conclusion": "success",
+          "scope": "Independent GitHub artifact custody regression",
+          "job": "custody-regression"
+        },
+        {
+          "run_id": 45580803494,
+          "conclusion": "failure",
+          "scope": "Windows and Ubuntu Offline QA",
+          "jobs": [
+            "Offline preflight tests (windows-latest)",
+            "Offline preflight tests (ubuntu-latest)"
+          ]
+        }
+      ],
+      "status": "PARTIAL_FAIL_CENTRAL_LEDGER_TEST_FIXTURE",
+      "failure": "Both Offline QA jobs failed because the evidence merge overwrote current_source_request_status with the short DRY_RUN artifact status.",
+      "resolution": "Restore the long product-lane status and keep the short workflow status in current_source_request_artifact_status."
+    },
+    {
+      "observed_at_utc": "2026-11-25T09:01:24.936Z",
+      "pull_request": 165,
+      "head_sha": "c8a1268bd34303cda449efe2ef579017b7c511e7",
+      "parent_sha": "37c90cdff469704e062596292c5a59fcc7a5010f",
+      "exact_head_workflows": [
+        {
+          "run_id": 45581237852,
+          "conclusion": "success",
+          "scope": "Transport fail-closed regression",
+          "job": "transport-regression"
+        },
+        {
+          "run_id": 45581237174,
+          "conclusion": "success",
+          "scope": "Independent GitHub artifact custody regression",
+          "job": "custody-regression"
+        },
+        {
+          "run_id": 45581237154,
+          "conclusion": "failure",
+          "scope": "Windows and Ubuntu Offline QA",
+          "jobs": [
+            "Offline preflight tests (windows-latest)",
+            "Offline preflight tests (ubuntu-latest)"
+          ]
+        }
+      ],
+      "additional_push_workflows": [
+        {
+          "run_id": 45581222714,
+          "conclusion": "failure",
+          "scope": "Push-triggered Windows and Ubuntu Offline QA on this exact head"
+        }
+      ],
+      "status": "PARTIAL_FAIL_CENTRAL_LEDGER_TEST_FIXTURE",
+      "failure": "Both Offline QA jobs failed because the evidence merge overwrote current_source_request_official_identity_status with NOT_COLLECTED, while the product-lane status must remain UNVERIFIED.",
+      "resolution": "Restore current_source_request_official_identity_status=UNVERIFIED and record the raw readback value separately as current_source_request_identity_readback_status=NOT_COLLECTED.",
+      "product_e2e_status": "HOLD",
+      "e2e_pass": false,
+      "real_msix": false
+    }
+  ]
 }
