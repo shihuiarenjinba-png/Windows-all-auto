@@ -15,34 +15,34 @@ class CurrentLiveProductReconciliationTests(unittest.TestCase):
 
     def test_pr165_exact_head_ci_is_not_product_e2e(self):
         latest = self.ledger["latest_transport_reconciliation"]
-        self.assertEqual(latest["central_head"], "dfe03df83a75cd696f6bdb10d482db4ada9c0d35")
-        self.assertEqual(latest["central_tested_head_sha"], "dfe03df83a75cd696f6bdb10d482db4ada9c0d35")
-        self.assertEqual(latest["previous_central_head_sha"], "b67e333178bff5a2214ad059a370163597a528c6")
-        self.assertEqual(latest["pr165_current_branch_head_sha"], "dfe03df83a75cd696f6bdb10d482db4ada9c0d35")
-        self.assertEqual(latest["pr165_current_branch_head_parent_sha"], "722e569c263759740867aa44b303fcf4ccd51929")
+        self.assertEqual(latest["central_head"], "addefcb0303897c3ce25c0b54f5d43b9336232f9")
+        self.assertEqual(latest["central_tested_head_sha"], "addefcb0303897c3ce25c0b54f5d43b9336232f9")
+        self.assertEqual(latest["previous_central_head_sha"], "dfe03df83a75cd696f6bdb10d482db4ada9c0d35")
+        self.assertEqual(latest["pr165_current_branch_head_sha"], "addefcb0303897c3ce25c0b54f5d43b9336232f9")
+        self.assertEqual(latest["pr165_current_branch_head_parent_sha"], "dfe03df83a75cd696f6bdb10d482db4ada9c0d35")
         self.assertEqual(latest["pr165_current_branch_head_ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual([x["run_id"] for x in latest["pr165_current_branch_head_ci"]],
-                         [45669620650, 45669620537, 45669620784])
+                         [45680373334, 45680373323, 45680373386])
         self.assertEqual([x["run_id"] for x in latest["exact_head_ci"]],
-                         [45669620650, 45669620537, 45669620784])
+                         [45680373334, 45680373323, 45680373386])
         self.assertEqual([x["run_id"] for x in latest["previous_exact_head_ci"]],
-                         [45658953507, 45658953645, 45658953242])
+                         [45669620650, 45669620537, 45669620784])
         self.assertEqual(latest["previous_tested_head_sha"], "b67e333178bff5a2214ad059a370163597a528c6")
         self.assertEqual([x["run_id"] for x in latest["previous_tested_exact_head_ci"]],
                          [45658953507, 45658953645, 45658953242])
-        self.assertEqual(latest["pr165_current_head_parent_ci_status"],
-                         "PARTIAL_FAIL_STALE_OVERLAY_STATUS_ASSERTION__SUPERSEDED_BY_CURRENT_HEAD_PASS")
-        self.assertEqual([x["run_id"] for x in latest["pr165_current_head_parent_ci"]], [45669385876, 45669385842, 45669385804])
+        self.assertEqual(latest["pr165_current_head_parent_ci_status"], "PASS_EXACT_HEAD_CI")
+        self.assertEqual([x["run_id"] for x in latest["pr165_current_head_parent_ci"]], [45669620650, 45669620537, 45669620784])
         self.assertEqual(latest["ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual(latest["status"], "HOLD")
         observation = self.ledger["pr165_live_head_observation_20261126_latest"]
-        self.assertEqual(observation["head_sha"], "dfe03df83a75cd696f6bdb10d482db4ada9c0d35")
-        self.assertEqual(observation["parent_sha"], "722e569c263759740867aa44b303fcf4ccd51929")
-        self.assertEqual(observation["comparison_to_previous_tested_head"]["ahead_by"], 2)
-        self.assertEqual(observation["status"], "PASS_EXACT_HEAD_CI")
-        self.assertEqual(self.ledger["pr165_current_head_parent_ci_status"],
-                         "PARTIAL_FAIL_STALE_OVERLAY_STATUS_ASSERTION__SUPERSEDED_BY_CURRENT_HEAD_PASS")
-        self.assertEqual([x["run_id"] for x in self.ledger["pr165_current_head_parent_ci"]], [45669385876, 45669385842, 45669385804])
+        self.assertEqual(observation["head_sha"], "c2c901525718cce96eb56135c9044edb5d062682")
+        self.assertEqual(observation["parent_sha"], "addefcb0303897c3ce25c0b54f5d43b9336232f9")
+        self.assertEqual(observation["comparison_to_previous_tested_head"]["ahead_by"], 1)
+        self.assertEqual(observation["status"], "FAIL_STALE_TEST_EXPECTATIONS")
+        self.assertEqual(observation["last_verified_head_sha"], "addefcb0303897c3ce25c0b54f5d43b9336232f9")
+        self.assertEqual(self.ledger["pr165_current_head_parent_ci_status"], "PASS_EXACT_HEAD_CI")
+        self.assertEqual([x["run_id"] for x in self.ledger["pr165_current_head_parent_ci"]], [45680373334, 45680373323, 45680373386])
+        self.assertEqual(self.ledger["pr165_current_branch_head_ci_status"], "FAIL_STALE_TEST_EXPECTATIONS")
         self.assertEqual(self.ledger["e2e_status"], "HOLD")
         self.assertIs(self.ledger["e2e_pass"], False)
         self.assertIs(latest["real_msix"], False)
@@ -54,7 +54,7 @@ class CurrentLiveProductReconciliationTests(unittest.TestCase):
         self.assertEqual(focus["approved_source_sha"], "8b00bc4e90828c4282463826873aa8dfd2eb93f4")
         self.assertEqual(focus["expected_current_source_request_id"], "app-focus-session-desk-fb6293839bc7")
         self.assertEqual(focus["current_source_request_status"],
-                         "NOT_OBSERVED__HISTORICAL_REQUEST_BINDS_8B00_ONLY")
+                         "GENERATED__DRY_RUN_ARTIFACT_VERIFIED__IDENTITY_READBACK_PENDING")
         self.assertIsNone(focus["package_version"])
         self.assertIs(focus["real_msix"], False)
 
