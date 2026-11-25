@@ -254,7 +254,7 @@ class CurrentLedgerGateTests(unittest.TestCase):
         self.assertIs(recon["e2e_pass"], False)
         self.assertEqual(recon["pr165_current_head_sha"], "e7ba529515609c230be87f05c99ce0f3835b8cb5")
         self.assertEqual([x["run_id"] for x in recon["pr165_current_head_ci"]],
-                         [45656584514, 45656584507, 45656584747])
+                         [45658023381, 45658023247, 45658023444])
         focus = next(p for p in recon["products"] if p["product"] == "Focus Session Desk")
         file_product = next(p for p in recon["products"] if p["product"] == "File Integrity Ledger")
         self.assertEqual(current["first_unconnected_interval"], recon["first_unconnected_interval"])
@@ -308,7 +308,7 @@ class CurrentObservationOverlayTests(unittest.TestCase):
                          "e7ba529515609c230be87f05c99ce0f3835b8cb5")
         self.assertEqual(
             [item["run_id"] for item in overlay["pr165"]["exact_head_ci"]],
-            [45656584514, 45656584507, 45656584747],
+            [45658023381, 45658023247, 45658023444],
         )
         self.assertTrue(overlay["pr165"]["repository_ci_is_not_product_e2e"])
         ledger = overlay["ledger_reconciliation"]
