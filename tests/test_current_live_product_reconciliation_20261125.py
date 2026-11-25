@@ -120,7 +120,7 @@ class CurrentLiveProductReconciliationTests(unittest.TestCase):
         self.assertEqual(self.recon["pr174"]["compare_to_current_pr165_head"]["behind_by"], 115)
         self.assertEqual(self.recon["pr174"]["decision"], "DO_NOT_RESTACK")
         self.assertEqual(self.ledger["parallel_draft_branch_assessment_20261125_0635"]["decision"],
-                         "NO_BLIND_RESTACK__SELECTIVELY_PORT_ONLY_CURRENT_PRODUCT_REGRESSION")
+                         "NO_BLIND_RESTACK__ALL_RELEVANT_CHANGES_ALREADY_PRESENT_OR_SUPERSEDED")
         parallel = self.ledger["parallel_draft_branch_assessment_20261125_0635"]
         self.assertEqual(parallel["current_pr165_head_sha"], "306c55cee26ec1087d77b933c8bec300b4a22b5c")
         self.assertEqual([x["behind_by"] for x in parallel["branches"]], [31, 31, 31])
