@@ -292,3 +292,44 @@ class CurrentLedgerGateTests(unittest.TestCase):
         self.assertIs(ledger["certification_allowed"], False)
         self.assertIs(ledger["publish_allowed"], False)
 
+
+class CurrentObservationOverlayTests(unittest.TestCase):
+    def test_20261126_overlay_records_latest_head_without_promoting_product_e2e(self):
+        root = Path(__file__).resolve().parents[1]
+        overlay = json.loads(
+            (root / "ops" / "active_e2e_handoff_overlay_20261126.json")
+            .read_text(encoding="utf-8")
+        )
+        self.assertEqual(overlay["status"], "HOLD")
+        self.assertIs(overlay["e2e_pass"], False)
+        self.assertEqual(overlay["pr165"]["head_sha"],
+                         "c307b29af3ff0f3fb1a9f73814d5e9955e68024c")
+        self.assertEqual(
+            [item["run_id"] for item in overlay["pr165"]["exact_head_ci"]],
+            [45653273056, 45653273551, 45653273553],
+        )
+        self.assertTrue(overlay["pr165"]["repository_ci_is_not_product_e2e"])
+        ledger = overlay["ledger_reconciliation"]
+        self.assertEqual(ledger["active_ledger_recorded_pr165_head"],
+                         "77068e3d1f67e2ce1a2ea09ffb9e38684cc7de0c")
+        self.assertEqual(ledger["actual_pr165_head"],
+                         "c307b29af3ff0f3fb1a9f73814d5e9955e68024c")
+        self.assertIs(ledger["active_ledger_reconciled"], False)
+        focus = overlay["products"]["focus_session_desk"]
+        self.assertEqual(focus["current_source_sha"],
+                         "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79")
+        self.assertNotEqual(focus["approved_identity_source_sha"],
+                            focus["current_source_sha"])
+        self.assertIsNone(focus["package_version"])
+        self.assertIs(focus["real_msix"], False)
+        file_product = overlay["products"]["file_integrity_ledger"]
+        self.assertIs(file_product["current_source_request"]["dry_run"], True)
+        self.assertEqual(file_product["current_source_request"]["official_identity_status"],
+                         "UNVERIFIED")
+        self.assertIsNone(file_product["package_version"])
+        self.assertIs(file_product["real_msix"], False)
+        self.assertEqual(overlay["first_unconnected_interval"]["status"],
+                         "BLOCKED_BEFORE_REAL_MSIX_BUILD")
+        self.assertIs(overlay["safety"]["store_submission_allowed"], False)
+        self.assertIs(overlay["safety"]["certification_allowed"], False)
+        self.assertIs(overlay["safety"]["publish_allowed"], False)
