@@ -141,8 +141,10 @@ class PartnerCenterFleetObservationTests(unittest.TestCase):
                 self.assertEqual(artifact["classification"], "QA_UNSIGNED_VALIDATION_ONLY")
                 self.assertFalse(artifact["uploadable"])
                 self.assertRegex(artifact["qa_unsigned_msix_sha256"], r"^[A-F0-9]{64}$")
-                self.assertEqual(artifact["sha256_evidence"]["evidence_level"], "BUILDER_REPORTED_HASH")
-                self.assertFalse(artifact["sha256_evidence"]["binary_downloaded_and_rehashed_locally"])
+                self.assertEqual(artifact["sha256_evidence"]["evidence_level"], "LOCAL_BINARY_REHASH_MATCHED_BUILDER_HASH")
+                self.assertTrue(artifact["sha256_evidence"]["binary_downloaded_and_rehashed_locally"])
+                self.assertTrue(artifact["local_verification_20261125"]["local_sha256_matches_builder"])
+                self.assertEqual(artifact["local_verification_20261125"]["signature_status"], "NotSigned")
                 self.assertEqual(
                     artifact["formal_store_msix_build"], "SKIPPED_STORE_READINESS_GATE"
                 )
@@ -161,19 +163,71 @@ class PartnerCenterFleetObservationTests(unittest.TestCase):
         self.assertEqual(dca["build_result"]["signature_status"], "UNSIGNED_STORE_CANDIDATE")
         self.assertEqual(dca["build_result"]["pack_unpack_verification"], "PASS")
         self.assertEqual(dca["unsigned_msix_candidate_artifact_id"], 15005358857)
-        self.assertFalse(dca["artifact_downloaded_and_rehashed_locally"])
+        self.assertTrue(dca["artifact_downloaded_and_rehashed_locally"])
+        self.assertTrue(dca["local_verification_20261125"]["local_sha256_matches_builder"])
+        self.assertEqual(dca["local_verification_20261125"]["install_status"], "ACCESS_DENIED")
+        self.assertEqual(dca["local_verification_20261125"]["exe_launch_status"], "TIMEOUT")
+        self.assertFalse(dca["local_verification_20261125"]["functional_qa_completed"])
         self.assertEqual(
             dca["current_branch_head_relation"]["application_runtime_source_changed_after_formal_candidate"],
             False,
         )
         self.assertFalse(dca["uploadable"])
 
+    def test_all_seven_local_package_hashes_and_manifest_fields_match(self):
+        expected_hashes = {
+            "ai-upload-guard": "1141d327f43ec0f846bf780d3d0c68b82ac261dd869a7a54fdbb31c70f8b6125",
+            "image-privacy-cleaner": "90396a9097b1e7b570b5cfef4b9a45a93958733636adfe47c1aa71cde7e29800",
+            "excel-csv-privacy-cleaner": "18c4f841df4c3daffeebd068d001287baa4bfc2876ce1c2558eab258351cc79d",
+            "data-contract-auditor": "e2ca6fd81720dc270667e65db05404b6efdde5b2c0712bee2853e0608767db05",
+            "pdf-privacy": "3911348b502afb133beb07d3ab1c9070a7f68fe3ed05772d027c38c040678ed9",
+            "web-evidence-archiver": "91fae107652539bad0c0bdc30e9ae1891542c1a92f2460218e1be24af987cebe",
+        }
+        group_c = json.loads(
+            (ROOT / "ops" / "group_c_store_products.json").read_text(encoding="utf-8")
+        )
+        group_b = json.loads(
+            (ROOT / "ops" / "group_b_standard_store_products.json").read_text(encoding="utf-8")
+        )
+        records = dict(group_c["products"])
+        records["workflow-automation-hub"] = group_b["products"]["workflow-automation-hub"]
+        expected_hashes["workflow-automation-hub"] = (
+            "512da1ab4449a69b02901baf9c8eaff6577f1e58d336f43ef608f4fbc3892a97"
+        )
+        self.assertEqual(set(records), set(expected_hashes))
+        for key, expected_sha in expected_hashes.items():
+            artifact = records[key]["remote_package_artifact_discovery"]
+            proof = artifact["local_verification_20261125"]
+            with self.subTest(product=key):
+                self.assertEqual(proof["builder_reported_sha256"], expected_sha)
+                self.assertEqual(proof["locally_computed_sha256"], expected_sha)
+                self.assertTrue(proof["local_sha256_matches_builder"])
+                self.assertEqual(proof["manifest_identity_match"], "PASS")
+                self.assertEqual(proof["manifest_publisher_match"], "PASS")
+                self.assertEqual(proof["manifest_version_match"], "PASS")
+                self.assertEqual(proof["manifest_architecture_match"], "PASS")
+                self.assertEqual(proof["signature_status"], "NotSigned")
+                self.assertTrue(artifact["artifact_downloaded_and_rehashed_locally"])
+                self.assertFalse(artifact["uploadable"])
+
     def test_web_evidence_archiver_artifact_waits_for_branch_integration(self):
         group_c = json.loads(
             (ROOT / "ops" / "group_c_store_products.json").read_text(encoding="utf-8")
         )
         wea = group_c["products"]["web-evidence-archiver"]
-        self.assertEqual(wea["source_reconciliation"]["status"], "HOLD_DIVERGED_BRANCHES")
+        self.assertEqual(wea["source_reconciliation"]["status"], "LOCAL_INTEGRATION_COMMITTED_UNPUSHED")
+        self.assertEqual(
+            wea["source_reconciliation"]["local_integration_commit_sha"],
+            "2516feedd5b10990fbe5c8184587e3b69214648d",
+        )
+        self.assertEqual(wea["source_reconciliation"]["integration_tests"], "41/41 PASS")
+        self.assertEqual(wea["source_reconciliation"]["compileall"], "PASS")
+        self.assertEqual(wea["source_reconciliation"]["push_status"], "NOT_PUSHED")
+        self.assertEqual(wea["source_reconciliation"]["remote_ci_status"], "NOT_RUN")
+        self.assertEqual(wea["source_reconciliation"]["actual_example_capture"], "TIMEOUT")
+        self.assertFalse(wea["source_reconciliation"]["capture_output_created"])
+        self.assertEqual(wea["remote_package_artifact_discovery"]["local_integration_commit_sha"],
+                         "2516feedd5b10990fbe5c8184587e3b69214648d")
         self.assertEqual(
             wea["remote_package_artifact_discovery"]["classification"],
             "QA_UNSIGNED_VALIDATION_ONLY",
