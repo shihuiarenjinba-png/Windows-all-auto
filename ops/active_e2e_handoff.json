@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-25T05:50:00Z",
+  "updated_at_utc": "2026-11-25T05:53:07Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -11140,7 +11140,7 @@
     }
   },
   "windows_e2e_custody_reconciliation": {
-    "checked_at_utc": "2026-11-25T05:50:00Z",
+    "checked_at_utc": "2026-11-25T05:53:07Z",
     "status": "HOLD",
     "pr161_head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
     "pr161_ci": [
@@ -11151,23 +11151,23 @@
       }
     ],
     "pr164_head_sha": "145cd1f44bdec9e584eb0f045dd139ef330c6321",
-    "pr165_tested_head_sha": "3612fcaad4edd47a833955b923f760ef89e175be",
-    "pr165_reconciliation_parent_head_sha": "0473dd02bf45b40db531d8f2ac5e5991fe691929",
+    "pr165_tested_head_sha": "8a0b60e6d6e29cfe0aab29049dace349a46f1baa",
+    "pr165_reconciliation_parent_head_sha": "3612fcaad4edd47a833955b923f760ef89e175be",
     "pr165_ci": [
       {
-        "run_id": 45556284349,
+        "run_id": 45556522939,
         "conclusion": "success",
         "scope": "Exact-head Windows E2E transport fail-closed regression",
         "job": "transport-regression"
       },
       {
-        "run_id": 45556284364,
+        "run_id": 45556522923,
         "conclusion": "success",
         "scope": "Exact-head independent GitHub artifact custody regression",
         "job": "custody-regression"
       },
       {
-        "run_id": 45556284413,
+        "run_id": 45556523074,
         "conclusion": "success",
         "scope": "Exact-head Windows-all-auto Offline QA",
         "jobs": [
@@ -11188,7 +11188,7 @@
     "prism_revision": "HOLD_CURRENT_SOURCE_B03CE7__NO_OLD_SOURCE_CAS",
     "signal_sprint": "HOLD_GDK_BUILD_ARTIFACT_AND_UIA_NOT_VERIFIED",
     "local_code_sync": "CLOUD_PASS_ONLY",
-    "note": "PR165 exact current tested HEAD 3612fcaad4edd47a833955b923f760ef89e175be passed transport 45556284349, independent artifact custody 45556284364, and Windows/Ubuntu Offline QA 45556284413. Immediate parent 0473dd02bf45b40db531d8f2ac5e5991fe691929 also passed all three exact-head workflows (45555969202, 45555969216, 45555969368). The earlier parent 8d17f2b269eef6f6b7ba24ade29f9bfb42e9c9ba had stale current-run-ID assertions (transport and Offline QA failed; custody passed); those were corrected in 0473dd02bf45b40db531d8f2ac5e5991fe691929. These are repository CI results only, not product E2E. Focus/File remain DELIVERY_HOLD: current-source Identity/request binding and authoritative Package Version are not verified; no real MSIX, GitHub backlog, local pull, checker, install, or local GUI-install receipt exists. PR174 remains diverged (ahead 6 / behind 87); DO_NOT_RESTACK. PR161 and PR171 evidence remains Offline QA only. Fresh unsold Store-upload eligibility remains 0; Store writes, certification and publish remain disabled.",
+    "note": "PR165 exact current tested HEAD 8a0b60e6d6e29cfe0aab29049dace349a46f1baa passed transport 45556522939, independent artifact custody 45556522923, and Windows/Ubuntu Offline QA 45556523074. Immediate parent 3612fcaad4edd47a833955b923f760ef89e175be also passed all three exact-head workflows (45556284349, 45556284364, 45556284413). These are repository CI results only, not product E2E. Focus Session Desk's exact MSIX export run 44779273420 failed at the Windows MSIX build step with \"MSIX_BUILD_HOLD: Missing verified version\" and produced no artifact. File Integrity's current-source request artifact 14934034365 is a verified 1,958-byte DRY_RUN archive; its receipt says package NOT_BUILT, official Identity UNVERIFIED, Version null, and next_stage LOCAL_WINDOWS_BUILD_NOT_IMPLEMENTED. Its MSIX export run 45422811552 stopped at \"MSIX_SELECTION_HOLD: approved Identity absent; do not invent Store IDs\" and produced no artifact. Focus/File remain DELIVERY_HOLD; no real MSIX, GitHub backlog, local pull, checker, install, or local GUI-install receipt exists. PR174 remains diverged (ahead 6 / behind 88); DO_NOT_RESTACK. PR161 and PR171 evidence remains Offline QA only. Fresh unsold Store-upload eligibility remains 0; Store writes, certification and publish remain disabled.",
     "approved_identity_product_checks": [
       {
         "product": "Focus Session Desk",
@@ -11346,7 +11346,16 @@
         "market_fit_evidence_verified": false,
         "market_fit_reason": "PROVISIONAL_SCORE_54_OF_100__BELOW_80_SALE_THRESHOLD__FREE_WINDOWS_CLOCK_AND_TASK_ALTERNATIVES",
         "current_source_request_status": "NOT_OBSERVED__HISTORICAL_REQUEST_BINDS_8B00_ONLY",
-        "identity_return_scope": "HISTORICAL_SOURCE_ONLY"
+        "identity_return_scope": "HISTORICAL_SOURCE_ONLY",
+        "msix_export": {
+          "run_id": 44779273420,
+          "workflow_conclusion": "failure",
+          "status": "FAILED_MISSING_VERIFIED_VERSION",
+          "artifact_id": null,
+          "artifacts": [],
+          "build_step": "Build MSIX on Windows with approved package identity",
+          "reason": "MSIX_BUILD_HOLD: Missing verified version"
+        }
       },
       {
         "product": "File Integrity Ledger",
@@ -11571,19 +11580,65 @@
           "status": "DRY_RUN",
           "route": "MSIX_OR_PWA_APP",
           "live_source_head_verification": "VERIFIED",
-          "official_identity_status": "NOT_COLLECTED",
-          "package_version": null
+          "official_identity_status": "UNVERIFIED",
+          "package_version": null,
+          "artifact_name": "file-integrity-package-request-45422895649",
+          "artifact_bytes": 1958,
+          "artifact_downloaded_and_rehashed": true,
+          "artifact_digest_matches_github_metadata": true,
+          "dry_run": true,
+          "requested_actions": [
+            "BUILD_WINDOWS",
+            "INSPECT_PACKAGE",
+            "LOOKUP_OFFICIAL_IDENTITY",
+            "PROPOSE_GITHUB_RETURN"
+          ],
+          "package_status": "NOT_BUILT",
+          "official_identity": {
+            "status": "UNVERIFIED",
+            "store_id": null,
+            "name": null,
+            "publisher": null,
+            "version": null,
+            "official_evidence_url": null
+          },
+          "next_stage": "LOCAL_WINDOWS_BUILD_NOT_IMPLEMENTED",
+          "registration_route": {
+            "registration_route": "MSIX_OR_PWA_APP",
+            "status": "ROUTE_METADATA_ONLY"
+          },
+          "artifact_expires_at_utc": "2026-12-24T15:13:06Z",
+          "request_artifact": {
+            "artifact_id": 14934034365,
+            "artifact_name": "file-integrity-package-request-45422895649",
+            "sha256": "697528b3b0769e3962eebfa0efcdcb026618cd378d97fc60c4f234017882527e",
+            "size_bytes": 1958,
+            "downloaded_and_rehashed": true,
+            "digest_matches_github_metadata": true
+          }
         },
         "store_id_scope": "HISTORICAL_IDENTITY_ONLY",
         "current_product_lane_base_pr": 95,
         "current_product_lane_base_head": "f77a59d52705473a3633f0f6eae868e1ec6d6297",
         "identity_file_present_on_current_pr_head": false,
         "identity_return_scope": "HISTORICAL_SOURCE_ONLY",
-        "current_source_request_status": "DRY_RUN__NOT_IDENTITY_RETURN",
+        "current_source_request_status": "DRY_RUN__OFFICIAL_IDENTITY_UNVERIFIED__PACKAGE_NOT_BUILT__LOCAL_WINDOWS_BUILD_NOT_IMPLEMENTED",
         "msix_export": {
           "run_id": 45422811552,
           "status": "SKIPPED_NO_ARTIFACT",
-          "artifact_id": null
+          "artifact_id": null,
+          "workflow_conclusion": "success",
+          "artifacts": [],
+          "msix_status": "NOT_BUILT",
+          "selection_gate_output": "MSIX_SELECTION_HOLD: approved Identity absent; do not invent Store IDs",
+          "build_step": "Build MSIX on Windows with approved package identity",
+          "build_steps_skipped": [
+            "Run factory regression tests",
+            "Build Windows executable dependencies",
+            "Build MSIX on Windows with approved package identity",
+            "Assemble verified MSIX handoff",
+            "Export package and checksum for Windows-all-auto"
+          ]
         },
         "store_assets_git_blob_sha_readback": {
           "StoreLogo": "e3c9a9426a1971f21175b9b045d4d5fef83f97d5",
@@ -12110,19 +12165,19 @@
     "pr165_current_head_parent_ci_status": "PASS_EXACT_HEAD_CI",
     "pr165_current_head_parent_ci": [
       {
-        "run_id": 45555969202,
+        "run_id": 45556284349,
         "conclusion": "success",
         "scope": "Immediate parent exact-head Windows E2E transport fail-closed regression",
         "job": "transport-regression"
       },
       {
-        "run_id": 45555969216,
+        "run_id": 45556284364,
         "conclusion": "success",
         "scope": "Immediate parent exact-head independent GitHub artifact custody regression",
         "job": "custody-regression"
       },
       {
-        "run_id": 45555969368,
+        "run_id": 45556284413,
         "conclusion": "success",
         "scope": "Immediate parent exact-head Windows-all-auto Offline QA",
         "jobs": [
@@ -17829,27 +17884,27 @@
     "note": "Cloud Windows smoke is not a physical user-PC local code sync receipt."
   },
   "latest_transport_reconciliation": {
-    "checked_at_utc": "2026-11-25T05:50:00Z",
+    "checked_at_utc": "2026-11-25T05:53:07Z",
     "central_pr": 165,
-    "central_head": "3612fcaad4edd47a833955b923f760ef89e175be",
-    "central_tested_head_sha": "3612fcaad4edd47a833955b923f760ef89e175be",
-    "previous_central_head_sha": "0473dd02bf45b40db531d8f2ac5e5991fe691929",
-    "previous_central_head": "0473dd02bf45b40db531d8f2ac5e5991fe691929",
+    "central_head": "8a0b60e6d6e29cfe0aab29049dace349a46f1baa",
+    "central_tested_head_sha": "8a0b60e6d6e29cfe0aab29049dace349a46f1baa",
+    "previous_central_head_sha": "3612fcaad4edd47a833955b923f760ef89e175be",
+    "previous_central_head": "3612fcaad4edd47a833955b923f760ef89e175be",
     "previous_exact_head_ci": [
       {
-        "run_id": 45555969202,
+        "run_id": 45556284349,
         "conclusion": "success",
         "scope": "Immediate parent exact-head Windows E2E transport fail-closed regression",
         "job": "transport-regression"
       },
       {
-        "run_id": 45555969216,
+        "run_id": 45556284364,
         "conclusion": "success",
         "scope": "Immediate parent exact-head independent GitHub artifact custody regression",
         "job": "custody-regression"
       },
       {
-        "run_id": 45555969368,
+        "run_id": 45556284413,
         "conclusion": "success",
         "scope": "Immediate parent exact-head Windows-all-auto Offline QA",
         "jobs": [
@@ -17860,19 +17915,19 @@
     ],
     "exact_head_ci": [
       {
-        "run_id": 45556284349,
+        "run_id": 45556522939,
         "conclusion": "success",
         "scope": "Exact-head Windows E2E transport fail-closed regression",
         "job": "transport-regression"
       },
       {
-        "run_id": 45556284364,
+        "run_id": 45556522923,
         "conclusion": "success",
         "scope": "Exact-head independent GitHub artifact custody regression",
         "job": "custody-regression"
       },
       {
-        "run_id": 45556284413,
+        "run_id": 45556523074,
         "conclusion": "success",
         "scope": "Exact-head Windows-all-auto Offline QA",
         "jobs": [
@@ -17931,7 +17986,7 @@
         "resolution": "Updated the remaining current run-ID assertions in 0473dd02bf45b40db531d8f2ac5e5991fe691929. Exact-head transport 45555969202, custody 45555969216, and Windows/Ubuntu Offline QA 45555969368 all passed."
       }
     ],
-    "note": "PR165 exact current tested HEAD 3612fcaad4edd47a833955b923f760ef89e175be passed transport 45556284349, independent artifact custody 45556284364, and Windows/Ubuntu Offline QA 45556284413. Immediate parent 0473dd02bf45b40db531d8f2ac5e5991fe691929 also passed all three exact-head workflows (45555969202, 45555969216, 45555969368). The earlier parent 8d17f2b269eef6f6b7ba24ade29f9bfb42e9c9ba had stale current-run-ID assertions (transport and Offline QA failed; custody passed); those were corrected in 0473dd02bf45b40db531d8f2ac5e5991fe691929. These are repository CI results only, not product E2E. Focus/File remain DELIVERY_HOLD: current-source Identity/request binding and authoritative Package Version are not verified; no real MSIX, GitHub backlog, local pull, checker, install, or local GUI-install receipt exists. PR174 remains diverged (ahead 6 / behind 87); DO_NOT_RESTACK. PR161 and PR171 evidence remains Offline QA only. Fresh unsold Store-upload eligibility remains 0; Store writes, certification and publish remain disabled."
+    "note": "PR165 exact current tested HEAD 8a0b60e6d6e29cfe0aab29049dace349a46f1baa passed transport 45556522939, independent artifact custody 45556522923, and Windows/Ubuntu Offline QA 45556523074. Immediate parent 3612fcaad4edd47a833955b923f760ef89e175be also passed all three exact-head workflows (45556284349, 45556284364, 45556284413). These are repository CI results only, not product E2E. Focus Session Desk's exact MSIX export run 44779273420 failed at the Windows MSIX build step with \"MSIX_BUILD_HOLD: Missing verified version\" and produced no artifact. File Integrity's current-source request artifact 14934034365 is a verified 1,958-byte DRY_RUN archive; its receipt says package NOT_BUILT, official Identity UNVERIFIED, Version null, and next_stage LOCAL_WINDOWS_BUILD_NOT_IMPLEMENTED. Its MSIX export run 45422811552 stopped at \"MSIX_SELECTION_HOLD: approved Identity absent; do not invent Store IDs\" and produced no artifact. Focus/File remain DELIVERY_HOLD; no real MSIX, GitHub backlog, local pull, checker, install, or local GUI-install receipt exists. PR174 remains diverged (ahead 6 / behind 88); DO_NOT_RESTACK. PR161 and PR171 evidence remains Offline QA only. Fresh unsold Store-upload eligibility remains 0; Store writes, certification and publish remain disabled."
   },
   "focus_file_transport_reconciliation_20261123": {
     "path": "ops/focus_file_transport_reconciliation_20261123.json",
@@ -19331,11 +19386,11 @@
     ]
   },
   "pr165_live_head_observation_20261125_latest": {
-    "observed_at_utc": "2026-11-25T05:50:00Z",
+    "observed_at_utc": "2026-11-25T05:53:07Z",
     "pull_request": 165,
     "head_ref": "refs/pull/165/head",
-    "head_sha": "3612fcaad4edd47a833955b923f760ef89e175be",
-    "parent_sha": "0473dd02bf45b40db531d8f2ac5e5991fe691929",
+    "head_sha": "8a0b60e6d6e29cfe0aab29049dace349a46f1baa",
+    "parent_sha": "3612fcaad4edd47a833955b923f760ef89e175be",
     "comparison_to_previous_tested_head": {
       "status": "ahead",
       "ahead_by": 1,
@@ -19344,19 +19399,19 @@
     },
     "exact_head_workflows": [
       {
-        "run_id": 45556284349,
+        "run_id": 45556522939,
         "conclusion": "success",
         "scope": "Exact-head Windows E2E transport fail-closed regression",
         "job": "transport-regression"
       },
       {
-        "run_id": 45556284364,
+        "run_id": 45556522923,
         "conclusion": "success",
         "scope": "Exact-head independent GitHub artifact custody regression",
         "job": "custody-regression"
       },
       {
-        "run_id": 45556284413,
+        "run_id": 45556523074,
         "conclusion": "success",
         "scope": "Exact-head Windows-all-auto Offline QA",
         "jobs": [
@@ -19427,26 +19482,26 @@
         "head_sha": "69e7b7c8a7b1ecdaea42e6f03644a8cd549dfaee",
         "status": "diverged",
         "ahead_by": 6,
-        "behind_by": 87,
+        "behind_by": 88,
         "decision": "DO_NOT_RESTACK"
       }
     },
     "current_head_parent_ci_status": "PASS_EXACT_HEAD_CI",
     "parent_exact_head_workflows": [
       {
-        "run_id": 45555969202,
+        "run_id": 45556284349,
         "conclusion": "success",
         "scope": "Immediate parent exact-head Windows E2E transport fail-closed regression",
         "job": "transport-regression"
       },
       {
-        "run_id": 45555969216,
+        "run_id": 45556284364,
         "conclusion": "success",
         "scope": "Immediate parent exact-head independent GitHub artifact custody regression",
         "job": "custody-regression"
       },
       {
-        "run_id": 45555969368,
+        "run_id": 45556284413,
         "conclusion": "success",
         "scope": "Immediate parent exact-head Windows-all-auto Offline QA",
         "jobs": [
@@ -19458,29 +19513,29 @@
   },
   "focus_file_transport_reconciliation_20261125": {
     "path": "ops/focus_file_transport_reconciliation_20261125.json",
-    "observed_at_utc": "2026-11-25T05:50:00Z",
+    "observed_at_utc": "2026-11-25T05:53:07Z",
     "status": "HOLD",
     "e2e_pass": false,
     "priority_product": "Focus Session Desk",
-    "central_head": "3612fcaad4edd47a833955b923f760ef89e175be",
-    "pr165_current_head_sha": "3612fcaad4edd47a833955b923f760ef89e175be",
-    "pr165_current_head_parent_sha": "0473dd02bf45b40db531d8f2ac5e5991fe691929",
+    "central_head": "8a0b60e6d6e29cfe0aab29049dace349a46f1baa",
+    "pr165_current_head_sha": "8a0b60e6d6e29cfe0aab29049dace349a46f1baa",
+    "pr165_current_head_parent_sha": "3612fcaad4edd47a833955b923f760ef89e175be",
     "pr165_current_head_ci_status": "PASS_EXACT_HEAD_CI",
     "pr165_current_head_ci": [
       {
-        "run_id": 45556284349,
+        "run_id": 45556522939,
         "conclusion": "success",
         "scope": "Exact-head Windows E2E transport fail-closed regression",
         "job": "transport-regression"
       },
       {
-        "run_id": 45556284364,
+        "run_id": 45556522923,
         "conclusion": "success",
         "scope": "Exact-head independent GitHub artifact custody regression",
         "job": "custody-regression"
       },
       {
-        "run_id": 45556284413,
+        "run_id": 45556523074,
         "conclusion": "success",
         "scope": "Exact-head Windows-all-auto Offline QA",
         "jobs": [
@@ -19489,22 +19544,22 @@
         ]
       }
     ],
-    "pr165_previous_current_head_sha": "0473dd02bf45b40db531d8f2ac5e5991fe691929",
+    "pr165_previous_current_head_sha": "3612fcaad4edd47a833955b923f760ef89e175be",
     "pr165_previous_current_head_ci": [
       {
-        "run_id": 45555969202,
+        "run_id": 45556284349,
         "conclusion": "success",
         "scope": "Immediate parent exact-head Windows E2E transport fail-closed regression",
         "job": "transport-regression"
       },
       {
-        "run_id": 45555969216,
+        "run_id": 45556284364,
         "conclusion": "success",
         "scope": "Immediate parent exact-head independent GitHub artifact custody regression",
         "job": "custody-regression"
       },
       {
-        "run_id": 45555969368,
+        "run_id": 45556284413,
         "conclusion": "success",
         "scope": "Immediate parent exact-head Windows-all-auto Offline QA",
         "jobs": [
@@ -19531,11 +19586,11 @@
       "branch": "codex/36-e2e-ledger-reconcile-20261123-1937",
       "head_sha": "69e7b7c8a7b1ecdaea42e6f03644a8cd549dfaee",
       "compare_to_current_pr165_head": {
-        "current_pr165_head_sha": "3612fcaad4edd47a833955b923f760ef89e175be",
+        "current_pr165_head_sha": "8a0b60e6d6e29cfe0aab29049dace349a46f1baa",
         "merge_base_sha": "c6f30824196e90c03837e0636d7557a79fad92af",
         "status": "diverged",
         "ahead_by": 6,
-        "behind_by": 87,
+        "behind_by": 88,
         "changed_files": [
           "ops/active_e2e_handoff.json",
           "ops/completion_rush_queue_20261116.json",
@@ -19567,7 +19622,16 @@
         "github_backlog_receipt": false,
         "local_pull_receipt": false,
         "local_checker_receipt": false,
-        "local_gui_install_receipt": false
+        "local_gui_install_receipt": false,
+        "msix_export": {
+          "run_id": 44779273420,
+          "workflow_conclusion": "failure",
+          "status": "FAILED_MISSING_VERIFIED_VERSION",
+          "artifact_id": null,
+          "artifacts": [],
+          "build_step": "Build MSIX on Windows with approved package identity",
+          "reason": "MSIX_BUILD_HOLD: Missing verified version"
+        }
       },
       {
         "product": "File Integrity Ledger",
@@ -19650,7 +19714,19 @@
         "msix_export": {
           "run_id": 45422811552,
           "status": "SKIPPED_NO_ARTIFACT",
-          "artifact_id": null
+          "artifact_id": null,
+          "workflow_conclusion": "success",
+          "artifacts": [],
+          "msix_status": "NOT_BUILT",
+          "selection_gate_output": "MSIX_SELECTION_HOLD: approved Identity absent; do not invent Store IDs",
+          "build_step": "Build MSIX on Windows with approved package identity",
+          "build_steps_skipped": [
+            "Run factory regression tests",
+            "Build Windows executable dependencies",
+            "Build MSIX on Windows with approved package identity",
+            "Assemble verified MSIX handoff",
+            "Export package and checksum for Windows-all-auto"
+          ]
         },
         "real_msix": false,
         "github_backlog_receipt": false,
@@ -19668,9 +19744,44 @@
           "status": "DRY_RUN",
           "route": "MSIX_OR_PWA_APP",
           "live_source_head_verification": "VERIFIED",
-          "official_identity_status": "NOT_COLLECTED",
-          "package_version": null
-        }
+          "official_identity_status": "UNVERIFIED",
+          "package_version": null,
+          "artifact_name": "file-integrity-package-request-45422895649",
+          "artifact_bytes": 1958,
+          "artifact_downloaded_and_rehashed": true,
+          "artifact_digest_matches_github_metadata": true,
+          "dry_run": true,
+          "requested_actions": [
+            "BUILD_WINDOWS",
+            "INSPECT_PACKAGE",
+            "LOOKUP_OFFICIAL_IDENTITY",
+            "PROPOSE_GITHUB_RETURN"
+          ],
+          "package_status": "NOT_BUILT",
+          "official_identity": {
+            "status": "UNVERIFIED",
+            "store_id": null,
+            "name": null,
+            "publisher": null,
+            "version": null,
+            "official_evidence_url": null
+          },
+          "next_stage": "LOCAL_WINDOWS_BUILD_NOT_IMPLEMENTED",
+          "registration_route": {
+            "registration_route": "MSIX_OR_PWA_APP",
+            "status": "ROUTE_METADATA_ONLY"
+          },
+          "artifact_expires_at_utc": "2026-12-24T15:13:06Z",
+          "request_artifact": {
+            "artifact_id": 14934034365,
+            "artifact_name": "file-integrity-package-request-45422895649",
+            "sha256": "697528b3b0769e3962eebfa0efcdcb026618cd378d97fc60c4f234017882527e",
+            "size_bytes": 1958,
+            "downloaded_and_rehashed": true,
+            "digest_matches_github_metadata": true
+          }
+        },
+        "current_source_request_status": "DRY_RUN__OFFICIAL_IDENTITY_UNVERIFIED__PACKAGE_NOT_BUILT__LOCAL_WINDOWS_BUILD_NOT_IMPLEMENTED"
       }
     ],
     "version_discovery": {
@@ -19682,7 +19793,10 @@
         "File Integrity PR115 deterministic request is DRY_RUN only and does not constitute Identity approval or Version readback.",
         "Reviewed PR94/PR95/PR115 discussions and current product artifacts; no authenticated Partner Center Package Version readback.",
         "Fresh direct read at 2026-11-25T05:38:56Z: AI-App-Factory PR94 HEAD fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79 contains products/focus-session-desk/store/approved-identity.json (blob 00c56e85ec7590783284e372ba100a3127614971); request app-focus-session-desk-8b00bc4e9082 and source_sha/verified_source_sha/expected_head_sha all bind historical source 8b00bc4e90828c4282463826873aa8dfd2eb93f4, package_version_gate=HOLD, with no package_version field. No current-source request/Identity binding was observed.",
-        "Fresh direct read at 2026-11-25T05:38:56Z: AI-App-Factory PR115 HEAD 33d612be2774ac155ea3d85289ec5cb7981c81c1 has no products/file-integrity-ledger/store/approved-identity.json; the historical file at commit db9a57af822788af4c8384499a6e343ec7b0353d (blob 78034cf62be3479f9ed752a2585ab31bb24c49ff) binds only source d1108d12f7d1697af30400f97c7db39cba5e6791 and package_version_gate=HOLD. Current PR115 request run 45422895649 / artifact 14934034365 is DRY_RUN with official_identity_status=NOT_COLLECTED and package_version=null; MSIX export run 45422811552 is SKIPPED_NO_ARTIFACT. No authenticated Partner Center Package Version readback was observed."
+        "Fresh direct read at 2026-11-25T05:38:56Z: AI-App-Factory PR115 HEAD 33d612be2774ac155ea3d85289ec5cb7981c81c1 has no products/file-integrity-ledger/store/approved-identity.json; the historical file at commit db9a57af822788af4c8384499a6e343ec7b0353d (blob 78034cf62be3479f9ed752a2585ab31bb24c49ff) binds only source d1108d12f7d1697af30400f97c7db39cba5e6791 and package_version_gate=HOLD. Current PR115 request run 45422895649 / artifact 14934034365 is DRY_RUN with official_identity_status=NOT_COLLECTED and package_version=null; MSIX export run 45422811552 is SKIPPED_NO_ARTIFACT. No authenticated Partner Center Package Version readback was observed.",
+        "Fresh direct read at 2026-11-25T05:53:07Z: Focus PR94 MSIX export run 44779273420 failed at \"Build MSIX on Windows with approved package identity\" with exact output \"MSIX_BUILD_HOLD: Missing verified version\"; artifact listing is empty.",
+        "Fresh direct read at 2026-11-25T05:53:07Z: File Integrity request artifact 14934034365 (file-integrity-package-request-45422895649) was downloaded as a 1,958-byte ZIP and independently rehashed to SHA-256 697528b3b0769e3962eebfa0efcdcb026618cd378d97fc60c4f234017882527e, matching GitHub artifact metadata. package-request.json is dry_run=true; provisioner-dry-run-receipt.json says status DRY_RUN, package NOT_BUILT, official_identity UNVERIFIED with Store ID/name/publisher/version all null, and next_stage LOCAL_WINDOWS_BUILD_NOT_IMPLEMENTED. registration-route.json is ROUTE_METADATA_ONLY.",
+        "Fresh direct read at 2026-11-25T05:53:07Z: File Integrity MSIX export run 45422811552 concluded success only because the selection gate held; output was \"MSIX_SELECTION_HOLD: approved Identity absent; do not invent Store IDs\". The Windows MSIX build, handoff assembly and export steps were skipped; artifact listing is empty."
       ],
       "partner_center_authenticated_readback": "NOT_OBSERVED",
       "decision": "KEEP_VERSION_HOLD__DO_NOT_INFER_OR_WRITE_VERSION"
@@ -19692,12 +19806,17 @@
       "focus_session_desk": [
         "CURRENT_SOURCE_REQUEST_BINDING_NOT_OBSERVED",
         "CURRENT_SOURCE_IDENTITY_REVALIDATION_REQUIRED",
-        "AUTHORITATIVE_PACKAGE_VERSION_REQUIRED"
+        "AUTHORITATIVE_PACKAGE_VERSION_REQUIRED",
+        "MSIX_BUILD_HOLD_MISSING_VERIFIED_VERSION"
       ],
       "file_integrity_ledger": [
         "PR115_INTEGRATED_SOURCE_CANDIDATE__HUMAN_VISUAL_REVIEW_REQUIRED",
         "CURRENT_SOURCE_IDENTITY_REVALIDATION_REQUIRED",
-        "AUTHORITATIVE_PACKAGE_VERSION_REQUIRED"
+        "AUTHORITATIVE_PACKAGE_VERSION_REQUIRED",
+        "CURRENT_SOURCE_REQUEST_DRY_RUN_ONLY",
+        "OFFICIAL_IDENTITY_UNVERIFIED",
+        "LOCAL_WINDOWS_BUILD_NOT_IMPLEMENTED",
+        "MSIX_SELECTION_HOLD_APPROVED_IDENTITY_ABSENT"
       ],
       "next_after_resolution": [
         "REAL_MSIX_BUILD",
@@ -19734,7 +19853,7 @@
       "merge_allowed": false,
       "force_push_allowed": false
     },
-    "next_action": "Focus remains rank 1: current-source request/Identity revalidation and authenticated Partner Center Package Version readback are required; do not reuse historical 8b00bc4e binding. File Integrity PR115 remains a current-source DRY_RUN candidate; human visual review, current-source Identity revalidation and authoritative Version are still required. Only after all gates pass may a real MSIX be built and moved through independent SHA custody, backlog, local pull, checker and local GUI/install QA. No Version inference, old-source CAS, Store write, merge or product-code changes.",
+    "next_action": "Focus remains rank 1: exact export run 44779273420 stops at MSIX_BUILD_HOLD: Missing verified version; current-source request/Identity revalidation and authoritative Package Version are still required. File Integrity PR115 has a verified DRY_RUN request artifact only; package is NOT_BUILT, official Identity UNVERIFIED, Version null, and LOCAL_WINDOWS_BUILD_NOT_IMPLEMENTED; its export gate stops because approved Identity is absent. Keep both DELIVERY_HOLD. No Version inference or old-source CAS. After current-source approved Identity and authoritative Version are independently verified, build a real MSIX, verify SHA custody, then backlog, local pull, checker and local GUI/install QA. No Store write, merge, or product-code changes.",
     "pr165_current_head_parent_ci_status": "PASS_EXACT_HEAD_CI",
     "pr165_intermediate_test_failures": [
       {
@@ -19808,11 +19927,11 @@
       "branch": "codex/36-e2e-ledger-reconcile-20261123-1937",
       "head_sha": "69e7b7c8a7b1ecdaea42e6f03644a8cd549dfaee",
       "compare_to_current_pr165_head": {
-        "current_pr165_head_sha": "3612fcaad4edd47a833955b923f760ef89e175be",
+        "current_pr165_head_sha": "8a0b60e6d6e29cfe0aab29049dace349a46f1baa",
         "merge_base_sha": "c6f30824196e90c03837e0636d7557a79fad92af",
         "status": "diverged",
         "ahead_by": 6,
-        "behind_by": 87,
+        "behind_by": 88,
         "changed_files": [
           "ops/active_e2e_handoff.json",
           "ops/completion_rush_queue_20261116.json",
@@ -19826,19 +19945,19 @@
     },
     "pr165_current_head_parent_ci": [
       {
-        "run_id": 45555969202,
+        "run_id": 45556284349,
         "conclusion": "success",
         "scope": "Immediate parent exact-head Windows E2E transport fail-closed regression",
         "job": "transport-regression"
       },
       {
-        "run_id": 45555969216,
+        "run_id": 45556284364,
         "conclusion": "success",
         "scope": "Immediate parent exact-head independent GitHub artifact custody regression",
         "job": "custody-regression"
       },
       {
-        "run_id": 45555969368,
+        "run_id": 45556284413,
         "conclusion": "success",
         "scope": "Immediate parent exact-head Windows-all-auto Offline QA",
         "jobs": [
@@ -19873,7 +19992,9 @@
       "current_source_request_status": "NOT_OBSERVED__HISTORICAL_REQUEST_BINDS_8B00_ONLY",
       "current_source_identity_binding_status": "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE",
       "package_version": null,
-      "real_msix": false
+      "real_msix": false,
+      "msix_export_status": "FAILED_MISSING_VERIFIED_VERSION",
+      "msix_export_run_id": 44779273420
     },
     {
       "rank": 2,
@@ -19887,7 +20008,11 @@
       "source_selection_status": "INTEGRATED_CANDIDATE_PR115__AWAITING_HUMAN_VISUAL_REVIEW_AND_IDENTITY_REVALIDATION",
       "current_source_identity_binding_status": "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE",
       "package_version": null,
-      "real_msix": false
+      "real_msix": false,
+      "current_source_request_status": "DRY_RUN__OFFICIAL_IDENTITY_UNVERIFIED__PACKAGE_NOT_BUILT__LOCAL_WINDOWS_BUILD_NOT_IMPLEMENTED",
+      "package_status": "NOT_BUILT",
+      "official_identity_status": "UNVERIFIED",
+      "next_stage": "LOCAL_WINDOWS_BUILD_NOT_IMPLEMENTED"
     }
   ],
   "store_upload_test_eligibility_live_20261125": {
@@ -19911,11 +20036,11 @@
     "branch": "codex/36-e2e-ledger-reconcile-20261123-1937",
     "head_sha": "69e7b7c8a7b1ecdaea42e6f03644a8cd549dfaee",
     "compare_to_current_pr165_head": {
-      "current_pr165_head_sha": "3612fcaad4edd47a833955b923f760ef89e175be",
+      "current_pr165_head_sha": "8a0b60e6d6e29cfe0aab29049dace349a46f1baa",
       "merge_base_sha": "c6f30824196e90c03837e0636d7557a79fad92af",
       "status": "diverged",
       "ahead_by": 6,
-      "behind_by": 87,
+      "behind_by": 88,
       "changed_files": [
         "ops/active_e2e_handoff.json",
         "ops/completion_rush_queue_20261116.json",
@@ -19959,7 +20084,10 @@
       "Fresh direct read at 2026-11-25T05:38:56Z: AI-App-Factory PR94 HEAD fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79 contains products/focus-session-desk/store/approved-identity.json (blob 00c56e85ec7590783284e372ba100a3127614971); request app-focus-session-desk-8b00bc4e9082 and source_sha/verified_source_sha/expected_head_sha all bind historical source 8b00bc4e90828c4282463826873aa8dfd2eb93f4, package_version_gate=HOLD, with no package_version field. No current-source request/Identity binding was observed.",
       "Fresh direct read at 2026-11-25T05:38:56Z: AI-App-Factory PR115 HEAD 33d612be2774ac155ea3d85289ec5cb7981c81c1 has no products/file-integrity-ledger/store/approved-identity.json; the historical file at commit db9a57af822788af4c8384499a6e343ec7b0353d (blob 78034cf62be3479f9ed752a2585ab31bb24c49ff) binds only source d1108d12f7d1697af30400f97c7db39cba5e6791 and package_version_gate=HOLD. Current PR115 request run 45422895649 / artifact 14934034365 is DRY_RUN with official_identity_status=NOT_COLLECTED and package_version=null; MSIX export run 45422811552 is SKIPPED_NO_ARTIFACT. No authenticated Partner Center Package Version readback was observed.",
       "Fresh live-head reconciliation at 2026-11-25T05:47:11Z: PR165 head 0473dd02bf45b40db531d8f2ac5e5991fe691929 exact-head transport/custody/Windows+Ubuntu Offline QA all SUCCESS. Immediate parent 8d17f2b269eef6f6b7ba24ade29f9bfb42e9c9ba had two stale current-run-ID assertions; the current head corrected them. This does not change Focus/File source-binding or authoritative Package Version HOLDs.",
-      "Fresh exact-head verification at 2026-11-25T05:50:00Z: PR165 head 3612fcaad4edd47a833955b923f760ef89e175be passed transport 45556284349, custody 45556284364, and Windows/Ubuntu Offline QA 45556284413. Parent 0473dd02bf45b40db531d8f2ac5e5991fe691929 also passed all three workflows. Product Identity/Version and real-package gates remain unchanged."
+      "Fresh exact-head verification at 2026-11-25T05:50:00Z: PR165 head 3612fcaad4edd47a833955b923f760ef89e175be passed transport 45556284349, custody 45556284364, and Windows/Ubuntu Offline QA 45556284413. Parent 0473dd02bf45b40db531d8f2ac5e5991fe691929 also passed all three workflows. Product Identity/Version and real-package gates remain unchanged.",
+      "Fresh direct read at 2026-11-25T05:53:07Z: Focus PR94 MSIX export run 44779273420 failed at \"Build MSIX on Windows with approved package identity\" with exact output \"MSIX_BUILD_HOLD: Missing verified version\"; artifact listing is empty.",
+      "Fresh direct read at 2026-11-25T05:53:07Z: File Integrity request artifact 14934034365 (file-integrity-package-request-45422895649) was downloaded as a 1,958-byte ZIP and independently rehashed to SHA-256 697528b3b0769e3962eebfa0efcdcb026618cd378d97fc60c4f234017882527e, matching GitHub artifact metadata. package-request.json is dry_run=true; provisioner-dry-run-receipt.json says status DRY_RUN, package NOT_BUILT, official_identity UNVERIFIED with Store ID/name/publisher/version all null, and next_stage LOCAL_WINDOWS_BUILD_NOT_IMPLEMENTED. registration-route.json is ROUTE_METADATA_ONLY.",
+      "Fresh direct read at 2026-11-25T05:53:07Z: File Integrity MSIX export run 45422811552 concluded success only because the selection gate held; output was \"MSIX_SELECTION_HOLD: approved Identity absent; do not invent Store IDs\". The Windows MSIX build, handoff assembly and export steps were skipped; artifact listing is empty."
     ],
     "partner_center_authenticated_readback": "NOT_OBSERVED",
     "decision": "KEEP_VERSION_HOLD__DO_NOT_INFER_OR_WRITE_VERSION"
@@ -20067,19 +20195,19 @@
   "pr165_current_head_parent_ci_status": "PASS_EXACT_HEAD_CI",
   "pr165_current_head_parent_ci": [
     {
-      "run_id": 45555969202,
+      "run_id": 45556284349,
       "conclusion": "success",
       "scope": "Immediate parent exact-head Windows E2E transport fail-closed regression",
       "job": "transport-regression"
     },
     {
-      "run_id": 45555969216,
+      "run_id": 45556284364,
       "conclusion": "success",
       "scope": "Immediate parent exact-head independent GitHub artifact custody regression",
       "job": "custody-regression"
     },
     {
-      "run_id": 45555969368,
+      "run_id": 45556284413,
       "conclusion": "success",
       "scope": "Immediate parent exact-head Windows-all-auto Offline QA",
       "jobs": [

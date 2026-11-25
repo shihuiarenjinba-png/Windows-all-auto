@@ -297,10 +297,10 @@ class CustodyTests(unittest.TestCase):
         ledger = json.loads((root / "ops/active_e2e_handoff.json").read_text(encoding="utf-8"))
         recon = json.loads((root / "ops/focus_file_transport_reconciliation_20261125.json").read_text(encoding="utf-8"))
         latest = ledger["latest_transport_reconciliation"]
-        self.assertEqual(latest["central_tested_head_sha"], "3612fcaad4edd47a833955b923f760ef89e175be")
-        self.assertEqual(latest["previous_central_head_sha"], "0473dd02bf45b40db531d8f2ac5e5991fe691929")
+        self.assertEqual(latest["central_tested_head_sha"], "8a0b60e6d6e29cfe0aab29049dace349a46f1baa")
+        self.assertEqual(latest["previous_central_head_sha"], "3612fcaad4edd47a833955b923f760ef89e175be")
         self.assertEqual([x["run_id"] for x in latest["exact_head_ci"]],
-                         [45556284349, 45556284364, 45556284413])
+                         [45556522939, 45556522923, 45556523074])
         self.assertEqual(latest["ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual(latest["status"], "HOLD")
         self.assertIs(latest["e2e_pass"], False)
@@ -326,6 +326,12 @@ class CustodyTests(unittest.TestCase):
         self.assertEqual(file_item["current_factory_head"], "33d612be2774ac155ea3d85289ec5cb7981c81c1")
         self.assertEqual(file_item["current_source_request_id"], "app-file-integrity-ledger-33d612be2774")
         self.assertEqual(file_item["current_source_request"]["status"], "DRY_RUN")
+        self.assertEqual(file_item["current_source_request"]["official_identity_status"], "UNVERIFIED")
+        self.assertEqual(file_item["current_source_request"]["package_status"], "NOT_BUILT")
+        self.assertEqual(file_item["current_source_request"]["next_stage"], "LOCAL_WINDOWS_BUILD_NOT_IMPLEMENTED")
+        self.assertEqual(file_item["current_source_request"]["request_artifact"]["sha256"],
+                         "697528b3b0769e3962eebfa0efcdcb026618cd378d97fc60c4f234017882527e")
+        self.assertTrue(file_item["current_source_request"]["request_artifact"]["downloaded_and_rehashed"])
         self.assertTrue(file_item["current_gui_followup"]["artifact_bytes_independently_downloaded_and_rehashed"])
         self.assertTrue(file_item["current_gui_followup"]["exe_sha256_independently_rehashed"])
         self.assertTrue(file_item["current_gui_followup"]["visual_review_required"])
@@ -335,6 +341,8 @@ class CustodyTests(unittest.TestCase):
         self.assertIsNone(file_item["package_version"])
         self.assertIs(file_item["real_msix"], False)
         self.assertEqual(file_item["msix_export"]["status"], "SKIPPED_NO_ARTIFACT")
+        self.assertEqual(file_item["msix_export"]["selection_gate_output"],
+                         "MSIX_SELECTION_HOLD: approved Identity absent; do not invent Store IDs")
         identity = dict(request_id="old-file-identity", source_sha=file_item["source_sha"],
                         verified_source_sha=file_item["store_assets_branch_head"],
                         expected_head_sha=file_item["source_sha"], package_version_gate="HOLD")
@@ -346,7 +354,7 @@ class CustodyTests(unittest.TestCase):
                          "NOT_OBSERVED__HISTORICAL_REQUEST_BINDS_8B00_ONLY")
         self.assertEqual(focus_item["store_assets_evidence"]["native_exe_gui"]["run_id"], 45234786152)
         self.assertEqual(focus_item["product_quality_assessment"]["score"]["total"], 54)
-        self.assertEqual(ledger["pr174_restack_assessment_live_20261125"]["compare_to_current_pr165_head"]["behind_by"], 87)
+        self.assertEqual(ledger["pr174_restack_assessment_live_20261125"]["compare_to_current_pr165_head"]["behind_by"], 88)
         self.assertEqual(ledger["store_upload_test_bridge"]["eligible_fresh_unsold_products"], 0)
 
 if __name__ == "__main__":

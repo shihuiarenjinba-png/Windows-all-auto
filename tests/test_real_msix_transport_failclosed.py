@@ -217,19 +217,19 @@ class CurrentLedgerGateTests(unittest.TestCase):
         self.assertIs(ledger["certification_allowed"], False)
         self.assertIs(ledger["publish_allowed"], False)
         latest = ledger["latest_transport_reconciliation"]
-        self.assertEqual(latest["central_tested_head_sha"], "3612fcaad4edd47a833955b923f760ef89e175be")
-        self.assertEqual(latest["previous_central_head_sha"], "0473dd02bf45b40db531d8f2ac5e5991fe691929")
+        self.assertEqual(latest["central_tested_head_sha"], "8a0b60e6d6e29cfe0aab29049dace349a46f1baa")
+        self.assertEqual(latest["previous_central_head_sha"], "3612fcaad4edd47a833955b923f760ef89e175be")
         self.assertEqual([x["run_id"] for x in latest["exact_head_ci"]],
-                         [45556284349, 45556284364, 45556284413])
+                         [45556522939, 45556522923, 45556523074])
         self.assertEqual(latest["ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual(latest["status"], "HOLD")
         self.assertIs(latest["e2e_pass"], False)
         self.assertIs(latest["real_msix"], False)
         self.assertEqual(latest["store_upload_test_eligible_products"], 0)
         current = ledger["windows_e2e_custody_reconciliation"]
-        self.assertEqual(current["pr165_tested_head_sha"], "3612fcaad4edd47a833955b923f760ef89e175be")
+        self.assertEqual(current["pr165_tested_head_sha"], "8a0b60e6d6e29cfe0aab29049dace349a46f1baa")
         self.assertEqual([x["run_id"] for x in current["pr165_ci"]],
-                         [45556284349, 45556284364, 45556284413])
+                         [45556522939, 45556522923, 45556523074])
         self.assertEqual(ledger["pr165_current_head_parent_ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual([x["run_id"] for x in ledger["pr165_current_head_parent_ci"]],
                          [45555969202, 45555969216, 45555969368])
@@ -248,9 +248,9 @@ class CurrentLedgerGateTests(unittest.TestCase):
         self.assertIs(ledger["e2e_pass"], False)
         self.assertEqual(recon["status"], "HOLD")
         self.assertIs(recon["e2e_pass"], False)
-        self.assertEqual(recon["pr165_current_head_sha"], "3612fcaad4edd47a833955b923f760ef89e175be")
+        self.assertEqual(recon["pr165_current_head_sha"], "8a0b60e6d6e29cfe0aab29049dace349a46f1baa")
         self.assertEqual([x["run_id"] for x in recon["pr165_current_head_ci"]],
-                         [45556284349, 45556284364, 45556284413])
+                         [45556522939, 45556522923, 45556523074])
         focus = next(p for p in recon["products"] if p["product"] == "Focus Session Desk")
         file_product = next(p for p in recon["products"] if p["product"] == "File Integrity Ledger")
         self.assertEqual(current["first_unconnected_interval"], recon["first_unconnected_interval"])
@@ -266,6 +266,13 @@ class CurrentLedgerGateTests(unittest.TestCase):
         self.assertEqual(file_product["current_source_request"]["status"], "DRY_RUN")
         self.assertEqual(file_product["current_source_request"]["source_sha"], file_product["current_source_sha"])
         self.assertEqual(file_product["current_source_request"]["route"], "MSIX_OR_PWA_APP")
+        self.assertEqual(file_product["current_source_request"]["official_identity_status"], "UNVERIFIED")
+        self.assertEqual(file_product["current_source_request"]["package_status"], "NOT_BUILT")
+        self.assertEqual(file_product["current_source_request"]["next_stage"], "LOCAL_WINDOWS_BUILD_NOT_IMPLEMENTED")
+        self.assertTrue(file_product["current_source_request"]["request_artifact"]["downloaded_and_rehashed"])
+        self.assertEqual(file_product["msix_export"]["selection_gate_output"],
+                         "MSIX_SELECTION_HOLD: approved Identity absent; do not invent Store IDs")
+        self.assertEqual(focus["msix_export"]["reason"], "MSIX_BUILD_HOLD: Missing verified version")
         self.assertEqual(file_product["current_source_identity_binding_status"], "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE")
         self.assertFalse(file_product["historical_approved_identity_file_present_on_current_source"])
         self.assertTrue(file_product["gui"]["visual_review_required"])

@@ -54,6 +54,10 @@
         {
           "field": "real_msix_transport",
           "status": "NOT_VERIFIED"
+        },
+        {
+          "field": "msix_export",
+          "status": "FAILED_MISSING_VERIFIED_VERSION"
         }
       ],
       "store_assets_evidence": {
@@ -259,7 +263,16 @@
       },
       "identity_return_scope": "HISTORICAL_SOURCE_ONLY",
       "current_source_request_id": null,
-      "current_source_request_status": "NOT_OBSERVED__HISTORICAL_REQUEST_BINDS_8B00_ONLY"
+      "current_source_request_status": "NOT_OBSERVED__HISTORICAL_REQUEST_BINDS_8B00_ONLY",
+      "msix_export": {
+        "run_id": 44779273420,
+        "workflow_conclusion": "failure",
+        "status": "FAILED_MISSING_VERIFIED_VERSION",
+        "artifact_id": null,
+        "artifacts": [],
+        "build_step": "Build MSIX on Windows with approved package identity",
+        "reason": "MSIX_BUILD_HOLD: Missing verified version"
+      }
     },
     {
       "rank": 2,
@@ -299,6 +312,14 @@
         {
           "field": "real_msix_transport",
           "status": "NOT_VERIFIED"
+        },
+        {
+          "field": "package_request_execution",
+          "status": "DRY_RUN_ONLY__LOCAL_WINDOWS_BUILD_NOT_IMPLEMENTED"
+        },
+        {
+          "field": "official_identity",
+          "status": "UNVERIFIED__STORE_ID_AND_VERSION_NULL"
         }
       ],
       "store_assets_evidence": {
@@ -684,15 +705,60 @@
         "status": "DRY_RUN",
         "route": "MSIX_OR_PWA_APP",
         "live_source_head_verification": "VERIFIED",
-        "official_identity_status": "NOT_COLLECTED",
-        "package_version": null
+        "official_identity_status": "UNVERIFIED",
+        "package_version": null,
+        "artifact_name": "file-integrity-package-request-45422895649",
+        "artifact_bytes": 1958,
+        "artifact_downloaded_and_rehashed": true,
+        "artifact_digest_matches_github_metadata": true,
+        "dry_run": true,
+        "requested_actions": [
+          "BUILD_WINDOWS",
+          "INSPECT_PACKAGE",
+          "LOOKUP_OFFICIAL_IDENTITY",
+          "PROPOSE_GITHUB_RETURN"
+        ],
+        "package_status": "NOT_BUILT",
+        "official_identity": {
+          "status": "UNVERIFIED",
+          "store_id": null,
+          "name": null,
+          "publisher": null,
+          "version": null,
+          "official_evidence_url": null
+        },
+        "next_stage": "LOCAL_WINDOWS_BUILD_NOT_IMPLEMENTED",
+        "registration_route": {
+          "registration_route": "MSIX_OR_PWA_APP",
+          "status": "ROUTE_METADATA_ONLY"
+        },
+        "artifact_expires_at_utc": "2026-12-24T15:13:06Z",
+        "request_artifact": {
+          "artifact_id": 14934034365,
+          "artifact_name": "file-integrity-package-request-45422895649",
+          "sha256": "697528b3b0769e3962eebfa0efcdcb026618cd378d97fc60c4f234017882527e",
+          "size_bytes": 1958,
+          "downloaded_and_rehashed": true,
+          "digest_matches_github_metadata": true
+        }
       },
       "current_gui_followup_base_head": "f77a59d52705473a3633f0f6eae868e1ec6d6297",
       "msix_export": {
         "run_id": 45422811552,
         "status": "SKIPPED_NO_ARTIFACT",
         "artifact_id": null,
-        "msix_status": "NOT_BUILT"
+        "msix_status": "NOT_BUILT",
+        "workflow_conclusion": "success",
+        "artifacts": [],
+        "selection_gate_output": "MSIX_SELECTION_HOLD: approved Identity absent; do not invent Store IDs",
+        "build_step": "Build MSIX on Windows with approved package identity",
+        "build_steps_skipped": [
+          "Run factory regression tests",
+          "Build Windows executable dependencies",
+          "Build MSIX on Windows with approved package identity",
+          "Assemble verified MSIX handoff",
+          "Export package and checksum for Windows-all-auto"
+        ]
       },
       "github_backlog_receipt": false,
       "local_pull_receipt": false,
@@ -807,7 +873,8 @@
         "local_checker_receipt": false,
         "local_gui_install_receipt": false,
         "source_selection_status": "INTEGRATED_CANDIDATE_PR115__AWAITING_HUMAN_VISUAL_REVIEW_AND_IDENTITY_REVALIDATION"
-      }
+      },
+      "current_source_request_status": "DRY_RUN__OFFICIAL_IDENTITY_UNVERIFIED__PACKAGE_NOT_BUILT__LOCAL_WINDOWS_BUILD_NOT_IMPLEMENTED"
     },
     {
       "rank": 3,
@@ -895,29 +962,29 @@
       "required_revision_in_frozen_source": false
     }
   ],
-  "last_reconciled_at_utc": "2026-11-25T05:50:00Z",
-  "last_reconciled_basis": "Direct reconciliation at 2026-11-25T05:50:00Z: PR165 live head 3612fcaad4edd47a833955b923f760ef89e175be exact-head transport/custody/Windows+Ubuntu Offline QA all SUCCESS (45556284349, 45556284364, 45556284413); immediate parent 0473dd02bf45b40db531d8f2ac5e5991fe691929 also all SUCCESS (45555969202, 45555969216, 45555969368). PR174 diverged ahead 6 / behind 87; DO_NOT_RESTACK. Focus/File current-source identity/request binding and authoritative Package Version remain unresolved; no real MSIX/backlog/local/checker/install receipts; Store eligibility 0.",
+  "last_reconciled_at_utc": "2026-11-25T05:53:07Z",
+  "last_reconciled_basis": "Direct reconciliation at 2026-11-25T05:53:07Z: PR165 live head 8a0b60e6d6e29cfe0aab29049dace349a46f1baa exact-head transport/custody/Windows+Ubuntu Offline QA all SUCCESS (45556522939, 45556522923, 45556523074); parent 3612fcaad4edd47a833955b923f760ef89e175be also all SUCCESS. Focus MSIX export 44779273420 failed with MSIX_BUILD_HOLD: Missing verified version. File Integrity request artifact 14934034365 SHA-256 independently rehashed and matched GitHub metadata; request is DRY_RUN, package NOT_BUILT, official Identity UNVERIFIED, next stage LOCAL_WINDOWS_BUILD_NOT_IMPLEMENTED; export run 45422811552 held because approved Identity is absent. PR174 diverged ahead 6 / behind 88; DO_NOT_RESTACK.",
   "latest_transport_reconciliation": {
-    "checked_at_utc": "2026-11-25T05:50:00Z",
+    "checked_at_utc": "2026-11-25T05:53:07Z",
     "central_pr": 165,
-    "central_head": "3612fcaad4edd47a833955b923f760ef89e175be",
-    "central_tested_head_sha": "3612fcaad4edd47a833955b923f760ef89e175be",
-    "previous_central_head_sha": "0473dd02bf45b40db531d8f2ac5e5991fe691929",
+    "central_head": "8a0b60e6d6e29cfe0aab29049dace349a46f1baa",
+    "central_tested_head_sha": "8a0b60e6d6e29cfe0aab29049dace349a46f1baa",
+    "previous_central_head_sha": "3612fcaad4edd47a833955b923f760ef89e175be",
     "exact_head_ci": [
       {
-        "run_id": 45556284349,
+        "run_id": 45556522939,
         "conclusion": "success",
         "scope": "Exact-head Windows E2E transport fail-closed regression",
         "job": "transport-regression"
       },
       {
-        "run_id": 45556284364,
+        "run_id": 45556522923,
         "conclusion": "success",
         "scope": "Exact-head independent GitHub artifact custody regression",
         "job": "custody-regression"
       },
       {
-        "run_id": 45556284413,
+        "run_id": 45556523074,
         "conclusion": "success",
         "scope": "Exact-head Windows-all-auto Offline QA",
         "jobs": [
@@ -928,19 +995,19 @@
     ],
     "previous_exact_head_ci": [
       {
-        "run_id": 45555969202,
+        "run_id": 45556284349,
         "conclusion": "success",
         "scope": "Immediate parent exact-head Windows E2E transport fail-closed regression",
         "job": "transport-regression"
       },
       {
-        "run_id": 45555969216,
+        "run_id": 45556284364,
         "conclusion": "success",
         "scope": "Immediate parent exact-head independent GitHub artifact custody regression",
         "job": "custody-regression"
       },
       {
-        "run_id": 45555969368,
+        "run_id": 45556284413,
         "conclusion": "success",
         "scope": "Immediate parent exact-head Windows-all-auto Offline QA",
         "jobs": [
@@ -963,7 +1030,7 @@
     "pr174_restack_assessment": {
       "status": "diverged",
       "ahead_by": 6,
-      "behind_by": 87,
+      "behind_by": 88,
       "decision": "DO_NOT_RESTACK"
     },
     "store_submission_allowed": false,
@@ -1006,9 +1073,9 @@
       }
     ],
     "central_base_sha": "145cd1f44bdec9e584eb0f045dd139ef330c6321",
-    "previous_central_head": "0473dd02bf45b40db531d8f2ac5e5991fe691929",
+    "previous_central_head": "3612fcaad4edd47a833955b923f760ef89e175be",
     "pr165_current_head_parent_ci_status": "PASS_EXACT_HEAD_CI",
-    "note": "PR165 exact current tested HEAD 3612fcaad4edd47a833955b923f760ef89e175be passed transport 45556284349, independent artifact custody 45556284364, and Windows/Ubuntu Offline QA 45556284413. Immediate parent 0473dd02bf45b40db531d8f2ac5e5991fe691929 also passed all three exact-head workflows (45555969202, 45555969216, 45555969368). The earlier parent 8d17f2b269eef6f6b7ba24ade29f9bfb42e9c9ba had stale current-run-ID assertions (transport and Offline QA failed; custody passed); those were corrected in 0473dd02bf45b40db531d8f2ac5e5991fe691929. These are repository CI results only, not product E2E. Focus/File remain DELIVERY_HOLD: current-source Identity/request binding and authoritative Package Version are not verified; no real MSIX, GitHub backlog, local pull, checker, install, or local GUI-install receipt exists. PR174 remains diverged (ahead 6 / behind 87); DO_NOT_RESTACK. PR161 and PR171 evidence remains Offline QA only. Fresh unsold Store-upload eligibility remains 0; Store writes, certification and publish remain disabled."
+    "note": "PR165 exact current tested HEAD 8a0b60e6d6e29cfe0aab29049dace349a46f1baa passed transport 45556522939, independent artifact custody 45556522923, and Windows/Ubuntu Offline QA 45556523074. Immediate parent 3612fcaad4edd47a833955b923f760ef89e175be also passed all three exact-head workflows (45556284349, 45556284364, 45556284413). These are repository CI results only, not product E2E. Focus Session Desk's exact MSIX export run 44779273420 failed at the Windows MSIX build step with \"MSIX_BUILD_HOLD: Missing verified version\" and produced no artifact. File Integrity's current-source request artifact 14934034365 is a verified 1,958-byte DRY_RUN archive; its receipt says package NOT_BUILT, official Identity UNVERIFIED, Version null, and next_stage LOCAL_WINDOWS_BUILD_NOT_IMPLEMENTED. Its MSIX export run 45422811552 stopped at \"MSIX_SELECTION_HOLD: approved Identity absent; do not invent Store IDs\" and produced no artifact. Focus/File remain DELIVERY_HOLD; no real MSIX, GitHub backlog, local pull, checker, install, or local GUI-install receipt exists. PR174 remains diverged (ahead 6 / behind 88); DO_NOT_RESTACK. PR161 and PR171 evidence remains Offline QA only. Fresh unsold Store-upload eligibility remains 0; Store writes, certification and publish remain disabled."
   },
   "previous_latest_transport_reconciliation": {
     "checked_at_utc": "2026-11-23T19:34:36Z",
@@ -1834,11 +1901,11 @@
     "publish_allowed": false
   },
   "pr165_live_head_observation_20261125_latest": {
-    "observed_at_utc": "2026-11-25T05:50:00Z",
+    "observed_at_utc": "2026-11-25T05:53:07Z",
     "pull_request": 165,
     "head_ref": "refs/pull/165/head",
-    "head_sha": "3612fcaad4edd47a833955b923f760ef89e175be",
-    "parent_sha": "0473dd02bf45b40db531d8f2ac5e5991fe691929",
+    "head_sha": "8a0b60e6d6e29cfe0aab29049dace349a46f1baa",
+    "parent_sha": "3612fcaad4edd47a833955b923f760ef89e175be",
     "comparison_to_previous_tested_head": {
       "status": "ahead",
       "ahead_by": 1,
@@ -1847,19 +1914,19 @@
     },
     "exact_head_workflows": [
       {
-        "run_id": 45556284349,
+        "run_id": 45556522939,
         "conclusion": "success",
         "scope": "Exact-head Windows E2E transport fail-closed regression",
         "job": "transport-regression"
       },
       {
-        "run_id": 45556284364,
+        "run_id": 45556522923,
         "conclusion": "success",
         "scope": "Exact-head independent GitHub artifact custody regression",
         "job": "custody-regression"
       },
       {
-        "run_id": 45556284413,
+        "run_id": 45556523074,
         "conclusion": "success",
         "scope": "Exact-head Windows-all-auto Offline QA",
         "jobs": [
@@ -1930,26 +1997,26 @@
         "head_sha": "69e7b7c8a7b1ecdaea42e6f03644a8cd549dfaee",
         "status": "diverged",
         "ahead_by": 6,
-        "behind_by": 87,
+        "behind_by": 88,
         "decision": "DO_NOT_RESTACK"
       }
     },
     "current_head_parent_ci_status": "PASS_EXACT_HEAD_CI",
     "parent_exact_head_workflows": [
       {
-        "run_id": 45555969202,
+        "run_id": 45556284349,
         "conclusion": "success",
         "scope": "Immediate parent exact-head Windows E2E transport fail-closed regression",
         "job": "transport-regression"
       },
       {
-        "run_id": 45555969216,
+        "run_id": 45556284364,
         "conclusion": "success",
         "scope": "Immediate parent exact-head independent GitHub artifact custody regression",
         "job": "custody-regression"
       },
       {
-        "run_id": 45555969368,
+        "run_id": 45556284413,
         "conclusion": "success",
         "scope": "Immediate parent exact-head Windows-all-auto Offline QA",
         "jobs": [
@@ -1965,11 +2032,11 @@
     "branch": "codex/36-e2e-ledger-reconcile-20261123-1937",
     "head_sha": "69e7b7c8a7b1ecdaea42e6f03644a8cd549dfaee",
     "compare_to_current_pr165_head": {
-      "current_pr165_head_sha": "3612fcaad4edd47a833955b923f760ef89e175be",
+      "current_pr165_head_sha": "8a0b60e6d6e29cfe0aab29049dace349a46f1baa",
       "merge_base_sha": "c6f30824196e90c03837e0636d7557a79fad92af",
       "status": "diverged",
       "ahead_by": 6,
-      "behind_by": 87,
+      "behind_by": 88,
       "changed_files": [
         "ops/active_e2e_handoff.json",
         "ops/completion_rush_queue_20261116.json",
