@@ -33,6 +33,22 @@ class GroupCRolloutTests(unittest.TestCase):
             ],
         )
 
+    def test_store_id_accepts_9n_partner_center_id_and_rejects_invalid_shapes(self):
+        registry = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
+        registry["products"]["web-evidence-archiver"]["store_id"] = "9NNT1B142ZWV"
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "registry.json"
+            path.write_text(json.dumps(registry), encoding="utf-8")
+            loaded = load_registry(path)
+            self.assertEqual(
+                loaded["products"]["web-evidence-archiver"]["store_id"],
+                "9NNT1B142ZWV",
+            )
+            registry["products"]["web-evidence-archiver"]["store_id"] = "X9NNT1B142ZWV"
+            path.write_text(json.dumps(registry), encoding="utf-8")
+            with self.assertRaisesRegex(GroupCRolloutError, "STORE_ID_INVALID"):
+                load_registry(path)
+
     def test_current_block_stops_every_later_product(self):
         registry = load_registry(REGISTRY_PATH)
         rows = rollout_status(ROOT, registry)
