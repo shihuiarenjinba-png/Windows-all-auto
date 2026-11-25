@@ -187,3 +187,25 @@ The next cycle should focus on DCA Windows installation/access-denied diagnostic
 ## Prohibited actions in this handoff
 
 No new Product creation, Submission start, package upload, Packages Save, pricing or market changes, Certification, Publish, PR merge, or `main` direct push is authorized by this document. Keep all Store writes behind explicit owner approval and current live-state revalidation.
+
+
+## 2026-11-25 follow-up — Store signing and local upload scripts
+
+The operator subsequently instructed the team to continue toward Partner Center submission. The earlier prohibition in this historical handoff is superseded for future work only to the extent of the operator's latest instruction; it does not waive product-specific quality/approval gates.
+
+The following changes are now present on the review branch:
+
+- `uploader.run` accepts `--package <local-msix>` so the exact already-downloaded binary can be checked and uploaded without re-downloading from repository contents.
+- Six existing-Draft job configs are registered with exact Product ID, Draft ID, package filename, source SHA, version, identity, publisher, architecture, and expected SHA-256.
+- DCA's formal candidate binding is updated to source `722ec7a077d2c6109e657c4ee661c9f3d06a4506`, artifact `15005358857`, SHA `e2ca6fd81720dc270667e65db05404b6efdde5b2c0712bee2853e0608767db05`.
+- The PDF Privacy source ref was checked against GitHub and corrected to `891dad28b15b5c1c7dd743e6cbe44280959ecb41`.
+- `scripts/preflight_store_fleet.py` recursively finds exactly one instance of each registered package and runs read-only SHA/manifest checks. Duplicate filenames are rejected.
+- `scripts/start_partner_center_edge_cdp.ps1` reuses a local Edge CDP endpoint or starts a dedicated loopback-only Edge profile.
+- `scripts/upload_store_msix.ps1` performs a per-product dry run by default. `-Execute` is fail-closed unless that product's job has `upload_approved: true`, a pinned SHA-256, and the exact registered filename. It then invokes the existing Draft upload/Save/reload route.
+- The upload script has no operation for starting a Submission, submitting for Certification, changing pricing/markets, or publishing.
+
+All six current job configs deliberately retain `upload_approved: false` with explicit hold reasons. The present QA-only artifacts are not promoted to commercial packages. WAH remains outside this existing-Draft uploader because the 2026-11-25 observation showed no Submission for Product `9P6SXJNNB5KK`.
+
+Latest workflow verification at this follow-up: commit `31c5161fa6651dea40fc170bfcc4bd79a8558f85`, Windows and Ubuntu both PASS, 386 tests each (Windows 2 existing skips), compile PASS. Run: https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/45616011224.
+
+No Partner Center write was performed during this implementation. The Partner Center browser/CDP session was not available to this GitHub-side operation, so package upload, Packages Save, Certification, and Publish remain not performed.
