@@ -317,7 +317,7 @@ class CurrentObservationOverlayTests(unittest.TestCase):
         self.assertEqual(ledger["actual_pr165_head"],
                          "b67e333178bff5a2214ad059a370163597a528c6")
         self.assertIs(ledger["active_ledger_reconciled"], True)
-        self.assertEqual(ledger["status"], "RECONCILED_TO_PR165_E7BA_OBSERVATION")
+        self.assertEqual(ledger["status"], "RECONCILED_TO_PR165_B67E_OBSERVATION")
         focus = overlay["products"]["focus_session_desk"]
         self.assertEqual(focus["current_source_sha"],
                          "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79")
