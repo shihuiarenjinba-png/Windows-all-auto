@@ -136,7 +136,7 @@ def validate_bundle(directory:Path,expected_run_sha:str|None=None)->dict:
             fail("transport, custody and approved Identity receipts must be JSON objects")
         approved_identity_bytes=approved_identity_path.read_bytes()
         approved_identity_git_blob_sha=sha1(
-            b"blob "+str(len(approved_identity_bytes)).encode("ascii")+b"\\0"+approved_identity_bytes
+            b"blob "+str(len(approved_identity_bytes)).encode("ascii")+b"\0"+approved_identity_bytes
         ).hexdigest()
         source=data.get("source_sha")
         if (transport_receipt.get("schema_version")!=1
