@@ -93,15 +93,15 @@ class CompletionRushQueueTests(unittest.TestCase):
 
     def test_latest_transport_and_store_gate_stay_held(self):
         latest = self.data["latest_transport_reconciliation"]
-        self.assertEqual(latest["central_head"], "90d49f0ac6c2eaccda6b625517f5c3520d171402")
+        self.assertEqual(latest["central_head"], "77068e3d1f67e2ce1a2ea09ffb9e38684cc7de0c")
         self.assertEqual(latest["central_tested_head_sha"], "90d49f0ac6c2eaccda6b625517f5c3520d171402")
-        self.assertEqual(latest["previous_central_head_sha"], "ea43d9ba6043c057b6013a31e6238d0ff60545d1")
-        self.assertEqual(latest["previous_tested_head_sha"], "2030227134c1a533295048c1af26f5c313b59b02")
+        self.assertEqual(latest["previous_central_head_sha"], "90d49f0ac6c2eaccda6b625517f5c3520d171402")
+        self.assertEqual(latest["previous_tested_head_sha"], "90d49f0ac6c2eaccda6b625517f5c3520d171402")
         self.assertEqual([x["run_id"] for x in latest["exact_head_ci"]],
-                         [45622784037, 45622783900, 45622784356])
-        self.assertEqual(latest["pr165_current_head_parent_ci_status"], "PARTIAL_FAIL_STALE_37_CHARACTER_SHA_ASSERTION__SUPERSEDED_BY_CURRENT_EXACT_HEAD_PASS")
+                         [45628378645, 45628378619, 45628378632])
+        self.assertEqual(latest["pr165_current_head_parent_ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual([x["run_id"] for x in latest["pr165_current_head_parent_ci"]],
-                         [45622670847, 45622671096, 45622670927])
+                         [45622784037, 45622783900, 45622784356])
         self.assertEqual(latest["status"], "HOLD")
         self.assertFalse(latest["e2e_pass"])
         self.assertEqual(self.data["store_upload_test_eligibility_live_20261125"]["eligible_fresh_unsold_products"], 0)
