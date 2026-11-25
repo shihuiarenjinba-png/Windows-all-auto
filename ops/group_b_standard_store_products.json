@@ -173,10 +173,20 @@
         "registry_reconciliation": {
           "store_id": "MATCH",
           "identity_name": "MATCH",
-          "publisher": "NOT_STORED",
-          "submission_id": "NOT_STORED"
+          "publisher": "MATCH",
+          "submission_id": "NO_SUBMISSION_OBSERVED"
         },
-        "overall_status": "NO_SUBMISSION_OBSERVED_REGISTRY_FIELDS_PARTIAL"
+        "overall_status": "NO_SUBMISSION_OBSERVED"
+      },
+      "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+      "draft_id": null,
+      "submission_state": "NO_SUBMISSION_OBSERVED",
+      "submission_state_observation_id": "partner-center-fleet-20261125T075209Z",
+      "partner_center_observation_promotion": {
+        "source_snapshot": "ops/partner_center_fleet_observation_20261125.json",
+        "observation_id": "partner-center-fleet-20261125T075209Z",
+        "observed_at_utc": "2026-11-25T07:52:09Z",
+        "rule": "Store Product ID, Identity, and Publisher filled only after exact read-only match; draft_id explicitly null because no submission was shown"
       }
     },
     "browser-automation-runner": {
