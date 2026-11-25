@@ -16,6 +16,15 @@ class FocusFileTransportReconciliation20261126(unittest.TestCase):
         p = d["pr165"]
         head = p["tested_code_head_sha"]
         self.assertEqual(head, "a6b9d2b1db3033d5846e136400d2fe67dede554d")
+        self.assertEqual(p["latest_verified_code_head_sha"], "7a97147335c5294057fbe341a7b41df3e40e1efa")
+        self.assertEqual(p["latest_exact_head_ci_status"], "PASS_EXACT_HEAD_CI")
+        self.assertEqual(p["latest_exact_head_ci_run_ids"], [45701740182, 45701740172, 45701740318, 45701728845])
+        self.assertEqual(p["latest_offline_qa_tests_run"], 563)
+        self.assertEqual(p["latest_product_e2e_status"], "HOLD")
+        latest = self.data["latest_observation"]
+        self.assertEqual(latest["pr165_head_sha"], p["latest_verified_code_head_sha"])
+        self.assertTrue(all(r["head_sha"] == latest["pr165_head_sha"] and r["conclusion"] == "success"
+                            for r in latest["exact_head_ci"]))
         self.assertEqual(p["exact_head_ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual(
             [r["run_id"] for r in p["exact_head_ci"]],
@@ -100,13 +109,16 @@ class FocusFileTransportReconciliation20261126(unittest.TestCase):
         self.assertEqual(d["pr177"]["compare_to_pr165"]["ahead_by"], 89)
         self.assertEqual(d["pr177"]["compare_to_pr165"]["behind_by"], 6)
         self.assertEqual(d["pr177"]["decision"], "DO_NOT_RESTACK")
+        self.assertEqual(d["pr177"]["latest_compare_to_latest_pr165"]["ahead_by"], 95)
+        self.assertEqual(d["pr177"]["latest_compare_to_latest_pr165"]["behind_by"], 6)
+        self.assertEqual(d["pr177"]["latest_compare_to_latest_pr165"]["decision"], "DO_NOT_RESTACK")
 
     def test_active_ledger_unavailable_is_not_treated_as_an_empty_file(self):
         l = self.data["ledger_reconciliation"]
         self.assertIs(l["active_ledger_direct_content_available"], False)
         self.assertIn("NOT_TREATED_AS_EMPTY_FILE", l["active_ledger_content_fetch_status"])
         self.assertIs(l["active_ledger_direct_update_performed"], False)
-        self.assertEqual(l["latest_pr165_head"], self.data["pr165"]["tested_code_head_sha"])
+        self.assertEqual(l["latest_pr165_head"], self.data["pr165"]["latest_verified_code_head_sha"])
 
     def test_store_and_repository_safety_flags_remain_closed(self):
         s = self.data["safety"]
