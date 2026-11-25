@@ -8,10 +8,12 @@ import zlib
 import tempfile
 import unittest
 import zipfile
+from email.message import Message
+from urllib.request import Request
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 from unittest.mock import patch
-from scripts.github_artifact_custody import main, verify_custody
+from scripts.github_artifact_custody import main, verify_custody, _SafeCrossOriginRedirectHandler
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from test_real_msix_transport_failclosed import authorize_transport
@@ -297,10 +299,10 @@ class CustodyTests(unittest.TestCase):
         ledger = json.loads((root / "ops/active_e2e_handoff.json").read_text(encoding="utf-8"))
         recon = json.loads((root / "ops/focus_file_transport_reconciliation_20261125.json").read_text(encoding="utf-8"))
         latest = ledger["latest_transport_reconciliation"]
-        self.assertEqual(latest["central_tested_head_sha"], "90d49f0ac6c2eaccda6b625517f5c3520d171402")
-        self.assertEqual(latest["previous_central_head_sha"], "ea43d9ba6043c057b6013a31e6238d0ff60545d1")
+        self.assertEqual(latest["central_tested_head_sha"], "77068e3d1f67e2ce1a2ea09ffb9e38684cc7de0c")
+        self.assertEqual(latest["previous_central_head_sha"], "90d49f0ac6c2eaccda6b625517f5c3520d171402")
         self.assertEqual([x["run_id"] for x in latest["exact_head_ci"]],
-                         [45622784037, 45622783900, 45622784356])
+                         [45628378645, 45628378619, 45628378632])
         self.assertEqual(latest["ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual(latest["status"], "HOLD")
         self.assertIs(latest["e2e_pass"], False)
@@ -309,7 +311,7 @@ class CustodyTests(unittest.TestCase):
         self.assertIs(ledger["store_submission_allowed"], False)
         self.assertIs(ledger["certification_allowed"], False)
         self.assertIs(ledger["publish_allowed"], False)
-        self.assertEqual(latest["central_head"], "90d49f0ac6c2eaccda6b625517f5c3520d171402")
+        self.assertEqual(latest["central_head"], "77068e3d1f67e2ce1a2ea09ffb9e38684cc7de0c")
         self.assertEqual(recon["central_head"], latest["central_head"])
         self.assertEqual(recon["status"], "HOLD")
         self.assertIs(recon["e2e_pass"], False)
@@ -362,6 +364,41 @@ class CustodyTests(unittest.TestCase):
         self.assertEqual(focus_item["product_quality_assessment"]["score"]["total"], 54)
         self.assertEqual(ledger["pr174_restack_assessment_live_20261125"]["compare_to_current_pr165_head"]["behind_by"], 121)
         self.assertEqual(ledger["store_upload_test_bridge"]["eligible_fresh_unsold_products"], 0)
+
+
+class RedirectCredentialTests(unittest.TestCase):
+    def setUp(self):
+        self.handler = _SafeCrossOriginRedirectHandler()
+        self.request = Request(
+            "https://api.github.com/repos/owner/repo/actions/artifacts/123/zip",
+            headers={
+                "Authorization": "Bearer test-token",
+                "Proxy-Authorization": "Basic test-proxy",
+                "Cookie": "session=test",
+                "Accept": "application/vnd.github+json",
+            },
+        )
+
+    def redirect(self, target):
+        return self.handler.redirect_request(
+            self.request, None, 302, "Found", Message(), target
+        )
+
+    def test_cross_origin_https_redirect_strips_all_credentials(self):
+        redirected = self.redirect("https://artifact-storage.example/signed.zip")
+        self.assertIsNotNone(redirected)
+        for header in ("Authorization", "Proxy-Authorization", "Cookie"):
+            self.assertIsNone(redirected.get_header(header))
+        self.assertEqual(redirected.get_header("Accept"), "application/vnd.github+json")
+
+    def test_same_origin_https_redirect_keeps_api_authorization(self):
+        redirected = self.redirect("https://api.github.com/repos/owner/repo/next")
+        self.assertIsNotNone(redirected)
+        self.assertEqual(redirected.get_header("Authorization"), "Bearer test-token")
+
+    def test_https_downgrade_redirect_is_rejected(self):
+        self.assertIsNone(self.redirect("http://api.github.com/repos/owner/repo/next"))
+
 
 if __name__ == "__main__":
     unittest.main()
