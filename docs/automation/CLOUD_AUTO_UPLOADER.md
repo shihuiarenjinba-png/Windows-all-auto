@@ -145,3 +145,12 @@ If the durable ledger cannot be read completely, the worker fails closed. If the
 - Certification, publishing, price or market edits.
 - Guaranteed always-zero backlog; GitHub Actions queued/running jobs are not an always-on daemon.
 - A verified GitHub Actions CDP connection or live Data Contract Auditor upload.
+
+
+## Latest verification checkpoint — 2026-11-25
+
+- Central review branch HEAD: `0597a56fc54074c8e68524f3d5358cf44ae44870`.
+- Windows and Ubuntu CI: 391 tests PASS on each runner; Windows has 2 existing skips.
+- Windows PowerShell Parser: all `.ps1` entrypoints parsed successfully.
+- Workflow: https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/45620671973
+- Live Partner Center upload was not run by the GitHub-side implementation because the authenticated local Edge session was unavailable to this operation. Use the DCA shortcut only from the operator's local Windows checkout after updating it to this branch and signing in manually.
