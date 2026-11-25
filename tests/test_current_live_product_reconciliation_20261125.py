@@ -77,6 +77,8 @@ class CurrentLiveProductReconciliationTests(unittest.TestCase):
         self.assertEqual(signal["cas_status"], "NOT_APPLIED")
         self.assertEqual(signal["build_artifact_id"], 14931068646)
         self.assertFalse(signal["physical_windows_uia_pass"])
+        self.assertIsNone(signal["package_version"])
+        self.assertIs(signal["real_msix"], False)
         self.assertFalse(signal["real_msixvc"])
         self.assertFalse(signal["required_revision_in_frozen_source"])
 
