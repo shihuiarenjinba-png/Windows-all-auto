@@ -96,7 +96,7 @@ class CurrentLiveProductReconciliationTests(unittest.TestCase):
                          "NO_BLIND_RESTACK__SELECTIVELY_PORT_ONLY_CURRENT_PRODUCT_REGRESSION")
         self.assertEqual(self.ledger["store_upload_test_bridge"]["eligible_fresh_unsold_products"], 0)
         self.assertFalse(self.ledger["store_upload_test_bridge"]["dry_run_started"])
-        self.assertEqual(self.ledger["local_code_sync_receipt_status_20261125"]["status"],
+        self.assertEqual(self.ledger["local_code_sync_receipt_status_20261125"],
                          "NOT_OBSERVED__CLOUD_PASS_ONLY")
         for key in ("store_submission_allowed", "certification_allowed", "publish_allowed",
                     "live_partner_center_write_allowed", "merge_allowed", "force_push_allowed"):
