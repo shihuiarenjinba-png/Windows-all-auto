@@ -211,20 +211,47 @@
         "msix_sha256_text_included": true,
         "technical_version": "1.0.0.0",
         "version_approval": "TECHNICAL_DRAFT_ONLY_PUBLIC_RELEASE_HOLD",
-        "package_signature": "UNSIGNED",
+        "package_signature": "NotSigned",
         "partner_center_submission": "NO_SUBMISSION_OBSERVED",
         "package_sha256": "512da1ab4449a69b02901baf9c8eaff6577f1e58d336f43ef608f4fbc3892a97",
         "uploadable": false,
-        "classification": "SOURCE_BOUND_UNSIGNED_TECHNICAL_DRAFT",
+        "classification": "UNSIGNED_TECHNICAL_DRAFT_HASH_AND_MANIFEST_VERIFIED_OWNER_APPROVAL_AND_SUBMISSION_UNVERIFIED",
         "package_file_name": "WorkflowAutomationHub_1.0.0.0_x64_StoreDraft_UNSIGNED.msix",
         "sha256_evidence": {
-          "source": "GitHub Actions generated exact-package handoff log",
-          "workflow_run_id": 44093505473,
-          "workflow_job_id": 134074500405,
-          "evidence_level": "GENERATED_HANDOFF_PACKAGE_SHA",
-          "binary_downloaded_and_rehashed_locally": false
+          "source": "LOCAL_PACKAGE_REHASH_REPORT.json and SHA256SUMS.txt supplied by operator",
+          "evidence_level": "LOCAL_BINARY_REHASH_MATCHED_BUILDER_HASH",
+          "local_sha256_matches_builder": true,
+          "local_manifest_identity_publisher_version_architecture": "PASS",
+          "binary_downloaded_and_rehashed_locally": true,
+          "evidence_paths": [
+            "LOCAL_PACKAGE_REHASH_REPORT.json",
+            "PACKAGE_INVENTORY.json",
+            "SHA256SUMS.txt",
+            "FINAL_REPORT.md"
+          ]
         },
-        "artifact_downloaded_and_rehashed_locally": false
+        "artifact_downloaded_and_rehashed_locally": true,
+        "local_verification_20261125": {
+          "observation_time": "2026-11-25 JST; operator-reported local verification",
+          "evidence_source": "LOCAL_PACKAGE_REHASH_REPORT.json + PACKAGE_INVENTORY.json + FINAL_REPORT.md + SHA256SUMS.txt",
+          "package_filename": "WorkflowAutomationHub_1.0.0.0_x64_StoreDraft_UNSIGNED.msix",
+          "package_version": "1.0.0.0",
+          "package_relative_path": "attempt-20261125\\workflow-automation-hub\\extracted\\store-out\\WorkflowAutomationHub_1.0.0.0_x64_StoreDraft_UNSIGNED.msix",
+          "builder_reported_sha256": "512da1ab4449a69b02901baf9c8eaff6577f1e58d336f43ef608f4fbc3892a97",
+          "locally_computed_sha256": "512da1ab4449a69b02901baf9c8eaff6577f1e58d336f43ef608f4fbc3892a97",
+          "local_sha256_matches_builder": true,
+          "manifest_identity_match": "PASS",
+          "manifest_publisher_match": "PASS",
+          "manifest_version_match": "PASS",
+          "manifest_architecture_match": "PASS",
+          "signature_status": "NotSigned",
+          "local_runtime_qa_status": "TECHNICAL_UNSIGNED_NO_OWNER_APPROVAL_NO_SUBMISSION_LIVE_RECHECK",
+          "evidence_status": "USER_REPORTED_LOCAL_REHASH_AND_MANIFEST_VERIFICATION",
+          "independent_reproduction_by_github_connector": false
+        },
+        "partner_center_live_recheck_20261125": "NOT_PERFORMED",
+        "current_submission_status": "NOT_LIVE_VERIFIED",
+        "submission_created_in_this_phase": false
       },
       "source_revision_binding": {
         "branch": "codex/hub-standard-consumer-ui-20261113",
