@@ -6,6 +6,7 @@ certification, pricing, markets, or publishing.
 from __future__ import annotations
 
 from pathlib import Path
+import re
 from time import monotonic
 from typing import Any
 
@@ -263,9 +264,28 @@ class PartnerCenterCDPConnection:
             if len(pages) != 1:
                 raise UploadError("PARTNER_CENTER_TAB_AMBIGUOUS", f"Expected one Partner Center tab; found {len(pages)}")
             return PartnerCenterBrowserPort(pages[0], self.config)
-        except Exception:
-            self.__exit__(None, None, None)
-            raise UploadError("BROWSER_CONNECTION_FAILED", "Could not attach to the configured authenticated browser session")
+        except UploadError:
+            # Preserve actionable states such as PARTNER_CENTER_TAB_AMBIGUOUS.
+            try:
+                self.__exit__(None, None, None)
+            except Exception:
+                pass
+            raise
+        except Exception as exc:
+            try:
+                self.__exit__(None, None, None)
+            except Exception:
+                pass
+            # Keep the useful Playwright/CDP exception while removing local
+            # WebSocket endpoint identifiers and any query-string material.
+            detail = f"{type(exc).__name__}: {exc}"
+            detail = re.sub(r"wss?://[^\\s'\\"<>]+", "<CDP WebSocket URL redacted>", detail)
+            detail = detail.replace(self.cdp_url, "<CDP endpoint>")
+            detail = " ".join(detail.split())[:600]
+            raise UploadError(
+                "BROWSER_CONNECTION_FAILED",
+                f"Could not attach to the configured authenticated browser session. Diagnostic: {detail}",
+            ) from exc
 
     def __exit__(self, exc_type: Any, exc: Any, tb: Any) -> None:
         if self.playwright is not None:
