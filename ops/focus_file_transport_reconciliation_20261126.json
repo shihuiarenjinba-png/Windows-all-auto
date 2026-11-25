@@ -1,0 +1,303 @@
+{
+  "schema_version": 1,
+  "path": "ops/focus_file_transport_reconciliation_20261126.json",
+  "observed_at_utc": "2026-11-25T21:05:21Z",
+  "record_type": "APPEND_ONLY_CURRENT_OBSERVATION",
+  "supersedes": [
+    "ops/active_e2e_handoff_overlay_20261126.json",
+    "ops/focus_file_transport_reconciliation_20261125.json"
+  ],
+  "repository": "shihuiarenjinba-png/Windows-all-auto",
+  "status": "HOLD",
+  "e2e_pass": false,
+  "priority_order": [
+    "Focus Session Desk",
+    "File Integrity Ledger"
+  ],
+  "pr165": {
+    "number": 165,
+    "state": "OPEN_DRAFT",
+    "branch": "codex/e2e-artifact-custody-20261114",
+    "head_sha": "a6b9d2b1db3033d5846e136400d2fe67dede554d",
+    "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
+    "exact_head_ci": [
+      {
+        "run_id": 45701014660,
+        "event": "pull_request",
+        "conclusion": "success",
+        "head_sha": "a6b9d2b1db3033d5846e136400d2fe67dede554d",
+        "workflow": "Windows E2E transport fail-closed regression",
+        "job": "transport-regression"
+      },
+      {
+        "run_id": 45701014598,
+        "event": "pull_request",
+        "conclusion": "success",
+        "head_sha": "a6b9d2b1db3033d5846e136400d2fe67dede554d",
+        "workflow": "GitHub artifact custody fail-closed regression",
+        "job": "custody-regression"
+      },
+      {
+        "run_id": 45701014777,
+        "event": "pull_request",
+        "conclusion": "success",
+        "head_sha": "a6b9d2b1db3033d5846e136400d2fe67dede554d",
+        "workflow": "Windows-all-auto Offline QA",
+        "jobs": [
+          "Offline preflight tests (ubuntu-latest)",
+          "Offline preflight tests (windows-latest)"
+        ]
+      }
+    ],
+    "offline_qa": {
+      "ubuntu_conclusion": "success",
+      "windows_conclusion": "success",
+      "tests_run": 556,
+      "windows_skipped": 2,
+      "scope": "repository offline tests only; not product E2E"
+    },
+    "product_e2e_status": "HOLD",
+    "real_msix": false,
+    "downstream_receipts": false
+  },
+  "pr161": {
+    "number": 161,
+    "head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
+    "exact_head_run_id": 42712757936,
+    "exact_head_conclusion": "success",
+    "push_run_id": 43403424936,
+    "push_conclusion": "success",
+    "scope": "Offline QA only; not product E2E"
+  },
+  "pr171": {
+    "number": 171,
+    "head_sha": "764721021f13be96364529650b44fb439770bac9",
+    "exact_head_run_id": 44437197470,
+    "exact_head_conclusion": "success",
+    "push_run_id": 44437190317,
+    "push_conclusion": "success",
+    "store_upload_bridge_present": true,
+    "store_upload_dry_run_started": false,
+    "eligible_fresh_unsold_products": 0,
+    "scope": "Offline QA only; no Store upload dry-run"
+  },
+  "pr177": {
+    "number": 177,
+    "head_sha": "44c1607fee25e57ea09d2e1b5ca6e223129da47d",
+    "compare_to_pr165": {
+      "status": "diverged",
+      "ahead_by": 89,
+      "behind_by": 6
+    },
+    "decision": "DO_NOT_RESTACK"
+  },
+  "products": {
+    "focus_session_desk": {
+      "lane": "APP",
+      "hold_class": "DELIVERY_HOLD",
+      "product_frozen_for_package": true,
+      "current_source_pr": 94,
+      "current_source_branch": "codex/focus-store-assets-gate-20261118",
+      "current_source_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+      "historical_approved_identity": {
+        "path": "products/focus-session-desk/store/approved-identity.json",
+        "blob_sha": "00c56e85ec7590783284e372ba100a3127614971",
+        "request_id": "app-focus-session-desk-8b00bc4e9082",
+        "source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+        "package_version_gate": "HOLD",
+        "version_field_present": false
+      },
+      "current_source_identity_binding_status": "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE",
+      "current_source_request": {
+        "request_id": "app-focus-session-desk-fb6293839bc7",
+        "source_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+        "status": "DRY_RUN",
+        "workflow_run_id": 45671921196,
+        "request_branch": "codex/focus-source-request-fb6293839bc7",
+        "request_branch_head_sha": "45560fb36eee3f2672ba1a1591f89edc6526865a",
+        "artifact_id": 15049692591,
+        "artifact_sha256": "c8b15058243982d90699dfb2a885a71b064a0a02b01dcb3c7492dec83ec3afae",
+        "official_identity_status": "NOT_COLLECTED",
+        "identity_readback_status": "NOT_COLLECTED",
+        "package_version": null,
+        "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
+        "request_submitted": false,
+        "partner_center_write": false,
+        "identity_write": false,
+        "msix_build": false
+      },
+      "package_version": null,
+      "real_msix": false,
+      "msix_export": {
+        "run_id": 44779273420,
+        "status": "FAILED_MISSING_VERIFIED_VERSION",
+        "artifact_id": null,
+        "exact_blocker": "MSIX_BUILD_HOLD: Missing verified version"
+      },
+      "assets": {
+        "owner": "00",
+        "status": "COMMITTED_ON_CURRENT_PR94_HEAD",
+        "raw_png_bytes_rehashed_this_run": false,
+        "msix_asset_embedding": "NOT_VERIFIED",
+        "StoreLogo": {
+          "blob_sha": "8017427aabf0e30168a88353588dc2ffdc2cba6d",
+          "dimensions": "300x300"
+        },
+        "Square150": {
+          "blob_sha": "c6060306f202b662831039b95b1352689da023c7",
+          "dimensions": "150x150"
+        },
+        "Square44": {
+          "blob_sha": "466a795ea01e34a28ac1db9aa7dcf3308464dbd0",
+          "dimensions": "44x44"
+        }
+      },
+      "product_quality_score": 54,
+      "sale_decision": "DO_NOT_SELL_BELOW_80",
+      "github_backlog_receipt": false,
+      "local_pull_receipt": false,
+      "local_checker_receipt": false,
+      "local_gui_install_receipt": false
+    },
+    "file_integrity_ledger": {
+      "lane": "APP",
+      "hold_class": "DELIVERY_HOLD",
+      "product_frozen_for_package": true,
+      "current_source_pr": 115,
+      "current_source_branch": "codex/integrity-pr95-source-request-integration-20261125",
+      "current_source_sha": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
+      "historical_approved_identity": {
+        "source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
+        "request_id": "app-file-integrity-ledger-d1108d12f7d1",
+        "package_version_gate": "HOLD"
+      },
+      "current_source_identity_binding_status": "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE",
+      "current_source_approved_identity_present": false,
+      "current_source_request": {
+        "request_id": "app-file-integrity-ledger-33d612be2774",
+        "source_sha": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
+        "request_sha256": "dc477b03dd8eb024dd4145fb56cace5d57531a9ae3bbba74a487631f823b2557",
+        "idempotency_key": "a1bb56ad8ec3fcebf8c4d6ee5b9b96bbbc64e6ac4c6a481b73810f3ed0f03df2",
+        "workflow_run_id": 45422895649,
+        "artifact_id": 14934034365,
+        "artifact_sha256": "697528b3b0769e3962eebfa0efcdcb026618cd378d97fc60c4f234017882527e",
+        "status": "DRY_RUN",
+        "official_identity_status": "UNVERIFIED",
+        "identity_readback_status": "NOT_COLLECTED",
+        "package_version": null,
+        "package_status": "NOT_BUILT",
+        "next_stage": "LOCAL_WINDOWS_BUILD_NOT_IMPLEMENTED",
+        "request_submitted": false,
+        "partner_center_write": false,
+        "identity_write": false,
+        "msix_build": false
+      },
+      "package_version": null,
+      "real_msix": false,
+      "msix_export": {
+        "run_id": 45422811552,
+        "workflow_conclusion": "success",
+        "status": "SKIPPED_NO_ARTIFACT",
+        "exact_gate_output": "MSIX_SELECTION_HOLD: approved Identity absent; do not invent Store IDs",
+        "build_and_export_steps": "SKIPPED"
+      },
+      "assets": {
+        "status": "PRESERVED_IN_INTEGRATED_PR115",
+        "StoreLogo": {
+          "blob_sha": "e3c9a9426a1971f21175b9b045d4d5fef83f97d5",
+          "sha256": "224fa777280cf61877c14146e920fca32bb90bff6f0cea3df4ed0ac77c0645a9"
+        },
+        "Square150": {
+          "blob_sha": "df892bd2fcf7b56f9facd94054b2b1385313b030",
+          "sha256": "e00136c7a319756ccc48c2dc50136f5872e272e806cd592a6beb8922bbb1742"
+        },
+        "Square44": {
+          "blob_sha": "d57e7a25d2a9eaa2b54d00c610f3a1ad7d4a4d49",
+          "sha256": "bd61099427a770f8dff247f0f6928e5d50ba2cd8265797c7f13952e96147d70d"
+        }
+      },
+      "gui_evidence": {
+        "run_id": 45422895435,
+        "conclusion": "success",
+        "head_sha": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
+        "artifact_id": 14934752145,
+        "artifact_sha256": "6faa6db6d0e05b6baa71347c31b6f4d871fedcf35e28b787a7fbdb99816ab04c",
+        "exe_sha256": "425e8f03397fc00a7b1442d58cc99d460fea53238e83c5b96500ac450bab85c6",
+        "visual_review_required": true,
+        "visual_review_status": "36_SCREENSHOT_INSPECTION_PASS__HUMAN_OWNER_REVIEW_REQUIRED"
+      },
+      "human_owner_visual_review_required": true,
+      "github_backlog_receipt": false,
+      "local_pull_receipt": false,
+      "local_checker_receipt": false,
+      "local_gui_install_receipt": false
+    }
+  },
+  "transport_contract": {
+    "implemented_in_pr165_head": "a6b9d2b1db3033d5846e136400d2fe67dede554d",
+    "app_identity_return_requires_paired_files": [
+      "approved-identity.json",
+      "transport_receipt.json",
+      "github-custody.json"
+    ],
+    "validates": [
+      "approved Identity Git blob SHA against exact local file bytes",
+      "current source SHA and expected/factory head equality",
+      "request ID, product type, factory, source branch and Store ID",
+      "name, publisher and exact Package Version against MSIX manifest",
+      "official Partner Center evidence URL path for the same Store ID",
+      "operator_verified=true and package_version_gate=PASS",
+      "GitHub Actions run/artifact/archive digest and exact local MSIX bytes"
+    ],
+    "store_authorization": false,
+    "synthetic_regression_fixtures_only": true,
+    "real_product_msix_verified": false,
+    "live_partner_center_readback_verified": false,
+    "local_product_e2e_verified": false
+  },
+  "first_unconnected_interval": {
+    "status": "BLOCKED_BEFORE_REAL_MSIX_BUILD",
+    "focus_blocker": "Current-source Identity revalidation and authoritative Package Version; current request is DRY_RUN only",
+    "file_integrity_blocker": "Current-source approved Identity absent; official Identity/Store ID/Version unverified; request is DRY_RUN only",
+    "next_after_approved_identity_and_version": "Build exact-source real MSIX, then package SHA custody → GitHub backlog → local pull → Windows-checker → local GUI/install",
+    "real_msix": false,
+    "package_sha_custody": false,
+    "github_backlog_receipt": false,
+    "local_pull_receipt": false,
+    "windows_checker_receipt": false,
+    "local_gui_install_receipt": false,
+    "product_e2e_pass": false
+  },
+  "store_upload_test": {
+    "bridge_pr": 171,
+    "eligible_fresh_unsold_products": 0,
+    "dry_run_started": false,
+    "draft_saved": 0,
+    "hold": 2,
+    "unknown": 0,
+    "error": 0
+  },
+  "ledger_reconciliation": {
+    "prior_overlay_head": "5ad2cf093539739f1a2af7e67c8c83f7c1960825",
+    "latest_pr165_head": "a6b9d2b1db3033d5846e136400d2fe67dede554d",
+    "active_ledger_blob_sha": "6e98ae17f0d67d1f3e6c3b5eaedf4115d1ed4f5c",
+    "active_ledger_direct_content_available": false,
+    "active_ledger_content_fetch_status": "EMPTY_RESPONSE_FOR_UTF8_AND_BASE64__NOT_TREATED_AS_EMPTY_FILE",
+    "active_ledger_direct_update_performed": false,
+    "note": "The large active_e2e_handoff.json body was not returned by the repository contents connector. This append-only observation supersedes the prior 5ad2cf overlay; the base file was not overwritten without readable contents."
+  },
+  "safety": {
+    "store_submission_allowed": false,
+    "certification_allowed": false,
+    "publish_allowed": false,
+    "live_partner_center_write_allowed": false,
+    "merge_allowed": false,
+    "force_push_allowed": false,
+    "product_code_changes": false,
+    "prism_old_source_identity_cas": false,
+    "twelve_repo_touched": false,
+    "twentyfour_repo_touched": false,
+    "png_generation_or_modification": false
+  },
+  "next_action": "Keep both APP lanes DELIVERY_HOLD. Obtain authenticated read-only Partner Center current-source Identity and authoritative Package Version. Do not build or transport a product MSIX until source/request/Identity/Version are aligned. Once those gates and existing PNG bytes are verified, build Focus first and continue custody/backlog/local checker/GUI. Do not start Store dry-run while eligible fresh unsold product count is zero."
+}
