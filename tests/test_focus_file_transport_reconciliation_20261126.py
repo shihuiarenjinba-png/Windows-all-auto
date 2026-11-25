@@ -35,7 +35,7 @@ class FocusFileTransportReconciliation20261126(unittest.TestCase):
     def test_focus_remains_blocked_on_current_source_identity_and_authoritative_version(self):
         p = self.data["products"]["focus_session_desk"]
         self.assertEqual(p["current_source_sha"], "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79")
-        self.assertEqual(p["approved_identity"]["source_sha"], "8b00bc4e90828c4282463826873aa8dfd2eb93f4")
+        self.assertEqual(p["historical_approved_identity"]["source_sha"], "8b00bc4e90828c4282463826873aa8dfd2eb93f4")
         self.assertNotEqual(p["approved_identity"]["source_sha"], p["current_source_sha"])
         self.assertEqual(p["current_source_identity_binding_status"],
                          "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE")
