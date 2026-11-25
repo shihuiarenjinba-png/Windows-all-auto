@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -17,6 +18,7 @@ ORDER = (
     "pdf-privacy",
 )
 COMPLETE_STATE = "READY_FOR_CERTIFICATION_REVIEW"
+STORE_ID_PATTERN = re.compile(r"^9[A-Z0-9]{11}$")
 
 
 class GroupCRolloutError(ValueError):
@@ -44,7 +46,7 @@ def load_registry(path: str | Path) -> dict[str, Any]:
         repositories.add(repository)
         store_id = item.get("store_id")
         if store_id is not None:
-            if not isinstance(store_id, str) or not store_id.startswith("9P"):
+            if not isinstance(store_id, str) or not STORE_ID_PATTERN.fullmatch(store_id.upper()):
                 raise GroupCRolloutError("GROUP_C_STORE_ID_INVALID")
             normalized = store_id.upper()
             if normalized in store_ids:
