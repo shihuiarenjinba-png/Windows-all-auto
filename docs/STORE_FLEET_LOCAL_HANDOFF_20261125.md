@@ -138,21 +138,26 @@ The source marks 1.0.0.0 technical-only, not owner-approved, uses temporary tech
 
 ### Data Contract Auditor
 
-The QA baseline source is `107e59f2cbcde9c6ca88cf1aaf3d52262004e6e0`. This is **not** the formal candidate source requirement. The formal candidate gate records `formal_source_sha=5a09d81955e25664761ea25ecfb4ebf8d24cea6d`, 40 commits after the QA baseline. The successful run `45103784990` built `DataContractSchemaDrift_1.0.0.0_x64.msix` from the formal source SHA and the builder logged package SHA `80cd02c0df8e75d1962d03ce63c1ba72d9a8f67e8056f43718ffc5bd8d3f3279`.
+The QA baseline is `107e59f2cbcde9c6ca88cf1aaf3d52262004e6e0`; it is not the required formal package source. The latest formal unsigned candidate was rebuilt from the current source branch HEAD `722ec7a077d2c6109e657c4ee661c9f3d06a4506`.
 
-The current branch HEAD at this handoff is `722ec7a077d2c6109e657c4ee661c9f3d06a4506`; the commits after `5a09...` change only the formal gate, product profile, and post-build profile test. No app runtime or packaging script changes were found in that range.
+The stale post-build profile test was corrected. Workflow `45580565845` completed successfully:
+- source unit tests PASS;
+- PowerShell syntax PASS;
+- compile PASS;
+- Store readiness preflight PASS;
+- formal unsigned MSIX build PASS;
+- QA-only structural unsigned build PASS.
 
-The failed CI run `45107287117` was caused by a stale test expecting pre-build status `READY_FOR_FORMAL_MSIX_BUILD`; the actual profile/gate had advanced to `READY_FOR_PARTNER_CENTER_READONLY` and `FORMAL_UNSIGNED_MSIX_CREATED_AND_VERIFIED`. The test was corrected in commit `722ec7a077d2c6109e657c4ee661c9f3d06a4506`.
+Latest formal candidate:
+- Artifact ID: `15005358857`; artifact name `data-contract-QA_UNSIGNED-msix-45580565845`; size 55,210,542 bytes.
+- Package: `DataContractSchemaDrift_1.0.0.0_x64.msix`; Version 1.0.0.0; x64.
+- Exact build source SHA: `722ec7a077d2c6109e657c4ee661c9f3d06a4506`.
+- EXE SHA-256: `b47219821bdaa9d3138b49dc4a00645190b6f6f3e7f90fa9e014fb5b93f7c1f5`.
+- MSIX SHA-256: `e2ca6fd81720dc270667e65db05404b6efdde5b2c0712bee2853e0608767db05`.
+- Signature status: `UNSIGNED_STORE_CANDIDATE`; package pack/unpack verification PASS.
+- QA-only separate artifact ID: `15006701456`; MSIX `DataContractSchemaDrift_QA_UNSIGNED_1.0.106.0_x64.msix`; SHA `23903c03a560e428dd27fe79cbbd7868cb3bb26a311f5a41d7e1ee15579d0e3d`.
 
-Current workflow run `45580565845`:
-- source tests passed;
-- compile passed;
-- Store package readiness preflight passed;
-- the formal unsigned candidate and QA structural jobs are running.
-
-Wait for the build jobs to finish and record the newly generated package filename, exact source SHA, MSIX SHA-256, and artifact ID. The prior candidate from run `45103784990` remains available and source-bound to `5a09...`; new run output should supersede it only after its SHA is independently verified locally.
-
-The current Partner Center read-only observation showed Draft `1152921505702212222` with Packages `Incomplete`. That must be re-read immediately before any upload. An unsigned candidate build is not authorization to upload, certify, or publish.
+The hashes above are from GitHub Actions builder logs, not locally re-hashed binaries. Download artifact ID `15005358857`, independently recompute SHA-256, check the manifest/Identity/Publisher/version/architecture, then run local installation/launch QA and write a source/package-bound receipt. The supplied Partner Center observation showed Draft `1152921505702212222` / Packages `Incomplete`; obtain a fresh read-only observation before any upload. No upload is authorized by the build.
 
 ### Web Evidence Archiver
 
