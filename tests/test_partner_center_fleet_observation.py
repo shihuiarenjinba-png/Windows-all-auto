@@ -140,9 +140,9 @@ class PartnerCenterFleetObservationTests(unittest.TestCase):
                 self.assertTrue(artifact["qa_unsigned_msix_artifact_available"])
                 self.assertEqual(artifact["classification"], "QA_UNSIGNED_VALIDATION_ONLY")
                 self.assertFalse(artifact["uploadable"])
-                self.assertEqual(
-                    artifact["qa_unsigned_msix_sha256"], "NOT_FETCHED_BINARY_NOT_CLAIMED"
-                )
+                self.assertRegex(artifact["qa_unsigned_msix_sha256"], r"^[A-F0-9]{64}$")
+                self.assertEqual(artifact["sha256_evidence"]["evidence_level"], "BUILDER_REPORTED_HASH")
+                self.assertFalse(artifact["sha256_evidence"]["binary_downloaded_and_rehashed_locally"])
                 self.assertEqual(
                     artifact["formal_store_msix_build"], "SKIPPED_STORE_READINESS_GATE"
                 )
@@ -151,6 +151,9 @@ class PartnerCenterFleetObservationTests(unittest.TestCase):
         self.assertEqual(dca["candidate_source_sha"], "5a09d81955e25664761ea25ecfb4ebf8d24cea6d")
         self.assertEqual(dca["required_source_sha"], "107e59f2cbcde9c6ca88cf1aaf3d52262004e6e0")
         self.assertFalse(dca["source_match"])
+        self.assertEqual(dca["package_sha256"], "80cd02c0df8e75d1962d03ce63c1ba72d9a8f67e8056f43718ffc5bd8d3f3279")
+        self.assertEqual(dca["current_branch_head_sha"], "0c73a746bcec9ded702567768d5c04f4240a12a9")
+        self.assertEqual(dca["current_branch_latest_ci"]["conclusion"], "failure")
         self.assertFalse(dca["uploadable"])
 
     def test_web_evidence_archiver_artifact_waits_for_branch_integration(self):
@@ -163,7 +166,10 @@ class PartnerCenterFleetObservationTests(unittest.TestCase):
             wea["remote_package_artifact_discovery"]["classification"],
             "QA_UNSIGNED_VALIDATION_ONLY",
         )
-        self.assertFalse(wea["remote_package_artifact_discovery"]["uploadable"])
+        wea_artifact = wea["remote_package_artifact_discovery"]
+        self.assertFalse(wea_artifact["uploadable"])
+        self.assertEqual(wea_artifact["qa_unsigned_msix_version"], "1.0.55.0")
+        self.assertEqual(wea_artifact["qa_unsigned_msix_sha256"], "91fae107652539bad0c0bdc30e9ae1891542c1a92f2460218e1be24af987cebe")
 
     def test_workflow_hub_has_source_bound_technical_artifact_but_no_submission(self):
         group_b = json.loads(
@@ -183,6 +189,7 @@ class PartnerCenterFleetObservationTests(unittest.TestCase):
         self.assertTrue(artifact["store_handoff_json_included"])
         self.assertTrue(artifact["msix_sha256_text_included"])
         self.assertEqual(artifact["package_signature"], "UNSIGNED")
+        self.assertEqual(artifact["package_sha256"], "512da1ab4449a69b02901baf9c8eaff6577f1e58d336f43ef608f4fbc3892a97")
         self.assertEqual(artifact["version_approval"], "TECHNICAL_DRAFT_ONLY_PUBLIC_RELEASE_HOLD")
         self.assertFalse(artifact["uploadable"])
 
