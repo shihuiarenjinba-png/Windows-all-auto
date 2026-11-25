@@ -6,10 +6,10 @@ This handoff is paired with PR #166:
 
 - Repository: `shihuiarenjinba-png/Windows-all-auto`
 - Branch: `codex/msix-commercial-handoff-20261115`
-- Current recorded head before this handoff document: `b0bac5eb05a9df4f13925ce5ed23b8d3d25f147c`
+- Current PR head at handoff: `ed52c038d0052968eaaed312e0efd4345ebe9175`
 - PR: https://github.com/shihuiarenjinba-png/Windows-all-auto/pull/166
 - State: OPEN / Draft / not merged
-- Latest Windows + Ubuntu CI: success on the current code, 379 tests; compile step passed.
+- Latest Windows + Ubuntu CI: success on current HEAD `ed52c038d0052968eaaed312e0efd4345ebe9175`, 379 tests on each runner; compile step passed. Runs: https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/45581433323 and https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/45581443686.
 
 Remote changes include:
 - 2026-11-25 read-only Partner Center snapshot for all seven products;
