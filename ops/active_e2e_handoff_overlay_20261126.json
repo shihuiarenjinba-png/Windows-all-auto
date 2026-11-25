@@ -878,6 +878,18 @@
         45706283485
       ],
       "ledger_reconciliation_status": "LAST_VERIFIED_TRANSPORT_HEAD_237E78__OPS_REFRESH_FAILURE_RECORDED"
+    },
+    {
+      "observed_at_utc": "2026-11-25T21:42:08Z",
+      "pr165_head_sha": "45c5f311c6b0523eec7509a4677ff89f2fb03f36",
+      "pr165_exact_head_ci_status": "FAIL_TEST_ASSERTION_ONLY",
+      "pr165_exact_head_ci_run_ids": [
+        45706682391,
+        45706682442,
+        45706682414,
+        45706671698
+      ],
+      "ledger_reconciliation_status": "LAST_VERIFIED_237E78__OVERLAY_ASSERTION_FAILURE_RECORDED"
     }
   ],
   "ledger_refresh_commit_parent_sha": "5e28aa9b7d65aac6c87bf91b063225c89ec11fd4",
@@ -898,5 +910,22 @@
     ],
     "product_e2e_status": "HOLD",
     "product_code_changed": false
-  }
+  },
+  "operations_only_refresh_followup": {
+    "commit_sha": "45c5f311c6b0523eec7509a4677ff89f2fb03f36",
+    "observed_at_utc": "2026-11-25T21:42:08Z",
+    "scope": "operations ledger and overlay regression tests only",
+    "workflow_runs": [
+      45706682391,
+      45706682442,
+      45706682414,
+      45706671698
+    ],
+    "workflow_conclusion": "failure",
+    "failure_reason": "STALE_OVERLAY_EXPECTATION__ACTUAL_BRANCH_HEAD_VS_LAST_VERIFIED_CODE_HEAD",
+    "latest_verified_transport_head_sha": "237e78c83082a092a45fc9a2b9ca95101611a6f5",
+    "product_e2e_status": "HOLD",
+    "product_code_changed": false
+  },
+  "latest_test_observation_at_utc": "2026-11-25T21:42:08Z"
 }

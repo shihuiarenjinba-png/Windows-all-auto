@@ -432,7 +432,7 @@ class CurrentObservationOverlayCustodyTests(unittest.TestCase):
         self.assertEqual(overlay["pr165"]["last_verified_head_sha"], "237e78c83082a092a45fc9a2b9ca95101611a6f5")
         self.assertTrue(overlay["ledger_reconciliation"]["active_ledger_reconciled"])
         self.assertEqual(overlay["ledger_reconciliation"]["active_ledger_recorded_pr165_head"], "237e78c83082a092a45fc9a2b9ca95101611a6f5")
-        self.assertEqual(overlay["ledger_reconciliation"]["status"], "RECONCILED_TO_PR165_237E78_EXACT_HEAD_PASS")
+        self.assertEqual(overlay["ledger_reconciliation"]["status"], "RECONCILED_TO_LAST_VERIFIED_237E78_WITH_5E28AA9_REFRESH_FAILURE_RECORDED")
         self.assertFalse(overlay["downstream_receipts"]["real_msix"])
         self.assertFalse(overlay["downstream_receipts"]["artifact_archive_and_package_sha_custody"])
         self.assertFalse(overlay["downstream_receipts"]["github_backlog_receipt"])

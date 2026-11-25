@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-25T21:39:29Z",
+  "updated_at_utc": "2026-11-25T21:42:08Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -25774,8 +25774,8 @@
     "decision": "NO_BLIND_RESTACK__ALL_RELEVANT_CHANGES_ALREADY_PRESENT_OR_SUPERSEDED",
     "merge_allowed": false
   },
-  "last_reconciled_at_utc": "2026-11-25T21:39:29Z",
-  "last_reconciled_basis": "Latest verified transport/code head remains PR165 237e78 (4/4 exact-head CI PASS). Subsequent operations-only refresh 5e28aa9 failed Offline QA on a test assertion that counted the parent push run inside the PR-only array; this is being corrected by asserting PR and push runs separately. Product E2E remains HOLD.",
+  "last_reconciled_at_utc": "2026-11-25T21:42:08Z",
+  "last_reconciled_basis": "Last verified transport/code head remains PR165 237e78 (4/4 exact-head CI PASS). Operations-only refresh 5e28aa9 had a parent-run array assertion failure; follow-up 45c5f311 corrected that, but overlay tests still conflated actual branch head 5e28aa9 with last verified transport head 237e78. This is a test expectation issue only; product E2E remains HOLD.",
   "pr165_previous_tested_head_sha": "5ad2cf093539739f1a2af7e67c8c83f7c1960825",
   "pr165_previous_tested_head_ci": [
     {
@@ -27104,10 +27104,10 @@
   "pr165_current_head_ci_status": "PASS_EXACT_HEAD_CI",
   "pr165_current_head_observed_at_utc": "2026-11-25T21:11:30Z",
   "pr165_current_head_parent_push_ci_status": "FAIL_STALE_LEDGER_OBSERVATION_ASSERTION",
-  "note": "PR165 HEAD 237e78 passed exact-head transport 45701952640, independent artifact custody 45701953080, Windows/Ubuntu Offline QA 45701952665, and push Offline QA 45701935988 (4/4 SUCCESS). Immediate parent a15a457 passed transport/custody but both Offline QA workflows failed on one stale ledger-observation assertion; current HEAD fixes it. Repository CI is not product E2E. Focus current-source request remains DRY_RUN and approved Identity is still bound only to historical source 8b00bc4e; Package Version is null. File Integrity current request remains DRY_RUN/UNVERIFIED, current approved Identity absent, owner visual review required, and Version null. No real MSIX, backlog, local pull/checker/GUI install or user-PC receipt exists. PR161/PR171 are Offline-QA-only; fresh unsold Store dry-run eligibility remains 0. Local code-sync receipt remains NOT_OBSERVED__CLOUD_PASS_ONLY. Operations-only refresh 5e28aa9 was not a product/transport regression: both Offline QA platforms failed one assertion that expected the push run inside the PR-only parent CI array. The ledger correctly separates three PR checks and one push check; the regression test is being corrected. Last verified transport head 237e78 remains 4/4 PASS.",
+  "note": "PR165 HEAD 237e78 passed exact-head transport 45701952640, independent artifact custody 45701953080, Windows/Ubuntu Offline QA 45701952665, and push Offline QA 45701935988 (4/4 SUCCESS). Immediate parent a15a457 passed transport/custody but both Offline QA workflows failed on one stale ledger-observation assertion; current HEAD fixes it. Repository CI is not product E2E. Focus current-source request remains DRY_RUN and approved Identity is still bound only to historical source 8b00bc4e; Package Version is null. File Integrity current request remains DRY_RUN/UNVERIFIED, current approved Identity absent, owner visual review required, and Version null. No real MSIX, backlog, local pull/checker/GUI install or user-PC receipt exists. PR161/PR171 are Offline-QA-only; fresh unsold Store dry-run eligibility remains 0. Local code-sync receipt remains NOT_OBSERVED__CLOUD_PASS_ONLY. Operations-only refresh 5e28aa9 was not a product/transport regression: both Offline QA platforms failed one assertion that expected the push run inside the PR-only parent CI array. The ledger correctly separates three PR checks and one push check; the regression test is being corrected. Last verified transport head 237e78 remains 4/4 PASS. Follow-up operations-only commit 45c5f311 failed four CI workflows on two stale overlay expectations: actual branch head 5e28aa9 is intentionally distinct from last verified transport head 237e78. The overlay test assertions are being corrected; no product/transport code changed.",
   "store_upload_test_eligible_products": 0,
-  "ledger_refresh_commit_parent_sha": "5e28aa9b7d65aac6c87bf91b063225c89ec11fd4",
-  "ledger_refresh_commit_scope": "operations ledger and regression-test correction only; no APP/GAME/3D product code, PNG, Identity, Version, Store state, main/release or protected repositories changed",
+  "ledger_refresh_commit_parent_sha": "45c5f311c6b0523eec7509a4677ff89f2fb03f36",
+  "ledger_refresh_commit_scope": "operations ledger and overlay regression-test correction only; no APP/GAME/3D product code, PNG, Identity, Version, Store state, main/release or protected repositories changed",
   "pr165_previous_snapshot_20261125_201712": {
     "latest_transport_reconciliation": {
       "checked_at_utc": "2026-11-25T19:35:52Z",
@@ -30442,6 +30442,18 @@
       "status": "PARTIAL_FAIL_PARENT_PUSH_RUN_MISCLASSIFIED_AS_PARENT_PR_CI",
       "cause": "Both Windows and Ubuntu Offline QA failed only because test_current_delivery_queue_cannot_enter_transport_without_binding_and_version expected four runs in pr165_immediate_parent_ci. The ledger correctly separates three pull_request runs from one push run.",
       "resolution": "Assert the three PR-triggered parent checks in pr165_immediate_parent_ci and assert the push-triggered run separately in pr165_immediate_parent_push_ci. No transport code or product evidence changed."
+    },
+    {
+      "head_sha": "45c5f311c6b0523eec7509a4677ff89f2fb03f36",
+      "runs": [
+        45706682391,
+        45706682442,
+        45706682414,
+        45706671698
+      ],
+      "status": "PARTIAL_FAIL_STALE_OVERLAY_RECONCILIATION_ASSERTIONS",
+      "cause": "Transport, custody and both Offline QA workflows failed only because overlay regression tests expected actual_pr165_head and ledger reconciliation status to equal the last verified transport code head 237e78. The overlay correctly records actual branch head 5e28aa9 at its observation time while separately retaining last_verified_head_sha=237e78.",
+      "resolution": "Update overlay tests to assert actual_pr165_head=5e28aa9 and RECONCILED_TO_LAST_VERIFIED_237E78_WITH_5E28AA9_REFRESH_FAILURE_RECORDED. Keep 237e78 as last verified transport head; no product or transport code changed."
     }
   ],
   "pr165_operations_only_refresh_20261126": {
@@ -30461,9 +30473,28 @@
     "product_e2e_status": "HOLD",
     "product_code_changed": false
   },
-  "pr165_current_branch_head_after_refresh_sha": "5e28aa9b7d65aac6c87bf91b063225c89ec11fd4",
+  "pr165_current_branch_head_after_refresh_sha": "45c5f311c6b0523eec7509a4677ff89f2fb03f36",
   "pr165_current_branch_head_after_refresh_ci_status": "FAIL_TEST_ASSERTION_ONLY",
   "pr165_current_branch_head_after_refresh_run_ids": [
-    45706283485
-  ]
+    45706682391,
+    45706682442,
+    45706682414,
+    45706671698
+  ],
+  "pr165_operations_only_refresh_followup_20261126": {
+    "commit_sha": "45c5f311c6b0523eec7509a4677ff89f2fb03f36",
+    "observed_at_utc": "2026-11-25T21:42:08Z",
+    "scope": "operations ledger and overlay regression tests only",
+    "workflow_runs": [
+      45706682391,
+      45706682442,
+      45706682414,
+      45706671698
+    ],
+    "workflow_conclusion": "failure",
+    "failure_reason": "STALE_OVERLAY_EXPECTATION__ACTUAL_BRANCH_HEAD_VS_LAST_VERIFIED_CODE_HEAD",
+    "latest_verified_transport_head_sha": "237e78c83082a092a45fc9a2b9ca95101611a6f5",
+    "product_e2e_status": "HOLD",
+    "product_code_changed": false
+  }
 }
