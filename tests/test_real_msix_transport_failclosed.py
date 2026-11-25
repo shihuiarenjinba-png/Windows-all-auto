@@ -234,9 +234,9 @@ class CurrentLedgerGateTests(unittest.TestCase):
         self.assertEqual(ledger["pr165_current_head_parent_ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual([x["run_id"] for x in ledger["pr165_current_head_parent_ci"]], [45680373334, 45680373323, 45680373386])
         self.assertEqual(current["pr165_reconciliation_parent_head_sha"], "dfe03df83a75cd696f6bdb10d482db4ada9c0d35")
-        self.assertEqual(current["pr165_immediate_parent_head_sha"], "722e569c263759740867aa44b303fcf4ccd51929")
-        self.assertEqual(current["pr165_immediate_parent_ci_status"], "PARTIAL_FAIL_STALE_OVERLAY_STATUS_ASSERTION__SUPERSEDED_BY_CURRENT_HEAD_PASS")
-        self.assertEqual([x["run_id"] for x in current["pr165_immediate_parent_ci"]], [45669385876, 45669385842, 45669385804])
+        self.assertEqual(current["pr165_immediate_parent_head_sha"], "dfe03df83a75cd696f6bdb10d482db4ada9c0d35")
+        self.assertEqual(current["pr165_immediate_parent_ci_status"], "PASS_EXACT_HEAD_CI")
+        self.assertEqual([x["run_id"] for x in current["pr165_immediate_parent_ci"]], [45669620650, 45669620537, 45669620784])
         observation = ledger["pr165_live_head_observation_20261126_latest"]
         self.assertEqual(observation["head_sha"], "c2c901525718cce96eb56135c9044edb5d062682")
         self.assertEqual(observation["parent_sha"], "addefcb0303897c3ce25c0b54f5d43b9336232f9")

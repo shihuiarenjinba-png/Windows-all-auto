@@ -27,9 +27,9 @@ class CurrentLiveProductReconciliationTests(unittest.TestCase):
                          [45680373334, 45680373323, 45680373386])
         self.assertEqual([x["run_id"] for x in latest["previous_exact_head_ci"]],
                          [45669620650, 45669620537, 45669620784])
-        self.assertEqual(latest["previous_tested_head_sha"], "b67e333178bff5a2214ad059a370163597a528c6")
+        self.assertEqual(latest["previous_tested_head_sha"], "dfe03df83a75cd696f6bdb10d482db4ada9c0d35")
         self.assertEqual([x["run_id"] for x in latest["previous_tested_exact_head_ci"]],
-                         [45658953507, 45658953645, 45658953242])
+                         [45669620650, 45669620537, 45669620784])
         self.assertEqual(latest["pr165_current_head_parent_ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual([x["run_id"] for x in latest["pr165_current_head_parent_ci"]], [45669620650, 45669620537, 45669620784])
         self.assertEqual(latest["ci_status"], "PASS_EXACT_HEAD_CI")

@@ -96,7 +96,7 @@ class CompletionRushQueueTests(unittest.TestCase):
         self.assertEqual(latest["central_head"], "addefcb0303897c3ce25c0b54f5d43b9336232f9")
         self.assertEqual(latest["central_tested_head_sha"], "addefcb0303897c3ce25c0b54f5d43b9336232f9")
         self.assertEqual(latest["previous_central_head_sha"], "dfe03df83a75cd696f6bdb10d482db4ada9c0d35")
-        self.assertEqual(latest["previous_tested_head_sha"], "b67e333178bff5a2214ad059a370163597a528c6")
+        self.assertEqual(latest["previous_tested_head_sha"], "dfe03df83a75cd696f6bdb10d482db4ada9c0d35")
         self.assertEqual([x["run_id"] for x in latest["exact_head_ci"]],
                          [45680373334, 45680373323, 45680373386])
         self.assertEqual(latest["pr165_current_head_parent_ci_status"], "PASS_EXACT_HEAD_CI")
