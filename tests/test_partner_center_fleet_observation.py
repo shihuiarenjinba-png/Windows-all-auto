@@ -214,7 +214,14 @@ class PartnerCenterFleetObservationTests(unittest.TestCase):
                 self.assertEqual(proof["manifest_architecture_match"], "PASS")
                 self.assertEqual(proof["signature_status"], "NotSigned")
                 self.assertTrue(artifact["artifact_downloaded_and_rehashed_locally"])
-                self.assertFalse(artifact["uploadable"])
+                if key == "data-contract-auditor":
+                    self.assertTrue(artifact["uploadable"])
+                    self.assertEqual(
+                        artifact["classification"],
+                        "ONE_TIME_DRAFT_PACKAGE_UPLOAD_AUTHORIZED_PACKAGED_EXE_RUNTIME_UNVERIFIED_CERTIFICATION_HOLD",
+                    )
+                else:
+                    self.assertFalse(artifact["uploadable"])
 
     def test_web_evidence_archiver_local_integration_is_unpushed_and_capture_is_blocked(self):
         group_c = json.loads(
