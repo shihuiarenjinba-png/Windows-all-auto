@@ -259,7 +259,7 @@ class PartnerCenterFleetObservationTests(unittest.TestCase):
         self.assertTrue(artifact["workflow_run_head_verified"])
         self.assertTrue(artifact["store_handoff_json_included"])
         self.assertTrue(artifact["msix_sha256_text_included"])
-        self.assertEqual(artifact["package_signature"], "UNSIGNED")
+        self.assertEqual(artifact["package_signature"], "NotSigned")
         self.assertEqual(artifact["package_sha256"], "512da1ab4449a69b02901baf9c8eaff6577f1e58d336f43ef608f4fbc3892a97")
         self.assertEqual(artifact["version_approval"], "TECHNICAL_DRAFT_ONLY_PUBLIC_RELEASE_HOLD")
         self.assertTrue(artifact["local_verification_20261125"]["local_sha256_matches_builder"])
