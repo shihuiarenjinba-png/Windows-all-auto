@@ -71,7 +71,7 @@ def verify_custody(expected, local_bundle, fetch_json, fetch_bytes):
                     return hold("LOCAL_TRANSPORT_RECEIPT_INVALID")
                 identity_bytes = identity_path.read_bytes()
                 identity_git_blob_sha = hashlib.sha1(
-                    b"blob " + str(len(identity_bytes)).encode("ascii") + b"\\0" + identity_bytes
+                    b"blob " + str(len(identity_bytes)).encode("ascii") + b"\0" + identity_bytes
                 ).hexdigest()
                 transport_identity = transport.get("identity")
                 evidence = transport.get("evidence_url")
