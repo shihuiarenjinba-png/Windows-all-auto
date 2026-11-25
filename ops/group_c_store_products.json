@@ -66,16 +66,37 @@
         "qa_unsigned_validation_artifact_name": "data-contract-QA_UNSIGNED-validation-msix-45103784990-1",
         "qa_unsigned_validation_artifact_size_bytes": 55176827,
         "artifact_available": true,
-        "package_sha256": "NOT_FETCHED_BINARY_NOT_CLAIMED",
+        "package_sha256": "80cd02c0df8e75d1962d03ce63c1ba72d9a8f67e8056f43718ffc5bd8d3f3279",
         "build_job": "SUCCESS",
         "source_match": false,
         "uploadable": false,
-        "classification": "UNSIGNED_CANDIDATE_SOURCE_REVISION_MISMATCH",
+        "classification": "UNSIGNED_CANDIDATE_SOURCE_REVISION_MISMATCH_AND_CURRENT_BRANCH_CI_FAILURE",
         "blockers": [
           "candidate source SHA differs from required registered source SHA",
+          "current branch HEAD differs from the required source SHA",
+          "latest current-branch source test fails before compile/preflight/package stages",
           "QA_UNSIGNED package is not Store upload authorization",
           "source/package-bound owner security and QA gates remain incomplete"
-        ]
+        ],
+        "candidate_msix_filename": "DataContractSchemaDrift_1.0.0.0_x64.msix",
+        "candidate_msix_version": "1.0.0.0",
+        "sha256_evidence": {
+          "source": "GitHub Actions job log MSIX_SHA256 output",
+          "workflow_run_id": 45103784990,
+          "workflow_job_id": 137460643292,
+          "evidence_level": "BUILDER_REPORTED_HASH",
+          "binary_downloaded_and_rehashed_locally": false
+        },
+        "current_branch_head_sha": "0c73a746bcec9ded702567768d5c04f4240a12a9",
+        "current_branch_latest_ci": {
+          "workflow_run_id": 45107287117,
+          "workflow_run_url": "https://github.com/shihuiarenjinba-png/csv-import-validator/actions/runs/45107287117",
+          "head_sha": "0c73a746bcec9ded702567768d5c04f4240a12a9",
+          "conclusion": "failure",
+          "failed_test": "test_product_profile_matches_live_entrypoint_and_formal_build_gate",
+          "failure_summary": "Expected READY_FOR_FORMAL_MSIX_BUILD, but observed READY_FOR_PARTNER_CENTER_READONLY",
+          "build_and_package_steps": "SKIPPED"
+        }
       }
     },
     "web-evidence-archiver": {
@@ -231,7 +252,7 @@
         "qa_unsigned_msix_artifact_name": "group-c-QA_UNSIGNED-validation-msix-44687814041-1",
         "qa_unsigned_msix_artifact_size_bytes": 13194740,
         "qa_unsigned_msix_artifact_available": true,
-        "qa_unsigned_msix_sha256": "NOT_FETCHED_BINARY_NOT_CLAIMED",
+        "qa_unsigned_msix_sha256": "18C4F841DF4C3DAFFEEBD068D001287BAA4BFC2876CE1C2558EAB258351CC79D",
         "formal_store_msix_build": "SKIPPED_STORE_READINESS_GATE",
         "blockers": [
           "approved_store_version is null",
@@ -240,7 +261,17 @@
           "owner-approved store-assets/approval.json is unavailable or not approved"
         ],
         "uploadable": false,
-        "classification": "QA_UNSIGNED_VALIDATION_ONLY"
+        "classification": "QA_UNSIGNED_VALIDATION_ONLY",
+        "qa_unsigned_msix_filename": "ExcelCSVPrivacyCleaner_QA_UNSIGNED_1.0.57.0_x64.msix",
+        "qa_unsigned_msix_version": "1.0.57.0",
+        "sha256_evidence": {
+          "source": "GitHub Actions job log MSIX SHA256 output",
+          "workflow_run_id": 44687814041,
+          "workflow_job_id": 136126795246,
+          "evidence_level": "BUILDER_REPORTED_HASH",
+          "binary_downloaded_and_rehashed_locally": false
+        },
+        "artifact_downloaded_and_rehashed_locally": false
       }
     },
     "image-privacy-cleaner": {
@@ -298,7 +329,7 @@
         "qa_unsigned_msix_artifact_name": "group-c-QA_UNSIGNED-validation-msix-44687836979-1",
         "qa_unsigned_msix_artifact_size_bytes": 21824223,
         "qa_unsigned_msix_artifact_available": true,
-        "qa_unsigned_msix_sha256": "NOT_FETCHED_BINARY_NOT_CLAIMED",
+        "qa_unsigned_msix_sha256": "90396A9097B1E7B570B5CFEF4B9A45A93958733636ADFE47C1AA71CDE7E29800",
         "formal_store_msix_build": "SKIPPED_STORE_READINESS_GATE",
         "blockers": [
           "approved_store_version is null",
@@ -307,7 +338,17 @@
           "owner-approved store-assets/approval.json is unavailable or not approved"
         ],
         "uploadable": false,
-        "classification": "QA_UNSIGNED_VALIDATION_ONLY"
+        "classification": "QA_UNSIGNED_VALIDATION_ONLY",
+        "qa_unsigned_msix_filename": "ImagePrivacyCleaner_QA_UNSIGNED_1.0.50.0_x64.msix",
+        "qa_unsigned_msix_version": "1.0.50.0",
+        "sha256_evidence": {
+          "source": "GitHub Actions job log MSIX SHA256 output",
+          "workflow_run_id": 44687836979,
+          "workflow_job_id": 136126667166,
+          "evidence_level": "BUILDER_REPORTED_HASH",
+          "binary_downloaded_and_rehashed_locally": false
+        },
+        "artifact_downloaded_and_rehashed_locally": false
       }
     },
     "ai-upload-guard": {
@@ -364,7 +405,7 @@
         "qa_unsigned_msix_artifact_name": "group-c-QA_UNSIGNED-validation-msix-44687824883-1",
         "qa_unsigned_msix_artifact_size_bytes": 21569997,
         "qa_unsigned_msix_artifact_available": true,
-        "qa_unsigned_msix_sha256": "NOT_FETCHED_BINARY_NOT_CLAIMED",
+        "qa_unsigned_msix_sha256": "1141D327F43EC0F846BF780D3D0C68B82AC261DD869A7A54FDBB31C70F8B6125",
         "formal_store_msix_build": "SKIPPED_STORE_READINESS_GATE",
         "blockers": [
           "approved_store_version is null",
@@ -373,7 +414,17 @@
           "owner-approved store-assets/approval.json is unavailable or not approved"
         ],
         "uploadable": false,
-        "classification": "QA_UNSIGNED_VALIDATION_ONLY"
+        "classification": "QA_UNSIGNED_VALIDATION_ONLY",
+        "qa_unsigned_msix_filename": "AIUploadGuard_QA_UNSIGNED_1.0.60.0_x64.msix",
+        "qa_unsigned_msix_version": "1.0.60.0",
+        "sha256_evidence": {
+          "source": "GitHub Actions job log MSIX SHA256 output",
+          "workflow_run_id": 44687824883,
+          "workflow_job_id": 136126694225,
+          "evidence_level": "BUILDER_REPORTED_HASH",
+          "binary_downloaded_and_rehashed_locally": false
+        },
+        "artifact_downloaded_and_rehashed_locally": false
       }
     },
     "pdf-privacy": {
@@ -431,7 +482,7 @@
         "qa_unsigned_msix_artifact_name": "group-c-QA_UNSIGNED-validation-msix-44687829990-1",
         "qa_unsigned_msix_artifact_size_bytes": 17722226,
         "qa_unsigned_msix_artifact_available": true,
-        "qa_unsigned_msix_sha256": "NOT_FETCHED_BINARY_NOT_CLAIMED",
+        "qa_unsigned_msix_sha256": "3911348B502AFB133BEB07D3AB1C9070A7F68FE3ED05772D027C38C040678ED9",
         "formal_store_msix_build": "SKIPPED_STORE_READINESS_GATE",
         "blockers": [
           "approved_store_version is null",
@@ -440,7 +491,17 @@
           "owner-approved store-assets/approval.json is unavailable or not approved"
         ],
         "uploadable": false,
-        "classification": "QA_UNSIGNED_VALIDATION_ONLY"
+        "classification": "QA_UNSIGNED_VALIDATION_ONLY",
+        "qa_unsigned_msix_filename": "PDFPrivacyToolkit_QA_UNSIGNED_1.0.54.0_x64.msix",
+        "qa_unsigned_msix_version": "1.0.54.0",
+        "sha256_evidence": {
+          "source": "GitHub Actions job log MSIX SHA256 output",
+          "workflow_run_id": 44687829990,
+          "workflow_job_id": 136126609675,
+          "evidence_level": "BUILDER_REPORTED_HASH",
+          "binary_downloaded_and_rehashed_locally": false
+        },
+        "artifact_downloaded_and_rehashed_locally": false
       }
     }
   },
