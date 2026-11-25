@@ -50,7 +50,11 @@ Workflow: https://github.com/shihuiarenjinba-png/workflow-automation-hub/actions
 
 ### Data Contract Auditor
 
-The successful candidate build run `45103784990` used candidate source `5a09d81955e25664761ea25ecfb4ebf8d24cea6d`. The Group C required source remains `107e59f2cbcde9c6ca88cf1aaf3d52262004e6e0`.
+The formal candidate gate records:
+- QA baseline source SHA: `107e59f2cbcde9c6ca88cf1aaf3d52262004e6e0`;
+- formal candidate source SHA: `5a09d81955e25664761ea25ecfb4ebf8d24cea6d`.
+
+The 107e commit is the QA baseline, not the required formal package revision. The formal source is 40 commits after that baseline. Run `45103784990` used the exact formal candidate source SHA `5a09...` and built the unsigned Store candidate.
 
 Artifacts:
 - `data-contract-QA_UNSIGNED-msix-45103784990` — ID `14787075908`, 55,190,196 bytes;
@@ -58,9 +62,11 @@ Artifacts:
 
 The candidate file was `DataContractSchemaDrift_1.0.0.0_x64.msix`; the builder log emitted SHA `80cd02c0df8e75d1962d03ce63c1ba72d9a8f67e8056f43718ffc5bd8d3f3279`.
 
-The build job succeeded at candidate source revision `5a09d81955e25664761ea25ecfb4ebf8d24cea6d`, but this does not match the required registered source `107e59f2cbcde9c6ca88cf1aaf3d52262004e6e0`. The current source branch head is `0c73a746bcec9ded702567768d5c04f4240a12a9`; its latest CI run `45107287117` failed in `test_product_profile_matches_live_entrypoint_and_formal_build_gate` before compile, Store preflight, or package build. The failure expected `READY_FOR_FORMAL_MSIX_BUILD` but observed `READY_FOR_PARTNER_CENTER_READONLY`.
+The current source branch HEAD at the time of this update was `0c73a746bcec9ded702567768d5c04f4240a12a9`, two metadata-only commits after the formal build source. The app runtime and packaging scripts did not change after `5a09...`. The failed CI run `45107287117` was caused by a stale product-profile test: it expected pre-build state `READY_FOR_FORMAL_MSIX_BUILD` after the profile had advanced to `READY_FOR_PARTNER_CENTER_READONLY` and `FORMAL_UNSIGNED_MSIX_CREATED_AND_VERIFIED`.
 
-The package is unsigned and remains blocked from upload. Compare the downloaded manifest, embedded source receipt, and package SHA to the required branch before deciding whether to rebuild.
+That stale test has been corrected on the DCA source branch to assert the recorded post-build read-only state and bind it to the formal candidate gate. New CI run `45580565845` is testing the correction.
+
+The candidate is still unsigned and is not upload authorization. The exact artifact must be downloaded and independently re-hashed, its manifest/source receipt inspected, and package-level local QA bound to that exact binary SHA. Re-read the current Partner Center Draft and Packages state before any upload.
 
 Workflow: https://github.com/shihuiarenjinba-png/csv-import-validator/actions/runs/45103784990
 
