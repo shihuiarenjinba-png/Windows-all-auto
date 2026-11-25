@@ -13,16 +13,16 @@ $expectedName = 'DataContractSchemaDrift_1.0.0.0_x64.msix'
 if (-not (Test-Path -LiteralPath $PackageRoot -PathType Container)) {
     throw "Package root does not exist: $PackageRoot"
 }
-$matches = @(Get-ChildItem -LiteralPath $PackageRoot -Filter $expectedName -File -Recurse)
-if ($matches.Count -ne 1) {
-    $paths = $matches | ForEach-Object { $_.FullName }
-    throw "Expected exactly one $expectedName under $PackageRoot; found $($matches.Count). Do not guess between attempts. Matches: $($paths -join '; ')"
+$packageMatches = @(Get-ChildItem -LiteralPath $PackageRoot -Filter $expectedName -File -Recurse)
+if ($packageMatches.Count -ne 1) {
+    $paths = $packageMatches | ForEach-Object { $_.FullName }
+    throw "Expected exactly one $expectedName under $PackageRoot; found $($packageMatches.Count). Do not guess between attempts. Matches: $($paths -join '; ')"
 }
 
 $uploadScript = Join-Path $PSScriptRoot 'upload_store_msix.ps1'
 $arguments = @(
     '-Product', 'data-contract-auditor',
-    '-Package', $matches[0].FullName,
+    '-Package', $packageMatches[0].FullName,
     '-CdpUrl', $CdpUrl
 )
 if ($Execute) {
