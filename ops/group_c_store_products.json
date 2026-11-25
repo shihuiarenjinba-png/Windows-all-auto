@@ -50,8 +50,8 @@
       "source_branch": null,
       "source_sha": null,
       "submission_route": "msix_pwa_app",
-      "store_id": null,
-      "draft_id": null,
+      "store_id": "9NNT1B142ZWV",
+      "draft_id": "1152921505702212223",
       "teacher_level": "GROUP_C_DIFFERENCE_ONLY",
       "receipt": null,
       "partner_center_live_observation": {
@@ -71,22 +71,85 @@
         "architecture": null,
         "package_binary_sha256_observable": false,
         "registry_reconciliation": {
-          "store_id": "NOT_STORED",
-          "identity_name": "NOT_STORED",
-          "publisher": "NOT_STORED",
-          "submission_id": "NOT_STORED"
+          "store_id": "MATCH",
+          "identity_name": "MATCH",
+          "publisher": "MATCH",
+          "submission_id": "MATCH"
         },
-        "overall_status": "LIVE_OBSERVATION_RECORDED_REGISTRY_ENRICHMENT_REQUIRED"
+        "overall_status": "EXACT_REGISTRY_MATCH"
+      },
+      "identity_name": "OkinawaDesktopTools.WebEvidenceArchiver",
+      "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+      "partner_center_observation_promotion": {
+        "source_snapshot": "ops/partner_center_fleet_observation_20261125.json",
+        "observation_id": "partner-center-fleet-20261125T075209Z",
+        "observed_at_utc": "2026-11-25T07:52:09Z",
+        "promotion_rule": "filled null fields only; existing non-null values had to match; current state must be re-read before any write"
+      },
+      "source_candidates": [
+        {
+          "role": "store_packaging_branch",
+          "branch": "codex/store-p0-web-evidence-20261023",
+          "sha": "3f2de607d83f36abef6d9a87da1a1c8b3bca604a",
+          "store_builder": "store/build-msix.ps1",
+          "workflow_run_id": 44687808856,
+          "workflow_run_url": "https://github.com/shihuiarenjinba-png/web-evidence-archiver/actions/runs/44687808856",
+          "qa_unsigned_msix_artifact_id": 14607965112,
+          "qa_unsigned_msix_artifact_name": "web-evidence-QA_UNSIGNED-validation-msix-44687808856-1",
+          "qa_unsigned_msix_artifact_size_bytes": 415899027,
+          "formal_store_candidate_build": "SKIPPED",
+          "status": "QA_UNSIGNED_ARTIFACT_AVAILABLE"
+        },
+        {
+          "role": "latest_gui_qa_branch",
+          "branch": "codex/web-evidence-gui-progress-20261124",
+          "sha": "fd34b93068d5ea39e3a02e89dc1c8c3d9bcb0812",
+          "pr_url": "https://github.com/shihuiarenjinba-png/web-evidence-archiver/pull/3",
+          "ci_status": "SUCCESS",
+          "gui_capture_qa": "OPERATOR_REPORTED_PASS"
+        }
+      ],
+      "source_reconciliation": {
+        "status": "HOLD_DIVERGED_BRANCHES",
+        "store_branch": "codex/store-p0-web-evidence-20261023",
+        "gui_branch": "codex/web-evidence-gui-progress-20261124",
+        "comparison_status": "diverged",
+        "merge_base_sha": "0f1537e33c6f5b3e79d034ad92865a162ee36275",
+        "gui_branch_ahead_by": 7,
+        "gui_branch_behind_by": 76,
+        "required_action": "Integrate the current GUI fixes into the Store-packaging source branch, preserve both histories, then rerun Store package preflight and Windows QA. Do not package from either branch alone."
+      },
+      "remote_package_artifact_discovery": {
+        "repository_full_name": "shihuiarenjinba-png/web-evidence-archiver",
+        "source_branch": "codex/store-p0-web-evidence-20261023",
+        "source_sha": "3f2de607d83f36abef6d9a87da1a1c8b3bca604a",
+        "builder": "store/build-msix.ps1",
+        "input": "store/partner_center_registration.json + store/product.json + browser bundle approval",
+        "workflow_run_id": 44687808856,
+        "workflow_run_url": "https://github.com/shihuiarenjinba-png/web-evidence-archiver/actions/runs/44687808856",
+        "qa_unsigned_msix_artifact_id": 14607965112,
+        "qa_unsigned_msix_artifact_name": "web-evidence-QA_UNSIGNED-validation-msix-44687808856-1",
+        "qa_unsigned_msix_artifact_size_bytes": 415899027,
+        "qa_unsigned_msix_artifact_available": true,
+        "qa_unsigned_msix_sha256": "NOT_FETCHED_BINARY_NOT_CLAIMED",
+        "formal_store_msix_build": "SKIPPED_INPUT_GATE",
+        "blockers": [
+          "approvedStoreVersion is null",
+          "manifestResources is empty",
+          "browserBundleApproval is null"
+        ],
+        "uploadable": false,
+        "classification": "QA_UNSIGNED_VALIDATION_ONLY"
       }
     },
     "excel-csv-privacy-cleaner": {
       "name": "Excel / CSV Privacy Cleaner",
       "repository_full_name": "shihuiarenjinba-png/-Excel-CSV-Privacy-Cleaner",
       "source_branch": "codex/store-p1-excel-csv-privacy-20261023",
-      "source_sha": "a3d39c1e3b9806de1c0c679203ed68366779e122",
+      "source_sha": "f715ce0e6f5d3eee8e483137fb42d41cb6e4ec20",
       "submission_route": "msix_pwa_app",
       "store_id": "9P3Z36J7PSFC",
-      "draft_id": null,
+      "draft_id": "1152921505702213008",
       "teacher_level": "GROUP_C_SCRIPT_FIRST",
       "receipt": null,
       "partner_center_live_observation": {
@@ -107,21 +170,53 @@
         "package_binary_sha256_observable": false,
         "registry_reconciliation": {
           "store_id": "MATCH",
-          "identity_name": "NOT_STORED",
-          "publisher": "NOT_STORED",
-          "submission_id": "NOT_STORED"
+          "identity_name": "MATCH",
+          "publisher": "MATCH",
+          "submission_id": "MATCH"
         },
-        "overall_status": "LIVE_OBSERVATION_RECORDED_REGISTRY_ENRICHMENT_REQUIRED"
+        "overall_status": "EXACT_REGISTRY_MATCH"
+      },
+      "identity_name": "OkinawaDesktopTools.ExcelCSVPrivacyCleaner",
+      "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+      "partner_center_observation_promotion": {
+        "source_snapshot": "ops/partner_center_fleet_observation_20261125.json",
+        "observation_id": "partner-center-fleet-20261125T075209Z",
+        "observed_at_utc": "2026-11-25T07:52:09Z",
+        "promotion_rule": "filled null fields only; existing non-null values had to match; current state must be re-read before any write"
+      },
+      "remote_package_artifact_discovery": {
+        "repository_full_name": "shihuiarenjinba-png/-Excel-CSV-Privacy-Cleaner",
+        "source_branch": "codex/store-p1-excel-csv-privacy-20261023",
+        "source_sha": "f715ce0e6f5d3eee8e483137fb42d41cb6e4ec20",
+        "builder": "store/build-store-msix.ps1",
+        "input": "store/unsigned_msix_submission_inputs.json",
+        "workflow": ".github/workflows/group-c-portable-prerequisite.yml",
+        "workflow_run_id": 44687814041,
+        "workflow_run_url": "https://github.com/shihuiarenjinba-png/-Excel-CSV-Privacy-Cleaner/actions/runs/44687814041",
+        "qa_unsigned_msix_artifact_id": 14607382071,
+        "qa_unsigned_msix_artifact_name": "group-c-QA_UNSIGNED-validation-msix-44687814041-1",
+        "qa_unsigned_msix_artifact_size_bytes": 13194740,
+        "qa_unsigned_msix_artifact_available": true,
+        "qa_unsigned_msix_sha256": "NOT_FETCHED_BINARY_NOT_CLAIMED",
+        "formal_store_msix_build": "SKIPPED_STORE_READINESS_GATE",
+        "blockers": [
+          "approved_store_version is null",
+          "package_version_approval is UNKNOWN",
+          "brand_assets_approval is UNKNOWN",
+          "owner-approved store-assets/approval.json is unavailable or not approved"
+        ],
+        "uploadable": false,
+        "classification": "QA_UNSIGNED_VALIDATION_ONLY"
       }
     },
     "image-privacy-cleaner": {
       "name": "Image Privacy Cleaner",
       "repository_full_name": "shihuiarenjinba-png/-Screenshot-Image-Privacy-Cleaner",
       "source_branch": "codex/store-p1-image-privacy-20261023",
-      "source_sha": "ca38b92944f2ebef0d241350d8d1fc81e8175b8e",
+      "source_sha": "b73f2dadd63843cadb9c1a779a87ef2045516af5",
       "submission_route": "msix_pwa_app",
       "store_id": "9PNSPFBKBBTQ",
-      "draft_id": null,
+      "draft_id": "1152921505702212225",
       "teacher_level": "GROUP_C_SCRIPT_FIRST",
       "receipt": null,
       "partner_center_live_observation": {
@@ -142,11 +237,43 @@
         "package_binary_sha256_observable": false,
         "registry_reconciliation": {
           "store_id": "MATCH",
-          "identity_name": "NOT_STORED",
-          "publisher": "NOT_STORED",
-          "submission_id": "NOT_STORED"
+          "identity_name": "MATCH",
+          "publisher": "MATCH",
+          "submission_id": "MATCH"
         },
-        "overall_status": "LIVE_OBSERVATION_RECORDED_REGISTRY_ENRICHMENT_REQUIRED"
+        "overall_status": "EXACT_REGISTRY_MATCH"
+      },
+      "identity_name": "OkinawaDesktopTools.ImagePrivacyCleaner",
+      "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+      "partner_center_observation_promotion": {
+        "source_snapshot": "ops/partner_center_fleet_observation_20261125.json",
+        "observation_id": "partner-center-fleet-20261125T075209Z",
+        "observed_at_utc": "2026-11-25T07:52:09Z",
+        "promotion_rule": "filled null fields only; existing non-null values had to match; current state must be re-read before any write"
+      },
+      "remote_package_artifact_discovery": {
+        "repository_full_name": "shihuiarenjinba-png/-Screenshot-Image-Privacy-Cleaner",
+        "source_branch": "codex/store-p1-image-privacy-20261023",
+        "source_sha": "b73f2dadd63843cadb9c1a779a87ef2045516af5",
+        "builder": "store/build-msix.ps1",
+        "input": "store/unsigned_msix_submission_inputs.json",
+        "workflow": ".github/workflows/group-c-portable-prerequisite.yml",
+        "workflow_run_id": 44687836979,
+        "workflow_run_url": "https://github.com/shihuiarenjinba-png/-Screenshot-Image-Privacy-Cleaner/actions/runs/44687836979",
+        "qa_unsigned_msix_artifact_id": 14607755190,
+        "qa_unsigned_msix_artifact_name": "group-c-QA_UNSIGNED-validation-msix-44687836979-1",
+        "qa_unsigned_msix_artifact_size_bytes": 21824223,
+        "qa_unsigned_msix_artifact_available": true,
+        "qa_unsigned_msix_sha256": "NOT_FETCHED_BINARY_NOT_CLAIMED",
+        "formal_store_msix_build": "SKIPPED_STORE_READINESS_GATE",
+        "blockers": [
+          "approved_store_version is null",
+          "package_version_approval is UNKNOWN",
+          "brand_assets_approval is UNKNOWN",
+          "owner-approved store-assets/approval.json is unavailable or not approved"
+        ],
+        "uploadable": false,
+        "classification": "QA_UNSIGNED_VALIDATION_ONLY"
       }
     },
     "ai-upload-guard": {
@@ -187,11 +314,11 @@
     "pdf-privacy": {
       "name": "PDF Privacy",
       "repository_full_name": "shihuiarenjinba-png/-PDF-Privacy-Toolkit",
-      "source_branch": null,
-      "source_sha": null,
+      "source_branch": "codex/store-p1-pdf-privacy-20261023",
+      "source_sha": "891dad28b15b5c1c7dd743e6cbe44280959ecb41",
       "submission_route": "msix_pwa_app",
-      "store_id": null,
-      "draft_id": null,
+      "store_id": "9PD1RXLFWPBC",
+      "draft_id": "1152921505702212497",
       "teacher_level": "GROUP_C_SCRIPT_FIRST",
       "receipt": null,
       "partner_center_live_observation": {
@@ -211,12 +338,44 @@
         "architecture": null,
         "package_binary_sha256_observable": false,
         "registry_reconciliation": {
-          "store_id": "NOT_STORED",
-          "identity_name": "NOT_STORED",
-          "publisher": "NOT_STORED",
-          "submission_id": "NOT_STORED"
+          "store_id": "MATCH",
+          "identity_name": "MATCH",
+          "publisher": "MATCH",
+          "submission_id": "MATCH"
         },
-        "overall_status": "LIVE_OBSERVATION_RECORDED_REGISTRY_ENRICHMENT_REQUIRED"
+        "overall_status": "EXACT_REGISTRY_MATCH"
+      },
+      "identity_name": "OkinawaDesktopTools.PDFPrivacy",
+      "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+      "partner_center_observation_promotion": {
+        "source_snapshot": "ops/partner_center_fleet_observation_20261125.json",
+        "observation_id": "partner-center-fleet-20261125T075209Z",
+        "observed_at_utc": "2026-11-25T07:52:09Z",
+        "promotion_rule": "filled null fields only; existing non-null values had to match; current state must be re-read before any write"
+      },
+      "remote_package_artifact_discovery": {
+        "repository_full_name": "shihuiarenjinba-png/-PDF-Privacy-Toolkit",
+        "source_branch": "codex/store-p1-pdf-privacy-20261023",
+        "source_sha": "891dad28b15b5c1c7dd743e6cbe44280959ecb41",
+        "builder": "store/build-msix.ps1",
+        "input": "store/unsigned_msix_submission_inputs.json",
+        "workflow": ".github/workflows/group-c-portable-prerequisite.yml",
+        "workflow_run_id": 44687829990,
+        "workflow_run_url": "https://github.com/shihuiarenjinba-png/-PDF-Privacy-Toolkit/actions/runs/44687829990",
+        "qa_unsigned_msix_artifact_id": 14607132432,
+        "qa_unsigned_msix_artifact_name": "group-c-QA_UNSIGNED-validation-msix-44687829990-1",
+        "qa_unsigned_msix_artifact_size_bytes": 17722226,
+        "qa_unsigned_msix_artifact_available": true,
+        "qa_unsigned_msix_sha256": "NOT_FETCHED_BINARY_NOT_CLAIMED",
+        "formal_store_msix_build": "SKIPPED_STORE_READINESS_GATE",
+        "blockers": [
+          "approved_store_version is null",
+          "package_version_approval is UNKNOWN",
+          "brand_assets_approval is UNKNOWN",
+          "owner-approved store-assets/approval.json is unavailable or not approved"
+        ],
+        "uploadable": false,
+        "classification": "QA_UNSIGNED_VALIDATION_ONLY"
       }
     }
   },
