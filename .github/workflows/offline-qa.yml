@@ -45,6 +45,7 @@ jobs:
         if: runner.os == 'Windows'
         shell: powershell
         run: |
+          $originalLocation = Get-Location
           $testRoot = Join-Path $env:TEMP ([Guid]::NewGuid().ToString('N'))
           $scriptDir = Join-Path $testRoot 'scripts'
           $packageRoot = Join-Path $testRoot 'packages'
@@ -89,6 +90,7 @@ jobs:
             Write-Host 'DCA wrapper parameter forwarding passed with a mock target; no Partner Center calls were made.'
           }
           finally {
+            Set-Location -LiteralPath $originalLocation.Path
             if (Test-Path -LiteralPath $testRoot) {
               Remove-Item -LiteralPath $testRoot -Recurse -Force
             }
