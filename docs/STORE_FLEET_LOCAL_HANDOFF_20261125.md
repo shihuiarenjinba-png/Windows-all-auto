@@ -6,10 +6,10 @@ This handoff is paired with PR #166:
 
 - Repository: `shihuiarenjinba-png/Windows-all-auto`
 - Branch: `codex/msix-commercial-handoff-20261115`
-- Current PR head at handoff: `ed52c038d0052968eaaed312e0efd4345ebe9175`
+- Current PR head at handoff: `5aa4ce3af1cd3271bd2de8e2cb51780025ace25a`
 - PR: https://github.com/shihuiarenjinba-png/Windows-all-auto/pull/166
 - State: OPEN / Draft / not merged
-- Latest Windows + Ubuntu CI: success on current HEAD `ed52c038d0052968eaaed312e0efd4345ebe9175`, 379 tests on each runner; compile step passed. Runs: https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/45581433323 and https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/45581443686.
+- Latest Windows + Ubuntu CI: success on current HEAD `5aa4ce3af1cd3271bd2de8e2cb51780025ace25a`, 380 tests on each runner (Windows reports 2 existing skips); compile passed. Runs: https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/45611639372 and https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/45611649170.
 
 Remote changes include:
 - 2026-11-25 read-only Partner Center snapshot for all seven products;
@@ -19,7 +19,10 @@ Remote changes include:
 - current source branch SHAs for Image, Excel/CSV, PDF, AI Upload Guard, and Workflow Automation Hub;
 - remote QA/unsigned MSIX artifact IDs, names, sizes, builder-reported hashes, versions, and provenance status;
 - a fix to Group C Store ID validation: the previous `9P` prefix-only check rejected the confirmed Web Evidence Archiver Store ID `9NNT1B142ZWV`. Validation now accepts `9` followed by 11 uppercase alphanumeric characters;
-- regression tests and documentation.
+- regression tests and documentation;
+- all seven local MSIX binary hashes reported equal to their builder hashes, with Manifest Identity/Publisher/Version/Architecture checks PASS; all seven are `NotSigned`;
+- WEA local integration commit `2516feedd5b10990fbe5c8184587e3b69214648d`, 41/41 tests PASS and compileall PASS, but it is unpushed and actual `example.com` capture timed out;
+- DCA local package install was ACCESS DENIED and EXE launch timed out, so runtime QA remains incomplete.
 
 The Partner Center observation is tagged `TRANSCRIBED_FROM_USER_SUPPLIED_FINAL_REPORT`. The local source report and screenshots were not independently attached to this GitHub update. The observed timestamp is `2026-11-25T07:52:09Z`. Re-read Partner Center before every write operation.
 
