@@ -18534,11 +18534,11 @@
       "current_source_request_id": "app-focus-session-desk-fb6293839bc7",
       "current_source_request": {
         "request_id": "app-focus-session-desk-fb6293839bc7",
-        "source_repository": "shihuiarenjinba-png/AI-App-Factory",
-        "source_pr": 94,
-        "source_branch": "codex/focus-store-assets-gate-20261118",
+        "status": "DRY_RUN",
         "source_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
         "expected_head_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+        "source_repository": "shihuiarenjinba-png/AI-App-Factory",
+        "source_branch": "codex/focus-store-assets-gate-20261118",
         "request_branch": "codex/focus-source-request-fb6293839bc7",
         "request_branch_head_sha": "45560fb36eee3f2672ba1a1591f89edc6526865a",
         "workflow_run_id": 45671921196,
@@ -18548,10 +18548,89 @@
         "artifact_bytes": 2687,
         "artifact_expires_at_utc": "2026-12-25T18:07:50Z",
         "request_sha256": "a950b9bcf0bf59b45cc724651ed9a736181ff69388c04f8aefcdd7d9975b7a94",
-        "idempotency_key": "750bc1eaa4ec66d8edb34d2d4c6c1a0d8ed1f93c27e27f7b6ed9d2b8bb4b6b18",
+        "idempotency_key": "750bc660374613ddddb6303dea4ccb88b9f15d4b8854b543a8640aca5e059f55",
+        "operation": "PARTNER_CENTER_IDENTITY_REVALIDATION",
+        "action_scope": "READ_ONLY_IDENTITY_REVALIDATION",
         "route": "MSIX_OR_PWA_APP",
-        "action_scope": "READ_ONLY_PARTNER_CENTER_IDENTITY_REVALIDATION",
-        "status": "DRY_RUN",
+        "request_payload": {
+          "schema_version": "focus-source-request/1",
+          "request_id": "app-focus-session-desk-fb6293839bc7",
+          "operation": "PARTNER_CENTER_IDENTITY_REVALIDATION",
+          "product": {
+            "display_name": "Focus Session Desk",
+            "product_type": "APP",
+            "slug": "focus-session-desk"
+          },
+          "source_repository": "shihuiarenjinba-png/AI-App-Factory",
+          "source_branch": "codex/focus-store-assets-gate-20261118",
+          "source_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+          "expected_head_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+          "historical_identity": {
+            "request_id": "app-focus-session-desk-8b00bc4e9082",
+            "source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+            "status": "HISTORICAL_ONLY_NOT_REUSED",
+            "reuse_for_current_source": false
+          },
+          "partner_center": {
+            "selection_code": "MSIX_OR_PWA_APP",
+            "selection_label": "MSIX or PWA app",
+            "action_scope": "READ_ONLY_IDENTITY_REVALIDATION",
+            "write_authorized": false
+          },
+          "package_version": {
+            "status": "HOLD_NOT_INFERRED",
+            "value": null
+          },
+          "required_operator_return_fields": [
+            "store_id",
+            "name",
+            "publisher",
+            "version",
+            "official_evidence_url",
+            "verified_by",
+            "operator_verified"
+          ],
+          "return_target": {
+            "repository": "shihuiarenjinba-png/AI-App-Factory",
+            "branch": "codex/focus-store-assets-gate-20261118",
+            "path": "products/focus-session-desk/store/approved-identity.json",
+            "expected_head_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+            "apply_authorized": false
+          },
+          "source_drift_policy": "Reject this request if the named source branch no longer points to source_sha or if products/focus-session-desk differs from that commit.",
+          "idempotency_key": "750bc660374613ddddb6303dea4ccb88b9f15d4b8854b543a8640aca5e059f55"
+        },
+        "verification": {
+          "schema_version": "focus-source-request-verification/1",
+          "request_id": "app-focus-session-desk-fb6293839bc7",
+          "request_sha256": "a950b9bcf0bf59b45cc724651ed9a736181ff69388c04f8aefcdd7d9975b7a94",
+          "idempotency_key": "750bc660374613ddddb6303dea4ccb88b9f15d4b8854b543a8640aca5e059f55",
+          "expected_head_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+          "source_repository": "shihuiarenjinba-png/AI-App-Factory",
+          "source_branch": "codex/focus-store-assets-gate-20261118",
+          "source_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+          "source_branch_head_check": "PASS",
+          "product_tree_unchanged_check": "PASS",
+          "request_tamper_check": "PASS",
+          "idempotent_replay_check": "PASS",
+          "dry_run": true,
+          "request_submitted": false,
+          "partner_center_write": false,
+          "identity_write": false,
+          "msix_build": false,
+          "store_submission": false,
+          "store_publication": false
+        },
+        "artifact": {
+          "artifact_id": 15049692591,
+          "artifact_name": "focus-source-request-app-focus-session-desk-fb6293839bc7",
+          "sha256": "c8b15058243982d90699dfb2a885a71b064a0a02b01dcb3c7492dec83ec3afae",
+          "size_bytes": 2687,
+          "downloaded_and_rehashed": true,
+          "digest_matches_github_metadata": true,
+          "zip_crc": "PASS",
+          "expires_at_utc": "2026-12-25T18:07:50Z"
+        },
         "dry_run": true,
         "request_submitted": false,
         "partner_center_write": false,
@@ -18560,18 +18639,14 @@
         "msix_build": false,
         "store_submission": false,
         "store_publication": false,
-        "source_branch_head_check": "PASS",
-        "product_tree_unchanged_check": "PASS",
-        "tamper_rejection_check": "PASS",
-        "idempotent_replay_check": "PASS",
-        "artifact_downloaded_and_rehashed": true,
-        "artifact_digest_matches_github_metadata": true,
-        "artifact_zip_crc": "PASS",
-        "embedded_request_sha256_matches": true,
         "official_identity_status": "NOT_COLLECTED",
         "identity_readback_status": "NOT_COLLECTED",
         "package_status": "NOT_BUILT",
-        "package_version": null,
+        "package_version": {
+          "status": "HOLD_NOT_INFERRED",
+          "value": null
+        },
+        "package_version_value": null,
         "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
         "next_stage": "READ_ONLY_PARTNER_CENTER_IDENTITY_REVALIDATION",
         "verified_at_utc": "2026-11-25T19:35:52Z"
@@ -18587,7 +18662,7 @@
       "current_source_request_artifact_digest_matches_github_metadata": true,
       "current_source_request_artifact_zip_crc": "PASS",
       "current_source_request_request_sha256": "a950b9bcf0bf59b45cc724651ed9a736181ff69388c04f8aefcdd7d9975b7a94",
-      "current_source_request_idempotency_key": "750bc1eaa4ec66d8edb34d2d4c6c1a0d8ed1f93c27e27f7b6ed9d2b8bb4b6b18",
+      "current_source_request_idempotency_key": "750bc660374613ddddb6303dea4ccb88b9f15d4b8854b543a8640aca5e059f55",
       "current_source_request_official_identity_status": "NOT_COLLECTED",
       "current_source_request_identity_readback_status": "NOT_COLLECTED",
       "current_source_request_package_status": "NOT_BUILT",
@@ -18599,7 +18674,11 @@
       "current_source_request_msix_build": false,
       "current_source_request_apply_authorized": false,
       "current_source_request_branch_search_result_branch": "codex/focus-source-request-fb6293839bc7",
-      "local_pull_receipt": false
+      "local_pull_receipt": false,
+      "current_source_request_operation": "PARTNER_CENTER_IDENTITY_REVALIDATION",
+      "current_source_request_action_scope": "READ_ONLY_IDENTITY_REVALIDATION",
+      "current_source_request_artifact_name": "focus-source-request-app-focus-session-desk-fb6293839bc7",
+      "current_source_request_package_version_gate_status": "HOLD_NOT_INFERRED"
     },
     {
       "rank": 2,
@@ -21022,11 +21101,11 @@
         "expected_current_source_request_id": "app-focus-session-desk-fb6293839bc7",
         "current_source_request": {
           "request_id": "app-focus-session-desk-fb6293839bc7",
-          "source_repository": "shihuiarenjinba-png/AI-App-Factory",
-          "source_pr": 94,
-          "source_branch": "codex/focus-store-assets-gate-20261118",
+          "status": "DRY_RUN",
           "source_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
           "expected_head_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+          "source_repository": "shihuiarenjinba-png/AI-App-Factory",
+          "source_branch": "codex/focus-store-assets-gate-20261118",
           "request_branch": "codex/focus-source-request-fb6293839bc7",
           "request_branch_head_sha": "45560fb36eee3f2672ba1a1591f89edc6526865a",
           "workflow_run_id": 45671921196,
@@ -21036,10 +21115,89 @@
           "artifact_bytes": 2687,
           "artifact_expires_at_utc": "2026-12-25T18:07:50Z",
           "request_sha256": "a950b9bcf0bf59b45cc724651ed9a736181ff69388c04f8aefcdd7d9975b7a94",
-          "idempotency_key": "750bc1eaa4ec66d8edb34d2d4c6c1a0d8ed1f93c27e27f7b6ed9d2b8bb4b6b18",
+          "idempotency_key": "750bc660374613ddddb6303dea4ccb88b9f15d4b8854b543a8640aca5e059f55",
+          "operation": "PARTNER_CENTER_IDENTITY_REVALIDATION",
+          "action_scope": "READ_ONLY_IDENTITY_REVALIDATION",
           "route": "MSIX_OR_PWA_APP",
-          "action_scope": "READ_ONLY_PARTNER_CENTER_IDENTITY_REVALIDATION",
-          "status": "DRY_RUN",
+          "request_payload": {
+            "schema_version": "focus-source-request/1",
+            "request_id": "app-focus-session-desk-fb6293839bc7",
+            "operation": "PARTNER_CENTER_IDENTITY_REVALIDATION",
+            "product": {
+              "display_name": "Focus Session Desk",
+              "product_type": "APP",
+              "slug": "focus-session-desk"
+            },
+            "source_repository": "shihuiarenjinba-png/AI-App-Factory",
+            "source_branch": "codex/focus-store-assets-gate-20261118",
+            "source_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+            "expected_head_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+            "historical_identity": {
+              "request_id": "app-focus-session-desk-8b00bc4e9082",
+              "source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+              "status": "HISTORICAL_ONLY_NOT_REUSED",
+              "reuse_for_current_source": false
+            },
+            "partner_center": {
+              "selection_code": "MSIX_OR_PWA_APP",
+              "selection_label": "MSIX or PWA app",
+              "action_scope": "READ_ONLY_IDENTITY_REVALIDATION",
+              "write_authorized": false
+            },
+            "package_version": {
+              "status": "HOLD_NOT_INFERRED",
+              "value": null
+            },
+            "required_operator_return_fields": [
+              "store_id",
+              "name",
+              "publisher",
+              "version",
+              "official_evidence_url",
+              "verified_by",
+              "operator_verified"
+            ],
+            "return_target": {
+              "repository": "shihuiarenjinba-png/AI-App-Factory",
+              "branch": "codex/focus-store-assets-gate-20261118",
+              "path": "products/focus-session-desk/store/approved-identity.json",
+              "expected_head_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+              "apply_authorized": false
+            },
+            "source_drift_policy": "Reject this request if the named source branch no longer points to source_sha or if products/focus-session-desk differs from that commit.",
+            "idempotency_key": "750bc660374613ddddb6303dea4ccb88b9f15d4b8854b543a8640aca5e059f55"
+          },
+          "verification": {
+            "schema_version": "focus-source-request-verification/1",
+            "request_id": "app-focus-session-desk-fb6293839bc7",
+            "request_sha256": "a950b9bcf0bf59b45cc724651ed9a736181ff69388c04f8aefcdd7d9975b7a94",
+            "idempotency_key": "750bc660374613ddddb6303dea4ccb88b9f15d4b8854b543a8640aca5e059f55",
+            "expected_head_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+            "source_repository": "shihuiarenjinba-png/AI-App-Factory",
+            "source_branch": "codex/focus-store-assets-gate-20261118",
+            "source_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+            "source_branch_head_check": "PASS",
+            "product_tree_unchanged_check": "PASS",
+            "request_tamper_check": "PASS",
+            "idempotent_replay_check": "PASS",
+            "dry_run": true,
+            "request_submitted": false,
+            "partner_center_write": false,
+            "identity_write": false,
+            "msix_build": false,
+            "store_submission": false,
+            "store_publication": false
+          },
+          "artifact": {
+            "artifact_id": 15049692591,
+            "artifact_name": "focus-source-request-app-focus-session-desk-fb6293839bc7",
+            "sha256": "c8b15058243982d90699dfb2a885a71b064a0a02b01dcb3c7492dec83ec3afae",
+            "size_bytes": 2687,
+            "downloaded_and_rehashed": true,
+            "digest_matches_github_metadata": true,
+            "zip_crc": "PASS",
+            "expires_at_utc": "2026-12-25T18:07:50Z"
+          },
           "dry_run": true,
           "request_submitted": false,
           "partner_center_write": false,
@@ -21048,18 +21206,14 @@
           "msix_build": false,
           "store_submission": false,
           "store_publication": false,
-          "source_branch_head_check": "PASS",
-          "product_tree_unchanged_check": "PASS",
-          "tamper_rejection_check": "PASS",
-          "idempotent_replay_check": "PASS",
-          "artifact_downloaded_and_rehashed": true,
-          "artifact_digest_matches_github_metadata": true,
-          "artifact_zip_crc": "PASS",
-          "embedded_request_sha256_matches": true,
           "official_identity_status": "NOT_COLLECTED",
           "identity_readback_status": "NOT_COLLECTED",
           "package_status": "NOT_BUILT",
-          "package_version": null,
+          "package_version": {
+            "status": "HOLD_NOT_INFERRED",
+            "value": null
+          },
+          "package_version_value": null,
           "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
           "next_stage": "READ_ONLY_PARTNER_CENTER_IDENTITY_REVALIDATION",
           "verified_at_utc": "2026-11-25T19:35:52Z"
@@ -21076,7 +21230,7 @@
         "current_source_request_artifact_digest_matches_github_metadata": true,
         "current_source_request_artifact_zip_crc": "PASS",
         "current_source_request_request_sha256": "a950b9bcf0bf59b45cc724651ed9a736181ff69388c04f8aefcdd7d9975b7a94",
-        "current_source_request_idempotency_key": "750bc1eaa4ec66d8edb34d2d4c6c1a0d8ed1f93c27e27f7b6ed9d2b8bb4b6b18",
+        "current_source_request_idempotency_key": "750bc660374613ddddb6303dea4ccb88b9f15d4b8854b543a8640aca5e059f55",
         "current_source_request_official_identity_status": "NOT_COLLECTED",
         "current_source_request_identity_readback_status": "NOT_COLLECTED",
         "current_source_request_package_status": "NOT_BUILT",
@@ -21089,7 +21243,11 @@
         "current_source_request_apply_authorized": false,
         "current_source_request_branch_search_result_branch": "codex/focus-source-request-fb6293839bc7",
         "identity_return_scope": "HISTORICAL_SOURCE_ONLY",
-        "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED"
+        "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
+        "current_source_request_operation": "PARTNER_CENTER_IDENTITY_REVALIDATION",
+        "current_source_request_action_scope": "READ_ONLY_IDENTITY_REVALIDATION",
+        "current_source_request_artifact_name": "focus-source-request-app-focus-session-desk-fb6293839bc7",
+        "current_source_request_package_version_gate_status": "HOLD_NOT_INFERRED"
       },
       {
         "product": "File Integrity Ledger",
@@ -21766,7 +21924,7 @@
       "request_artifact_sha256": "c8b15058243982d90699dfb2a885a71b064a0a02b01dcb3c7492dec83ec3afae",
       "request_artifact_bytes": 2687,
       "request_sha256": "a950b9bcf0bf59b45cc724651ed9a736181ff69388c04f8aefcdd7d9975b7a94",
-      "idempotency_key": "750bc1eaa4ec66d8edb34d2d4c6c1a0d8ed1f93c27e27f7b6ed9d2b8bb4b6b18",
+      "idempotency_key": "750bc660374613ddddb6303dea4ccb88b9f15d4b8854b543a8640aca5e059f55",
       "artifact_downloaded_and_rehashed": true,
       "artifact_digest_matches_github_metadata": true,
       "artifact_zip_crc": "PASS",
@@ -21779,7 +21937,91 @@
       "identity_return_scope": "HISTORICAL_SOURCE_ONLY",
       "official_identity_status": "NOT_COLLECTED",
       "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
-      "decision": "REQUEST_GENERATED_ONLY__READ_ONLY_IDENTITY_REVALIDATION_PENDING"
+      "decision": "REQUEST_GENERATED_ONLY__READ_ONLY_IDENTITY_REVALIDATION_PENDING",
+      "operation": "PARTNER_CENTER_IDENTITY_REVALIDATION",
+      "action_scope": "READ_ONLY_IDENTITY_REVALIDATION",
+      "request_payload": {
+        "schema_version": "focus-source-request/1",
+        "request_id": "app-focus-session-desk-fb6293839bc7",
+        "operation": "PARTNER_CENTER_IDENTITY_REVALIDATION",
+        "product": {
+          "display_name": "Focus Session Desk",
+          "product_type": "APP",
+          "slug": "focus-session-desk"
+        },
+        "source_repository": "shihuiarenjinba-png/AI-App-Factory",
+        "source_branch": "codex/focus-store-assets-gate-20261118",
+        "source_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+        "expected_head_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+        "historical_identity": {
+          "request_id": "app-focus-session-desk-8b00bc4e9082",
+          "source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+          "status": "HISTORICAL_ONLY_NOT_REUSED",
+          "reuse_for_current_source": false
+        },
+        "partner_center": {
+          "selection_code": "MSIX_OR_PWA_APP",
+          "selection_label": "MSIX or PWA app",
+          "action_scope": "READ_ONLY_IDENTITY_REVALIDATION",
+          "write_authorized": false
+        },
+        "package_version": {
+          "status": "HOLD_NOT_INFERRED",
+          "value": null
+        },
+        "required_operator_return_fields": [
+          "store_id",
+          "name",
+          "publisher",
+          "version",
+          "official_evidence_url",
+          "verified_by",
+          "operator_verified"
+        ],
+        "return_target": {
+          "repository": "shihuiarenjinba-png/AI-App-Factory",
+          "branch": "codex/focus-store-assets-gate-20261118",
+          "path": "products/focus-session-desk/store/approved-identity.json",
+          "expected_head_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+          "apply_authorized": false
+        },
+        "source_drift_policy": "Reject this request if the named source branch no longer points to source_sha or if products/focus-session-desk differs from that commit.",
+        "idempotency_key": "750bc660374613ddddb6303dea4ccb88b9f15d4b8854b543a8640aca5e059f55"
+      },
+      "verification": {
+        "schema_version": "focus-source-request-verification/1",
+        "request_id": "app-focus-session-desk-fb6293839bc7",
+        "request_sha256": "a950b9bcf0bf59b45cc724651ed9a736181ff69388c04f8aefcdd7d9975b7a94",
+        "idempotency_key": "750bc660374613ddddb6303dea4ccb88b9f15d4b8854b543a8640aca5e059f55",
+        "expected_head_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+        "source_repository": "shihuiarenjinba-png/AI-App-Factory",
+        "source_branch": "codex/focus-store-assets-gate-20261118",
+        "source_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+        "source_branch_head_check": "PASS",
+        "product_tree_unchanged_check": "PASS",
+        "request_tamper_check": "PASS",
+        "idempotent_replay_check": "PASS",
+        "dry_run": true,
+        "request_submitted": false,
+        "partner_center_write": false,
+        "identity_write": false,
+        "msix_build": false,
+        "store_submission": false,
+        "store_publication": false
+      },
+      "artifact": {
+        "artifact_id": 15049692591,
+        "artifact_name": "focus-source-request-app-focus-session-desk-fb6293839bc7",
+        "sha256": "c8b15058243982d90699dfb2a885a71b064a0a02b01dcb3c7492dec83ec3afae",
+        "size_bytes": 2687,
+        "downloaded_and_rehashed": true,
+        "digest_matches_github_metadata": true,
+        "zip_crc": "PASS",
+        "expires_at_utc": "2026-12-25T18:07:50Z"
+      },
+      "request_artifact_name": "focus-source-request-app-focus-session-desk-fb6293839bc7",
+      "package_version_gate_status": "HOLD_NOT_INFERRED",
+      "current_source_request_status": "GENERATED__DRY_RUN_ARTIFACT_VERIFIED__IDENTITY_READBACK_PENDING"
     },
     "last_reconciled_at_utc": "2026-11-25T19:35:52Z",
     "last_reconciled_basis": "PR165 live branch codex/e2e-artifact-custody-20261114 is exact HEAD addefcb0303897c3ce25c0b54f5d43b9336232f9 (parent dfe03df83a75cd696f6bdb10d482db4ada9c0d35). Exact-head transport 45680373334, artifact custody 45680373323 and Windows/Ubuntu Offline QA 45680373386 all SUCCESS. Parent dfe03df exact-head CI 45669620650/45669620537/45669620784 and push Offline QA 45669610986 also SUCCESS. PR161 branch compare is identical to 71d9c2125b6aed44a86ca1872d48ad19963f3e63; its Offline QA 42712757936 SUCCESS. PR171 head 764721021f13be96364529650b44fb439770bac9 remains Offline-QA-only; Store dry-run not started and eligible fresh unsold products 0. Focus PR94 source branch remains exact fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79; current-source request branch codex/focus-source-request-fb6293839bc7 is exact 45560fb36eee3f2672ba1a1591f89edc6526865a. Request app-focus-session-desk-fb6293839bc7 (run 45671921196, artifact 15049692591, 2,687 bytes, SHA-256 c8b15058243982d90699dfb2a885a71b064a0a02b01dcb3c7492dec83ec3afae) was independently downloaded, ZIP CRC and digest verified, embedded request SHA a950b9bcf0bf59b45cc724651ed9a736181ff69388c04f8aefcdd7d9975b7a94 matched; dry_run=true and no submit/Partner Center write/Identity write/MSIX build. Focus approved Identity remains historical-source-only for 8b00bc4e; current-source identity revalidation and authoritative Version remain pending. File Integrity PR115 source branch remains exact 33d612be; current request artifact 14934034365 was independently re-downloaded and rehashed to 697528b3b0769e3962eebfa0efcdcb026618cd378d97fc60c4f234017882527e, ZIP CRC passes, but it is DRY_RUN, official Identity UNVERIFIED/NOT_COLLECTED, package NOT_BUILT, owner visual sign-off required and Version null. No real MSIX, backlog, local pull/checker/GUI install or user-PC receipt. Local code sync remains NOT_OBSERVED__CLOUD_PASS_ONLY. Repository CI is not product E2E; keep E2E HOLD, Store/certification/publish disabled.",
@@ -22779,7 +23021,7 @@
     "request_artifact_sha256": "c8b15058243982d90699dfb2a885a71b064a0a02b01dcb3c7492dec83ec3afae",
     "request_artifact_bytes": 2687,
     "request_sha256": "a950b9bcf0bf59b45cc724651ed9a736181ff69388c04f8aefcdd7d9975b7a94",
-    "idempotency_key": "750bc1eaa4ec66d8edb34d2d4c6c1a0d8ed1f93c27e27f7b6ed9d2b8bb4b6b18",
+    "idempotency_key": "750bc660374613ddddb6303dea4ccb88b9f15d4b8854b543a8640aca5e059f55",
     "artifact_downloaded_and_rehashed": true,
     "artifact_digest_matches_github_metadata": true,
     "artifact_zip_crc": "PASS",
@@ -22792,7 +23034,91 @@
     "identity_return_scope": "HISTORICAL_SOURCE_ONLY",
     "official_identity_status": "NOT_COLLECTED",
     "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
-    "decision": "REQUEST_GENERATED_ONLY__READ_ONLY_IDENTITY_REVALIDATION_PENDING"
+    "decision": "REQUEST_GENERATED_ONLY__READ_ONLY_IDENTITY_REVALIDATION_PENDING",
+    "operation": "PARTNER_CENTER_IDENTITY_REVALIDATION",
+    "action_scope": "READ_ONLY_IDENTITY_REVALIDATION",
+    "request_payload": {
+      "schema_version": "focus-source-request/1",
+      "request_id": "app-focus-session-desk-fb6293839bc7",
+      "operation": "PARTNER_CENTER_IDENTITY_REVALIDATION",
+      "product": {
+        "display_name": "Focus Session Desk",
+        "product_type": "APP",
+        "slug": "focus-session-desk"
+      },
+      "source_repository": "shihuiarenjinba-png/AI-App-Factory",
+      "source_branch": "codex/focus-store-assets-gate-20261118",
+      "source_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+      "expected_head_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+      "historical_identity": {
+        "request_id": "app-focus-session-desk-8b00bc4e9082",
+        "source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+        "status": "HISTORICAL_ONLY_NOT_REUSED",
+        "reuse_for_current_source": false
+      },
+      "partner_center": {
+        "selection_code": "MSIX_OR_PWA_APP",
+        "selection_label": "MSIX or PWA app",
+        "action_scope": "READ_ONLY_IDENTITY_REVALIDATION",
+        "write_authorized": false
+      },
+      "package_version": {
+        "status": "HOLD_NOT_INFERRED",
+        "value": null
+      },
+      "required_operator_return_fields": [
+        "store_id",
+        "name",
+        "publisher",
+        "version",
+        "official_evidence_url",
+        "verified_by",
+        "operator_verified"
+      ],
+      "return_target": {
+        "repository": "shihuiarenjinba-png/AI-App-Factory",
+        "branch": "codex/focus-store-assets-gate-20261118",
+        "path": "products/focus-session-desk/store/approved-identity.json",
+        "expected_head_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+        "apply_authorized": false
+      },
+      "source_drift_policy": "Reject this request if the named source branch no longer points to source_sha or if products/focus-session-desk differs from that commit.",
+      "idempotency_key": "750bc660374613ddddb6303dea4ccb88b9f15d4b8854b543a8640aca5e059f55"
+    },
+    "verification": {
+      "schema_version": "focus-source-request-verification/1",
+      "request_id": "app-focus-session-desk-fb6293839bc7",
+      "request_sha256": "a950b9bcf0bf59b45cc724651ed9a736181ff69388c04f8aefcdd7d9975b7a94",
+      "idempotency_key": "750bc660374613ddddb6303dea4ccb88b9f15d4b8854b543a8640aca5e059f55",
+      "expected_head_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+      "source_repository": "shihuiarenjinba-png/AI-App-Factory",
+      "source_branch": "codex/focus-store-assets-gate-20261118",
+      "source_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+      "source_branch_head_check": "PASS",
+      "product_tree_unchanged_check": "PASS",
+      "request_tamper_check": "PASS",
+      "idempotent_replay_check": "PASS",
+      "dry_run": true,
+      "request_submitted": false,
+      "partner_center_write": false,
+      "identity_write": false,
+      "msix_build": false,
+      "store_submission": false,
+      "store_publication": false
+    },
+    "artifact": {
+      "artifact_id": 15049692591,
+      "artifact_name": "focus-source-request-app-focus-session-desk-fb6293839bc7",
+      "sha256": "c8b15058243982d90699dfb2a885a71b064a0a02b01dcb3c7492dec83ec3afae",
+      "size_bytes": 2687,
+      "downloaded_and_rehashed": true,
+      "digest_matches_github_metadata": true,
+      "zip_crc": "PASS",
+      "expires_at_utc": "2026-12-25T18:07:50Z"
+    },
+    "request_artifact_name": "focus-source-request-app-focus-session-desk-fb6293839bc7",
+    "package_version_gate_status": "HOLD_NOT_INFERRED",
+    "current_source_request_status": "GENERATED__DRY_RUN_ARTIFACT_VERIFIED__IDENTITY_READBACK_PENDING"
   },
   "parallel_draft_branch_assessment_20261125_0635": {
     "checked_at_utc": "2026-11-25T17:36:06Z",
