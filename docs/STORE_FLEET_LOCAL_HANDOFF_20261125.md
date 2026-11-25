@@ -90,29 +90,29 @@ git ls-remote https://github.com/shihuiarenjinba-png/Windows-all-auto.git HEAD
 
 Do not paste tokens into chat, source code, logs, or reports. Do not create or revoke credentials as an automatic recovery step. After local authentication is valid, fetch and inspect the remote branch head before any push.
 
-## Download exact remote artifacts for local hash verification
+## Local artifact acquisition and verification — completed
 
-The remote artifact metadata is in:
-- `ops/group_b_standard_store_products.json`
-- `ops/group_c_store_products.json`
-- `docs/GROUP_C_REMOTE_MSIX_ARTIFACT_INVENTORY_20261125.md`
+The operator reports that all seven Actions artifacts were downloaded. The local file SHA-256 values match the builder-reported hashes, and each manifest's Identity, Publisher, Version, and Architecture was checked. Every package is `NotSigned`.
 
-Use exact artifact names and download to a new evidence folder. These artifacts are not Store upload approval:
+| Product | Version | Local MSIX SHA-256 | Remaining gate |
+|---|---:|---|---|
+| AI Upload Guard | 1.0.60.0 | `1141d327f43ec0f846bf780d3d0c68b82ac261dd869a7a54fdbb31c70f8b6125` | Runtime QA not verified |
+| Image Privacy Cleaner | 1.0.50.0 | `90396a9097b1e7b570b5cfef4b9a45a93958733636adfe47c1aa71cde7e29800` | Owner-approved Store Version/artwork missing |
+| Excel / CSV Privacy Cleaner | 1.0.57.0 | `18c4f841df4c3daffeebd068d001287baa4bfc2876ce1c2558eab258351cc79d` | Owner-approved Store Version/artwork missing |
+| Data Contract Auditor | 1.0.0.0 | `e2ca6fd81720dc270667e65db05404b6efdde5b2c0712bee2853e0608767db05` | Install Access Denied; EXE launch timeout; runtime QA incomplete |
+| PDF Privacy Toolkit | 1.0.54.0 | `3911348b502afb133beb07d3ab1c9070a7f68fe3ed05772d027c38c040678ed9` | Owner-approved Store Version/artwork missing |
+| Web Evidence Archiver | 1.0.55.0 | `91fae107652539bad0c0bdc30e9ae1891542c1a92f2460218e1be24af987cebe` | Old pre-integration package; example capture timed out; formal preflight HOLD |
+| Workflow Automation Hub | 1.0.0.0 | `512da1ab4449a69b02901baf9c8eaff6577f1e58d336f43ef608f4fbc3892a97` | Technical draft; owner approval and current Submission state not verified live |
 
-```powershell
-$root = "C:\Users\aaron\Desktop\portfolio-audit\_runtime\store-fleet-sync\remote-artifacts"
-New-Item -ItemType Directory -Force -Path $root | Out-Null
+The user-provided evidence files are:
+- `LOCAL_PACKAGE_REHASH_REPORT.json`
+- `PACKAGE_INVENTORY.json`
+- `LOCAL_PACKAGE_QA_REPORT.json`
+- `SHA256SUMS.txt`
+- `FINAL_REPORT.md`
 
-gh run download 44093505473 -R shihuiarenjinba-png/workflow-automation-hub -n WorkflowAutomationHub-Store-MSIX-UNSIGNED-DRAFT -D (Join-Path $root "workflow-automation-hub")
-gh run download 45103784990 -R shihuiarenjinba-png/csv-import-validator -n data-contract-QA_UNSIGNED-msix-45103784990 -D (Join-Path $root "data-contract-auditor")
-gh run download 44687824883 -R shihuiarenjinba-png/-AI-Upload-Guard-AI- -n group-c-QA_UNSIGNED-validation-msix-44687824883-1 -D (Join-Path $root "ai-upload-guard")
-gh run download 44687836979 -R shihuiarenjinba-png/-Screenshot-Image-Privacy-Cleaner -n group-c-QA_UNSIGNED-validation-msix-44687836979-1 -D (Join-Path $root "image-privacy-cleaner")
-gh run download 44687814041 -R shihuiarenjinba-png/-Excel-CSV-Privacy-Cleaner -n group-c-QA_UNSIGNED-validation-msix-44687814041-1 -D (Join-Path $root "excel-csv-privacy-cleaner")
-gh run download 44687829990 -R shihuiarenjinba-png/-PDF-Privacy-Toolkit -n group-c-QA_UNSIGNED-validation-msix-44687829990-1 -D (Join-Path $root "pdf-privacy")
-gh run download 44687808856 -R shihuiarenjinba-png/web-evidence-archiver -n web-evidence-QA_UNSIGNED-validation-msix-44687808856-1 -D (Join-Path $root "web-evidence-archiver")
-```
+The report set is stored locally at `C:\Users\aaron\Desktop\portfolio-audit\_runtime\store-fleet-sync\`. Earlier report files were preserved under `EVIDENCE` before replacement. This update records operator-supplied local results; GitHub connector did not independently access the Windows filesystem.
 
-Then compute the actual files' SHA-256 and compare them with the builder-reported hashes in the inventory. The hashes recorded in this PR came from GitHub Actions logs/generated handoffs; those binary artifacts have not yet been downloaded and independently re-hashed locally. If any local digest differs, hold that artifact and investigate; do not upload.
 
 ## Product-specific next actions
 
@@ -138,45 +138,48 @@ The source marks 1.0.0.0 technical-only, not owner-approved, uses temporary tech
 
 ### Data Contract Auditor
 
-The QA baseline is `107e59f2cbcde9c6ca88cf1aaf3d52262004e6e0`; it is not the required formal package source. The latest formal unsigned candidate was rebuilt from the current source branch HEAD `722ec7a077d2c6109e657c4ee661c9f3d06a4506`.
+The latest formal unsigned candidate was built from source HEAD `722ec7a077d2c6109e657c4ee661c9f3d06a4506`:
+- Artifact ID: `15005358857`
+- Package: `DataContractSchemaDrift_1.0.0.0_x64.msix`
+- Version: `1.0.0.0`; Architecture x64
+- Builder SHA and local SHA: `e2ca6fd81720dc270667e65db05404b6efdde5b2c0712bee2853e0608767db05` (match)
+- EXE SHA: `b47219821bdaa9d3138b49dc4a00645190b6f6f3e7f90fa9e014fb5b93f7c1f5`
+- Manifest Identity/Publisher/Version/Architecture: PASS
+- Signature: `NotSigned`
 
-The stale post-build profile test was corrected. Workflow `45580565845` completed successfully:
-- source unit tests PASS;
-- PowerShell syntax PASS;
-- compile PASS;
-- Store readiness preflight PASS;
-- formal unsigned MSIX build PASS;
-- QA-only structural unsigned build PASS.
+Local install was denied by Windows and EXE launch timed out. Functional package QA remains incomplete. Do not infer a code defect solely from access denial; retain the Windows event / application-control diagnostic evidence and investigate the installation context. Do not certify or upload the unsigned candidate.
 
-Latest formal candidate:
-- Artifact ID: `15005358857`; artifact name `data-contract-QA_UNSIGNED-msix-45580565845`; size 55,210,542 bytes.
-- Package: `DataContractSchemaDrift_1.0.0.0_x64.msix`; Version 1.0.0.0; x64.
-- Exact build source SHA: `722ec7a077d2c6109e657c4ee661c9f3d06a4506`.
-- EXE SHA-256: `b47219821bdaa9d3138b49dc4a00645190b6f6f3e7f90fa9e014fb5b93f7c1f5`.
-- MSIX SHA-256: `e2ca6fd81720dc270667e65db05404b6efdde5b2c0712bee2853e0608767db05`.
-- Signature status: `UNSIGNED_STORE_CANDIDATE`; package pack/unpack verification PASS.
-- QA-only separate artifact ID: `15006701456`; MSIX `DataContractSchemaDrift_QA_UNSIGNED_1.0.106.0_x64.msix`; SHA `23903c03a560e428dd27fe79cbbd7868cb3bb26a311f5a41d7e1ee15579d0e3d`.
-
-The hashes above are from GitHub Actions builder logs, not locally re-hashed binaries. Download artifact ID `15005358857`, independently recompute SHA-256, check the manifest/Identity/Publisher/version/architecture, then run local installation/launch QA and write a source/package-bound receipt. The supplied Partner Center observation showed Draft `1152921505702212222` / Packages `Incomplete`; obtain a fresh read-only observation before any upload. No upload is authorized by the build.
+The historical Partner Center observation showed Draft `1152921505702212222` / Packages `Incomplete`; this phase did not live-recheck Partner Center. A fresh read-only observation is required before any later write.
 
 ### Web Evidence Archiver
 
-Store package branch:
-- `codex/store-p0-web-evidence-20261023` at `3f2de607d83f36abef6d9a87da1a1c8b3bca604a`
+The old QA package was built from Store branch `codex/store-p0-web-evidence-20261023` at `3f2de607d83f36abef6d9a87da1a1c8b3bca604a`. It was downloaded, and the local SHA matched the builder value:
+- Package: `WebEvidenceArchiver_QA_UNSIGNED_1.0.55.0_x64.msix`
+- SHA-256: `91fae107652539bad0c0bdc30e9ae1891542c1a92f2460218e1be24af987cebe`
+- Manifest Identity/Publisher/Version/Architecture: PASS
+- Signature: `NotSigned`
 
-Latest GUI QA branch:
-- `codex/web-evidence-gui-progress-20261124` at `fd34b93068d5ea39e3a02e89dc1c8c3d9bcb0812`
+The GUI and Store branches were integrated locally. Integration commit:
+`2516feedd5b10990fbe5c8184587e3b69214648d`
 
-The branches diverged from merge base `0f1537e33c6f5b3e79d034ad92865a162ee36275`: GUI branch is 7 commits ahead and 76 behind the Store branch. Create a review branch from the Store package branch and merge the GUI branch into it; preserve the Store packaging, manifest resources, browser bundle license/approval gates, and new GUI fixes. Resolve conflicts, run full Windows QA and Store preflight on the resulting commit, and only then create/update a review PR. Do not package from either old branch alone.
+Local checks: 41 tests PASS and `compileall` PASS. However:
+- GUI window launched;
+- actual `example.com` CLI capture timed out;
+- no capture output files were produced;
+- formal Store preflight remains HOLD due approved version, owner-approved logos/assets, language settings, Chromium bundle approval, and offline/runtime QA gates;
+- local integration commit is not pushed; no PR was created; remote CI was not run.
+
+Important: the package whose SHA was verified is from the pre-integration Store source revision. It does not prove the new GUI integration commit is packaged. Do not upload or promote the old QA artifact. After pushing the integration commit on a review branch, run remote CI, repair the actual capture timeout, pass formal preflight with approved inputs, and build a fresh package from that exact commit.
+
 
 ## DCA and other formal gates
 
 - AI/Image/Excel/PDF CI builds created QA_UNSIGNED packages with placeholder logos; their formal Store-candidate workflow stages were skipped because owner-approved Store Version and artwork approvals are missing.
-- WEA structural QA artifact is unsigned, and formal candidate build was skipped because approved version, manifest resources, and browser bundle approval are missing.
+- WEA old structural QA artifact is unsigned; its local SHA/Manifest checks pass, but actual capture timed out and formal preflight remains HOLD. The integrated local commit is unpushed and not yet built.
 - WAH technical unsigned draft is source-bound but its version, assets and current initial Submission are not owner-approved.
-- DCA candidate source mismatch and current branch test failure remain unresolved.
+- DCA builder/local SHA and Manifest checks pass, but installation was denied and EXE launch timed out; runtime QA remains incomplete.
 
-The next local cycle should therefore complete: download/re-hash -> inspect manifests / Source Revision -> fix DCA current branch test -> integrate WEA GUI and Store source -> build/retest only when approved inputs exist -> update handoff receipts and PRs.
+The next cycle should focus on DCA Windows installation/access-denied diagnostics and runtime QA; WEA capture timeout diagnosis, then push its integrated source branch and run remote CI; obtain owner-approved Store Version/artwork/language/Chromium bundle inputs; perform a fresh read-only Partner Center recheck; and only then create new source-bound formal candidates.
 
 ## Prohibited actions in this handoff
 
