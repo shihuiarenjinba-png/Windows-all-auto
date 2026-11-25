@@ -12,6 +12,7 @@ from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 from unittest.mock import patch
 from scripts.github_artifact_custody import main, verify_custody
+from all_auto.handoff_bridge import validate_bundle
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from test_real_msix_transport_failclosed import authorize_transport
@@ -101,61 +102,20 @@ class CustodyTests(unittest.TestCase):
         self.assertEqual(result, 2)
         self.assertFalse(output.exists())
 
-    def test_cli_accepts_source_bound_identity_and_adds_custody_to_bundle(self):
+    def test_cli_accepts_transport_receipt_and_adds_custody_to_bundle(self):
         package_bytes = self.local.read_bytes()
         identity = {"name": "OkinawaDesktopTools.Test", "publisher": "CN=Test", "version": "1.0.0.0"}
-        source = "a" * 40
-        repository = "https://github.com/shihuiarenjinba-png/AI-App-Factory"
-        store_id = "9PTESTING"
-        request_id = "app-request-1234"
-        source_branch = "codex/test-branch"
-        display_name = "Sample App"
-        exe_sha = hashlib.sha256(b"fixture-exe").hexdigest()
         handoff = {
             "schema_version": 1, "package": "package.msix", "status": "QA_UNSIGNED",
-            "source_sha": source, "expected_head_sha": source, "factory_head_sha": source,
-            "package_sha256": self.digest, "package_bytes": len(package_bytes), "identity": identity,
-            "source_repository": repository, "request_id": request_id, "product_type": "APP",
-            "source_factory": "AI-App-Factory", "source_branch": source_branch,
-            "store_id": store_id, "display_name": display_name, "prebuilt_exe_sha256": exe_sha,
-            "slug": "sample-app", "type": "app"
+            "source_sha": "a" * 40, "package_sha256": self.digest,
+            "package_bytes": len(package_bytes), "identity": identity
         }
         handoff_bytes = json.dumps(handoff, separators=(",", ":")).encode("utf-8")
         bundle = Path(self.tmp.name) / "bundle"
         bundle.mkdir()
         (bundle / "handoff.json").write_bytes(handoff_bytes)
         (bundle / "package.msix").write_bytes(package_bytes)
-        verifier = "fixture-operator"
-        evidence = "https://partner.microsoft.com/dashboard/products/" + store_id + "/identity"
-        approved_identity = {
-            "schema_version": "1.0", "reviewed": True, "source": "partner_center",
-            "request_id": request_id, "product_type": "APP", "source_factory": "AI-App-Factory",
-            "source_repository": "shihuiarenjinba-png/AI-App-Factory",
-            "source_branch": source_branch, "source_sha": source, "expected_head_sha": source,
-            "store_id": store_id, "name": identity["name"], "publisher": identity["publisher"],
-            "version": identity["version"], "package_version_gate": "PASS",
-            "operator_verified": True, "verified_by": verifier, "evidence_url": evidence
-        }
-        identity_bytes = json.dumps(approved_identity, separators=(",", ":")).encode("utf-8")
-        (bundle / "approved-identity.json").write_bytes(identity_bytes)
-        identity_blob_sha = hashlib.sha1(
-            b"blob " + str(len(identity_bytes)).encode("ascii") + b"\0" + identity_bytes
-        ).hexdigest()
-        transport = {
-            "schema_version": 1, "status": "SOURCE_BOUND_VERSION_APPROVED",
-            "source_sha": source, "expected_head_sha": source, "factory_head_sha": source,
-            "source_repository": repository, "product_type": "APP", "source_factory": "AI-App-Factory",
-            "package_sha256": self.digest, "package_bytes": len(package_bytes), "identity": identity,
-            "approval_source": "partner_center", "package_version_gate": "PASS",
-            "package_version": identity["version"], "operator_verified": True,
-            "store_submission_allowed": False, "certification_allowed": False, "publish_allowed": False,
-            "approved_identity_file_sha": identity_blob_sha, "verified_by": verifier, "evidence_url": evidence,
-            "request_id": request_id, "source_branch": source_branch, "store_id": store_id,
-            "display_name": display_name, "prebuilt_exe_sha256": exe_sha
-        }
-        (bundle / "transport_receipt.json").write_text(
-            json.dumps(transport, separators=(",", ":")), encoding="utf-8"
-        )
+        (bundle / "transport_receipt.json").write_text('{"schema_version":1}', encoding="utf-8")
 
         archive_buffer = io.BytesIO()
         with zipfile.ZipFile(archive_buffer, "w") as z:
@@ -164,7 +124,7 @@ class CustodyTests(unittest.TestCase):
         archive = archive_buffer.getvalue()
         artifact = dict(self.artifact)
         artifact["digest"] = "sha256:" + hashlib.sha256(archive).hexdigest()
-        expected = dict(self.expected, identity=identity, repository="shihuiarenjinba-png/AI-App-Factory")
+        expected = dict(self.expected, identity=identity)
         expected_path = Path(self.tmp.name) / "expected-bundle.json"
         expected_path.write_text(json.dumps(expected), encoding="utf-8")
         output = bundle / "github-custody.json"
@@ -176,19 +136,17 @@ class CustodyTests(unittest.TestCase):
 
         args = ["--expected", str(expected_path), "--local-bundle", str(bundle),
                 "--output", str(output)]
-        with patch("scripts.github_artifact_custody.github_clients", side_effect=fake_clients), \
-             patch.dict(os.environ, {"GITHUB_TOKEN": "test-token"}, clear=True), \
+        with patch("scripts.github_artifact_custody.github_clients", side_effect=fake_clients), \\
+             patch.dict(os.environ, {"GITHUB_TOKEN": "test-token"}, clear=True), \\
              redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
             result = main(args)
         self.assertEqual(result, 0)
         self.assertTrue(output.is_file())
-        self.assertEqual({p.name for p in bundle.iterdir()}, {
-            "handoff.json", "package.msix", "transport_receipt.json",
-            "approved-identity.json", "github-custody.json"
-        })
+        self.assertEqual({p.name for p in bundle.iterdir()},
+                         {"handoff.json", "package.msix", "transport_receipt.json", "github-custody.json"})
         receipt = json.loads(output.read_text(encoding="utf-8"))
         self.assertEqual(receipt["status"], "CUSTODY_VERIFIED_ONLY")
-        self.assertEqual(receipt["source_sha"], source)
+        self.assertEqual(receipt["source_sha"], "a" * 40)
         self.assertFalse(receipt["e2e_pass"])
 
     def test_bundle_transport_receipt_requires_approved_identity_file(self):
@@ -197,9 +155,8 @@ class CustodyTests(unittest.TestCase):
         (bundle / "handoff.json").write_text("{}", encoding="utf-8")
         (bundle / "package.msix").write_bytes(self.local.read_bytes())
         (bundle / "transport_receipt.json").write_text("{}", encoding="utf-8")
-        result = verify_custody(self.expected, bundle, lambda url: {}, lambda url: b"")
-        self.assertEqual(result["status"], "HOLD")
-        self.assertEqual(result["reason"], "LOCAL_APPROVED_IDENTITY_RECEIPTS_UNPAIRED")
+        with self.assertRaisesRegex(ValueError, "central identity and custody receipts must be paired"):
+            validate_bundle(bundle)
 
     def test_cli_requires_token_and_does_not_write(self):
         expected_path = Path(self.tmp.name) / "expected.json"
