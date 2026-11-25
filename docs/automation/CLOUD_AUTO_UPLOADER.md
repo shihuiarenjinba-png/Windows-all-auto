@@ -29,21 +29,29 @@ An API is not used for this route. The proven browser interaction is the chosen 
 
 ## Local Windows execution — existing authenticated Edge session
 
-The local route is preferred when the owner already has Partner Center open in Edge. It does not require a billed remote-browser service or a Microsoft Store API. It uses the same proven Playwright/CDP browser adapter, but points it at the operator's local Edge debugging endpoint.
+The local route uses the existing Partner Center Edge session when local CDP is already enabled. If no local CDP endpoint is available, `scripts/start_partner_center_edge_cdp.ps1` starts a dedicated Edge profile on loopback port 9223; the owner signs in manually and completes MFA in that local window. No billed remote-browser service or Microsoft Store API is required. The existing Playwright/CDP adapter connects only to the loopback endpoint.
 
 ### 1. Read-only preflight for the full fleet
 
-Run from the repository root after downloading the seven Actions artifacts:
+Run from the repository root after downloading the seven Actions artifacts. Scope the scan to the current `attempt-20261125` folder so older attempts with the same filename cannot make the lookup ambiguous:
 
 ```powershell
 python scripts/preflight_store_fleet.py `
-  --package-root "C:\Users\aaron\Desktop\portfolio-audit\_runtime\store-fleet-sync" `
+  --package-root "C:\Users\aaron\Desktop\portfolio-audit\_runtime\store-fleet-sync\attempt-20261125" `
   --output "C:\Users\aaron\Desktop\portfolio-audit\_runtime\store-fleet-sync\store-fleet-preflight.json"
 ```
 
 The preflight recursively locates each exact registered filename and requires exactly one match. It verifies the package SHA-256 and manifest Identity, Publisher, Version, and Architecture. A missing or duplicated filename is a HOLD, never an arbitrary selection. It does not open Partner Center, upload, Save, start certification, or publish. Workflow Automation Hub is separately reported as `NO_EXISTING_SUBMISSION` because it has no existing Draft in the recorded snapshot.
 
-### 2. One product dry run
+### 2. Start or connect to local Edge CDP
+
+```powershell
+.\scripts\start_partner_center_edge_cdp.ps1
+```
+
+If Edge CDP was already active on port 9223, the script reuses it and does not launch another window. Otherwise it opens a dedicated local Edge profile at `%LOCALAPPDATA%\\PartnerCenterUploaderEdge`. Sign in to Partner Center manually in that window and complete MFA there. Keep exactly one Partner Center tab open in that CDP session. The script does not read credentials or automate sign-in.
+
+### 3. One product dry run
 
 ```powershell
 .\scripts\upload_store_msix.ps1 `
@@ -51,9 +59,9 @@ The preflight recursively locates each exact registered filename and requires ex
   -Package "C:\path\to\AIUploadGuard_QA_UNSIGNED_1.0.60.0_x64.msix"
 ```
 
-Dry-run is the default. It verifies the exact configured filename, SHA-256, and manifest and writes an execution receipt under `.uploader-run` without touching Partner Center.
+Dry-run is the default. It verifies the exact configured filename, SHA-256, and manifest and writes a product-isolated execution receipt under `.uploader-run\\<product-key>` without touching Partner Center.
 
-### 3. Existing-Draft package upload and Save
+### 4. Existing-Draft package upload and Save
 
 ```powershell
 .\scripts\upload_store_msix.ps1 `
@@ -70,7 +78,7 @@ The existing browser adapter then re-reads the exact Product Identity and config
 
 ### Current registered-product holds
 
-The six existing-Draft job files are registered with exact package filenames and builder/local SHA values. All six currently have `upload_approved: false` because their product-specific release gates are not yet satisfied. The exact hold reasons are included in each `uploader/config/*.job.json` file. Do not change these flags just to bypass a hold.
+The six existing-Draft job files are registered with exact package filenames and builder/local SHA values. All six currently have `upload_approved: false` because their product-specific release gates are not yet satisfied. The exact hold reasons are included in each `uploader/config/*.job.json` file. The PowerShell wrapper checks this flag and the registered filename/SHA before attempting to connect to Edge. Do not change these flags just to bypass a hold.
 
 Workflow Automation Hub deliberately has no existing-Draft job file because the latest read-only Partner Center observation showed no Submission. It must follow an owner-approved initial-Submission route rather than the existing-Draft uploader.
 
