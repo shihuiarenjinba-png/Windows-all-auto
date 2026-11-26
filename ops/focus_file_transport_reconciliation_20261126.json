@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "path": "ops/focus_file_transport_reconciliation_20261126.json",
-  "observed_at_utc": "2026-11-26T01:57:30Z",
+  "observed_at_utc": "2026-11-26T01:59:00Z",
   "record_type": "APPEND_ONLY_CURRENT_OBSERVATION",
   "supersedes": [
     "ops/active_e2e_handoff_overlay_20261126.json",
@@ -700,11 +700,11 @@
   "ledger_reconciliation": {
     "prior_overlay_head": "c8018c560f28d26f055da66bd36fc0fabad44d73",
     "latest_pr165_head": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb",
-    "active_ledger_blob_sha": "6d29dd3c0b9b8a906fdc42f5ccc41b46dd6da2b0",
+    "active_ledger_blob_sha": "8c902dadc2cd4c853545c4386307307f4cbadbd7",
     "active_ledger_direct_content_available": true,
     "active_ledger_content_fetch_status": "FETCHED_DIRECTLY_FROM_EXACT_BLOB_BYTES__NOT_TREATED_AS_EMPTY_FILE",
     "active_ledger_direct_update_performed": true,
-    "active_ledger_updated_at_utc": "2026-11-26T01:57:30Z",
+    "active_ledger_updated_at_utc": "2026-11-26T01:59:00Z",
     "active_ledger_recorded_pr165_head": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb",
     "actual_pr165_head": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
     "snapshot_parent_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
@@ -723,18 +723,18 @@
       45738280673,
       45738280653
     ],
-    "note": "Last fully verified head 86b6aa06 passed all three workflows. Tip 8d4488d3 had one Offline QA assertion failure caused by observation.status using PASS_EXACT_HEAD_CI instead of HOLD; transport and custody passed. Corrective snapshot sets observation.status=HOLD and keeps exact_head_ci_status=PASS. Product code unchanged.",
+    "note": "Active ledger reconciled to last fully verified PR165 head 86b6aa06. Later test-only tips 8d4488d3 and 7f3f555f had snapshot-metadata assertion failures only; no product code changed. The stable reconciliation enum is restored and failure history is separate.",
     "active_ledger_path": "ops/active_e2e_handoff.json",
     "active_ledger_recorded_pr165_code_head": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb",
-    "actual_pr165_branch_head": "2ba11031c1c713abb7b548125b10b48af5346bfd",
+    "actual_pr165_branch_head": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
     "latest_verified_code_head_sha": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb",
     "snapshot_commit_scope": "OPERATIONS_AND_REGRESSION_TESTS_ONLY",
     "snapshot_commit_ci_status": "PASS_EXACT_HEAD_CI",
     "current_branch_head_parent_ci_status": "NOT_OBSERVED_FOR_CURRENT_PARENT",
     "current_branch_head_parent_ci_run_ids": [],
-    "status": "RECONCILED_TO_PR165_C68ADC_CODE_86B6AA_BRANCH_HEAD__LATER_TEST_ONLY_ASSERTION_FAILURE_RECORDED",
-    "latest_push_tip_sha": "8d4488d3f83e9ac5d7f8657f0e735fe2dd1bde5a",
-    "latest_push_tip_ci_status": "PARTIAL_FAIL_OFFLINE_QA__OBSERVATION_STATUS_ASSERTION"
+    "status": "RECONCILED_TO_PR165_C68ADC_CODE_86B6AA_BRANCH_HEAD",
+    "latest_push_tip_sha": "7f3f555fa82d16987c64f8378978cc7ae2fd4b55",
+    "latest_push_tip_ci_status": "FAIL_OFFLINE_QA__THREE_SNAPSHOT_METADATA_ASSERTIONS"
   },
   "safety": {
     "store_submission_allowed": false,
@@ -1496,9 +1496,42 @@
     "product_e2e_status": "HOLD",
     "e2e_pass": false
   },
-  "pr165_latest_push_tip_sha": "8d4488d3f83e9ac5d7f8657f0e735fe2dd1bde5a",
-  "pr165_latest_push_tip_parent_sha": "148a63c0af3446ff5df388465963fe402e5cbc0e",
-  "pr165_latest_push_tip_ci_status": "PARTIAL_FAIL_OFFLINE_QA__OBSERVATION_STATUS_ASSERTION",
-  "pr165_latest_push_tip_ci_run_id": 45739101304,
-  "pr165_latest_push_tip_product_code_changed": false
+  "pr165_latest_push_tip_sha": "7f3f555fa82d16987c64f8378978cc7ae2fd4b55",
+  "pr165_latest_push_tip_parent_sha": "419d1e0cb536f86bc68a1d75934c3d5d0cd95b7c",
+  "pr165_latest_push_tip_ci_status": "FAIL_OFFLINE_QA__THREE_SNAPSHOT_METADATA_ASSERTIONS",
+  "pr165_latest_push_tip_ci_run_id": 45739289644,
+  "pr165_latest_push_tip_product_code_changed": false,
+  "pr165_intermediate_test_failure_20261126_015854": {
+    "observed_at_utc": "2026-11-26T01:59:00Z",
+    "head_sha": "7f3f555fa82d16987c64f8378978cc7ae2fd4b55",
+    "parent_sha": "419d1e0cb536f86bc68a1d75934c3d5d0cd95b7c",
+    "workflow_run_id": 45739289644,
+    "job_ids": [
+      139640056774,
+      139640057081
+    ],
+    "workflow": "Windows-all-auto Offline QA",
+    "conclusion": "failure",
+    "tests_run": 565,
+    "skipped": 2,
+    "failures": [
+      {
+        "test": "test_latest_transport_and_store_gate_stay_held",
+        "reason": "queue.generated_at was 2026-11-26T01:57:30Z while assertion expected 2026-11-26T01:50:00Z"
+      },
+      {
+        "test": "test_20261126_overlay_keeps_synthetic_custody_separate_from_real_package",
+        "reason": "overlay reconciliation status appended a failure suffix instead of preserving the stable RECONCILED_TO_PR165_C68ADC_CODE_86B6AA_BRANCH_HEAD enum"
+      },
+      {
+        "test": "test_20261126_overlay_records_latest_head_without_promoting_product_e2e",
+        "reason": "same unstable reconciliation status enum"
+      }
+    ],
+    "root_cause": "Snapshot metadata assertions and stable status enum were not aligned after the latest observation update.",
+    "corrective_action": "Update generated_at expectation to 01:57:30Z, restore stable reconciliation status enum, and record failures in a separate history field.",
+    "product_code_changed": false,
+    "product_e2e_status": "HOLD",
+    "e2e_pass": false
+  }
 }

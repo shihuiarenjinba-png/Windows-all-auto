@@ -53,6 +53,8 @@ class FocusFileTransportReconciliation20261126(unittest.TestCase):
         self.assertEqual(self.data["pr165_current_branch_head_ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual(self.data["snapshot_commit_ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual(self.data["ledger_reconciliation"]["actual_pr165_head"], current["head_sha"])
+        self.assertEqual(self.data["ledger_reconciliation"]["actual_pr165_branch_head"], current["head_sha"])
+        self.assertEqual(self.data["ledger_reconciliation"]["status"], "RECONCILED_TO_PR165_C68ADC_CODE_86B6AA_BRANCH_HEAD")
         self.assertEqual([x["run_id"] for x in current["exact_head_ci"]], [45738280697, 45738280673, 45738280653])
         self.assertEqual(self.data["pr165"]["latest_verified_code_head_sha"], "c68adc79ecf8a0c6ad4b538146648391b1b4eddb")
         self.assertEqual(self.data["pr165"]["immediate_parent_ci_status"], "PARTIAL_FAIL_RECONCILIATION_TEST_KEYERROR")

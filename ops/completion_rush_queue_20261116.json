@@ -1254,8 +1254,8 @@
       "physical_windows_uia_pass": false
     }
   ],
-  "last_reconciled_at_utc": "2026-11-26T01:57:30Z",
-  "last_reconciled_basis": "Last fully verified PR165 branch head 86b6aa06: exact-head transport, custody and Windows/Ubuntu Offline QA all SUCCESS (565 tests; Windows 2 skips). Later test-only tip 8d4488d3 had one Offline QA assertion failure because observation.status was PASS rather than product E2E HOLD; transport and custody passed. This snapshot corrects status semantics; no product code changed; product E2E remains HOLD.",
+  "last_reconciled_at_utc": "2026-11-26T01:59:00Z",
+  "last_reconciled_basis": "Last fully verified PR165 branch head 86b6aa06 passed exact-head transport, custody and Windows/Ubuntu Offline QA (565 tests; Windows 2 skips). Test-only tips 8d4488d3 and 7f3f555f had snapshot-metadata assertion failures only; no product code changed. Stable correction aligns queue timestamp and ledger enum; product E2E remains HOLD.",
   "latest_transport_reconciliation": {
     "checked_at_utc": "2026-11-26T00:51:09Z",
     "central_pr": 165,
@@ -9796,12 +9796,45 @@
     "product_e2e_status": "HOLD",
     "e2e_pass": false
   },
-  "pr165_latest_push_tip_sha": "8d4488d3f83e9ac5d7f8657f0e735fe2dd1bde5a",
-  "pr165_latest_push_tip_parent_sha": "148a63c0af3446ff5df388465963fe402e5cbc0e",
-  "pr165_latest_push_tip_ci_status": "PARTIAL_FAIL_OFFLINE_QA__OBSERVATION_STATUS_ASSERTION",
-  "pr165_latest_push_tip_ci_run_id": 45739101304,
+  "pr165_latest_push_tip_sha": "7f3f555fa82d16987c64f8378978cc7ae2fd4b55",
+  "pr165_latest_push_tip_parent_sha": "419d1e0cb536f86bc68a1d75934c3d5d0cd95b7c",
+  "pr165_latest_push_tip_ci_status": "FAIL_OFFLINE_QA__THREE_SNAPSHOT_METADATA_ASSERTIONS",
+  "pr165_latest_push_tip_ci_run_id": 45739289644,
   "pr165_latest_push_tip_product_code_changed": false,
   "pr165_latest_push_tip_changed_files": [
     "tests/test_completion_rush_queue_20261116.py"
-  ]
+  ],
+  "pr165_intermediate_test_failure_20261126_015854": {
+    "observed_at_utc": "2026-11-26T01:59:00Z",
+    "head_sha": "7f3f555fa82d16987c64f8378978cc7ae2fd4b55",
+    "parent_sha": "419d1e0cb536f86bc68a1d75934c3d5d0cd95b7c",
+    "workflow_run_id": 45739289644,
+    "job_ids": [
+      139640056774,
+      139640057081
+    ],
+    "workflow": "Windows-all-auto Offline QA",
+    "conclusion": "failure",
+    "tests_run": 565,
+    "skipped": 2,
+    "failures": [
+      {
+        "test": "test_latest_transport_and_store_gate_stay_held",
+        "reason": "queue.generated_at was 2026-11-26T01:57:30Z while assertion expected 2026-11-26T01:50:00Z"
+      },
+      {
+        "test": "test_20261126_overlay_keeps_synthetic_custody_separate_from_real_package",
+        "reason": "overlay reconciliation status appended a failure suffix instead of preserving the stable RECONCILED_TO_PR165_C68ADC_CODE_86B6AA_BRANCH_HEAD enum"
+      },
+      {
+        "test": "test_20261126_overlay_records_latest_head_without_promoting_product_e2e",
+        "reason": "same unstable reconciliation status enum"
+      }
+    ],
+    "root_cause": "Snapshot metadata assertions and stable status enum were not aligned after the latest observation update.",
+    "corrective_action": "Update generated_at expectation to 01:57:30Z, restore stable reconciliation status enum, and record failures in a separate history field.",
+    "product_code_changed": false,
+    "product_e2e_status": "HOLD",
+    "e2e_pass": false
+  }
 }
