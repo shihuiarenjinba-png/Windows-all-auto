@@ -1,0 +1,216 @@
+{
+  "schema_version": 1,
+  "path": "ops/active_e2e_handoff_overlay_20261126_163937.json",
+  "observed_at_utc": "2026-11-26T16:39:37Z",
+  "record_type": "APPEND_ONLY_CURRENT_STATUS_RECONCILIATION",
+  "supersedes": [
+    "ops/active_e2e_handoff_overlay_20261126_161044.json"
+  ],
+  "repository": "shihuiarenjinba-png/Windows-all-auto",
+  "status": "HOLD",
+  "e2e_status": "HOLD",
+  "e2e_pass": false,
+  "pr165": {
+    "number": 165,
+    "branch": "codex/e2e-artifact-custody-20261114",
+    "head_sha": "84f9a3480e2df93f0d75bddc29fb8de47e4ec941",
+    "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
+    "exact_head_ci": [
+      {
+        "run_id": 45833181013,
+        "head_sha": "84f9a3480e2df93f0d75bddc29fb8de47e4ec941",
+        "conclusion": "success",
+        "workflow": "Windows E2E transport fail-closed regression"
+      },
+      {
+        "run_id": 45833181073,
+        "head_sha": "84f9a3480e2df93f0d75bddc29fb8de47e4ec941",
+        "conclusion": "success",
+        "workflow": "GitHub artifact custody fail-closed regression"
+      },
+      {
+        "run_id": 45833180930,
+        "head_sha": "84f9a3480e2df93f0d75bddc29fb8de47e4ec941",
+        "conclusion": "success",
+        "workflow": "Windows-all-auto Offline QA"
+      }
+    ],
+    "product_code_changed_since_last_product_code_head": false
+  },
+  "pr192_local_pull_transport": {
+    "number": 192,
+    "branch": "codex/36-pr187-restack-84f9-20261127",
+    "base_sha": "84f9a3480e2df93f0d75bddc29fb8de47e4ec941",
+    "head_sha": "792a6ab7bc1a5847c03ebf59e07354edb3d3afb0",
+    "state": "OPEN_DRAFT",
+    "status": "IMPLEMENTED_CI_PASS_NOT_EXECUTED",
+    "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
+    "exact_head_ci": [
+      {
+        "run_id": 45856211088,
+        "head_sha": "792a6ab7bc1a5847c03ebf59e07354edb3d3afb0",
+        "conclusion": "success",
+        "workflow": "Windows E2E transport fail-closed regression"
+      },
+      {
+        "run_id": 45856211096,
+        "head_sha": "792a6ab7bc1a5847c03ebf59e07354edb3d3afb0",
+        "conclusion": "success",
+        "workflow": "GitHub artifact custody fail-closed regression"
+      },
+      {
+        "run_id": 45856211210,
+        "head_sha": "792a6ab7bc1a5847c03ebf59e07354edb3d3afb0",
+        "conclusion": "success",
+        "workflow": "Windows-all-auto Offline QA"
+      }
+    ],
+    "local_pull_receipt": false,
+    "windows_checker_receipt": false,
+    "local_gui_install_receipt": false,
+    "product_e2e_pass": false
+  },
+  "pr193_ledger_reconciliation": {
+    "number": 193,
+    "branch": "codex/36-pr188-restack-792a-20261127",
+    "base_sha": "792a6ab7bc1a5847c03ebf59e07354edb3d3afb0",
+    "head_sha": "4dcebd43db89da144ac0cd1a3bf3506b5d366426",
+    "state": "OPEN_DRAFT",
+    "mergeable": true,
+    "exact_head_ci": [
+      {
+        "run_id": 45858443725,
+        "head_sha": "4dcebd43db89da144ac0cd1a3bf3506b5d366426",
+        "conclusion": "success",
+        "workflow": "Windows-all-auto Offline QA",
+        "jobs": [
+          "Offline preflight tests (windows-latest)",
+          "Offline preflight tests (ubuntu-latest)"
+        ]
+      }
+    ],
+    "product_e2e_pass": false
+  },
+  "pr161": {
+    "number": 161,
+    "head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
+    "exact_head_ci": [
+      {
+        "run_id": 42712757936,
+        "conclusion": "success",
+        "scope": "Offline QA only; not product E2E"
+      }
+    ]
+  },
+  "pr171": {
+    "number": 171,
+    "branch": "codex/local-github-evidence-smoke",
+    "head_sha": "764721021f13be96364529650b44fb439770bac9",
+    "exact_head_ci": [
+      {
+        "run_id": 44437197470,
+        "conclusion": "success",
+        "scope": "Offline QA only; Store upload dry-run not started"
+      }
+    ],
+    "bridge_present": true,
+    "bridge_paths": [
+      "scripts/store_upload_test_bridge.py",
+      "all_auto/store_upload_test.py",
+      "docs/STORE_UPLOAD_TEST_BRIDGE.md"
+    ],
+    "batch_limit": 20,
+    "eligible_fresh_unsold_products": 0,
+    "dry_run_started": false
+  },
+  "windows_automator_pin": {
+    "repository": "shihuiarenjinba-png/Windows-Automator",
+    "branch": "codex/msix-commercial-contract-20261115",
+    "commit_sha": "d3b8ed4ae7762a69d3fe2a90b64aa86ee938259b",
+    "ci_run_id": 44319200630,
+    "ci_conclusion": "success",
+    "pin_update_allowed": false
+  },
+  "products": {
+    "focus_session_desk": {
+      "current_source_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+      "current_source_request_id": "app-focus-session-desk-fb6293839bc7",
+      "current_source_request_status": "DRY_RUN__IDENTITY_READBACK_PENDING",
+      "historical_approved_identity_source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+      "current_source_identity_binding_status": "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE",
+      "package_version": null,
+      "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
+      "current_source_exe_artifact_id": 15083856249,
+      "current_source_exe_artifact_kind": "UNSIGNED_PRE_IDENTITY_EXE_NOT_MSIX",
+      "store_asset_raw_bytes_verified": true,
+      "msix_asset_embedding_verified": false,
+      "real_msix": false,
+      "package_blockers": [
+        "current_source_identity_revalidation",
+        "authoritative_package_version",
+        "real_msix_export"
+      ]
+    },
+    "file_integrity_ledger": {
+      "current_source_sha": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
+      "current_source_request_id": "app-file-integrity-ledger-33d612be2774",
+      "current_source_request_status": "DRY_RUN__OFFICIAL_IDENTITY_UNVERIFIED__PACKAGE_NOT_BUILT",
+      "historical_approved_identity_source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
+      "approved_identity_file_present_on_current_pr115_head": false,
+      "current_source_identity_binding_status": "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE",
+      "package_version": null,
+      "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
+      "human_visual_review_status": "PASS",
+      "human_visual_review_observed_at_utc": "2026-11-26T13:30:25Z",
+      "human_visual_review_required": false,
+      "immutable_receipt_visual_review_required": true,
+      "asset_mapping_qa": {
+        "pr": 124,
+        "head_sha": "d245b5b0541a09af2de46d092e5525023456f843",
+        "run_id": 45747686529,
+        "conclusion": "success"
+      },
+      "real_msix": false,
+      "package_blockers": [
+        "current_source_identity_revalidation",
+        "authoritative_package_version",
+        "real_msix_export"
+      ]
+    }
+  },
+  "first_unconnected_interval": {
+    "status": "BLOCKED_BEFORE_REAL_MSIX",
+    "first_blocker": "FOCUS_CURRENT_SOURCE_IDENTITY_REVALIDATION_AND_AUTHORITATIVE_PACKAGE_VERSION",
+    "secondary_blocker": "FILE_CURRENT_SOURCE_APPROVED_IDENTITY_ABSENT_AND_AUTHORITATIVE_PACKAGE_VERSION_REQUIRED",
+    "after_gate": "REAL_MSIX_WITH_BYTE_IDENTICAL_STORE_ASSET_EMBEDDING -> PR165_ARTIFACT_CUSTODY -> PR192_LOCAL_PULL -> PHYSICAL_WINDOWS_CHECKER -> GUI_INSTALL",
+    "note": "The real package does not exist yet. PR165/PR192 transport CI is green, but no eligible MSIX is available to transfer."
+  },
+  "partner_center_authenticated_readback": "NOT_OBSERVED__NO_CONNECTED_MICROSOFT_SIGNIN_CONTEXT",
+  "local_code_sync_receipt": "NOT_OBSERVED__CLOUD_PASS_ONLY",
+  "store_upload_test_eligibility_current": {
+    "eligible_fresh_unsold_products": 0,
+    "dry_run_started": false
+  },
+  "real_msix": false,
+  "github_backlog_receipt": false,
+  "local_pull_receipt": false,
+  "local_checker_receipt": false,
+  "local_gui_install_receipt": false,
+  "safety": {
+    "live_partner_center_write_allowed": false,
+    "identity_write_allowed": false,
+    "cas_apply_allowed": false,
+    "version_inference_allowed": false,
+    "store_submission_allowed": false,
+    "certification_allowed": false,
+    "publish_allowed": false,
+    "merge_allowed": false,
+    "force_push_allowed": false,
+    "main_release_write_allowed": false,
+    "product_code_changed": false,
+    "png_generation_or_modification_by_36": false,
+    "twelve_repo_touched": false,
+    "twentyfour_repo_touched": false
+  },
+  "note": "This observation clears only File Integrity's completed human visual-review gate. The original GUI receipt's visual_review_required=true is preserved as immutable provenance. Current-source Identity and authoritative Version remain HOLD for both APPs; E2E is not promoted."
+}
