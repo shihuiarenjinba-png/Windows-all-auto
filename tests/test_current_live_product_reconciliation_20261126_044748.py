@@ -14,9 +14,9 @@ class CurrentLiveProductReconciliation20261126_044748Tests(unittest.TestCase):
         overlay = json.loads((ROOT / "ops/active_e2e_handoff_overlay_20261126_044748.json").read_text(encoding="utf-8"))
         observation = ledger[KEY]
 
-        self.assertEqual(ledger["pr165_latest_live_observation_key"], "pr165_live_head_observation_20261126_045730")
-        self.assertEqual(ledger["pr165_latest_live_head_sha"], "380d4818330688f47d3558217ed556868cf0b744")
-        self.assertEqual(ledger["pr165_latest_live_head_parent_sha"], "51198dc63061f06a3afc61017e4e12009a13eadc")
+        self.assertEqual(ledger["pr165_latest_live_observation_key"], "pr165_live_head_observation_20261126_074400")
+        self.assertEqual(ledger["pr165_latest_live_head_sha"], "74dee49585edbeee7eb66d58ff9fa2ea0b97e27f")
+        self.assertEqual(ledger["pr165_latest_live_head_parent_sha"], "68fdccd2edf55538b2898c3c67b39f678004a6f9")
         self.assertEqual(ledger["pr165_latest_live_head_ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual([x["run_id"] for x in observation["exact_head_ci"]], [45757413753, 45757413754, 45757413777])
         self.assertTrue(all(x["head_sha"] == HEAD and x["conclusion"] == "success" for x in observation["exact_head_ci"]))
@@ -59,8 +59,8 @@ class CurrentLiveProductReconciliation20261126_044748Tests(unittest.TestCase):
         self.assertIs(ledger["certification_allowed"], False)
         self.assertIs(ledger["publish_allowed"], False)
 
-        self.assertEqual(queue["latest_observation_key"], "pr165_live_head_observation_20261126_045730")
-        self.assertEqual(queue["pr165_latest_live_head_sha"], "380d4818330688f47d3558217ed556868cf0b744")
+        self.assertEqual(queue["latest_observation_key"], "pr165_live_head_observation_20261126_074400")
+        self.assertEqual(queue["pr165_latest_live_head_sha"], "74dee49585edbeee7eb66d58ff9fa2ea0b97e27f")
         self.assertIs(queue["e2e_pass"], False)
         self.assertEqual(overlay["pr165"]["head_sha"], HEAD)
         self.assertEqual(overlay["status"], "HOLD")
