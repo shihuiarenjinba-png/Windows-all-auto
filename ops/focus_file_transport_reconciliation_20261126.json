@@ -675,7 +675,7 @@
     "live_partner_center_readback_verified": false,
     "local_product_e2e_verified": false,
     "app_identity_return_missing_receipts_allowed": false,
-    "app_identity_return_gate_commit": "ea55f1a496c68bec7b07db1e365f0b23301d5ae1",
+    "app_identity_return_gate_commit": "7959d773b0e16525a19018f59d768a02394cd58e",
     "app_identity_return_gate_status": "IMPLEMENTED_FAIL_CLOSED__EXACT_HEAD_CI_PASS",
     "app_identity_return_gate_regression": "test_identity_return_without_source_bound_receipts_is_rejected_before_local_qa"
   },
@@ -739,12 +739,12 @@
     "status": "RECONCILED_TO_PR165_C68ADC_CODE_86B6AA_BRANCH_HEAD",
     "latest_push_tip_sha": "7f3f555fa82d16987c64f8378978cc7ae2fd4b55",
     "latest_push_tip_ci_status": "FAIL_OFFLINE_QA__THREE_SNAPSHOT_METADATA_ASSERTIONS",
-    "latest_live_head_sha": "ea55f1a496c68bec7b07db1e365f0b23301d5ae1",
+    "latest_live_head_sha": "380d4818330688f47d3558217ed556868cf0b744",
     "latest_live_head_ci_status": "PASS_EXACT_HEAD_CI",
     "latest_live_head_ci_run_ids": [
-      45757413753,
-      45757413754,
-      45757413777
+      45758414537,
+      45758414580,
+      45758414538
     ],
     "product_e2e_status": "HOLD"
   },
@@ -1546,62 +1546,66 @@
     "product_e2e_status": "HOLD",
     "e2e_pass": false
   },
-  "latest_observation_at_utc": "2026-11-26T04:47:48Z",
-  "latest_observation_key": "pr165_live_head_observation_20261126_044748",
-  "pr165_latest_live_head_sha": "ea55f1a496c68bec7b07db1e365f0b23301d5ae1",
-  "pr165_latest_live_head_parent_sha": "ba768ed90581f587fbd067b34bad0e4e2f8741af",
+  "latest_observation_at_utc": "2026-11-26T04:57:30Z",
+  "latest_observation_key": "pr165_live_head_observation_20261126_045730",
+  "pr165_latest_live_head_sha": "380d4818330688f47d3558217ed556868cf0b744",
+  "pr165_latest_live_head_parent_sha": "51198dc63061f06a3afc61017e4e12009a13eadc",
   "pr165_latest_live_head_ci_status": "PASS_EXACT_HEAD_CI",
   "pr165_latest_live_head_ci": [
     {
-      "run_id": 45757413753,
+      "run_id": 45758414537,
       "event": "pull_request",
       "conclusion": "success",
-      "head_sha": "ea55f1a496c68bec7b07db1e365f0b23301d5ae1",
+      "head_sha": "380d4818330688f47d3558217ed556868cf0b744",
       "workflow": "Windows E2E transport fail-closed regression",
       "job": "transport-regression"
     },
     {
-      "run_id": 45757413754,
+      "run_id": 45758414580,
       "event": "pull_request",
       "conclusion": "success",
-      "head_sha": "ea55f1a496c68bec7b07db1e365f0b23301d5ae1",
+      "head_sha": "380d4818330688f47d3558217ed556868cf0b744",
       "workflow": "GitHub artifact custody fail-closed regression",
       "job": "custody-regression"
     },
     {
-      "run_id": 45757413777,
+      "run_id": 45758414538,
       "event": "pull_request",
       "conclusion": "success",
-      "head_sha": "ea55f1a496c68bec7b07db1e365f0b23301d5ae1",
+      "head_sha": "380d4818330688f47d3558217ed556868cf0b744",
       "workflow": "Windows-all-auto Offline QA",
       "jobs": [
-        "Offline preflight tests (windows-latest)",
-        "Offline preflight tests (ubuntu-latest)"
+        "Offline preflight tests (ubuntu-latest)",
+        "Offline preflight tests (windows-latest)"
       ],
-      "tests_run": 567,
+      "tests_run": 568,
       "windows_skipped": 2
     }
   ],
   "pr165_latest_live_head_ci_run_ids": [
-    45757413753,
-    45757413754,
-    45757413777
+    45758414537,
+    45758414580,
+    45758414538
   ],
   "pr165_latest_live_head_comparison_to_last_verified_code_head": {
     "status": "ahead",
-    "ahead_by": 29,
+    "ahead_by": 32,
     "behind_by": 0,
-    "total_commits": 29,
+    "total_commits": 32,
     "base_sha": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb"
   },
   "pr165_latest_live_head_changed_files": [
     "all_auto/handoff_bridge.py",
     "ops/active_e2e_handoff.json",
     "ops/active_e2e_handoff_overlay_20261126.json",
+    "ops/active_e2e_handoff_overlay_20261126_040324.json",
+    "ops/active_e2e_handoff_overlay_20261126_044748.json",
     "ops/completion_rush_queue_20261116.json",
     "ops/focus_file_transport_reconciliation_20261126.json",
     "tests/test_completion_rush_queue_20261116.py",
     "tests/test_current_live_product_reconciliation_20261125.py",
+    "tests/test_current_live_product_reconciliation_20261126_040324.py",
+    "tests/test_current_live_product_reconciliation_20261126_044748.py",
     "tests/test_focus_file_transport_reconciliation_20261126.py",
     "tests/test_github_artifact_custody.py",
     "tests/test_handoff_bridge.py",
@@ -1612,26 +1616,30 @@
   "pr165_latest_live_head_product_code_changed": false,
   "pr165_latest_live_head_transport_contract_code_changed": true,
   "latest_live_head_observation": {
-    "observed_at_utc": "2026-11-26T04:47:48Z",
+    "observed_at_utc": "2026-11-26T04:57:30Z",
     "pull_request": 165,
     "branch": "codex/e2e-artifact-custody-20261114",
-    "head_sha": "ea55f1a496c68bec7b07db1e365f0b23301d5ae1",
-    "parent_sha": "ba768ed90581f587fbd067b34bad0e4e2f8741af",
+    "head_sha": "380d4818330688f47d3558217ed556868cf0b744",
+    "parent_sha": "51198dc63061f06a3afc61017e4e12009a13eadc",
     "comparison_to_last_verified_code_head": {
       "status": "ahead",
-      "ahead_by": 29,
+      "ahead_by": 32,
       "behind_by": 0,
-      "total_commits": 29,
+      "total_commits": 32,
       "base_sha": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb"
     },
     "changed_files_since_last_verified_code_head": [
       "all_auto/handoff_bridge.py",
       "ops/active_e2e_handoff.json",
       "ops/active_e2e_handoff_overlay_20261126.json",
+      "ops/active_e2e_handoff_overlay_20261126_040324.json",
+      "ops/active_e2e_handoff_overlay_20261126_044748.json",
       "ops/completion_rush_queue_20261116.json",
       "ops/focus_file_transport_reconciliation_20261126.json",
       "tests/test_completion_rush_queue_20261116.py",
       "tests/test_current_live_product_reconciliation_20261125.py",
+      "tests/test_current_live_product_reconciliation_20261126_040324.py",
+      "tests/test_current_live_product_reconciliation_20261126_044748.py",
       "tests/test_focus_file_transport_reconciliation_20261126.py",
       "tests/test_github_artifact_custody.py",
       "tests/test_handoff_bridge.py",
@@ -1645,82 +1653,84 @@
     "status": "PASS_EXACT_HEAD_CI",
     "exact_head_ci": [
       {
-        "run_id": 45757413753,
+        "run_id": 45758414537,
         "event": "pull_request",
         "conclusion": "success",
-        "head_sha": "ea55f1a496c68bec7b07db1e365f0b23301d5ae1",
+        "head_sha": "380d4818330688f47d3558217ed556868cf0b744",
         "workflow": "Windows E2E transport fail-closed regression",
         "job": "transport-regression"
       },
       {
-        "run_id": 45757413754,
+        "run_id": 45758414580,
         "event": "pull_request",
         "conclusion": "success",
-        "head_sha": "ea55f1a496c68bec7b07db1e365f0b23301d5ae1",
+        "head_sha": "380d4818330688f47d3558217ed556868cf0b744",
         "workflow": "GitHub artifact custody fail-closed regression",
         "job": "custody-regression"
       },
       {
-        "run_id": 45757413777,
+        "run_id": 45758414538,
         "event": "pull_request",
         "conclusion": "success",
-        "head_sha": "ea55f1a496c68bec7b07db1e365f0b23301d5ae1",
+        "head_sha": "380d4818330688f47d3558217ed556868cf0b744",
         "workflow": "Windows-all-auto Offline QA",
         "jobs": [
-          "Offline preflight tests (windows-latest)",
-          "Offline preflight tests (ubuntu-latest)"
+          "Offline preflight tests (ubuntu-latest)",
+          "Offline preflight tests (windows-latest)"
         ],
-        "tests_run": 567,
+        "tests_run": 568,
         "windows_skipped": 2
       }
     ],
     "push_offline_qa": {
-      "run_id": 45757409017,
+      "run_id": 45758409330,
       "event": "push",
       "conclusion": "success",
-      "head_sha": "ea55f1a496c68bec7b07db1e365f0b23301d5ae1",
+      "head_sha": "380d4818330688f47d3558217ed556868cf0b744",
       "workflow": "Windows-all-auto Offline QA",
       "jobs": [
-        "Offline preflight tests (windows-latest)",
-        "Offline preflight tests (ubuntu-latest)"
-      ]
+        "Offline preflight tests (ubuntu-latest)",
+        "Offline preflight tests (windows-latest)"
+      ],
+      "tests_run": 568,
+      "windows_skipped": 2
     },
-    "parent_ci_status": "PARTIAL_FAIL_TEST_FIXTURE_GIT_BLOB_SHA",
+    "parent_ci_status": "PARTIAL_FAIL_TEST_ONLY_CURRENT_REQUEST_STATUS_FIELD",
     "parent_ci": [
       {
-        "run_id": 45757357685,
+        "run_id": 45758324323,
         "event": "pull_request",
         "conclusion": "success",
-        "head_sha": "ba768ed90581f587fbd067b34bad0e4e2f8741af",
+        "head_sha": "51198dc63061f06a3afc61017e4e12009a13eadc",
         "workflow": "Windows E2E transport fail-closed regression",
         "job": "transport-regression"
       },
       {
-        "run_id": 45757357794,
+        "run_id": 45758324350,
         "event": "pull_request",
         "conclusion": "success",
-        "head_sha": "ba768ed90581f587fbd067b34bad0e4e2f8741af",
+        "head_sha": "51198dc63061f06a3afc61017e4e12009a13eadc",
         "workflow": "GitHub artifact custody fail-closed regression",
         "job": "custody-regression"
       },
       {
-        "run_id": 45757357642,
+        "run_id": 45758324386,
         "event": "pull_request",
         "conclusion": "failure",
-        "head_sha": "ba768ed90581f587fbd067b34bad0e4e2f8741af",
+        "head_sha": "51198dc63061f06a3afc61017e4e12009a13eadc",
         "workflow": "Windows-all-auto Offline QA",
-        "failure": "Synthetic approved-Identity Git blob SHA fixture used an escaped backslash-zero instead of a NUL byte; corrected in ea55f1a."
+        "failure": "Latest live reconciliation test used nonexistent file_product.current_source_request_status; corrected to request_status in 380d481."
       }
     ],
-    "parent_push_ci_status": "FAIL_TEST_FIXTURE_GIT_BLOB_SHA",
+    "parent_push_ci_status": "FAIL_TEST_ONLY_CURRENT_REQUEST_STATUS_FIELD",
     "parent_push_ci": [
       {
-        "run_id": 45757353427,
+        "run_id": 45758318584,
         "event": "push",
         "conclusion": "failure",
-        "head_sha": "ba768ed90581f587fbd067b34bad0e4e2f8741af",
+        "head_sha": "51198dc63061f06a3afc61017e4e12009a13eadc",
         "workflow": "Windows-all-auto Offline QA",
-        "failure": "Same synthetic approved-Identity Git blob SHA fixture encoding; corrected in ea55f1a."
+        "failure": "Same current-source request-status field mismatch; corrected in 380d481."
       }
     ],
     "repository_ci_is_not_product_e2e": true,
