@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
   "path": "ops/active_e2e_handoff_overlay_20261126.json",
-  "observed_at_utc": "2026-11-26T01:59:00Z",
+  "observed_at_utc": "2026-11-26T02:06:43Z",
   "status": "HOLD",
   "e2e_pass": false,
   "record_type": "APPEND_ONLY_CURRENT_OBSERVATION",
-  "note": "Last fully verified PR165 head 86b6aa06 passed exact-head transport, custody and Windows/Ubuntu Offline QA (565 tests; Windows 2 skips). Subsequent test-only tips 8d4488d3 and 7f3f555f had snapshot metadata assertion failures only; no product code changed. This snapshot restores observation.status=HOLD, keeps exact_head_ci_status=PASS, aligns queue timestamp assertions and restores the stable ledger reconciliation enum. Product E2E remains HOLD.",
+  "note": "PR165 live head 13f8ed4f and immediate parent f8d52742 were directly read; all exact-head repository CI passed. Focus/File remain blocked before real MSIX, so repository CI is not product E2E.",
   "priority_order": [
     "Focus Session Desk",
     "File Integrity Ledger"
@@ -15,74 +15,55 @@
     "number": 165,
     "state": "OPEN_DRAFT",
     "branch": "codex/e2e-artifact-custody-20261114",
-    "head_sha": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb",
-    "parent_sha": "20d64d0a43581372477f2990133b914390ca3559",
-    "observed_updated_at_utc": "2026-11-26T00:51:09Z",
+    "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+    "parent_sha": "f8d52742e41689bc684f84f65bdff32204077d40",
+    "observed_updated_at_utc": "2026-11-26T02:06:43Z",
     "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
     "exact_head_ci": [
       {
-        "run_id": 45731501639,
-        "event": "pull_request",
+        "run_id": 45739568443,
         "conclusion": "success",
-        "head_sha": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb",
-        "workflow": "GitHub artifact custody fail-closed regression",
-        "job": "custody-regression"
+        "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+        "workflow": "transport-regression"
       },
       {
-        "run_id": 45731501700,
-        "event": "pull_request",
+        "run_id": 45739568709,
         "conclusion": "success",
-        "head_sha": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb",
-        "workflow": "Windows E2E transport fail-closed regression",
-        "job": "transport-regression"
+        "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+        "workflow": "artifact-custody-regression"
       },
       {
-        "run_id": 45731501669,
-        "event": "pull_request",
+        "run_id": 45739568625,
         "conclusion": "success",
-        "head_sha": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb",
-        "workflow": "Windows-all-auto Offline QA",
-        "jobs": [
-          "Offline preflight tests (windows-latest)",
-          "Offline preflight tests (ubuntu-latest)"
-        ],
-        "tests_run": 564,
-        "windows_skipped": 2
+        "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+        "workflow": "offline-qa",
+        "tests_run": 565,
+        "windows_skipped": 2,
+        "ubuntu_skipped": 0
       }
     ],
     "repository_ci_is_not_product_e2e": true,
-    "immediate_parent_ci_status": "PARTIAL_FAIL_RECONCILIATION_TEST_KEYERROR",
-    "immediate_parent_head_sha": "20d64d0a43581372477f2990133b914390ca3559",
-    "previous_tested_head_sha": "1d02a0307c6ce456b25c3d4fafa40362078f7c0a",
+    "immediate_parent_ci_status": "PASS_EXACT_HEAD_CI",
+    "immediate_parent_head_sha": "f8d52742e41689bc684f84f65bdff32204077d40",
+    "previous_tested_head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
     "previous_tested_head_ci": [
       {
-        "run_id": 45727872167,
-        "event": "pull_request",
+        "run_id": 45738280697,
         "conclusion": "success",
-        "head_sha": "1d02a0307c6ce456b25c3d4fafa40362078f7c0a",
-        "workflow": "Windows E2E transport fail-closed regression",
-        "job": "transport-regression"
+        "head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
+        "workflow": "transport-regression"
       },
       {
-        "run_id": 45727872209,
-        "event": "pull_request",
+        "run_id": 45738280673,
         "conclusion": "success",
-        "head_sha": "1d02a0307c6ce456b25c3d4fafa40362078f7c0a",
-        "workflow": "GitHub artifact custody fail-closed regression",
-        "job": "custody-regression"
+        "head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
+        "workflow": "artifact-custody-regression"
       },
       {
-        "run_id": 45727872206,
-        "event": "pull_request",
+        "run_id": 45738280653,
         "conclusion": "success",
-        "head_sha": "1d02a0307c6ce456b25c3d4fafa40362078f7c0a",
-        "workflow": "Windows-all-auto Offline QA",
-        "jobs": [
-          "Offline preflight tests (ubuntu-latest)",
-          "Offline preflight tests (windows-latest)"
-        ],
-        "tests_run": 564,
-        "windows_skipped": 2
+        "head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
+        "workflow": "offline-qa"
       }
     ],
     "push_offline_qa": {
@@ -99,36 +80,30 @@
     },
     "immediate_parent_exact_head_ci": [
       {
-        "run_id": 45731429031,
-        "event": "pull_request",
+        "run_id": 45739553986,
         "conclusion": "success",
-        "head_sha": "20d64d0a43581372477f2990133b914390ca3559",
-        "workflow": "GitHub artifact custody fail-closed regression",
-        "job": "custody-regression"
+        "head_sha": "f8d52742e41689bc684f84f65bdff32204077d40",
+        "workflow": "transport-regression"
       },
       {
-        "run_id": 45731429039,
-        "event": "pull_request",
+        "run_id": 45739554048,
         "conclusion": "success",
-        "head_sha": "20d64d0a43581372477f2990133b914390ca3559",
-        "workflow": "Windows E2E transport fail-closed regression",
-        "job": "transport-regression"
+        "head_sha": "f8d52742e41689bc684f84f65bdff32204077d40",
+        "workflow": "artifact-custody-regression"
       },
       {
-        "run_id": 45731429057,
-        "event": "pull_request",
-        "conclusion": "failure",
-        "head_sha": "20d64d0a43581372477f2990133b914390ca3559",
-        "workflow": "Windows-all-auto Offline QA",
-        "failure": "FocusFileTransportReconciliation test used exact_head_ci; actual snapshot field is exact_head_workflows. KeyError corrected on c68adc."
+        "run_id": 45739553974,
+        "conclusion": "success",
+        "head_sha": "f8d52742e41689bc684f84f65bdff32204077d40",
+        "workflow": "offline-qa"
       }
     ],
     "comparison_to_previous_tested_head": {
       "status": "ahead",
-      "ahead_by": 3,
+      "ahead_by": 6,
       "behind_by": 0,
-      "total_commits": 3,
-      "base_sha": "6ff05c0a3b682ade5016894c08c9edfbdf75e375"
+      "total_commits": 6,
+      "base_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23"
     },
     "immediate_parent_additional_ci": [],
     "previous_tested_exact_head_ci": [
@@ -182,36 +157,28 @@
         "failure": "Same stale historical recon run-ID assertion"
       }
     ],
-    "last_verified_head_sha": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb",
+    "last_verified_head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
     "last_verified_head_ci": [
       {
-        "run_id": 45731501639,
-        "event": "pull_request",
+        "run_id": 45739568443,
         "conclusion": "success",
-        "head_sha": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb",
-        "workflow": "GitHub artifact custody fail-closed regression",
-        "job": "custody-regression"
+        "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+        "workflow": "transport-regression"
       },
       {
-        "run_id": 45731501700,
-        "event": "pull_request",
+        "run_id": 45739568709,
         "conclusion": "success",
-        "head_sha": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb",
-        "workflow": "Windows E2E transport fail-closed regression",
-        "job": "transport-regression"
+        "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+        "workflow": "artifact-custody-regression"
       },
       {
-        "run_id": 45731501669,
-        "event": "pull_request",
+        "run_id": 45739568625,
         "conclusion": "success",
-        "head_sha": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb",
-        "workflow": "Windows-all-auto Offline QA",
-        "jobs": [
-          "Offline preflight tests (windows-latest)",
-          "Offline preflight tests (ubuntu-latest)"
-        ],
-        "tests_run": 564,
-        "windows_skipped": 2
+        "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+        "workflow": "offline-qa",
+        "tests_run": 565,
+        "windows_skipped": 2,
+        "ubuntu_skipped": 0
       }
     ],
     "e2e_pass": false,
@@ -223,54 +190,65 @@
     "local_checker_receipt": false,
     "local_gui_install_receipt": false,
     "latest_product_e2e_status": "HOLD",
-    "current_branch_head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
-    "current_branch_head_parent_sha": "5292b3bf3ef6e8cb28fcfd1fa9f4ee000975437e",
+    "current_branch_head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+    "current_branch_head_parent_sha": "f8d52742e41689bc684f84f65bdff32204077d40",
     "current_branch_head_ci_status": "PASS_EXACT_HEAD_CI",
     "current_branch_head_ci": [
       {
-        "run_id": 45738280697,
-        "event": "pull_request",
+        "run_id": 45739568443,
         "conclusion": "success",
-        "head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
-        "workflow": "Windows E2E transport fail-closed regression",
-        "job": "transport-regression"
+        "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+        "workflow": "transport-regression"
       },
       {
-        "run_id": 45738280673,
-        "event": "pull_request",
+        "run_id": 45739568709,
         "conclusion": "success",
-        "head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
-        "workflow": "GitHub artifact custody fail-closed regression",
-        "job": "custody-regression"
+        "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+        "workflow": "artifact-custody-regression"
       },
       {
-        "run_id": 45738280653,
-        "event": "pull_request",
+        "run_id": 45739568625,
         "conclusion": "success",
-        "head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
-        "workflow": "Windows-all-auto Offline QA",
-        "jobs": [
-          "Offline preflight tests (ubuntu-latest)",
-          "Offline preflight tests (windows-latest)"
-        ],
+        "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+        "workflow": "offline-qa",
         "tests_run": 565,
-        "windows_skipped": 2
+        "windows_skipped": 2,
+        "ubuntu_skipped": 0
       }
     ],
     "current_branch_head_ci_run_ids": [
-      45738280697,
-      45738280673,
-      45738280653
+      45739568443,
+      45739568709,
+      45739568625
     ],
-    "current_branch_head_observed_at_utc": "2026-11-26T01:50:00Z",
-    "current_branch_head_parent_ci_status": "NOT_OBSERVED_FOR_CURRENT_PARENT",
-    "current_branch_head_parent_ci": [],
+    "current_branch_head_observed_at_utc": "2026-11-26T02:06:43Z",
+    "current_branch_head_parent_ci_status": "PASS_EXACT_HEAD_CI",
+    "current_branch_head_parent_ci": [
+      {
+        "run_id": 45739553986,
+        "conclusion": "success",
+        "head_sha": "f8d52742e41689bc684f84f65bdff32204077d40",
+        "workflow": "transport-regression"
+      },
+      {
+        "run_id": 45739554048,
+        "conclusion": "success",
+        "head_sha": "f8d52742e41689bc684f84f65bdff32204077d40",
+        "workflow": "artifact-custody-regression"
+      },
+      {
+        "run_id": 45739553974,
+        "conclusion": "success",
+        "head_sha": "f8d52742e41689bc684f84f65bdff32204077d40",
+        "workflow": "offline-qa"
+      }
+    ],
     "current_branch_head_comparison_to_last_tested_code_head": {
       "status": "ahead",
-      "ahead_by": 18,
+      "ahead_by": 6,
       "behind_by": 0,
-      "total_commits": 18,
-      "base_sha": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb"
+      "total_commits": 6,
+      "base_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23"
     },
     "current_branch_head_changed_files": [
       "ops/active_e2e_handoff.json",
@@ -285,17 +263,24 @@
     ],
     "current_branch_head_product_code_changed": false,
     "current_branch_head_observation": {
-      "observed_at_utc": "2026-11-26T01:50:00Z",
+      "observed_at_utc": "2026-11-26T02:06:43Z",
       "pull_request": 165,
       "branch": "codex/e2e-artifact-custody-20261114",
-      "head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
-      "parent_sha": "5292b3bf3ef6e8cb28fcfd1fa9f4ee000975437e",
+      "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+      "parent_sha": "f8d52742e41689bc684f84f65bdff32204077d40",
+      "comparison_to_previous_tested_head": {
+        "status": "ahead",
+        "ahead_by": 6,
+        "behind_by": 0,
+        "total_commits": 6,
+        "base_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23"
+      },
       "comparison_to_last_tested_code_head": {
         "status": "ahead",
-        "ahead_by": 18,
+        "ahead_by": 6,
         "behind_by": 0,
-        "total_commits": 18,
-        "base_sha": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb"
+        "total_commits": 6,
+        "base_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23"
       },
       "changed_files_since_last_tested_code_head": [
         "ops/active_e2e_handoff.json",
@@ -310,40 +295,51 @@
       ],
       "product_code_changed": false,
       "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
-      "status": "HOLD",
       "exact_head_ci": [
         {
-          "run_id": 45738280697,
-          "event": "pull_request",
+          "run_id": 45739568443,
           "conclusion": "success",
-          "head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
-          "workflow": "Windows E2E transport fail-closed regression",
-          "job": "transport-regression"
+          "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+          "workflow": "transport-regression"
         },
         {
-          "run_id": 45738280673,
-          "event": "pull_request",
+          "run_id": 45739568709,
           "conclusion": "success",
-          "head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
-          "workflow": "GitHub artifact custody fail-closed regression",
-          "job": "custody-regression"
+          "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+          "workflow": "artifact-custody-regression"
         },
         {
-          "run_id": 45738280653,
-          "event": "pull_request",
+          "run_id": 45739568625,
           "conclusion": "success",
-          "head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
-          "workflow": "Windows-all-auto Offline QA",
-          "jobs": [
-            "Offline preflight tests (ubuntu-latest)",
-            "Offline preflight tests (windows-latest)"
-          ],
+          "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+          "workflow": "offline-qa",
           "tests_run": 565,
-          "windows_skipped": 2
+          "windows_skipped": 2,
+          "ubuntu_skipped": 0
         }
       ],
-      "parent_ci_status": "NOT_OBSERVED_FOR_CURRENT_PARENT",
-      "parent_ci": [],
+      "status": "HOLD",
+      "parent_ci_status": "PASS_EXACT_HEAD_CI",
+      "parent_ci": [
+        {
+          "run_id": 45739553986,
+          "conclusion": "success",
+          "head_sha": "f8d52742e41689bc684f84f65bdff32204077d40",
+          "workflow": "transport-regression"
+        },
+        {
+          "run_id": 45739554048,
+          "conclusion": "success",
+          "head_sha": "f8d52742e41689bc684f84f65bdff32204077d40",
+          "workflow": "artifact-custody-regression"
+        },
+        {
+          "run_id": 45739553974,
+          "conclusion": "success",
+          "head_sha": "f8d52742e41689bc684f84f65bdff32204077d40",
+          "workflow": "offline-qa"
+        }
+      ],
       "parent_push_ci_status": "NOT_OBSERVED_FOR_CURRENT_PARENT",
       "parent_push_ci": [],
       "repository_ci_is_not_product_e2e": true,
@@ -362,14 +358,37 @@
       "certification_allowed": false,
       "publish_allowed": false,
       "snapshot_scope": "OPERATIONS_AND_REGRESSION_TESTS_ONLY",
-      "last_verified_code_head_sha": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb",
-      "last_verified_branch_head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
+      "last_verified_head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+      "last_verified_head_ci": [
+        {
+          "run_id": 45739568443,
+          "conclusion": "success",
+          "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+          "workflow": "transport-regression"
+        },
+        {
+          "run_id": 45739568709,
+          "conclusion": "success",
+          "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+          "workflow": "artifact-custody-regression"
+        },
+        {
+          "run_id": 45739568625,
+          "conclusion": "success",
+          "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+          "workflow": "offline-qa",
+          "tests_run": 565,
+          "windows_skipped": 2,
+          "ubuntu_skipped": 0
+        }
+      ],
       "offline_qa_tests_run": 565,
-      "offline_qa_windows_skipped": 2
+      "offline_qa_windows_skipped": 2,
+      "offline_qa_ubuntu_skipped": 0
     },
-    "snapshot_commit_parent_sha": "2ba11031c1c713abb7b548125b10b48af5346bfd",
+    "snapshot_commit_parent_sha": "f8d52742e41689bc684f84f65bdff32204077d40",
     "snapshot_commit_scope": "OPERATIONS_AND_REGRESSION_TESTS_ONLY",
-    "snapshot_commit_ci_status": "PENDING_EXACT_HEAD_CI",
+    "snapshot_commit_ci_status": "PASS_EXACT_HEAD_CI",
     "branch_head_ci_history_20261126": [
       {
         "head_sha": "2f47dfffa6c8fedeea54c6fbdd2af31157e53f18",
@@ -494,21 +513,32 @@
         "windows_skipped": 2
       }
     ],
-    "current_branch_head_parent_ci_run_ids": [],
+    "current_branch_head_parent_ci_run_ids": [
+      45739553986,
+      45739554048,
+      45739553974
+    ],
     "current_branch_head_parent_push_ci_status": "NOT_OBSERVED_FOR_CURRENT_PARENT",
     "current_branch_head_parent_push_ci": [],
     "latest_live_head_observation": {
-      "observed_at_utc": "2026-11-26T01:50:00Z",
+      "observed_at_utc": "2026-11-26T02:06:43Z",
       "pull_request": 165,
       "branch": "codex/e2e-artifact-custody-20261114",
-      "head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
-      "parent_sha": "5292b3bf3ef6e8cb28fcfd1fa9f4ee000975437e",
+      "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+      "parent_sha": "f8d52742e41689bc684f84f65bdff32204077d40",
+      "comparison_to_previous_tested_head": {
+        "status": "ahead",
+        "ahead_by": 6,
+        "behind_by": 0,
+        "total_commits": 6,
+        "base_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23"
+      },
       "comparison_to_last_tested_code_head": {
         "status": "ahead",
-        "ahead_by": 18,
+        "ahead_by": 6,
         "behind_by": 0,
-        "total_commits": 18,
-        "base_sha": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb"
+        "total_commits": 6,
+        "base_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23"
       },
       "changed_files_since_last_tested_code_head": [
         "ops/active_e2e_handoff.json",
@@ -523,40 +553,51 @@
       ],
       "product_code_changed": false,
       "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
-      "status": "HOLD",
       "exact_head_ci": [
         {
-          "run_id": 45738280697,
-          "event": "pull_request",
+          "run_id": 45739568443,
           "conclusion": "success",
-          "head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
-          "workflow": "Windows E2E transport fail-closed regression",
-          "job": "transport-regression"
+          "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+          "workflow": "transport-regression"
         },
         {
-          "run_id": 45738280673,
-          "event": "pull_request",
+          "run_id": 45739568709,
           "conclusion": "success",
-          "head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
-          "workflow": "GitHub artifact custody fail-closed regression",
-          "job": "custody-regression"
+          "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+          "workflow": "artifact-custody-regression"
         },
         {
-          "run_id": 45738280653,
-          "event": "pull_request",
+          "run_id": 45739568625,
           "conclusion": "success",
-          "head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
-          "workflow": "Windows-all-auto Offline QA",
-          "jobs": [
-            "Offline preflight tests (ubuntu-latest)",
-            "Offline preflight tests (windows-latest)"
-          ],
+          "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+          "workflow": "offline-qa",
           "tests_run": 565,
-          "windows_skipped": 2
+          "windows_skipped": 2,
+          "ubuntu_skipped": 0
         }
       ],
-      "parent_ci_status": "NOT_OBSERVED_FOR_CURRENT_PARENT",
-      "parent_ci": [],
+      "status": "HOLD",
+      "parent_ci_status": "PASS_EXACT_HEAD_CI",
+      "parent_ci": [
+        {
+          "run_id": 45739553986,
+          "conclusion": "success",
+          "head_sha": "f8d52742e41689bc684f84f65bdff32204077d40",
+          "workflow": "transport-regression"
+        },
+        {
+          "run_id": 45739554048,
+          "conclusion": "success",
+          "head_sha": "f8d52742e41689bc684f84f65bdff32204077d40",
+          "workflow": "artifact-custody-regression"
+        },
+        {
+          "run_id": 45739553974,
+          "conclusion": "success",
+          "head_sha": "f8d52742e41689bc684f84f65bdff32204077d40",
+          "workflow": "offline-qa"
+        }
+      ],
       "parent_push_ci_status": "NOT_OBSERVED_FOR_CURRENT_PARENT",
       "parent_push_ci": [],
       "repository_ci_is_not_product_e2e": true,
@@ -575,25 +616,357 @@
       "certification_allowed": false,
       "publish_allowed": false,
       "snapshot_scope": "OPERATIONS_AND_REGRESSION_TESTS_ONLY",
-      "last_verified_code_head_sha": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb",
-      "last_verified_branch_head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
+      "last_verified_head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+      "last_verified_head_ci": [
+        {
+          "run_id": 45739568443,
+          "conclusion": "success",
+          "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+          "workflow": "transport-regression"
+        },
+        {
+          "run_id": 45739568709,
+          "conclusion": "success",
+          "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+          "workflow": "artifact-custody-regression"
+        },
+        {
+          "run_id": 45739568625,
+          "conclusion": "success",
+          "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+          "workflow": "offline-qa",
+          "tests_run": 565,
+          "windows_skipped": 2,
+          "ubuntu_skipped": 0
+        }
+      ],
       "offline_qa_tests_run": 565,
-      "offline_qa_windows_skipped": 2
+      "offline_qa_windows_skipped": 2,
+      "offline_qa_ubuntu_skipped": 0
     },
     "latest_live_head_reconciliation": {
-      "observed_at_utc": "2026-11-26T01:50:00Z",
-      "pull_request": 165,
-      "branch": "codex/e2e-artifact-custody-20261114",
-      "head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
-      "parent_sha": "5292b3bf3ef6e8cb28fcfd1fa9f4ee000975437e",
-      "comparison_to_last_tested_code_head": {
+      "checked_at_utc": "2026-11-26T02:06:43Z",
+      "central_pr": 165,
+      "central_head": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+      "central_tested_head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+      "previous_central_head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
+      "previous_central_head": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
+      "previous_exact_head_ci": [
+        {
+          "run_id": 45738280697,
+          "conclusion": "success",
+          "head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
+          "workflow": "transport-regression"
+        },
+        {
+          "run_id": 45738280673,
+          "conclusion": "success",
+          "head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
+          "workflow": "artifact-custody-regression"
+        },
+        {
+          "run_id": 45738280653,
+          "conclusion": "success",
+          "head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
+          "workflow": "offline-qa"
+        }
+      ],
+      "previous_tested_head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
+      "previous_tested_exact_head_ci": [
+        {
+          "run_id": 45738280697,
+          "conclusion": "success",
+          "head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
+          "workflow": "transport-regression"
+        },
+        {
+          "run_id": 45738280673,
+          "conclusion": "success",
+          "head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
+          "workflow": "artifact-custody-regression"
+        },
+        {
+          "run_id": 45738280653,
+          "conclusion": "success",
+          "head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
+          "workflow": "offline-qa"
+        }
+      ],
+      "exact_head_ci": [
+        {
+          "run_id": 45739568443,
+          "conclusion": "success",
+          "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+          "workflow": "transport-regression"
+        },
+        {
+          "run_id": 45739568709,
+          "conclusion": "success",
+          "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+          "workflow": "artifact-custody-regression"
+        },
+        {
+          "run_id": 45739568625,
+          "conclusion": "success",
+          "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+          "workflow": "offline-qa",
+          "tests_run": 565,
+          "windows_skipped": 2,
+          "ubuntu_skipped": 0
+        }
+      ],
+      "additional_push_ci": [],
+      "status": "HOLD",
+      "ci_status": "PASS_EXACT_HEAD_CI",
+      "e2e_pass": false,
+      "real_msix": false,
+      "github_backlog_receipt": false,
+      "local_pull_receipt": false,
+      "local_checker_receipt": false,
+      "local_gui_install_receipt": false,
+      "local_code_sync": "NOT_OBSERVED__CLOUD_PASS_ONLY",
+      "store_upload_test_eligible_products": 0,
+      "immediate_parent_ci_status": "PASS_EXACT_HEAD_CI",
+      "immediate_parent_exact_head_ci": [
+        {
+          "run_id": 45739553986,
+          "conclusion": "success",
+          "head_sha": "f8d52742e41689bc684f84f65bdff32204077d40",
+          "workflow": "transport-regression"
+        },
+        {
+          "run_id": 45739554048,
+          "conclusion": "success",
+          "head_sha": "f8d52742e41689bc684f84f65bdff32204077d40",
+          "workflow": "artifact-custody-regression"
+        },
+        {
+          "run_id": 45739553974,
+          "conclusion": "success",
+          "head_sha": "f8d52742e41689bc684f84f65bdff32204077d40",
+          "workflow": "offline-qa"
+        }
+      ],
+      "pr165_current_head_parent_ci_status": "PASS_EXACT_HEAD_CI",
+      "pr165_current_head_parent_ci": [
+        {
+          "run_id": 45739553986,
+          "conclusion": "success",
+          "head_sha": "f8d52742e41689bc684f84f65bdff32204077d40",
+          "workflow": "transport-regression"
+        },
+        {
+          "run_id": 45739554048,
+          "conclusion": "success",
+          "head_sha": "f8d52742e41689bc684f84f65bdff32204077d40",
+          "workflow": "artifact-custody-regression"
+        },
+        {
+          "run_id": 45739553974,
+          "conclusion": "success",
+          "head_sha": "f8d52742e41689bc684f84f65bdff32204077d40",
+          "workflow": "offline-qa"
+        }
+      ],
+      "pr165_current_branch_head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+      "pr165_current_branch_head_parent_sha": "f8d52742e41689bc684f84f65bdff32204077d40",
+      "pr165_current_branch_head_ci": [
+        {
+          "run_id": 45739568443,
+          "conclusion": "success",
+          "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+          "workflow": "transport-regression"
+        },
+        {
+          "run_id": 45739568709,
+          "conclusion": "success",
+          "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+          "workflow": "artifact-custody-regression"
+        },
+        {
+          "run_id": 45739568625,
+          "conclusion": "success",
+          "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+          "workflow": "offline-qa",
+          "tests_run": 565,
+          "windows_skipped": 2,
+          "ubuntu_skipped": 0
+        }
+      ],
+      "pr165_current_branch_head_ci_status": "PASS_EXACT_HEAD_CI",
+      "pr165_current_branch_head_ci_run_ids": [
+        45739568443,
+        45739568709,
+        45739568625
+      ],
+      "pr165_current_branch_head_observed_at_utc": "2026-11-26T02:06:43Z",
+      "pr165_current_head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+      "pr165_current_head_parent_sha": "f8d52742e41689bc684f84f65bdff32204077d40",
+      "pr165_current_head_ci_status": "PASS_EXACT_HEAD_CI",
+      "pr165_current_head_ci": [
+        {
+          "run_id": 45739568443,
+          "conclusion": "success",
+          "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+          "workflow": "transport-regression"
+        },
+        {
+          "run_id": 45739568709,
+          "conclusion": "success",
+          "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+          "workflow": "artifact-custody-regression"
+        },
+        {
+          "run_id": 45739568625,
+          "conclusion": "success",
+          "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+          "workflow": "offline-qa",
+          "tests_run": 565,
+          "windows_skipped": 2,
+          "ubuntu_skipped": 0
+        }
+      ],
+      "pr165_current_head_observed_at_utc": "2026-11-26T02:06:43Z",
+      "pr165_current_head_parent_push_ci_status": "NOT_OBSERVED_FOR_CURRENT_PARENT",
+      "pr165_current_head_parent_push_ci": [],
+      "pr165_current_head_parent_exact_ci": [
+        {
+          "run_id": 45739553986,
+          "conclusion": "success",
+          "head_sha": "f8d52742e41689bc684f84f65bdff32204077d40",
+          "workflow": "transport-regression"
+        },
+        {
+          "run_id": 45739554048,
+          "conclusion": "success",
+          "head_sha": "f8d52742e41689bc684f84f65bdff32204077d40",
+          "workflow": "artifact-custody-regression"
+        },
+        {
+          "run_id": 45739553974,
+          "conclusion": "success",
+          "head_sha": "f8d52742e41689bc684f84f65bdff32204077d40",
+          "workflow": "offline-qa"
+        }
+      ],
+      "pr165_last_verified_head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+      "pr165_last_verified_head_ci": [
+        {
+          "run_id": 45739568443,
+          "conclusion": "success",
+          "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+          "workflow": "transport-regression"
+        },
+        {
+          "run_id": 45739568709,
+          "conclusion": "success",
+          "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+          "workflow": "artifact-custody-regression"
+        },
+        {
+          "run_id": 45739568625,
+          "conclusion": "success",
+          "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+          "workflow": "offline-qa",
+          "tests_run": 565,
+          "windows_skipped": 2,
+          "ubuntu_skipped": 0
+        }
+      ],
+      "pr165_previous_tested_head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
+      "pr165_previous_tested_head_ci": [
+        {
+          "run_id": 45738280697,
+          "conclusion": "success",
+          "head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
+          "workflow": "transport-regression"
+        },
+        {
+          "run_id": 45738280673,
+          "conclusion": "success",
+          "head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
+          "workflow": "artifact-custody-regression"
+        },
+        {
+          "run_id": 45738280653,
+          "conclusion": "success",
+          "head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
+          "workflow": "offline-qa"
+        }
+      ],
+      "pr165_immediate_parent_head_sha": "f8d52742e41689bc684f84f65bdff32204077d40",
+      "pr165_immediate_parent_ci_status": "PASS_EXACT_HEAD_CI",
+      "pr165_immediate_parent_ci": [
+        {
+          "run_id": 45739553986,
+          "conclusion": "success",
+          "head_sha": "f8d52742e41689bc684f84f65bdff32204077d40",
+          "workflow": "transport-regression"
+        },
+        {
+          "run_id": 45739554048,
+          "conclusion": "success",
+          "head_sha": "f8d52742e41689bc684f84f65bdff32204077d40",
+          "workflow": "artifact-custody-regression"
+        },
+        {
+          "run_id": 45739553974,
+          "conclusion": "success",
+          "head_sha": "f8d52742e41689bc684f84f65bdff32204077d40",
+          "workflow": "offline-qa"
+        }
+      ],
+      "pr165_immediate_parent_exact_ci": [
+        {
+          "run_id": 45739553986,
+          "conclusion": "success",
+          "head_sha": "f8d52742e41689bc684f84f65bdff32204077d40",
+          "workflow": "transport-regression"
+        },
+        {
+          "run_id": 45739554048,
+          "conclusion": "success",
+          "head_sha": "f8d52742e41689bc684f84f65bdff32204077d40",
+          "workflow": "artifact-custody-regression"
+        },
+        {
+          "run_id": 45739553974,
+          "conclusion": "success",
+          "head_sha": "f8d52742e41689bc684f84f65bdff32204077d40",
+          "workflow": "offline-qa"
+        }
+      ],
+      "pr165_current_branch_head_parent_ci_status": "PASS_EXACT_HEAD_CI",
+      "pr165_current_branch_head_parent_ci": [
+        {
+          "run_id": 45739553986,
+          "conclusion": "success",
+          "head_sha": "f8d52742e41689bc684f84f65bdff32204077d40",
+          "workflow": "transport-regression"
+        },
+        {
+          "run_id": 45739554048,
+          "conclusion": "success",
+          "head_sha": "f8d52742e41689bc684f84f65bdff32204077d40",
+          "workflow": "artifact-custody-regression"
+        },
+        {
+          "run_id": 45739553974,
+          "conclusion": "success",
+          "head_sha": "f8d52742e41689bc684f84f65bdff32204077d40",
+          "workflow": "offline-qa"
+        }
+      ],
+      "pr165_current_branch_head_parent_push_ci_status": "NOT_OBSERVED_FOR_CURRENT_PARENT",
+      "pr165_current_branch_head_parent_push_ci": [],
+      "pr165_current_branch_head_comparison_to_last_tested_code_head": {
         "status": "ahead",
-        "ahead_by": 18,
+        "ahead_by": 6,
         "behind_by": 0,
-        "total_commits": 18,
-        "base_sha": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb"
+        "total_commits": 6,
+        "base_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23"
       },
-      "changed_files_since_last_tested_code_head": [
+      "pr165_current_branch_head_changed_files": [
         "ops/active_e2e_handoff.json",
         "ops/active_e2e_handoff_overlay_20261126.json",
         "ops/completion_rush_queue_20261116.json",
@@ -604,106 +977,130 @@
         "tests/test_github_artifact_custody.py",
         "tests/test_real_msix_transport_failclosed.py"
       ],
-      "product_code_changed": false,
-      "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
-      "status": "HOLD",
-      "exact_head_ci": [
+      "pr165_current_branch_head_product_code_changed": false,
+      "pr165_current_branch_head_snapshot_parent_sha": "f8d52742e41689bc684f84f65bdff32204077d40",
+      "pr165_current_branch_head_snapshot_commit_ci_status": "PASS_EXACT_HEAD_CI",
+      "pr165_current_branch_head_snapshot_commit_scope": "OPERATIONS_AND_REGRESSION_TESTS_ONLY",
+      "pr165_current_branch_head_snapshot_commit_ci": [
         {
-          "run_id": 45738280697,
-          "event": "pull_request",
+          "run_id": 45739568443,
           "conclusion": "success",
-          "head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
-          "workflow": "Windows E2E transport fail-closed regression",
-          "job": "transport-regression"
+          "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+          "workflow": "transport-regression"
         },
         {
-          "run_id": 45738280673,
-          "event": "pull_request",
+          "run_id": 45739568709,
           "conclusion": "success",
-          "head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
-          "workflow": "GitHub artifact custody fail-closed regression",
-          "job": "custody-regression"
+          "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+          "workflow": "artifact-custody-regression"
         },
         {
-          "run_id": 45738280653,
-          "event": "pull_request",
+          "run_id": 45739568625,
           "conclusion": "success",
-          "head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
-          "workflow": "Windows-all-auto Offline QA",
-          "jobs": [
-            "Offline preflight tests (ubuntu-latest)",
-            "Offline preflight tests (windows-latest)"
-          ],
+          "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+          "workflow": "offline-qa",
           "tests_run": 565,
-          "windows_skipped": 2
+          "windows_skipped": 2,
+          "ubuntu_skipped": 0
         }
       ],
-      "parent_ci_status": "NOT_OBSERVED_FOR_CURRENT_PARENT",
-      "parent_ci": [],
-      "parent_push_ci_status": "NOT_OBSERVED_FOR_CURRENT_PARENT",
-      "parent_push_ci": [],
+      "pr165_current_head_parent_ci_run_ids": [
+        45739553986,
+        45739554048,
+        45739553974
+      ],
+      "pr165_current_branch_head_parent_ci_run_ids": [
+        45739553986,
+        45739554048,
+        45739553974
+      ],
+      "pr165_current_head_ci_run_ids": [
+        45739568443,
+        45739568709,
+        45739568625
+      ],
       "repository_ci_is_not_product_e2e": true,
       "product_e2e_status": "HOLD",
-      "e2e_pass": false,
-      "real_msix": false,
-      "github_backlog_receipt": false,
-      "local_pull_receipt": false,
-      "local_checker_receipt": false,
-      "local_gui_install_receipt": false,
-      "local_code_sync_receipt": "NOT_OBSERVED__CLOUD_PASS_ONLY",
       "authoritative_package_version": "NOT_FOUND_IN_REVIEWED_GITHUB_EVIDENCE__KEEP_HOLD",
       "partner_center_authenticated_readback": "NOT_OBSERVED__BROWSER_CONTEXT_UNAVAILABLE",
-      "store_upload_test_eligible_products": 0,
+      "comparison_to_previous_tested_head": {
+        "status": "ahead",
+        "ahead_by": 6,
+        "behind_by": 0,
+        "total_commits": 6,
+        "base_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23"
+      },
+      "last_verified_head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+      "last_verified_head_ci": [
+        {
+          "run_id": 45739568443,
+          "conclusion": "success",
+          "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+          "workflow": "transport-regression"
+        },
+        {
+          "run_id": 45739568709,
+          "conclusion": "success",
+          "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+          "workflow": "artifact-custody-regression"
+        },
+        {
+          "run_id": 45739568625,
+          "conclusion": "success",
+          "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+          "workflow": "offline-qa",
+          "tests_run": 565,
+          "windows_skipped": 2,
+          "ubuntu_skipped": 0
+        }
+      ],
+      "push_offline_qa": {
+        "status": "NOT_OBSERVED_FOR_CURRENT_HEAD",
+        "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1"
+      },
+      "request_artifact_readback": {
+        "focus_artifact_id": 15049692591,
+        "file_artifact_id": 14934034365,
+        "status": "VERIFIED_DRY_RUN_ONLY__NO_PARTNER_CENTER_WRITE"
+      },
       "store_submission_allowed": false,
       "certification_allowed": false,
       "publish_allowed": false,
-      "snapshot_scope": "OPERATIONS_AND_REGRESSION_TESTS_ONLY",
-      "last_verified_code_head_sha": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb",
-      "last_verified_branch_head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
-      "offline_qa_tests_run": 565,
-      "offline_qa_windows_skipped": 2
+      "note": "PR165 head 13f8ed4f and parent f8d52742 both pass exact-head repository CI. Offline QA: 565 tests; Windows 2 skips, Ubuntu 0. Product E2E remains HOLD."
     },
-    "latest_live_branch_head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
-    "latest_live_branch_head_observed_at_utc": "2026-11-26T01:50:00Z",
+    "latest_live_branch_head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+    "latest_live_branch_head_observed_at_utc": "2026-11-26T02:06:43Z",
     "latest_live_branch_head_ci_status": "PASS_EXACT_HEAD_CI",
     "latest_live_branch_head_ci_run_ids": [
-      45738280697,
-      45738280673,
-      45738280653
+      45739568443,
+      45739568709,
+      45739568625
     ],
-    "latest_verified_branch_head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
+    "latest_verified_branch_head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
     "latest_verified_branch_head_ci": [
       {
-        "run_id": 45738280697,
-        "event": "pull_request",
+        "run_id": 45739568443,
         "conclusion": "success",
-        "head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
-        "workflow": "Windows E2E transport fail-closed regression",
-        "job": "transport-regression"
+        "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+        "workflow": "transport-regression"
       },
       {
-        "run_id": 45738280673,
-        "event": "pull_request",
+        "run_id": 45739568709,
         "conclusion": "success",
-        "head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
-        "workflow": "GitHub artifact custody fail-closed regression",
-        "job": "custody-regression"
+        "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+        "workflow": "artifact-custody-regression"
       },
       {
-        "run_id": 45738280653,
-        "event": "pull_request",
+        "run_id": 45739568625,
         "conclusion": "success",
-        "head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
-        "workflow": "Windows-all-auto Offline QA",
-        "jobs": [
-          "Offline preflight tests (ubuntu-latest)",
-          "Offline preflight tests (windows-latest)"
-        ],
+        "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+        "workflow": "offline-qa",
         "tests_run": 565,
-        "windows_skipped": 2
+        "windows_skipped": 2,
+        "ubuntu_skipped": 0
       }
     ],
-    "latest_verified_branch_head_observed_at_utc": "2026-11-26T01:50:00Z",
+    "latest_verified_branch_head_observed_at_utc": "2026-11-26T02:06:43Z",
     "live_branch_head_observation_20261126_013641": {
       "observed_at_utc": "2026-11-26T01:36:41Z",
       "pull_request": 165,
@@ -1023,450 +1420,251 @@
       "last_verified_branch_head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
       "offline_qa_tests_run": 565,
       "offline_qa_windows_skipped": 2
-    }
+    },
+    "snapshot_commit_ci": [
+      {
+        "run_id": 45739568443,
+        "conclusion": "success",
+        "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+        "workflow": "transport-regression"
+      },
+      {
+        "run_id": 45739568709,
+        "conclusion": "success",
+        "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+        "workflow": "artifact-custody-regression"
+      },
+      {
+        "run_id": 45739568625,
+        "conclusion": "success",
+        "head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+        "workflow": "offline-qa",
+        "tests_run": 565,
+        "windows_skipped": 2,
+        "ubuntu_skipped": 0
+      }
+    ],
+    "latest_live_branch_head_product_code_changed": false,
+    "latest_live_branch_head_parent_ci_status": "PASS_EXACT_HEAD_CI"
   },
   "pr161": {
     "number": 161,
-    "state": "OPEN_DRAFT",
     "head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
-    "exact_head_ci": [
+    "exact_head_ci_status": "PASS",
+    "runs": [
       {
         "run_id": 42712757936,
-        "event": "pull_request",
         "conclusion": "success",
-        "head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
-        "scope": "PR161 exact-head Offline QA only; not product E2E"
+        "scope": "Offline QA only"
       }
     ],
-    "push_ci": [
-      {
-        "run_id": 43403424936,
-        "event": "push",
-        "conclusion": "success",
-        "head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
-        "scope": "Offline QA only; not product E2E"
-      }
-    ],
-    "branch": "codex/e2e-id-state-classification-20261105",
-    "branch_compare": {
-      "status": "identical",
-      "ahead_by": 0,
-      "behind_by": 0
-    }
+    "product_e2e_status": "HOLD"
   },
   "pr171": {
     "number": 171,
-    "state": "OPEN_DRAFT",
     "head_sha": "764721021f13be96364529650b44fb439770bac9",
-    "exact_head_ci": [
+    "exact_head_ci_status": "PASS",
+    "runs": [
       {
         "run_id": 44437197470,
-        "event": "pull_request",
         "conclusion": "success",
-        "head_sha": "764721021f13be96364529650b44fb439770bac9",
-        "scope": "PR171 exact-head Offline QA only; Store upload dry-run not started"
+        "scope": "Offline QA only"
       }
     ],
-    "push_ci": [
-      {
-        "run_id": 44437190317,
-        "event": "push",
-        "conclusion": "success",
-        "head_sha": "764721021f13be96364529650b44fb439770bac9"
-      }
-    ],
-    "store_upload_bridge_present": true,
-    "store_upload_dry_run_started": false,
-    "eligible_fresh_unsold_products": 0,
-    "store_dry_run_started": false
+    "store_upload_dry_run": "NOT_STARTED",
+    "eligible_fresh_unsold_products": 0
   },
   "products": {
     "focus_session_desk": {
-      "lane": "APP",
-      "hold_class": "DELIVERY_HOLD",
-      "product_frozen_for_package": true,
+      "product": "Focus Session Desk",
+      "current_source_pr": 94,
       "current_source_branch": "codex/focus-store-assets-gate-20261118",
       "current_source_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
-      "current_source_pr": 94,
-      "current_source_pr_state": "OPEN_DRAFT",
-      "approved_identity_path": "products/focus-session-desk/store/approved-identity.json",
-      "approved_identity_blob_sha": "00c56e85ec7590783284e372ba100a3127614971",
-      "approved_identity_request_id": "app-focus-session-desk-8b00bc4e9082",
-      "approved_identity_source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
-      "approved_identity_expected_head_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
-      "approved_identity_package_version_gate": "HOLD",
-      "current_source_identity_binding_status": "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE",
-      "current_source_request_id_expected": "app-focus-session-desk-fb6293839bc7",
-      "current_source_request_status": "GENERATED__DRY_RUN_ARTIFACT_VERIFIED__IDENTITY_READBACK_PENDING",
-      "current_source_request_artifact_verified": true,
-      "current_source_request_branch_search_result_count": 1,
-      "package_version": null,
-      "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
-      "partner_center_authenticated_version_readback": "NOT_OBSERVED",
-      "real_msix": false,
-      "msix_export": {
-        "run_id": 44779273420,
-        "status": "FAILED_MISSING_VERIFIED_VERSION",
-        "artifact_id": null,
-        "exact_blocker": "MSIX_BUILD_HOLD: Missing verified version"
-      },
-      "assets": {
-        "status": "COMMITTED_ON_CURRENT_PR94_HEAD",
-        "raw_png_bytes_rehashed_in_this_run": false,
-        "StoreLogo": {
-          "blob_sha": "8017427aabf0e30168a88353588dc2ffdc2cba6d",
-          "dimensions": "300x300"
-        },
-        "Square150": {
-          "blob_sha": "c6060306f202b662831039b95b1352689da023c7",
-          "dimensions": "150x150"
-        },
-        "Square44": {
-          "blob_sha": "466a795ea01e34a28ac1db9aa7dcf3308464dbd0",
-          "dimensions": "44x44"
-        },
-        "owner": "00"
-      },
-      "gui_evidence": {
-        "run_id": 44779287840,
-        "conclusion": "success",
-        "head_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
-        "artifact_id": 14651506416,
-        "visual_review_required": true
-      },
-      "product_quality_score": 54,
-      "sale_decision": "DO_NOT_SELL_BELOW_80",
-      "expected_current_source_request_id": "app-focus-session-desk-fb6293839bc7",
-      "approved_identity_file_blob_sha": "00c56e85ec7590783284e372ba100a3127614971",
-      "product": "Focus Session Desk",
       "current_source_request_id": "app-focus-session-desk-fb6293839bc7",
-      "current_source_request": {
-        "request_id": "app-focus-session-desk-fb6293839bc7",
-        "status": "DRY_RUN",
-        "source_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
-        "expected_head_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
-        "source_repository": "shihuiarenjinba-png/AI-App-Factory",
-        "source_branch": "codex/focus-store-assets-gate-20261118",
-        "request_branch": "codex/focus-source-request-fb6293839bc7",
-        "request_branch_head_sha": "45560fb36eee3f2672ba1a1591f89edc6526865a",
-        "workflow_run_id": 45671921196,
-        "artifact_id": 15049692591,
-        "artifact_name": "focus-source-request-app-focus-session-desk-fb6293839bc7",
-        "artifact_sha256": "c8b15058243982d90699dfb2a885a71b064a0a02b01dcb3c7492dec83ec3afae",
-        "artifact_bytes": 2687,
-        "artifact_expires_at_utc": "2026-12-25T18:07:50Z",
-        "request_sha256": "a950b9bcf0bf59b45cc724651ed9a736181ff69388c04f8aefcdd7d9975b7a94",
-        "idempotency_key": "750bc660374613ddddb6303dea4ccb88b9f15d4b8854b543a8640aca5e059f55",
-        "operation": "PARTNER_CENTER_IDENTITY_REVALIDATION",
-        "action_scope": "READ_ONLY_IDENTITY_REVALIDATION",
-        "route": "MSIX_OR_PWA_APP",
-        "request_payload": {
-          "schema_version": "focus-source-request/1",
-          "request_id": "app-focus-session-desk-fb6293839bc7",
-          "operation": "PARTNER_CENTER_IDENTITY_REVALIDATION",
-          "product": {
-            "display_name": "Focus Session Desk",
-            "product_type": "APP",
-            "slug": "focus-session-desk"
-          },
-          "source_repository": "shihuiarenjinba-png/AI-App-Factory",
-          "source_branch": "codex/focus-store-assets-gate-20261118",
-          "source_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
-          "expected_head_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
-          "historical_identity": {
-            "request_id": "app-focus-session-desk-8b00bc4e9082",
-            "source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
-            "status": "HISTORICAL_ONLY_NOT_REUSED",
-            "reuse_for_current_source": false
-          },
-          "partner_center": {
-            "selection_code": "MSIX_OR_PWA_APP",
-            "selection_label": "MSIX or PWA app",
-            "action_scope": "READ_ONLY_IDENTITY_REVALIDATION",
-            "write_authorized": false
-          },
-          "package_version": {
-            "status": "HOLD_NOT_INFERRED",
-            "value": null
-          },
-          "required_operator_return_fields": [
-            "store_id",
-            "name",
-            "publisher",
-            "version",
-            "official_evidence_url",
-            "verified_by",
-            "operator_verified"
-          ],
-          "return_target": {
-            "repository": "shihuiarenjinba-png/AI-App-Factory",
-            "branch": "codex/focus-store-assets-gate-20261118",
-            "path": "products/focus-session-desk/store/approved-identity.json",
-            "expected_head_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
-            "apply_authorized": false
-          },
-          "source_drift_policy": "Reject this request if the named source branch no longer points to source_sha or if products/focus-session-desk differs from that commit.",
-          "idempotency_key": "750bc660374613ddddb6303dea4ccb88b9f15d4b8854b543a8640aca5e059f55",
-          "execution": {
-            "dry_run": true,
-            "identity_write": false,
-            "msix_build": false,
-            "partner_center_write": false,
-            "request_submitted": false,
-            "store_publication": false,
-            "store_submission": false
-          },
-          "action_scope": "READ_ONLY_IDENTITY_REVALIDATION",
-          "request_payload": {
-            "execution": {
-              "dry_run": true,
-              "identity_write": false,
-              "msix_build": false,
-              "partner_center_write": false,
-              "request_submitted": false,
-              "store_publication": false,
-              "store_submission": false
-            },
-            "idempotency_key": "750bc660374613ddddb6303dea4ccb88b9f15d4b8854b543a8640aca5e059f55",
-            "partner_center": {
-              "selection_code": "MSIX_OR_PWA_APP",
-              "selection_label": "MSIX or PWA app",
-              "action_scope": "READ_ONLY_IDENTITY_REVALIDATION",
-              "write_authorized": false
-            },
-            "package_version": {
-              "status": "HOLD_NOT_INFERRED",
-              "value": null
-            }
-          }
-        },
-        "verification": {
-          "schema_version": "focus-source-request-verification/1",
-          "request_id": "app-focus-session-desk-fb6293839bc7",
-          "request_sha256": "a950b9bcf0bf59b45cc724651ed9a736181ff69388c04f8aefcdd7d9975b7a94",
-          "idempotency_key": "750bc660374613ddddb6303dea4ccb88b9f15d4b8854b543a8640aca5e059f55",
-          "expected_head_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
-          "source_repository": "shihuiarenjinba-png/AI-App-Factory",
-          "source_branch": "codex/focus-store-assets-gate-20261118",
-          "source_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
-          "source_branch_head_check": "PASS",
-          "product_tree_unchanged_check": "PASS",
-          "request_tamper_check": "PASS",
-          "idempotent_replay_check": "PASS",
-          "dry_run": true,
-          "request_submitted": false,
-          "partner_center_write": false,
-          "identity_write": false,
-          "msix_build": false,
-          "store_submission": false,
-          "store_publication": false,
-          "execution": {
-            "dry_run": true,
-            "identity_write": false,
-            "msix_build": false,
-            "partner_center_write": false,
-            "request_submitted": false,
-            "store_publication": false,
-            "store_submission": false
-          },
-          "action_scope": "READ_ONLY_IDENTITY_REVALIDATION",
-          "operation": "PARTNER_CENTER_IDENTITY_REVALIDATION",
-          "request_payload": {
-            "execution": {
-              "dry_run": true,
-              "identity_write": false,
-              "msix_build": false,
-              "partner_center_write": false,
-              "request_submitted": false,
-              "store_publication": false,
-              "store_submission": false
-            },
-            "idempotency_key": "750bc660374613ddddb6303dea4ccb88b9f15d4b8854b543a8640aca5e059f55",
-            "partner_center": {
-              "selection_code": "MSIX_OR_PWA_APP",
-              "selection_label": "MSIX or PWA app",
-              "action_scope": "READ_ONLY_IDENTITY_REVALIDATION",
-              "write_authorized": false
-            },
-            "package_version": {
-              "status": "HOLD_NOT_INFERRED",
-              "value": null
-            }
-          }
-        },
-        "artifact": {
-          "artifact_id": 15049692591,
-          "artifact_name": "focus-source-request-app-focus-session-desk-fb6293839bc7",
-          "sha256": "c8b15058243982d90699dfb2a885a71b064a0a02b01dcb3c7492dec83ec3afae",
-          "size_bytes": 2687,
-          "downloaded_and_rehashed": true,
-          "digest_matches_github_metadata": true,
-          "zip_crc": "PASS",
-          "expires_at_utc": "2026-12-25T18:07:50Z"
-        },
-        "dry_run": true,
-        "request_submitted": false,
-        "partner_center_write": false,
-        "identity_write": false,
-        "apply_authorized": false,
-        "msix_build": false,
-        "store_submission": false,
-        "store_publication": false,
-        "official_identity_status": "NOT_COLLECTED",
-        "identity_readback_status": "NOT_COLLECTED",
-        "package_status": "NOT_BUILT",
-        "package_version": {
-          "status": "HOLD_NOT_INFERRED",
-          "value": null
-        },
-        "package_version_value": null,
-        "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
-        "next_stage": "READ_ONLY_PARTNER_CENTER_IDENTITY_REVALIDATION",
-        "verified_at_utc": "2026-11-25T19:35:52Z",
-        "execution": {
-          "dry_run": true,
-          "identity_write": false,
-          "msix_build": false,
-          "partner_center_write": false,
-          "request_submitted": false,
-          "store_publication": false,
-          "store_submission": false
-        }
-      },
-      "current_source_request_artifact_id": 15049692591,
-      "current_source_request_artifact_sha256": "c8b15058243982d90699dfb2a885a71b064a0a02b01dcb3c7492dec83ec3afae",
-      "current_source_request_artifact_bytes": 2687,
-      "current_source_request_request_sha256": "a950b9bcf0bf59b45cc724651ed9a736181ff69388c04f8aefcdd7d9975b7a94",
-      "current_source_request_idempotency_key": "750bc660374613ddddb6303dea4ccb88b9f15d4b8854b543a8640aca5e059f55",
-      "current_source_request_branch": "codex/focus-source-request-fb6293839bc7",
-      "current_source_request_branch_head_sha": "45560fb36eee3f2672ba1a1591f89edc6526865a",
+      "current_source_request_status": "GENERATED__DRY_RUN_ARTIFACT_VERIFIED__IDENTITY_READBACK_PENDING",
       "current_source_request_run_id": 45671921196,
-      "current_source_request_artifact_status": "DRY_RUN",
-      "current_source_request_artifact_downloaded_and_rehashed": true,
-      "current_source_request_artifact_digest_matches_github_metadata": true,
-      "current_source_request_artifact_zip_crc": "PASS",
-      "identity_return_scope": "HISTORICAL_SOURCE_ONLY",
-      "current_source_request_official_identity_status": "NOT_COLLECTED",
-      "current_source_request_identity_readback_status": "NOT_COLLECTED",
-      "current_source_request_operation": "PARTNER_CENTER_IDENTITY_REVALIDATION",
-      "current_source_request_action_scope": "READ_ONLY_IDENTITY_REVALIDATION",
-      "current_source_request_artifact_name": "focus-source-request-app-focus-session-desk-fb6293839bc7",
-      "current_source_request_package_status": "NOT_BUILT",
-      "current_source_request_package_version": null,
-      "current_source_request_package_version_gate_status": "HOLD_NOT_INFERRED",
+      "current_source_request_artifact_id": 15049692591,
+      "current_source_request_artifact_bytes": 2687,
+      "current_source_request_artifact_sha256": "c8b15058243982d90699dfb2a885a71b064a0a02b01dcb3c7492dec83ec3afae",
+      "current_source_request_sha256": "a950b9bcf0bf59b45cc724651ed9a736181ff69388c04f8aefcdd7d9975b7a94",
+      "current_source_request_idempotency_key": "750bc660374613ddddb6303dea4ccb88b9f15d4b8854b543a8640aca5e059f55",
       "current_source_request_dry_run": true,
       "current_source_request_submitted": false,
       "current_source_request_partner_center_write": false,
       "current_source_request_identity_write": false,
       "current_source_request_msix_build": false,
-      "current_source_request_apply_authorized": false,
-      "current_source_request_branch_search_at_utc": "2026-11-25T19:35:52Z",
-      "current_source_request_branch_search_query": "app-focus-session-desk-fb6293839bc7",
-      "current_source_request_branch_search_result_branch": "codex/focus-source-request-fb6293839bc7"
-    },
-    "file_integrity_ledger": {
-      "lane": "APP",
-      "hold_class": "DELIVERY_HOLD",
-      "product_frozen_for_package": true,
-      "current_source_branch": "codex/integrity-pr95-source-request-integration-20261125",
-      "current_source_sha": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
-      "current_source_pr": 115,
-      "current_source_base_pr": 95,
-      "current_source_base_sha": "f77a59d52705473a3633f0f6eae868e1ec6d6297",
-      "current_source_identity_binding_status": "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE",
-      "current_source_approved_identity_present": false,
-      "historical_approved_identity_commit": "db9a57af822788af4c8384499a6e343ec7b0353d",
-      "historical_approved_identity_source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
-      "historical_approved_identity_request_id": "app-file-integrity-ledger-d1108d12f7d1",
-      "historical_approved_identity_package_version_gate": "HOLD",
-      "current_source_request": {
-        "request_id": "app-file-integrity-ledger-33d612be2774",
-        "source_sha": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
-        "request_sha256": "dc477b03dd8eb024dd4145fb56cace5d57531a9ae3bbba74a487631f823b2557",
-        "idempotency_key": "a1bb56ad8ec3fcebf8c4d6ee5b9b96bbbc64e6ac4c6a481b73810f3ed0f03df2",
-        "run_id": 45422895649,
-        "artifact_id": 14934034365,
-        "artifact_sha256": "697528b3b0769e3962eebfa0efcdcb026618cd378d97fc60c4f234017882527e",
-        "artifact_bytes": 1958,
-        "status": "DRY_RUN",
-        "route": "MSIX_OR_PWA_APP",
-        "official_identity_status": "UNVERIFIED",
-        "identity_readback_status": "NOT_COLLECTED",
-        "package_version": null,
-        "package_status": "NOT_BUILT",
-        "dry_run": true,
-        "request_submitted": false,
-        "partner_center_write": false,
-        "identity_write": false,
-        "artifact_downloaded_and_rehashed": true,
-        "artifact_digest_matches_github_metadata": true,
-        "artifact_zip_crc": "PASS",
-        "next_stage": "LOCAL_WINDOWS_BUILD_NOT_IMPLEMENTED"
+      "historical_approved_identity": {
+        "path": "products/focus-session-desk/store/approved-identity.json",
+        "blob_sha": "00c56e85ec7590783284e372ba100a3127614971",
+        "request_id": "app-focus-session-desk-8b00bc4e9082",
+        "source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+        "store_id": "9P6452C61N7B",
+        "package_version_gate": "HOLD",
+        "current_source_reuse_allowed": false
       },
+      "current_source_identity_readback_status": "NOT_COLLECTED",
+      "current_source_identity_binding_status": "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE",
       "package_version": null,
       "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
-      "partner_center_authenticated_version_readback": "NOT_OBSERVED",
+      "msix_export": {
+        "run_id": 44779273420,
+        "status": "FAILED_MISSING_VERIFIED_VERSION",
+        "artifact_id": null,
+        "reason": "MSIX_BUILD_HOLD: Missing verified version"
+      },
+      "store_assets": {
+        "owner": "00",
+        "status": "PRESENT_ON_CURRENT_SOURCE__OWNER_BYTE_CHECK_REPORTED",
+        "regeneration_allowed": false,
+        "msix_embedding_status": "NOT_VERIFIED",
+        "items": [
+          {
+            "name": "StoreLogo.png",
+            "blob_sha": "8017427aabf0e30168a88353588dc2ffdc2cba6d",
+            "dimensions": "300x300"
+          },
+          {
+            "name": "Square150.png",
+            "blob_sha": "c6060306f202b662831039b95b1352689da023c7",
+            "dimensions": "150x150"
+          },
+          {
+            "name": "Square44.png",
+            "blob_sha": "466a795ea01e34a28ac1db9aa7dcf3308464dbd0",
+            "dimensions": "44x44"
+          }
+        ]
+      },
+      "exact_source_gui_artifact": {
+        "run_id": 44779287840,
+        "artifact_id": 14651506416,
+        "size_bytes": 157500,
+        "sha256": "c6cd277dda7a1e713754cf66c4321ce88ebbb217f4d497228dc559b335d5699b",
+        "artifact_contains_product_exe_bytes": false,
+        "reported_exe_sha256": "65f97c29809e5a0f10c2ed1fe8079d6a408f6844be8bc1589dec59506d37a009",
+        "status": "GUI_EVIDENCE_ONLY__PRODUCT_EXE_BYTES_NOT_PRESENT"
+      },
+      "separate_gui_followup": {
+        "pr": 102,
+        "head_sha": "3f2eb8b579bb19716590be4b5d6536db789742af",
+        "run_id": 45234786152,
+        "artifact_id": 14849620327,
+        "artifact_bytes": 187951,
+        "artifact_sha256": "0e3291ac4798d61f83bb9d3a2544eab67a69f384e5c17909ff98028f77929d45",
+        "visual_review_status": "PASS_36_VISUAL_REVIEW__100_PERCENT_AND_COLD_RESTART_PERSISTENCE"
+      },
+      "product_quality_assessment": {
+        "score": 54,
+        "decision": "DO_NOT_SELL__BELOW_80",
+        "threshold": 80
+      },
+      "hold_class": "DELIVERY_HOLD",
+      "functional_hold": false,
+      "product_frozen_for_package": true,
+      "real_msix": false,
+      "github_backlog_receipt": false,
+      "local_pull_receipt": false,
+      "local_checker_receipt": false,
+      "local_gui_install_receipt": false,
+      "product_e2e_pass": false,
+      "store_upload_test_eligible": false,
+      "last_observed_at_utc": "2026-11-26T02:06:43Z"
+    },
+    "file_integrity_ledger": {
+      "product": "File Integrity Ledger",
+      "current_source_pr": 115,
+      "current_source_branch": "codex/integrity-pr95-source-request-integration-20261125",
+      "current_source_sha": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
+      "current_source_request_id": "app-file-integrity-ledger-33d612be2774",
+      "current_source_request_status": "DRY_RUN",
+      "current_source_request_run_id": 45422895649,
+      "current_source_request_artifact_id": 14934034365,
+      "current_source_request_artifact_bytes": 1958,
+      "current_source_request_artifact_sha256": "697528b3b0769e3962eebfa0efcdcb026618cd378d97fc60c4f234017882527e",
+      "current_source_request_sha256": "dc477b03dd8eb024dd4145fb56cace5d57531a9ae3bbba74a487631f823b2557",
+      "current_source_request_idempotency_key": "a1bb56ad8ec3fcebf8c4d6ee5b9b96bbbc64e6ac4c6a481b73810f3ed0f03df2",
+      "current_source_request_dry_run": true,
+      "current_source_request_submitted": false,
+      "current_source_request_partner_center_write": false,
+      "current_source_request_identity_write": false,
+      "current_source_request_official_identity_status": "UNVERIFIED",
+      "current_source_request_identity_readback_status": "NOT_COLLECTED",
+      "current_source_request_package_status": "NOT_BUILT",
+      "historical_approved_identity": {
+        "path": "products/file-integrity-ledger/store/approved-identity.json",
+        "blob_sha": "78034cf62be3479f9ed752a2585ab31bb24c49ff",
+        "request_id": "app-file-integrity-ledger-d1108d12f7d1",
+        "source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
+        "package_version_gate": "HOLD"
+      },
+      "current_source_approved_identity_file": {
+        "status": "NOT_FOUND_ON_CURRENT_PR115_HEAD",
+        "http_status": 404,
+        "current_source_reuse_allowed": false
+      },
+      "current_source_identity_readback_status": "NOT_COLLECTED",
+      "current_source_identity_binding_status": "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE",
+      "package_version": null,
+      "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
       "msix_export": {
         "run_id": 45422811552,
         "workflow_conclusion": "success",
         "status": "SKIPPED_NO_ARTIFACT",
-        "exact_gate_output": "MSIX_SELECTION_HOLD: approved Identity absent; do not invent Store IDs",
+        "artifact_id": null,
+        "selection_gate_output": "MSIX_SELECTION_HOLD: approved Identity absent; do not invent Store IDs",
         "build_and_export_steps": "SKIPPED"
       },
-      "real_msix": false,
-      "assets": {
-        "source_pr": 95,
-        "status": "PRESERVED_IN_INTEGRATED_PR115",
-        "StoreLogo": {
-          "blob_sha": "e3c9a9426a1971f21175b9b045d4d5fef83f97d5",
-          "sha256": "224fa777280cf61877c14146e920fca32bb90bff6f0cea3df4ed0ac77c0645a9"
-        },
-        "Square150": {
-          "blob_sha": "df892bd2fcf7b56f9facd94054b2b1385313b030",
-          "sha256": "e00136c7a319756ccc48c2dc50136f5872e272e806cd592a6beb8922bbb1742"
-        },
-        "Square44": {
-          "blob_sha": "d57e7a25d2a9eaa2b54d00c610f3a1ad7d4a4d49",
-          "sha256": "bd61099427a770f8dff247f0f6928e5d50ba2cd8265797c7f13952e96147d70d"
-        }
-      },
-      "gui_evidence": {
+      "exact_source_gui_artifact": {
         "run_id": 45422895435,
-        "conclusion": "success",
-        "head_sha": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
         "artifact_id": 14934752145,
-        "artifact_sha256": "6faa6db6d0e05b6baa71347c31b6f4d871fedcf35e28b787a7fbdb99816ab04c",
+        "size_bytes": 11422614,
+        "sha256": "6faa6db6d0e05b6baa71347c31b6f4d871fedcf35e28b787a7fbdb99816ab04c",
         "exe_sha256": "425e8f03397fc00a7b1442d58cc99d460fea53238e83c5b96500ac450bab85c6",
+        "exe_sha256_independently_verified": true,
+        "artifact_bytes_independently_rehashed": true,
         "visual_review_required": true,
         "visual_review_status": "36_SCREENSHOT_INSPECTION_PASS__HUMAN_OWNER_REVIEW_REQUIRED"
       },
-      "current_source_request_id": "app-file-integrity-ledger-33d612be2774",
-      "current_source_request_run_id": 45422895649,
-      "current_source_request_artifact_id": 14934034365,
-      "current_source_request_artifact_sha256": "697528b3b0769e3962eebfa0efcdcb026618cd378d97fc60c4f234017882527e",
-      "current_source_request_artifact_bytes": 1958,
-      "current_source_request_artifact_status": "DRY_RUN",
-      "current_source_request_dry_run": true,
-      "current_source_request_submitted": false,
-      "current_source_request_official_identity_status": "UNVERIFIED",
-      "current_source_request_identity_readback_status": "NOT_COLLECTED",
-      "current_source_request_package_status": "NOT_BUILT",
-      "approved_identity_file_present_on_current_pr115_head": false,
+      "historical_pr100_gui_candidate": {
+        "pr": 100,
+        "head_sha": "081fc168544022c401ce95a0f481644568912337",
+        "artifact_id": 14840743814,
+        "artifact_bytes": 11444167,
+        "exe_bytes": 11494247,
+        "exe_sha256": "5b788cdb0bc7c63d92956228358983fefc1352797fa5d7133ab365d2a7d774aa",
+        "status": "SEPARATE_DIVERGED_GUI_CANDIDATE__NOT_CURRENT_PR115_SOURCE"
+      },
+      "hold_class": "DELIVERY_HOLD",
+      "functional_hold": false,
+      "product_frozen_for_package": true,
+      "real_msix": false,
+      "github_backlog_receipt": false,
+      "local_pull_receipt": false,
+      "local_checker_receipt": false,
+      "local_gui_install_receipt": false,
+      "product_e2e_pass": false,
       "human_visual_review_required": true,
-      "product": "File Integrity Ledger",
-      "current_source_request_status": "DRY_RUN__OFFICIAL_IDENTITY_UNVERIFIED__PACKAGE_NOT_BUILT__LOCAL_WINDOWS_BUILD_NOT_IMPLEMENTED",
-      "current_source_request_artifact_verified": true,
-      "current_source_request_artifact_downloaded_and_rehashed": true,
-      "current_source_request_artifact_digest_matches_github_metadata": true,
-      "current_source_request_artifact_zip_crc": "PASS",
-      "human_visual_review_status": "36_SCREENSHOT_INSPECTION_PASS__HUMAN_OWNER_REVIEW_REQUIRED"
+      "store_upload_test_eligible": false,
+      "last_observed_at_utc": "2026-11-26T02:06:43Z"
     }
   },
   "first_unconnected_interval": {
     "status": "BLOCKED_BEFORE_REAL_MSIX_BUILD",
-    "focus_blocker": "Current source fb629383 has a verified DRY_RUN request and source-head check PASS, but approved-identity.json is blob 00c56e85 and binds historical source 8b00bc4, not current source. Its package_version_gate is HOLD; current request package_version is HOLD_NOT_INFERRED/null. Read-only Partner Center identity revalidation has not returned.",
-    "file_integrity_blocker": "Current PR115 source 33d612be has no approved-identity.json (404). Request artifact is verified DRY_RUN, package NOT_BUILT, official Identity UNVERIFIED, version null; no Partner Center lookup/return was performed.",
-    "next_after_approved_identity_and_version": "Build exact-current-source real MSIX, then package SHA custody → GitHub backlog → local pull → Windows-checker → local GUI/install.",
+    "focus_session_desk": [
+      "CURRENT_SOURCE_REQUEST_GENERATED_AND_VERIFIED_DRY_RUN_ONLY",
+      "CURRENT_SOURCE_IDENTITY_READBACK_NOT_COLLECTED__HISTORICAL_IDENTITY_SOURCE_8B00BC4",
+      "AUTHORITATIVE_PACKAGE_VERSION_REQUIRED__MSIX_EXPORT_FAILED_MISSING_VERIFIED_VERSION",
+      "PR94_GUI_ARTIFACT_14651506416_DOES_NOT_CONTAIN_PRODUCT_EXE_BYTES",
+      "STORE_PNG_EMBEDDING_IN_REAL_MSIX_NOT_VERIFIED"
+    ],
+    "file_integrity_ledger": [
+      "CURRENT_PR115_APPROVED_IDENTITY_FILE_404",
+      "OFFICIAL_IDENTITY_READBACK_NOT_COLLECTED",
+      "AUTHORITATIVE_PACKAGE_VERSION_REQUIRED",
+      "HUMAN_OWNER_VISUAL_REVIEW_REQUIRED",
+      "MSIX_EXPORT_SKIPPED_NO_ARTIFACT_APPROVED_IDENTITY_ABSENT",
+      "LOCAL_WINDOWS_BUILD_NOT_IMPLEMENTED"
+    ],
     "real_msix": false,
     "package_sha_custody": false,
     "github_backlog_receipt": false,
@@ -1512,71 +1710,66 @@
   },
   "version_discovery": {
     "status": "NO_AUTHORITATIVE_VERSION_FOUND_IN_REVIEWED_EVIDENCE",
-    "last_checked_at_utc": "2026-11-26T01:02:18Z",
     "decision": "KEEP_VERSION_HOLD__DO_NOT_INFER_OR_WRITE_VERSION",
-    "partner_center_authenticated_readback": "NOT_OBSERVED__BROWSER_CONTEXT_UNAVAILABLE",
-    "reviewed": [
-      "Fresh direct read at 2026-11-26T01:02:18Z: Focus PR94 exact HEAD fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79 still contains approved-identity.json blob 00c56e85ec7590783284e372ba100a3127614971, but request/source/verified_source/expected_head remain bound to historical 8b00bc4e90828c4282463826873aa8dfd2eb93f4; package_version_gate=HOLD and no package_version field. Current-source request app-focus-session-desk-fb6293839bc7 is DRY_RUN only; artifact 15049692591 is verified, but official Identity and Version readback are NOT_COLLECTED.",
-      "Fresh direct read at 2026-11-26T01:02:18Z: File Integrity PR115 exact HEAD 33d612be2774ac155ea3d85289ec5cb7981c81c1 has no approved-identity.json (404). Historical Identity at db9a57af822788af4c8384499a6e343ec7b0353d binds only source d1108d12f7d1697af30400f97c7db39cba5e6791 and package_version_gate=HOLD; current request app-file-integrity-ledger-33d612be2774 remains DRY_RUN, official Identity UNVERIFIED/NOT_COLLECTED, package NOT_BUILT, Version null.",
-      "Partner Center authenticated readback was not available in this run: the connected ChatGPT browser context was unavailable and no TinyFish browser profile recorded a Microsoft sign-in. No Version was inferred or written; keep both product gates HOLD."
-    ]
+    "focus_session_desk": "CURRENT_SOURCE_IDENTITY_READBACK_NOT_COLLECTED__HISTORICAL_IDENTITY_SOURCE_MISMATCH",
+    "file_integrity_ledger": "CURRENT_SOURCE_APPROVED_IDENTITY_FILE_404__OFFICIAL_READBACK_NOT_COLLECTED"
   },
   "store_upload_test": {
     "eligible_fresh_unsold_products": 0,
+    "status": "NOT_RUN_NO_PRODUCT_MEETS_ALL_GATES",
     "dry_run_started": false,
-    "live_partner_center_write_allowed": false,
-    "store_submission_allowed": false,
-    "certification_allowed": false,
-    "publish_allowed": false,
     "bridge_pr": 171,
     "bridge_head": "764721021f13be96364529650b44fb439770bac9",
-    "status": "NOT_RUN_NO_PRODUCT_MEETS_ALL_GATES",
-    "live_started": false,
-    "draft_saved": 0,
-    "hold": 2,
-    "unknown": 0,
-    "error": 0
+    "bridge_ci_run": 44437197470,
+    "store_submission_allowed": false,
+    "certification_allowed": false,
+    "publish_allowed": false
   },
   "local_code_sync": {
-    "receipt_status": "NOT_OBSERVED__CLOUD_PASS_ONLY",
-    "local_windows_receipt_verified": false
+    "status": "NOT_OBSERVED__CLOUD_PASS_ONLY",
+    "exact_sha_receipt": false
   },
   "ledger_reconciliation": {
-    "status": "RECONCILED_TO_PR165_C68ADC_CODE_86B6AA_BRANCH_HEAD",
+    "status": "RECONCILED_TO_PR165_13F8ED4F_EXACT_HEAD__PRODUCT_E2E_HOLD",
     "active_ledger_path": "ops/active_e2e_handoff.json",
-    "active_ledger_blob_sha": "8c902dadc2cd4c853545c4386307307f4cbadbd7",
-    "active_ledger_updated_at_utc": "2026-11-26T01:59:00Z",
-    "active_ledger_recorded_pr165_head": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb",
-    "actual_pr165_head": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
-    "snapshot_parent_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
+    "active_ledger_blob_sha": "4217211774742c8ef436d558d1e3fe098d1f6008",
+    "active_ledger_updated_at_utc": "2026-11-26T02:06:43Z",
+    "active_ledger_recorded_pr165_head": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+    "actual_pr165_head": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+    "snapshot_parent_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
     "comparison": {
       "status": "ahead",
-      "ahead_by": 18,
+      "ahead_by": 6,
       "behind_by": 0,
-      "total_commits": 18,
-      "base_sha": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb"
+      "total_commits": 6,
+      "base_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23"
     },
     "active_ledger_reconciled": true,
     "active_ledger_direct_content_available": true,
-    "active_ledger_direct_update_performed": true,
-    "latest_verified_head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
+    "active_ledger_direct_update_performed": false,
+    "latest_verified_head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
     "current_branch_head_ci_status": "PASS_EXACT_HEAD_CI",
     "current_branch_head_ci_run_ids": [
-      45738280697,
-      45738280673,
-      45738280653
+      45739568443,
+      45739568709,
+      45739568625
     ],
-    "note": "The active ledger is reconciled to last fully verified PR165 head 86b6aa06. Two later test-only tips had snapshot metadata assertion failures; no product code changed. The failure records are kept separately from the stable reconciliation status enum. Product E2E remains HOLD.",
+    "note": "The canonical ledger was fetched from its exact Git blob and the proposed replacement matches the directly observed PR165 base head 13f8ed4f. This update is staged on a draft stacked PR; PR165 itself was not directly modified or force-pushed.",
     "active_ledger_recorded_pr165_code_head": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb",
-    "actual_pr165_branch_head": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
-    "latest_verified_code_head_sha": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb",
+    "actual_pr165_branch_head": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+    "latest_verified_code_head_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
     "snapshot_commit_scope": "OPERATIONS_AND_REGRESSION_TESTS_ONLY",
     "snapshot_commit_ci_status": "PASS_EXACT_HEAD_CI",
-    "current_branch_head_parent_ci_status": "NOT_OBSERVED_FOR_CURRENT_PARENT",
-    "current_branch_head_parent_ci_run_ids": [],
-    "active_ledger_content_fetch_status": "FETCHED_DIRECTLY_FROM_EXACT_BLOB_BYTES__NOT_TREATED_AS_EMPTY_FILE",
+    "current_branch_head_parent_ci_status": "PASS_EXACT_HEAD_CI",
+    "current_branch_head_parent_ci_run_ids": [
+      45739553986,
+      45739554048,
+      45739553974
+    ],
+    "active_ledger_content_fetch_status": "FETCHED_DIRECTLY_FROM_EXACT_BLOB_BYTES",
     "latest_push_tip_sha": "7f3f555fa82d16987c64f8378978cc7ae2fd4b55",
-    "latest_push_tip_ci_status": "FAIL_OFFLINE_QA__THREE_SNAPSHOT_METADATA_ASSERTIONS"
+    "latest_push_tip_ci_status": "FAIL_OFFLINE_QA__THREE_SNAPSHOT_METADATA_ASSERTIONS",
+    "active_ledger_update_proposed_in_stacked_pr": true
   },
   "safety": {
     "e2e_pass": false,
@@ -1593,7 +1786,7 @@
     "version_inference_allowed": false,
     "cas_allowed": false
   },
-  "next_action": "Focus Session Desk rank 1: obtain authenticated read-only Partner Center current-source Identity/Version readback for source fb629383; existing approved-identity.json is historical 8b00bc4 and current request remains DRY_RUN. File Integrity rank 2: current PR115 source 33d612be has no approved-identity.json; its request remains DRY_RUN and package NOT_BUILT. Do not infer Version, reuse historical Identity, generate PNGs, build a package, or start Store upload-test until all gates are independently verified.",
+  "next_action": "Focus rank 1: obtain read-only current-source Identity/Version evidence for app-focus-session-desk-fb6293839bc7; do not reuse historical 8b00 Identity. File rank 2: complete human visual review and read-only current-source Identity/Version revalidation; current PR115 approved-identity.json is 404. Only after approved current Identity + authoritative Version + assets are verified, build real MSIX, then package SHA custody → backlog → local pull → Windows-checker → local GUI/install. No Partner Center write.",
   "history": [
     {
       "observed_at_utc": "2026-11-25T18:55:47Z",
@@ -1734,7 +1927,7 @@
     "product_e2e_status": "HOLD",
     "product_code_changed": false
   },
-  "latest_test_observation_at_utc": "2026-11-26T00:51:09Z",
+  "latest_test_observation_at_utc": "2026-11-26T02:06:43Z",
   "latest_live_head_observation": {
     "observed_at_utc": "2026-11-26T01:50:00Z",
     "pull_request": 165,
@@ -2086,5 +2279,212 @@
     "product_code_changed": false,
     "product_e2e_status": "HOLD",
     "e2e_pass": false
+  },
+  "reconciliation_pr": {
+    "branch": "codex/36-pr165-ledger-reconcile-20261126-1106",
+    "base_branch": "codex/e2e-artifact-custody-20261114",
+    "base_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+    "state": "DRAFT",
+    "ci_status": "PENDING_EXACT_HEAD_CI"
+  },
+  "focus_file_delivery_observation_20261126": {
+    "observed_at_utc": "2026-11-26T02:06:43Z",
+    "focus_session_desk": {
+      "product": "Focus Session Desk",
+      "current_source_pr": 94,
+      "current_source_branch": "codex/focus-store-assets-gate-20261118",
+      "current_source_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+      "current_source_request_id": "app-focus-session-desk-fb6293839bc7",
+      "current_source_request_status": "GENERATED__DRY_RUN_ARTIFACT_VERIFIED__IDENTITY_READBACK_PENDING",
+      "current_source_request_run_id": 45671921196,
+      "current_source_request_artifact_id": 15049692591,
+      "current_source_request_artifact_bytes": 2687,
+      "current_source_request_artifact_sha256": "c8b15058243982d90699dfb2a885a71b064a0a02b01dcb3c7492dec83ec3afae",
+      "current_source_request_sha256": "a950b9bcf0bf59b45cc724651ed9a736181ff69388c04f8aefcdd7d9975b7a94",
+      "current_source_request_idempotency_key": "750bc660374613ddddb6303dea4ccb88b9f15d4b8854b543a8640aca5e059f55",
+      "current_source_request_dry_run": true,
+      "current_source_request_submitted": false,
+      "current_source_request_partner_center_write": false,
+      "current_source_request_identity_write": false,
+      "current_source_request_msix_build": false,
+      "historical_approved_identity": {
+        "path": "products/focus-session-desk/store/approved-identity.json",
+        "blob_sha": "00c56e85ec7590783284e372ba100a3127614971",
+        "request_id": "app-focus-session-desk-8b00bc4e9082",
+        "source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+        "store_id": "9P6452C61N7B",
+        "package_version_gate": "HOLD",
+        "current_source_reuse_allowed": false
+      },
+      "current_source_identity_readback_status": "NOT_COLLECTED",
+      "current_source_identity_binding_status": "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE",
+      "package_version": null,
+      "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
+      "msix_export": {
+        "run_id": 44779273420,
+        "status": "FAILED_MISSING_VERIFIED_VERSION",
+        "artifact_id": null,
+        "reason": "MSIX_BUILD_HOLD: Missing verified version"
+      },
+      "store_assets": {
+        "owner": "00",
+        "status": "PRESENT_ON_CURRENT_SOURCE__OWNER_BYTE_CHECK_REPORTED",
+        "regeneration_allowed": false,
+        "msix_embedding_status": "NOT_VERIFIED",
+        "items": [
+          {
+            "name": "StoreLogo.png",
+            "blob_sha": "8017427aabf0e30168a88353588dc2ffdc2cba6d",
+            "dimensions": "300x300"
+          },
+          {
+            "name": "Square150.png",
+            "blob_sha": "c6060306f202b662831039b95b1352689da023c7",
+            "dimensions": "150x150"
+          },
+          {
+            "name": "Square44.png",
+            "blob_sha": "466a795ea01e34a28ac1db9aa7dcf3308464dbd0",
+            "dimensions": "44x44"
+          }
+        ]
+      },
+      "exact_source_gui_artifact": {
+        "run_id": 44779287840,
+        "artifact_id": 14651506416,
+        "size_bytes": 157500,
+        "sha256": "c6cd277dda7a1e713754cf66c4321ce88ebbb217f4d497228dc559b335d5699b",
+        "artifact_contains_product_exe_bytes": false,
+        "reported_exe_sha256": "65f97c29809e5a0f10c2ed1fe8079d6a408f6844be8bc1589dec59506d37a009",
+        "status": "GUI_EVIDENCE_ONLY__PRODUCT_EXE_BYTES_NOT_PRESENT"
+      },
+      "separate_gui_followup": {
+        "pr": 102,
+        "head_sha": "3f2eb8b579bb19716590be4b5d6536db789742af",
+        "run_id": 45234786152,
+        "artifact_id": 14849620327,
+        "artifact_bytes": 187951,
+        "artifact_sha256": "0e3291ac4798d61f83bb9d3a2544eab67a69f384e5c17909ff98028f77929d45",
+        "visual_review_status": "PASS_36_VISUAL_REVIEW__100_PERCENT_AND_COLD_RESTART_PERSISTENCE"
+      },
+      "product_quality_assessment": {
+        "score": 54,
+        "decision": "DO_NOT_SELL__BELOW_80",
+        "threshold": 80
+      },
+      "hold_class": "DELIVERY_HOLD",
+      "functional_hold": false,
+      "product_frozen_for_package": true,
+      "real_msix": false,
+      "github_backlog_receipt": false,
+      "local_pull_receipt": false,
+      "local_checker_receipt": false,
+      "local_gui_install_receipt": false,
+      "product_e2e_pass": false,
+      "store_upload_test_eligible": false,
+      "last_observed_at_utc": "2026-11-26T02:06:43Z"
+    },
+    "file_integrity_ledger": {
+      "product": "File Integrity Ledger",
+      "current_source_pr": 115,
+      "current_source_branch": "codex/integrity-pr95-source-request-integration-20261125",
+      "current_source_sha": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
+      "current_source_request_id": "app-file-integrity-ledger-33d612be2774",
+      "current_source_request_status": "DRY_RUN",
+      "current_source_request_run_id": 45422895649,
+      "current_source_request_artifact_id": 14934034365,
+      "current_source_request_artifact_bytes": 1958,
+      "current_source_request_artifact_sha256": "697528b3b0769e3962eebfa0efcdcb026618cd378d97fc60c4f234017882527e",
+      "current_source_request_sha256": "dc477b03dd8eb024dd4145fb56cace5d57531a9ae3bbba74a487631f823b2557",
+      "current_source_request_idempotency_key": "a1bb56ad8ec3fcebf8c4d6ee5b9b96bbbc64e6ac4c6a481b73810f3ed0f03df2",
+      "current_source_request_dry_run": true,
+      "current_source_request_submitted": false,
+      "current_source_request_partner_center_write": false,
+      "current_source_request_identity_write": false,
+      "current_source_request_official_identity_status": "UNVERIFIED",
+      "current_source_request_identity_readback_status": "NOT_COLLECTED",
+      "current_source_request_package_status": "NOT_BUILT",
+      "historical_approved_identity": {
+        "path": "products/file-integrity-ledger/store/approved-identity.json",
+        "blob_sha": "78034cf62be3479f9ed752a2585ab31bb24c49ff",
+        "request_id": "app-file-integrity-ledger-d1108d12f7d1",
+        "source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
+        "package_version_gate": "HOLD"
+      },
+      "current_source_approved_identity_file": {
+        "status": "NOT_FOUND_ON_CURRENT_PR115_HEAD",
+        "http_status": 404,
+        "current_source_reuse_allowed": false
+      },
+      "current_source_identity_readback_status": "NOT_COLLECTED",
+      "current_source_identity_binding_status": "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE",
+      "package_version": null,
+      "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
+      "msix_export": {
+        "run_id": 45422811552,
+        "workflow_conclusion": "success",
+        "status": "SKIPPED_NO_ARTIFACT",
+        "artifact_id": null,
+        "selection_gate_output": "MSIX_SELECTION_HOLD: approved Identity absent; do not invent Store IDs",
+        "build_and_export_steps": "SKIPPED"
+      },
+      "exact_source_gui_artifact": {
+        "run_id": 45422895435,
+        "artifact_id": 14934752145,
+        "size_bytes": 11422614,
+        "sha256": "6faa6db6d0e05b6baa71347c31b6f4d871fedcf35e28b787a7fbdb99816ab04c",
+        "exe_sha256": "425e8f03397fc00a7b1442d58cc99d460fea53238e83c5b96500ac450bab85c6",
+        "exe_sha256_independently_verified": true,
+        "artifact_bytes_independently_rehashed": true,
+        "visual_review_required": true,
+        "visual_review_status": "36_SCREENSHOT_INSPECTION_PASS__HUMAN_OWNER_REVIEW_REQUIRED"
+      },
+      "historical_pr100_gui_candidate": {
+        "pr": 100,
+        "head_sha": "081fc168544022c401ce95a0f481644568912337",
+        "artifact_id": 14840743814,
+        "artifact_bytes": 11444167,
+        "exe_bytes": 11494247,
+        "exe_sha256": "5b788cdb0bc7c63d92956228358983fefc1352797fa5d7133ab365d2a7d774aa",
+        "status": "SEPARATE_DIVERGED_GUI_CANDIDATE__NOT_CURRENT_PR115_SOURCE"
+      },
+      "hold_class": "DELIVERY_HOLD",
+      "functional_hold": false,
+      "product_frozen_for_package": true,
+      "real_msix": false,
+      "github_backlog_receipt": false,
+      "local_pull_receipt": false,
+      "local_checker_receipt": false,
+      "local_gui_install_receipt": false,
+      "product_e2e_pass": false,
+      "human_visual_review_required": true,
+      "store_upload_test_eligible": false,
+      "last_observed_at_utc": "2026-11-26T02:06:43Z"
+    },
+    "first_unconnected_interval": {
+      "status": "BLOCKED_BEFORE_REAL_MSIX_BUILD",
+      "focus_session_desk": [
+        "CURRENT_SOURCE_REQUEST_GENERATED_AND_VERIFIED_DRY_RUN_ONLY",
+        "CURRENT_SOURCE_IDENTITY_READBACK_NOT_COLLECTED__HISTORICAL_IDENTITY_SOURCE_8B00BC4",
+        "AUTHORITATIVE_PACKAGE_VERSION_REQUIRED__MSIX_EXPORT_FAILED_MISSING_VERIFIED_VERSION",
+        "PR94_GUI_ARTIFACT_14651506416_DOES_NOT_CONTAIN_PRODUCT_EXE_BYTES",
+        "STORE_PNG_EMBEDDING_IN_REAL_MSIX_NOT_VERIFIED"
+      ],
+      "file_integrity_ledger": [
+        "CURRENT_PR115_APPROVED_IDENTITY_FILE_404",
+        "OFFICIAL_IDENTITY_READBACK_NOT_COLLECTED",
+        "AUTHORITATIVE_PACKAGE_VERSION_REQUIRED",
+        "HUMAN_OWNER_VISUAL_REVIEW_REQUIRED",
+        "MSIX_EXPORT_SKIPPED_NO_ARTIFACT_APPROVED_IDENTITY_ABSENT",
+        "LOCAL_WINDOWS_BUILD_NOT_IMPLEMENTED"
+      ],
+      "real_msix": false,
+      "package_sha_custody": false,
+      "github_backlog_receipt": false,
+      "local_pull_receipt": false,
+      "windows_checker_receipt": false,
+      "local_gui_install_receipt": false,
+      "product_e2e_pass": false
+    }
   }
 }
