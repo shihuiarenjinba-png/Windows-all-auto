@@ -12,6 +12,7 @@ from urllib.parse import urlsplit
 from urllib.request import urlopen
 import re
 import json
+import hashlib
 
 from uploader.core import UploadError, VerifiedJob
 from uploader.receipts import receipt_matches_job
@@ -51,6 +52,33 @@ def safe_page_metadata(page: Any) -> dict[str, str]:
     return {"title": title, "scheme": scheme, "hostname": hostname, "path": path}
 
 
+def _page_has_signed_in_session(page: Any) -> bool:
+    """Read-only, conservative check used only to distinguish exact duplicate tabs."""
+    try:
+        meta = safe_page_metadata(page)
+        if meta["scheme"] != "https" or meta["hostname"] != PARTNER_HOST:
+            return False
+        if any(part in meta["path"].casefold() for part in ("login", "signin")):
+            return False
+        return page.locator("input[type='password']").count() == 0
+    except Exception:
+        return False
+
+
+def _duplicate_target_signature(page: Any, meta: dict[str, str], config: dict[str, Any]) -> str | None:
+    """Return a private digest only when duplicate tabs expose the same complete target view."""
+    try:
+        body = page.locator("body").inner_text()
+    except Exception:
+        return None
+    normalized = " ".join(str(body).split())
+    product_name = str(config.get("product_name", "")).strip()
+    if not normalized or (product_name and product_name.casefold() not in (meta["title"] + " " + normalized).casefold()):
+        return None
+    signature_input = "\n".join((meta["scheme"], meta["hostname"], meta["path"], meta["title"], normalized))
+    return hashlib.sha256(signature_input.encode("utf-8")).hexdigest()
+
+
 def select_partner_center_page(pages: list[Any], config: dict[str, Any]) -> tuple[Any, str, list[dict[str, str]]]:
     """Select one page by exact DCA Draft, then exact Product, then sole PC page."""
     product_id = str(config.get("product_id", ""))
@@ -66,7 +94,17 @@ def select_partner_center_page(pages: list[Any], config: dict[str, Any]) -> tupl
             partner_pages.append((page, meta))
     exact = [(page, meta) for page, meta in partner_pages if meta["path"].rstrip("/") == draft_path]
     if len(exact) > 1:
-        raise UploadError("PARTNER_CENTER_TAB_AMBIGUOUS", f"Multiple exact DCA Draft tabs matched; candidates={_safe_candidates([m for _, m in exact])}")
+        # Prefer the sole exact-route tab with a live signed-in session.
+        # If several exact-route tabs remain, collapse them only when their
+        # visible target-page content is identical. No tab is closed or mutated.
+        signed_in = [(page, meta) for page, meta in exact if _page_has_signed_in_session(page)]
+        if len(signed_in) == 1:
+            return signed_in[0][0], "READY_EXACT_DRAFT_TAB", [m for _, m in partner_pages]
+        comparable = signed_in if signed_in else exact
+        signatures = [_duplicate_target_signature(page, meta, config) for page, meta in comparable]
+        if signatures and signatures[0] is not None and all(sig == signatures[0] for sig in signatures):
+            return comparable[0][0], "READY_EXACT_DRAFT_TAB", [m for _, m in partner_pages]
+        raise UploadError("PARTNER_CENTER_TAB_AMBIGUOUS", f"Multiple exact DCA Draft tabs are not demonstrably equivalent; candidates={_safe_candidates([m for _, m in exact])}")
     if exact:
         return exact[0][0], "READY_EXACT_DRAFT_TAB", [m for _, m in partner_pages]
     product = [(page, meta) for page, meta in partner_pages if meta["path"].startswith(product_prefix)]
@@ -417,8 +455,21 @@ class PartnerCenterCDPConnection:
                 "navigation_performed": False, "clicks_performed": False, "save_performed": False}
         try:
             selected, status, candidates = select_partner_center_page(pages, self.config)
+            exact_path = f"/en-us/dashboard/products/{self.config.get('product_id', '')}/submissions/{self.config.get('submission_id', '')}/packages"
+            equivalent_duplicates = sum(
+                1 for candidate in pages
+                if safe_page_metadata(candidate)["scheme"] == "https"
+                and safe_page_metadata(candidate)["hostname"] == PARTNER_HOST
+                and safe_page_metadata(candidate)["path"].rstrip("/") == exact_path
+            )
+            resolution = None
+            if equivalent_duplicates > 1:
+                resolution = "Equivalent exact-Draft tabs were compared read-only; selected one deterministic page without closing or changing either tab."
             base.update({"status": status, "selected_page": safe_page_metadata(selected),
-                         "candidate_partner_center_pages": candidates})
+                         "candidate_partner_center_pages": candidates,
+                         "exact_draft_tab_count": equivalent_duplicates})
+            if resolution:
+                base["selection_resolution"] = resolution
             try:
                 PartnerCenterBrowserPort(selected, self.config)._assert_session()
                 base["authentication_state"] = "SIGNED_IN_SESSION_PRESENT"
