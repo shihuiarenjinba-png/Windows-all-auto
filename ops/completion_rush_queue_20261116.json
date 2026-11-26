@@ -699,7 +699,7 @@
           "msix_status": "NOT_BUILT"
         }
       },
-      "current_source_identity_binding_status": "CURRENT_SOURCE_APPROVED_IDENTITY_FILE_ABSENT",
+      "current_source_identity_binding_status": "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE",
       "current_source_identity_binding_detail": "Historical approved Identity at commit db9a57af is bound to d1108d12 and is absent at current PR95 HEAD 4474af31 and PR97 HEAD d09973e3. PR95 diverges from the approved source. Do not reuse the old binding.",
       "approved_identity_file_present_at_approved_commit": true,
       "approved_identity_file_present_on_current_gui_head": false,
@@ -1227,7 +1227,8 @@
         "human_visual_review_status": "PASS",
         "package_version": null,
         "real_msix": false
-      }
+      },
+      "current_source_identity_detail": "APPROVED_IDENTITY_FILE_ABSENT_ON_CURRENT_PR115_HEAD"
     },
     {
       "rank": 3,
