@@ -512,7 +512,24 @@
       "current_source_request_operation": "PARTNER_CENTER_IDENTITY_REVALIDATION",
       "current_source_request_action_scope": "READ_ONLY_IDENTITY_REVALIDATION",
       "current_source_request_artifact_name": "focus-source-request-app-focus-session-desk-fb6293839bc7",
-      "current_source_request_package_version_gate_status": "HOLD_NOT_INFERRED"
+      "current_source_request_package_version_gate_status": "HOLD_NOT_INFERRED",
+      "current_source_exe_qa_pr": 123,
+      "current_source_exe_qa_head_sha": "1dfeff00d02c2f97649a817adcbdde0280cc18b9",
+      "current_source_exe_core_run_id": 45746737336,
+      "current_source_exe_gui_run_id": 45746737287,
+      "current_source_exe_artifact_id": 15083856249,
+      "current_source_exe_artifact_size_bytes": 11414184,
+      "current_source_exe_artifact_zip_sha256": "d3c36255a282d1912c6fe5e00efdbaad217433033226744fb61cf6e493c9f19d",
+      "current_source_exe_bytes_present_in_artifact": true,
+      "current_source_exe_bytes": 11477122,
+      "current_source_exe_sha256": "d1ef4b389b1344e4886eb7728173508ea7754b795d476340dffd46f9024ddcda",
+      "current_source_exe_receipt_sha256": "98016fe288a0921addfea63e5f74fc55dc573171ea840511d584fbd247ef1786",
+      "current_source_exe_custody_status": "VERIFIED_UNSIGNED_PRE_IDENTITY_EXE_ONLY",
+      "current_source_exe_custody_owner": "00",
+      "current_source_exe_custody_reported_at_utc": "2026-11-26T03:09:25Z",
+      "progress_visual_review_required": true,
+      "owner_visual_signoff_status": "PENDING",
+      "store_assets_msix_embedding_status": "NOT_VERIFIED"
     },
     {
       "rank": 2,
@@ -1153,7 +1170,12 @@
       "current_source_request_submitted": false,
       "current_source_request_partner_center_write": false,
       "current_source_request_identity_write": false,
-      "last_observed_at_utc": "2026-11-25T19:35:52Z"
+      "last_observed_at_utc": "2026-11-25T19:35:52Z",
+      "current_source_exe_custody_status": "VERIFIED_UNSIGNED_PRE_IDENTITY_EXE_ONLY",
+      "current_source_exe_artifact_id": 14934752145,
+      "current_source_exe_artifact_zip_sha256": "6faa6db6d0e05b6baa71347c31b6f4d871fedcf35e28b787a7fbdb99816ab04c",
+      "current_source_exe_sha256": "425e8f03397fc00a7b1442d58cc99d460fea53238e83c5b96500ac450bab85c6",
+      "current_source_exe_bytes": 11494118
     },
     {
       "rank": 3,
@@ -9836,5 +9858,15 @@
     "product_code_changed": false,
     "product_e2e_status": "HOLD",
     "e2e_pass": false
-  }
+  },
+  "latest_observation_at_utc": "2026-11-26T04:03:24Z",
+  "latest_observation_key": "pr165_live_head_observation_20261126_040324",
+  "pr165_latest_live_head_sha": "f2a8d5b3f96b395ff248f42125daa26295f94c78",
+  "pr165_latest_live_head_parent_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
+  "pr165_latest_live_head_ci_run_ids": [
+    45744533119,
+    45744533062,
+    45744533258
+  ],
+  "store_upload_test_eligible_products": 0
 }
