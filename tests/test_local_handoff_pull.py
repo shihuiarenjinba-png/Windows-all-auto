@@ -241,18 +241,18 @@ class LocalPullTests(unittest.TestCase):
 
     def test_illegal_store_approval_rejected(self):
         self.q["items"][0]["submit_allowed"]=True
-        with self.assertRaisesRegex(ValueError,"authorize Store submission"):
+        with self.assertRaisesRegex(ValueError,"QUEUE_STORE_AUTHORITY_INVALID"):
             self.pull_fake(self.root/"inbox")
 
     def test_corrupt_queue_count_rejected(self):
         self.q["intake_count"]=2
-        with self.assertRaisesRegex(ValueError,"Invalid queue count"):
+        with self.assertRaisesRegex(ValueError,"QUEUE_PERMISSION_OR_COUNT_INVALID"):
             self.pull_fake(self.root/"inbox")
 
     def test_queue_cannot_underreport_package_size(self):
         # A forged small size must not bypass the 2 GiB quota.
         self.q["items"][0]["package_bytes"]=1
-        with self.assertRaisesRegex(ValueError,"Queue metadata mismatch: package_bytes"):
+        with self.assertRaisesRegex(ValueError,"QUEUE_PACKAGE_METADATA_MISMATCH"):
             self.pull_fake(self.root/"inbox")
         self.assertEqual(list((self.root/"inbox").iterdir()),[])
 
