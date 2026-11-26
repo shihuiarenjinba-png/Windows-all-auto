@@ -43,7 +43,7 @@ class FocusFileTransportReconciliation20261126(unittest.TestCase):
         current = self.data["current_branch_head_observation"]
         self.assertEqual(current["head_sha"], "46af9c95e56755c5894e800edce8d2fe69f06ac9")
         self.assertEqual(current["parent_sha"], "e42184cc073acb418473634382c50533aca6d062")
-        self.assertEqual(current["status"], "PASS_EXACT_HEAD_CI")
+        self.assertEqual(current["exact_head_ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual(current["comparison_to_last_tested_code_head"]["ahead_by"], 9)
         self.assertFalse(current["product_code_changed"])
         self.assertFalse(current["e2e_pass"])
