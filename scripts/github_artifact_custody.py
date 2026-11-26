@@ -9,7 +9,9 @@ import sys
 import urllib.request
 import zipfile
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlsplit
+
+from all_auto.lane_queue import relative_package_path
 
 HEX40 = re.compile(r"^[0-9a-f]{40}$")
 HEX64 = re.compile(r"^[0-9a-f]{64}$")
@@ -19,6 +21,54 @@ MAX_RESPONSE_BYTES = 320 * 1024 * 1024
 
 def hold(reason):
     return {"status": "HOLD", "reason": reason, "e2e_pass": False}
+
+
+def safe_package_folder(item: dict) -> Path:
+    """Return a bounded, deterministic package folder; reject path traversal before I/O."""
+    try:
+        if not isinstance(item, dict):
+            raise ValueError
+        slug = item.get("slug")
+        digest = item.get("package_sha256")
+        if (not isinstance(slug, str) or not re.fullmatch(r"[a-z][a-z0-9-]{3,39}", slug)
+                or not isinstance(digest, str) or not HEX64.fullmatch(digest)):
+            raise ValueError
+        folder = relative_package_path(item)
+        parts = folder.parts
+        expected_count = 2 if item.get("contract_status") == "IMMUTABLE_QA_ONLY" or item.get("request_id") else 1
+        if (folder.is_absolute() or len(parts) != expected_count
+                or parts[-1] != slug + "-" + digest[:12]
+                or any(part in ("", ".", "..") or ":" in part or "/" in part or "\\" in part
+                       for part in parts)):
+            raise ValueError
+        if len(parts) == 2 and parts[0] != item.get("product_type"):
+            raise ValueError
+        if len(parts) == 2 and parts[0] not in ("APP", "GAME", "GAME_3D"):
+            raise ValueError
+        return folder
+    except (KeyError, TypeError, ValueError):
+        raise ValueError("PACKAGE_PATH_INVALID") from None
+
+
+def _file_sha256(path: Path) -> tuple[str, int]:
+    digest = hashlib.sha256()
+    size = 0
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+            size += len(chunk)
+    return digest.hexdigest(), size
+
+
+def _zip_member_matches(z: zipfile.ZipFile, info: zipfile.ZipInfo, local_path: Path) -> bool:
+    with z.open(info, "r") as archived, local_path.open("rb") as local:
+        while True:
+            left = archived.read(1024 * 1024)
+            right = local.read(1024 * 1024)
+            if left != right:
+                return False
+            if not left:
+                return True
 
 
 def verify_custody(expected, local_bundle, fetch_json, fetch_bytes):
@@ -213,20 +263,278 @@ def verify_custody(expected, local_bundle, fetch_json, fetch_bytes):
         return hold("EVIDENCE_UNAVAILABLE_OR_INVALID")
 
 
+def verify_queue_artifact_custody(expected, local_artifact, fetch_json, fetch_bytes):
+    """Verify a republished Windows QA queue artifact and its extracted local bytes.
+
+    This is separate from verify_custody(), which verifies a single Factory
+    handoff bundle. It proves archive custody only; it never proves product E2E.
+    """
+    try:
+        if not isinstance(expected, dict):
+            return hold("EXPECTED_INVALID")
+        repository = expected["repository"]
+        if not isinstance(repository, str) or repository.count("/") != 1:
+            return hold("REPOSITORY_INVALID")
+        owner, repo = repository.split("/")
+        if (not re.fullmatch(r"[A-Za-z0-9-]{1,39}", owner)
+                or not re.fullmatch(r"[A-Za-z0-9._-]{1,100}", repo)
+                or repo in (".", "..")):
+            return hold("REPOSITORY_INVALID")
+        run_id = expected["run_id"]
+        artifact_id = expected["artifact_id"]
+        head = expected["run_head_sha"]
+        name = expected["artifact_name"]
+        if not all(type(v) is int and v > 0 for v in (run_id, artifact_id)):
+            return hold("ARTIFACT_IDS_INVALID")
+        if (not HEX40.fullmatch(head) or not isinstance(name, str)
+                or not re.fullmatch(r"verified-msix-local-qa-[A-Za-z0-9._-]{1,100}", name)):
+            return hold("PIN_INVALID")
+
+        local = Path(local_artifact)
+        if local.is_symlink() or not local.is_dir():
+            return hold("LOCAL_ARTIFACT_MISSING")
+        root_items = list(local.iterdir())
+        if (any(p.is_symlink() for p in root_items)
+                or {p.name for p in root_items} != {"queue.json", "packages"}):
+            return hold("LOCAL_QUEUE_CONTENT_INVALID")
+        queue_path = local / "queue.json"
+        package_root = local / "packages"
+        if (queue_path.is_symlink() or not queue_path.is_file()
+                or queue_path.stat().st_size > 1024 * 1024
+                or package_root.is_symlink() or not package_root.is_dir()):
+            return hold("LOCAL_QUEUE_CONTENT_INVALID")
+        queue_bytes = queue_path.read_bytes()
+        queue = json.loads(queue_bytes.decode("utf-8"))
+        items = queue.get("items") if isinstance(queue, dict) else None
+        if not isinstance(items, list) or not 1 <= len(items) <= 20:
+            return hold("QUEUE_ITEMS_INVALID")
+        if (queue.get("schema_version") != 1
+                or queue.get("mode") != "WINDOWS_LOCAL_QA_ONLY"
+                or type(queue.get("intake_count")) is not int
+                or queue.get("intake_count") != len(items)
+                or type(queue.get("store_submissions")) is not int
+                or queue.get("store_submissions") != 0):
+            return hold("QUEUE_PERMISSION_OR_COUNT_INVALID")
+        if any(not isinstance(item, dict)
+               or item.get("submit_allowed") is not False
+               or item.get("store_id") is not None
+               or item.get("security_confirmed") is not False
+               or item.get("price_approved") is not False
+               for item in items):
+            return hold("QUEUE_STORE_AUTHORITY_INVALID")
+
+        base = "https://api.github.com/repos/{}/{}/actions".format(owner, repo)
+        run = fetch_json(base + "/runs/" + str(run_id))
+        artifact = fetch_json(base + "/artifacts/" + str(artifact_id))
+        if (run.get("name") != "Factory MSIX intake and local QA handoff"
+                or run.get("path") != ".github/workflows/factory-msix-intake.yml"
+                or run.get("status") != "completed"
+                or run.get("conclusion") != "success"
+                or run.get("head_sha") != head
+                or run.get("event") not in ("schedule", "workflow_dispatch", "push")):
+            return hold("RUN_HEAD_OR_STATUS_MISMATCH")
+        if (run.get("head_repository", {}).get("full_name") != repository
+                or not isinstance(run.get("head_branch"), str)
+                or not re.fullmatch(r"codex/[A-Za-z0-9._/-]+", run["head_branch"])
+                or ".." in run["head_branch"] or "//" in run["head_branch"]):
+            return hold("RUN_REPOSITORY_OR_BRANCH_MISMATCH")
+        workflow = artifact.get("workflow_run", {})
+        if (artifact.get("id") != artifact_id or artifact.get("name") != name
+                or artifact.get("expired") is not False
+                or workflow.get("id") != run_id
+                or workflow.get("head_sha") != head):
+            return hold("ARTIFACT_RUN_OR_IDENTITY_MISMATCH")
+
+        archive = fetch_bytes(base + "/artifacts/" + str(artifact_id) + "/zip")
+        if not isinstance(archive, (bytes, bytearray)) or len(archive) > MAX_RESPONSE_BYTES:
+            return hold("ARTIFACT_ARCHIVE_UNAVAILABLE_OR_OVERSIZED")
+        archive_sha = hashlib.sha256(archive).hexdigest()
+        api_digest = artifact.get("digest")
+        match = ARTIFACT_DIGEST.fullmatch(api_digest) if isinstance(api_digest, str) else None
+        if not match:
+            return hold("ARTIFACT_ARCHIVE_DIGEST_MISSING")
+        if match.group(1) != archive_sha:
+            return hold("ARTIFACT_ARCHIVE_DIGEST_MISMATCH")
+
+        with zipfile.ZipFile(io.BytesIO(archive)) as z:
+            infos = z.infolist()
+            if (not 1 <= len(infos) <= 2000
+                    or sum(info.file_size for info in infos) > 2 * 1024 * 1024 * 1024 + 1024 * 1024):
+                return hold("ARTIFACT_UNCOMPRESSED_SIZE_LIMIT")
+            all_names = []
+            files = {}
+            archive_dirs = []
+            for info in infos:
+                raw_name = info.filename
+                if not isinstance(raw_name, str) or not raw_name or "\\" in raw_name:
+                    return hold("ARTIFACT_PATH_INVALID")
+                normalized = raw_name[:-1] if info.is_dir() else raw_name
+                parts = normalized.split("/")
+                if (normalized.startswith("/")
+                        or any(part in ("", ".", "..") for part in parts)
+                        or ":" in parts[0]):
+                    return hold("ARTIFACT_PATH_INVALID")
+                mode = (info.external_attr >> 16) & 0o170000
+                if mode == 0o120000:
+                    return hold("ARTIFACT_SYMLINK_REJECTED")
+                if info.flag_bits & 0x1:
+                    return hold("ARTIFACT_ENCRYPTED_ENTRY")
+                folded = normalized.casefold()
+                if folded in all_names:
+                    return hold("ARTIFACT_DUPLICATE_PATH")
+                all_names.append(folded)
+                if info.is_dir():
+                    archive_dirs.append(normalized)
+                else:
+                    files[normalized] = info
+            if z.testzip() is not None:
+                return hold("ARTIFACT_CORRUPT")
+            if ("queue.json" not in files or files["queue.json"].file_size > 1024 * 1024
+                    or z.read("queue.json") != queue_bytes):
+                return hold("QUEUE_BYTES_DIFFER")
+
+            expected_files = {"queue.json"}
+            expected_dirs = {"packages"}
+            expected_folders = set()
+            package_records = []
+            for item in items:
+                if not isinstance(item, dict):
+                    return hold("QUEUE_ITEM_INVALID")
+                try:
+                    folder = safe_package_folder(item)
+                except ValueError:
+                    return hold("PACKAGE_PATH_INVALID")
+                folder_key = folder.as_posix().casefold()
+                if folder_key in expected_folders:
+                    return hold("QUEUE_DUPLICATE_PACKAGE_PATH")
+                expected_folders.add(folder_key)
+                local_folder = package_root
+                for part in folder.parts:
+                    local_folder = local_folder / part
+                    if local_folder.is_symlink():
+                        return hold("LOCAL_PACKAGE_PATH_LINKED")
+                if not local_folder.is_dir():
+                    return hold("LOCAL_PACKAGE_BUNDLE_MISSING")
+                for index in range(1, len(folder.parts) + 1):
+                    expected_dirs.add("packages/" + "/".join(folder.parts[:index]))
+                children = list(local_folder.iterdir())
+                if (any(p.is_symlink() or not p.is_file() for p in children)
+                        or not {"handoff.json", "package.msix"}.issubset({p.name for p in children})
+                        or not {p.name for p in children}.issubset(
+                            {"handoff.json", "package.msix", "transport_receipt.json",
+                             "approved-identity.json", "github-custody.json"})):
+                    return hold("LOCAL_PACKAGE_BUNDLE_INVALID")
+                local_package_sha = None
+                local_package_bytes = None
+                local_package_size = None
+                for child in children:
+                    if child.name == "handoff.json" and child.stat().st_size > 32 * 1024:
+                        return hold("HANDOFF_METADATA_OVERSIZED")
+                    if child.name == "package.msix" and child.stat().st_size > 300 * 1024 * 1024:
+                        return hold("LOCAL_MSIX_OVERSIZED")
+                    if child.name == "approved-identity.json" and child.stat().st_size > 32 * 1024:
+                        return hold("APPROVED_IDENTITY_OVERSIZED")
+                    if child.name == "transport_receipt.json" and child.stat().st_size > 32 * 1024:
+                        return hold("TRANSPORT_RECEIPT_OVERSIZED")
+                    if child.name == "github-custody.json" and child.stat().st_size > 16 * 1024:
+                        return hold("CUSTODY_RECEIPT_OVERSIZED")
+                    archive_name = "packages/{}/{}".format(folder.as_posix(), child.name)
+                    info = files.get(archive_name)
+                    if info is None:
+                        return hold("ARTIFACT_PACKAGE_FILE_MISSING")
+                    if not _zip_member_matches(z, info, child):
+                        return hold("LOCAL_ARTIFACT_BYTES_DIFFER")
+                    expected_files.add(archive_name)
+                    if child.name == "package.msix":
+                        local_package_sha, local_package_size = _file_sha256(child)
+                if local_package_sha is None or local_package_size is None:
+                    return hold("LOCAL_MSIX_MISSING")
+                if (item.get("package_sha256") != local_package_sha
+                        or item.get("package_bytes") != local_package_size):
+                    return hold("QUEUE_PACKAGE_METADATA_MISMATCH")
+                package_records.append({
+                    "slug": item.get("slug"),
+                    "request_id": item.get("request_id"),
+                    "source_sha": item.get("source_sha"),
+                    "package_sha256": local_package_sha,
+                    "package_bytes": local_package_size,
+                    "local_sha256": local_package_sha,
+                })
+            if set(files) != expected_files:
+                return hold("ARTIFACT_EXTRA_OR_MISSING_FILES")
+            if any(directory not in expected_dirs for directory in archive_dirs):
+                return hold("ARTIFACT_EXTRA_DIRECTORY")
+            for path in package_root.rglob("*"):
+                if path.is_symlink():
+                    return hold("LOCAL_PACKAGE_PATH_LINKED")
+                if path.is_dir():
+                    relative = path.relative_to(package_root).as_posix().casefold()
+                    if not any(folder == relative or folder.startswith(relative + "/")
+                               for folder in expected_folders):
+                        return hold("LOCAL_EXTRA_PACKAGE_DIRECTORY")
+
+        return {
+            "status": "CUSTODY_VERIFIED_ONLY",
+            "e2e_pass": False,
+            "repository": repository,
+            "run_id": run_id,
+            "artifact_id": artifact_id,
+            "artifact_name": name,
+            "run_head_sha": head,
+            "archive_sha256": archive_sha,
+            "queue_sha256": hashlib.sha256(queue_bytes).hexdigest(),
+            "packages": package_records,
+            "signature": "NOT_VERIFIED",
+            "checker": "NOT_VERIFIED",
+            "gui": "NOT_VERIFIED",
+        }
+    except (KeyError, AttributeError, TypeError, ValueError, OSError,
+            zipfile.BadZipFile, RuntimeError, UnicodeDecodeError, json.JSONDecodeError):
+        return hold("EVIDENCE_UNAVAILABLE_OR_INVALID")
+
+class _SafeCrossOriginRedirectHandler(urllib.request.HTTPRedirectHandler):
+    """Follow HTTPS artifact redirects without forwarding GitHub credentials cross-origin."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        old = urlsplit(req.full_url)
+        new = urlsplit(newurl)
+        if (new.scheme.lower() != "https" or not new.hostname
+                or new.username or new.password or new.fragment):
+            return None
+        redirected = super().redirect_request(req, fp, code, msg, headers, newurl)
+        if redirected is None:
+            return None
+
+        def origin(parts):
+            return (parts.scheme.lower(), parts.hostname.lower(),
+                    parts.port or 443)
+
+        if origin(old) != origin(new):
+            for name in ("Authorization", "Proxy-Authorization", "Cookie"):
+                redirected.remove_header(name)
+                for mapping in (redirected.headers, redirected.unredirected_hdrs):
+                    for key in list(mapping):
+                        if key.lower() == name.lower():
+                            mapping.pop(key, None)
+        return redirected
+
 def github_clients(token):
     """Real API transport; never put token in evidence or logs."""
     if not token:
         raise ValueError("Missing GitHub token")
+    opener = urllib.request.build_opener(_SafeCrossOriginRedirectHandler())
 
     def request(url):
-        if not url.startswith("https://api.github.com/"):
+        parsed = urlsplit(url)
+        if (parsed.scheme.lower() != "https" or parsed.hostname != "api.github.com"
+                or parsed.username or parsed.password or parsed.port not in (None, 443)):
             raise ValueError("Unexpected API URL")
         req = urllib.request.Request(url, headers={
             "Authorization": "Bearer " + token,
             "Accept": "application/vnd.github+json",
             "X-GitHub-Api-Version": "2022-11-28",
             "User-Agent": "windows-e2e-custody-gate"})
-        with urllib.request.urlopen(req, timeout=30) as response:
+        with opener.open(req, timeout=30) as response:
             length = response.headers.get("Content-Length")
             if length is not None:
                 try:
