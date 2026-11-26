@@ -364,3 +364,38 @@ class CurrentObservationOverlayTests(unittest.TestCase):
         self.assertFalse(overlay["safety"]["store_submission_allowed"])
         self.assertFalse(overlay["safety"]["certification_allowed"])
         self.assertFalse(overlay["safety"]["publish_allowed"])
+
+
+
+class CurrentFocusFileExecutionEvidence20261126Tests(unittest.TestCase):
+    def test_verified_pre_identity_exes_do_not_unlock_real_msix_transport(self):
+        root = Path(__file__).resolve().parents[1]
+        overlay = json.loads((root / "ops" / "active_e2e_handoff_overlay_20261126_123829.json").read_text(encoding="utf-8"))
+        self.assertEqual(overlay["status"], "HOLD")
+        self.assertIs(overlay["e2e_pass"], False)
+
+        focus = overlay["products"]["focus_session_desk"]
+        self.assertEqual(focus["source_sha"], "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79")
+        self.assertTrue(focus["exe_artifact"]["archive_sha256_independently_recomputed"])
+        self.assertTrue(focus["exe_artifact"]["exe_sha256_independently_recomputed"])
+        self.assertEqual(focus["exe_artifact"]["custody_scope"], "UNSIGNED_PRE_IDENTITY_EXE_QA_ONLY_NOT_MSIX")
+        self.assertIs(focus["real_msix"], False)
+        self.assertIsNone(focus["package_version"])
+        self.assertFalse(focus["identity"]["current_source_reuse_allowed"])
+
+        identity = {
+            "source_sha": focus["source_sha"],
+            "verified_source_sha": focus["identity"]["historical_source_sha"],
+            "expected_head_sha": focus["identity"]["historical_source_sha"],
+            "package_version_gate": "HOLD",
+        }
+        result = authorize_transport(identity, {}, Path("not-built.msix"), {}, None)
+        self.assertEqual(result["status"], "HOLD")
+        self.assertEqual(result["reason"], "SOURCE_DRIFT")
+
+        file_product = overlay["products"]["file_integrity_ledger"]
+        self.assertIs(file_product["identity"]["current_source_approved_identity_present"], False)
+        self.assertIs(file_product["real_msix"], False)
+        self.assertIsNone(file_product["package_version"])
+        self.assertEqual(file_product["exe_artifact"]["custody_scope"], "UNSIGNED_PRE_IDENTITY_EXE_QA_ONLY_NOT_MSIX")
+        self.assertIs(overlay["safety"]["store_submission_allowed"], False)

@@ -466,5 +466,33 @@ class CurrentObservationOverlayCustodyTests(unittest.TestCase):
         self.assertFalse(overlay["safety"]["certification_allowed"])
         self.assertFalse(overlay["safety"]["publish_allowed"])
 
+
+
+class CurrentProductExeArtifactCustody20261126Tests(unittest.TestCase):
+    def test_exact_archive_and_exe_sha_custody_is_not_msix_or_product_e2e(self):
+        root = Path(__file__).resolve().parents[1]
+        overlay = json.loads((root / "ops" / "active_e2e_handoff_overlay_20261126_123829.json").read_text(encoding="utf-8"))
+        self.assertEqual(overlay["pr165"]["head_sha"], "de8ea3457cc225eeabc63f9fa3c1217c477bca64")
+        self.assertEqual(overlay["pr165"]["exact_head_ci_status"], "PASS_EXACT_HEAD_CI")
+        self.assertEqual([x["run_id"] for x in overlay["pr165"]["exact_head_ci"]], [45786190840, 45786190774, 45786190918])
+        self.assertEqual(overlay["status"], "HOLD")
+        self.assertIs(overlay["e2e_pass"], False)
+
+        for key in ("focus_session_desk", "file_integrity_ledger"):
+            product = overlay["products"][key]
+            artifact = product["exe_artifact"]
+            self.assertEqual(artifact["artifact_kind"], "PRE_IDENTITY_EXE_QA")
+            self.assertTrue(artifact["archive_sha256_independently_recomputed"])
+            self.assertTrue(artifact["exe_sha256_independently_recomputed"])
+            self.assertEqual(artifact["archive_sha256"], artifact["github_artifact_digest"])
+            self.assertEqual(artifact["exe_sha256"], artifact["embedded_exe_sha256"])
+            self.assertEqual(artifact["zip_crc"], "PASS")
+            self.assertEqual(artifact["custody_scope"], "UNSIGNED_PRE_IDENTITY_EXE_QA_ONLY_NOT_MSIX")
+            self.assertIs(product["real_msix"], False)
+            self.assertIs(product["github_backlog_receipt"], False)
+            self.assertIs(product["local_pull_receipt"], False)
+            self.assertIs(product["windows_checker_receipt"], False)
+            self.assertIs(product["local_gui_install_receipt"], False)
+
 if __name__ == "__main__":
     unittest.main()
