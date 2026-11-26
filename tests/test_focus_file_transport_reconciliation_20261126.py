@@ -47,7 +47,7 @@ class FocusFileTransportReconciliation20261126(unittest.TestCase):
         self.assertEqual(current["comparison_to_last_tested_code_head"]["ahead_by"], 9)
         self.assertFalse(current["product_code_changed"])
         self.assertFalse(current["e2e_pass"])
-        self.assertEqual([x["run_id"] for x in current["exact_head_workflows"]], [45732215983, 45732216287, 45732216014])
+        self.assertEqual([x["run_id"] for x in current["exact_head_ci"]], [45732215983, 45732216287, 45732216014])
         self.assertEqual(self.data["pr165"]["latest_verified_code_head_sha"], "c68adc79ecf8a0c6ad4b538146648391b1b4eddb")
         self.assertEqual(self.data["pr165"]["immediate_parent_ci_status"], "PARTIAL_FAIL_RECONCILIATION_TEST_KEYERROR")
         self.assertEqual([x["run_id"] for x in self.data["pr165"]["immediate_parent_exact_head_ci"]], [45731429031, 45731429039, 45731429057])
