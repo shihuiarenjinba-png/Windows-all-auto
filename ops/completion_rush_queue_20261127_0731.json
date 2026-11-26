@@ -1310,7 +1310,7 @@
       "fixture_ci_verified": true,
       "real_windows_uia_pass": false,
       "real_msixvc": false,
-      "next_action": "12: resolve GDK SDK root/version and exact UIA Windows proof; the EXE and GDK readiness artifacts exist, so do not report the build artifact as absent.",
+      "next_action": "12: resolve GDK SDK root/version and exact UIA Windows proof; the EXE and GDK readiness artifacts do exist, so do not report the build artifact as absent.",
       "historical_source_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
       "current_candidate_source_sha": "1a349faa41663c417c40710140a4d50c79b62b78",
       "current_qa_pr": 32,
