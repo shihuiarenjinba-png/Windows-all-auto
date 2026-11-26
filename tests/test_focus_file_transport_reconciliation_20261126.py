@@ -14,40 +14,40 @@ class FocusFileTransportReconciliation20261126(unittest.TestCase):
     def test_pr165_exact_head_regressions_pass_without_promoting_product_e2e(self):
         d = self.data
         p = d["pr165"]
-        head = p["tested_code_head_sha"]
-        self.assertEqual(head, "0803ba70bae5c6fbd0cc00b17d31d53c2b6642a9")
-        self.assertEqual(p["latest_verified_code_head_sha"], "0803ba70bae5c6fbd0cc00b17d31d53c2b6642a9")
+        head = p["latest_verified_code_head_sha"]
+        self.assertEqual(head, "1d02a0307c6ce456b25c3d4fafa40362078f7c0a")
+        self.assertEqual(p["tested_code_head_sha"], "1d02a0307c6ce456b25c3d4fafa40362078f7c0a")
         self.assertEqual(p["latest_exact_head_ci_status"], "PASS_EXACT_HEAD_CI")
-        self.assertEqual(p["latest_exact_head_ci_run_ids"], [45724625846, 45724625924, 45724625860])
-        self.assertEqual(p["latest_offline_qa_tests_run"], 563)
+        self.assertEqual(p["latest_exact_head_ci_run_ids"], [45727872167, 45727872209, 45727872206])
+        self.assertEqual(p["latest_offline_qa_tests_run"], 564)
         self.assertEqual(p["latest_product_e2e_status"], "HOLD")
-        latest = self.data["latest_observation"]
-        self.assertEqual(latest["pr165_head_sha"], p["latest_verified_code_head_sha"])
-        self.assertTrue(all(r["head_sha"] == latest["pr165_head_sha"] and r["conclusion"] == "success"
+        latest = d["latest_observation"]
+        self.assertEqual(latest["pr165_head_sha"], head)
+        self.assertTrue(all(r["head_sha"] == head and r["conclusion"] == "success"
                             for r in latest["exact_head_ci"]))
         self.assertEqual(p["exact_head_ci_status"], "PASS_EXACT_HEAD_CI")
-        self.assertEqual(
-            [r["run_id"] for r in p["exact_head_ci"]],
-            [45724625846, 45724625924, 45724625860],
-        )
+        self.assertEqual([r["run_id"] for r in p["exact_head_ci"]], [45727872167, 45727872209, 45727872206])
         self.assertTrue(all(r["head_sha"] == head and r["conclusion"] == "success"
                             for r in p["exact_head_ci"]))
         self.assertEqual(p["offline_qa"]["ubuntu_conclusion"], "success")
         self.assertEqual(p["offline_qa"]["windows_conclusion"], "success")
-        self.assertEqual(p["offline_qa"]["tests_run"], 563)
+        self.assertEqual(p["offline_qa"]["tests_run"], 564)
+        self.assertEqual(p["offline_qa"]["windows_skipped"], 2)
         self.assertEqual(p["product_e2e_status"], "HOLD")
         self.assertIs(p["real_msix"], False)
         self.assertIs(p["downstream_receipts"], False)
         self.assertIs(d["e2e_pass"], False)
         self.assertEqual(d["status"], "HOLD")
 
-    def test_current_branch_failure_is_separate_from_last_verified_head(self):
+    def test_current_branch_head_pass_is_separate_from_parent_snapshot_failure(self):
         current = self.data["current_branch_head_observation"]
-        self.assertEqual(current["head_sha"], "929a85197669a5a0531422027b958e32ad50c6a1")
-        self.assertEqual(current["parent_sha"], "0803ba70bae5c6fbd0cc00b17d31d53c2b6642a9")
-        self.assertEqual(current["status"], "FAIL_STALE_RECONCILIATION_ASSERTIONS")
-        self.assertEqual([x["run_id"] for x in current["exact_head_workflows"]], [45725227329, 45725227317, 45725227238])
-        self.assertEqual(self.data["pr165"]["latest_verified_code_head_sha"], "0803ba70bae5c6fbd0cc00b17d31d53c2b6642a9")
+        self.assertEqual(current["head_sha"], "1d02a0307c6ce456b25c3d4fafa40362078f7c0a")
+        self.assertEqual(current["parent_sha"], "a5792b5e63feb1af01be4834b2ea086794b9e705")
+        self.assertEqual(current["status"], "PASS_EXACT_HEAD_CI")
+        self.assertEqual([x["run_id"] for x in current["exact_head_workflows"]], [45727872167, 45727872209, 45727872206])
+        self.assertEqual(self.data["pr165"]["latest_verified_code_head_sha"], "1d02a0307c6ce456b25c3d4fafa40362078f7c0a")
+        self.assertEqual(self.data["pr165"]["immediate_parent_ci_status"], "PARTIAL_FAIL_STALE_RECONCILIATION_ASSERTIONS")
+        self.assertEqual([x["run_id"] for x in self.data["pr165"]["immediate_parent_exact_head_ci"]], [45727712524, 45727712527, 45727712585])
         self.assertFalse(self.data["e2e_pass"])
 
     def test_focus_remains_blocked_on_current_source_identity_and_authoritative_version(self):
@@ -118,8 +118,8 @@ class FocusFileTransportReconciliation20261126(unittest.TestCase):
         self.assertEqual(d["pr177"]["compare_to_pr165"]["ahead_by"], 89)
         self.assertEqual(d["pr177"]["compare_to_pr165"]["behind_by"], 6)
         self.assertEqual(d["pr177"]["decision"], "DO_NOT_RESTACK")
-        self.assertEqual(d["pr177"]["latest_compare_to_latest_pr165"]["ahead_by"], 95)
-        self.assertEqual(d["pr177"]["latest_compare_to_latest_pr165"]["behind_by"], 6)
+        self.assertEqual(d["pr177"]["latest_compare_to_latest_pr165"]["ahead_by"], 6)
+        self.assertEqual(d["pr177"]["latest_compare_to_latest_pr165"]["behind_by"], 108)
         self.assertEqual(d["pr177"]["latest_compare_to_latest_pr165"]["decision"], "DO_NOT_RESTACK")
 
     def test_active_ledger_direct_blob_readback_is_reconciled(self):
