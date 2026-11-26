@@ -122,7 +122,7 @@ class CurrentTransportRestack20261126_161044Tests(unittest.TestCase):
         self.assertEqual(self.current["pr171"]["exact_head_ci"][0]["run_id"], 44437197470)
         self.assertEqual(self.current["windows_automator_pin"]["commit_sha"],
                          "d3b8ed4ae7762a69d3fe2a90b64aa86ee938259b")
-        self.assertEqual(self.current["windows_automator_pin"]["exact_head_ci_run_id"], 44319200630)
+        self.assertEqual(self.current["windows_automator_pin"]["exact_head_ci"][0]["run_id"], 44319200630)
 
         eligibility = self.current["store_upload_test"]
         self.assertEqual(eligibility["eligible_fresh_unsold_products"], 0)
