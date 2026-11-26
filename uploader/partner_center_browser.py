@@ -464,7 +464,7 @@ class PartnerCenterCDPConnection:
             )
             resolution = None
             if equivalent_duplicates > 1:
-                resolution = "Equivalent exact-Draft tabs were compared read-only; selected one deterministic page without closing or changing either tab."
+                resolution = "Duplicate exact-Draft tabs were resolved using read-only session checks; when multiple signed-in tabs remained, visible page content also had to match. One tab was selected without closing or changing either tab."
             base.update({"status": status, "selected_page": safe_page_metadata(selected),
                          "candidate_partner_center_pages": candidates,
                          "exact_draft_tab_count": equivalent_duplicates})
