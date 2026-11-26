@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-11-26T01:57:30Z",
+  "generated_at": "2026-11-26T16:39:37Z",
   "policy": "COMPLETION_RUSH_EXISTING_PRODUCTS_ONLY",
   "new_product_generation_allowed": false,
   "rules": {
