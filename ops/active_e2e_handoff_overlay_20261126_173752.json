@@ -1,0 +1,258 @@
+{
+  "schema_version": 1,
+  "path": "ops/active_e2e_handoff_overlay_20261126_173752.json",
+  "observed_at_utc": "2026-11-26T17:37:52Z",
+  "record_type": "APPEND_ONLY_CURRENT_STATUS_RECONCILIATION",
+  "supersedes": [
+    "ops/active_e2e_handoff_overlay_20261126_163937.json"
+  ],
+  "repository": "shihuiarenjinba-png/Windows-all-auto",
+  "status": "HOLD",
+  "e2e_status": "HOLD",
+  "e2e_pass": false,
+  "source_identity_version_reconciliation": {
+    "focus_session_desk": {
+      "current_source": {
+        "repository": "shihuiarenjinba-png/AI-App-Factory",
+        "pr": 94,
+        "branch": "codex/focus-store-assets-gate-20261118",
+        "source_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+        "request_id": "app-focus-session-desk-fb6293839bc7",
+        "request_status": "DRY_RUN__IDENTITY_READBACK_PENDING",
+        "approved_identity_file_present": true,
+        "approved_identity_file_blob_sha": "00c56e85ec7590783284e372ba100a3127614971",
+        "identity_status": "STALE_TRACKED",
+        "package_version": null,
+        "version_status": "MISSING",
+        "source_compare_from_returned_identity_source": {
+          "base": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+          "head": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+          "status": "ahead",
+          "ahead_by": 27,
+          "behind_by": 0,
+          "product_main_py_modified": true
+        }
+      },
+      "historical_approved_identity_return": {
+        "return_commit_sha": "8a7139375524830bf823469526837259266172be",
+        "blob_sha": "00c56e85ec7590783284e372ba100a3127614971",
+        "return_commit_compare_from_source": {
+          "base": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+          "head": "8a7139375524830bf823469526837259266172be",
+          "status": "ahead",
+          "ahead_by": 1,
+          "behind_by": 0,
+          "changed_path": "products/focus-session-desk/store/approved-identity.json"
+        },
+        "request_id": "app-focus-session-desk-8b00bc4e9082",
+        "source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+        "verified_source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+        "expected_head_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+        "store_id": "9P6452C61N7B",
+        "package_sha256": "04b2d7e4eae215855217285f07f8835ffe3cf60dc5aab24ede141d28f563416d",
+        "package_kind": "exe",
+        "package_bytes": 11475865,
+        "signature_status": "PRE_IDENTITY_EXE_NOT_MSIX",
+        "package_version_gate": "HOLD",
+        "verified_by": "LOCAL_WINDOWS_PARTNER_CENTER_OPERATOR",
+        "evidence_url": "https://partner.microsoft.com/en-us/dashboard/products/9P6452C61N7B/identity"
+      },
+      "decision": "Historical approved Identity is authentic for its recorded source/request only. Do not reuse, CAS, or treat it as approved for the current fb629383 source."
+    },
+    "file_integrity_ledger": {
+      "current_source": {
+        "repository": "shihuiarenjinba-png/AI-App-Factory",
+        "pr": 115,
+        "branch": "codex/integrity-pr95-source-request-integration-20261125",
+        "source_sha": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
+        "request_id": "app-file-integrity-ledger-33d612be2774",
+        "request_status": "DRY_RUN__OFFICIAL_IDENTITY_UNVERIFIED__PACKAGE_NOT_BUILT",
+        "request_run_id": 45422895649,
+        "request_artifact_id": 14934034365,
+        "request_artifact_zip_sha256": "697528b3b0769e3962eebfa0efcdcb026618cd378d97fc60c4f234017882527e",
+        "approved_identity_file_present": false,
+        "identity_status": "MISSING",
+        "package_version": null,
+        "version_status": "UNAVAILABLE",
+        "source_compare_from_returned_identity_source": {
+          "base": "d1108d12f7d1697af30400f97c7db39cba5e6791",
+          "head": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
+          "status": "diverged",
+          "ahead_by": 16,
+          "behind_by": 8,
+          "merge_base": "deaa9f324326a1ee276596c325f7a360adf27877"
+        }
+      },
+      "historical_approved_identity_return": {
+        "return_commit_sha": "db9a57af822788af4c8384499a6e343ec7b0353d",
+        "blob_sha": "78034cf62be3479f9ed752a2585ab31bb24c49ff",
+        "return_commit_compare_from_source": {
+          "base": "d1108d12f7d1697af30400f97c7db39cba5e6791",
+          "head": "db9a57af822788af4c8384499a6e343ec7b0353d",
+          "status": "ahead",
+          "ahead_by": 1,
+          "behind_by": 0,
+          "changed_path": "products/file-integrity-ledger/store/approved-identity.json"
+        },
+        "request_id": "app-file-integrity-ledger-d1108d12f7d1",
+        "source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
+        "verified_source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
+        "expected_head_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
+        "store_id": "9PGZ445SR5GM",
+        "package_sha256": "9100bbcfba20ed2768e5d2dffcb39c987466377d26a34af1e03cc166071e02ca",
+        "package_kind": "exe",
+        "package_bytes": 11393466,
+        "signature_status": "PRE_IDENTITY_EXE_NOT_MSIX",
+        "package_version_gate": "HOLD",
+        "verified_by": "LOCAL_WINDOWS_PARTNER_CENTER_OPERATOR",
+        "evidence_url": "https://partner.microsoft.com/en-us/dashboard/products/9PGZ445SR5GM/identity"
+      },
+      "decision": "Historical approved Identity is authentic for its recorded source/request only. Current PR115 source is diverged and has no approved-identity.json; do not reuse the old return."
+    }
+  },
+  "package_source_preflight": {
+    "repository": "shihuiarenjinba-png/AI-App-Factory",
+    "pr": 126,
+    "exact_head": "c5ff92d4c92f346af94555e5dce176de81fe776a",
+    "core_ci_run_id": 45828057699,
+    "preflight_run_id": 45828057878,
+    "preflight_conclusion": "success",
+    "artifact_id": 15120688601,
+    "artifact_name": "package-source-preflight-qa-only",
+    "artifact_zip_sha256": "f5dfe278ae02359bce5b5e180244c84a991894254c9ede3030b162ff2b406dea",
+    "focus": {
+      "asset_validation": "PASS",
+      "asset_sha256": {
+        "StoreLogo.png": "2c0460e0f2947ce975b7a6abbc607acaeea8a22bf9bcae984b420acedddc8e2f",
+        "Square150.png": "9183aa4055ed453360b656b4fe291bf392413e04fab44048820ca4bcfa5d1d0c",
+        "Square44.png": "3fbdcd610f6781b72308755c6f92b1fdaef0592bab51c612556e5b8b95c1ee46"
+      },
+      "identity_status": "STALE_TRACKED",
+      "identity_recorded_source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+      "version_status": "MISSING",
+      "status": "DELIVERY_HOLD",
+      "hold_reason": "Identity source SHA does not match the pinned current source",
+      "product_msix_created": false
+    },
+    "file_integrity_ledger": {
+      "asset_validation": "PASS",
+      "asset_sha256": {
+        "StoreLogo.png": "224fa777280cf61877c14146e920fca32bb90bff6f0cea3df4ed0ac77c0645a9",
+        "Square150.png": "e00136c7a319756ccc48c2dc50136f5872e272e806cd592a6beb8922bbb1742",
+        "Square44.png": "bd61099427a770f8dff247f0f6928e5d50ba2cd8265797c7f13952e96147d70d"
+      },
+      "identity_status": "MISSING",
+      "identity_recorded_source_sha": null,
+      "version_status": "UNAVAILABLE",
+      "status": "DELIVERY_HOLD",
+      "hold_reason": "official source-bound Identity return missing",
+      "product_msix_created": false
+    },
+    "disposable_makeappx_fixture": {
+      "status": "success",
+      "artifact_class": "QA_FIXTURE_ONLY_NOT_PRODUCT",
+      "identity_fixture_only": true,
+      "version_fixture_only": true,
+      "fixture_version": "1.0.0.0",
+      "product_msix_created": false,
+      "note": "Real PyInstaller/MakeAppx succeeded only for a disposable demo product. The fixture Version must never be copied to Focus or File Integrity."
+    }
+  },
+  "focus_error_recovery_qa": {
+    "repository": "shihuiarenjinba-png/AI-App-Factory",
+    "pr": 130,
+    "exact_head": "e1ab2e09bc12ef7b07b82f0cd1d1ef43b5d42034",
+    "core_ci_run_id": 45866054373,
+    "windows_gui_run_id": 45866054492,
+    "windows_gui_conclusion": "success",
+    "artifact_id": 15140077746,
+    "artifact_name": "focus-error-recovery-45866054492",
+    "artifact_zip_sha256": "88ee51ee28ca735cfbd396277504515d23957107c57f0d71306b1efdf67f7164",
+    "product_source_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+    "request_id": "app-focus-session-desk-fb6293839bc7",
+    "exe_sha256": "d1ef4b389b1344e4886eb7728173508ea7754b795d476340dffd46f9024ddcda",
+    "existing_exe_artifact_id": 15083856249,
+    "existing_exe_artifact_zip_sha256": "d3c36255a282d1912c6fe5e00efdbaad217433033226744fb61cf6e493c9f19d",
+    "scenarios": {
+      "corrupt_primary_valid_backup": "PASS",
+      "invalid_duration_zero": "PASS"
+    },
+    "product_source_changed": false,
+    "real_msix_created": false,
+    "note": "Native Windows QA reused the existing exact-source unsigned EXE. It did not rebuild the product, create an MSIX, or establish Store readiness."
+  },
+  "transport": {
+    "pr161": {
+      "head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
+      "offline_qa_run_id": 42712757936,
+      "offline_qa_conclusion": "success",
+      "scope": "Offline QA only; not product E2E"
+    },
+    "pr165": {
+      "head_sha": "84f9a3480e2df93f0d75bddc29fb8de47e4ec941",
+      "transport_run_id": 45833181013,
+      "custody_run_id": 45833181073,
+      "offline_qa_run_id": 45833180930,
+      "all_conclusion": "success"
+    },
+    "pr192": {
+      "head_sha": "792a6ab7bc1a5847c03ebf59e07354edb3d3afb0",
+      "transport_run_id": 45856211088,
+      "custody_run_id": 45856211096,
+      "offline_qa_run_id": 45856211210,
+      "all_conclusion": "success",
+      "local_pull_worker_status": "IMPLEMENTED_CI_PASS_NOT_EXECUTED"
+    },
+    "pr171": {
+      "head_sha": "764721021f13be96364529650b44fb439770bac9",
+      "offline_qa_run_id": 44437197470,
+      "offline_qa_conclusion": "success",
+      "fresh_unsold_store_eligible_products": 0,
+      "store_dry_run_started": false
+    },
+    "pr194": {
+      "head_sha": "294e4dc2c3c631778edfee5c855ffe687d55d494",
+      "offline_qa_run_id": 45862062306,
+      "windows_job": "success",
+      "ubuntu_job": "success"
+    }
+  },
+  "first_unconnected_interval": {
+    "status": "BLOCKED_BEFORE_REAL_MSIX",
+    "first_blocker": "FOCUS_CURRENT_SOURCE_IDENTITY_REVALIDATION_AND_AUTHORITATIVE_PACKAGE_VERSION",
+    "secondary_blocker": "FILE_CURRENT_SOURCE_APPROVED_IDENTITY_ABSENT_AND_AUTHORITATIVE_PACKAGE_VERSION_REQUIRED",
+    "after_gate": "REAL_PRODUCT_MSIX_WITH_BYTE_IDENTICAL_STORE_ASSET_EMBEDDING -> PR165_ARTIFACT_CUSTODY -> PR192_LOCAL_PULL -> PHYSICAL_WINDOWS_CHECKER -> GUI_INSTALL",
+    "note": "Repository CI and QA-fixture MakeAppx are green, but no eligible product MSIX exists to transfer."
+  },
+  "downstream_receipts": {
+    "real_msix": false,
+    "github_backlog_receipt": false,
+    "local_pull_receipt": false,
+    "local_checker_receipt": false,
+    "local_gui_install_receipt": false,
+    "product_e2e_pass": false
+  },
+  "partner_center_authenticated_readback": "NOT_OBSERVED__NO_MICROSOFT_SIGNED_IN_BROWSER_PROFILE",
+  "local_code_sync_receipt": "NOT_OBSERVED__CLOUD_CI_ONLY",
+  "store_upload_test_eligibility": {
+    "eligible_fresh_unsold_products": 0,
+    "dry_run_started": false
+  },
+  "safety": {
+    "live_partner_center_write_allowed": false,
+    "identity_write_allowed": false,
+    "cas_apply_allowed": false,
+    "version_inference_allowed": false,
+    "store_submission_allowed": false,
+    "certification_allowed": false,
+    "publish_allowed": false,
+    "merge_allowed": false,
+    "force_push_allowed": false,
+    "main_release_write_allowed": false,
+    "product_code_changed": false,
+    "png_generation_or_modification_by_36": false,
+    "twelve_repo_touched": false,
+    "twentyfour_repo_touched": false
+  },
+  "note": "This overlay distinguishes the authentic historical Identity returns from the current source revisions. Both returned identities are one-commit append-only records for their old source/request tuples only; neither grants current-source approval or a Package Version. PR126's 1.0.0.0 is a disposable QA fixture only. PR130 adds Focus EXE error-recovery QA but does not create an MSIX. Keep E2E and Store-write permissions HOLD."
+}
