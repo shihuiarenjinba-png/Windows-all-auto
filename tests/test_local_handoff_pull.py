@@ -307,7 +307,7 @@ class LocalPullTests(unittest.TestCase):
             self.pull_fake(self.root/"inbox")
         self.q["items"][0]["store_id"]=None
         self.q["items"][0]["security_confirmed"]=True
-        with self.assertRaisesRegex(ValueError,"must not assert Store approvals"):
+        with self.assertRaisesRegex(ValueError,"QUEUE_STORE_AUTHORITY_INVALID"):
             self.pull_fake(self.root/"inbox")
 
 
