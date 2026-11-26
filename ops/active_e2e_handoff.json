@@ -11204,7 +11204,16 @@
         "head_sha": "a7e2abae75a65828721ea35005df12a245335f2a"
       }
     ],
-    "pr190_implementation_status": "IMPLEMENTED_CI_PASS_NOT_EXECUTED"
+    "pr190_implementation_status": "IMPLEMENTED_CI_PASS_NOT_EXECUTED",
+    "pr161_head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
+    "pr161_ci": [
+      {
+        "run_id": 42712757936,
+        "conclusion": "success",
+        "head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
+        "scope": "Offline QA only"
+      }
+    ]
   },
   "store_submission_allowed": false,
   "certification_allowed": false,
