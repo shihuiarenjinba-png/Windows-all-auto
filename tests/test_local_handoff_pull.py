@@ -10,7 +10,7 @@ import zipfile
 
 from all_auto.lane_queue import relative_package_path
 from scripts.local_handoff_pull import pull, recent_artifacts
-from scripts.github_artifact_custody import safe_package_folder
+from scripts.github_artifact_custody import safe_package_folder, verify_queue_artifact_custody
 
 SOURCE_SHA="b"*40
 RUN_HEAD_SHA="c"*40
@@ -261,6 +261,23 @@ class LocalPullTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"Queue metadata mismatch: identity"):
             self.pull_fake(self.root/"inbox")
         self.assertEqual(list((self.root/"inbox").iterdir()),[])
+
+    def test_custody_layer_allows_bounded_approved_identity_member_without_claiming_e2e(self):
+        # This layer proves only archive/local byte custody. The later strict
+        # handoff validator still requires the complete paired Identity receipts.
+        (self.fixture / "factory-qa" / "approved-identity.json").write_text(
+            '{"reviewed": true}', encoding="utf-8"
+        )
+        self.build_artifact()
+        fetch_json, fetch_bytes = self.fake_clients("test-token")
+        result = verify_queue_artifact_custody(
+            {"repository": "shihuiarenjinba-png/Windows-all-auto",
+             "run_id": self.run_id, "artifact_id": self.artifact_id,
+             "artifact_name": self.artifact_name, "run_head_sha": self.run_head_sha},
+            self.artifact_dir, fetch_json, fetch_bytes
+        )
+        self.assertEqual(result["status"], "CUSTODY_VERIFIED_ONLY")
+        self.assertIs(result["e2e_pass"], False)
 
     def test_safe_package_folder_rejects_path_traversal(self):
         item = {"slug": "../escape", "package_sha256": self.checksum}
