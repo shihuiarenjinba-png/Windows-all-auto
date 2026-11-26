@@ -32,7 +32,7 @@ class FileVisualReviewGateReconciliation20261127Tests(unittest.TestCase):
         self.assertIsNone(self.file_item["package_version"])
         self.assertFalse(self.file_item["real_msix"])
         self.assertFalse(self.file_item["product_e2e_pass"])
-        self.assertEqual(self.overlay["file_integrity_ledger"]["current_source_sha"], "33d612be2774ac155ea3d85289ec5cb7981c81c1")
+        self.assertEqual(self.overlay["products"]["file_integrity_ledger"]["current_source_sha"], "33d612be2774ac155ea3d85289ec5cb7981c81c1")
         self.assertEqual(self.overlay["status"], "HOLD")
 
 
