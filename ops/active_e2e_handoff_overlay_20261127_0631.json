@@ -120,7 +120,9 @@
     "recorded_parent_sha": "5292b3bf3ef6e8cb28fcfd1fa9f4ee000975437e",
     "actual_parent_sha": "64a57e24a377c33904749fd6deac5d14655ea6d5",
     "mismatch": true,
-    "resolution": "This append-only overlay records the live PR165 head and exact-head CI. The oversized canonical ledger was not rewritten; its stale head pointer remains explicitly disclosed."
+    "resolution": "This append-only overlay records the live PR165 head and exact-head CI. The oversized canonical ledger was not rewritten; its stale head pointer remains explicitly disclosed.",
+    "current_actual_pr165_head_after_reconciliation": "6afe5ec89a440880066bee43a61f596a5939761d",
+    "canonical_pointer_still_stale": true
   },
   "products": {
     "focus_session_desk": {
@@ -201,18 +203,22 @@
         "StoreLogo": {
           "git_blob_sha": "8017427aabf0e30168a88353588dc2ffdc2cba6d",
           "bytes": 360393,
-          "dimensions": "300x300"
+          "dimensions": "300x300",
+          "sha256": "2c0460e0f2947ce975b7a6abbc607acaeea8a22bf9bcae984b420acedddc8e2f"
         },
         "Square150": {
           "git_blob_sha": "c6060306f202b662831039b95b1352689da023c7",
           "bytes": 90223,
-          "dimensions": "150x150"
+          "dimensions": "150x150",
+          "sha256": "9183aa4055ed453360b656b4fe291bf392413e04fab44048820ca4bcfa5d1d0c"
         },
         "Square44": {
           "git_blob_sha": "466a795ea01e34a28ac1db9aa7dcf3308464dbd0",
           "bytes": 7856,
-          "dimensions": "44x44"
-        }
+          "dimensions": "44x44",
+          "sha256": "3fbdcd610f6781b72308755c6f92b1fdaef0592bab51c612556e5b8b95c1ee46"
+        },
+        "raw_sha256_independently_recomputed": true
       },
       "package_version": null,
       "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
@@ -302,8 +308,9 @@
         },
         "Square44": {
           "git_blob_sha": "d57e7a25d2a9eaa2b54d00c610f3a1ad7d4a4d49",
-          "sha256": "bd61099427a770f8dff247f0f6928e5d50ba2cd8265797c7f13952e96147d70d"
-        }
+          "sha256": "bd61099427a770f8ddf247f0f6928e5d50ba2cd8265797c7f13952e96147d70d"
+        },
+        "raw_sha256_independently_recomputed": true
       },
       "msix_export": {
         "run_id": 45422811552,
@@ -418,5 +425,63 @@
     "certification_allowed": false,
     "publish_allowed": false
   },
-  "next_action": "Focus first: obtain authenticated read-only Partner Center current-source Identity and authoritative Version for exact PR94 head b6b69464 and a request bound to that same source; never reuse the 8b00 or fb629 binding. File second: obtain current-source approved Identity and authoritative Version for PR115 33d612be; never reuse historical d1108. 00 remains owner of PNG and Focus visual sign-off. Once official Identity/Version and required assets are verified, build real MSIX then proceed through SHA custody, GitHub backlog, local pull, Windows-checker and local GUI. Keep E2E and Store gates HOLD."
+  "next_action": "Focus first: obtain authenticated read-only Partner Center current-source Identity and authoritative Version for exact PR94 head b6b69464 and a request bound to that same source; never reuse the 8b00 or fb629 binding. File second: obtain current-source approved Identity and authoritative Version for PR115 33d612be; never reuse historical d1108. 00 remains owner of PNG and Focus visual sign-off. Once official Identity/Version and required assets are verified, build real MSIX then proceed through SHA custody, GitHub backlog, local pull, Windows-checker and local GUI. Keep E2E and Store gates HOLD.",
+  "post_observation_verification": {
+    "verified_at_utc": "2026-11-26T21:37:45Z",
+    "latest_pr165_head_sha": "6afe5ec89a440880066bee43a61f596a5939761d",
+    "latest_pr165_parent_sha": "b5eadbd66ec50b9e7272a2e5e09edea672735274",
+    "product_code_changed_since_84f9": false,
+    "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
+    "exact_head_ci": [
+      {
+        "run_id": 45899399627,
+        "event": "pull_request",
+        "conclusion": "success",
+        "head_sha": "6afe5ec89a440880066bee43a61f596a5939761d",
+        "workflow": "Windows E2E transport fail-closed regression"
+      },
+      {
+        "run_id": 45899399764,
+        "event": "pull_request",
+        "conclusion": "success",
+        "head_sha": "6afe5ec89a440880066bee43a61f596a5939761d",
+        "workflow": "GitHub artifact custody fail-closed regression"
+      },
+      {
+        "run_id": 45899399661,
+        "event": "pull_request",
+        "conclusion": "success",
+        "head_sha": "6afe5ec89a440880066bee43a61f596a5939761d",
+        "workflow": "Windows-all-auto Offline QA",
+        "tests_run": 584,
+        "windows_skipped": 2,
+        "ubuntu_skipped": 0
+      }
+    ],
+    "same_head_push_offline_qa": {
+      "run_id": 45899395261,
+      "event": "push",
+      "conclusion": "success",
+      "head_sha": "6afe5ec89a440880066bee43a61f596a5939761d"
+    },
+    "intermediate_test_only_failures": [
+      {
+        "head_sha": "004c83d20332acef17b4ce793b43e943cb8283d9",
+        "run_ids": [
+          45899289790,
+          45899295052
+        ],
+        "cause": "New assertion used a nonexistent identity.source_sha key instead of historical_source_sha."
+      },
+      {
+        "head_sha": "b5eadbd66ec50b9e7272a2e5e09edea672735274",
+        "run_ids": [
+          45899350732,
+          45899356318
+        ],
+        "cause": "A second expected_head_sha assertion still referenced the nonexistent identity.source_sha key."
+      }
+    ],
+    "resolution": "Both test-only assertion errors were corrected. Current exact-head transport, custody, Windows/Ubuntu Offline QA and push Offline QA all pass."
+  }
 }

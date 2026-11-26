@@ -78,6 +78,11 @@ class CurrentLiveProductReconciliation20261127Tests(unittest.TestCase):
         self.assertIsNone(f["package_version"])
         self.assertFalse(f["real_msix"])
         self.assertEqual(f["store_assets"]["owner"], "00")
+        assets = f["store_assets"]
+        self.assertTrue(assets["raw_sha256_independently_recomputed"])
+        self.assertEqual(assets["StoreLogo"]["sha256"], "2c0460e0f2947ce975b7a6abbc607acaeea8a22bf9bcae984b420acedddc8e2f")
+        self.assertEqual(assets["Square150"]["sha256"], "9183aa4055ed453360b656b4fe291bf392413e04fab44048820ca4bcfa5d1d0c")
+        self.assertEqual(assets["Square44"]["sha256"], "3fbdcd610f6781b72308755c6f92b1fdaef0592bab51c612556e5b8b95c1ee46")
         self.assertEqual(f["product_quality_score"], 54)
 
     def test_file_current_source_has_no_approved_identity_and_no_msix(self):
@@ -101,6 +106,11 @@ class CurrentLiveProductReconciliation20261127Tests(unittest.TestCase):
         self.assertIn("approved Identity absent", export["exact_gate_output"])
         self.assertEqual(f["latest_native_windows_gui"]["run_id"], 45422895435)
         self.assertEqual(f["latest_native_windows_gui"]["human_visual_review_status"], "PASS")
+        assets = f["store_assets"]
+        self.assertTrue(assets["raw_sha256_independently_recomputed"])
+        self.assertEqual(assets["StoreLogo"]["sha256"], "224fa777280cf61877c14146e920fca32bb90bff6f0cea3df4ed0ac77c0645a9")
+        self.assertEqual(assets["Square150"]["sha256"], "e00136c7a319756ccc48c2dc50136f5872e272e806cd592a6bebb8922bbb1742")
+        self.assertEqual(assets["Square44"]["sha256"], "bd61099427a770f8ddf247f0f6928e5d50ba2cd8265797c7f13952e96147d70d")
 
     def test_first_unconnected_interval_is_before_real_msix_and_downstream_stays_false(self):
         o = self.overlay
@@ -131,6 +141,24 @@ class CurrentLiveProductReconciliation20261127Tests(unittest.TestCase):
         self.assertFalse(q["certification_allowed"])
         self.assertFalse(q["publish_allowed"])
 
+
+    def test_post_observation_pr165_head_and_exact_head_ci_are_current(self):
+        post = self.overlay["post_observation_verification"]
+        self.assertEqual(post["latest_pr165_head_sha"], "6afe5ec89a440880066bee43a61f596a5939761d")
+        self.assertEqual(post["exact_head_ci_status"], "PASS_EXACT_HEAD_CI")
+        self.assertEqual([x["run_id"] for x in post["exact_head_ci"]],
+                         [45899399627, 45899399764, 45899399661])
+        self.assertTrue(all(x["head_sha"] == post["latest_pr165_head_sha"]
+                            and x["conclusion"] == "success" for x in post["exact_head_ci"]))
+        self.assertEqual(post["exact_head_ci"][2]["tests_run"], 584)
+        self.assertEqual(post["exact_head_ci"][2]["windows_skipped"], 2)
+        self.assertEqual(post["same_head_push_offline_qa"]["run_id"], 45899395261)
+        self.assertEqual(post["same_head_push_offline_qa"]["conclusion"], "success")
+        self.assertFalse(post["product_code_changed_since_84f9"])
+        self.assertTrue(self.overlay["canonical_ledger_reconciliation"]["canonical_pointer_still_stale"])
+        self.assertEqual(self.queue["latest_pr165_head_after_reconciliation"], post["latest_pr165_head_sha"])
+        self.assertEqual(self.queue["latest_pr165_exact_head_ci_run_ids"],
+                         [45899399627, 45899399764, 45899399661])
 
 if __name__ == "__main__":
     unittest.main()
