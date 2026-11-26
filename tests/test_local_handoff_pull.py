@@ -61,10 +61,20 @@ class LocalPullTests(unittest.TestCase):
         (self.artifact_dir/"queue.json").write_text(json.dumps(self.q),encoding="utf-8")
         archive=io.BytesIO()
         with zipfile.ZipFile(archive,"w",zipfile.ZIP_DEFLATED) as z:
-            z.write(self.artifact_dir/"queue.json","queue.json")
-            for path in sorted((self.artifact_dir/"packages").rglob("*")):
-                if path.is_file():
-                    z.write(path,path.relative_to(self.artifact_dir).as_posix())
+            paths=[(self.artifact_dir/"queue.json","queue.json")]
+            paths.extend(
+                (path,path.relative_to(self.artifact_dir).as_posix())
+                for path in sorted((self.artifact_dir/"packages").rglob("*"))
+                if path.is_file()
+            )
+            for path,archive_name in paths:
+                # Artifact IDs are immutable; test archive bytes must also be
+                # deterministic across Windows replays (avoid wall-clock ZIP timestamps).
+                info=zipfile.ZipInfo(archive_name,date_time=(2020,1,1,0,0,0))
+                info.compress_type=zipfile.ZIP_DEFLATED
+                info.create_system=3
+                info.external_attr=0o100644 << 16
+                z.writestr(info,path.read_bytes())
         self.archive_bytes=archive.getvalue()
         self.run_response={
             "name":"Factory MSIX intake and local QA handoff",
