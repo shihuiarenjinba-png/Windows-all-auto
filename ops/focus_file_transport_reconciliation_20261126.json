@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "path": "ops/focus_file_transport_reconciliation_20261126.json",
-  "observed_at_utc": "2026-11-26T01:25:00Z",
+  "observed_at_utc": "2026-11-26T01:36:41Z",
   "record_type": "APPEND_ONLY_CURRENT_OBSERVATION",
   "supersedes": [
     "ops/active_e2e_handoff_overlay_20261126.json",
@@ -700,43 +700,43 @@
   "ledger_reconciliation": {
     "prior_overlay_head": "c8018c560f28d26f055da66bd36fc0fabad44d73",
     "latest_pr165_head": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb",
-    "active_ledger_blob_sha": "9cce6b183dcab8331b33a544b2de4023c458e1bf",
+    "active_ledger_blob_sha": "e8f70e051605b812b5f122690276bffddc6086da",
     "active_ledger_direct_content_available": true,
     "active_ledger_content_fetch_status": "FETCHED_DIRECTLY_FROM_EXACT_BLOB_BYTES__NOT_TREATED_AS_EMPTY_FILE",
     "active_ledger_direct_update_performed": true,
-    "active_ledger_updated_at_utc": "2026-11-26T01:25:00Z",
+    "active_ledger_updated_at_utc": "2026-11-26T01:36:41Z",
     "active_ledger_recorded_pr165_head": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb",
-    "actual_pr165_head": "2ba11031c1c713abb7b548125b10b48af5346bfd",
-    "snapshot_parent_sha": "2ba11031c1c713abb7b548125b10b48af5346bfd",
+    "actual_pr165_head": "1b2f2c15a8d1ed436e364f7b9a61591b47d8a3d0",
+    "snapshot_parent_sha": "1b2f2c15a8d1ed436e364f7b9a61591b47d8a3d0",
     "comparison": {
       "status": "ahead",
-      "ahead_by": 14,
+      "ahead_by": 15,
       "behind_by": 0,
-      "total_commits": 14,
+      "total_commits": 15,
       "base_sha": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb"
     },
     "active_ledger_reconciled": true,
-    "latest_verified_head_sha": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb",
+    "latest_verified_head_sha": "1b2f2c15a8d1ed436e364f7b9a61591b47d8a3d0",
     "current_branch_head_ci_status": "PASS_EXACT_HEAD_CI",
     "current_branch_head_ci_run_ids": [
-      45735513903,
-      45735513946,
-      45735513940
+      45735790127,
+      45735790125,
+      45735790106
     ],
-    "note": "Canonical active ledger records tested transport-code head c68adc79 separately from live branch head 2ba11031. Three intermediate test-only assertion issues are preserved in history; current branch head passes all three exact-head workflows. Product E2E remains HOLD.",
+    "note": "The active ledger was fetched from its exact blob bytes, updated, and reconciled to live PR165 HEAD 1b2f2c15. c68adc79 remains the last verified transport-code baseline; 1b2f2c15 is 15 operations/test-only commits ahead, with no product code change. Exact-head custody, transport and Windows/Ubuntu Offline QA pass. Product E2E remains HOLD.",
     "active_ledger_path": "ops/active_e2e_handoff.json",
     "active_ledger_recorded_pr165_code_head": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb",
     "actual_pr165_branch_head": "2ba11031c1c713abb7b548125b10b48af5346bfd",
     "latest_verified_code_head_sha": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb",
     "snapshot_commit_scope": "OPERATIONS_AND_REGRESSION_TESTS_ONLY",
-    "snapshot_commit_ci_status": "PENDING_EXACT_HEAD_CI",
-    "current_branch_head_parent_ci_status": "PARTIAL_FAIL_TEST_ONLY_STALE_OBSERVATION_KEY",
+    "snapshot_commit_ci_status": "PASS_EXACT_HEAD_CI",
+    "current_branch_head_parent_ci_status": "PASS_EXACT_HEAD_CI",
     "current_branch_head_parent_ci_run_ids": [
-      45735435213,
-      45735435218,
-      45735435236
+      45735513903,
+      45735513946,
+      45735513940
     ],
-    "status": "RECONCILED_TO_PR165_C68ADC_CODE_2BA110_BRANCH_HEAD"
+    "status": "RECONCILED_TO_PR165_C68ADC_CODE_1B2F_BRANCH_HEAD"
   },
   "safety": {
     "store_submission_allowed": false,
@@ -751,7 +751,7 @@
     "twentyfour_repo_touched": false,
     "png_generation_or_modification": false
   },
-  "next_action": "Focus Session Desk rank 1: current-source DRY_RUN request app-focus-session-desk-fb6293839bc7 and artifact 15049692591 are verified, but approved-identity.json remains bound to historical source 8b00bc4; read-only Partner Center current-source Identity/Version readback is unavailable. Do not reuse historical Identity or infer Version. File Integrity rank 2: PR115 source 33d612be has no current approved-identity.json; historical Identity is source d1108d12 only; current request remains DRY_RUN, official Identity NOT_COLLECTED/UNVERIFIED, package NOT_BUILT, Version null, and human visual review is still required. After authoritative current-source Identity + Version evidence, build real MSIX → independent SHA custody → GitHub backlog → local pull → Windows-checker → GUI/install. Local user-PC code-sync receipt remains NOT_OBSERVED. PR161/171 remain repository-CI-only; Store dry-run eligibility remains zero. No Partner Center write, Store upload/submission/certification/publish, merge, force-push, or main/release change.",
+  "next_action": "Keep E2E HOLD. Focus current-source Partner Center Identity/Version readback is not collected; its existing approved-identity.json is bound to historical source 8b00bc4. File Integrity current PR115 source 33d612be has no approved-identity.json and its request is DRY_RUN only. Obtain authenticated read-only Partner Center evidence, then bind exact source/request/Identity/Version; build real MSIX only after all gates pass. No live Store write.",
   "latest_observation": {
     "observed_at_utc": "2026-11-26T00:51:09Z",
     "pull_request": 165,
@@ -1018,44 +1018,44 @@
     }
   ],
   "pr165_last_verified_head_sha": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb",
-  "pr165_current_branch_head_sha": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb",
-  "pr165_current_branch_head_parent_sha": "20d64d0a43581372477f2990133b914390ca3559",
+  "pr165_current_branch_head_sha": "1b2f2c15a8d1ed436e364f7b9a61591b47d8a3d0",
+  "pr165_current_branch_head_parent_sha": "2ba11031c1c713abb7b548125b10b48af5346bfd",
   "pr165_current_branch_head_ci_status": "PASS_EXACT_HEAD_CI",
   "pr165_current_branch_head_ci": [
     {
-      "run_id": 45731501639,
+      "run_id": 45735790127,
       "event": "pull_request",
       "conclusion": "success",
-      "head_sha": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb",
+      "head_sha": "1b2f2c15a8d1ed436e364f7b9a61591b47d8a3d0",
       "workflow": "GitHub artifact custody fail-closed regression",
       "job": "custody-regression"
     },
     {
-      "run_id": 45731501700,
+      "run_id": 45735790125,
       "event": "pull_request",
       "conclusion": "success",
-      "head_sha": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb",
+      "head_sha": "1b2f2c15a8d1ed436e364f7b9a61591b47d8a3d0",
       "workflow": "Windows E2E transport fail-closed regression",
       "job": "transport-regression"
     },
     {
-      "run_id": 45731501669,
+      "run_id": 45735790106,
       "event": "pull_request",
       "conclusion": "success",
-      "head_sha": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb",
+      "head_sha": "1b2f2c15a8d1ed436e364f7b9a61591b47d8a3d0",
       "workflow": "Windows-all-auto Offline QA",
       "jobs": [
         "Offline preflight tests (windows-latest)",
         "Offline preflight tests (ubuntu-latest)"
       ],
-      "tests_run": 564,
+      "tests_run": 565,
       "windows_skipped": 2
     }
   ],
   "pr165_current_branch_head_ci_run_ids": [
-    45731501639,
-    45731501700,
-    45731501669
+    45735790127,
+    45735790125,
+    45735790106
   ],
   "pr165_current_head_ci_run_ids": [
     45731501639,
@@ -1168,16 +1168,16 @@
     }
   ],
   "current_branch_head_observation": {
-    "observed_at_utc": "2026-11-26T01:25:00Z",
+    "observed_at_utc": "2026-11-26T01:36:41Z",
     "pull_request": 165,
     "branch": "codex/e2e-artifact-custody-20261114",
-    "head_sha": "2ba11031c1c713abb7b548125b10b48af5346bfd",
-    "parent_sha": "fdb270ca6a67c41d8ab5e1d1f4b3ef3b4f08fbed",
+    "head_sha": "1b2f2c15a8d1ed436e364f7b9a61591b47d8a3d0",
+    "parent_sha": "2ba11031c1c713abb7b548125b10b48af5346bfd",
     "comparison_to_last_tested_code_head": {
       "status": "ahead",
-      "ahead_by": 14,
+      "ahead_by": 15,
       "behind_by": 0,
-      "total_commits": 14,
+      "total_commits": 15,
       "base_sha": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb"
     },
     "changed_files_since_last_tested_code_head": [
@@ -1195,6 +1195,38 @@
     "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
     "status": "PASS_EXACT_HEAD_CI",
     "exact_head_ci": [
+      {
+        "run_id": 45735790127,
+        "event": "pull_request",
+        "conclusion": "success",
+        "head_sha": "1b2f2c15a8d1ed436e364f7b9a61591b47d8a3d0",
+        "workflow": "GitHub artifact custody fail-closed regression",
+        "job": "custody-regression"
+      },
+      {
+        "run_id": 45735790125,
+        "event": "pull_request",
+        "conclusion": "success",
+        "head_sha": "1b2f2c15a8d1ed436e364f7b9a61591b47d8a3d0",
+        "workflow": "Windows E2E transport fail-closed regression",
+        "job": "transport-regression"
+      },
+      {
+        "run_id": 45735790106,
+        "event": "pull_request",
+        "conclusion": "success",
+        "head_sha": "1b2f2c15a8d1ed436e364f7b9a61591b47d8a3d0",
+        "workflow": "Windows-all-auto Offline QA",
+        "jobs": [
+          "Offline preflight tests (windows-latest)",
+          "Offline preflight tests (ubuntu-latest)"
+        ],
+        "tests_run": 565,
+        "windows_skipped": 2
+      }
+    ],
+    "parent_ci_status": "PASS_EXACT_HEAD_CI",
+    "parent_ci": [
       {
         "run_id": 45735513903,
         "event": "pull_request",
@@ -1225,31 +1257,8 @@
         "windows_skipped": 2
       }
     ],
-    "parent_ci_status": "PARTIAL_FAIL_TEST_ONLY_STALE_OBSERVATION_KEY",
-    "parent_ci": [
-      {
-        "run_id": 45735435213,
-        "event": "pull_request",
-        "conclusion": "success",
-        "head_sha": "fdb270ca6a67c41d8ab5e1d1f4b3ef3b4f08fbed",
-        "workflow": "Windows E2E transport fail-closed regression"
-      },
-      {
-        "run_id": 45735435218,
-        "event": "pull_request",
-        "conclusion": "success",
-        "head_sha": "fdb270ca6a67c41d8ab5e1d1f4b3ef3b4f08fbed",
-        "workflow": "GitHub artifact custody fail-closed regression"
-      },
-      {
-        "run_id": 45735435236,
-        "event": "pull_request",
-        "conclusion": "failure",
-        "head_sha": "fdb270ca6a67c41d8ab5e1d1f4b3ef3b4f08fbed",
-        "workflow": "Windows-all-auto Offline QA",
-        "failure": "Two stale observation-key assertions still pointed to 46af snapshot key 010218 instead of latest key 012000."
-      }
-    ],
+    "parent_push_ci_status": "NOT_OBSERVED_FOR_CURRENT_PARENT",
+    "parent_push_ci": [],
     "repository_ci_is_not_product_e2e": true,
     "product_e2e_status": "HOLD",
     "e2e_pass": false,
@@ -1266,9 +1275,12 @@
     "certification_allowed": false,
     "publish_allowed": false,
     "snapshot_scope": "OPERATIONS_AND_REGRESSION_TESTS_ONLY",
-    "last_verified_code_head_sha": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb"
+    "last_verified_code_head_sha": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb",
+    "last_verified_branch_head_sha": "1b2f2c15a8d1ed436e364f7b9a61591b47d8a3d0",
+    "offline_qa_tests_run": 565,
+    "offline_qa_windows_skipped": 2
   },
-  "pr165_current_branch_head_observed_at_utc": "2026-11-26T00:51:09Z",
+  "pr165_current_branch_head_observed_at_utc": "2026-11-26T01:36:41Z",
   "pr165_current_head_parent_push_ci_status": "NOT_OBSERVED_FOR_CURRENT_PARENT",
   "pr165_current_head_parent_push_ci": [],
   "pr165_last_verified_head_ci": [
@@ -1375,7 +1387,163 @@
     "http_status": 404,
     "current_source_reuse_allowed": false
   },
-  "snapshot_commit_parent_sha": "2ba11031c1c713abb7b548125b10b48af5346bfd",
+  "snapshot_commit_parent_sha": "1b2f2c15a8d1ed436e364f7b9a61591b47d8a3d0",
   "snapshot_commit_scope": "OPERATIONS_AND_REGRESSION_TESTS_ONLY",
-  "snapshot_commit_ci_status": "PENDING_EXACT_HEAD_CI"
+  "snapshot_commit_ci_status": "PASS_EXACT_HEAD_CI",
+  "pr165_current_branch_head_parent_ci_status": "PASS_EXACT_HEAD_CI",
+  "pr165_current_branch_head_parent_ci": [
+    {
+      "run_id": 45735513903,
+      "event": "pull_request",
+      "conclusion": "success",
+      "head_sha": "2ba11031c1c713abb7b548125b10b48af5346bfd",
+      "workflow": "GitHub artifact custody fail-closed regression",
+      "job": "custody-regression"
+    },
+    {
+      "run_id": 45735513946,
+      "event": "pull_request",
+      "conclusion": "success",
+      "head_sha": "2ba11031c1c713abb7b548125b10b48af5346bfd",
+      "workflow": "Windows E2E transport fail-closed regression",
+      "job": "transport-regression"
+    },
+    {
+      "run_id": 45735513940,
+      "event": "pull_request",
+      "conclusion": "success",
+      "head_sha": "2ba11031c1c713abb7b548125b10b48af5346bfd",
+      "workflow": "Windows-all-auto Offline QA",
+      "jobs": [
+        "Offline preflight tests (windows-latest)",
+        "Offline preflight tests (ubuntu-latest)"
+      ],
+      "tests_run": 565,
+      "windows_skipped": 2
+    }
+  ],
+  "pr165_current_branch_head_parent_ci_run_ids": [
+    45735513903,
+    45735513946,
+    45735513940
+  ],
+  "pr165_current_branch_head_parent_push_ci_status": "NOT_OBSERVED_FOR_CURRENT_PARENT",
+  "pr165_current_branch_head_parent_push_ci": [],
+  "pr165_current_branch_head_comparison_to_last_tested_code_head": {
+    "status": "ahead",
+    "ahead_by": 15,
+    "behind_by": 0,
+    "total_commits": 15,
+    "base_sha": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb"
+  },
+  "pr165_current_branch_head_changed_files": [
+    "ops/active_e2e_handoff.json",
+    "ops/active_e2e_handoff_overlay_20261126.json",
+    "ops/completion_rush_queue_20261116.json",
+    "ops/focus_file_transport_reconciliation_20261126.json",
+    "tests/test_completion_rush_queue_20261116.py",
+    "tests/test_current_live_product_reconciliation_20261125.py",
+    "tests/test_focus_file_transport_reconciliation_20261126.py",
+    "tests/test_github_artifact_custody.py",
+    "tests/test_real_msix_transport_failclosed.py"
+  ],
+  "pr165_current_branch_head_product_code_changed": false,
+  "pr165_current_branch_head_snapshot_parent_sha": "1b2f2c15a8d1ed436e364f7b9a61591b47d8a3d0",
+  "pr165_current_branch_head_snapshot_commit_ci_status": "PASS_EXACT_HEAD_CI",
+  "pr165_current_branch_head_snapshot_commit_scope": "OPERATIONS_AND_REGRESSION_TESTS_ONLY",
+  "pr165_current_branch_head_snapshot_commit_ci": [
+    {
+      "run_id": 45735790127,
+      "event": "pull_request",
+      "conclusion": "success",
+      "head_sha": "1b2f2c15a8d1ed436e364f7b9a61591b47d8a3d0",
+      "workflow": "GitHub artifact custody fail-closed regression",
+      "job": "custody-regression"
+    },
+    {
+      "run_id": 45735790125,
+      "event": "pull_request",
+      "conclusion": "success",
+      "head_sha": "1b2f2c15a8d1ed436e364f7b9a61591b47d8a3d0",
+      "workflow": "Windows E2E transport fail-closed regression",
+      "job": "transport-regression"
+    },
+    {
+      "run_id": 45735790106,
+      "event": "pull_request",
+      "conclusion": "success",
+      "head_sha": "1b2f2c15a8d1ed436e364f7b9a61591b47d8a3d0",
+      "workflow": "Windows-all-auto Offline QA",
+      "jobs": [
+        "Offline preflight tests (windows-latest)",
+        "Offline preflight tests (ubuntu-latest)"
+      ],
+      "tests_run": 565,
+      "windows_skipped": 2
+    }
+  ],
+  "snapshot_commit_ci": [
+    {
+      "run_id": 45735790127,
+      "event": "pull_request",
+      "conclusion": "success",
+      "head_sha": "1b2f2c15a8d1ed436e364f7b9a61591b47d8a3d0",
+      "workflow": "GitHub artifact custody fail-closed regression",
+      "job": "custody-regression"
+    },
+    {
+      "run_id": 45735790125,
+      "event": "pull_request",
+      "conclusion": "success",
+      "head_sha": "1b2f2c15a8d1ed436e364f7b9a61591b47d8a3d0",
+      "workflow": "Windows E2E transport fail-closed regression",
+      "job": "transport-regression"
+    },
+    {
+      "run_id": 45735790106,
+      "event": "pull_request",
+      "conclusion": "success",
+      "head_sha": "1b2f2c15a8d1ed436e364f7b9a61591b47d8a3d0",
+      "workflow": "Windows-all-auto Offline QA",
+      "jobs": [
+        "Offline preflight tests (windows-latest)",
+        "Offline preflight tests (ubuntu-latest)"
+      ],
+      "tests_run": 565,
+      "windows_skipped": 2
+    }
+  ],
+  "pr165_last_verified_branch_head_sha": "1b2f2c15a8d1ed436e364f7b9a61591b47d8a3d0",
+  "pr165_last_verified_branch_head_ci": [
+    {
+      "run_id": 45735790127,
+      "event": "pull_request",
+      "conclusion": "success",
+      "head_sha": "1b2f2c15a8d1ed436e364f7b9a61591b47d8a3d0",
+      "workflow": "GitHub artifact custody fail-closed regression",
+      "job": "custody-regression"
+    },
+    {
+      "run_id": 45735790125,
+      "event": "pull_request",
+      "conclusion": "success",
+      "head_sha": "1b2f2c15a8d1ed436e364f7b9a61591b47d8a3d0",
+      "workflow": "Windows E2E transport fail-closed regression",
+      "job": "transport-regression"
+    },
+    {
+      "run_id": 45735790106,
+      "event": "pull_request",
+      "conclusion": "success",
+      "head_sha": "1b2f2c15a8d1ed436e364f7b9a61591b47d8a3d0",
+      "workflow": "Windows-all-auto Offline QA",
+      "jobs": [
+        "Offline preflight tests (windows-latest)",
+        "Offline preflight tests (ubuntu-latest)"
+      ],
+      "tests_run": 565,
+      "windows_skipped": 2
+    }
+  ],
+  "pr165_last_verified_branch_head_observed_at_utc": "2026-11-26T01:36:41Z"
 }

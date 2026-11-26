@@ -41,13 +41,19 @@ class FocusFileTransportReconciliation20261126(unittest.TestCase):
 
     def test_current_branch_head_pass_is_separate_from_parent_snapshot_failure(self):
         current = self.data["current_branch_head_observation"]
-        self.assertEqual(current["head_sha"], "2ba11031c1c713abb7b548125b10b48af5346bfd")
-        self.assertEqual(current["parent_sha"], "fdb270ca6a67c41d8ab5e1d1f4b3ef3b4f08fbed")
+        self.assertEqual(current["head_sha"], "1b2f2c15a8d1ed436e364f7b9a61591b47d8a3d0")
+        self.assertEqual(current["parent_sha"], "2ba11031c1c713abb7b548125b10b48af5346bfd")
         self.assertEqual(current["exact_head_ci_status"], "PASS_EXACT_HEAD_CI")
-        self.assertEqual(current["comparison_to_last_tested_code_head"]["ahead_by"], 14)
+        self.assertEqual(current["comparison_to_last_tested_code_head"]["ahead_by"], 15)
         self.assertFalse(current["product_code_changed"])
         self.assertFalse(current["e2e_pass"])
-        self.assertEqual([x["run_id"] for x in current["exact_head_ci"]], [45735513903, 45735513946, 45735513940])
+        self.assertEqual(current["parent_ci_status"], "PASS_EXACT_HEAD_CI")
+        self.assertEqual([x["run_id"] for x in current["parent_ci"]], [45735513903, 45735513946, 45735513940])
+        self.assertEqual(self.data["pr165_current_branch_head_sha"], current["head_sha"])
+        self.assertEqual(self.data["pr165_current_branch_head_ci_status"], "PASS_EXACT_HEAD_CI")
+        self.assertEqual(self.data["snapshot_commit_ci_status"], "PASS_EXACT_HEAD_CI")
+        self.assertEqual(self.data["ledger_reconciliation"]["actual_pr165_head"], current["head_sha"])
+        self.assertEqual([x["run_id"] for x in current["exact_head_ci"]], [45735790127, 45735790125, 45735790106])
         self.assertEqual(self.data["pr165"]["latest_verified_code_head_sha"], "c68adc79ecf8a0c6ad4b538146648391b1b4eddb")
         self.assertEqual(self.data["pr165"]["immediate_parent_ci_status"], "PARTIAL_FAIL_RECONCILIATION_TEST_KEYERROR")
         self.assertEqual([x["run_id"] for x in self.data["pr165"]["immediate_parent_exact_head_ci"]], [45731429031, 45731429039, 45731429057])
