@@ -1,0 +1,140 @@
+{
+  "schema_version": "1.0",
+  "path": "ops/completion_rush_queue_20261127_0631.json",
+  "generated_at": "2026-11-26T21:31:17Z",
+  "policy": "COMPLETION_RUSH_EXISTING_PRODUCTS_ONLY",
+  "supersedes_current_snapshot": "ops/completion_rush_queue_20261116.json",
+  "source_observation": "ops/active_e2e_handoff_overlay_20261127_0631.json",
+  "new_product_generation_allowed": false,
+  "rules": {
+    "functional_hold": "Improve only an existing product when paid value, core functionality, beginner UX, safety or stability is deficient.",
+    "delivery_hold": "Do not add features. Advance current-source Identity/Version binding, real package, custody, backlog, local pull, checker and Windows QA.",
+    "freeze_for_package": "When no FUNCTIONAL_HOLD remains, product code is frozen except package-blocking defects.",
+    "never_guess": [
+      "Identity",
+      "Publisher",
+      "PFN",
+      "SID",
+      "Package Version"
+    ]
+  },
+  "priority": [
+    {
+      "rank": 1,
+      "product": "Focus Session Desk",
+      "lane": "APP",
+      "state": "POST_IDENTITY_UPGRADE",
+      "hold_class": "DELIVERY_HOLD",
+      "functional_hold": false,
+      "product_frozen_for_package": true,
+      "current_source_pr": 94,
+      "current_source_sha": "b6b69464a9c7450489338bc7542fd22cf190ed42",
+      "historical_identity_source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+      "current_identity_binding": "STALE_HISTORICAL_SOURCE_MISMATCH",
+      "current_request_id": "app-focus-session-desk-fb6293839bc7",
+      "current_request_source_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+      "current_request_status": "DRY_RUN__STALE_AFTER_SOURCE_HEAD_ADVANCED",
+      "package_version": null,
+      "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
+      "real_msix": false,
+      "store_assets_owner": "00",
+      "visual_signoff": "PENDING",
+      "sale_decision": "DO_NOT_SELL_BELOW_80",
+      "quality_score": 54,
+      "next_action": "Read-only current-source Partner Center Identity/Version revalidation; regenerate only a source-bound DRY_RUN request if required. No CAS, guessed Version, Store write or PNG regeneration."
+    },
+    {
+      "rank": 2,
+      "product": "File Integrity Ledger",
+      "lane": "APP",
+      "state": "POST_IDENTITY_UPGRADE",
+      "hold_class": "DELIVERY_HOLD",
+      "functional_hold": false,
+      "product_frozen_for_package": true,
+      "current_source_pr": 115,
+      "current_source_sha": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
+      "current_source_approved_identity_present": false,
+      "historical_identity_source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
+      "current_request_id": "app-file-integrity-ledger-33d612be2774",
+      "current_request_status": "DRY_RUN",
+      "package_version": null,
+      "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
+      "real_msix": false,
+      "visual_review": "HUMAN_OWNER_VISUAL_REVIEW_PASS",
+      "next_action": "Obtain current-source approved Identity and authoritative Version; do not reuse historical Identity or invent Store ID/Version."
+    },
+    {
+      "rank": 3,
+      "product": "Prism Route 3D",
+      "lane": "3D",
+      "state": "POST_IDENTITY_UPGRADE",
+      "hold_class": "DELIVERY_AND_PHYSICAL_QA_HOLD",
+      "functional_hold": false,
+      "product_frozen_for_package": true,
+      "current_source_sha": "b03ce7b16c3f75c04fe20fdda224c45849eeba0d",
+      "physical_qa_sessions": "0/6",
+      "physical_qa_screenshots": "0/36",
+      "package_version": null,
+      "real_msix": false,
+      "evidence_carry_forward_from": "ops/completion_rush_queue_20261116.json",
+      "evidence_revalidated_this_run": false
+    },
+    {
+      "rank": 4,
+      "product": "Signal Sprint",
+      "lane": "GAME",
+      "state": "POST_IDENTITY_UPGRADE",
+      "hold_class": "FUNCTIONAL_QA_THEN_DELIVERY_HOLD",
+      "functional_hold": true,
+      "product_frozen_for_package": false,
+      "current_candidate_source_sha": "1a349faa41663c417c40710140a4d50c79b62b78",
+      "real_windows_uia_pass": false,
+      "real_msixvc": false,
+      "package_version": null,
+      "build_artifact_status": "HOLD_BUILD_ARTIFACT_NOT_CONFIGURED",
+      "evidence_carry_forward_from": "ops/completion_rush_queue_20261116.json",
+      "evidence_revalidated_this_run": false
+    }
+  ],
+  "pr165": {
+    "head_sha_at_observation": "84f9a3480e2df93f0d75bddc29fb8de47e4ec941",
+    "parent_sha": "64a57e24a377c33904749fd6deac5d14655ea6d5",
+    "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
+    "exact_head_ci_run_ids": [
+      45833181073,
+      45833181013,
+      45833180930
+    ]
+  },
+  "pr161": {
+    "head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
+    "ci_run_ids": [
+      42712757936,
+      43403424936
+    ],
+    "conclusion": "SUCCESS"
+  },
+  "pr171": {
+    "head_sha": "764721021f13be96364529650b44fb439770bac9",
+    "ci_run_ids": [
+      44437197470,
+      44437190317
+    ],
+    "conclusion": "SUCCESS",
+    "eligible_fresh_unsold_products": 0,
+    "dry_run_started": false
+  },
+  "status": "HOLD",
+  "e2e_pass": false,
+  "first_unconnected_interval": "BLOCKED_BEFORE_REAL_MSIX_BUILD",
+  "store_upload_test_eligibility": {
+    "eligible_fresh_unsold_products": 0,
+    "status": "NOT_RUN_NO_PRODUCT_MEETS_ALL_GATES",
+    "dry_run_started": false,
+    "live_started": false
+  },
+  "store_submission_allowed": false,
+  "certification_allowed": false,
+  "publish_allowed": false,
+  "next_action": "Focus first: obtain authenticated read-only Partner Center current-source Identity and authoritative Version for exact PR94 head b6b69464 and a request bound to that same source; never reuse the 8b00 or fb629 binding. File second: obtain current-source approved Identity and authoritative Version for PR115 33d612be; never reuse historical d1108. 00 remains owner of PNG and Focus visual sign-off. Once official Identity/Version and required assets are verified, build real MSIX then proceed through SHA custody, GitHub backlog, local pull, Windows-checker and local GUI. Keep E2E and Store gates HOLD."
+}
