@@ -119,6 +119,9 @@ class CompletionRushQueueTests(unittest.TestCase):
         self.assertEqual(self.data["pr165_current_branch_head_parent_ci_status"], "NOT_OBSERVED_FOR_CURRENT_PARENT")
         self.assertEqual([x["run_id"] for x in self.data["pr165_current_branch_head_parent_ci"]], [])
         self.assertEqual(self.data["pr165_current_branch_head_snapshot_commit_ci_status"], "PASS_EXACT_HEAD_CI")
+        latest = self.data["pr165_live_branch_head_observation_20261126_latest"]
+        self.assertFalse(latest["product_code_changed"])
+        self.assertEqual(latest["parent_ci_status"], "NOT_OBSERVED_FOR_CURRENT_PARENT")
         live = self.data["pr165_live_branch_head_observation_20261126_015000"]
         self.assertEqual(live["head_sha"], "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23")
         self.assertEqual(live["comparison_to_last_tested_code_head"]["ahead_by"], 18)
