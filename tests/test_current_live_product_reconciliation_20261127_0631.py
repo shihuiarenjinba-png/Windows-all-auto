@@ -55,7 +55,7 @@ class CurrentLiveProductReconciliation20261127Tests(unittest.TestCase):
     def test_focus_current_source_does_not_reuse_historical_identity_or_request(self):
         f = self.overlay["products"]["focus_session_desk"]
         self.assertEqual(f["current_source_sha"], "b6b69464a9c7450489338bc7542fd22cf190ed42")
-        self.assertEqual(f["identity"]["source_sha"], "8b00bc4e90828c4282463826873aa8dfd2eb93f4")
+        self.assertEqual(f["identity"]["historical_source_sha"], "8b00bc4e90828c4282463826873aa8dfd2eb93f4")
         self.assertEqual(f["identity"]["expected_head_sha"], f["identity"]["source_sha"])
         self.assertEqual(f["identity"]["package_version_gate"], "HOLD")
         self.assertFalse(f["identity"]["package_version_field_present"])
