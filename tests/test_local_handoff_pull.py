@@ -279,6 +279,23 @@ class LocalPullTests(unittest.TestCase):
         self.assertEqual(result["status"], "CUSTODY_VERIFIED_ONLY")
         self.assertIs(result["e2e_pass"], False)
 
+    def test_nested_app_package_path_is_verified_case_insensitively(self):
+        self.q["items"][0].update({
+            "request_id": "app-sample-app-1234",
+            "product_type": "APP",
+            "contract_status": "IMMUTABLE_QA_ONLY",
+        })
+        self.build_artifact()
+        fetch_json, fetch_bytes = self.fake_clients("test-token")
+        result = verify_queue_artifact_custody(
+            {"repository": "shihuiarenjinba-png/Windows-all-auto",
+             "run_id": self.run_id, "artifact_id": self.artifact_id,
+             "artifact_name": self.artifact_name, "run_head_sha": self.run_head_sha},
+            self.artifact_dir, fetch_json, fetch_bytes
+        )
+        self.assertEqual(result["status"], "CUSTODY_VERIFIED_ONLY")
+        self.assertIs(result["e2e_pass"], False)
+
     def test_safe_package_folder_rejects_path_traversal(self):
         item = {"slug": "../escape", "package_sha256": self.checksum}
         with self.assertRaisesRegex(ValueError, "PACKAGE_PATH_INVALID"):
