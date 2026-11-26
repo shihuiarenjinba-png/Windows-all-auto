@@ -3,7 +3,12 @@ on:
   pull_request:
     paths:
       - 'scripts/github_artifact_custody.py'
+      - 'scripts/local_handoff_pull.py'
       - 'tests/test_github_artifact_custody.py'
+      - 'tests/test_local_handoff_pull.py'
+      - 'tests/test_github_artifact_redirect_security.py'
+      - 'tests/test_live_pr165_reconciliation_20261126_143124.py'
+      - '.github/workflows/windows-e2e-transport-regression.yml'
       - '.github/workflows/e2e-artifact-custody.yml'
   workflow_dispatch:
 jobs:
@@ -19,4 +24,8 @@ jobs:
         with:
           python-version: '3.12'
       - name: Independent artifact custody regression
-        run: python -m unittest discover -s tests -p 'test_github_artifact_custody.py' -v
+        run: |
+          python -m unittest discover -s tests -p 'test_github_artifact_custody.py' -v
+          python -m unittest discover -s tests -p 'test_local_handoff_pull.py' -v
+          python -m unittest discover -s tests -p 'test_github_artifact_redirect_security.py' -v
+          python -m unittest discover -s tests -p 'test_live_pr165_reconciliation_20261126_143124.py' -v
