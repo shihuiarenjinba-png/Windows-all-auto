@@ -41091,7 +41091,7 @@
       "certification_allowed": false,
       "publish_allowed": false
     },
-    "correction_note": "PR165 current live head 84f9a348 is directly observed and all three exact-head PR CI workflows pass. The 39-commit transport/regression line remains ahead of last verified code head c68adc with no product-code changes in the two-commit delta since 776431. Focus/File remain blocked before real MSIX: current-source Identity and authoritative Package Version are not verified. PR187 local pull custody work is selectively ported to this current head with an added approved-identity receipt allowlist and all-or-none trio guard; current branch CI is pending. No local Windows receipt or Partner Center readback was available.",
+    "correction_note": "PR165 current live head 84f9a348 is directly verified and all three exact-head CI workflows pass. PR189 selectively ports PR187 local artifact custody pull to the current PR165 base; its implementation head c8d421fb also passed exact-head transport, custody and Windows/Ubuntu Offline QA (590 tests per OS; Windows skipped 2 symlink-privilege tests). The new receipt trio guard passes. This is code/CI only: no real MSIX, physical local pull, checker, GUI/install receipt, or product E2E. Focus/File remain blocked before real MSIX by current-source Identity and authoritative Version.",
     "pr165_head_parent_sha": "243fd0d86f69ecde28ab09814dee8dc8a3f2aa01",
     "pr165_exact_head_ci_status": "PASS_EXACT_HEAD_CI",
     "pr165_exact_head_ci": [
@@ -41241,7 +41241,7 @@
       "decision": "DO_NOT_MERGE_OR_REBASE_BLINDLY__SELECTIVE_PORT_TO_CURRENT_HEAD"
     },
     "local_pull_contract": {
-      "status": "PORTED_TO_CURRENT_PR165_STACK__EXACT_HEAD_CI_PENDING",
+      "status": "PORTED_TO_CURRENT_PR165_STACK__CODE_CI_PASS__NO_PHYSICAL_LOCAL_PULL",
       "source_pr": 187,
       "source_head": "5ad7b5b9522ef4640481b5c71af301405b1f255b",
       "code_paths": [
@@ -41264,9 +41264,92 @@
       "e2e_pass": false,
       "local_pull_receipt": false,
       "local_checker_receipt": false,
-      "local_gui_install_receipt": false
+      "local_gui_install_receipt": false,
+      "implementation_head_sha": "c8d421fb01bb2d4df4808cb949daf60638094c09",
+      "implementation_exact_head_ci_status": "PASS_EXACT_HEAD_CI",
+      "implementation_exact_head_ci": [
+        {
+          "run_id": 45841720888,
+          "workflow": "Windows E2E transport fail-closed regression",
+          "conclusion": "success",
+          "head_sha": "c8d421fb01bb2d4df4808cb949daf60638094c09"
+        },
+        {
+          "run_id": 45841720878,
+          "workflow": "GitHub artifact custody fail-closed regression",
+          "conclusion": "success",
+          "head_sha": "c8d421fb01bb2d4df4808cb949daf60638094c09"
+        },
+        {
+          "run_id": 45841720884,
+          "workflow": "Windows-all-auto Offline QA",
+          "conclusion": "success",
+          "head_sha": "c8d421fb01bb2d4df4808cb949daf60638094c09",
+          "windows_tests_run": 590,
+          "windows_skipped": 2,
+          "ubuntu_tests_run": 590,
+          "ubuntu_skipped": 0
+        }
+      ],
+      "implementation_tests": {
+        "test_github_artifact_custody.py": {
+          "run_count": 23,
+          "conclusion": "success"
+        },
+        "test_local_handoff_pull.py": {
+          "run_count": 14,
+          "conclusion": "success",
+          "approved_identity_trio_test": "PASS",
+          "partial_receipt_guard_test": "PASS"
+        },
+        "test_github_artifact_redirect_security.py": {
+          "run_count": 3,
+          "conclusion": "success"
+        },
+        "test_live_pr165_reconciliation_20261126_143124.py": {
+          "run_count": 4,
+          "conclusion": "success"
+        }
+      }
     },
-    "next_action_current": "36: obtain authenticated read-only Partner Center readback for Focus current source fb6293839 and request app-focus-session-desk-fb6293839bc7; do not reuse historical Identity or infer Version. File Integrity current PR115 source 33d612be lacks approved-identity.json and needs current-source Identity/Version revalidation. Once official Identity, authoritative Version and owner-controlled assets are verified, build a real MSIX, then use the local artifact pull worker for archive/package SHA custody and a separate local Windows checker/GUI receipt. 00 retains PNG/EXE ownership and Focus visual sign-off."
+    "next_action_current": "36: local artifact pull custody code is now exact-head CI verified on PR189. The next real blocker remains authenticated read-only Partner Center current-source Identity plus authoritative Package Version for Focus (source fb6293839/request app-focus-session-desk-fb6293839bc7) and File Integrity (source 33d612be). Do not reuse historical Identity or infer Version. Once official Identity, Version and owner-controlled assets are verified, build a real MSIX and execute the pull on the physical Windows host; then collect independent checker and GUI/install receipts. 00 retains PNG/EXE ownership and Focus visual sign-off.",
+    "pr189": {
+      "number": 189,
+      "branch": "codex/36-e2e-local-pull-ledger-20261126-1431",
+      "base": "codex/e2e-artifact-custody-20261114",
+      "base_sha": "84f9a3480e2df93f0d75bddc29fb8de47e4ec941",
+      "implementation_head_sha": "c8d421fb01bb2d4df4808cb949daf60638094c09",
+      "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
+      "exact_head_ci": [
+        {
+          "run_id": 45841720888,
+          "workflow": "Windows E2E transport fail-closed regression",
+          "conclusion": "success",
+          "head_sha": "c8d421fb01bb2d4df4808cb949daf60638094c09"
+        },
+        {
+          "run_id": 45841720878,
+          "workflow": "GitHub artifact custody fail-closed regression",
+          "conclusion": "success",
+          "head_sha": "c8d421fb01bb2d4df4808cb949daf60638094c09"
+        },
+        {
+          "run_id": 45841720884,
+          "workflow": "Windows-all-auto Offline QA",
+          "conclusion": "success",
+          "head_sha": "c8d421fb01bb2d4df4808cb949daf60638094c09",
+          "windows_tests_run": 590,
+          "windows_skipped": 2,
+          "ubuntu_tests_run": 590,
+          "ubuntu_skipped": 0
+        }
+      ],
+      "draft": true,
+      "merged": false,
+      "mergeable": true,
+      "product_e2e_status": "HOLD",
+      "e2e_pass": false
+    }
   },
   "latest_live_execution_reconciliation_key": "latest_live_execution_reconciliation_20261126_143124",
   "latest_live_execution_reconciliation_status": "HOLD",
@@ -41340,5 +41423,44 @@
     "active_ledger_reconciled": true,
     "reconciliation_scope": "APPEND_ONLY_CURRENT_HEAD_OBSERVATION_AND_TESTS__NO_PRODUCT_CODE",
     "status": "RECONCILED_TO_PR165_84F9_CURRENT_HEAD__PRODUCT_E2E_HOLD"
-  }
+  },
+  "pr189_live_verification_20261126_144305": {
+    "number": 189,
+    "branch": "codex/36-e2e-local-pull-ledger-20261126-1431",
+    "base": "codex/e2e-artifact-custody-20261114",
+    "base_sha": "84f9a3480e2df93f0d75bddc29fb8de47e4ec941",
+    "implementation_head_sha": "c8d421fb01bb2d4df4808cb949daf60638094c09",
+    "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
+    "exact_head_ci": [
+      {
+        "run_id": 45841720888,
+        "workflow": "Windows E2E transport fail-closed regression",
+        "conclusion": "success",
+        "head_sha": "c8d421fb01bb2d4df4808cb949daf60638094c09"
+      },
+      {
+        "run_id": 45841720878,
+        "workflow": "GitHub artifact custody fail-closed regression",
+        "conclusion": "success",
+        "head_sha": "c8d421fb01bb2d4df4808cb949daf60638094c09"
+      },
+      {
+        "run_id": 45841720884,
+        "workflow": "Windows-all-auto Offline QA",
+        "conclusion": "success",
+        "head_sha": "c8d421fb01bb2d4df4808cb949daf60638094c09",
+        "windows_tests_run": 590,
+        "windows_skipped": 2,
+        "ubuntu_tests_run": 590,
+        "ubuntu_skipped": 0
+      }
+    ],
+    "draft": true,
+    "merged": false,
+    "mergeable": true,
+    "product_e2e_status": "HOLD",
+    "e2e_pass": false
+  },
+  "latest_live_local_pull_port_key": "pr189_live_verification_20261126_144305",
+  "latest_live_local_pull_port_status": "CODE_CI_PASS__NO_PHYSICAL_LOCAL_PULL"
 }
