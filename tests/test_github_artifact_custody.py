@@ -496,5 +496,32 @@ class CurrentProductExeArtifactCustody20261126Tests(unittest.TestCase):
             self.assertIs(product["local_gui_install_receipt"], False)
         self.assertNotIn("idempotency_key", overlay["products"]["file_integrity_ledger"]["request"])
 
+
+
+class CurrentPr165Reconciliation133835Tests(unittest.TestCase):
+    def test_latest_pr165_head_and_downstream_receipts_remain_separate(self):
+        root = Path(__file__).resolve().parents[1]
+        ledger = json.loads((root / "ops" / "active_e2e_handoff.json").read_text(encoding="utf-8"))
+        overlay = json.loads((root / "ops" / "active_e2e_handoff_overlay_20261126_133835.json").read_text(encoding="utf-8"))
+        key = "pr165_latest_branch_head_observation_20261126_133835"
+        head = "776431b039bd67ffdbc6a215aa1fc672ad1d1549"
+        self.assertEqual(ledger["pr165_latest_branch_head_observation_key"], key)
+        self.assertEqual(ledger["pr165_latest_branch_head_sha"], head)
+        observation = ledger[key]
+        self.assertEqual(observation["head_sha"], head)
+        self.assertEqual([x["run_id"] for x in observation["exact_head_ci"]], [45824011236, 45824011171, 45824011205])
+        self.assertTrue(all(x["head_sha"] == head and x["conclusion"] == "success" for x in observation["exact_head_ci"]))
+        self.assertEqual(ledger["latest_execution_reconciliation_key"], "latest_execution_reconciliation_20261126_133835")
+        self.assertEqual(ledger["e2e_status"], "HOLD")
+        self.assertIs(ledger["e2e_pass"], False)
+        self.assertEqual(overlay["pr165"]["head_sha"], head)
+        self.assertEqual(overlay["pr165"]["exact_head_ci_status"], "PASS_EXACT_HEAD_CI")
+        self.assertEqual(overlay["status"], "HOLD")
+        self.assertIs(overlay["e2e_pass"], False)
+        self.assertEqual(overlay["store_upload_test"]["eligible_fresh_unsold_products"], 0)
+        self.assertIs(overlay["safety"]["store_submission_allowed"], False)
+        self.assertIs(overlay["safety"]["certification_allowed"], False)
+        self.assertIs(overlay["safety"]["publish_allowed"], False)
+
 if __name__ == "__main__":
     unittest.main()

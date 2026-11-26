@@ -401,3 +401,27 @@ class CurrentFocusFileExecutionEvidence20261126Tests(unittest.TestCase):
         self.assertNotIn("idempotency_key", file_product["request"])
         self.assertEqual(file_product["exe_artifact"]["custody_scope"], "UNSIGNED_PRE_IDENTITY_EXE_QA_ONLY_NOT_MSIX")
         self.assertIs(overlay["safety"]["store_submission_allowed"], False)
+
+
+
+class CurrentPr165TransportGates133835Tests(unittest.TestCase):
+    def test_current_source_identity_and_version_gates_remain_fail_closed(self):
+        root = Path(__file__).resolve().parents[1]
+        overlay = json.loads((root / "ops" / "active_e2e_handoff_overlay_20261126_133835.json").read_text(encoding="utf-8"))
+        focus = overlay["products"]["focus_session_desk"]
+        file_product = overlay["products"]["file_integrity_ledger"]
+        self.assertEqual(focus["identity"]["current_source_identity_status"], "NOT_COLLECTED")
+        self.assertIs(focus["identity"]["current_source_reuse_allowed"], False)
+        self.assertIsNone(focus["package_version"])
+        self.assertIs(focus["real_msix"], False)
+        self.assertIs(file_product["identity"]["current_source_approved_identity_present"], False)
+        self.assertEqual(file_product["identity"]["official_identity_status"], "UNVERIFIED")
+        self.assertIsNone(file_product["package_version"])
+        self.assertIs(file_product["real_msix"], False)
+        self.assertEqual(file_product["visual_review"]["status"], "HUMAN_OWNER_VISUAL_REVIEW_PASS")
+        self.assertIs(file_product["visual_review"]["immutable_receipt_flag_remains_true"], True)
+        self.assertEqual(overlay["first_unconnected_interval"]["status"], "BLOCKED_BEFORE_REAL_MSIX_BUILD")
+        self.assertIs(overlay["partner_center"]["version_inferred"], False)
+        self.assertIs(overlay["local_windows_execution"]["cloud_ci_promoted_to_local_pass"], False)
+        self.assertEqual(overlay["transport_contract"]["status"], "IMPLEMENTED_FAIL_CLOSED__EXACT_HEAD_CI_PASS")
+
