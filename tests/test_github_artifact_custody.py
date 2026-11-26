@@ -317,7 +317,7 @@ class CustodyTests(unittest.TestCase):
         for product in ("Focus Session Desk", "File Integrity Ledger"):
             item = next(p for p in queue["priority"] if p["product"] == product)
             self.assertEqual(item["hold_class"], "DELIVERY_HOLD")
-            self.assertEqual(item["state"], "POST_IDENTITY_UPGRADE")
+            self.assertEqual(item["state"], "WAITING_USER_IDENTITY")
             self.assertIsNone(item["package_version"])
             self.assertIs(item["real_msix"], False)
             self.assertEqual(item["current_source_identity_binding_status"],
