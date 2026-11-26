@@ -66,6 +66,50 @@ class LocalCheckerQueueTests(unittest.TestCase):
                 "prebuilt_exe_sha256": hashlib.sha256(EXE).hexdigest(),
             })
         (folder / "handoff.json").write_text(json.dumps(meta), encoding="utf-8")
+        if lane == "APP":
+            # Synthetic source-bound receipts exercise the production intake
+            # contract; they are not real Partner Center or product approval.
+            verifier = "fixture-operator"
+            evidence = "https://partner.microsoft.com/dashboard/products/" + meta["store_id"] + "/identity"
+            approved = {
+                "schema_version": "1.0", "reviewed": True, "source": "partner_center",
+                "request_id": meta["request_id"], "product_type": "APP",
+                "source_factory": "AI-App-Factory",
+                "source_repository": "shihuiarenjinba-png/AI-App-Factory",
+                "source_branch": meta["source_branch"], "source_sha": source,
+                "expected_head_sha": source, "store_id": meta["store_id"],
+                "name": meta["identity"]["name"], "publisher": meta["identity"]["publisher"],
+                "version": meta["identity"]["version"], "package_version_gate": "PASS",
+                "operator_verified": True, "verified_by": verifier, "evidence_url": evidence,
+            }
+            approved_raw = json.dumps(approved, separators=(",", ":")).encode("utf-8")
+            (folder / "approved-identity.json").write_bytes(approved_raw)
+            approved_blob_sha = hashlib.sha1(
+                b"blob " + str(len(approved_raw)).encode("ascii") + b"\\0" + approved_raw
+            ).hexdigest()
+            transport = {
+                "schema_version": 1, "status": "SOURCE_BOUND_VERSION_APPROVED",
+                "source_sha": source, "expected_head_sha": source, "factory_head_sha": source,
+                "source_repository": meta["source_repository"], "product_type": "APP",
+                "source_factory": "AI-App-Factory", "package_sha256": meta["package_sha256"],
+                "package_bytes": meta["package_bytes"], "identity": meta["identity"],
+                "approval_source": "partner_center", "package_version_gate": "PASS",
+                "package_version": meta["identity"]["version"], "operator_verified": True,
+                "store_submission_allowed": False, "certification_allowed": False, "publish_allowed": False,
+                "approved_identity_file_sha": approved_blob_sha, "verified_by": verifier,
+                "evidence_url": evidence, "request_id": meta["request_id"],
+                "source_branch": meta["source_branch"], "store_id": meta["store_id"],
+                "display_name": meta["display_name"], "prebuilt_exe_sha256": meta["prebuilt_exe_sha256"],
+            }
+            (folder / "transport_receipt.json").write_text(json.dumps(transport), encoding="utf-8")
+            custody = {
+                "status": "CUSTODY_VERIFIED_ONLY", "e2e_pass": False,
+                "source_sha": source, "msix_sha256": meta["package_sha256"],
+                "run_id": 12345, "artifact_id": 67890,
+                "repository": "shihuiarenjinba-png/AI-App-Factory",
+                "archive_sha256": "d" * 64,
+            }
+            (folder / "github-custody.json").write_text(json.dumps(custody), encoding="utf-8")
         return folder
 
     def test_empty_inbox_is_hold_not_e2e(self):

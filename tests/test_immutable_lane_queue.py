@@ -73,16 +73,15 @@ class ImmutableLaneTransportTests(unittest.TestCase):
                 self.base[key] = original
         self.write()
 
-    def test_app_identity_return_run_sha_and_exe_bound(self):
+    def test_app_identity_return_requires_source_bound_receipts_before_local_queue(self):
         self.base.update(type="app", product_type="APP", source_factory="AI-App-Factory",
                          source_repository="https://github.com/shihuiarenjinba-png/AI-App-Factory",
                          factory_head_sha=HEAD, source_branch="codex/app-pinned-exe-msix-handoff-20261027",
                          display_name="Demo", prebuilt_exe_sha256=hashlib.sha256(b"runnable payload fixture").hexdigest())
         self.write()
-        result = stage_bundle(self.source, self.root / "queue", HEAD)
-        self.assertEqual(result["source_sha"], SHA)
-        self.assertEqual(result["factory_head_sha"], HEAD)
-        self.assertTrue((self.root / "queue" / "APP" / (self.base["slug"] + "-" + self.base["package_sha256"][:12])).is_dir())
+        with self.assertRaisesRegex(ValueError, "source-bound Partner Center"):
+            stage_bundle(self.source, self.root / "queue", HEAD)
+        self.assertFalse((self.root / "queue").exists())
         with self.assertRaisesRegex(ValueError, "Actions head SHA"):
             validate_bundle(self.source, SHA)
 
