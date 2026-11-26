@@ -33,8 +33,12 @@ class LivePR165Reconciliation20261126Tests(unittest.TestCase):
         self.assertEqual(observation["offline_qa"]["ubuntu"]["tests_run"], 578)
         self.assertEqual(observation["offline_qa"]["ubuntu"]["skipped"], 0)
         self.assertEqual(ledger["latest_live_execution_reconciliation_key"],
-                         "latest_live_execution_reconciliation_20261126_143124")
+                         "latest_live_execution_reconciliation_20261126_183935")
+        self.assertIn("latest_live_execution_reconciliation_20261126_143124", ledger)
         recon = ledger["latest_live_execution_reconciliation_20261126_143124"]
+        latest = ledger["latest_live_execution_reconciliation_20261126_183935"]
+        self.assertEqual(latest["pr165_head_sha"], observation["head_sha"])
+        self.assertIs(latest["e2e_pass"], False)
         self.assertEqual(recon["status"], "HOLD")
         self.assertIs(recon["e2e_pass"], False)
         self.assertIs(ledger["latest_live_e2e_pass"], False)
