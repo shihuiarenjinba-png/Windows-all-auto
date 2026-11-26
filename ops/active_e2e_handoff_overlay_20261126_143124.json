@@ -408,7 +408,7 @@
     "png_generation_or_modification": false,
     "product_code_changed": false
   },
-  "next_action": "36: keep Focus rank 1 and File Integrity rank 2. Obtain authenticated read-only Partner Center readback for Focus source fb6293839/request app-focus-session-desk-fb6293839bc7; do not reuse the historical 8b00bc4e Identity or infer Version. File Integrity source 33d612be needs a current-source approved Identity and authoritative Version. After both gates and owner-controlled assets are verified, build a real MSIX, then run archive/package SHA custody, GitHub backlog, local pull, Windows checker and GUI/install QA. 00 retains PNG/EXE ownership; no Store dry-run until a fresh unsold product is fully eligible.",
+  "next_action": "36: use the CI-verified local pull worker only after a real MSIX exists. First obtain read-only Partner Center current-source Identity and authoritative Package Version for Focus and File Integrity; do not reuse historical Identity or infer Version. 00 retains PNG/EXE ownership and Focus visual sign-off. After the real package and independent ACK, execute local pull on physical Windows, then checker and GUI/install QA. Keep Store upload dry-run at HOLD until a fresh unsold product is eligible.",
   "correction_note": "Latest PR115 owner comment records HUMAN VISUAL REVIEW PASS; the immutable GUI receipt's visual_review_required=true flag remains unchanged. Focus PR94 owner handoff requests a separate 1024x768 native Windows smoke. Both products remain DELIVERY_HOLD because current-source official Identity/Version and real MSIX are absent.",
   "stale_reconciliation_drafts": {
     "pr185": {
@@ -466,7 +466,7 @@
     "decision": "SELECTIVE_PORT_ONLY__NO_BLIND_MERGE_OR_REBASE"
   },
   "local_pull_contract": {
-    "status": "PORTED_TO_CURRENT_PR165_STACK__CURRENT_BRANCH_CI_PENDING",
+    "status": "PORTED_TO_CURRENT_PR165_STACK__CODE_CI_PASS__NO_PHYSICAL_LOCAL_PULL",
     "source_pr": 187,
     "source_head": "5ad7b5b9522ef4640481b5c71af301405b1f255b",
     "branch": "codex/36-e2e-local-pull-ledger-20261126-1431",
@@ -493,7 +493,53 @@
     "e2e_pass": false,
     "physical_local_pull_receipt": false,
     "windows_checker_receipt": false,
-    "local_gui_install_receipt": false
+    "local_gui_install_receipt": false,
+    "implementation_head_sha": "c8d421fb01bb2d4df4808cb949daf60638094c09",
+    "implementation_exact_head_ci_status": "PASS_EXACT_HEAD_CI",
+    "implementation_exact_head_ci": [
+      {
+        "run_id": 45841720888,
+        "workflow": "Windows E2E transport fail-closed regression",
+        "conclusion": "success",
+        "head_sha": "c8d421fb01bb2d4df4808cb949daf60638094c09"
+      },
+      {
+        "run_id": 45841720878,
+        "workflow": "GitHub artifact custody fail-closed regression",
+        "conclusion": "success",
+        "head_sha": "c8d421fb01bb2d4df4808cb949daf60638094c09"
+      },
+      {
+        "run_id": 45841720884,
+        "workflow": "Windows-all-auto Offline QA",
+        "conclusion": "success",
+        "head_sha": "c8d421fb01bb2d4df4808cb949daf60638094c09",
+        "windows_tests_run": 590,
+        "windows_skipped": 2,
+        "ubuntu_tests_run": 590,
+        "ubuntu_skipped": 0
+      }
+    ],
+    "implementation_tests": {
+      "test_github_artifact_custody.py": {
+        "run_count": 23,
+        "conclusion": "success"
+      },
+      "test_local_handoff_pull.py": {
+        "run_count": 14,
+        "conclusion": "success",
+        "approved_identity_trio_test": "PASS",
+        "partial_receipt_guard_test": "PASS"
+      },
+      "test_github_artifact_redirect_security.py": {
+        "run_count": 3,
+        "conclusion": "success"
+      },
+      "test_live_pr165_reconciliation_20261126_143124.py": {
+        "run_count": 4,
+        "conclusion": "success"
+      }
+    }
   },
   "ledger_reconciliation": {
     "active_ledger_blob_sha_before_update": "5e764d88bcc7d5f101557dfb547cfab48d7d5145",
@@ -521,5 +567,42 @@
     "reconciliation_scope": "APPEND_ONLY_CURRENT_HEAD_OBSERVATION_AND_TESTS__NO_PRODUCT_CODE",
     "status": "RECONCILED_TO_PR165_84F9_CURRENT_HEAD__PRODUCT_E2E_HOLD"
   },
-  "note": "PR165 84f9a348 is directly verified with three exact-head CI workflows passing. The current source/product gates still prevent a real MSIX: Focus current-source Identity and authoritative Version are not collected; File Integrity has no current-source approved-identity file and Version remains null. File Integrity owner visual review is PASS, while Focus owner visual sign-off remains pending. Local artifact pull custody code is selectively ported from PR187 with approved-identity receipt support; this branch still requires its own exact-head CI. No physical local Windows or Partner Center browser context was available."
+  "note": "PR165 84f9a348 remains directly verified with all three exact-head CI workflows passing. PR189 selectively ports PR187 local artifact custody pull to the current PR165 head, with approved-identity.json support and an all-or-none three-receipt guard. PR189 implementation head c8d421fb passed transport regression, custody regression, and Windows/Ubuntu Offline QA (590 tests per OS; Windows skipped 2 symlink-privilege tests). This is code/CI only: no real MSIX, physical local pull, checker, GUI install, or product E2E. Focus/File current-source Identity and authoritative Version remain unresolved.",
+  "pr189": {
+    "number": 189,
+    "branch": "codex/36-e2e-local-pull-ledger-20261126-1431",
+    "base": "codex/e2e-artifact-custody-20261114",
+    "base_sha": "84f9a3480e2df93f0d75bddc29fb8de47e4ec941",
+    "implementation_head_sha": "c8d421fb01bb2d4df4808cb949daf60638094c09",
+    "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
+    "exact_head_ci": [
+      {
+        "run_id": 45841720888,
+        "workflow": "Windows E2E transport fail-closed regression",
+        "conclusion": "success",
+        "head_sha": "c8d421fb01bb2d4df4808cb949daf60638094c09"
+      },
+      {
+        "run_id": 45841720878,
+        "workflow": "GitHub artifact custody fail-closed regression",
+        "conclusion": "success",
+        "head_sha": "c8d421fb01bb2d4df4808cb949daf60638094c09"
+      },
+      {
+        "run_id": 45841720884,
+        "workflow": "Windows-all-auto Offline QA",
+        "conclusion": "success",
+        "head_sha": "c8d421fb01bb2d4df4808cb949daf60638094c09",
+        "windows_tests_run": 590,
+        "windows_skipped": 2,
+        "ubuntu_tests_run": 590,
+        "ubuntu_skipped": 0
+      }
+    ],
+    "draft": true,
+    "merged": false,
+    "mergeable": true,
+    "product_e2e_status": "HOLD",
+    "e2e_pass": false
+  }
 }
