@@ -424,4 +424,5 @@ class CurrentPr165TransportGates133835Tests(unittest.TestCase):
         self.assertIs(overlay["partner_center"]["version_inferred"], False)
         self.assertIs(overlay["local_windows_execution"]["cloud_ci_promoted_to_local_pass"], False)
         self.assertEqual(overlay["transport_contract"]["status"], "IMPLEMENTED_FAIL_CLOSED__EXACT_HEAD_CI_PASS")
+        self.assertEqual(overlay["central_ledger_reconciliation"]["reconciliation_parent_head_sha"], "776431b039bd67ffdbc6a215aa1fc672ad1d1549")
 

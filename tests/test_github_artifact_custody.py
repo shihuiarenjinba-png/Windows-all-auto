@@ -507,6 +507,8 @@ class CurrentPr165Reconciliation133835Tests(unittest.TestCase):
         head = "776431b039bd67ffdbc6a215aa1fc672ad1d1549"
         self.assertEqual(ledger["pr165_latest_branch_head_observation_key"], key)
         self.assertEqual(ledger["pr165_latest_branch_head_sha"], head)
+        self.assertEqual(ledger["pr165_current_branch_head_sha"], "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23")
+        self.assertEqual(ledger["pr165_current_branch_head_parent_sha"], "5292b3bf3ef6e8cb28fcfd1fa9f4ee000975437e")
         observation = ledger[key]
         self.assertEqual(observation["head_sha"], head)
         self.assertEqual([x["run_id"] for x in observation["exact_head_ci"]], [45824011236, 45824011171, 45824011205])

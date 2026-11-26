@@ -387,7 +387,11 @@
     "actual_pr165_parent_sha": "243fd0d86f69ecde28ab09814dee8dc8a3f2aa01",
     "reconciled_to_actual_branch_head": true,
     "reconciliation_scope": "APPEND_ONLY_LEDGER_OVERLAY_AND_TESTS_ONLY",
-    "status": "RECONCILED_TO_PR165_776431_CURRENT_BRANCH_HEAD__PRODUCT_E2E_HOLD"
+    "status": "RECONCILED_TO_PR165_776431_CURRENT_BRANCH_HEAD__PRODUCT_E2E_HOLD",
+    "active_ledger_blob_sha_after_update": "5e764d88bcc7d5f101557dfb547cfab48d7d5145",
+    "reconciliation_parent_head_sha": "776431b039bd67ffdbc6a215aa1fc672ad1d1549",
+    "reconciliation_commit_sha": "64a57e24a377c33904749fd6deac5d14655ea6d5",
+    "reconciliation_commit_scope": "OPS_LEDGER_OVERLAY_AND_TESTS_ONLY_NO_PRODUCT_CODE"
   },
   "safety": {
     "store_submission_allowed": false,
