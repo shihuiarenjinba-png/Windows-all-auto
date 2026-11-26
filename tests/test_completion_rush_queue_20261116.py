@@ -19,7 +19,7 @@ class CompletionRushQueueTests(unittest.TestCase):
         items = {x["product"]: x for x in self.data["priority"]}
         for name in ("Focus Session Desk", "File Integrity Ledger"):
             row = items[name]
-            self.assertEqual(row["state"], "POST_IDENTITY_UPGRADE")
+            self.assertEqual(row["state"], "WAITING_USER_IDENTITY")
             self.assertEqual(row["hold_class"], "DELIVERY_HOLD")
             self.assertFalse(row["functional_hold"])
             self.assertTrue(row["product_frozen_for_package"])
@@ -132,7 +132,7 @@ class CompletionRushQueueTests(unittest.TestCase):
         self.assertFalse(live["product_code_changed"])
         self.assertFalse(live["e2e_pass"])
         self.assertEqual(self.data["pr165_current_branch_head_ci_run_ids"], [45738280697, 45738280673, 45738280653])
-        self.assertEqual(self.data["generated_at"], "2026-11-26T16:39:37Z")
+        self.assertEqual(self.data["generated_at"], "2026-11-26T20:32:04Z")
         self.assertEqual(self.data["pr165_current_branch_head_observed_at_utc"], "2026-11-26T01:50:00Z")
         self.assertEqual(self.data["pr165_current_branch_head_snapshot_commit_ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual(self.data["pr165_live_branch_head_observation_20261126_latest"]["head_sha"], "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23")
