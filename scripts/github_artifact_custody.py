@@ -312,6 +312,7 @@ def verify_queue_artifact_custody(expected, local_artifact, fetch_json, fetch_by
                 or queue.get("mode") != "WINDOWS_LOCAL_QA_ONLY"
                 or type(queue.get("intake_count")) is not int
                 or queue.get("intake_count") != len(items)
+                or type(queue.get("store_submissions")) is not int
                 or queue.get("store_submissions") != 0):
             return hold("QUEUE_PERMISSION_OR_COUNT_INVALID")
         if any(not isinstance(item, dict)
