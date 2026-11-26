@@ -24,7 +24,7 @@ class FocusFileTransportReconciliation20261126(unittest.TestCase):
         latest = d["latest_observation"]
         self.assertEqual(latest["pr165_head_sha"], head)
         self.assertTrue(all(r["head_sha"] == head and r["conclusion"] == "success"
-                            for r in latest["exact_head_ci"]))
+                            for r in latest["exact_head_workflows"]))
         self.assertEqual(p["exact_head_ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual([r["run_id"] for r in p["exact_head_ci"]], [45727872167, 45727872209, 45727872206])
         self.assertTrue(all(r["head_sha"] == head and r["conclusion"] == "success"
