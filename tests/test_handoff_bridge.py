@@ -260,15 +260,12 @@ class HandoffBridgeTests(unittest.TestCase):
         self.info["package_bytes"]=len(blob)
         self.write_info()
 
-    def test_identity_return_preserves_original_source_sha_through_local_qa(self):
+    def test_identity_return_without_source_bound_receipts_is_rejected_before_local_qa(self):
         self.set_identity_return_bundle()
-        result=stage_bundle(self.source,self.root/"queue",SHA)
-        self.assertEqual(result["source_sha"],"b"*40)
-        self.assertEqual(result["factory_head_sha"],SHA)
-        self.assertEqual(result["request_id"],"app-request-1234")
-        self.assertEqual(result["claimed_store_id"],"9PTESTING")
-        self.assertIsNone(result["store_id"])
-        self.assertFalse(result["submit_allowed"])
+        target=self.root/"queue"
+        with self.assertRaisesRegex(ValueError,"APP identity-return package requires source-bound Partner Center"):
+            stage_bundle(self.source,target,SHA)
+        self.assertFalse(target.exists())
 
     def test_identity_return_requires_actual_prebuilt_exe_payload(self):
         self.set_identity_return_bundle()

@@ -278,6 +278,11 @@ def validate_bundle(directory:Path,expected_run_sha:str|None=None)->dict:
         not isinstance(details.get(k),str) or not details.get(k)
         for k in ("name","publisher","version")):
         fail("MSIX embedded identity mismatch")
+    # APP identity-return packages must carry the current-source Partner Center
+    # transport, approved Identity and independent GitHub custody receipts before
+    # they can enter the local Windows QA queue. Pre-Identity EXE QA is separate.
+    if kind=="app" and factory_head is not None and transport_receipt is None:
+        fail("APP identity-return package requires source-bound Partner Center, approved Identity and independent GitHub custody receipts")
     result={
        "schema_version":1,"slug":slug,"type":kind,"source_repository":repo,
        "source_sha":sha,"package_sha256":file_hash,"package_bytes":details["bytes"],
