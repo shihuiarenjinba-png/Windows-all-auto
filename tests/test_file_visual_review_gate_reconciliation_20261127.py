@@ -4,6 +4,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 TS = "2026-11-26T16:39:37Z"
+QUEUE_TS = "2026-11-26T20:32:04Z"
 PR165_HEAD = "84f9a3480e2df93f0d75bddc29fb8de47e4ec941"
 PR192_HEAD = "792a6ab7bc1a5847c03ebf59e07354edb3d3afb0"
 PR193_HEAD = "4dcebd43db89da144ac0cd1a3bf3506b5d366426"
@@ -18,7 +19,7 @@ class FileVisualReviewGateReconciliation20261127Tests(unittest.TestCase):
 
     def test_completed_visual_review_is_not_an_outstanding_package_blocker(self):
         f = self.file_product
-        self.assertEqual(self.queue["generated_at"], TS)
+        self.assertEqual(self.queue["generated_at"], QUEUE_TS)
         self.assertEqual(f["current_source_sha"], "33d612be2774ac155ea3d85289ec5cb7981c81c1")
         self.assertEqual(f["human_visual_review_status"], "PASS")
         self.assertEqual(f["human_visual_review_observed_at_utc"], "2026-11-26T13:30:25Z")
