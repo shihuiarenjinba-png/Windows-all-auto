@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-26T04:57:30Z",
+  "updated_at_utc": "2026-11-26T08:42:05Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -21555,7 +21555,10 @@
     "user_pc_exact_three_sha_receipt": "NOT_OBSERVED",
     "idempotent_reuse_receipt": "NOT_OBSERVED",
     "scheduled_task_receipt": "NOT_OBSERVED",
-    "note": "Cloud Windows smoke is not a physical user-PC local code sync receipt."
+    "note": "Signal Sprint and Prism Route 3D source refs were reverified remotely; Offline Notes remains HOLD_SOURCE_NOT_FIXED. No physical user-PC receipt or Task Scheduler result was available in this cloud run.",
+    "latest_source_ref_verification_key": "local_code_sync_source_ref_verification_20261126_084205",
+    "latest_source_ref_verification_status": "HOLD_LOCAL_WINDOWS_EXECUTION_NOT_AVAILABLE",
+    "source_refs_verified_at_utc": "2026-11-26T08:42:05Z"
   },
   "latest_transport_reconciliation": {
     "checked_at_utc": "2026-11-26T00:51:09Z",
@@ -39595,6 +39598,179 @@
       "exact_head_run_id": 44437197470,
       "exact_head_conclusion": "success",
       "scope": "Offline QA only; Store upload dry-run not started"
+    }
+  },
+  "pr165_live_branch_head_observation_20261126_084205": {
+    "observed_at_utc": "2026-11-26T08:42:05Z",
+    "pull_request": 165,
+    "branch": "codex/e2e-artifact-custody-20261114",
+    "head_sha": "74dee49585edbeee7eb66d58ff9fa2ea0b97e27f",
+    "parent_sha": "68fdccd2edf55538b2898c3c67b39f678004a6f9",
+    "comparison_to_last_verified_code_head": {
+      "status": "ahead",
+      "ahead_by": 34,
+      "behind_by": 0,
+      "total_commits": 34,
+      "base_sha": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb"
+    },
+    "latest_commit_changed_files": [
+      "tests/test_current_live_product_reconciliation_20261126_040324.py",
+      "tests/test_current_live_product_reconciliation_20261126_044748.py"
+    ],
+    "product_code_changed": false,
+    "transport_contract_code_changed_since_comparison_base": true,
+    "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
+    "exact_head_ci": [
+      {
+        "run_id": 45758828791,
+        "event": "pull_request",
+        "conclusion": "success",
+        "head_sha": "74dee49585edbeee7eb66d58ff9fa2ea0b97e27f",
+        "workflow": "GitHub artifact custody fail-closed regression"
+      },
+      {
+        "run_id": 45758828777,
+        "event": "pull_request",
+        "conclusion": "success",
+        "head_sha": "74dee49585edbeee7eb66d58ff9fa2ea0b97e27f",
+        "workflow": "Windows E2E transport fail-closed regression"
+      },
+      {
+        "run_id": 45758828792,
+        "event": "pull_request",
+        "conclusion": "success",
+        "head_sha": "74dee49585edbeee7eb66d58ff9fa2ea0b97e27f",
+        "workflow": "Windows-all-auto Offline QA"
+      }
+    ],
+    "repository_ci_is_not_product_e2e": true,
+    "product_e2e_status": "HOLD",
+    "e2e_pass": false,
+    "real_msix": false,
+    "github_backlog_receipt": false,
+    "local_pull_receipt": false,
+    "local_checker_receipt": false,
+    "local_gui_install_receipt": false,
+    "local_code_sync_receipt": "NOT_OBSERVED__CLOUD_PASS_ONLY",
+    "last_product_observation_key": "pr165_live_head_observation_20261126_045730",
+    "last_product_observation_head_sha": "380d4818330688f47d3558217ed556868cf0b744",
+    "note": "The current PR165 branch head was rechecked. The latest commit only changes historical-observation tests; product state remains HOLD. The central latest product observation remains the 380d481 snapshot."
+  },
+  "pr165_latest_branch_head_observation_key": "pr165_live_branch_head_observation_20261126_084205",
+  "pr165_latest_branch_head_sha": "74dee49585edbeee7eb66d58ff9fa2ea0b97e27f",
+  "pr165_latest_branch_head_ci_status": "PASS_EXACT_HEAD_CI",
+  "pr165_latest_branch_head_ci_run_ids": [
+    45758828791,
+    45758828777,
+    45758828792
+  ],
+  "pr165_latest_branch_head_observed_at_utc": "2026-11-26T08:42:05Z",
+  "local_code_sync_source_ref_verification_20261126_084205": {
+    "schema_version": 1,
+    "observed_at_utc": "2026-11-26T08:42:05Z",
+    "overall_status": "HOLD_LOCAL_WINDOWS_EXECUTION_NOT_AVAILABLE",
+    "scope": "READ_ONLY_GITHUB_SOURCE_REF_VERIFICATION",
+    "exact_three_sha_tuple": {
+      "local_sync_tooling_commit": "b962910095adcdbcee7fb0c1ef12e4fb3575c9e8",
+      "signal_sprint_source_sha": "1a349faa41663c417c40710140a4d50c79b62b78",
+      "prism_route_3d_source_sha": "b03ce7b16c3f75c04fe20fdda224c45849eeba0d"
+    },
+    "local_tooling": {
+      "repository": "shihuiarenjinba-png/Windows-all-auto",
+      "pr": 32,
+      "branch": "codex/focus-app-operator-intake-20261029",
+      "head_sha": "b962910095adcdbcee7fb0c1ef12e4fb3575c9e8",
+      "head_verified": true,
+      "entrypoint": "py -3 -m scripts.local_code_sync",
+      "registration_script": "scripts/register_local_code_sync.ps1",
+      "local_checkout_head_verified": false
+    },
+    "targets": [
+      {
+        "product": "Offline Notes Canary",
+        "status": "HOLD_SOURCE_NOT_FIXED",
+        "repository": "shihuiarenjinba-png/AI-App-Factory",
+        "research_candidate_branch": "codex/app-canary-offline-notes-20261027",
+        "research_candidate_head": "b83702c8948991cc3bd31745db5df64afaf6010f",
+        "owner_workflow_pr": 24,
+        "owner_workflow_head": "7213ebbaccbd0c12fa3630161593bdfb2319635e",
+        "factory_state": {
+          "stage": "research",
+          "slug": null,
+          "cycle": 3,
+          "revision": 0
+        },
+        "request_id": null,
+        "immutable_product_source_sha": null,
+        "exe_artifact": null,
+        "manifest_included": false,
+        "candidate_sha_must_not_be_used": true
+      },
+      {
+        "product": "Signal Sprint",
+        "status": "SOURCE_REF_VERIFIED_LOCAL_RECEIPT_NOT_OBSERVED",
+        "repository": "shihuiarenjinba-png/AI-Game-Factory",
+        "branch": "codex/signal-sprint-frozen-source-ref-20261124",
+        "source_sha": "1a349faa41663c417c40710140a4d50c79b62b78",
+        "request_id": "game-signal-sprint-1a349faa41663c417c40710140a4d50c79b62b78",
+        "branch_head_verified": true,
+        "manifest_blob_sha": "1f1865b3c6ce71180a3b1854c496830455dfe199",
+        "first_run_receipt": null,
+        "idempotent_reuse_receipt": null,
+        "task_scheduler_receipt": null
+      },
+      {
+        "product": "Prism Route 3D",
+        "status": "SOURCE_REF_VERIFIED_LOCAL_RECEIPT_NOT_OBSERVED",
+        "repository": "shihuiarenjinba-png/3d-game-factory",
+        "branch": "codex/prism-tower1-hud-clearance-fix-20261103",
+        "source_sha": "b03ce7b16c3f75c04fe20fdda224c45849eeba0d",
+        "request_id": "3d-prism-route-3d-b03ce7b16c3f",
+        "branch_head_verified": true,
+        "product_manifest_blob_sha": "e7eb4b03108d01d2ffa00a03b758ce244c6138ed",
+        "approved_identity_blob_sha": "9b38b20527b81c85fd03b5373d4a8f8245047115",
+        "approved_identity_source_sha": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
+        "approved_identity_request_id": "3d-prism-route-3d-15fdcb52e46e",
+        "approved_identity_reuse_for_current_source_allowed": false,
+        "package_version": null,
+        "first_run_receipt": null,
+        "idempotent_reuse_receipt": null,
+        "task_scheduler_receipt": null
+      }
+    ],
+    "local_execution": {
+      "runtime_os": "Linux x86_64",
+      "git_available": true,
+      "github_cli_available": false,
+      "powershell_available": false,
+      "physical_user_windows_session_available": false,
+      "windows_task_scheduler_available": false,
+      "connected_browser_context_available": false,
+      "first_run_receipt": "NOT_OBSERVED",
+      "idempotent_replay_receipt": "NOT_OBSERVED",
+      "scheduled_task_last_result": null,
+      "local_code_sync_pass": false,
+      "cloud_results_must_not_be_promoted_to_local_pass": true
+    },
+    "required_local_evidence": [
+      "Verify the local tooling checkout HEAD equals the pinned tooling commit without switching branches or updating it.",
+      "Run the exact two-target manifest once; require PASS, snapshots=2, exact_sha_verified=true, clean snapshots, and local HEAD equal to each source_sha.",
+      "Replay the same manifest/root and require REUSED_EXACT_SNAPSHOT for both targets.",
+      "Inspect the existing WindowsAllAuto-Factory-Code-Sync task; never overwrite an existing task.",
+      "If absent, register and run once; require LastTaskResult=0 and updated scheduled receipt.",
+      "Keep overall three-target completion HOLD until Offline Notes is promoted to a fixed immutable source/request and artifact."
+    ],
+    "safety": {
+      "store_submission_allowed": false,
+      "certification_allowed": false,
+      "publish_allowed": false,
+      "partner_center_write_performed": false,
+      "identity_write_performed": false,
+      "version_inferred": false,
+      "cas_applied": false,
+      "package_installed": false,
+      "product_code_changed": false,
+      "prism_historical_identity_reused": false
     }
   }
 }
