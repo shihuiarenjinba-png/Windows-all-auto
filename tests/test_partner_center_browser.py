@@ -9,7 +9,7 @@ from uploader.core import UploadError, verify_file
 from uploader.receipts import new_execution_receipt
 from uploader.partner_center_browser import (
     FILE_INPUT, PACKAGES_COMPLETE, PACKAGE_NAME_SELECTOR, WARNING_SELECTOR,
-    PartnerCenterBrowserPort,
+    PartnerCenterBrowserPort, select_partner_center_page, safe_page_metadata,
 )
 
 KNOWN_WARNING = "Package acceptance validation warning: The following restricted capabilities require approval before you can use them in your app: runFullTrust."
@@ -98,7 +98,97 @@ class FakePage:
     def wait_for_timeout(self, milliseconds): pass
 
 
+class SelectionLocator:
+    def __init__(self, page, selector):
+        self.page, self.selector = page, selector
+
+    def count(self):
+        if self.selector == "input[type='password']":
+            return 1 if self.page.password_prompt else 0
+        if self.selector == "body":
+            return 1
+        return 0
+
+    def inner_text(self):
+        if self.selector != "body":
+            raise AssertionError("Only read-only body text is exposed by this fixture")
+        return self.page.body
+
+
+class SelectionPage:
+    def __init__(self, url, title, body, *, password_prompt=False):
+        self.url = url
+        self._title = title
+        self.body = body
+        self.password_prompt = password_prompt
+
+    def title(self):
+        return self._title
+
+    def locator(self, selector):
+        return SelectionLocator(self, selector)
+
+
 class PartnerCenterBrowserTests(unittest.TestCase):
+    def test_selects_exact_dca_draft_when_other_partner_center_product_is_open(self):
+        exact_url = f"https://partner.microsoft.com/en-us/dashboard/products/{CONFIG['product_id']}/submissions/{CONFIG['submission_id']}/packages"
+        exact = SelectionPage(exact_url, "Packages | Folder Automation Engine | Partner Center", "Folder Automation Engine Packages")
+        other = SelectionPage("https://partner.microsoft.com/en-us/dashboard/products/OTHER123/overview", "Overview | Other App | Partner Center", "Other App")
+        selected, status, _ = select_partner_center_page([other, exact], CONFIG)
+        self.assertIs(selected, exact)
+        self.assertEqual(status, "READY_EXACT_DRAFT_TAB")
+
+    def test_exact_packages_route_is_preferred_over_generic_product_overview(self):
+        base = f"https://partner.microsoft.com/en-us/dashboard/products/{CONFIG['product_id']}"
+        overview = SelectionPage(base + "/overview", "Overview | Folder Automation Engine | Partner Center", "Folder Automation Engine Overview")
+        packages = SelectionPage(base + f"/submissions/{CONFIG['submission_id']}/packages", "Packages | Folder Automation Engine | Partner Center", "Folder Automation Engine Packages")
+        selected, status, _ = select_partner_center_page([overview, packages], CONFIG)
+        self.assertIs(selected, packages)
+        self.assertEqual(status, "READY_EXACT_DRAFT_TAB")
+
+    def test_equivalent_duplicate_exact_draft_tabs_are_safely_collapsed_without_mutation(self):
+        exact_url = f"https://partner.microsoft.com/en-us/dashboard/products/{CONFIG['product_id']}/submissions/{CONFIG['submission_id']}/packages"
+        title = "Packages | Folder Automation Engine | Partner Center"
+        body = "Folder Automation Engine\nPackages\nWindows Desktop"
+        first = SelectionPage(exact_url, title, body)
+        second = SelectionPage(exact_url, title, body)
+        selected, status, _ = select_partner_center_page([first, second], CONFIG)
+        self.assertIs(selected, first)
+        self.assertEqual(status, "READY_EXACT_DRAFT_TAB")
+        self.assertEqual(first.url, exact_url)
+        self.assertEqual(second.url, exact_url)
+
+    def test_non_equivalent_duplicate_exact_draft_tabs_remain_ambiguous(self):
+        exact_url = f"https://partner.microsoft.com/en-us/dashboard/products/{CONFIG['product_id']}/submissions/{CONFIG['submission_id']}/packages"
+        title = "Packages | Folder Automation Engine | Partner Center"
+        first = SelectionPage(exact_url, title, "Folder Automation Engine\nPackages\nNo package rows")
+        second = SelectionPage(exact_url, title, "Folder Automation Engine\nPackages\nUnexpected package row")
+        with self.assertRaises(UploadError) as caught:
+            select_partner_center_page([first, second], CONFIG)
+        self.assertEqual(caught.exception.code, "PARTNER_CENTER_TAB_AMBIGUOUS")
+
+    def test_signed_in_exact_draft_tab_is_preferred_over_signed_out_duplicate(self):
+        exact_url = f"https://partner.microsoft.com/en-us/dashboard/products/{CONFIG['product_id']}/submissions/{CONFIG['submission_id']}/packages"
+        title = "Packages | Folder Automation Engine | Partner Center"
+        signed_out = SelectionPage(exact_url, title, "Sign in to Partner Center", password_prompt=True)
+        signed_in = SelectionPage(exact_url, title, "Folder Automation Engine Packages")
+        selected, status, _ = select_partner_center_page([signed_out, signed_in], CONFIG)
+        self.assertIs(selected, signed_in)
+        self.assertEqual(status, "READY_EXACT_DRAFT_TAB")
+
+    def test_unrelated_origins_are_ignored_and_query_fragment_are_not_exposed(self):
+        exact_url = f"https://partner.microsoft.com/en-us/dashboard/products/{CONFIG['product_id']}/submissions/{CONFIG['submission_id']}/packages?code=secret#fragment"
+        exact = SelectionPage(exact_url, "Packages | Folder Automation Engine | Partner Center", "Folder Automation Engine Packages")
+        cloudflare = SelectionPage("https://dash.cloudflare.com/account/workers-and-pages", "Workers & Pages | Cloudflare", "Cloudflare")
+        selected, status, _ = select_partner_center_page([cloudflare, exact], CONFIG)
+        metadata = safe_page_metadata(exact)
+        self.assertIs(selected, exact)
+        self.assertEqual(status, "READY_EXACT_DRAFT_TAB")
+        self.assertNotIn("secret", str(metadata))
+        self.assertNotIn("fragment", str(metadata))
+        self.assertNotIn("?", metadata["path"])
+        self.assertNotIn("#", metadata["path"])
+
     def make_package(self, path):
         with zipfile.ZipFile(path, "w") as z:
             z.writestr("AppxManifest.xml", '''<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"><Identity Name="OkinawaDesktopTools.FolderAutomationEngine" Publisher="CN=46263F21-A700-41DB-8C9B-114C22FB82FC" Version="1.0.0.0" ProcessorArchitecture="x64" /></Package>''')
