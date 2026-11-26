@@ -56,7 +56,7 @@ class LocalPullTests(unittest.TestCase):
         (self.artifact_dir/"packages").mkdir(parents=True)
         folder=relative_package_path(self.q["items"][0])
         destination=self.artifact_dir/"packages"/folder
-        destination.mkdir()
+        destination.mkdir(parents=True)
         for entry in (self.fixture/"factory-qa").iterdir():
             shutil.copyfile(entry,destination/entry.name)
         (self.artifact_dir/"queue.json").write_text(json.dumps(self.q),encoding="utf-8")
