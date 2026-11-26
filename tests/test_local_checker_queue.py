@@ -85,7 +85,7 @@ class LocalCheckerQueueTests(unittest.TestCase):
             approved_raw = json.dumps(approved, separators=(",", ":")).encode("utf-8")
             (folder / "approved-identity.json").write_bytes(approved_raw)
             approved_blob_sha = hashlib.sha1(
-                b"blob " + str(len(approved_raw)).encode("ascii") + b"\\0" + approved_raw
+                b"blob " + str(len(approved_raw)).encode("ascii") + b"\0" + approved_raw
             ).hexdigest()
             transport = {
                 "schema_version": 1, "status": "SOURCE_BOUND_VERSION_APPROVED",
