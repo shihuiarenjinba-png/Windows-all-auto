@@ -16,7 +16,7 @@ class CurrentLiveProductReconciliation20261126_044748Tests(unittest.TestCase):
 
         self.assertEqual(ledger["pr165_latest_live_observation_key"], "pr165_live_head_observation_20261126_045730")
         self.assertEqual(ledger["pr165_latest_live_head_sha"], "380d4818330688f47d3558217ed556868cf0b744")
-        self.assertEqual(ledger["pr165_latest_live_head_parent_sha"], "ba768ed90581f587fbd067b34bad0e4e2f8741af")
+        self.assertEqual(ledger["pr165_latest_live_head_parent_sha"], "51198dc63061f06a3afc61017e4e12009a13eadc")
         self.assertEqual(ledger["pr165_latest_live_head_ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual([x["run_id"] for x in observation["exact_head_ci"]], [45757413753, 45757413754, 45757413777])
         self.assertTrue(all(x["head_sha"] == HEAD and x["conclusion"] == "success" for x in observation["exact_head_ci"]))
