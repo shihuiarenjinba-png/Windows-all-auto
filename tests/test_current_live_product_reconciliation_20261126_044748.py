@@ -44,7 +44,7 @@ class CurrentLiveProductReconciliation20261126_044748Tests(unittest.TestCase):
         self.assertIsNone(focus["package_version"])
         self.assertEqual(focus["current_source_exe_custody_status"], "VERIFIED_UNSIGNED_PRE_IDENTITY_EXE_ONLY")
         self.assertIs(focus["real_msix"], False)
-        self.assertIs(focus["store_assets_msix_embedding_status"], "NOT_VERIFIED")
+        self.assertEqual(focus["store_assets_msix_embedding_status"], "NOT_VERIFIED")
 
         file_product = observation["product_blockers"]["file_integrity_ledger"]
         self.assertEqual(file_product["current_source_sha"], "33d612be2774ac155ea3d85289ec5cb7981c81c1")
