@@ -38001,5 +38001,7 @@
   "main_release_direct_change_allowed": false,
   "repositories_12_24_touched": false,
   "assets_owner_00": true,
-  "no_duplicate_png_or_exe_generation_by_36": true
+  "no_duplicate_png_or_exe_generation_by_36": true,
+  "pr165_current_branch_head_is_historical_snapshot": true,
+  "pr165_current_branch_head_snapshot_superseded_by_live_head_sha": "f2a8d5b3f96b395ff248f42125daa26295f94c78"
 }
