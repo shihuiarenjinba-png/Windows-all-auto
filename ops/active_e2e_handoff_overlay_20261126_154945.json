@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "observed_at_utc": "2026-11-26T15:52:46.893Z",
+  "observed_at_utc": "2026-11-26T15:54:03.539Z",
   "record_type": "APPEND_ONLY_CURRENT_EXECUTION_RECONCILIATION",
   "repository": "shihuiarenjinba-png/Windows-all-auto",
   "central_pr": 165,
@@ -282,8 +282,8 @@
   "ledger_reconciliation": {
     "status": "RECONCILED_TO_PR165_84F9__PR190_A7E2__PRODUCT_E2E_HOLD",
     "active_ledger_reconciled": true,
-    "active_ledger_blob_sha": "3d3a6242c4d520ae83cca743b0afeb496bb04a6c",
-    "queue_blob_sha": "2927fdde73b295b377695c0ef7a35cc6a0f42540",
+    "active_ledger_blob_sha": "ef90e6116bef3fce8c5d3e227786a11de0ae1d07",
+    "queue_blob_sha": "a2caf781989933e10834fb9386d62101161edc6b",
     "actual_pr165_head": "84f9a3480e2df93f0d75bddc29fb8de47e4ec941",
     "pr190_head": "a7e2abae75a65828721ea35005df12a245335f2a",
     "pr190_exact_head_ci_status": "PASS_EXACT_HEAD_CI",
