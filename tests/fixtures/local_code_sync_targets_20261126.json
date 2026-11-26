@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "jobs": [
+    {
+      "request_id": "game-signal-sprint-1a349faa41663c417c40710140a4d50c79b62b78",
+      "slug": "signal-sprint",
+      "source_repository": "shihuiarenjinba-png/AI-Game-Factory",
+      "source_branch": "codex/signal-sprint-frozen-source-ref-20261124",
+      "source_sha": "1a349faa41663c417c40710140a4d50c79b62b78"
+    },
+    {
+      "request_id": "3d-prism-route-3d-b03ce7b16c3f",
+      "slug": "prism-route-3d",
+      "source_repository": "shihuiarenjinba-png/3d-game-factory",
+      "source_branch": "codex/prism-tower1-hud-clearance-fix-20261103",
+      "source_sha": "b03ce7b16c3f75c04fe20fdda224c45849eeba0d"
+    }
+  ]
+}

@@ -29,12 +29,14 @@ jobs:
         run: |
           $root = Join-Path $env:RUNNER_TEMP 'FactoryCodeMirror'
           $receipt = Join-Path $env:RUNNER_TEMP 'code-sync-receipt.json'
-          py -3 -m scripts.local_code_sync --manifest tests/fixtures/local_code_sync_targets.json --root $root --receipt $receipt
+          py -3 -m scripts.local_code_sync --manifest tests/fixtures/local_code_sync_targets_20261126.json --root $root --receipt $receipt
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           Get-Content $receipt
           $data = Get-Content $receipt -Raw | ConvertFrom-Json
-          if ($data.status -ne 'PASS' -or $data.snapshots -ne 3 -or -not $data.exact_sha_verified) { throw 'first sync did not prove exact source retrieval' }
+          if ($data.status -ne 'PASS' -or $data.snapshots -ne 2 -or -not $data.exact_sha_verified -or -not $data.exact_three_sha_tuple_verified -or $data.idempotent_reuse_verified) { throw 'first sync did not prove the exact source/remote/local SHA tuple' }
           foreach ($p in $data.products) {
+            if (-not $p.request_id -or -not $p.source_repository -or -not $p.source_branch) { throw "missing immutable provenance: $($p.slug)" }
+            if ($p.three_sha_tuple.source_sha -ne $p.source_sha -or $p.three_sha_tuple.remote_branch_head_sha -ne $p.source_sha -or $p.three_sha_tuple.local_checkout_head_sha -ne $p.source_sha) { throw "three-SHA tuple mismatch: $($p.slug)" }
             $head = git -C $p.path rev-parse HEAD
             if ($head.Trim() -ne $p.source_sha) { throw "HEAD mismatch: $($p.slug)" }
           }
@@ -43,9 +45,12 @@ jobs:
         run: |
           $root = Join-Path $env:RUNNER_TEMP 'FactoryCodeMirror'
           $receipt = Join-Path $env:RUNNER_TEMP 'code-sync-receipt-2.json'
-          py -3 -m scripts.local_code_sync --manifest tests/fixtures/local_code_sync_targets.json --root $root --receipt $receipt
+          py -3 -m scripts.local_code_sync --manifest tests/fixtures/local_code_sync_targets_20261126.json --root $root --receipt $receipt
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           $data = Get-Content $receipt -Raw | ConvertFrom-Json
+          if ($data.status -ne 'PASS' -or $data.snapshots -ne 2 -or -not $data.exact_three_sha_tuple_verified -or -not $data.idempotent_reuse_verified) { throw 'replay did not prove exact idempotent reuse' }
           foreach ($p in $data.products) {
             if ($p.status -ne 'REUSED_EXACT_SNAPSHOT') { throw "not idempotent: $($p.slug)" }
+            if ($p.source_sha -ne $p.remote_head_sha -or $p.source_sha -ne $p.local_head_sha) { throw "replay SHA tuple mismatch: $($p.slug)" }
           }
+          Write-Host 'CLOUD_WINDOWS_EQUIVALENT_PASS only; this is not a physical user-PC LOCAL_CODE_SYNC_PASS.'

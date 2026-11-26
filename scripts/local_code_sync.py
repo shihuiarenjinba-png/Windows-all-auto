@@ -15,6 +15,7 @@ import re
 import shutil
 import subprocess
 import tempfile
+from datetime import datetime, timezone
 
 OWNER = "shihuiarenjinba-png"
 MAX_ITEMS = 20
@@ -69,12 +70,18 @@ def _normalize_job(raw: dict) -> dict:
         raise SyncHold("invalid immutable source SHA")
     if not isinstance(slug, str) or not SLUG_RE.fullmatch(slug):
         raise SyncHold("invalid slug")
-    if request_id is not None and (not isinstance(request_id, str)
+    if (not isinstance(request_id, str) or not request_id.strip()
             or len(request_id) > 180 or any(ch in request_id for ch in "\r\n\0")):
-        raise SyncHold("invalid request_id")
+        raise SyncHold("request_id missing or invalid")
+    if raw.get("repository") and raw.get("source_repository") and raw["repository"] != raw["source_repository"]:
+        raise SyncHold("conflicting repository/source_repository")
+    if raw.get("branch") and raw.get("source_branch") and raw["branch"] != raw["source_branch"]:
+        raise SyncHold("conflicting branch/source_branch")
     return {
         "repository": repository,
+        "source_repository": repository,
         "branch": branch,
+        "source_branch": branch,
         "source_sha": source_sha,
         "slug": slug,
         "request_id": request_id,
@@ -111,6 +118,29 @@ def _verify_remote_head(job: dict) -> None:
     parts = lines[0].split()
     if len(parts) != 2 or parts[1] != ref or parts[0] != job["source_sha"]:
         raise SyncHold("REMOTE_HEAD_CONFLICT: source branch differs from pinned SHA")
+    return parts[0]
+
+
+def _verified_snapshot(job: dict, target: Path, status: str,
+                       remote_head_sha: str, local_head_sha: str) -> dict:
+    three_sha_tuple = {
+        "source_sha": job["source_sha"],
+        "remote_branch_head_sha": remote_head_sha,
+        "local_checkout_head_sha": local_head_sha,
+    }
+    if len(set(three_sha_tuple.values())) != 1:
+        raise SyncHold("EXACT_THREE_SHA_TUPLE_MISMATCH")
+    return {
+        **job,
+        "source_repository": job["repository"],
+        "source_branch": job["branch"],
+        "remote_head_sha": remote_head_sha,
+        "local_head_sha": local_head_sha,
+        "three_sha_tuple": three_sha_tuple,
+        "exact_three_sha_tuple_verified": True,
+        "status": status,
+        "path": str(target),
+    }
 
 
 def _verify_existing(target: Path, job: dict) -> dict:
@@ -128,8 +158,10 @@ def _verify_existing(target: Path, job: dict) -> dict:
     expected_origin = "https://github.com/" + job["repository"] + ".git"
     if origin != expected_origin:
         raise SyncHold("existing snapshot origin mismatch")
-    _verify_remote_head(job)
-    return {"status": "REUSED_EXACT_SNAPSHOT", "path": str(target)}
+    remote_head_sha = _verify_remote_head(job)
+    return _verified_snapshot(
+        job, target, "REUSED_EXACT_SNAPSHOT", remote_head_sha, head
+    )
 
 
 def sync_one(root: Path, job: dict) -> dict:
@@ -167,11 +199,9 @@ def sync_one(root: Path, job: dict) -> dict:
         if _run("git", "-C", str(temp), "status", "--porcelain"):
             raise SyncHold("new snapshot unexpectedly dirty")
         os.replace(temp, target)
-        return {
-            **job,
-            "status": "DOWNLOADED_EXACT_SNAPSHOT",
-            "path": str(target),
-        }
+        return _verified_snapshot(
+            job, target, "DOWNLOADED_EXACT_SNAPSHOT", observed, checked
+        )
     finally:
         if temp.exists():
             shutil.rmtree(temp, ignore_errors=True)
@@ -202,13 +232,28 @@ def sync_manifest(manifest: Path, root: Path, receipt: Path) -> dict:
         raise SyncHold("local code root is linked/junction")
     root.mkdir(parents=True, exist_ok=True)
     jobs = load_jobs(manifest)
+    started_at_utc = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
     products = [sync_one(root, job) for job in jobs]
+    finished_at_utc = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+    exact_three_sha_tuple_verified = bool(products) and all(
+        p.get("exact_three_sha_tuple_verified") is True
+        and p.get("source_sha") == p.get("remote_head_sha") == p.get("local_head_sha")
+        for p in products
+    )
+    if not exact_three_sha_tuple_verified:
+        raise SyncHold("EXACT_THREE_SHA_TUPLE_NOT_VERIFIED")
     result = {
         "schema_version": 1,
         "status": "PASS",
+        "started_at_utc": started_at_utc,
+        "finished_at_utc": finished_at_utc,
         "products": products,
         "snapshots": len(products),
         "exact_sha_verified": True,
+        "exact_three_sha_tuple_verified": exact_three_sha_tuple_verified,
+        "idempotent_reuse_verified": all(
+            p.get("status") == "REUSED_EXACT_SNAPSHOT" for p in products
+        ),
         "development_checkout_modified": False,
         "product_code_executed": False,
         "store_submission": False,
@@ -232,6 +277,7 @@ def main(argv=None) -> int:
         result = {
             "schema_version": 1,
             "status": "HOLD",
+            "observed_at_utc": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
             "reason": str(exc)[:240],
             "exact_sha_verified": False,
             "development_checkout_modified": False,
