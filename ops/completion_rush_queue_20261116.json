@@ -9861,7 +9861,7 @@
     "e2e_pass": false
   },
   "updated_at_utc": "2026-11-26T03:36:00Z",
-  "pr165_previous_live_head_sha_20261126_024046": null,
+  "pr165_previous_live_head_sha_20261126_024046": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
   "pr165_latest_live_head_sha": "f2a8d5b3f96b395ff248f42125daa26295f94c78",
   "pr165_latest_live_head_parent_sha": "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1",
   "pr165_latest_live_head_observed_at_utc": "2026-11-26T02:50:00Z",
@@ -10124,5 +10124,7 @@
     "cas_applied": false,
     "product_priority_rank": 4,
     "note": "The legacy active_product record remains historical only; current delivery order comes from the completion queue."
-  }
+  },
+  "pr165_current_branch_head_is_historical_snapshot": true,
+  "pr165_current_branch_head_snapshot_superseded_by_live_head_sha": "f2a8d5b3f96b395ff248f42125daa26295f94c78"
 }
