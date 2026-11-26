@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "path": "ops/focus_file_transport_reconciliation_20261126.json",
-  "observed_at_utc": "2026-11-26T01:50:00Z",
+  "observed_at_utc": "2026-11-26T01:57:30Z",
   "record_type": "APPEND_ONLY_CURRENT_OBSERVATION",
   "supersedes": [
     "ops/active_e2e_handoff_overlay_20261126.json",
@@ -700,11 +700,11 @@
   "ledger_reconciliation": {
     "prior_overlay_head": "c8018c560f28d26f055da66bd36fc0fabad44d73",
     "latest_pr165_head": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb",
-    "active_ledger_blob_sha": "a23c7b2697aaeedb9187ca1564961907fcb08339",
+    "active_ledger_blob_sha": "6d29dd3c0b9b8a906fdc42f5ccc41b46dd6da2b0",
     "active_ledger_direct_content_available": true,
     "active_ledger_content_fetch_status": "FETCHED_DIRECTLY_FROM_EXACT_BLOB_BYTES__NOT_TREATED_AS_EMPTY_FILE",
     "active_ledger_direct_update_performed": true,
-    "active_ledger_updated_at_utc": "2026-11-26T01:50:00Z",
+    "active_ledger_updated_at_utc": "2026-11-26T01:57:30Z",
     "active_ledger_recorded_pr165_head": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb",
     "actual_pr165_head": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
     "snapshot_parent_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
@@ -723,7 +723,7 @@
       45738280673,
       45738280653
     ],
-    "note": "The active ledger was fetched from its exact blob bytes, updated, and reconciled to live PR165 HEAD 86b6aa06. c68adc79 remains the verified transport-code baseline; 86b6aa06 is 18 operations/test-only commits ahead, with no product code change. Exact-head transport, custody and Windows/Ubuntu Offline QA pass. Product E2E remains HOLD.",
+    "note": "Last fully verified head 86b6aa06 passed all three workflows. Tip 8d4488d3 had one Offline QA assertion failure caused by observation.status using PASS_EXACT_HEAD_CI instead of HOLD; transport and custody passed. Corrective snapshot sets observation.status=HOLD and keeps exact_head_ci_status=PASS. Product code unchanged.",
     "active_ledger_path": "ops/active_e2e_handoff.json",
     "active_ledger_recorded_pr165_code_head": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb",
     "actual_pr165_branch_head": "2ba11031c1c713abb7b548125b10b48af5346bfd",
@@ -732,7 +732,9 @@
     "snapshot_commit_ci_status": "PASS_EXACT_HEAD_CI",
     "current_branch_head_parent_ci_status": "NOT_OBSERVED_FOR_CURRENT_PARENT",
     "current_branch_head_parent_ci_run_ids": [],
-    "status": "RECONCILED_TO_PR165_C68ADC_CODE_86B6AA_BRANCH_HEAD"
+    "status": "RECONCILED_TO_PR165_C68ADC_CODE_86B6AA_BRANCH_HEAD__LATER_TEST_ONLY_ASSERTION_FAILURE_RECORDED",
+    "latest_push_tip_sha": "8d4488d3f83e9ac5d7f8657f0e735fe2dd1bde5a",
+    "latest_push_tip_ci_status": "PARTIAL_FAIL_OFFLINE_QA__OBSERVATION_STATUS_ASSERTION"
   },
   "safety": {
     "store_submission_allowed": false,
@@ -1189,7 +1191,7 @@
     ],
     "product_code_changed": false,
     "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
-    "status": "PASS_EXACT_HEAD_CI",
+    "status": "HOLD",
     "exact_head_ci": [
       {
         "run_id": 45738280697,
@@ -1477,5 +1479,26 @@
       "windows_skipped": 2
     }
   ],
-  "pr165_last_verified_branch_head_observed_at_utc": "2026-11-26T01:50:00Z"
+  "pr165_last_verified_branch_head_observed_at_utc": "2026-11-26T01:50:00Z",
+  "pr165_intermediate_test_failure_20261126_015638": {
+    "observed_at_utc": "2026-11-26T01:57:30Z",
+    "head_sha": "8d4488d3f83e9ac5d7f8657f0e735fe2dd1bde5a",
+    "parent_sha": "148a63c0af3446ff5df388465963fe402e5cbc0e",
+    "workflow_run_id": 45739101304,
+    "failed_job_id": 139639424307,
+    "workflow": "Windows-all-auto Offline QA",
+    "conclusion": "failure",
+    "test_name": "test_latest_transport_and_store_gate_stay_held",
+    "assertion": "latest['status'] expected HOLD but observation.status was PASS_EXACT_HEAD_CI",
+    "root_cause": "The observation status field conflated repository CI status with overall product E2E status.",
+    "corrective_action": "Set observation.status=HOLD and retain exact_head_ci_status=PASS_EXACT_HEAD_CI.",
+    "product_code_changed": false,
+    "product_e2e_status": "HOLD",
+    "e2e_pass": false
+  },
+  "pr165_latest_push_tip_sha": "8d4488d3f83e9ac5d7f8657f0e735fe2dd1bde5a",
+  "pr165_latest_push_tip_parent_sha": "148a63c0af3446ff5df388465963fe402e5cbc0e",
+  "pr165_latest_push_tip_ci_status": "PARTIAL_FAIL_OFFLINE_QA__OBSERVATION_STATUS_ASSERTION",
+  "pr165_latest_push_tip_ci_run_id": 45739101304,
+  "pr165_latest_push_tip_product_code_changed": false
 }

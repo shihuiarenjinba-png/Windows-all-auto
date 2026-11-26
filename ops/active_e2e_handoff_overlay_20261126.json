@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
   "path": "ops/active_e2e_handoff_overlay_20261126.json",
-  "observed_at_utc": "2026-11-26T01:50:00Z",
+  "observed_at_utc": "2026-11-26T01:57:30Z",
   "status": "HOLD",
   "e2e_pass": false,
   "record_type": "APPEND_ONLY_CURRENT_OBSERVATION",
-  "note": "PR165 live branch HEAD 86b6aa06 passed exact-head transport, custody and Windows/Ubuntu Offline QA (565 tests; Windows 2 skips), 18 commits ahead/0 behind of the last verified transport-code head c68adc79. The delta is operations snapshots and regression tests only; no product code changed. Immediate parent 5292b3bf has no observed workflow runs. Focus/File remain POST_IDENTITY DELIVERY_HOLD; no authoritative current-source Identity/Version readback, real MSIX, backlog, local pull, checker or local GUI install receipt exists.",
+  "note": "PR165 full exact-head pass is 86b6aa06: transport, custody and Offline QA all SUCCESS (565 tests; Windows 2 skips). A later test-only tip 8d4488d3 had one Offline QA assertion failure because observation.status was incorrectly PASS while product E2E must remain HOLD; transport and custody workflows passed. This snapshot corrects that semantic mismatch. No product code changed; no real MSIX, backlog, local pull, checker or GUI receipt.",
   "priority_order": [
     "Focus Session Desk",
     "File Integrity Ledger"
@@ -310,7 +310,7 @@
       ],
       "product_code_changed": false,
       "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
-      "status": "PASS_EXACT_HEAD_CI",
+      "status": "HOLD",
       "exact_head_ci": [
         {
           "run_id": 45738280697,
@@ -523,7 +523,7 @@
       ],
       "product_code_changed": false,
       "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
-      "status": "PASS_EXACT_HEAD_CI",
+      "status": "HOLD",
       "exact_head_ci": [
         {
           "run_id": 45738280697,
@@ -606,7 +606,7 @@
       ],
       "product_code_changed": false,
       "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
-      "status": "PASS_EXACT_HEAD_CI",
+      "status": "HOLD",
       "exact_head_ci": [
         {
           "run_id": 45738280697,
@@ -843,7 +843,7 @@
       ],
       "product_code_changed": false,
       "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
-      "status": "PASS_EXACT_HEAD_CI",
+      "status": "HOLD",
       "exact_head_ci": [
         {
           "run_id": 45738280697,
@@ -967,7 +967,7 @@
       ],
       "product_code_changed": false,
       "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
-      "status": "PASS_EXACT_HEAD_CI",
+      "status": "HOLD",
       "exact_head_ci": [
         {
           "run_id": 45738280697,
@@ -1542,10 +1542,10 @@
     "local_windows_receipt_verified": false
   },
   "ledger_reconciliation": {
-    "status": "RECONCILED_TO_PR165_C68ADC_CODE_86B6AA_BRANCH_HEAD",
+    "status": "RECONCILED_TO_PR165_C68ADC_CODE_86B6AA_BRANCH_HEAD__LATER_TEST_ONLY_ASSERTION_FAILURE_RECORDED",
     "active_ledger_path": "ops/active_e2e_handoff.json",
-    "active_ledger_blob_sha": "a23c7b2697aaeedb9187ca1564961907fcb08339",
-    "active_ledger_updated_at_utc": "2026-11-26T01:50:00Z",
+    "active_ledger_blob_sha": "6d29dd3c0b9b8a906fdc42f5ccc41b46dd6da2b0",
+    "active_ledger_updated_at_utc": "2026-11-26T01:57:30Z",
     "active_ledger_recorded_pr165_head": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb",
     "actual_pr165_head": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
     "snapshot_parent_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
@@ -1574,7 +1574,9 @@
     "snapshot_commit_ci_status": "PASS_EXACT_HEAD_CI",
     "current_branch_head_parent_ci_status": "NOT_OBSERVED_FOR_CURRENT_PARENT",
     "current_branch_head_parent_ci_run_ids": [],
-    "active_ledger_content_fetch_status": "FETCHED_DIRECTLY_FROM_EXACT_BLOB_BYTES__NOT_TREATED_AS_EMPTY_FILE"
+    "active_ledger_content_fetch_status": "FETCHED_DIRECTLY_FROM_EXACT_BLOB_BYTES__NOT_TREATED_AS_EMPTY_FILE",
+    "latest_push_tip_sha": "8d4488d3f83e9ac5d7f8657f0e735fe2dd1bde5a",
+    "latest_push_tip_ci_status": "PARTIAL_FAIL_OFFLINE_QA__OBSERVATION_STATUS_ASSERTION"
   },
   "safety": {
     "e2e_pass": false,
@@ -2027,5 +2029,29 @@
     "product_e2e_status": "HOLD",
     "e2e_pass": false,
     "real_msix": false
-  }
+  },
+  "pr165_intermediate_test_failure_20261126_015638": {
+    "observed_at_utc": "2026-11-26T01:57:30Z",
+    "head_sha": "8d4488d3f83e9ac5d7f8657f0e735fe2dd1bde5a",
+    "parent_sha": "148a63c0af3446ff5df388465963fe402e5cbc0e",
+    "workflow_run_id": 45739101304,
+    "failed_job_id": 139639424307,
+    "workflow": "Windows-all-auto Offline QA",
+    "conclusion": "failure",
+    "test_name": "test_latest_transport_and_store_gate_stay_held",
+    "assertion": "latest['status'] expected HOLD but observation.status was PASS_EXACT_HEAD_CI",
+    "root_cause": "The observation status field conflated repository CI status with overall product E2E status.",
+    "corrective_action": "Set observation.status=HOLD and retain exact_head_ci_status=PASS_EXACT_HEAD_CI.",
+    "product_code_changed": false,
+    "product_e2e_status": "HOLD",
+    "e2e_pass": false
+  },
+  "pr165_latest_push_tip_sha": "8d4488d3f83e9ac5d7f8657f0e735fe2dd1bde5a",
+  "pr165_latest_push_tip_parent_sha": "148a63c0af3446ff5df388465963fe402e5cbc0e",
+  "pr165_latest_push_tip_ci_status": "PARTIAL_FAIL_OFFLINE_QA__OBSERVATION_STATUS_ASSERTION",
+  "pr165_latest_push_tip_ci_run_id": 45739101304,
+  "pr165_latest_push_tip_product_code_changed": false,
+  "pr165_latest_push_tip_changed_files": [
+    "tests/test_completion_rush_queue_20261116.py"
+  ]
 }

@@ -341,7 +341,7 @@ class CurrentObservationOverlayTests(unittest.TestCase):
         ledger = overlay["ledger_reconciliation"]
         self.assertEqual(ledger["active_ledger_recorded_pr165_head"], "c68adc79ecf8a0c6ad4b538146648391b1b4eddb")
         self.assertEqual(ledger["actual_pr165_head"], "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23")
-        self.assertEqual(ledger["active_ledger_blob_sha"], "a23c7b2697aaeedb9187ca1564961907fcb08339")
+        self.assertEqual(ledger["active_ledger_blob_sha"], "6d29dd3c0b9b8a906fdc42f5ccc41b46dd6da2b0")
         self.assertIs(ledger["active_ledger_reconciled"], True)
         self.assertEqual(ledger["status"], "RECONCILED_TO_PR165_C68ADC_CODE_86B6AA_BRANCH_HEAD")
         self.assertFalse(overlay["downstream_receipts"]["real_msix"])

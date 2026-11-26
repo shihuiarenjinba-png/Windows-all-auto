@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-26T01:50:00Z",
+  "updated_at_utc": "2026-11-26T01:57:30Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -11143,7 +11143,7 @@
     }
   },
   "windows_e2e_custody_reconciliation": {
-    "checked_at_utc": "2026-11-26T01:50:00Z",
+    "checked_at_utc": "2026-11-26T01:57:30Z",
     "status": "HOLD",
     "pr161_head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
     "pr161_ci": [
@@ -11201,7 +11201,7 @@
     "prism_revision": "HOLD_CURRENT_SOURCE_B03CE7__NO_OLD_SOURCE_CAS",
     "signal_sprint": "HOLD_GDK_BUILD_ARTIFACT_AND_UIA_NOT_VERIFIED",
     "local_code_sync": "NOT_OBSERVED__CLOUD_PASS_ONLY",
-    "note": "PR165 live branch HEAD 86b6aa06 passed exact-head transport, custody and Windows/Ubuntu Offline QA (565 tests; Windows 2 skips). It is 18 operations/test-only commits ahead of c68adc79; product code unchanged. Immediate parent 5292b3bf has no observed workflow runs. Product E2E remains HOLD: Focus current-source Identity/Version not read back; File current-source approved Identity absent and Version null; no real MSIX, backlog, local pull, checker or GUI install receipt.",
+    "note": "Last full exact-head pass remains 86b6aa06 (transport, custody, 565 tests; Windows 2 skips). The subsequent test-only tip 8d4488d3 had one Offline QA assertion failure: observation.status was PASS_EXACT_HEAD_CI but overall product E2E must remain HOLD. Corrective snapshot sets observation.status=HOLD while retaining exact_head_ci_status=PASS. No product code changed; no real MSIX/local E2E.",
     "approved_identity_product_checks": [
       {
         "product": "Focus Session Desk",
@@ -13599,7 +13599,11 @@
     "pr165_current_branch_head_parent_push_ci": [],
     "pr165_current_branch_head_parent_push_ci_status": "NOT_OBSERVED_FOR_CURRENT_PARENT",
     "pr165_current_branch_head_snapshot_parent_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
-    "pr165_current_branch_head_snapshot_commit_ci_status": "PASS_EXACT_HEAD_CI"
+    "pr165_current_branch_head_snapshot_commit_ci_status": "PASS_EXACT_HEAD_CI",
+    "pr165_latest_push_tip_sha": "8d4488d3f83e9ac5d7f8657f0e735fe2dd1bde5a",
+    "pr165_latest_push_tip_ci_status": "PARTIAL_FAIL_OFFLINE_QA__OBSERVATION_STATUS_ASSERTION",
+    "pr165_latest_push_tip_ci_run_id": 45739101304,
+    "pr165_latest_push_tip_product_code_changed": false
   },
   "store_submission_allowed": false,
   "certification_allowed": false,
@@ -26337,8 +26341,8 @@
     "decision": "NO_BLIND_RESTACK__ALL_RELEVANT_CHANGES_ALREADY_PRESENT_OR_SUPERSEDED",
     "merge_allowed": false
   },
-  "last_reconciled_at_utc": "2026-11-26T01:50:00Z",
-  "last_reconciled_basis": "PR165 live branch head 86b6aa06 exact-head transport, custody and Windows/Ubuntu Offline QA all SUCCESS (565 tests; Windows 2 skips); 18 commits ahead/0 behind of last verified transport-code head c68adc79. Delta is operations snapshots and regression tests only; no product code changed. Immediate parent 5292b3bf has no observed workflow runs. Focus/File current-source Identity/Version remain unverified; no real MSIX/backlog/local pull/checker/GUI receipts, so product E2E remains HOLD.",
+  "last_reconciled_at_utc": "2026-11-26T01:57:30Z",
+  "last_reconciled_basis": "Last fully verified PR165 branch head 86b6aa06: exact-head transport, custody and Windows/Ubuntu Offline QA all SUCCESS (565 tests; Windows 2 skips). A later test-only tip 8d4488d3 had one Offline QA assertion failure because observation.status incorrectly reflected CI PASS rather than product E2E HOLD; transport and custody workflows passed. This snapshot corrects the status semantics without product-code changes; product E2E remains HOLD.",
   "pr165_previous_tested_head_sha": "1d02a0307c6ce456b25c3d4fafa40362078f7c0a",
   "pr165_previous_tested_head_ci": [
     {
@@ -37039,7 +37043,7 @@
     ],
     "product_code_changed": false,
     "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
-    "status": "PASS_EXACT_HEAD_CI",
+    "status": "HOLD",
     "exact_head_ci": [
       {
         "run_id": 45738280697,
@@ -37235,7 +37239,7 @@
     ],
     "product_code_changed": false,
     "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
-    "status": "PASS_EXACT_HEAD_CI",
+    "status": "HOLD",
     "exact_head_ci": [
       {
         "run_id": 45738280697,
@@ -37383,7 +37387,7 @@
     ],
     "product_code_changed": false,
     "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
-    "status": "PASS_EXACT_HEAD_CI",
+    "status": "HOLD",
     "exact_head_ci": [
       {
         "run_id": 45738280697,
@@ -37439,5 +37443,29 @@
     "last_verified_branch_head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
     "offline_qa_tests_run": 565,
     "offline_qa_windows_skipped": 2
-  }
+  },
+  "pr165_intermediate_test_failure_20261126_015638": {
+    "observed_at_utc": "2026-11-26T01:57:30Z",
+    "head_sha": "8d4488d3f83e9ac5d7f8657f0e735fe2dd1bde5a",
+    "parent_sha": "148a63c0af3446ff5df388465963fe402e5cbc0e",
+    "workflow_run_id": 45739101304,
+    "failed_job_id": 139639424307,
+    "workflow": "Windows-all-auto Offline QA",
+    "conclusion": "failure",
+    "test_name": "test_latest_transport_and_store_gate_stay_held",
+    "assertion": "latest['status'] expected HOLD but observation.status was PASS_EXACT_HEAD_CI",
+    "root_cause": "The observation status field conflated repository CI status with overall product E2E status.",
+    "corrective_action": "Set observation.status=HOLD and retain exact_head_ci_status=PASS_EXACT_HEAD_CI.",
+    "product_code_changed": false,
+    "product_e2e_status": "HOLD",
+    "e2e_pass": false
+  },
+  "pr165_latest_push_tip_sha": "8d4488d3f83e9ac5d7f8657f0e735fe2dd1bde5a",
+  "pr165_latest_push_tip_parent_sha": "148a63c0af3446ff5df388465963fe402e5cbc0e",
+  "pr165_latest_push_tip_ci_status": "PARTIAL_FAIL_OFFLINE_QA__OBSERVATION_STATUS_ASSERTION",
+  "pr165_latest_push_tip_ci_run_id": 45739101304,
+  "pr165_latest_push_tip_product_code_changed": false,
+  "pr165_latest_push_tip_changed_files": [
+    "tests/test_completion_rush_queue_20261116.py"
+  ]
 }
