@@ -286,7 +286,7 @@ class LocalPullTests(unittest.TestCase):
 
     def test_queue_cannot_claim_store_id_or_approval(self):
         self.q["items"][0]["store_id"]="UNVERIFIED-STORE-ID"
-        with self.assertRaisesRegex(ValueError,"must not assign a Store ID"):
+        with self.assertRaisesRegex(ValueError,"QUEUE_STORE_AUTHORITY_INVALID"):
             self.pull_fake(self.root/"inbox")
         self.q["items"][0]["store_id"]=None
         self.q["items"][0]["security_confirmed"]=True
