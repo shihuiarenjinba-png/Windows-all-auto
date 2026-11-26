@@ -13,8 +13,8 @@ class CurrentLiveProductReconciliation20261126Tests(unittest.TestCase):
         key = "pr165_live_head_observation_20261126_040324"
         observation = ledger[key]
 
-        self.assertEqual(ledger["pr165_latest_live_observation_key"], "pr165_live_head_observation_20261126_045730")
-        self.assertEqual(ledger["pr165_latest_live_head_sha"], "380d4818330688f47d3558217ed556868cf0b744")
+        self.assertEqual(ledger["pr165_latest_live_observation_key"], "pr165_live_head_observation_20261126_053549")
+        self.assertEqual(ledger["pr165_latest_live_head_sha"], "74dee49585edbeee7eb66d58ff9fa2ea0b97e27f")
         self.assertEqual(ledger["pr165_latest_live_head_ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual(observation["head_sha"], "f2a8d5b3f96b395ff248f42125daa26295f94c78")
         self.assertEqual(observation["parent_sha"], "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1")
