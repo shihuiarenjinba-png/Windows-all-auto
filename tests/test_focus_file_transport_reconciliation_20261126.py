@@ -41,6 +41,15 @@ class FocusFileTransportReconciliation20261126(unittest.TestCase):
         self.assertIs(d["e2e_pass"], False)
         self.assertEqual(d["status"], "HOLD")
 
+    def test_current_branch_failure_is_separate_from_last_verified_head(self):
+        current = self.data["current_branch_head_observation"]
+        self.assertEqual(current["head_sha"], "929a85197669a5a0531422027b958e32ad50c6a1")
+        self.assertEqual(current["parent_sha"], "0803ba70bae5c6fbd0cc00b17d31d53c2b6642a9")
+        self.assertEqual(current["status"], "FAIL_STALE_RECONCILIATION_ASSERTIONS")
+        self.assertEqual([x["run_id"] for x in current["exact_head_workflows"]], [45725227329, 45725227317, 45725227238])
+        self.assertEqual(self.data["pr165"]["latest_verified_code_head_sha"], "0803ba70bae5c6fbd0cc00b17d31d53c2b6642a9")
+        self.assertFalse(self.data["e2e_pass"])
+
     def test_focus_remains_blocked_on_current_source_identity_and_authoritative_version(self):
         p = self.data["products"]["focus_session_desk"]
         self.assertEqual(p["current_source_sha"], "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79")
