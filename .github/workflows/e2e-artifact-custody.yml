@@ -7,6 +7,7 @@ on:
       - 'tests/test_github_artifact_custody.py'
       - 'tests/test_local_handoff_pull.py'
       - 'tests/test_github_artifact_redirect_security.py'
+      - '.github/workflows/windows-e2e-transport-regression.yml'
       - '.github/workflows/e2e-artifact-custody.yml'
   workflow_dispatch:
 jobs:
