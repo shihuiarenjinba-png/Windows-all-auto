@@ -452,9 +452,9 @@ class CurrentObservationOverlayCustodyTests(unittest.TestCase):
         self.assertFalse(overlay["downstream_receipts"]["windows_checker_receipt"])
         self.assertFalse(overlay["downstream_receipts"]["local_gui_install_receipt"])
         queue = json.loads((root / "ops" / "completion_rush_queue_20261116.json").read_text(encoding="utf-8"))
-        self.assertEqual(queue["pr165_current_branch_head_sha"], "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23")
-        self.assertEqual(queue["pr165_current_branch_head_parent_sha"], "5292b3bf3ef6e8cb28fcfd1fa9f4ee000975437e")
-        self.assertEqual(queue["pr165_current_branch_head_ci_run_ids"], [45738280697, 45738280673, 45738280653])
+        self.assertEqual(queue["pr165_current_branch_head_sha"], "${head165}")
+        self.assertIsNone(queue["pr165_current_branch_head_parent_sha"])
+        self.assertEqual(queue["pr165_current_branch_head_ci_run_ids"], ${run165})
         self.assertEqual(queue["pr165_current_branch_head_snapshot_commit_ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual(queue["status"], "HOLD")
         self.assertFalse(queue["e2e_pass"])
@@ -498,32 +498,43 @@ class CurrentProductExeArtifactCustody20261126Tests(unittest.TestCase):
 
 
 
-class CurrentPr165Reconciliation133835Tests(unittest.TestCase):
+class CurrentPr165Reconciliation20261127Tests(unittest.TestCase):
     def test_latest_pr165_head_and_downstream_receipts_remain_separate(self):
         root = Path(__file__).resolve().parents[1]
         ledger = json.loads((root / "ops" / "active_e2e_handoff.json").read_text(encoding="utf-8"))
         overlay = json.loads((root / "ops" / "active_e2e_handoff_overlay_20261126_133835.json").read_text(encoding="utf-8"))
-        key = "pr165_latest_branch_head_observation_20261126_133835"
-        head = "776431b039bd67ffdbc6a215aa1fc672ad1d1549"
-        self.assertEqual(ledger["pr165_latest_branch_head_observation_key"], key)
-        self.assertEqual(ledger["pr165_latest_branch_head_sha"], head)
-        self.assertEqual(ledger["pr165_current_branch_head_sha"], "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23")
-        self.assertEqual(ledger["pr165_current_branch_head_parent_sha"], "5292b3bf3ef6e8cb28fcfd1fa9f4ee000975437e")
-        observation = ledger[key]
-        self.assertEqual(observation["head_sha"], head)
-        self.assertEqual([x["run_id"] for x in observation["exact_head_ci"]], [45824011236, 45824011171, 45824011205])
-        self.assertTrue(all(x["head_sha"] == head and x["conclusion"] == "success" for x in observation["exact_head_ci"]))
-        self.assertEqual(ledger["latest_execution_reconciliation_key"], "latest_execution_reconciliation_20261126_133835")
+        historical_key = "pr165_latest_branch_head_observation_20261126_133835"
+        self.assertEqual(ledger[historical_key]["head_sha"], "776431b039bd67ffdbc6a215aa1fc672ad1d1549")
+        self.assertEqual(ledger["pr165_latest_live_observation_key"], "pr165_live_head_observation_20261126_154945")
+        self.assertEqual(ledger["pr165_latest_live_head_sha"], "84f9a3480e2df93f0d75bddc29fb8de47e4ec941")
+        self.assertEqual(ledger["pr165_latest_branch_head_sha"], "84f9a3480e2df93f0d75bddc29fb8de47e4ec941")
+        self.assertEqual(ledger["pr165_current_branch_head_sha"], "84f9a3480e2df93f0d75bddc29fb8de47e4ec941")
+        self.assertIsNone(ledger["pr165_current_branch_head_parent_sha"])
+        observation = ledger["pr165_live_head_observation_20261126_154945"]
+        self.assertEqual(observation["head_sha"], "84f9a3480e2df93f0d75bddc29fb8de47e4ec941")
+        self.assertIsNone(observation["parent_sha"])
+        self.assertEqual([x["run_id"] for x in observation["exact_head_ci"]], [45833181013, 45833181073, 45833180930])
+        self.assertTrue(all(x["head_sha"] == "84f9a3480e2df93f0d75bddc29fb8de47e4ec941" and x["conclusion"] == "success" for x in observation["exact_head_ci"]))
+        self.assertFalse(observation["product_code_changed"])
+        self.assertEqual(observation["product_e2e_status"], "HOLD")
+        self.assertFalse(observation["e2e_pass"])
+        self.assertFalse(observation["real_msix"])
+        self.assertFalse(observation["github_backlog_receipt"])
+        self.assertFalse(observation["local_pull_receipt"])
+        self.assertFalse(observation["local_checker_receipt"])
+        self.assertFalse(observation["local_gui_install_receipt"])
+        self.assertEqual(ledger["latest_execution_reconciliation_key"], "latest_execution_reconciliation_20261126_154945")
         self.assertEqual(ledger["e2e_status"], "HOLD")
-        self.assertIs(ledger["e2e_pass"], False)
-        self.assertEqual(overlay["pr165"]["head_sha"], head)
-        self.assertEqual(overlay["pr165"]["exact_head_ci_status"], "PASS_EXACT_HEAD_CI")
+        self.assertFalse(ledger["e2e_pass"])
+        self.assertEqual(overlay["pr165"]["head_sha"], "776431b039bd67ffdbc6a215aa1fc672ad1d1549")
         self.assertEqual(overlay["status"], "HOLD")
-        self.assertIs(overlay["e2e_pass"], False)
+        self.assertFalse(overlay["e2e_pass"])
         self.assertEqual(overlay["store_upload_test"]["eligible_fresh_unsold_products"], 0)
-        self.assertIs(overlay["safety"]["store_submission_allowed"], False)
-        self.assertIs(overlay["safety"]["certification_allowed"], False)
-        self.assertIs(overlay["safety"]["publish_allowed"], False)
+        self.assertFalse(overlay["safety"]["store_submission_allowed"])
+        self.assertFalse(overlay["safety"]["certification_allowed"])
+        self.assertFalse(overlay["safety"]["publish_allowed"])
+
+
 
 if __name__ == "__main__":
     unittest.main()
