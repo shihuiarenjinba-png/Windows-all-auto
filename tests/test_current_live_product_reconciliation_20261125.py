@@ -37,7 +37,8 @@ class CurrentLiveProductReconciliationTests(unittest.TestCase):
         observation = self.ledger["pr165_live_head_observation_20261126_latest"]
         self.assertEqual(observation["head_sha"], "929a85197669a5a0531422027b958e32ad50c6a1")
         self.assertEqual(observation["parent_sha"], "0803ba70bae5c6fbd0cc00b17d31d53c2b6642a9")
-        self.assertEqual(observation["comparison_to_previous_tested_head"]["ahead_by"], 3)
+        self.assertEqual(observation["comparison_to_previous_tested_head"]["ahead_by"], 1)
+        self.assertEqual(observation["comparison_to_previous_tested_head"]["base_sha"], "0803ba70bae5c6fbd0cc00b17d31d53c2b6642a9")
         self.assertEqual(observation["status"], "FAIL_STALE_RECONCILIATION_ASSERTIONS")
         self.assertEqual(observation["last_verified_head_sha"], "0803ba70bae5c6fbd0cc00b17d31d53c2b6642a9")
         self.assertEqual(self.ledger["pr165_current_head_parent_ci_status"], "PASS_EXACT_HEAD_CI")
