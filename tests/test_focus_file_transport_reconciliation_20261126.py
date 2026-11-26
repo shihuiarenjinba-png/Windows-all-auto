@@ -15,23 +15,23 @@ class FocusFileTransportReconciliation20261126(unittest.TestCase):
         d = self.data
         p = d["pr165"]
         head = p["latest_verified_code_head_sha"]
-        self.assertEqual(head, "c68adc79ecf8a0c6ad4b538146648391b1b4eddb")
-        self.assertEqual(p["tested_code_head_sha"], "c68adc79ecf8a0c6ad4b538146648391b1b4eddb")
+        self.assertEqual(head, "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1")
+        self.assertEqual(p["tested_code_head_sha"], "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1")
         self.assertEqual(p["latest_exact_head_ci_status"], "PASS_EXACT_HEAD_CI")
-        self.assertEqual(p["latest_exact_head_ci_run_ids"], [45731501639, 45731501700, 45731501669])
-        self.assertEqual(p["latest_offline_qa_tests_run"], 564)
+        self.assertEqual(p["latest_exact_head_ci_run_ids"], [45739568443, 45739568709, 45739568625])
+        self.assertEqual(p["latest_offline_qa_tests_run"], 565)
         self.assertEqual(p["latest_product_e2e_status"], "HOLD")
         latest = d["latest_observation"]
         self.assertEqual(latest["pr165_head_sha"], head)
         self.assertTrue(all(r["head_sha"] == head and r["conclusion"] == "success"
                             for r in latest["exact_head_workflows"]))
         self.assertEqual(p["exact_head_ci_status"], "PASS_EXACT_HEAD_CI")
-        self.assertEqual([r["run_id"] for r in p["exact_head_ci"]], [45731501639, 45731501700, 45731501669])
+        self.assertEqual([r["run_id"] for r in p["exact_head_ci"]], [45739568443, 45739568709, 45739568625])
         self.assertTrue(all(r["head_sha"] == head and r["conclusion"] == "success"
                             for r in p["exact_head_ci"]))
         self.assertEqual(p["offline_qa"]["ubuntu_conclusion"], "success")
         self.assertEqual(p["offline_qa"]["windows_conclusion"], "success")
-        self.assertEqual(p["offline_qa"]["tests_run"], 564)
+        self.assertEqual(p["offline_qa"]["tests_run"], 565)
         self.assertEqual(p["offline_qa"]["windows_skipped"], 2)
         self.assertEqual(p["product_e2e_status"], "HOLD")
         self.assertIs(p["real_msix"], False)
@@ -41,24 +41,24 @@ class FocusFileTransportReconciliation20261126(unittest.TestCase):
 
     def test_current_branch_head_pass_is_separate_from_parent_snapshot_failure(self):
         current = self.data["current_branch_head_observation"]
-        self.assertEqual(current["head_sha"], "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23")
-        self.assertEqual(current["parent_sha"], "5292b3bf3ef6e8cb28fcfd1fa9f4ee000975437e")
+        self.assertEqual(current["head_sha"], "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1")
+        self.assertEqual(current["parent_sha"], "f8d52742e41689bc684f84f65bdff32204077d40")
         self.assertEqual(current["exact_head_ci_status"], "PASS_EXACT_HEAD_CI")
-        self.assertEqual(current["comparison_to_last_tested_code_head"]["ahead_by"], 18)
+        self.assertEqual(current["comparison_to_last_tested_code_head"]["ahead_by"], 6)
         self.assertFalse(current["product_code_changed"])
         self.assertFalse(current["e2e_pass"])
-        self.assertEqual(current["parent_ci_status"], "NOT_OBSERVED_FOR_CURRENT_PARENT")
+        self.assertEqual(current["parent_ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual([x["run_id"] for x in current["parent_ci"]], [])
         self.assertEqual(self.data["pr165_current_branch_head_sha"], current["head_sha"])
         self.assertEqual(self.data["pr165_current_branch_head_ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual(self.data["snapshot_commit_ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual(self.data["ledger_reconciliation"]["actual_pr165_head"], current["head_sha"])
         self.assertEqual(self.data["ledger_reconciliation"]["actual_pr165_branch_head"], current["head_sha"])
-        self.assertEqual(self.data["ledger_reconciliation"]["status"], "RECONCILED_TO_PR165_C68ADC_CODE_86B6AA_BRANCH_HEAD")
-        self.assertEqual([x["run_id"] for x in current["exact_head_ci"]], [45738280697, 45738280673, 45738280653])
-        self.assertEqual(self.data["pr165"]["latest_verified_code_head_sha"], "c68adc79ecf8a0c6ad4b538146648391b1b4eddb")
-        self.assertEqual(self.data["pr165"]["immediate_parent_ci_status"], "PARTIAL_FAIL_RECONCILIATION_TEST_KEYERROR")
-        self.assertEqual([x["run_id"] for x in self.data["pr165"]["immediate_parent_exact_head_ci"]], [45731429031, 45731429039, 45731429057])
+        self.assertEqual(self.data["ledger_reconciliation"]["status"], "RECONCILED_TO_PR165_13F8ED4F_EXACT_HEAD__PRODUCT_E2E_HOLD")
+        self.assertEqual([x["run_id"] for x in current["exact_head_ci"]], [45739568443, 45739568709, 45739568625])
+        self.assertEqual(self.data["pr165"]["latest_verified_code_head_sha"], "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1")
+        self.assertEqual(self.data["pr165"]["immediate_parent_ci_status"], "PASS_EXACT_HEAD_CI")
+        self.assertEqual([x["run_id"] for x in self.data["pr165"]["immediate_parent_exact_head_ci"]], [45739553986, 45739554048, 45739553974])
         self.assertFalse(self.data["e2e_pass"])
 
     def test_request_artifacts_are_verified_dry_run_only_and_have_no_authoritative_version(self):
