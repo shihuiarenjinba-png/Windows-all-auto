@@ -468,6 +468,7 @@ class CurrentObservationOverlayCustodyTests(unittest.TestCase):
 
 
 
+
 class CurrentProductExeArtifactCustody20261126Tests(unittest.TestCase):
     def test_exact_archive_and_exe_sha_custody_is_not_msix_or_product_e2e(self):
         root = Path(__file__).resolve().parents[1]
@@ -493,6 +494,7 @@ class CurrentProductExeArtifactCustody20261126Tests(unittest.TestCase):
             self.assertIs(product["local_pull_receipt"], False)
             self.assertIs(product["windows_checker_receipt"], False)
             self.assertIs(product["local_gui_install_receipt"], False)
+        self.assertNotIn("idempotency_key", overlay["products"]["file_integrity_ledger"]["request"])
 
 if __name__ == "__main__":
     unittest.main()

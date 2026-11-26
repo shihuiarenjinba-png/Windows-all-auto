@@ -367,6 +367,7 @@ class CurrentObservationOverlayTests(unittest.TestCase):
 
 
 
+
 class CurrentFocusFileExecutionEvidence20261126Tests(unittest.TestCase):
     def test_verified_pre_identity_exes_do_not_unlock_real_msix_transport(self):
         root = Path(__file__).resolve().parents[1]
@@ -397,5 +398,6 @@ class CurrentFocusFileExecutionEvidence20261126Tests(unittest.TestCase):
         self.assertIs(file_product["identity"]["current_source_approved_identity_present"], False)
         self.assertIs(file_product["real_msix"], False)
         self.assertIsNone(file_product["package_version"])
+        self.assertNotIn("idempotency_key", file_product["request"])
         self.assertEqual(file_product["exe_artifact"]["custody_scope"], "UNSIGNED_PRE_IDENTITY_EXE_QA_ONLY_NOT_MSIX")
         self.assertIs(overlay["safety"]["store_submission_allowed"], False)

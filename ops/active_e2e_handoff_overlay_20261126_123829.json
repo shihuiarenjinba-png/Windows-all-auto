@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "path": "ops/active_e2e_handoff_overlay_20261126_123829.json",
-  "observed_at_utc": "2026-11-26T12:51:02.113Z",
+  "observed_at_utc": "2026-11-26T12:53:57.179Z",
   "record_type": "APPEND_ONLY_CURRENT_EXECUTION_RECONCILIATION",
   "supersedes": [
     "ops/active_e2e_handoff_overlay_20261126_084205.json",
@@ -220,7 +220,6 @@
         "artifact_id": 14934034365,
         "artifact_sha256": "697528b3b0769e3962eebfa0efcdcb026618cd378d97fc60c4f234017882527e",
         "request_sha256": "dc477b03dd8eb024dd4145fb56cace5d57531a9ae3bbba74a487631f823b2557",
-        "idempotency_key": "a1bb56ad8ec3fcebf8c4d6ee5b9b96bbbc64e6ac4c6a481b73810f3ed0f03df2",
         "request_submitted": false,
         "partner_center_write": false,
         "identity_write": false,
@@ -332,7 +331,8 @@
     "actual_pr165_head": "de8ea3457cc225eeabc63f9fa3c1217c477bca64",
     "actual_pr165_parent_sha": "74dee49585edbeee7eb66d58ff9fa2ea0b97e27f",
     "reconciled_to_actual_branch_head": true,
-    "status": "RECONCILED_TO_PR165_DE8EA_CURRENT_BRANCH_HEAD__PRODUCT_E2E_HOLD"
+    "status": "RECONCILED_TO_PR165_DE8EA_CURRENT_BRANCH_HEAD__PRODUCT_E2E_HOLD",
+    "correction_parent_head": "243fd0d86f69ecde28ab09814dee8dc8a3f2aa01"
   },
   "safety": {
     "store_submission_allowed": false,
@@ -351,5 +351,6 @@
     "twentyfour_repo_touched": false,
     "png_generation_or_modification": false
   },
-  "next_action": "36: obtain authenticated read-only Partner Center current-source Identity and authoritative Package Version readback for Focus first; keep File Integrity current-source Identity absent and Version null until independently read back. Do not build MSIX, CAS, install locally, or start Store dry-run until the source-bound official gates pass."
+  "next_action": "36: obtain authenticated read-only Partner Center current-source Identity and authoritative Package Version readback for Focus first; keep File Integrity current-source Identity absent and Version null until independently read back. Do not build MSIX, CAS, install locally, or start Store dry-run until the source-bound official gates pass.",
+  "correction_note": "Removed an unverified File Integrity request idempotency-key field; the current-source request evidence did not establish that value. No other product, identity, version, package, or safety state changed."
 }

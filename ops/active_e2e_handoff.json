@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-26T12:51:02.113Z",
+  "updated_at_utc": "2026-11-26T12:53:57.179Z",
   "e2e_status": "HOLD",
   "e2e_pass": false,
   "new_product_allowed": false,
@@ -39843,7 +39843,7 @@
   },
   "latest_execution_reconciliation_key": "latest_execution_reconciliation_20261126_123829",
   "latest_execution_reconciliation_20261126_123829": {
-    "observed_at_utc": "2026-11-26T12:51:02.113Z",
+    "observed_at_utc": "2026-11-26T12:53:57.179Z",
     "status": "HOLD",
     "e2e_pass": false,
     "pr165_head_sha": "de8ea3457cc225eeabc63f9fa3c1217c477bca64",
@@ -39956,7 +39956,6 @@
         "artifact_id": 14934034365,
         "artifact_sha256": "697528b3b0769e3962eebfa0efcdcb026618cd378d97fc60c4f234017882527e",
         "request_sha256": "dc477b03dd8eb024dd4145fb56cace5d57531a9ae3bbba74a487631f823b2557",
-        "idempotency_key": "a1bb56ad8ec3fcebf8c4d6ee5b9b96bbbc64e6ac4c6a481b73810f3ed0f03df2",
         "request_submitted": false,
         "partner_center_write": false,
         "identity_write": false,
@@ -40059,7 +40058,8 @@
       "store_submission_allowed": false,
       "certification_allowed": false,
       "publish_allowed": false
-    }
+    },
+    "correction_note": "Removed an unverified File Integrity request idempotency-key field; the current-source request evidence did not establish that value. No other product, identity, version, package, or safety state changed."
   },
   "authoritative_version_discovery_20261126_123829": {
     "status": "NO_AUTHORITATIVE_VERSION_FOUND_IN_REVIEWED_EVIDENCE",
