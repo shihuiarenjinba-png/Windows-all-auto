@@ -276,6 +276,10 @@ def verify_queue_artifact_custody(expected, local_artifact, fetch_json, fetch_by
         if not isinstance(repository, str) or repository.count("/") != 1:
             return hold("REPOSITORY_INVALID")
         owner, repo = repository.split("/")
+        if (not re.fullmatch(r"[A-Za-z0-9-]{1,39}", owner)
+                or not re.fullmatch(r"[A-Za-z0-9._-]{1,100}", repo)
+                or repo in (".", "..")):
+            return hold("REPOSITORY_INVALID")
         run_id = expected["run_id"]
         artifact_id = expected["artifact_id"]
         head = expected["run_head_sha"]
@@ -283,7 +287,7 @@ def verify_queue_artifact_custody(expected, local_artifact, fetch_json, fetch_by
         if not all(type(v) is int and v > 0 for v in (run_id, artifact_id)):
             return hold("ARTIFACT_IDS_INVALID")
         if (not HEX40.fullmatch(head) or not isinstance(name, str)
-                or not name.startswith("verified-msix-local-qa-")):
+                or not re.fullmatch(r"verified-msix-local-qa-[A-Za-z0-9._-]{1,100}", name)):
             return hold("PIN_INVALID")
 
         local = Path(local_artifact)
@@ -330,7 +334,8 @@ def verify_queue_artifact_custody(expected, local_artifact, fetch_json, fetch_by
             return hold("RUN_HEAD_OR_STATUS_MISMATCH")
         if (run.get("head_repository", {}).get("full_name") != repository
                 or not isinstance(run.get("head_branch"), str)
-                or not run["head_branch"].startswith("codex/")):
+                or not re.fullmatch(r"codex/[A-Za-z0-9._/-]+", run["head_branch"])
+                or ".." in run["head_branch"] or "//" in run["head_branch"]):
             return hold("RUN_REPOSITORY_OR_BRANCH_MISMATCH")
         workflow = artifact.get("workflow_run", {})
         if (artifact.get("id") != artifact_id or artifact.get("name") != name
@@ -383,7 +388,8 @@ def verify_queue_artifact_custody(expected, local_artifact, fetch_json, fetch_by
                     files[normalized] = info
             if z.testzip() is not None:
                 return hold("ARTIFACT_CORRUPT")
-            if "queue.json" not in files or z.read("queue.json") != queue_bytes:
+            if ("queue.json" not in files or files["queue.json"].file_size > 1024 * 1024
+                    or z.read("queue.json") != queue_bytes):
                 return hold("QUEUE_BYTES_DIFFER")
 
             expected_files = {"queue.json"}
@@ -461,7 +467,7 @@ def verify_queue_artifact_custody(expected, local_artifact, fetch_json, fetch_by
                 if path.is_symlink():
                     return hold("LOCAL_PACKAGE_PATH_LINKED")
                 if path.is_dir():
-                    relative = path.relative_to(package_root).as_posix()
+                    relative = path.relative_to(package_root).as_posix().casefold()
                     if not any(folder == relative or folder.startswith(relative + "/")
                                for folder in expected_folders):
                         return hold("LOCAL_EXTRA_PACKAGE_DIRECTORY")
@@ -491,8 +497,8 @@ class _SafeCrossOriginRedirectHandler(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, req, fp, code, msg, headers, newurl):
         old = urlsplit(req.full_url)
         new = urlsplit(newurl)
-        if (new.scheme != "https" or not new.hostname
-                or new.username or new.password):
+        if (new.scheme.lower() != "https" or not new.hostname
+                or new.username or new.password or new.fragment):
             return None
         redirected = super().redirect_request(req, fp, code, msg, headers, newurl)
         if redirected is None:
@@ -519,7 +525,7 @@ def github_clients(token):
 
     def request(url):
         parsed = urlsplit(url)
-        if (parsed.scheme != "https" or parsed.hostname != "api.github.com"
+        if (parsed.scheme.lower() != "https" or parsed.hostname != "api.github.com"
                 or parsed.username or parsed.password or parsed.port not in (None, 443)):
             raise ValueError("Unexpected API URL")
         req = urllib.request.Request(url, headers={
