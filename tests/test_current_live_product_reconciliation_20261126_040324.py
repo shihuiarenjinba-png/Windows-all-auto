@@ -13,8 +13,8 @@ class CurrentLiveProductReconciliation20261126Tests(unittest.TestCase):
         key = "pr165_live_head_observation_20261126_040324"
         observation = ledger[key]
 
-        self.assertEqual(ledger["pr165_latest_live_observation_key"], "pr165_live_head_observation_20261126_045730")
-        self.assertEqual(ledger["pr165_latest_live_head_sha"], "380d4818330688f47d3558217ed556868cf0b744")
+        self.assertEqual(ledger["pr165_latest_live_observation_key"], "pr165_live_head_observation_20261126_154945")
+        self.assertEqual(ledger["pr165_latest_live_head_sha"], "84f9a3480e2df93f0d75bddc29fb8de47e4ec941")
         self.assertEqual(ledger["pr165_latest_live_head_ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual(observation["head_sha"], "f2a8d5b3f96b395ff248f42125daa26295f94c78")
         self.assertEqual(observation["parent_sha"], "13f8ed4f44e7c7e1ffaa3e64f9de73ba931e64d1")
@@ -62,7 +62,7 @@ class CurrentLiveProductReconciliation20261126Tests(unittest.TestCase):
     def test_completion_queue_records_focus_exe_custody_without_promoting_msix(self):
         queue = json.loads((ROOT / "ops/completion_rush_queue_20261116.json").read_text(encoding="utf-8"))
         focus = next(item for item in queue["priority"] if item["product"] == "Focus Session Desk")
-        self.assertEqual(queue["latest_observation_key"], "pr165_live_head_observation_20261126_045730")
+        self.assertEqual(queue["latest_observation_key"], "pr165_live_head_observation_20261126_154945")
         self.assertEqual(focus["current_source_exe_artifact_id"], 15083856249)
         self.assertTrue(focus["current_source_exe_bytes_present_in_artifact"])
         self.assertEqual(focus["current_source_exe_custody_status"], "VERIFIED_UNSIGNED_PRE_IDENTITY_EXE_ONLY")
