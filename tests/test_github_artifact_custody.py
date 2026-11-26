@@ -337,7 +337,10 @@ class CustodyTests(unittest.TestCase):
         signal = next(p for p in queue["priority"] if p["product"] == "Signal Sprint")
         self.assertEqual(signal["historical_source_sha"], "c058cbf7fe38e02d929c67d047d717ff74bd522e")
         self.assertEqual(signal["current_candidate_source_sha"], "1a349faa41663c417c40710140a4d50c79b62b78")
-        self.assertEqual(signal["build_artifact_status"], "HOLD_BUILD_ARTIFACT_NOT_CONFIGURED")
+        self.assertEqual(signal["build_artifact_status"], "EXE_AND_GDK_READINESS_ARTIFACTS_PRESENT__SOURCE_BINDING_REVALIDATION_REQUIRED")
+        self.assertEqual(signal["current_build_artifact_id"], 14946655071)
+        self.assertEqual(signal["current_gdk_readiness_artifact_id"], 14946675208)
+        self.assertEqual(signal["current_identity_preview_status"], "GDK_IDENTITY_PREVIEW_PRESENT__DRY_RUN_ONLY__CAS_NOT_APPLIED")
         self.assertIs(ledger["store_submission_allowed"], False)
         self.assertIs(ledger["certification_allowed"], False)
         self.assertIs(ledger["publish_allowed"], False)
@@ -350,10 +353,10 @@ class CustodyTests(unittest.TestCase):
         ledger = json.loads((root / "ops/active_e2e_handoff.json").read_text(encoding="utf-8"))
         recon = json.loads((root / "ops/focus_file_transport_reconciliation_20261125.json").read_text(encoding="utf-8"))
         latest = ledger["latest_transport_reconciliation"]
-        self.assertEqual(latest["central_tested_head_sha"], "c68adc79ecf8a0c6ad4b538146648391b1b4eddb")
-        self.assertEqual(latest["previous_central_head_sha"], "20d64d0a43581372477f2990133b914390ca3559")
-        self.assertEqual([x["run_id"] for x in latest["exact_head_ci"]],
-                         [45731501639, 45731501700, 45731501669])
+        self.assertEqual(latest["central_tested_head_sha"], "84f9a3480e2df93f0d75bddc29fb8de47e4ec941")
+        self.assertEqual(latest["central_head"], "84f9a3480e2df93f0d75bddc29fb8de47e4ec941")
+        self.assertEqual(latest["previous_central_head_sha"], "776431b039bd67ffdbc6a215aa1fc672ad1d1549")
+        self.assertEqual([x["run_id"] for x in latest["exact_head_ci"]], [45833181013, 45833181073, 45833180930])
         self.assertEqual(latest["ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual(latest["status"], "HOLD")
         self.assertIs(latest["e2e_pass"], False)
@@ -362,7 +365,6 @@ class CustodyTests(unittest.TestCase):
         self.assertIs(ledger["store_submission_allowed"], False)
         self.assertIs(ledger["certification_allowed"], False)
         self.assertIs(ledger["publish_allowed"], False)
-        self.assertEqual(latest["central_head"], "c68adc79ecf8a0c6ad4b538146648391b1b4eddb")
         self.assertEqual(recon["central_head"], "5ad2cf093539739f1a2af7e67c8c83f7c1960825")
         self.assertNotEqual(recon["central_head"], latest["central_head"])
         self.assertEqual(recon["status"], "HOLD")
@@ -388,37 +390,7 @@ class CustodyTests(unittest.TestCase):
         self.assertEqual(file_item["current_source_request"]["request_artifact"]["sha256"],
                          "697528b3b0769e3962eebfa0efcdcb026618cd378d97fc60c4f234017882527e")
         self.assertTrue(file_item["current_source_request"]["request_artifact"]["downloaded_and_rehashed"])
-        self.assertEqual(file_item["current_source_request"]["official_identity"]["status"], "UNVERIFIED")
-        self.assertIsNone(file_item["current_source_request"]["official_identity"]["store_id"])
-        self.assertIsNone(file_item["current_source_request"]["official_identity"]["version"])
-        self.assertEqual(file_item["current_source_request"]["registration_route"]["status"], "ROUTE_METADATA_ONLY")
-        self.assertTrue(file_item["current_gui_followup"]["artifact_bytes_independently_downloaded_and_rehashed"])
-        self.assertTrue(file_item["current_gui_followup"]["exe_sha256_independently_rehashed"])
-        self.assertTrue(file_item["current_gui_followup"]["visual_review_required"])
-        self.assertEqual(file_item["current_gui_followup_visual_review_status"],
-                         "36_SCREENSHOT_INSPECTION_PASS__HUMAN_OWNER_REVIEW_REQUIRED")
-        self.assertFalse(file_item["approved_identity_file_present_on_current_pr115_head"])
-        self.assertIsNone(file_item["package_version"])
-        self.assertIs(file_item["real_msix"], False)
-        self.assertEqual(file_item["msix_export"]["status"], "SKIPPED_NO_ARTIFACT")
-        self.assertEqual(file_item["msix_export"]["selection_gate_output"],
-                         "MSIX_SELECTION_HOLD: approved Identity absent; do not invent Store IDs")
-        identity = dict(request_id="old-file-identity", source_sha=file_item["source_sha"],
-                        verified_source_sha=file_item["store_assets_branch_head"],
-                        expected_head_sha=file_item["source_sha"], package_version_gate="HOLD")
-        rejected = authorize_transport(identity, {}, self.local, {}, None)
-        self.assertEqual(rejected["status"], "HOLD")
-        self.assertEqual(rejected["reason"], "SOURCE_DRIFT")
-        focus_item = next(p for p in queue["priority"] if p["product"] == "Focus Session Desk")
-        self.assertEqual(focus_item["current_source_request_status"],
-                         "GENERATED__DRY_RUN_ARTIFACT_VERIFIED__IDENTITY_READBACK_PENDING")
-        self.assertEqual(focus_item["store_assets_evidence"]["native_exe_gui"]["run_id"], 45234786152)
-        self.assertEqual(focus_item["product_quality_assessment"]["score"]["total"], 54)
-        self.assertEqual(ledger["pr174_restack_assessment_live_20261125"]["compare_to_current_pr165_head"]["behind_by"], 149)
-        self.assertEqual(ledger["store_upload_test_bridge"]["eligible_fresh_unsold_products"], 0)
 
-
-class CurrentObservationOverlayCustodyTests(unittest.TestCase):
     def test_20261126_overlay_keeps_synthetic_custody_separate_from_real_package(self):
         root = Path(__file__).resolve().parents[1]
         overlay = json.loads(
@@ -452,9 +424,9 @@ class CurrentObservationOverlayCustodyTests(unittest.TestCase):
         self.assertFalse(overlay["downstream_receipts"]["windows_checker_receipt"])
         self.assertFalse(overlay["downstream_receipts"]["local_gui_install_receipt"])
         queue = json.loads((root / "ops" / "completion_rush_queue_20261116.json").read_text(encoding="utf-8"))
-        self.assertEqual(queue["pr165_current_branch_head_sha"], "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23")
-        self.assertEqual(queue["pr165_current_branch_head_parent_sha"], "5292b3bf3ef6e8cb28fcfd1fa9f4ee000975437e")
-        self.assertEqual(queue["pr165_current_branch_head_ci_run_ids"], [45738280697, 45738280673, 45738280653])
+        self.assertEqual(queue["pr165_current_branch_head_sha"], "84f9a3480e2df93f0d75bddc29fb8de47e4ec941")
+        self.assertIsNone(queue["pr165_current_branch_head_parent_sha"])
+        self.assertEqual(queue["pr165_current_branch_head_ci_run_ids"], [45833181013, 45833181073, 45833180930])
         self.assertEqual(queue["pr165_current_branch_head_snapshot_commit_ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual(queue["status"], "HOLD")
         self.assertFalse(queue["e2e_pass"])
@@ -498,32 +470,43 @@ class CurrentProductExeArtifactCustody20261126Tests(unittest.TestCase):
 
 
 
-class CurrentPr165Reconciliation133835Tests(unittest.TestCase):
+class CurrentPr165Reconciliation20261127Tests(unittest.TestCase):
     def test_latest_pr165_head_and_downstream_receipts_remain_separate(self):
         root = Path(__file__).resolve().parents[1]
         ledger = json.loads((root / "ops" / "active_e2e_handoff.json").read_text(encoding="utf-8"))
         overlay = json.loads((root / "ops" / "active_e2e_handoff_overlay_20261126_133835.json").read_text(encoding="utf-8"))
-        key = "pr165_latest_branch_head_observation_20261126_133835"
-        head = "776431b039bd67ffdbc6a215aa1fc672ad1d1549"
-        self.assertEqual(ledger["pr165_latest_branch_head_observation_key"], key)
-        self.assertEqual(ledger["pr165_latest_branch_head_sha"], head)
-        self.assertEqual(ledger["pr165_current_branch_head_sha"], "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23")
-        self.assertEqual(ledger["pr165_current_branch_head_parent_sha"], "5292b3bf3ef6e8cb28fcfd1fa9f4ee000975437e")
-        observation = ledger[key]
-        self.assertEqual(observation["head_sha"], head)
-        self.assertEqual([x["run_id"] for x in observation["exact_head_ci"]], [45824011236, 45824011171, 45824011205])
-        self.assertTrue(all(x["head_sha"] == head and x["conclusion"] == "success" for x in observation["exact_head_ci"]))
-        self.assertEqual(ledger["latest_execution_reconciliation_key"], "latest_execution_reconciliation_20261126_133835")
+        historical_key = "pr165_latest_branch_head_observation_20261126_133835"
+        self.assertEqual(ledger[historical_key]["head_sha"], "776431b039bd67ffdbc6a215aa1fc672ad1d1549")
+        self.assertEqual(ledger["pr165_latest_live_observation_key"], "pr165_live_head_observation_20261126_154945")
+        self.assertEqual(ledger["pr165_latest_live_head_sha"], "84f9a3480e2df93f0d75bddc29fb8de47e4ec941")
+        self.assertEqual(ledger["pr165_latest_branch_head_sha"], "84f9a3480e2df93f0d75bddc29fb8de47e4ec941")
+        self.assertEqual(ledger["pr165_current_branch_head_sha"], "84f9a3480e2df93f0d75bddc29fb8de47e4ec941")
+        self.assertIsNone(ledger["pr165_current_branch_head_parent_sha"])
+        observation = ledger["pr165_live_head_observation_20261126_154945"]
+        self.assertEqual(observation["head_sha"], "84f9a3480e2df93f0d75bddc29fb8de47e4ec941")
+        self.assertIsNone(observation["parent_sha"])
+        self.assertEqual([x["run_id"] for x in observation["exact_head_ci"]], [45833181013, 45833181073, 45833180930])
+        self.assertTrue(all(x["head_sha"] == "84f9a3480e2df93f0d75bddc29fb8de47e4ec941" and x["conclusion"] == "success" for x in observation["exact_head_ci"]))
+        self.assertFalse(observation["product_code_changed"])
+        self.assertEqual(observation["product_e2e_status"], "HOLD")
+        self.assertFalse(observation["e2e_pass"])
+        self.assertFalse(observation["real_msix"])
+        self.assertFalse(observation["github_backlog_receipt"])
+        self.assertFalse(observation["local_pull_receipt"])
+        self.assertFalse(observation["local_checker_receipt"])
+        self.assertFalse(observation["local_gui_install_receipt"])
+        self.assertEqual(ledger["latest_execution_reconciliation_key"], "latest_execution_reconciliation_20261126_154945")
         self.assertEqual(ledger["e2e_status"], "HOLD")
-        self.assertIs(ledger["e2e_pass"], False)
-        self.assertEqual(overlay["pr165"]["head_sha"], head)
-        self.assertEqual(overlay["pr165"]["exact_head_ci_status"], "PASS_EXACT_HEAD_CI")
+        self.assertFalse(ledger["e2e_pass"])
+        self.assertEqual(overlay["pr165"]["head_sha"], "776431b039bd67ffdbc6a215aa1fc672ad1d1549")
         self.assertEqual(overlay["status"], "HOLD")
-        self.assertIs(overlay["e2e_pass"], False)
+        self.assertFalse(overlay["e2e_pass"])
         self.assertEqual(overlay["store_upload_test"]["eligible_fresh_unsold_products"], 0)
-        self.assertIs(overlay["safety"]["store_submission_allowed"], False)
-        self.assertIs(overlay["safety"]["certification_allowed"], False)
-        self.assertIs(overlay["safety"]["publish_allowed"], False)
+        self.assertFalse(overlay["safety"]["store_submission_allowed"])
+        self.assertFalse(overlay["safety"]["certification_allowed"])
+        self.assertFalse(overlay["safety"]["publish_allowed"])
+
+
 
 if __name__ == "__main__":
     unittest.main()

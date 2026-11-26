@@ -1,0 +1,309 @@
+{
+  "schema_version": "1.0",
+  "observed_at_utc": "2026-11-26T15:58:49.184Z",
+  "record_type": "APPEND_ONLY_CURRENT_EXECUTION_RECONCILIATION",
+  "repository": "shihuiarenjinba-png/Windows-all-auto",
+  "central_pr": 165,
+  "central_head_sha": "84f9a3480e2df93f0d75bddc29fb8de47e4ec941",
+  "transport_restack_pr": 190,
+  "transport_restack_head_sha": "a7e2abae75a65828721ea35005df12a245335f2a",
+  "status": "HOLD",
+  "e2e_pass": false,
+  "pr165": {
+    "number": 165,
+    "state": "OPEN_DRAFT",
+    "branch": "codex/e2e-artifact-custody-20261114",
+    "head_sha": "84f9a3480e2df93f0d75bddc29fb8de47e4ec941",
+    "parent_sha": null,
+    "parent_sha_status": "NOT_RETURNED_BY_COMMIT_METADATA_READ",
+    "comparison_to_last_verified_code_head": {
+      "status": "ahead",
+      "ahead_by": 2,
+      "behind_by": 0,
+      "total_commits": 2,
+      "base_sha": "776431b039bd67ffdbc6a215aa1fc672ad1d1549"
+    },
+    "changed_files_since_last_verified_code_head": [
+      "ops/active_e2e_handoff.json",
+      "ops/active_e2e_handoff_overlay_20261126_133835.json",
+      "tests/test_github_artifact_custody.py",
+      "tests/test_real_msix_transport_failclosed.py"
+    ],
+    "product_code_changed": false,
+    "transport_contract_code_changed": false,
+    "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
+    "exact_head_ci": [
+      {
+        "run_id": 45833181013,
+        "event": "pull_request",
+        "conclusion": "success",
+        "head_sha": "84f9a3480e2df93f0d75bddc29fb8de47e4ec941",
+        "workflow": "Windows E2E transport fail-closed regression",
+        "job": "transport-regression"
+      },
+      {
+        "run_id": 45833181073,
+        "event": "pull_request",
+        "conclusion": "success",
+        "head_sha": "84f9a3480e2df93f0d75bddc29fb8de47e4ec941",
+        "workflow": "GitHub artifact custody fail-closed regression",
+        "job": "custody-regression"
+      },
+      {
+        "run_id": 45833180930,
+        "event": "pull_request",
+        "conclusion": "success",
+        "head_sha": "84f9a3480e2df93f0d75bddc29fb8de47e4ec941",
+        "workflow": "Windows-all-auto Offline QA",
+        "jobs": [
+          "Offline preflight tests (windows-latest)",
+          "Offline preflight tests (ubuntu-latest)"
+        ]
+      }
+    ],
+    "parent_ci_status": "NOT_OBSERVED__PARENT_SHA_NOT_RETURNED_BY_COMMIT_METADATA_READ",
+    "parent_exact_head_ci": [],
+    "repository_ci_is_not_product_e2e": true,
+    "product_e2e_status": "HOLD",
+    "e2e_pass": false
+  },
+  "pr190": {
+    "number": 190,
+    "state": "OPEN_DRAFT",
+    "branch": "codex/36-pr165-pr187-restack-20261127-0035",
+    "base_branch": "codex/e2e-artifact-custody-20261114",
+    "base_sha": "84f9a3480e2df93f0d75bddc29fb8de47e4ec941",
+    "head_sha": "a7e2abae75a65828721ea35005df12a245335f2a",
+    "comparison_to_pr165": {
+      "status": "ahead",
+      "ahead_by": 6,
+      "behind_by": 0,
+      "total_commits": 6
+    },
+    "changed_files": [
+      ".github/workflows/e2e-artifact-custody.yml",
+      ".github/workflows/windows-e2e-transport-regression.yml",
+      "scripts/github_artifact_custody.py",
+      "scripts/local_handoff_pull.py",
+      "tests/test_github_artifact_redirect_security.py",
+      "tests/test_local_handoff_pull.py"
+    ],
+    "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
+    "exact_head_ci": [
+      {
+        "run_id": 45851167368,
+        "event": "pull_request",
+        "conclusion": "success",
+        "head_sha": "a7e2abae75a65828721ea35005df12a245335f2a",
+        "workflow": "Windows E2E transport fail-closed regression",
+        "job": "transport-regression"
+      },
+      {
+        "run_id": 45851167382,
+        "event": "pull_request",
+        "conclusion": "success",
+        "head_sha": "a7e2abae75a65828721ea35005df12a245335f2a",
+        "workflow": "GitHub artifact custody fail-closed regression",
+        "job": "custody-regression"
+      },
+      {
+        "run_id": 45851167381,
+        "event": "pull_request",
+        "conclusion": "success",
+        "head_sha": "a7e2abae75a65828721ea35005df12a245335f2a",
+        "workflow": "Windows-all-auto Offline QA",
+        "jobs": [
+          "Offline preflight tests (windows-latest)",
+          "Offline preflight tests (ubuntu-latest)"
+        ]
+      }
+    ],
+    "implementation_status": "IMPLEMENTED_CI_PASS_NOT_EXECUTED",
+    "physical_user_pc_execution_status": "NOT_RUN_ON_PHYSICAL_USER_PC",
+    "real_msix_queue_artifact_available": false,
+    "local_pull_receipt": false,
+    "windows_checker_receipt": false,
+    "local_gui_install_receipt": false,
+    "product_e2e_pass": false
+  },
+  "pr187_historical": {
+    "number": 187,
+    "base_sha": "74dee49585edbeee7eb66d58ff9fa2ea0b97e27f",
+    "head_sha": "5ad7b5b9522ef4640481b5c71af301405b1f255b",
+    "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
+    "exact_head_ci": [
+      45768375683,
+      45768375692,
+      45768375748
+    ],
+    "status": "HISTORICAL_OLD_BASE__SUPERSEDED_BY_PR190_RESTACK",
+    "local_pull_executed": false
+  },
+  "pr188_historical": {
+    "number": 188,
+    "base_sha": "74dee49585edbeee7eb66d58ff9fa2ea0b97e27f",
+    "head_sha": "943e74322aaf70c760db39c779b6507a2719452e",
+    "status": "STALE_BASE__DO_NOT_MERGE_AS_IS",
+    "replacement": "PR191 current-head ledger/queue reconciliation"
+  },
+  "pr161": {
+    "number": 161,
+    "head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
+    "run_id": 42712757936,
+    "conclusion": "success",
+    "scope": "Offline QA only"
+  },
+  "pr171": {
+    "number": 171,
+    "head_sha": "764721021f13be96364529650b44fb439770bac9",
+    "run_id": 44437197470,
+    "conclusion": "success",
+    "scope": "Offline QA only; Store upload dry-run not started"
+  },
+  "transport_contract": {
+    "pr165_status": "IMPLEMENTED_FAIL_CLOSED__EXACT_HEAD_CI_PASS",
+    "pr190_local_pull_status": "IMPLEMENTED_CI_PASS_NOT_EXECUTED",
+    "approved_identity_file_required": true,
+    "source_bound_partner_center_receipt_required": true,
+    "independent_github_custody_receipt_required": true,
+    "missing_receipt_result": "HOLD_BEFORE_LOCAL_QA_QUEUE",
+    "synthetic_fixtures_are_not_product_evidence": true
+  },
+  "first_unconnected_interval": {
+    "status": "BLOCKED_BEFORE_REAL_MSIX",
+    "first_blocker": "USER_OWNED_CURRENT_SOURCE_IDENTITY_AND_AUTHORITATIVE_PACKAGE_VERSION_FOR_FOCUS__FILE_CURRENT_SOURCE_IDENTITY_UNVERIFIED",
+    "after_gate": "REAL_MSIX→GITHUB_ARTIFACT_CUSTODY/BACKLOG→PR190_LOCAL_PULL→PHYSICAL_WINDOWS_CHECKER→GUI_INSTALL",
+    "note": "PR190 makes the GitHub artifact-to-local-staging code path exact-head CI-green. No eligible real MSIX queue artifact exists, so local pull/checker/GUI cannot be executed."
+  },
+  "products": {
+    "focus_session_desk": {
+      "current_source_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+      "current_source_request_id": "app-focus-session-desk-fb6293839bc7",
+      "historical_approved_identity_source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+      "current_source_identity_status": "NOT_COLLECTED__USER_OWNED",
+      "package_version": null,
+      "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
+      "store_assets_owner": "00",
+      "store_assets_git_blob_sha_verified": true,
+      "store_assets_msix_embedding_status": "NOT_VERIFIED",
+      "owner_visual_signoff_status": "PENDING",
+      "real_msix": false,
+      "github_backlog_receipt": false,
+      "local_pull_receipt": false,
+      "windows_checker_receipt": false,
+      "local_gui_install_receipt": false,
+      "product_e2e_pass": false,
+      "product_quality_score": 54
+    },
+    "file_integrity_ledger": {
+      "current_source_sha": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
+      "current_source_request_id": "app-file-integrity-ledger-33d612be2774",
+      "historical_approved_identity_source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
+      "approved_identity_file_present_on_current_source": false,
+      "current_source_identity_status": "UNVERIFIED__USER_OWNED",
+      "package_version": null,
+      "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
+      "human_visual_review_required": true,
+      "real_msix": false,
+      "github_backlog_receipt": false,
+      "local_pull_receipt": false,
+      "windows_checker_receipt": false,
+      "local_gui_install_receipt": false,
+      "product_e2e_pass": false
+    },
+    "prism_route_3d": {
+      "current_source_sha": "b03ce7b16c3f75c04fe20fdda224c45849eeba0d",
+      "historical_factory_source_sha": "4c22875c5ed79d393516c6a7a95361b9e9ed1950",
+      "historical_approved_identity_source_sha_prefix": "15fdcb52",
+      "current_source_request_id": "3d-prism-route-3d-b03ce7b16c3f",
+      "current_source_identity_rebind": "PENDING_CURRENT_SOURCE_APPROVAL",
+      "export_verified": true,
+      "independent_cloud_qa_passes": 7,
+      "independent_cloud_qa_total": 7,
+      "physical_windows_sessions_passed": 0,
+      "physical_windows_sessions_required": 6,
+      "physical_windows_screenshots": 0,
+      "physical_windows_screenshots_required": 36,
+      "package_version": null,
+      "real_msix": false,
+      "product_e2e_pass": false
+    },
+    "signal_sprint": {
+      "current_source_sha": "1a349faa41663c417c40710140a4d50c79b62b78",
+      "historical_source_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
+      "current_source_request_id": "game-signal-sprint-1a349faa41663c417c40710140a4d50c79b62b78",
+      "current_identity_preview_status": "GDK_IDENTITY_PREVIEW_PRESENT__DRY_RUN_ONLY__CAS_NOT_APPLIED",
+      "request_status": "DRY_RUN__NOT_SUBMITTED__CAS_NOT_APPLIED",
+      "cas_applied": false,
+      "current_build_artifact_id": 14946655071,
+      "current_gdk_readiness_artifact_id": 14946675208,
+      "artifact_source_binding_status": "REVALIDATION_REQUIRED",
+      "package_version": null,
+      "physical_windows_uia_pass": false,
+      "real_msixvc": false,
+      "product_e2e_pass": false
+    }
+  },
+  "current_active_product": {
+    "lane": "GAME",
+    "slug": "signal-sprint",
+    "request_id": "game-signal-sprint-1a349faa41663c417c40710140a4d50c79b62b78",
+    "source_sha": "1a349faa41663c417c40710140a4d50c79b62b78",
+    "historical_source_sha": "c058cbf7fe38e02d929c67d047d717ff74bd522e",
+    "status": "HOLD",
+    "identity_preview_status": "GDK_IDENTITY_PREVIEW_PRESENT__DRY_RUN_ONLY__CAS_NOT_APPLIED",
+    "cas_applied": false
+  },
+  "downstream_receipts": {
+    "real_msix": false,
+    "github_backlog_receipt": false,
+    "artifact_archive_and_package_sha_custody": false,
+    "local_pull_receipt": false,
+    "windows_checker_receipt": false,
+    "local_gui_install_receipt": false,
+    "physical_user_pc_local_code_sync_receipt": false,
+    "product_e2e_pass": false
+  },
+  "local_code_sync": {
+    "status": "NOT_OBSERVED__CLOUD_PASS_ONLY"
+  },
+  "store_upload_test": {
+    "bridge_pr": 171,
+    "bridge_head_sha": "764721021f13be96364529650b44fb439770bac9",
+    "bridge_exact_head_run_id": 44437197470,
+    "bridge_exact_head_scope": "Offline QA only; Store upload dry-run not started",
+    "eligible_fresh_unsold_products": 0,
+    "dry_run_started": false,
+    "live_partner_center_write_allowed": false,
+    "store_submission_allowed": false,
+    "certification_allowed": false,
+    "publish_allowed": false
+  },
+  "ledger_reconciliation": {
+    "status": "RECONCILED_TO_PR165_84F9__PR190_A7E2__PRODUCT_E2E_HOLD",
+    "active_ledger_reconciled": true,
+    "active_ledger_blob_sha": "3a8514c02e9764b5b4e7322ddda1a19130f9f763",
+    "queue_blob_sha": "9d7de0fa3e69186ef759887770862bbc7b624302",
+    "actual_pr165_head": "84f9a3480e2df93f0d75bddc29fb8de47e4ec941",
+    "pr190_head": "a7e2abae75a65828721ea35005df12a245335f2a",
+    "pr190_exact_head_ci_status": "PASS_EXACT_HEAD_CI",
+    "product_e2e_status": "HOLD",
+    "e2e_pass": false
+  },
+  "safety": {
+    "live_partner_center_write_allowed": false,
+    "store_submission_allowed": false,
+    "certification_allowed": false,
+    "publish_allowed": false,
+    "identity_write_allowed": false,
+    "version_inference_allowed": false,
+    "cas_apply_allowed": false,
+    "merge_allowed": false,
+    "force_push_allowed": false,
+    "main_release_write_allowed": false,
+    "product_code_changed": false,
+    "png_generation_or_modification": false,
+    "twelve_repo_touched": false,
+    "twentyfour_repo_touched": false
+  }
+}
