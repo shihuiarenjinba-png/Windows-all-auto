@@ -44,7 +44,7 @@ class CurrentLiveProductReconciliationTests(unittest.TestCase):
         self.assertEqual([x["run_id"] for x in self.ledger["pr165_current_head_ci"]], [45731501639, 45731501700, 45731501669])
         self.assertEqual(self.ledger["pr165_current_branch_head_ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual(self.ledger["pr165_current_branch_head_parent_sha"], "b1ebc578c39084a032502d153bfa159480fc7116")
-        live_branch = self.ledger["pr165_live_branch_head_observation_20261126_010218"]
+        live_branch = self.ledger["pr165_live_branch_head_observation_20261126_012000"]
         self.assertEqual(live_branch["head_sha"], "7e5cb744bb5c3cffbf17695c670ed0813f67f720")
         self.assertEqual(live_branch["exact_head_ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual([x["run_id"] for x in live_branch["exact_head_ci"]], [45734980032, 45734979170, 45734979161])

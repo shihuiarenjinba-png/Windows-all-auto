@@ -117,7 +117,7 @@ class CompletionRushQueueTests(unittest.TestCase):
         self.assertEqual(self.data["pr165_current_branch_head_ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual(self.data["pr165_current_branch_head_parent_sha"], "b1ebc578c39084a032502d153bfa159480fc7116")
         self.assertEqual(self.data["pr165_current_branch_head_parent_ci_status"], "PARTIAL_FAIL_TEST_ONLY_KEYERROR_EXACT_HEAD_WORKFLOWS_FIELD")
-        live = self.data["pr165_live_branch_head_observation_20261126_010218"]
+        live = self.data["pr165_live_branch_head_observation_20261126_012000"]
         self.assertEqual(live["head_sha"], "7e5cb744bb5c3cffbf17695c670ed0813f67f720")
         self.assertEqual(live["comparison_to_last_tested_code_head"]["ahead_by"], 12)
         self.assertFalse(live["product_code_changed"])
