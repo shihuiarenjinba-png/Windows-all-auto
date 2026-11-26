@@ -119,6 +119,7 @@ class CompletionRushQueueTests(unittest.TestCase):
         self.assertEqual(self.data["pr165_current_branch_head_parent_ci_status"], "NOT_OBSERVED_FOR_CURRENT_PARENT")
         self.assertEqual([x["run_id"] for x in self.data["pr165_current_branch_head_parent_ci"]], [])
         self.assertEqual(self.data["pr165_current_branch_head_snapshot_commit_ci_status"], "PASS_EXACT_HEAD_CI")
+        self.assertEqual(self.data["pr165_latest_push_tip_ci_status"], "FAIL_OFFLINE_QA__THREE_SNAPSHOT_METADATA_ASSERTIONS")
         latest = self.data["pr165_live_branch_head_observation_20261126_latest"]
         self.assertFalse(latest["product_code_changed"])
         self.assertEqual(latest["status"], "HOLD")
