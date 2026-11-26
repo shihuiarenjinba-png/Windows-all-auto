@@ -70,7 +70,7 @@ class LivePR165Reconciliation20261126Tests(unittest.TestCase):
 
     def test_local_pull_port_keeps_identity_receipts_paired_and_never_claims_e2e(self):
         port = self.ledger["latest_live_execution_reconciliation_20261126_143124"]["local_pull_contract"]
-        self.assertEqual(port["status"], "PORTED_TO_CURRENT_PR165_STACK__EXACT_HEAD_CI_PENDING")
+        self.assertEqual(port["status"], "PORTED_TO_CURRENT_PR165_STACK__CODE_CI_PASS__NO_PHYSICAL_LOCAL_PULL")
         self.assertEqual(port["receipt_status"], "CUSTODY_VERIFIED_ONLY")
         self.assertIn("approved-identity.json included in custody bundle allowlist", port["checks"])
         self.assertIn("transport_receipt.json + github-custody.json + approved-identity.json required all-or-none",
@@ -79,11 +79,19 @@ class LivePR165Reconciliation20261126Tests(unittest.TestCase):
         self.assertIs(port["local_pull_receipt"], False)
         self.assertIs(port["local_checker_receipt"], False)
         self.assertIs(port["local_gui_install_receipt"], False)
+        self.assertEqual(port["implementation_head_sha"], "c8d421fb01bb2d4df4808cb949daf60638094c09")
+        self.assertEqual(port["implementation_exact_head_ci_status"], "PASS_EXACT_HEAD_CI")
+        self.assertEqual([x["run_id"] for x in port["implementation_exact_head_ci"]],
+                         [45841720888, 45841720878, 45841720884])
+        self.assertEqual(port["implementation_tests"]["test_local_handoff_pull.py"]["run_count"], 14)
+        self.assertEqual(port["implementation_tests"]["test_live_pr165_reconciliation_20261126_143124.py"]["run_count"], 4)
 
         overlay_port = self.overlay["local_pull_contract"]
         self.assertEqual(overlay_port["branch"], "codex/36-e2e-local-pull-ledger-20261126-1431")
         self.assertEqual(overlay_port["base_pr165_head"], "84f9a3480e2df93f0d75bddc29fb8de47e4ec941")
         self.assertEqual(overlay_port["identity_receipt_pairing"], "ALL_THREE_REQUIRED_OR_HOLD")
+        self.assertEqual(overlay_port["implementation_exact_head_ci_status"], "PASS_EXACT_HEAD_CI")
+        self.assertEqual(overlay_port["implementation_head_sha"], "c8d421fb01bb2d4df4808cb949daf60638094c09")
         self.assertIs(overlay_port["e2e_pass"], False)
 
     def test_pr161_pr187_pr171_and_store_safety_are_not_misrepresented(self):
