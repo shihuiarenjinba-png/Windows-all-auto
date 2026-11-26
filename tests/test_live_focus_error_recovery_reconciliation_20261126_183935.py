@@ -61,7 +61,7 @@ class LiveFocusErrorRecoveryReconciliation20261126Tests(unittest.TestCase):
         self.assertEqual(self.recon["pr189_pre_update_head"]["exact_head_ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual(self.recon["local_pull_contract"]["receipt_status"], "CUSTODY_VERIFIED_ONLY")
         self.assertIs(self.recon["local_pull_contract"]["e2e_pass"], False)
-        self.assertIs(self.recon["local_pull_contract"]["physical_local_pull_receipt"], False)
+        self.assertIs(self.recon["local_pull_contract"]["local_pull_receipt"], False)
         self.assertIs(self.recon["local_pull_contract"]["local_checker_receipt"], False)
         self.assertIs(self.recon["local_pull_contract"]["local_gui_install_receipt"], False)
 
