@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-11-26T06:03:07Z",
+  "repository": "shihuiarenjinba-png/Windows-all-auto",
+  "purpose": "LOCAL_CODE_SYNC_TARGET_RESOLUTION_ONLY__NO_PACKAGE_INSTALL_OR_CAS",
+  "overall_status": "HOLD_USER_PC_RECEIPTS_PENDING_AND_OFFLINE_NOTES_SOURCE_NOT_FIXED",
+  "required_target_count": 3,
+  "resolvable_target_count": 2,
+  "source_sha_tuple": {
+    "offline_notes_canary": null,
+    "signal_sprint": "1a349faa41663c417c40710140a4d50c79b62b78",
+    "prism_route_3d": "b03ce7b16c3f75c04fe20fdda224c45849eeba0d"
+  },
+  "targets": [
+    {
+      "product": "Offline Notes Canary",
+      "status": "HOLD_SOURCE_NOT_FIXED",
+      "source_repository": "shihuiarenjinba-png/AI-App-Factory",
+      "source_branch": null,
+      "source_sha": null,
+      "request_id": null,
+      "exe_artifact_id": null,
+      "candidate_pr": 14,
+      "candidate_branch": "codex/app-canary-offline-notes-20261027",
+      "candidate_head_sha": "b83702c8948991cc3bd31745db5df64afaf6010f",
+      "reason": "PR #14 explicitly remains a research candidate: factory stage=research, slug=null, active_product=null, no committed product source, request_id or Windows EXE artifact. Do not treat candidate head as an immutable product source."
+    },
+    {
+      "product": "Signal Sprint",
+      "status": "REMOTE_HEAD_VERIFIED_AWAITING_USER_PC_RECEIPT",
+      "source_repository": "shihuiarenjinba-png/AI-Game-Factory",
+      "source_branch": "codex/signal-sprint-frozen-source-ref-20261124",
+      "source_sha": "1a349faa41663c417c40710140a4d50c79b62b78",
+      "request_id": "game-signal-sprint-1a349faa41663c417c40710140a4d50c79b62b78",
+      "remote_branch_head_sha": "1a349faa41663c417c40710140a4d50c79b62b78",
+      "remote_head_verified": true
+    },
+    {
+      "product": "Prism Route 3D",
+      "status": "REMOTE_HEAD_VERIFIED_AWAITING_USER_PC_RECEIPT",
+      "source_repository": "shihuiarenjinba-png/3d-game-factory",
+      "source_branch": "codex/prism-tower1-hud-clearance-fix-20261103",
+      "source_sha": "b03ce7b16c3f75c04fe20fdda224c45849eeba0d",
+      "request_id": "3d-prism-route-3d-b03ce7b16c3f",
+      "remote_branch_head_sha": "b03ce7b16c3f75c04fe20fdda224c45849eeba0d",
+      "remote_head_verified": true
+    }
+  ],
+  "local_code_sync": {
+    "first_run_exact_three_sha_receipt": "NOT_OBSERVED",
+    "replay_idempotent_reuse_receipt": "NOT_OBSERVED",
+    "task_scheduler_execution_receipt": "NOT_OBSERVED",
+    "physical_user_pc_receipt": "NOT_OBSERVED",
+    "cloud_windows_smoke_is_local_receipt": false
+  },
+  "safety": {
+    "product_code_modified": false,
+    "package_install": false,
+    "identity_cas": false,
+    "store_submission": false,
+    "certification": false,
+    "publish": false
+  }
+}
