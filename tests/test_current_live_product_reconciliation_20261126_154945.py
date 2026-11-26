@@ -51,7 +51,7 @@ class CurrentLiveProductReconciliation20261126_154945Tests(unittest.TestCase):
         self.assertEqual(ledger["current_active_product"]["current_identity_preview_status"], "GDK_IDENTITY_PREVIEW_PRESENT__DRY_RUN_ONLY__CAS_NOT_APPLIED")
         self.assertFalse(ledger["current_active_product"]["cas_applied"])
 
-        products = {x["product"]: x for x in ledger[f"current_priority_products_live_20261127_{STAMP[-6:]}"]} if f"current_priority_products_live_20261127_{STAMP[-6:]}" in ledger else {x["product"]: x for x in ledger["current_priority_products_live_20261127_154945"]}
+        products = {x["product"]: x for x in ledger["current_priority_products_live_20261127_154945"]}
         focus = products["Focus Session Desk"]
         self.assertEqual(focus["current_source_sha"], "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79")
         self.assertEqual(focus["identity_acquisition_owner"], "USER")
