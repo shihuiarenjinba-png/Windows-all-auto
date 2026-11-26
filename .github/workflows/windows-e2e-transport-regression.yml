@@ -8,6 +8,7 @@ on:
       - 'tests/test_github_artifact_custody.py'
       - 'tests/test_local_handoff_pull.py'
       - 'tests/test_github_artifact_redirect_security.py'
+      - 'tests/test_live_pr165_reconciliation_20261126_143124.py'
       - '.github/workflows/e2e-artifact-custody.yml'
       - '.github/workflows/windows-e2e-transport-regression.yml'
   workflow_dispatch:
