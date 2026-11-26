@@ -50,7 +50,7 @@ class CurrentLiveProductReconciliation20261126_044748Tests(unittest.TestCase):
         self.assertEqual(file_product["current_source_sha"], "33d612be2774ac155ea3d85289ec5cb7981c81c1")
         self.assertIs(file_product["approved_identity_file_present_on_current_source"], False)
         self.assertIsNone(file_product["package_version"])
-        self.assertEqual(file_product["current_source_request_status"], "DRY_RUN")
+        self.assertEqual(file_product["request_status"], "DRY_RUN")
         self.assertIs(file_product["real_msix"], False)
 
         self.assertEqual(observation["store_upload_test_eligibility"]["eligible_fresh_unsold_products"], 0)
