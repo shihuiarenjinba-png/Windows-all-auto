@@ -41,10 +41,13 @@ class FocusFileTransportReconciliation20261126(unittest.TestCase):
 
     def test_current_branch_head_pass_is_separate_from_parent_snapshot_failure(self):
         current = self.data["current_branch_head_observation"]
-        self.assertEqual(current["head_sha"], "c68adc79ecf8a0c6ad4b538146648391b1b4eddb")
-        self.assertEqual(current["parent_sha"], "20d64d0a43581372477f2990133b914390ca3559")
+        self.assertEqual(current["head_sha"], "46af9c95e56755c5894e800edce8d2fe69f06ac9")
+        self.assertEqual(current["parent_sha"], "e42184cc073acb418473634382c50533aca6d062")
         self.assertEqual(current["status"], "PASS_EXACT_HEAD_CI")
-        self.assertEqual([x["run_id"] for x in current["exact_head_workflows"]], [45731501639, 45731501700, 45731501669])
+        self.assertEqual(current["comparison_to_last_tested_code_head"]["ahead_by"], 9)
+        self.assertFalse(current["product_code_changed"])
+        self.assertFalse(current["e2e_pass"])
+        self.assertEqual([x["run_id"] for x in current["exact_head_workflows"]], [45732215983, 45732216287, 45732216014])
         self.assertEqual(self.data["pr165"]["latest_verified_code_head_sha"], "c68adc79ecf8a0c6ad4b538146648391b1b4eddb")
         self.assertEqual(self.data["pr165"]["immediate_parent_ci_status"], "PARTIAL_FAIL_RECONCILIATION_TEST_KEYERROR")
         self.assertEqual([x["run_id"] for x in self.data["pr165"]["immediate_parent_exact_head_ci"]], [45731429031, 45731429039, 45731429057])
