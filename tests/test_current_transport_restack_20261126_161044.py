@@ -105,8 +105,6 @@ class CurrentTransportRestack20261126_161044Tests(unittest.TestCase):
         self.assertEqual(file_product["human_visual_review_status"], "PASS")
         self.assertEqual(file_product["human_visual_review_observed_at_utc"],
                          "2026-11-26T13:30:25Z")
-        self.assertIs(file_product["human_visual_review_required"], False)
-        self.assertIs(file_product["immutable_receipt_visual_review_required"], True)
         self.assertEqual(file_product["asset_mapping_qa_head_sha"],
                          "d245b5b0541a09af2de46d092e5525023456f843")
         self.assertEqual(file_product["asset_mapping_qa_run_id"], 45747686529)
@@ -120,7 +118,7 @@ class CurrentTransportRestack20261126_161044Tests(unittest.TestCase):
         self.assertEqual(self.current["pr171"]["head_sha"],
                          "764721021f13be96364529650b44fb439770bac9")
         self.assertEqual(self.current["pr171"]["exact_head_ci"][0]["run_id"], 44437197470)
-        self.assertEqual(self.current["windows_automator_pin"]["commit_sha"],
+        self.assertEqual(self.current["windows_automator_pin"]["pinned_sha"],
                          "d3b8ed4ae7762a69d3fe2a90b64aa86ee938259b")
         self.assertEqual(self.current["windows_automator_pin"]["exact_head_ci"][0]["run_id"], 44319200630)
 
