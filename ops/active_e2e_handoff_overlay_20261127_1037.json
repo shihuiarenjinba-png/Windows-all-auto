@@ -15,26 +15,28 @@
       "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
       "exact_head_ci": [
         {
-          "run_id": 45917965610,
+          "run_id": 45924297463,
           "workflow": "Windows E2E transport fail-closed regression",
-          "head_sha": "490e4533c35740f9eb6d9695bab860895630521e",
+          "head_sha": "4f1ab065d291736017a40405cfb898fa203f69c8",
           "conclusion": "success"
         },
         {
-          "run_id": 45917965618,
+          "run_id": 45924297406,
           "workflow": "GitHub artifact custody fail-closed regression",
-          "head_sha": "490e4533c35740f9eb6d9695bab860895630521e",
+          "head_sha": "4f1ab065d291736017a40405cfb898fa203f69c8",
           "conclusion": "success"
         },
         {
-          "run_id": 45917965593,
+          "run_id": 45924297519,
           "workflow": "Windows-all-auto Offline QA",
-          "head_sha": "490e4533c35740f9eb6d9695bab860895630521e",
+          "head_sha": "4f1ab065d291736017a40405cfb898fa203f69c8",
           "conclusion": "success",
           "jobs": [
             "windows-latest",
             "ubuntu-latest"
-          ]
+          ],
+          "tests_run": 631,
+          "windows_skipped": 2
         }
       ],
       "repository_ci_is_not_product_e2e": true
