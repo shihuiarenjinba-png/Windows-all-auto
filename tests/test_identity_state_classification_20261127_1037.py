@@ -66,6 +66,10 @@ class CurrentIdentityStateClassificationTests(unittest.TestCase):
         self.assertFalse(f["identity"]["present_on_current_source"])
         self.assertEqual(f["identity"]["historical_source_sha"],
                          "d1108d12f7d1697af30400f97c7db39cba5e6791")
+        assets = f["pre_identity_evidence"]["store_assets"]
+        self.assertFalse(assets["raw_sha256_independently_recomputed"])
+        self.assertEqual(assets["Square44"],
+                         "bd61099427a770f8ddf247f0f6928e5d50ba2cd8265797c7f13952e96147d70d")
         self.assertFalse(f["identity"]["current_source_reuse_allowed"])
         self.assertIsNone(f["package_version"])
         self.assertEqual(f["package_version_status"], "AUTHORITATIVE_VALUE_REQUIRED")

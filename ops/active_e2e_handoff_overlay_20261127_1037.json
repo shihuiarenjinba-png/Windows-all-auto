@@ -212,7 +212,6 @@
         "binding_status": "MISSING",
         "current_source_reuse_allowed": false,
         "historical_identity_commit": "db9a57af822788af4c8384499a6e343ec7b0353d",
-        "historical_identity_blob_sha": "78034cf62be3479f9ed752a2585ab31bb24c49ff",
         "historical_source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
         "historical_request_id": "app-file-integrity-ledger-d1108d12f7d1",
         "historical_store_id": "9PGZ445SR5GM",
@@ -252,10 +251,11 @@
         },
         "store_assets": {
           "owner": "00",
-          "raw_sha256_independently_recomputed": true,
+          "raw_sha256_independently_recomputed": false,
           "StoreLogo": "224fa777280cf61877c14146e920fca32bb90bff6f0cea3df4ed0ac77c0645a9",
           "Square150": "e00136c7a319756ccc48c2dc50136f5872e272e806cd592a6bebb8922bbb1742",
-          "Square44": "bd61099427a770f8dff247f0f6928e5d50ba2cd8265797c7f13952e96147d70d"
+          "Square44": "bd61099427a770f8ddf247f0f6928e5d50ba2cd8265797c7f13952e96147d70d",
+          "hash_source": "PR126 exact-source preflight artifact 15120688601:file-integrity-ledger.json"
         },
         "source_preflight": {
           "qa_pr": 126,
@@ -280,6 +280,11 @@
             "package_version": "1.0.0.0",
             "msix_sha256": "dbb95aefca3b0045f732c2c2ddb3edf347904ea961270a8361ea599d53ccd351",
             "not_file_integrity_product": true
+          },
+          "asset_sha256": {
+            "StoreLogo.png": "224fa777280cf61877c14146e920fca32bb90bff6f0cea3df4ed0ac77c0645a9",
+            "Square150.png": "e00136c7a319756ccc48c2dc50136f5872e272e806cd592a6beb8922bbb1742",
+            "Square44.png": "bd61099427a770f8ddf247f0f6928e5d50ba2cd8265797c7f13952e96147d70d"
           }
         }
       },
