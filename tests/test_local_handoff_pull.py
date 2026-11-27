@@ -393,6 +393,7 @@ class CustodyPullCheckerIntegrationTests(unittest.TestCase):
             "source_factory": "AI-Game-Factory",
             "source_branch": "codex/qa-fixture-only",
             "expected_head_sha": self.source_sha,
+            "factory_head_sha": self.source_sha,
             "store_id": "9PQA00000000",
             "signature_status": "UNSIGNED",
             "qa_fixture_marker": "QA_FIXTURE_ONLY_NOT_PRODUCT",
