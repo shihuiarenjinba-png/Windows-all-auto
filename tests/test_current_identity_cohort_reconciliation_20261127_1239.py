@@ -146,6 +146,24 @@ class CurrentIdentityCohortReconciliation20261127Tests(unittest.TestCase):
         self.assertFalse(local["local_code_sync_pass"])
         self.assertFalse(sync["repository_tree_scan"]["durable_local_code_sync_receipt_found"])
 
+    def test_partner_center_readback_is_not_assumed(self):
+        pc = self.overlay["partner_center_readback"]
+        self.assertFalse(pc["authenticated_browser_context_available"])
+        self.assertEqual(pc["browser_access_result"],
+                         "REQUIRES_ORIGINATING_BROWSER_CONTEXT")
+        self.assertEqual(pc["current_source_identity_readback"], "NOT_COLLECTED")
+        self.assertEqual(pc["authoritative_package_version_readback"], "NOT_COLLECTED")
+        self.assertFalse(pc["partner_center_write_performed"])
+        self.assertFalse(pc["identity_write_performed"])
+        self.assertFalse(pc["version_inferred"])
+
+    def test_canonical_ledger_pointer_mismatch_is_disclosed_not_rewritten(self):
+        ledger = self.overlay["canonical_ledger"]
+        self.assertTrue(ledger["pointer_mismatch"])
+        self.assertEqual(ledger["actual_pr165_head_sha"],
+                         "07cb543816c7432edcf45465ae0763e16917aecc")
+        self.assertIn("left unchanged", ledger["resolution"])
+
     def test_transport_and_store_gates_remain_fail_closed(self):
         d = self.overlay["transport_and_downstream"]
         self.assertEqual(d["first_unconnected_interval"], "BLOCKED_BEFORE_REAL_MSIX_BUILD")

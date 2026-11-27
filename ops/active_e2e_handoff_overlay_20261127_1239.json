@@ -191,7 +191,7 @@
   "canonical_ledger": {
     "path": "ops/active_e2e_handoff.json",
     "blob_sha": "5e764d88bcc7d5f101557dfb547cfab48d7d5145",
-    "bytes": 1976796,
+    "bytes": 1976822,
     "updated_at_utc": "2026-11-26T13:38:35Z",
     "full_content_read_status": "READABLE_VIA_GITHUB_FETCH_BLOB",
     "e2e_status": "HOLD",
@@ -507,7 +507,7 @@
         "product": "File Integrity Ledger",
         "source_pr": 115,
         "current_source_sha": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
-        "status": "GENERATED_CURRENT_SOURCE_REQUEST_DR Y_RUN__IDENTITY_MISSING"
+        "status": "GENERATED_CURRENT_SOURCE_REQUEST_DRY_RUN__IDENTITY_MISSING"
       },
       {
         "product": "Offline Image Inventory Desk",
@@ -704,5 +704,14 @@
     "owner_24": "Preserve exact Prism PR25 export artifact 14797309778 before 2026-11-30T07:32:37Z and continue its read-only MakeAppx/Windows SDK preflight; no Identity CAS.",
     "owner_12": "Refresh Signal Sprint PR54 check-only preview against build 45446392478 / EXE artifact 14946655071 / readiness artifact 14946675208; keep GDK_GAME route and CAS NOT_APPLIED.",
     "local_windows": "Run the exact two-target local code sync manifest only from the physical user Windows session; record first-run, idempotent replay and Task Scheduler receipts. Do not convert cloud-only evidence to local PASS."
+  },
+  "partner_center_readback": {
+    "authenticated_browser_context_available": false,
+    "browser_access_result": "REQUIRES_ORIGINATING_BROWSER_CONTEXT",
+    "current_source_identity_readback": "NOT_COLLECTED",
+    "authoritative_package_version_readback": "NOT_COLLECTED",
+    "partner_center_write_performed": false,
+    "identity_write_performed": false,
+    "version_inferred": false
   }
 }
