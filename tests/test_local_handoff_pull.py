@@ -334,4 +334,295 @@ class LocalPullTests(unittest.TestCase):
         self.assertEqual(result["status"], "HOLD")
         self.assertEqual(result["reason"], "APPROVED_IDENTITY_OVERSIZED")
 
+
+
+class CustodyPullCheckerIntegrationTests(unittest.TestCase):
+    """Disposable QA fixture only; never a real product or Windows E2E claim."""
+
+    def setUp(self):
+        import hashlib
+        import io
+
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        self.root = Path(temp.name)
+        self.source_sha = "a" * 40
+        self.run_id = 88123
+        self.artifact_id = 77123
+        self.artifact_name = "verified-msix-local-qa-qa-fixture-only-77123"
+        self.identity = {
+            "name": "QA.Fixture.Only",
+            "publisher": "CN=QA_FIXTURE_ONLY_NOT_PRODUCT",
+            "version": "1.0.0.0",
+        }
+
+        manifest = (
+            b'<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10">'
+            b'<Identity Name="QA.Fixture.Only" Publisher="CN=QA_FIXTURE_ONLY_NOT_PRODUCT" '
+            b'Version="1.0.0.0"/></Package>'
+        )
+        package = io.BytesIO()
+        with zipfile.ZipFile(package, "w", zipfile.ZIP_DEFLATED) as archive:
+            for name, data in (
+                ("AppxManifest.xml", manifest),
+                ("AppxBlockMap.xml", b'<BlockMap xmlns="http://schemas.microsoft.com/appx/2010/blockmap"/>'),
+                ("[Content_Types].xml", b'<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"/>'),
+                ("main.exe", b"QA_FIXTURE_ONLY_NOT_PRODUCT executable bytes"),
+            ):
+                info = zipfile.ZipInfo(name, date_time=(2020, 1, 1, 0, 0, 0))
+                info.compress_type = zipfile.ZIP_DEFLATED
+                info.create_system = 3
+                info.external_attr = 0o100644 << 16
+                archive.writestr(info, data)
+        package_bytes = package.getvalue()
+        self.package_sha256 = hashlib.sha256(package_bytes).hexdigest()
+
+        self.handoff = {
+            "schema_version": 1,
+            "source_repository": "https://github.com/shihuiarenjinba-png/AI-Game-Factory",
+            "source_sha": self.source_sha,
+            "type": "game",
+            "slug": "qa-fixture-only",
+            "package": "package.msix",
+            "status": "QA_UNSIGNED",
+            "package_bytes": len(package_bytes),
+            "package_sha256": self.package_sha256,
+            "identity": self.identity,
+            "request_id": "qa-fixture-only-" + self.source_sha[:12],
+            "product_type": "GAME",
+            "source_factory": "AI-Game-Factory",
+            "source_branch": "codex/qa-fixture-only",
+            "expected_head_sha": self.source_sha,
+            "store_id": "9PQA00000000",
+            "signature_status": "UNSIGNED",
+            "qa_fixture_marker": "QA_FIXTURE_ONLY_NOT_PRODUCT",
+        }
+        self.queue_item = {
+            **self.handoff,
+            "store_id": None,
+            "claimed_store_id": self.handoff["store_id"],
+            "contract_status": "IMMUTABLE_QA_ONLY",
+            "submit_allowed": False,
+            "security_confirmed": False,
+            "price_approved": False,
+        }
+        self.queue = {
+            "schema_version": 1,
+            "mode": "WINDOWS_LOCAL_QA_ONLY",
+            "intake_count": 1,
+            "items": [self.queue_item],
+            "store_submissions": 0,
+            "qa_fixture_marker": "QA_FIXTURE_ONLY_NOT_PRODUCT",
+        }
+        self.artifact_dir = self.root / "artifact"
+        self._build_artifact()
+
+    def _build_artifact(self, partial_receipt=False):
+        import hashlib
+        import io
+        import shutil
+
+        if self.artifact_dir.exists():
+            shutil.rmtree(self.artifact_dir)
+        package_dir = self.artifact_dir / "packages" / relative_package_path(self.queue_item)
+        package_dir.mkdir(parents=True)
+        package = io.BytesIO()
+        with zipfile.ZipFile(package, "w", zipfile.ZIP_DEFLATED) as archive:
+            manifest = (
+                b'<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10">'
+                b'<Identity Name="QA.Fixture.Only" Publisher="CN=QA_FIXTURE_ONLY_NOT_PRODUCT" '
+                b'Version="1.0.0.0"/></Package>'
+            )
+            for name, data in (
+                ("AppxManifest.xml", manifest),
+                ("AppxBlockMap.xml", b'<BlockMap xmlns="http://schemas.microsoft.com/appx/2010/blockmap"/>'),
+                ("[Content_Types].xml", b'<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"/>'),
+                ("main.exe", b"QA_FIXTURE_ONLY_NOT_PRODUCT executable bytes"),
+            ):
+                info = zipfile.ZipInfo(name, date_time=(2020, 1, 1, 0, 0, 0))
+                info.compress_type = zipfile.ZIP_DEFLATED
+                info.create_system = 3
+                info.external_attr = 0o100644 << 16
+                archive.writestr(info, data)
+        package_bytes = package.getvalue()
+        self.package_sha256 = hashlib.sha256(package_bytes).hexdigest()
+        self.handoff["package_bytes"] = len(package_bytes)
+        self.handoff["package_sha256"] = self.package_sha256
+        self.queue_item["package_bytes"] = len(package_bytes)
+        self.queue_item["package_sha256"] = self.package_sha256
+        (package_dir / "handoff.json").write_text(
+            json.dumps(self.handoff, ensure_ascii=False, sort_keys=True, separators=(",", ":")),
+            encoding="utf-8",
+        )
+        (package_dir / "package.msix").write_bytes(package_bytes)
+        if partial_receipt:
+            (package_dir / "transport_receipt.json").write_text(
+                '{"qa_fixture_marker":"QA_FIXTURE_ONLY_NOT_PRODUCT"}', encoding="utf-8"
+            )
+
+        queue_bytes = json.dumps(
+            self.queue, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+        ).encode("utf-8")
+        (self.artifact_dir / "queue.json").write_bytes(queue_bytes)
+        archive_bytes = io.BytesIO()
+        with zipfile.ZipFile(archive_bytes, "w", zipfile.ZIP_DEFLATED) as archive:
+            paths = [(self.artifact_dir / "queue.json", "queue.json")]
+            paths.extend(
+                (path, path.relative_to(self.artifact_dir).as_posix())
+                for path in sorted((self.artifact_dir / "packages").rglob("*"))
+                if path.is_file()
+            )
+            for path, archive_name in paths:
+                info = zipfile.ZipInfo(archive_name, date_time=(2020, 1, 1, 0, 0, 0))
+                info.compress_type = zipfile.ZIP_DEFLATED
+                info.create_system = 3
+                info.external_attr = 0o100644 << 16
+                archive.writestr(info, path.read_bytes())
+        self.archive_bytes = archive_bytes.getvalue()
+        archive_sha = hashlib.sha256(self.archive_bytes).hexdigest()
+        self.run_response = {
+            "name": "Factory MSIX intake and local QA handoff",
+            "path": ".github/workflows/factory-msix-intake.yml",
+            "status": "completed",
+            "conclusion": "success",
+            "event": "schedule",
+            "head_sha": self.source_sha,
+            "head_branch": "codex/qa-fixture-only",
+            "head_repository": {"full_name": "shihuiarenjinba-png/Windows-all-auto"},
+        }
+        self.artifact_response = {
+            "id": self.artifact_id,
+            "name": self.artifact_name,
+            "expired": False,
+            "digest": "sha256:" + archive_sha,
+            "workflow_run": {"id": self.run_id, "head_sha": self.source_sha},
+        }
+
+    def _pull(self, target, run_head_sha=None, bad_digest=False, partial_receipt=False):
+        import os
+        import shutil
+        from unittest.mock import patch
+
+        self._build_artifact(partial_receipt=partial_receipt)
+        if bad_digest:
+            self.artifact_response["digest"] = "sha256:" + ("0" * 64)
+        artifact = {
+            "run_id": self.run_id,
+            "artifact_id": self.artifact_id,
+            "artifact_name": self.artifact_name,
+            "run_head_sha": run_head_sha or self.source_sha,
+        }
+
+        def fake_gh(*args):
+            if args[:2] != ("run", "download"):
+                raise AssertionError("QA fixture must not call an external GitHub CLI command")
+            shutil.copytree(self.artifact_dir, Path(args[-1]), dirs_exist_ok=True)
+            return ""
+
+        def fake_clients(token):
+            if token != "qa-fixture-token":
+                raise AssertionError("unexpected fixture token")
+
+            def fetch_json(url):
+                if url.endswith("/runs/" + str(self.run_id)):
+                    return self.run_response
+                if url.endswith("/artifacts/" + str(self.artifact_id)):
+                    return self.artifact_response
+                raise AssertionError("unexpected GitHub API URL")
+
+            def fetch_bytes(url):
+                if url.endswith("/artifacts/" + str(self.artifact_id) + "/zip"):
+                    return self.archive_bytes
+                raise AssertionError("unexpected GitHub artifact URL")
+
+            return fetch_json, fetch_bytes
+
+        with patch("scripts.local_handoff_pull.recent_artifacts", return_value=[artifact]), \
+             patch("scripts.local_handoff_pull.gh", side_effect=fake_gh), \
+             patch("scripts.local_handoff_pull.github_clients", side_effect=fake_clients), \
+             patch.dict(os.environ, {"GITHUB_TOKEN": "qa-fixture-token"}, clear=True):
+            return pull(target)
+
+    def test_qa_fixture_only_flows_custody_pull_checker_and_idempotent_replay(self):
+        import json
+        from scripts.local_checker_queue import check_local_queue
+
+        inbox = self.root / "inbox"
+        first = self._pull(inbox)
+        receipt_path = inbox / ".artifact-custody" / (str(self.artifact_id) + ".json")
+        receipt_before = receipt_path.read_bytes()
+        second = self._pull(inbox)
+        receipt_after = receipt_path.read_bytes()
+
+        self.assertEqual(first["new_packages"], 1)
+        self.assertEqual(second["new_packages"], 0)
+        self.assertEqual(first["submitted_to_store"], 0)
+        self.assertEqual(second["submitted_to_store"], 0)
+        self.assertEqual(receipt_before, receipt_after)
+        self.assertEqual(len(list((inbox / "GAME").glob("*/package.msix"))), 1)
+        custody = json.loads(receipt_after.decode("utf-8"))
+        self.assertEqual(custody["status"], "CUSTODY_VERIFIED_ONLY")
+        self.assertFalse(custody["e2e_pass"])
+        self.assertIn("qa-fixture-only", custody["artifact_name"])
+        self.assertEqual(custody["packages"][0]["package_sha256"], self.package_sha256)
+        self.assertEqual(custody["packages"][0]["local_sha256"], self.package_sha256)
+        self.assertEqual(custody["packages"][0]["local_pull_status"], "VERIFIED")
+
+        checker = self.root / "checker"
+        checker.mkdir()
+        (checker / "run.py").write_text(
+            "import hashlib, json, sys\n"
+            "from pathlib import Path\n"
+            "args = sys.argv\n"
+            "package = Path(args[args.index('--msix') + 1])\n"
+            "report = Path(args[args.index('--report') + 1])\n"
+            "report.write_text(json.dumps({'verdict':'NEEDS_REVIEW',"
+            "'fixture_marker':'QA_FIXTURE_ONLY_NOT_PRODUCT',"
+            "'package_sha256':hashlib.sha256(package.read_bytes()).hexdigest()}),"
+            "encoding='utf-8')\n"
+            "sys.exit(1)\n",
+            encoding="utf-8",
+        )
+        result = check_local_queue(inbox, checker, self.root / "reports")
+        self.assertEqual(result["status"], "HOLD")
+        self.assertEqual(result["checked"], 1)
+        self.assertFalse(result["e2e_pass"])
+        self.assertEqual(result["submitted_to_store"], 0)
+        checked = result["results"][0]
+        self.assertEqual(checked["checker_verdict"], "NEEDS_REVIEW")
+        self.assertEqual(checked["request_id"], self.handoff["request_id"])
+        self.assertEqual(checked["source_sha"], self.source_sha)
+        self.assertEqual(checked["package_sha256"], self.package_sha256)
+        self.assertEqual(checked["local_artifact_ids"], [self.artifact_id])
+        self.assertEqual(checked["local_artifact_custody"], "VERIFIED")
+        self.assertEqual(checked["local_gui_qa"], "NOT_RUN")
+        self.assertFalse(checked["e2e_pass"])
+        self.assertFalse(checked["submitted_to_store"])
+        report = json.loads((self.root / "reports" / checked["checker_report"]).read_text(encoding="utf-8"))
+        self.assertEqual(report["checker"]["fixture_marker"], "QA_FIXTURE_ONLY_NOT_PRODUCT")
+        self.assertEqual(report["checker"]["package_sha256"], self.package_sha256)
+        self.assertEqual(report["receipt"]["status"], "HOLD")
+
+    def test_wrong_run_head_fails_closed_before_local_staging(self):
+        inbox = self.root / "wrong-head-inbox"
+        with self.assertRaisesRegex(ValueError, "RUN_HEAD_OR_STATUS_MISMATCH"):
+            self._pull(inbox, run_head_sha="b" * 40)
+        self.assertFalse((inbox / "GAME").exists())
+        self.assertFalse((inbox / ".artifact-custody").exists())
+
+    def test_archive_digest_mismatch_fails_closed_before_local_staging(self):
+        inbox = self.root / "wrong-digest-inbox"
+        with self.assertRaisesRegex(ValueError, "ARTIFACT_ARCHIVE_DIGEST_MISMATCH"):
+            self._pull(inbox, bad_digest=True)
+        self.assertFalse((inbox / "GAME").exists())
+        self.assertFalse((inbox / ".artifact-custody").exists())
+
+    def test_partial_identity_receipt_trio_fails_closed_before_local_staging(self):
+        inbox = self.root / "partial-receipt-inbox"
+        with self.assertRaisesRegex(ValueError, "LOCAL_PACKAGE_BUNDLE_INVALID"):
+            self._pull(inbox, partial_receipt=True)
+        self.assertFalse((inbox / "GAME").exists())
+        self.assertFalse((inbox / ".artifact-custody").exists())
+
+
 if __name__=="__main__":unittest.main()
