@@ -166,6 +166,7 @@ class CloudUploaderTests(unittest.TestCase):
                      job.sha256, '{"legacy":"kept"}'),
                 )
 
+            con.close()
             order = []
             def preflight(*_, **__):
                 order.append("preflight")
@@ -226,6 +227,7 @@ class CloudUploaderTests(unittest.TestCase):
                     (JobLedger.key(job), job.product_id, job.submission_id, job.file_name, job.sha256),
                 )
 
+            con.close()
             order = []
             def preflight(*_, **__):
                 order.append("preflight")
