@@ -126,8 +126,21 @@ def verify_file(config: dict[str, Any], path: Path, *, expected_sha256: str | No
     )
 
 
+LEGACY_PREWRITE_FAILURE_CODES = frozenset({
+    # These failures are raised before the package file input is selected.
+    # Keep this allowlist deliberately narrow; ambiguous/post-write errors
+    # remain charged conservatively and require reconciliation.
+    "BROWSER_CONNECTION_FAILED",
+    "PARTNER_CENTER_TAB_AMBIGUOUS",
+    "HOLD_NO_MATCHING_PRODUCT_TAB",
+    "BROWSER_RUNTIME_MISSING",
+    "CDP_ENDPOINT_NOT_LOOPBACK",
+    "BROWSER_NOT_EDGE",
+})
+
+
 class JobLedger:
-    """SQLite idempotency ledger; attempted remote writes become UNKNOWN."""
+    """SQLite idempotency ledger with separate historical and remote-write counts."""
 
     def __init__(self, path: Path):
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -141,6 +154,36 @@ class JobLedger:
         if "package_file_name" not in columns:
             # Old cache rows lack the filename binding; they cannot prove identity.
             self.db.execute("ALTER TABLE uploads ADD COLUMN package_file_name TEXT NOT NULL DEFAULT ''")
+
+        # Additive migration: keep the original uploads rows and their attempts
+        # untouched. This companion table separates true remote-write reservations
+        # from legacy preflight-only failures which older versions counted.
+        self.db.execute("""CREATE TABLE IF NOT EXISTS upload_write_attempts (
+            job_key TEXT PRIMARY KEY,
+            remote_write_attempts INTEGER NOT NULL,
+            classification TEXT NOT NULL,
+            legacy_status TEXT NOT NULL DEFAULT '',
+            legacy_error_code TEXT NOT NULL DEFAULT '')""")
+        placeholders = ",".join("?" for _ in LEGACY_PREWRITE_FAILURE_CODES)
+        codes = tuple(sorted(LEGACY_PREWRITE_FAILURE_CODES))
+        self.db.execute(
+            f"""INSERT OR IGNORE INTO upload_write_attempts
+                (job_key, remote_write_attempts, classification, legacy_status, legacy_error_code)
+                SELECT job_key,
+                    CASE
+                        WHEN status = 'DRY_RUN' THEN 0
+                        WHEN status = 'FAILED' AND error_code IN ({placeholders}) THEN 0
+                        ELSE attempts
+                    END,
+                    CASE
+                        WHEN status = 'DRY_RUN' THEN 'LEGACY_DRY_RUN'
+                        WHEN status = 'FAILED' AND error_code IN ({placeholders}) THEN 'LEGACY_PREUPLOAD_FAILURE'
+                        ELSE 'LEGACY_CONSERVATIVE'
+                    END,
+                    status, error_code
+                FROM uploads""",
+            codes * 2,
+        )
 
     def close(self):
         self.db.close()
@@ -167,25 +210,46 @@ class JobLedger:
         key = self.key(job)
         row = self.db.execute("SELECT status,attempts FROM uploads WHERE job_key=?", (key,)).fetchone()
         if row:
-            if row[0] == "SUCCEEDED": return "DUPLICATE", row[1]
-            if row[0] == "DRY_RUN" and dry_run: return "DRY_RUN_ALREADY_DONE", row[1]
-            if row[0] in {"UPLOADING", "UNKNOWN"}: return "RECONCILE_REQUIRED", row[1]
-            attempts = int(row[1])
-            if row[0] == "DRY_RUN":
-                # A dry-run validates bytes but is not a remote write attempt.
-                # Reuse (or initialize) its row without consuming retry budget.
+            status, attempts = str(row[0]), int(row[1])
+            if status == "SUCCEEDED": return "DUPLICATE", attempts
+            if status == "DRY_RUN" and dry_run: return "DRY_RUN_ALREADY_DONE", attempts
+            if status in {"UPLOADING", "UNKNOWN"}: return "RECONCILE_REQUIRED", attempts
+            accounting = self.db.execute(
+                "SELECT remote_write_attempts FROM upload_write_attempts WHERE job_key=?", (key,)
+            ).fetchone()
+            # Rows created before the companion table appeared are conservatively
+            # charged their full historical count; do not silently zero them.
+            remote_attempts = int(accounting[0]) if accounting else attempts
+            if remote_attempts >= 3:
+                return "RETRY_LIMIT", attempts
+            if status == "DRY_RUN":
+                # Dry-run does not consume the historical count or write budget.
                 attempts = max(1, attempts)
-                self.db.execute("UPDATE uploads SET status='UPLOADING',attempts=?,error_code='' WHERE job_key=?", (attempts, key))
-                return "READY", attempts
-            if attempts >= 3: return "RETRY_LIMIT", attempts
-            self.db.execute("UPDATE uploads SET status='UPLOADING',attempts=?,error_code='' WHERE job_key=?", (attempts + 1, key))
-            return "READY", attempts + 1
+                self.db.execute("UPDATE uploads SET status='UPLOADING',attempts=?,error_code='' WHERE job_key=?",
+                                (attempts, key))
+            else:
+                attempts += 1
+                self.db.execute("UPDATE uploads SET status='UPLOADING',attempts=?,error_code='' WHERE job_key=?",
+                                (attempts, key))
+            self.db.execute(
+                "UPDATE upload_write_attempts SET remote_write_attempts=? WHERE job_key=?",
+                (remote_attempts + 1, key),
+            )
+            return "READY", attempts
+
         legacy = self.db.execute("SELECT status,attempts FROM uploads WHERE product_id=? AND submission_id=? AND sha256=? AND package_file_name='' ORDER BY attempts DESC LIMIT 1",
                                  (job.product_id, job.submission_id, job.sha256)).fetchone()
         if legacy and legacy[0] in {"SUCCEEDED", "UPLOADING", "UNKNOWN"}:
             return "RECONCILE_REQUIRED", int(legacy[1])
+        initial_remote_attempts = 0 if dry_run else 1
         self.db.execute("INSERT INTO uploads(job_key,product_id,submission_id,package_file_name,sha256,status,attempts) VALUES(?,?,?,?,?,?,1)",
                          (key, job.product_id, job.submission_id, job.file_name, job.sha256, "UPLOADING"))
+        self.db.execute(
+            """INSERT INTO upload_write_attempts
+               (job_key, remote_write_attempts, classification, legacy_status, legacy_error_code)
+               VALUES(?, ?, 'NEW_JOB', '', '')""",
+            (key, initial_remote_attempts),
+        )
         return "READY", 1
 
     def finish(self, job: VerifiedJob, status: str, *, error_code: str = "", receipt: dict[str, Any] | None = None):
