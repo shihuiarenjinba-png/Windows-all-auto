@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "pointer_version": 1,
+  "path": "ops/active_e2e_handoff_pointer_v1.json",
+  "repository": "shihuiarenjinba-png/Windows-all-auto",
+  "generated_at_utc": "2026-11-27T20:38:24Z",
+  "status": "ACTIVE",
+  "selection_policy": "VERIFIED_POINTER_REFERENCED_OVERLAY_ONLY",
+  "fallback_to_canonical_ledger": false,
+  "source_observation": {
+    "pr_number": 217,
+    "branch": "codex/36-pr216-state-correction-20261128-0132",
+    "head_sha": "57dade207470014edcfc2fc24f430d9b10a94826",
+    "exact_head_ci_run_id": 46035167037,
+    "exact_head_ci_conclusion": "success"
+  },
+  "active_snapshot": {
+    "observed_at_utc": "2026-11-27T20:38:24Z",
+    "overlay": {
+      "path": "ops/active_e2e_handoff_overlay_20261128_0538.json",
+      "git_blob_sha": "2128c84bc1d3d4a1e0f7eccb3b634f1fc79316b0"
+    },
+    "queue": {
+      "path": "ops/completion_rush_queue_20261128_0538.json",
+      "git_blob_sha": "b2e2c9194182f8ccaa0ce929c3a97b7225dc583e"
+    }
+  },
+  "canonical_ledger": {
+    "path": "ops/active_e2e_handoff.json",
+    "git_blob_sha": "5e764d88bcc7d5f101557dfb547cfab48d7d5145",
+    "bytes": 1976822,
+    "read_status": "EMPTY_CONTENT",
+    "rewritten": false
+  },
+  "legacy_embedded_pointer": {
+    "path": "ops/active_e2e_handoff.json",
+    "recorded_pr165_head_sha": "380d4818330688f47d3558217ed556868cf0b744",
+    "directly_resolved_pr165_head_sha": "07cb543816c7432edcf45465ae0763e16917aecc",
+    "status": "STALE_NOT_AUTHORITATIVE"
+  },
+  "safety": {
+    "real_msix": false,
+    "product_e2e_pass": false,
+    "store_submission_allowed": false,
+    "certification_allowed": false,
+    "publish_allowed": false,
+    "merge_allowed": false,
+    "force_push_allowed": false
+  }
+}
