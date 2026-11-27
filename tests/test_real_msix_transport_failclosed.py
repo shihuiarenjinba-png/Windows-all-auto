@@ -199,13 +199,17 @@ class CurrentLedgerGateTests(unittest.TestCase):
             self.assertEqual(item["hold_class"], "DELIVERY_HOLD")
             self.assertIsNone(item["package_version"])
             self.assertIs(item["real_msix"], False)
-            self.assertEqual(item["current_source_identity_binding_status"],
-                             "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE")
+            expected_binding = {
+                "Focus Session Desk": "STALE_HISTORICAL_SOURCE_MISMATCH",
+                "File Integrity Ledger": "NO_CURRENT_SOURCE_APPROVED_IDENTITY",
+            }[product]
+            self.assertEqual(item["current_source_identity_binding_status"], expected_binding)
+            self.assertEqual(item["store_assets_branch_head"], item["current_source_sha"])
             identity = {
                 "request_id": "ledger-fixture",
                 "source_sha": item["source_sha"],
                 "verified_source_sha": item["store_assets_branch_head"],
-                "expected_head_sha": item["source_sha"],
+                "expected_head_sha": item["current_source_sha"],
                 "package_version_gate": "HOLD",
             }
             result = authorize_transport(identity, {}, Path("unused.msix"), {}, None)

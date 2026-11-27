@@ -3,7 +3,7 @@ from pathlib import Path
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
-QUEUE = ROOT / "ops/completion_rush_queue_20261116.json"
+QUEUE = ROOT / "ops/completion_rush_queue_20261127_0731.json"
 CURRENT = ROOT / "ops/active_e2e_handoff_overlay_20261126_161044.json"
 HISTORICAL = ROOT / "ops/active_e2e_handoff_overlay_20261126_074400.json"
 PR165_HEAD = "84f9a3480e2df93f0d75bddc29fb8de47e4ec941"

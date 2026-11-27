@@ -3,82 +3,80 @@ from pathlib import Path
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
-OVERLAY = ROOT / "ops/active_e2e_handoff_overlay_20261126_203204.json"
-QUEUE = ROOT / "ops/completion_rush_queue_20261116.json"
+HISTORICAL = ROOT / "ops/active_e2e_handoff_overlay_20261126_203204.json"
+CURRENT = ROOT / "ops/active_e2e_handoff_overlay_20261127_0731.json"
+QUEUE = ROOT / "ops/completion_rush_queue_20261127_0731.json"
 
 
 class CurrentStatusReconciliation20261127Tests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.overlay = json.loads(OVERLAY.read_text(encoding="utf-8"))
+        cls.historical = json.loads(HISTORICAL.read_text(encoding="utf-8"))
+        cls.current = json.loads(CURRENT.read_text(encoding="utf-8"))
         cls.queue = json.loads(QUEUE.read_text(encoding="utf-8"))
-        cls.focus = cls.overlay["source_identity_version_reconciliation"]["focus_session_desk"]
-        cls.file = cls.overlay["source_identity_version_reconciliation"]["file_integrity_ledger"]
 
-    def test_focus_waits_for_user_identity_only_after_all_other_gates_pass(self):
-        f = self.focus
-        self.assertEqual(f["state"], "WAITING_USER_IDENTITY")
-        self.assertEqual(f["non_identity_prerequisites_status"], "PASS")
-        self.assertEqual(f["current_source"]["source_sha"], "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79")
-        self.assertEqual(f["historical_identity"]["source_sha"], "8b00bc4e90828c4282463826873aa8dfd2eb93f4")
-        self.assertFalse(f["historical_identity"]["current_source_reuse_allowed"])
-        self.assertEqual(f["current_source_request"]["artifact_id"], 15049692591)
-        self.assertEqual(f["current_source_request"]["source_branch_head_check"], "PASS")
-        self.assertEqual(f["current_source_exe"]["artifact_id"], 15083856249)
-        self.assertEqual(f["native_windows_qa"]["windows_gui_run_id"], 45866054492)
-        self.assertEqual(f["native_windows_qa"]["scenarios"]["corrupt_primary_valid_backup_restore_and_notice"], "PASS")
-        self.assertEqual(f["native_windows_qa"]["scenarios"]["invalid_duration_zero_controlled_error_and_state_unchanged"], "PASS")
-        self.assertTrue(f["store_assets"]["current_git_blob_sha_readback_matches"])
-        self.assertIsNone(f["package_version"])
-        self.assertFalse(f["real_msix"])
+    def test_previous_observation_is_preserved_as_history(self):
+        self.assertEqual(self.historical["observed_at_utc"], "2026-11-26T20:32:04Z")
+        self.assertEqual(self.historical["status"], "HOLD")
+        self.assertFalse(self.historical["e2e_pass"])
 
-    def test_file_integrity_waits_for_user_identity_after_visual_and_asset_map_pass(self):
-        f = self.file
-        self.assertEqual(f["state"], "WAITING_USER_IDENTITY")
-        self.assertEqual(f["non_identity_prerequisites_status"], "PASS")
-        self.assertEqual(f["current_source"]["source_sha"], "33d612be2774ac155ea3d85289ec5cb7981c81c1")
-        self.assertFalse(f["historical_identity"]["current_source_reuse_allowed"])
-        self.assertEqual(f["current_source_request"]["artifact_id"], 14934034365)
-        self.assertEqual(f["current_source_gui_artifact"]["artifact_id"], 14934752145)
-        self.assertEqual(f["current_source_gui_artifact"]["human_visual_review"], "PASS")
-        self.assertEqual(f["asset_mapping_qa"]["mapping_run_id"], 45747686529)
-        self.assertTrue(f["store_assets"]["current_git_blob_sha_readback_matches"])
-        self.assertIsNone(f["package_version"])
-        self.assertFalse(f["real_msix"])
+    def test_current_pr165_head_and_exact_ci_are_directly_reconciled(self):
+        pr = self.current["pr165"]
+        self.assertEqual(pr["head_sha"], "07cb543816c7432edcf45465ae0763e16917aecc")
+        self.assertEqual(pr["parent_sha"], "6afe5ec89a440880066bee43a61f596a5939761d")
+        self.assertEqual(pr["exact_head_ci_status"], "PASS_EXACT_HEAD_CI")
+        self.assertEqual([x["run_id"] for x in pr["exact_head_ci"]], [45899687528,45899687437,45899687545])
+        self.assertTrue(all(x["head_sha"] == pr["head_sha"] and x["conclusion"] == "success" for x in pr["exact_head_ci"]))
+        self.assertEqual(pr["product_e2e_status"], "HOLD")
+        self.assertFalse(pr["real_msix"])
 
-    def test_transport_ci_is_exact_head_but_not_product_e2e(self):
-        t = self.overlay["transport"]
-        self.assertEqual(t["pr161"]["head_sha"], "71d9c2125b6aed44a86ca1872d48ad19963f3e63")
-        self.assertEqual(t["pr165"]["head_sha"], "84f9a3480e2df93f0d75bddc29fb8de47e4ec941")
-        self.assertEqual(t["pr192"]["head_sha"], "792a6ab7bc1a5847c03ebf59e07354edb3d3afb0")
-        self.assertEqual(t["pr195"]["head_sha"], "e2851d5e755c439667faa5587eafdc7e4edac7ea")
-        self.assertEqual(t["pr195"]["exact_head_offline_qa_run_id"], 45870733361)
-        self.assertEqual(self.overlay["e2e_status"], "HOLD")
-        self.assertFalse(self.overlay["e2e_pass"])
-        self.assertFalse(self.overlay["downstream_receipts"]["real_msix"])
-        self.assertFalse(self.overlay["downstream_receipts"]["github_backlog_receipt"])
-        self.assertFalse(self.overlay["downstream_receipts"]["local_pull_receipt"])
-        self.assertFalse(self.overlay["downstream_receipts"]["local_checker_receipt"])
-        self.assertFalse(self.overlay["downstream_receipts"]["local_gui_install_receipt"])
+    def test_focus_and_file_are_bound_to_their_current_factory_heads(self):
+        focus = self.current["products"]["focus_session_desk"]
+        self.assertEqual(focus["current_source_sha"], "b6b69464a9c7450489338bc7542fd22cf190ed42")
+        self.assertEqual(focus["state"], "POST_IDENTITY_UPGRADE")
+        self.assertEqual(focus["current_source_request_status"], "STALE_SOURCE_MISMATCH__REGENERATION_REQUIRED")
+        self.assertEqual(focus["stale_source_request"]["source_sha"], "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79")
+        self.assertEqual(focus["identity"]["historical_source_sha"], "8b00bc4e90828c4282463826873aa8dfd2eb93f4")
+        self.assertFalse(focus["identity"]["current_source_reuse_allowed"])
+        self.assertIsNone(focus["package_version"])
+        self.assertFalse(focus["real_msix"])
 
-    def test_queue_points_to_current_overlay_and_keeps_store_gates_false(self):
-        self.assertEqual(self.queue["current_status_reconciliation_file"], "ops/active_e2e_handoff_overlay_20261126_203204.json")
-        self.assertEqual(self.queue["current_status_reconciliation_20261127_0532"]["focus_state"], "WAITING_USER_IDENTITY")
-        self.assertEqual(self.queue["current_status_reconciliation_20261127_0532"]["file_integrity_state"], "WAITING_USER_IDENTITY")
+        file_item = self.current["products"]["file_integrity_ledger"]
+        self.assertEqual(file_item["current_source_sha"], "33d612be2774ac155ea3d85289ec5cb7981c81c1")
+        self.assertEqual(file_item["state"], "WAITING_USER_IDENTITY")
+        self.assertEqual(file_item["current_source_request"]["request_id"], "app-file-integrity-ledger-33d612be2774")
+        self.assertFalse(file_item["identity"]["current_source_approved_identity_present"])
+        self.assertEqual(file_item["identity"]["historical_identity_source_sha"], "d1108d12f7d1697af30400f97c7db39cba5e6791")
+        self.assertIsNone(file_item["package_version"])
+        self.assertFalse(file_item["real_msix"])
+
+    def test_canonical_ledger_stale_pointer_is_explicit_and_not_rewritten(self):
+        ledger = self.current["canonical_ledger_reconciliation"]
+        self.assertEqual(ledger["blob_sha"], "5e764d88bcc7d5f101557dfb547cfab48d7d5145")
+        self.assertEqual(ledger["recorded_pr165_current_branch_head_sha"], "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23")
+        self.assertEqual(ledger["actual_pr165_head_sha"], "07cb543816c7432edcf45465ae0763e16917aecc")
+        self.assertTrue(ledger["mismatch"])
+        self.assertIn("intentionally not rewritten", ledger["resolution"])
+
+    def test_current_queue_points_to_current_overlay_and_restack_chain_is_green(self):
+        self.assertEqual(self.queue["current_status_reconciliation_file"], "ops/active_e2e_handoff_overlay_20261127_0731.json")
+        self.assertEqual(self.queue["generated_at"], "2026-11-26T22:31:21Z")
+        self.assertEqual([x["pr"] for x in self.queue["restack_chain_current_20261127_0731"]], [197,198,202,203,204])
+        self.assertTrue(all(x["ci_status"] == "PASS_EXACT_HEAD_CI" for x in self.queue["restack_chain_current_20261127_0731"]))
+        self.assertEqual(self.queue["status"], "HOLD")
         self.assertFalse(self.queue["e2e_pass"])
-        self.assertFalse(self.queue["store_submission_allowed"])
-        self.assertFalse(self.queue["certification_allowed"])
-        self.assertFalse(self.queue["publish_allowed"])
-        self.assertEqual(self.queue["store_upload_test_eligibility_current_20261127_0532"]["eligible_fresh_unsold_products"], 0)
 
-    def test_user_owned_identity_return_is_the_resume_trigger(self):
-        self.assertEqual(self.overlay["resume_trigger"]["owner"], "USER")
-        self.assertIn("authoritative Package Version", self.overlay["resume_trigger"]["required_return"])
-        self.assertFalse(self.overlay["safety"]["live_partner_center_write_allowed"])
-        self.assertFalse(self.overlay["safety"]["identity_write_allowed"])
-        self.assertFalse(self.overlay["safety"]["version_inference_allowed"])
-        self.assertFalse(self.overlay["safety"]["merge_allowed"])
-        self.assertFalse(self.overlay["safety"]["force_push_allowed"])
+    def test_all_downstream_and_store_authority_gates_remain_false(self):
+        for value in self.current["downstream_receipts"].values():
+            self.assertFalse(value)
+        self.assertEqual(self.current["store_upload_test_eligibility_current"]["eligible_fresh_unsold_products"], 0)
+        self.assertFalse(self.current["store_upload_test_eligibility_current"]["dry_run_started"])
+        self.assertFalse(self.current["store_upload_test_eligibility_current"]["live_started"])
+        self.assertFalse(self.current["safety"]["live_partner_center_write_allowed"])
+        self.assertFalse(self.current["safety"]["store_submission_allowed"])
+        self.assertFalse(self.current["safety"]["certification_allowed"])
+        self.assertFalse(self.current["safety"]["publish_allowed"])
+        self.assertEqual(self.current["local_code_sync_receipt_status"], "NOT_OBSERVED__CLOUD_PASS_ONLY")
 
 
 if __name__ == "__main__":

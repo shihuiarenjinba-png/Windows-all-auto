@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "record_type": "APPEND_ONLY_PRISM_CURRENT_SOURCE_CORRECTION",
+  "observed_on": "2026-11-27",
+  "repository": "shihuiarenjinba-png/Windows-all-auto",
+  "supersedes_prior_classification": "ops/active_e2e_handoff_overlay_20261127_0731.json#prism_source_conflict_current_20261127_0731",
+  "status": "HOLD",
+  "e2e_pass": false,
+  "correction": {
+    "previously_referenced_prefix": "4c22875c",
+    "previously_recorded_as": "USER_DECLARED_CURRENT_PRODUCT_SOURCE_PREFIX",
+    "verified_classification": "QA_TOOLING_COMMIT_NOT_PRODUCT_SOURCE",
+    "tooling_commit": {
+      "repository": "shihuiarenjinba-png/3d-game-factory",
+      "sha": "4c22875c5ed79d393516c6a7a95361b9e9ed1950",
+      "title": "Add fail-closed Prism revision package binding preflight (QA only)",
+      "changed_files": [
+        "tools/prism_revision_package_binding.py"
+      ],
+      "product_source": false
+    }
+  },
+  "current_product_source": {
+    "repository": "shihuiarenjinba-png/3d-game-factory",
+    "pr": 25,
+    "branch": "codex/prism-tower1-hud-clearance-fix-20261103",
+    "head_sha": "b03ce7b16c3f75c04fe20fdda224c45849eeba0d",
+    "request_id": "3d-prism-route-3d-b03ce7b16c3f",
+    "registration_route": "MSIX_OR_PWA_GAME",
+    "export": {
+      "workflow_run_id": 43794658086,
+      "conclusion": "success",
+      "artifact_id": 14797309778,
+      "artifact_name": "godot-3d-factory-export-evidence",
+      "artifact_bytes": 37795977,
+      "artifact_sha256": "e2573b9ab11afde6ab6ec7417c23438581620a08bb9dcff76d792a2b5592ccac",
+      "expires_at_utc": "2026-11-30T07:32:37Z",
+      "exe_bytes": 84214784,
+      "exe_sha256": "66b26ad96df7458ea917b632a73ac7c88bb058db24dbd11a457fd50435ab7b13",
+      "pck_bytes": 6987584,
+      "pck_sha256": "b7abc0f9caf2e505a1dcaf834b4cb897d8f00df4060c31708914e8bb4f3d5666",
+      "export_evidence_sha256": "442d2c9070e017adf1c0ceaa96ba607f470c0f147176671f8a844122aca4d5bd"
+    },
+    "approved_identity_file": {
+      "path": "products/prism-route-3d/store/approved-identity.json",
+      "file_present_on_current_pr25_head": true,
+      "blob_sha": "9b38b20527b81c85fd03b5373d4a8f8245047115",
+      "reviewed": true,
+      "source": "partner_center",
+      "request_id": "3d-prism-route-3d-15fdcb52e46e",
+      "source_sha": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
+      "verified_source_sha": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
+      "expected_head_sha": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
+      "store_id": "9N95J2T57B41",
+      "name": "OkinawaDesktopTools.PrismRoute3D",
+      "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+      "package_version_gate": "HOLD",
+      "version_field_present": false,
+      "signature_status": "PRE_IDENTITY_EXE_NOT_MSIX",
+      "current_source_binding_status": "HISTORICAL_SOURCE_MISMATCH",
+      "current_source_rebind": "PENDING_CURRENT_SOURCE_APPROVAL",
+      "old_identity_reuse_allowed": false
+    },
+    "package_version": null,
+    "real_msix": false,
+    "sale_ready": false,
+    "physical_windows_qa_status": "HOLD"
+  },
+  "independent_qa": {
+    "repository": "shihuiarenjinba-png/3d-build-qa",
+    "pr": 19,
+    "branch": "codex/prism-pr25-exact-pck-qa-20261106",
+    "current_head_sha": "9b90bfc9dfa6ded9699c3f22df45390be909dae8",
+    "exact_head_ci_status": "PASS_8_OF_8",
+    "exact_head_ci": [
+      {
+        "run_id": 45461731027,
+        "workflow": "Prism b03ce7 current-source custody fixture (not physical QA)",
+        "conclusion": "success"
+      },
+      {
+        "run_id": 45461731094,
+        "workflow": "Prism b03ce7 exact exported bytes (fail closed)",
+        "conclusion": "success"
+      },
+      {
+        "run_id": 45461731229,
+        "workflow": "Prism PR25 physical capture runner syntax (Windows CI only, not physical QA)",
+        "conclusion": "success"
+      },
+      {
+        "run_id": 45461731139,
+        "workflow": "Prism b03ce7 current PCK rendered smoke (not physical QA)",
+        "conclusion": "success"
+      },
+      {
+        "run_id": 45461731013,
+        "workflow": "Windows QA evidence contract",
+        "conclusion": "success"
+      },
+      {
+        "run_id": 45461731148,
+        "workflow": "Prism b03ce7 Mesa rendered PCK diagnostic (not physical QA)",
+        "conclusion": "success"
+      },
+      {
+        "run_id": 45461731469,
+        "workflow": "Prism PR25 physical evidence contract (QA only)",
+        "conclusion": "success"
+      },
+      {
+        "run_id": 45461731033,
+        "workflow": "Prism consumer real exported-PCK runtime (QA only)",
+        "conclusion": "success"
+      }
+    ],
+    "latest_handoff_artifact": {
+      "artifact_id": 14952074847,
+      "name": "prism-pr25-exact-binary-physical-qa-handoff-not-store",
+      "bytes": 129481721,
+      "sha256": "35ae3ea873e0b122fe2cb138a170cd233cf89c7c81e8fed4262139d366a4c4c6",
+      "expires_at_utc": "2026-12-01T18:39:16Z"
+    },
+    "physical_windows_sessions_completed": 0,
+    "physical_windows_sessions_required": 6,
+    "physical_screenshots_completed": 0,
+    "physical_screenshots_required": 36,
+    "physical_qa_status": "HOLD",
+    "cloud_ci_is_not_physical_qa": true
+  },
+  "product_gate": {
+    "current_source_identity_rebind": "PENDING_CURRENT_SOURCE_APPROVAL",
+    "authoritative_package_version": null,
+    "real_msix": false,
+    "signed_msix": false,
+    "physical_windows_qa": "0_OF_6_SESSIONS__0_OF_36_SCREENSHOTS",
+    "store_submission_allowed": false,
+    "certification_allowed": false,
+    "publish_allowed": false,
+    "sale_ready": false
+  },
+  "ownership": {
+    "current_source_and_identity_reconciliation": "36_READ_ONLY_ONLY",
+    "physical_windows_capture": "USER_OR_PHYSICAL_QA_OPERATOR",
+    "makeappx_capability_preflight": "24_LANE",
+    "product_source_and_identity_mutation_by_36": false
+  },
+  "next_action": "Use Factory PR25 source b03ce7b16c3f75c04fe20fdda224c45849eeba0d and request 3d-prism-route-3d-b03ce7b16c3f as the only current product tuple. Keep the 15fd Identity historical-only and Version HOLD. The 4c22875c commit is QA tooling, not product source. Preserve exact export artifact 14797309778 before its 2026-11-30T07:32:37Z expiry; do not silently rebuild from another source. Keep PR19 8/8 cloud CI separate from physical 0/6 and 0/36. No CAS, Version inference, MSIX build, Store submission or publish."
+}
