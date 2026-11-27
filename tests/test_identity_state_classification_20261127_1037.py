@@ -19,7 +19,7 @@ class CurrentIdentityStateClassificationTests(unittest.TestCase):
         self.assertEqual(p205["head_sha_before_append"],
                          "4f1ab065d291736017a40405cfb898fa203f69c8")
         self.assertEqual([x["run_id"] for x in p205["exact_head_ci"]],
-                         [45917965610, 45917965618, 45917965593])
+                         [45924297463, 45924297406, 45924297519])
         self.assertTrue(all(x["head_sha"] == p205["head_sha_before_append"]
                             and x["conclusion"] == "success"
                             for x in p205["exact_head_ci"]))
