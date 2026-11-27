@@ -199,6 +199,7 @@ def pull(target:Path)->dict:
                 if local_sha!=checksum or len(local_bytes)!=size:
                     raise ValueError("LOCAL_STAGED_BYTES_MISMATCH")
                 package_receipts.append({
+                    "product_type":result.get("product_type"),
                     "slug":slug,
                     "request_id":result.get("request_id"),
                     "source_sha":result["source_sha"],
