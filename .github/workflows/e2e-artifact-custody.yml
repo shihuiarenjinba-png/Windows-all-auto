@@ -7,6 +7,9 @@ on:
       - 'tests/test_github_artifact_custody.py'
       - 'tests/test_local_handoff_pull.py'
       - 'tests/test_github_artifact_redirect_security.py'
+      - 'ops/active_e2e_handoff_overlay_20261127_1500.json'
+      - 'ops/completion_rush_queue_20261127_1500.json'
+      - 'tests/test_current_e2e_handoff_reconciliation_20261127_1500.py'
       - '.github/workflows/windows-e2e-transport-regression.yml'
       - '.github/workflows/e2e-artifact-custody.yml'
   workflow_dispatch:
@@ -27,3 +30,5 @@ jobs:
           python -m unittest discover -s tests -p 'test_github_artifact_custody.py' -v
           python -m unittest discover -s tests -p 'test_local_handoff_pull.py' -v
           python -m unittest discover -s tests -p 'test_github_artifact_redirect_security.py' -v
+      - name: Current E2E handoff reconciliation regression
+        run: python -m unittest discover -s tests -p 'test_current_e2e_handoff_reconciliation_20261127_1500.py' -v
