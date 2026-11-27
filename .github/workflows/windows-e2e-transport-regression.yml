@@ -8,6 +8,9 @@ on:
       - 'tests/test_github_artifact_custody.py'
       - 'tests/test_local_handoff_pull.py'
       - 'tests/test_github_artifact_redirect_security.py'
+      - 'ops/active_e2e_handoff_overlay_20261127_1500.json'
+      - 'ops/completion_rush_queue_20261127_1500.json'
+      - 'tests/test_current_e2e_handoff_reconciliation_20261127_1500.py'
       - '.github/workflows/e2e-artifact-custody.yml'
       - '.github/workflows/windows-e2e-transport-regression.yml'
   workflow_dispatch:
@@ -25,3 +28,5 @@ jobs:
           python-version: '3.12'
       - name: Fail-closed transport regression
         run: python -m unittest discover -s tests -p 'test_real_msix_transport_failclosed.py' -v
+      - name: Current E2E handoff reconciliation regression
+        run: python -m unittest discover -s tests -p 'test_current_e2e_handoff_reconciliation_20261127_1500.py' -v
