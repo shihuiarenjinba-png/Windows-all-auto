@@ -42,7 +42,7 @@ class CurrentTransportRestack20261126Tests(unittest.TestCase):
         self.assertEqual(self.current["status"], "HOLD")
         self.assertIs(self.current["e2e_pass"], False)
         for field in ("real_msix", "github_backlog_receipt", "local_pull_receipt",
-                      "local_checker_receipt", "local_gui_install_receipt"):
+                      "windows_checker_receipt", "local_gui_install_receipt"):
             self.assertIs(self.current["downstream_receipts"][field], False)
 
     def test_focus_and_file_current_source_gates_remain_fail_closed(self):
