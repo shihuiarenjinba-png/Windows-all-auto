@@ -327,10 +327,13 @@ def verify_queue_artifact_custody(expected, local_artifact, fetch_json, fetch_by
                 if local_folder.is_symlink() or not local_folder.is_dir():
                     return hold("LOCAL_PACKAGE_BUNDLE_MISSING")
                 children = list(local_folder.iterdir())
+                child_names = {p.name for p in children}
+                receipt_names = {"transport_receipt.json", "github-custody.json", "approved-identity.json"}
+                present_receipts = child_names & receipt_names
                 if (any(p.is_symlink() or not p.is_file() for p in children)
-                        or not {"handoff.json", "package.msix"}.issubset({p.name for p in children})
-                        or not {p.name for p in children}.issubset(
-                            {"handoff.json", "package.msix", "transport_receipt.json", "github-custody.json"})):
+                        or not {"handoff.json", "package.msix"}.issubset(child_names)
+                        or not child_names.issubset({"handoff.json", "package.msix"} | receipt_names)
+                        or (present_receipts and present_receipts != receipt_names)):
                     return hold("LOCAL_PACKAGE_BUNDLE_INVALID")
                 local_package_sha = None
                 local_package_bytes = None
@@ -343,6 +346,8 @@ def verify_queue_artifact_custody(expected, local_artifact, fetch_json, fetch_by
                         return hold("TRANSPORT_RECEIPT_OVERSIZED")
                     if child.name == "github-custody.json" and child.stat().st_size > 16 * 1024:
                         return hold("CUSTODY_RECEIPT_OVERSIZED")
+                    if child.name == "approved-identity.json" and child.stat().st_size > 32 * 1024:
+                        return hold("APPROVED_IDENTITY_OVERSIZED")
                     archive_name = "packages/{}/{}".format(folder, child.name)
                     if archive_name not in files:
                         return hold("ARTIFACT_PACKAGE_FILE_MISSING")
