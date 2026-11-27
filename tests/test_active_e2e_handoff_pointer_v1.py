@@ -6,6 +6,7 @@ from pathlib import Path
 
 from all_auto.active_handoff_pointer import (
     ActiveHandoffPointerError,
+    git_blob_sha1,
     load_active_handoff_pointer,
 )
 
@@ -14,6 +15,9 @@ POINTER_PATH = "ops/active_e2e_handoff_pointer_v1.json"
 
 
 class ActiveHandoffPointerV1Tests(unittest.TestCase):
+    def test_git_blob_sha_is_stable_across_windows_crlf_checkout(self):
+        self.assertEqual(git_blob_sha1(b"one\ntwo\n"), git_blob_sha1(b"one\r\ntwo\r\n"))
+
     def _copy_pointer_snapshot(self, destination: Path) -> None:
         pointer = json.loads((ROOT / POINTER_PATH).read_text(encoding="utf-8"))
         overlay_path = pointer["active_snapshot"]["overlay"]["path"]

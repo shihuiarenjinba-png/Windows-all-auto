@@ -17,8 +17,11 @@ def _fail(reason: str) -> None:
 
 
 def git_blob_sha1(data: bytes) -> str:
-    header = b"blob " + str(len(data)).encode("ascii") + b"\0"
-    return hashlib.sha1(header + data).hexdigest()
+    # Git's text checkout may materialize LF blobs as CRLF on Windows.
+    # Normalize only CRLF pairs so the digest remains the repository blob SHA.
+    canonical = data.replace(b"\r\n", b"\n")
+    header = b"blob " + str(len(canonical)).encode("ascii") + b"\0"
+    return hashlib.sha1(header + canonical).hexdigest()
 
 
 def _read_repo_file(root: Path, relative_path: Any) -> bytes:
