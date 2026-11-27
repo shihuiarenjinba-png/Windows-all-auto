@@ -1,0 +1,352 @@
+{
+  "schema_version": 1,
+  "path": "ops/active_e2e_handoff_overlay_20261128_0025.json",
+  "observed_at_utc": "2026-11-27T15:25:41Z",
+  "record_type": "APPEND_ONLY_CURRENT_EXECUTION_RECONCILIATION",
+  "repository": "shihuiarenjinba-png/Windows-all-auto",
+  "reconciles_against": [
+    "ops/active_e2e_handoff_overlay_20261127_1641.json",
+    "ops/completion_rush_queue_20261127_1641.json",
+    "PR #165 live HEAD 07cb543816c7432edcf45465ae0763e16917aecc",
+    "PR #161 live HEAD 71d9c2125b6aed44a86ca1872d48ad19963f3e63",
+    "PR #171 live HEAD 764721021f13be96364529650b44fb439770bac9",
+    "PR #197 live HEAD 1f106f0fffe871bf82a2ae3ceeb04eaa8ab75988",
+    "PR #214 live HEAD ab27a30f6ebeb496b346ff6467b4c018be527be3",
+    "PR #215 live HEAD ffcb416493fe4ec41779ae65b2274551c2a3c3eb"
+  ],
+  "status": "HOLD",
+  "e2e_pass": false,
+  "pr165": {
+    "number": 165,
+    "state": "OPEN",
+    "branch": "codex/e2e-artifact-custody-20261114",
+    "head_sha": "07cb543816c7432edcf45465ae0763e16917aecc",
+    "parent_sha": "6afe5ec89a440880066bee43a61f596a5939761d",
+    "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
+    "exact_head_ci": [
+      {
+        "run_id": 45899687437,
+        "workflow": "Windows E2E transport fail-closed regression",
+        "head_sha": "07cb543816c7432edcf45465ae0763e16917aecc",
+        "conclusion": "success"
+      },
+      {
+        "run_id": 45899687528,
+        "workflow": "GitHub artifact custody fail-closed regression",
+        "head_sha": "07cb543816c7432edcf45465ae0763e16917aecc",
+        "conclusion": "success"
+      },
+      {
+        "run_id": 45899687545,
+        "workflow": "Windows-all-auto Offline QA",
+        "head_sha": "07cb543816c7432edcf45465ae0763e16917aecc",
+        "conclusion": "success"
+      }
+    ],
+    "repository_ci_is_not_product_e2e": true,
+    "product_e2e_status": "HOLD",
+    "real_msix": false,
+    "github_backlog_receipt": false,
+    "local_pull_receipt": false,
+    "local_checker_receipt": false,
+    "local_gui_install_receipt": false
+  },
+  "pr161": {
+    "number": 161,
+    "head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
+    "exact_head_ci": [
+      {
+        "run_id": 43403424936,
+        "event": "push",
+        "head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
+        "conclusion": "success",
+        "workflow": "Windows-all-auto Offline QA"
+      },
+      {
+        "run_id": 42712757936,
+        "event": "pull_request",
+        "head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
+        "conclusion": "success",
+        "workflow": "Windows-all-auto Offline QA"
+      }
+    ],
+    "scope": "Offline QA only; not product E2E"
+  },
+  "pr171": {
+    "number": 171,
+    "head_sha": "764721021f13be96364529650b44fb439770bac9",
+    "exact_head_ci": [
+      {
+        "run_id": 44437197470,
+        "event": "pull_request",
+        "head_sha": "764721021f13be96364529650b44fb439770bac9",
+        "conclusion": "success",
+        "workflow": "Windows-all-auto Offline QA"
+      },
+      {
+        "run_id": 44437190317,
+        "event": "push",
+        "head_sha": "764721021f13be96364529650b44fb439770bac9",
+        "conclusion": "success",
+        "workflow": "Windows-all-auto Offline QA"
+      }
+    ],
+    "store_upload_bridge_present": true,
+    "windows_automator_pin": {
+      "repository": "shihuiarenjinba-png/Windows-Automator",
+      "branch": "codex/msix-commercial-contract-20261115",
+      "commit_sha": "d3b8ed4ae7762a69d3fe2a90b64aa86ee938259b",
+      "revalidated_this_run": false
+    },
+    "eligible_fresh_unsold_products": 0,
+    "dry_run_started": false,
+    "live_started": false
+  },
+  "pr197": {
+    "number": 197,
+    "head_sha": "1f106f0fffe871bf82a2ae3ceeb04eaa8ab75988",
+    "base_pr165_head_sha": "07cb543816c7432edcf45465ae0763e16917aecc",
+    "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
+    "exact_head_ci": [
+      {
+        "run_id": 45941584857,
+        "workflow": "Windows E2E transport fail-closed regression",
+        "head_sha": "1f106f0fffe871bf82a2ae3ceeb04eaa8ab75988",
+        "conclusion": "success"
+      },
+      {
+        "run_id": 45941584802,
+        "workflow": "GitHub artifact custody fail-closed regression",
+        "head_sha": "1f106f0fffe871bf82a2ae3ceeb04eaa8ab75988",
+        "conclusion": "success"
+      },
+      {
+        "run_id": 45941584807,
+        "workflow": "Windows-all-auto Offline QA",
+        "head_sha": "1f106f0fffe871bf82a2ae3ceeb04eaa8ab75988",
+        "conclusion": "success"
+      },
+      {
+        "run_id": 45961473995,
+        "workflow": "Windows-all-auto Offline QA",
+        "head_sha": "1f106f0fffe871bf82a2ae3ceeb04eaa8ab75988",
+        "conclusion": "success"
+      }
+    ],
+    "local_artifact_custody": "IMPLEMENTED_CONTRACT_CI_PASS",
+    "local_pull": "IMPLEMENTED_NOT_EXECUTED_WITH_REAL_PRODUCT_MSIX",
+    "local_checker": "FAIL_CLOSED_RECEIPT_GATE_IMPLEMENTED",
+    "product_code_changed": false
+  },
+  "pr214": {
+    "number": 214,
+    "head_sha": "ab27a30f6ebeb496b346ff6467b4c018be527be3",
+    "base_pr197_head_sha": "1f106f0fffe871bf82a2ae3ceeb04eaa8ab75988",
+    "exact_head_ci_status": "PASS_OFFLINE_QA",
+    "exact_head_ci": [
+      {
+        "run_id": 46022806440,
+        "workflow": "Windows-all-auto Offline QA",
+        "head_sha": "ab27a30f6ebeb496b346ff6467b4c018be527be3",
+        "conclusion": "success"
+      }
+    ],
+    "canonical_ledger_rewrite": false
+  },
+  "pr215": {
+    "number": 215,
+    "state": "OPEN_DRAFT",
+    "head_sha": "ffcb416493fe4ec41779ae65b2274551c2a3c3eb",
+    "base_pr214_head_sha": "ab27a30f6ebeb496b346ff6467b4c018be527be3",
+    "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
+    "exact_head_ci": [
+      {
+        "run_id": 46023263708,
+        "workflow": "Windows E2E transport fail-closed regression",
+        "head_sha": "ffcb416493fe4ec41779ae65b2274551c2a3c3eb",
+        "conclusion": "success"
+      },
+      {
+        "run_id": 46023263760,
+        "workflow": "GitHub artifact custody fail-closed regression",
+        "head_sha": "ffcb416493fe4ec41779ae65b2274551c2a3c3eb",
+        "conclusion": "success"
+      },
+      {
+        "run_id": 46023263941,
+        "workflow": "Windows-all-auto Offline QA",
+        "head_sha": "ffcb416493fe4ec41779ae65b2274551c2a3c3eb",
+        "conclusion": "success"
+      },
+      {
+        "run_id": 46023253792,
+        "event": "push",
+        "workflow": "Windows-all-auto Offline QA",
+        "head_sha": "ffcb416493fe4ec41779ae65b2274551c2a3c3eb",
+        "conclusion": "success"
+      }
+    ],
+    "integration_fixture": {
+      "marker": "QA_FIXTURE_ONLY_NOT_PRODUCT",
+      "path": "verify_queue_artifact_custody -> local_handoff_pull.pull -> local_checker_queue.check_local_queue",
+      "synthetic_package": true,
+      "synthetic_identity_and_version": true,
+      "synthetic_store_id_is_claim_only": true,
+      "checker_verdict": "NEEDS_REVIEW",
+      "result_status": "HOLD",
+      "e2e_pass": false,
+      "local_gui_qa": "NOT_RUN",
+      "submitted_to_store": 0,
+      "regressions": [
+        "exact run HEAD and archive digest",
+        "package SHA and local custody receipt",
+        "idempotent replay without duplicate package or receipt overwrite",
+        "wrong run HEAD rejected before staging",
+        "archive digest mismatch rejected before staging",
+        "partial approved-Identity receipt trio rejected before staging"
+      ],
+      "real_product_msix": false,
+      "physical_local_windows_pull": false,
+      "trusted_windows_checker": false,
+      "product_gui_install": false,
+      "product_e2e": false
+    }
+  },
+  "products": {
+    "focus_session_desk": {
+      "lane": "APP",
+      "current_source_pr": 94,
+      "current_source_sha": "b6b69464a9c7450489338bc7542fd22cf190ed42",
+      "current_source_branch": "codex/focus-store-assets-gate-20261118",
+      "hold_class": "DELIVERY_HOLD",
+      "functional_hold": false,
+      "product_frozen_for_package": true,
+      "approved_identity_file_present": true,
+      "approved_identity_blob_sha": "00c56e85ec7590783284e372ba100a3127614971",
+      "approved_identity_source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+      "approved_identity_verified_source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+      "approved_identity_expected_head_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+      "approved_identity_package_version_gate": "HOLD",
+      "approved_identity_version_field_present": false,
+      "current_identity_binding": "STALE_HISTORICAL_SOURCE_MISMATCH_NOT_REUSABLE",
+      "current_request": {
+        "request_id": "app-focus-session-desk-b6b69464a9c7",
+        "source_sha": "b6b69464a9c7450489338bc7542fd22cf190ed42",
+        "run_id": 45925933012,
+        "artifact_id": 15166202971,
+        "artifact_sha256": "8f1862039297711a68bc33e8e25bea8cfc85f9926b269f0b2136bfa9986b503a",
+        "request_sha256": "09f730c785d242a3e7ef3f827593468950b77ce67ecbc3f7e4ede1357d0bb186",
+        "source_head_verification": "VERIFIED",
+        "status": "DRY_RUN",
+        "submitted": false,
+        "official_identity_status": "UNVERIFIED",
+        "package_version": null,
+        "package_status": "NOT_BUILT",
+        "github_return_status": "NOT_APPLIED"
+      },
+      "msix_export": {
+        "run_id": 45895944516,
+        "head_sha": "b6b69464a9c7450489338bc7542fd22cf190ed42",
+        "conclusion": "failure",
+        "failed_step": "Build MSIX on Windows with approved package identity",
+        "exact_reason": "MSIX_BUILD_HOLD: Missing verified version",
+        "artifact_created": false
+      },
+      "store_assets": {
+        "store_logo_present": true,
+        "square150_present": true,
+        "square44_present": true,
+        "owner": "00",
+        "regeneration_by_36": false
+      },
+      "sale_decision": "DO_NOT_SELL_BELOW_80",
+      "quality_score": 54,
+      "real_msix": false
+    },
+    "file_integrity_ledger": {
+      "lane": "APP",
+      "current_source_pr": 115,
+      "current_source_sha": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
+      "current_source_branch": "codex/integrity-pr95-source-request-integration-20261125",
+      "hold_class": "DELIVERY_HOLD",
+      "functional_hold": false,
+      "product_frozen_for_package": true,
+      "approved_identity_file_present": false,
+      "historical_identity_source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
+      "current_identity_binding": "NO_CURRENT_SOURCE_APPROVED_IDENTITY",
+      "current_request": {
+        "request_id": "app-file-integrity-ledger-33d612be2774",
+        "source_sha": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
+        "run_id": 45422895649,
+        "artifact_id": 14934034365,
+        "artifact_sha256": "697528b3b0769e3962eebfa0efcdcb026618cd378d97fc60c4f234017882527e",
+        "request_sha256": "dc477b03dd8eb024dd4145fb56cace5d57531a9ae3bbba74a487631f823b2557",
+        "source_head_verification": "VERIFIED",
+        "status": "DRY_RUN",
+        "submitted": false,
+        "official_identity_status": "UNVERIFIED",
+        "package_version": null,
+        "package_status": "NOT_BUILT",
+        "github_return_status": "NOT_APPLIED"
+      },
+      "msix_export": {
+        "run_id": 45422811552,
+        "head_sha": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
+        "conclusion": "success",
+        "selection_hold_reason": "MSIX_SELECTION_HOLD: approved Identity absent; do not invent Store IDs",
+        "build_steps_skipped": true,
+        "artifact_created": false
+      },
+      "store_assets": {
+        "store_logo_present": true,
+        "square150_present": true,
+        "square44_present": true,
+        "owner": "00",
+        "regeneration_by_36": false,
+        "human_visual_review": "PASS"
+      },
+      "real_msix": false
+    }
+  },
+  "canonical_ledger_reconciliation": {
+    "path": "ops/active_e2e_handoff.json",
+    "blob_sha": "5e764d88bcc7d5f101557dfb547cfab48d7d5145",
+    "bytes": 1976822,
+    "current_fetch_status": "EMPTY_CONTENT",
+    "full_content_read_status": "NOT_VERIFIABLE_IN_THIS_RUN",
+    "recorded_pr165_latest_live_head_sha": "380d4818330688f47d3558217ed556868cf0b744",
+    "actual_pr165_head_sha": "07cb543816c7432edcf45465ae0763e16917aecc",
+    "stale": true,
+    "rewritten": false,
+    "resolution": "Preserve canonical ledger; this run adds an append-only current evidence overlay because the 1,976,822-byte canonical blob again returned empty content."
+  },
+  "local_code_sync": {
+    "status": "NOT_OBSERVED__CLOUD_PASS_ONLY",
+    "durable_receipt_present": false,
+    "physical_user_windows_session_available": false,
+    "powershell_receipt": false,
+    "task_scheduler_receipt": false,
+    "first_run_receipt": null,
+    "idempotent_reuse_receipt": null,
+    "source_ref_observation_test_present": true
+  },
+  "store_upload_test_eligibility": {
+    "eligible_fresh_unsold_products": 0,
+    "status": "NOT_RUN_NO_PRODUCT_MEETS_ALL_GATES",
+    "dry_run_started": false,
+    "live_started": false
+  },
+  "e2e_status": "HOLD",
+  "real_msix": false,
+  "github_backlog_receipt": false,
+  "local_pull_receipt": false,
+  "local_checker_receipt": false,
+  "local_gui_install_receipt": false,
+  "store_submission_allowed": false,
+  "certification_allowed": false,
+  "publish_allowed": false,
+  "merge_allowed": false,
+  "force_push_allowed": false,
+  "product_repositories_12_and_24_modified": false,
+  "next_action": "WAIT_FOR_READ_ONLY_OFFICIAL_CURRENT_SOURCE_IDENTITY_AND_AUTHORITATIVE_PACKAGE_VERSION_FOR_FOCUS_PR94_SOURCE_B6B69464_REQUEST_APP_FOCUS_SESSION_DESK_B6B69464A9C7; THEN RECHECK_SOURCE_AND_BUILD_REAL_MSIX. FILE_PR115_FOLLOWS_WITH_CURRENT_SOURCE_IDENTITY_AND_VERSION. DO_NOT_REUSE_HISTORICAL_IDENTITY_OR_INFER_VERSION."
+}
