@@ -209,7 +209,7 @@ class PartnerCenterBrowserPort:
 
         def has_product_segment(value: Any) -> bool:
             segments = [
-                re.sub(r"\\s+", " ", part).strip()
+                re.sub(r"\s+", " ", part).strip()
                 for part in re.split(r"[|｜]", str(value))
             ]
             return product_name in segments
