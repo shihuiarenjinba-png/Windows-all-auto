@@ -1,0 +1,137 @@
+{
+  "schema_version": "1.0",
+  "path": "ops/completion_rush_queue_20261127_1239.json",
+  "generated_at_utc": "2026-11-27T03:39:35Z",
+  "policy": "COMPLETION_RUSH_EXISTING_PRODUCTS_ONLY",
+  "supersedes": "ops/completion_rush_queue_20261127_0731.json",
+  "source_observation": "ops/active_e2e_handoff_overlay_20261127_1239.json",
+  "new_product_generation_allowed": false,
+  "rules": {
+    "functional_hold": "Only fix evidenced functional or safety defects in an existing product.",
+    "delivery_hold": "Do not add features; advance exact current-source Identity/Version, real package, custody, backlog, local pull, checker and Windows QA.",
+    "freeze_for_package": "Focus, File Integrity and Prism remain feature-frozen while delivery gates are unresolved.",
+    "never_guess": [
+      "Identity",
+      "Store ID",
+      "Publisher",
+      "PFN",
+      "SID",
+      "Package Version"
+    ],
+    "never_reuse_historical_identity": true
+  },
+  "priority": [
+    {
+      "rank": 1,
+      "product": "Focus Session Desk",
+      "lane": "APP",
+      "source_pr": 94,
+      "current_source_sha": "b6b69464a9c7450489338bc7542fd22cf190ed42",
+      "state": "PRE_IDENTITY_FIX_REQUIRED",
+      "hold_class": "DELIVERY_HOLD",
+      "functional_hold": false,
+      "product_frozen_for_package": true,
+      "non_identity_pre_identity_blocker_count": 1,
+      "blocker": "CURRENT_HEAD_DRY_RUN_REQUEST_NOT_OBSERVED",
+      "expected_request_id": "app-focus-session-desk-b6b69464a9c7",
+      "owner": "00",
+      "package_version": null,
+      "real_msix": false
+    },
+    {
+      "rank": 2,
+      "product": "File Integrity Ledger",
+      "lane": "APP",
+      "source_pr": 115,
+      "current_source_sha": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
+      "state": "WAITING_USER_IDENTITY",
+      "hold_class": "DELIVERY_HOLD",
+      "functional_hold": false,
+      "product_frozen_for_package": true,
+      "non_identity_pre_identity_blocker_count": 0,
+      "current_request_id": "app-file-integrity-ledger-33d612be2774",
+      "current_request_status": "DRY_RUN__SOURCE_VERIFIED",
+      "post_identity_delivery_label": "LOCAL_WINDOWS_BUILD_NOT_IMPLEMENTED",
+      "post_identity_delivery_label_is_pre_identity_blocker": false,
+      "package_version": null,
+      "real_msix": false
+    },
+    {
+      "rank": 3,
+      "product": "Prism Route 3D",
+      "lane": "3D",
+      "source_pr": 25,
+      "current_source_sha": "b03ce7b16c3f75c04fe20fdda224c45849eeba0d",
+      "current_request_id": "3d-prism-route-3d-b03ce7b16c3f",
+      "user_declared_4c_prefix_is_qa_tooling_not_product_source": true,
+      "state": "WAITING_USER_IDENTITY",
+      "hold_class": "DELIVERY_AND_PHYSICAL_QA_HOLD",
+      "functional_hold": false,
+      "product_frozen_for_package": true,
+      "non_identity_pre_identity_blocker_count": 0,
+      "physical_windows_sessions": "0/6",
+      "physical_screenshots": "0/36",
+      "package_version": null,
+      "real_msix": false
+    },
+    {
+      "rank": 4,
+      "product": "Signal Sprint",
+      "lane": "GAME",
+      "current_source_sha": "1a349faa41663c417c40710140a4d50c79b62b78",
+      "current_request_id": "game-signal-sprint-1a349faa41663c417c40710140a4d50c79b62b78",
+      "identity_state": "USER_IDENTITY_RECEIVED_REFERENCE_ONLY",
+      "state": "GDK_CONTRACT_HOLD",
+      "hold_class": "FUNCTIONAL_QA_THEN_DELIVERY_HOLD",
+      "functional_hold": true,
+      "product_frozen_for_package": false,
+      "registration_type": "GDK_GAME",
+      "route": "GDK_GAME",
+      "request_dry_run": true,
+      "cas_applied": false,
+      "gdk_sdk_status": "HOLD_GDK_SDK_ROOT_NOT_FOUND",
+      "physical_windows_uia_pass": false,
+      "real_msixvc": false,
+      "ordinary_msix_allowed": false,
+      "package_version": null
+    }
+  ],
+  "app_cohort_summary": {
+    "planned_products": 5,
+    "historically_generated_products": 4,
+    "current_source_identity_received": 0,
+    "generated_products": [
+      "Focus Session Desk",
+      "File Integrity Ledger",
+      "Offline Image Inventory Desk",
+      "Offline Text Diff Desk"
+    ],
+    "candidate_only": [
+      "Offline Notes Canary"
+    ],
+    "no_sixth_product": true,
+    "image_inventory_artifact_currently_available": false,
+    "text_diff_artifact_currently_available": false,
+    "image_inventory_gui_verified": false,
+    "text_diff_gui_verified": false
+  },
+  "downstream": {
+    "first_unconnected_interval": "BLOCKED_BEFORE_REAL_MSIX_BUILD",
+    "real_product_msix": false,
+    "github_backlog_receipt": false,
+    "local_pull_receipt": false,
+    "windows_checker_receipt": false,
+    "local_gui_install_receipt": false,
+    "product_e2e_pass": false,
+    "status": "HOLD"
+  },
+  "store_safety": {
+    "eligible_fresh_unsold_products": 0,
+    "dry_run_started": false,
+    "live_started": false,
+    "store_submission_allowed": false,
+    "certification_allowed": false,
+    "publish_allowed": false
+  },
+  "next_action": "Focus first: wait for owner 00's DRY_RUN request bound to exact b6 source. File and Prism are waiting for official current-source Identity and authoritative Version. Signal stays on GDK_GAME only. Do not build a real package or advance local QA until source-bound Identity and Version are authoritative."
+}
