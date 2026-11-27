@@ -19,7 +19,7 @@ class CompletionRushQueueTests(unittest.TestCase):
         items = {x["product"]: x for x in self.data["priority"]}
         for name in ("Focus Session Desk", "File Integrity Ledger"):
             row = items[name]
-            self.assertEqual(row["state"], "POST_IDENTITY_UPGRADE")
+            self.assertEqual(row["state"], "WAITING_USER_IDENTITY")
             self.assertEqual(row["hold_class"], "DELIVERY_HOLD")
             self.assertFalse(row["functional_hold"])
             self.assertTrue(row["product_frozen_for_package"])
@@ -32,9 +32,18 @@ class CompletionRushQueueTests(unittest.TestCase):
     def test_focus_identity_is_not_reused_for_current_source(self):
         row = next(x for x in self.data["priority"] if x["product"] == "Focus Session Desk")
         self.assertEqual(row["source_sha"], "8b00bc4e90828c4282463826873aa8dfd2eb93f4")
-        self.assertEqual(row["current_source_sha"], "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79")
+        self.assertEqual(row["current_source_sha"], "b6b69464a9c7450489338bc7542fd22cf190ed42")
         self.assertEqual(row["current_source_identity_binding_status"], "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE")
-        self.assertEqual(row["current_source_request_status"], "GENERATED__DRY_RUN_ARTIFACT_VERIFIED__IDENTITY_READBACK_PENDING")
+        self.assertEqual(row["current_source_request_status"], "DRY_RUN__STALE_AFTER_SOURCE_HEAD_ADVANCED")
+        self.assertEqual(row["current_source_request"]["source_sha"], "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79")
+        self.assertFalse(row["current_source_request_matches_current_head"])
+        self.assertEqual(row["current_source_compare"]["ahead_by"], 4)
+        self.assertFalse(row["current_source_compare"]["product_code_changed"])
+        self.assertEqual(row["latest_native_windows_gui"]["head_sha"], "b6b69464a9c7450489338bc7542fd22cf190ed42")
+        self.assertEqual(row["latest_native_windows_gui"]["run_id"], 45895951025)
+        self.assertEqual(row["latest_native_windows_gui"]["artifact_id"], 15153413358)
+        self.assertTrue(row["latest_native_windows_gui"]["human_visual_review_required"])
+        self.assertEqual(row["latest_native_windows_gui"]["owner_visual_signoff_status"], "PENDING")
         self.assertEqual(row["package_version_status"], "AUTHORITATIVE_VALUE_REQUIRED")
         self.assertEqual(row["store_assets_evidence"]["native_exe_gui"]["run_id"], 45234786152)
         self.assertEqual(row["store_assets_evidence"]["native_exe_gui"]["visual_review_status"],
@@ -132,7 +141,7 @@ class CompletionRushQueueTests(unittest.TestCase):
         self.assertFalse(live["product_code_changed"])
         self.assertFalse(live["e2e_pass"])
         self.assertEqual(self.data["pr165_current_branch_head_ci_run_ids"], [45738280697, 45738280673, 45738280653])
-        self.assertEqual(self.data["generated_at"], "2026-11-26T16:39:37Z")
+        self.assertEqual(self.data["generated_at"], "2026-11-26T20:32:04Z")
         self.assertEqual(self.data["pr165_current_branch_head_observed_at_utc"], "2026-11-26T01:50:00Z")
         self.assertEqual(self.data["pr165_current_branch_head_snapshot_commit_ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual(self.data["pr165_live_branch_head_observation_20261126_latest"]["head_sha"], "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23")
