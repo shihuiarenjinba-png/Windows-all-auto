@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "record_type": "APPEND_ONLY_CURRENT_PRODUCT_IDENTITY_STATE_CLASSIFICATION",
-  "observed_at_utc": "2026-11-27T01:37:07Z",
+  "observed_at_utc": "2026-11-27T01:45:00Z",
   "repository": "shihuiarenjinba-png/Windows-all-auto",
   "status": "HOLD",
   "e2e_pass": false,
@@ -9,8 +9,8 @@
     "pr205": {
       "number": 205,
       "branch": "codex/36-current-source-ledger-reconcile-20261127-0731",
-      "head_sha_before_append": "490e4533c35740f9eb6d9695bab860895630521e",
-      "parent_sha": "de8f4526417e42ec378b7abd2a8a6f91a4361660",
+      "head_sha_before_append": "4f1ab065d291736017a40405cfb898fa203f69c8",
+      "parent_sha": "68ac2db5d9f85311f1e26bde07eb09c1a8c9f422",
       "latest_commit_scope": "TEST_ONLY__NO_PRODUCT_OR_LEDGER_CODE_CHANGED",
       "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
       "exact_head_ci": [
@@ -434,5 +434,14 @@
     "force_push_allowed": false,
     "pr12_or_pr24_repo_touched": false
   },
-  "next_action": "Keep File Integrity Ledger in WAITING_USER_IDENTITY because its exact-current-source request, GUI, visual review, PNG and staging-map preflight are complete; obtain the official current-source approved Identity and authoritative Package Version. Then run the existing gated Windows build and continue real MSIX custody → backlog → local pull → checker → GUI/install. Keep Focus PRE_IDENTITY_FIX_REQUIRED until owner 00 produces the exact b6 request artifact. Keep Prism PRE_IDENTITY_FIX_REQUIRED against current Factory PR25 source b03; 4c is QA tooling and 15fd Identity is historical-only. No Store write, CAS, Version inference, merge, main/release write or force push."
+  "next_action": "Keep File Integrity Ledger in WAITING_USER_IDENTITY because its exact-current-source request, GUI, visual review, PNG and staging-map preflight are complete; obtain the official current-source approved Identity and authoritative Package Version. Then run the existing gated Windows build and continue real MSIX custody → backlog → local pull → checker → GUI/install. Keep Focus PRE_IDENTITY_FIX_REQUIRED until owner 00 produces the exact b6 request artifact. Keep Prism PRE_IDENTITY_FIX_REQUIRED against current Factory PR25 source b03; 4c is QA tooling and 15fd Identity is historical-only. No Store write, CAS, Version inference, merge, main/release write or force push.",
+  "partner_center_readback": {
+    "authenticated_browser_context_available": false,
+    "browser_access_result": "REQUIRES_ORIGINATING_BROWSER_CONTEXT",
+    "current_source_identity_readback": "NOT_COLLECTED",
+    "authoritative_package_version_readback": "NOT_COLLECTED",
+    "partner_center_write_performed": false,
+    "identity_write_performed": false,
+    "reason": "Read-only browser tab access was attempted but the connected browser runtime reported that the originating browser context is unavailable."
+  }
 }

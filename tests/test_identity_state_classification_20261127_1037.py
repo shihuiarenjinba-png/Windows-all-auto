@@ -147,6 +147,14 @@ class CurrentIdentityStateClassificationTests(unittest.TestCase):
             "pr12_or_pr24_repo_touched",
         ):
             self.assertFalse(safety[key])
+        partner_center = self.data["partner_center_readback"]
+        self.assertFalse(partner_center["authenticated_browser_context_available"])
+        self.assertEqual(partner_center["browser_access_result"],
+                         "REQUIRES_ORIGINATING_BROWSER_CONTEXT")
+        self.assertEqual(partner_center["current_source_identity_readback"], "NOT_COLLECTED")
+        self.assertEqual(partner_center["authoritative_package_version_readback"], "NOT_COLLECTED")
+        self.assertFalse(partner_center["partner_center_write_performed"])
+        self.assertFalse(partner_center["identity_write_performed"])
         self.assertEqual(self.data["status"], "HOLD")
         self.assertIs(self.data["e2e_pass"], False)
 
