@@ -160,11 +160,68 @@ class PartnerCenterBrowserPort:
                 "packages_url": packages_url}
 
     def _goto(self, url: str) -> None:
+        # Do not hard-reload a route that is already open in the authenticated
+        # Partner Center tab. Same-route reloads are unnecessary and can send
+        # an otherwise-rendered page through Microsoft sign-out redirects.
+        try:
+            current = urlsplit(str(self.page.url))
+            target = urlsplit(url)
+            same_route = (
+                current.scheme.lower() == target.scheme.lower()
+                and current.netloc.lower() == target.netloc.lower()
+                and current.path.rstrip("/") == target.path.rstrip("/")
+            )
+        except Exception:
+            same_route = False
+        if same_route:
+            self._assert_session()
+            return
         self.page.goto(url, wait_until="domcontentloaded", timeout=60_000)
         self._assert_session()
 
     def _exact_text(self, value: str, label: str) -> Any:
         return self._one(self.page.get_by_text(value, exact=True), label)
+
+    def _assert_product_name(self, section: str) -> None:
+        """Accept the configured product as a complete heading/title segment.
+
+        Partner Center currently renders the Identity heading as
+        '<product name> | Product identity' and the document title as
+        'Product identity | <product name> | Partner Center'. The product
+        name is still bound to the exact Product ID, Package Identity and
+        Publisher checks performed by _assert_target.
+        """
+        product_name = str(self.config["product_name"]).strip()
+        exact_count = self.page.get_by_text(product_name, exact=True).count()
+        if exact_count == 1:
+            return
+
+        try:
+            headings = self.page.locator(
+                "h1, h2, [role='heading']"
+            ).all_text_contents()[:10]
+        except Exception:
+            headings = []
+        try:
+            title = self.page.title()
+        except Exception:
+            title = ""
+
+        def has_product_segment(value: Any) -> bool:
+            segments = [
+                re.sub(r"\\s+", " ", part).strip()
+                for part in re.split(r"[|｜]", str(value))
+            ]
+            return product_name in segments
+
+        if any(has_product_segment(value) for value in headings) or has_product_segment(title):
+            return
+
+        raise UploadError(
+            "PARTNER_CENTER_UI_CHANGED",
+            f"Expected configured Product name in {section} heading/title; "
+            f"exact text count={exact_count}",
+        )
 
     def _assert_target(self, product_id: str, submission_id: str) -> str:
         if not product_id or not submission_id:
@@ -173,7 +230,7 @@ class PartnerCenterBrowserPort:
         packages_url = f"{PARTNER_ORIGIN}{path}/packages"
         identity_url = f"{PARTNER_ORIGIN}/en-us/dashboard/products/{product_id}/identity"
         self._goto(identity_url)
-        self._exact_text(self.config["product_name"], "configured Product name")
+        self._assert_product_name("Identity")
         self._exact_text(product_id, "configured Store ID")
         self._exact_text(self.config["identity_name"], "configured Package Identity")
         self._exact_text(self.config["publisher"], "configured Publisher")
@@ -307,7 +364,7 @@ class PartnerCenterBrowserPort:
         expected_path = f"/en-us/dashboard/products/{job.product_id}/overview"
         if meta["scheme"] != "https" or meta["hostname"] != PARTNER_HOST or meta["path"].rstrip("/") != expected_path:
             raise UploadError("PRODUCT_MISMATCH", "Save did not return to the configured product Overview")
-        self._one(self.page.get_by_role("heading", name=job.product_name, exact=True), "configured product Overview heading")
+        self._assert_product_name("Overview")
         self._exact_text(job.file_name, "saved package filename on Overview")
         self._exact_text("Validated", "package validation state")
         packages = self._one(self.page.locator(PACKAGES_COMPLETE), "Packages Complete status")

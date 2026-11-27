@@ -43,7 +43,10 @@ class Locator:
         if self.role == "heading" and self.text == CONFIG["product_name"]: return 1 if p.is_overview else 0
         if self.text in {"9P99MJX1R4V6", "OkinawaDesktopTools.FolderAutomationEngine", "CN=46263F21-A700-41DB-8C9B-114C22FB82FC"}:
             return 1 if "/identity" in p.url else 0
-        if self.text == CONFIG["product_name"]: return 1 if "/identity" in p.url else 0
+        if self.text == CONFIG["product_name"]:
+            if p.combined_product_heading and "/identity" in p.url:
+                return 0
+            return 1 if "/identity" in p.url else 0
         if self.text == p.job.file_name: return int(p.package_present and (p.is_packages or p.is_overview))
         if self.text in {"Validated"}: return int(p.saved and p.is_overview)
         if self.text in {"Uploading", "Analyzing package"}: return 0
@@ -51,6 +54,12 @@ class Locator:
 
     def all_text_contents(self):
         p = self.page
+        if self.selector == "h1, h2, [role='heading']":
+            if "/identity" in p.url:
+                return [f"{CONFIG['product_name']} | Product identity"]
+            if p.is_overview:
+                return [f"Overview | {CONFIG['product_name']}"]
+            return []
         if self.selector == PACKAGE_NAME_SELECTOR and self.count(): return [p.job.file_name]
         if self.selector == WARNING_SELECTOR and self.count(): return [KNOWN_WARNING]
         if self.selector == "table.package-table" and self.count(): return [f"{p.job.file_name} v{p.job.version} {p.job.architecture.upper()} Windows.Desktop"]
@@ -85,6 +94,15 @@ class FakePage:
         self.upload_calls = 0
         self.save_calls = 0
         self.upload_path = None
+        self.goto_calls = 0
+        self.combined_product_heading = False
+
+    def title(self):
+        if "/identity" in self.url:
+            return f"Product identity | {CONFIG['product_name']} | Partner Center"
+        if self.is_overview:
+            return f"Overview | {CONFIG['product_name']} | Partner Center"
+        return f"Packages | {CONFIG['product_name']} | Partner Center"
 
     @property
     def is_packages(self): return "/packages" in self.url
@@ -93,7 +111,9 @@ class FakePage:
     def locator(self, selector): return Locator(self, selector)
     def get_by_text(self, text, exact=True): return Locator(self, "text", text=text)
     def get_by_role(self, role, name="", exact=True): return Locator(self, "role", text=name, role=role)
-    def goto(self, url, wait_until=None, timeout=None): self.url = url
+    def goto(self, url, wait_until=None, timeout=None):
+        self.goto_calls += 1
+        self.url = url
     def reload(self, wait_until=None, timeout=None): pass
     def wait_for_timeout(self, milliseconds): pass
 
@@ -130,6 +150,22 @@ class SelectionPage:
 
 
 class PartnerCenterBrowserTests(unittest.TestCase):
+    def test_pipe_delimited_identity_heading_is_accepted_without_same_route_reload(self):
+        page = FakePage(None)
+        page.url = (
+            f"https://partner.microsoft.com/en-us/dashboard/products/"
+            f"{CONFIG['product_id']}/identity"
+        )
+        page.combined_product_heading = True
+        port = PartnerCenterBrowserPort(page, CONFIG)
+
+        before = page.goto_calls
+        port._goto(page.url)
+        port._assert_product_name("Identity")
+
+        self.assertEqual(page.goto_calls, before)
+        self.assertEqual(page.url.rsplit("/", 1)[-1], "identity")
+
     def test_selects_exact_dca_draft_when_other_partner_center_product_is_open(self):
         exact_url = f"https://partner.microsoft.com/en-us/dashboard/products/{CONFIG['product_id']}/submissions/{CONFIG['submission_id']}/packages"
         exact = SelectionPage(exact_url, "Packages | Folder Automation Engine | Partner Center", "Folder Automation Engine Packages")
