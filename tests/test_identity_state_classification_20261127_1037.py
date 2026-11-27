@@ -17,7 +17,7 @@ class CurrentIdentityStateClassificationTests(unittest.TestCase):
     def test_observation_is_bound_to_live_pr205_and_pr165_heads(self):
         p205 = self.data["observation_basis"]["pr205"]
         self.assertEqual(p205["head_sha_before_append"],
-                         "490e4533c35740f9eb6d9695bab860895630521e")
+                         "4f1ab065d291736017a40405cfb898fa203f69c8")
         self.assertEqual([x["run_id"] for x in p205["exact_head_ci"]],
                          [45917965610, 45917965618, 45917965593])
         self.assertTrue(all(x["head_sha"] == p205["head_sha_before_append"]
