@@ -348,7 +348,7 @@ def verify_queue_artifact_custody(expected, local_artifact, fetch_json, fetch_by
                         return hold("CUSTODY_RECEIPT_OVERSIZED")
                     if child.name == "approved-identity.json" and child.stat().st_size > 32 * 1024:
                         return hold("APPROVED_IDENTITY_OVERSIZED")
-                    archive_name = "packages/{}/{}".format(folder, child.name)
+                    archive_name = "packages/{}/{}".format(folder.as_posix(), child.name)
                     if archive_name not in files:
                         return hold("ARTIFACT_PACKAGE_FILE_MISSING")
                     local_bytes = child.read_bytes()
