@@ -86,7 +86,7 @@ class CurrentIdentityStateClassificationTests(unittest.TestCase):
         self.assertTrue(build["builder_in_current_pr115_source"]["present"])
         self.assertTrue(build["builder_in_current_pr115_source"]["requires_approved_identity_and_version"])
         self.assertFalse(build["request_workflow"]["invokes_product_builder"])
-        preflight = f["identity"]["source_preflight"]
+        preflight = f["pre_identity_evidence"]["source_preflight"]
         self.assertEqual(preflight["source_sha"], f["current_source_sha"])
         self.assertEqual(preflight["identity_status"], "MISSING")
         self.assertEqual(preflight["version_status"], "UNAVAILABLE")
