@@ -204,6 +204,50 @@ class CloudUploaderTests(unittest.TestCase):
             self.assertEqual(status, "SUCCEEDED")
             self.assertEqual(remote_attempts, 1)
 
+
+    def test_dry_run_on_legacy_failed_row_does_not_change_history_or_remote_budget(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            package = root / "pkg.msix"
+            make_msix(package)
+            digest = hashlib.sha256(package.read_bytes()).hexdigest()
+            job = verify_file(CONFIG, package, expected_sha256=digest)
+            db_path = root / "legacy-ledger.sqlite3"
+
+            con = sqlite3.connect(db_path)
+            try:
+                con.execute("""CREATE TABLE uploads (
+                    job_key TEXT PRIMARY KEY, product_id TEXT NOT NULL, submission_id TEXT NOT NULL,
+                    package_file_name TEXT NOT NULL DEFAULT '', sha256 TEXT NOT NULL,
+                    status TEXT NOT NULL, attempts INTEGER NOT NULL,
+                    error_code TEXT NOT NULL DEFAULT '', receipt_json TEXT NOT NULL DEFAULT '')""")
+                con.execute(
+                    """INSERT INTO uploads
+                       (job_key, product_id, submission_id, package_file_name, sha256,
+                        status, attempts, error_code, receipt_json)
+                       VALUES (?, ?, ?, ?, ?, 'FAILED', 3, 'PARTNER_CENTER_TAB_AMBIGUOUS', ?)""",
+                    (JobLedger.key(job), job.product_id, job.submission_id, job.file_name,
+                     job.sha256, '{"legacy":"kept"}'),
+                )
+                con.commit()
+            finally:
+                con.close()
+
+            with JobLedger(db_path) as ledger:
+                result = process_job(CONFIG, package, ledger, expected_sha256=digest, dry_run=True)
+                historical = ledger.db.execute(
+                    "SELECT status, attempts, error_code, receipt_json FROM uploads WHERE job_key=?",
+                    (JobLedger.key(job),),
+                ).fetchone()
+                remote_attempts = ledger.db.execute(
+                    "SELECT remote_write_attempts FROM upload_write_attempts WHERE job_key=?",
+                    (JobLedger.key(job),),
+                ).fetchone()[0]
+
+            self.assertEqual(result["status"], "DRY_RUN")
+            self.assertEqual(historical, ("FAILED", 3, "PARTNER_CENTER_TAB_AMBIGUOUS", '{"legacy":"kept"}'))
+            self.assertEqual(remote_attempts, 0)
+
     def test_legacy_ambiguous_write_history_remains_at_retry_limit(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

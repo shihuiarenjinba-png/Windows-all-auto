@@ -214,6 +214,10 @@ class JobLedger:
             if status == "SUCCEEDED": return "DUPLICATE", attempts
             if status == "DRY_RUN" and dry_run: return "DRY_RUN_ALREADY_DONE", attempts
             if status in {"UPLOADING", "UNKNOWN"}: return "RECONCILE_REQUIRED", attempts
+            if dry_run:
+                # A dry-run against an existing failed row must not reserve a
+                # remote attempt or rewrite the historical upload state.
+                return "DRY_RUN", attempts
             accounting = self.db.execute(
                 "SELECT remote_write_attempts FROM upload_write_attempts WHERE job_key=?", (key,)
             ).fetchone()
