@@ -9,6 +9,7 @@ from unittest.mock import patch
 import zipfile
 
 from all_auto.lane_queue import relative_package_path
+from scripts.github_artifact_custody import verify_queue_artifact_custody
 from scripts.local_handoff_pull import pull, recent_artifacts
 
 SOURCE_SHA="b"*40
@@ -280,5 +281,57 @@ class LocalPullTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"must not assert Store approvals"):
             self.pull_fake(self.root/"inbox")
 
+
+
+    def test_identity_return_queue_bundle_accepts_paired_approved_identity_receipts(self):
+        bundle = self.fixture / "factory-qa"
+        (bundle / "transport_receipt.json").write_text('{"schema_version":1}', encoding="utf-8")
+        (bundle / "github-custody.json").write_text('{"status":"CUSTODY_VERIFIED_ONLY"}', encoding="utf-8")
+        (bundle / "approved-identity.json").write_text('{"reviewed":true}', encoding="utf-8")
+        self.build_artifact()
+        fetch_json, fetch_bytes = self.fake_clients("test-token")
+        result = verify_queue_artifact_custody({
+            "repository": "shihuiarenjinba-png/Windows-all-auto",
+            "run_id": self.run_id,
+            "artifact_id": self.artifact_id,
+            "artifact_name": self.artifact_name,
+            "run_head_sha": self.run_head_sha,
+        }, self.artifact_dir, fetch_json, fetch_bytes)
+        self.assertEqual(result["status"], "CUSTODY_VERIFIED_ONLY")
+        self.assertFalse(result["e2e_pass"])
+        self.assertEqual(result["packages"][0]["package_sha256"], self.checksum)
+        self.assertEqual(result["packages"][0]["local_sha256"], self.checksum)
+
+    def test_identity_return_queue_bundle_rejects_partial_receipt_trio(self):
+        bundle = self.fixture / "factory-qa"
+        (bundle / "approved-identity.json").write_text('{"reviewed":true}', encoding="utf-8")
+        self.build_artifact()
+        fetch_json, fetch_bytes = self.fake_clients("test-token")
+        result = verify_queue_artifact_custody({
+            "repository": "shihuiarenjinba-png/Windows-all-auto",
+            "run_id": self.run_id,
+            "artifact_id": self.artifact_id,
+            "artifact_name": self.artifact_name,
+            "run_head_sha": self.run_head_sha,
+        }, self.artifact_dir, fetch_json, fetch_bytes)
+        self.assertEqual(result["status"], "HOLD")
+        self.assertEqual(result["reason"], "LOCAL_PACKAGE_BUNDLE_INVALID")
+
+    def test_identity_return_queue_bundle_holds_oversized_approved_identity(self):
+        bundle = self.fixture / "factory-qa"
+        (bundle / "transport_receipt.json").write_text('{"schema_version":1}', encoding="utf-8")
+        (bundle / "github-custody.json").write_text('{"status":"CUSTODY_VERIFIED_ONLY"}', encoding="utf-8")
+        (bundle / "approved-identity.json").write_text("x" * (32 * 1024 + 1), encoding="utf-8")
+        self.build_artifact()
+        fetch_json, fetch_bytes = self.fake_clients("test-token")
+        result = verify_queue_artifact_custody({
+            "repository": "shihuiarenjinba-png/Windows-all-auto",
+            "run_id": self.run_id,
+            "artifact_id": self.artifact_id,
+            "artifact_name": self.artifact_name,
+            "run_head_sha": self.run_head_sha,
+        }, self.artifact_dir, fetch_json, fetch_bytes)
+        self.assertEqual(result["status"], "HOLD")
+        self.assertEqual(result["reason"], "APPROVED_IDENTITY_OVERSIZED")
 
 if __name__=="__main__":unittest.main()
