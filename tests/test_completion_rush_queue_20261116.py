@@ -48,7 +48,7 @@ class CompletionRushQueueTests(unittest.TestCase):
         self.assertEqual(row["current_factory_head"], "33d612be2774ac155ea3d85289ec5cb7981c81c1")
         self.assertEqual(row["current_source_sha"], "33d612be2774ac155ea3d85289ec5cb7981c81c1")
         self.assertEqual(row["source_selection_status"],
-                         "INTEGRATED_CANDIDATE_PR115__AWAITING_HUMAN_VISUAL_REVIEW_AND_IDENTITY_REVALIDATION")
+                         "INTEGRATED_CANDIDATE_PR115__AWAITING_CURRENT_SOURCE_IDENTITY_AND_AUTHORITATIVE_VERSION")
         self.assertEqual(row["current_factory_compare"], {
             "status": "ahead", "ahead_by": 2, "behind_by": 0, "total_commits": 2, "changed_files": 8
         })
@@ -132,7 +132,7 @@ class CompletionRushQueueTests(unittest.TestCase):
         self.assertFalse(live["product_code_changed"])
         self.assertFalse(live["e2e_pass"])
         self.assertEqual(self.data["pr165_current_branch_head_ci_run_ids"], [45738280697, 45738280673, 45738280653])
-        self.assertEqual(self.data["generated_at"], "2026-11-26T01:57:30Z")
+        self.assertEqual(self.data["generated_at"], "2026-11-26T16:39:37Z")
         self.assertEqual(self.data["pr165_current_branch_head_observed_at_utc"], "2026-11-26T01:50:00Z")
         self.assertEqual(self.data["pr165_current_branch_head_snapshot_commit_ci_status"], "PASS_EXACT_HEAD_CI")
         self.assertEqual(self.data["pr165_live_branch_head_observation_20261126_latest"]["head_sha"], "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23")
