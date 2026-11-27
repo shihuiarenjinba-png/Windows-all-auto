@@ -380,7 +380,7 @@ class PartnerCenterBrowserPort:
         """Read Partner Center; filename/UI state alone cannot establish binary identity."""
         overview_url = f"{PARTNER_ORIGIN}/en-us/dashboard/products/{job.product_id}/overview"
         self._goto(overview_url)
-        self._one(self.page.get_by_role("heading", name=job.product_name, exact=True), "configured product Overview heading")
+        self._assert_product_name("Overview")
         complete = self.page.locator(PACKAGES_COMPLETE)
         saved_name = self.page.get_by_text(job.file_name, exact=True)
         validated = self.page.get_by_text("Validated", exact=True)
