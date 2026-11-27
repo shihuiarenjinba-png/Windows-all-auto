@@ -62,7 +62,12 @@ class CurrentStatusReconciliation20261127Tests(unittest.TestCase):
         self.assertFalse(self.overlay["downstream_receipts"]["local_gui_install_receipt"])
 
     def test_queue_points_to_current_overlay_and_keeps_store_gates_false(self):
-        self.assertEqual(self.queue["current_status_reconciliation_file"], "ops/active_e2e_handoff_overlay_20261126_203204.json")
+        self.assertEqual(self.queue["previous_current_status_reconciliation_file"], "ops/active_e2e_handoff_overlay_20261126_203204.json")
+        self.assertEqual(self.queue["current_status_reconciliation_file"], "ops/active_e2e_handoff_overlay_20261127_1432.json")
+        self.assertEqual(self.queue["current_status_reconciliation_20261127_1432"]["focus_source_sha"], "b6b69464a9c7450489338bc7542fd22cf190ed42")
+        self.assertEqual(self.queue["current_status_reconciliation_20261127_1432"]["focus_request_source_sha"], "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79")
+        self.assertFalse(self.queue["current_status_reconciliation_20261127_1432"]["focus_request_matches_current_source"])
+        self.assertEqual(self.queue["current_status_reconciliation_20261127_1432"]["file_source_sha"], "33d612be2774ac155ea3d85289ec5cb7981c81c1")
         self.assertEqual(self.queue["current_status_reconciliation_20261127_0532"]["focus_state"], "WAITING_USER_IDENTITY")
         self.assertEqual(self.queue["current_status_reconciliation_20261127_0532"]["file_integrity_state"], "WAITING_USER_IDENTITY")
         self.assertFalse(self.queue["e2e_pass"])
