@@ -1,0 +1,258 @@
+{
+  "schema_version": "1.0",
+  "path": "ops/completion_rush_queue_20261127_1641.json",
+  "generated_at": "2026-11-27T07:41:33Z",
+  "policy": "COMPLETION_RUSH_EXISTING_PRODUCTS_ONLY",
+  "supersedes_current_snapshot": "ops/completion_rush_queue_20261127_1500.json",
+  "source_observation": "ops/active_e2e_handoff_overlay_20261127_1641.json",
+  "new_product_generation_allowed": false,
+  "rules": {
+    "functional_hold": "Improve only an existing product when paid value, core functionality, beginner UX, safety or stability is deficient.",
+    "delivery_hold": "Do not add features. Advance current-source Identity/Version binding, real package, custody, backlog, local pull, checker and Windows QA.",
+    "freeze_for_package": "When no FUNCTIONAL_HOLD remains, product code is frozen except package-blocking defects.",
+    "never_guess": [
+      "Identity",
+      "Publisher",
+      "PFN",
+      "SID",
+      "Package Version"
+    ],
+    "no_store_write": true,
+    "png_owner": "00"
+  },
+  "priority": [
+    {
+      "rank": 1,
+      "product": "Focus Session Desk",
+      "lane": "APP",
+      "state": "WAITING_USER_IDENTITY",
+      "hold_class": "DELIVERY_HOLD",
+      "functional_hold": false,
+      "product_frozen_for_package": true,
+      "current_source_pr": 94,
+      "current_source_sha": "b6b69464a9c7450489338bc7542fd22cf190ed42",
+      "historical_identity_source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+      "current_identity_binding": "STALE_HISTORICAL_SOURCE_MISMATCH",
+      "current_identity_readback_owner": "USER",
+      "current_request_id": "app-focus-session-desk-b6b69464a9c7",
+      "current_request_source_sha": "b6b69464a9c7450489338bc7542fd22cf190ed42",
+      "current_request_status": "DRY_RUN__SOURCE_BOUND_TO_CURRENT_HEAD",
+      "current_request_pr": 134,
+      "current_request_artifact_id": 15166202971,
+      "current_request_artifact_sha256": "8f1862039297711a68bc33e8e25bea8cfc85f9926b269f0b2136bfa9986b503a",
+      "current_request_sha256": "09f730c785d242a3e7ef3f827593468950b77ce67ecbc3f7e4ede1357d0bb186",
+      "current_request_submitted": false,
+      "package_version": null,
+      "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
+      "real_msix": false,
+      "store_assets_owner": "00",
+      "store_assets_regeneration_by_36": false,
+      "msix_embedding": "NOT_VERIFIED",
+      "visual_signoff": "00_VISUAL_QA_PASS__HUMAN_OWNER_ACK_NOT_RECORDED",
+      "sale_decision": "DO_NOT_SELL_BELOW_80",
+      "quality_score": 54,
+      "next_action": "Read-only official current-source Identity and Package Version for exact PR94 source/request tuple."
+    },
+    {
+      "rank": 2,
+      "product": "File Integrity Ledger",
+      "lane": "APP",
+      "state": "WAITING_USER_IDENTITY",
+      "hold_class": "DELIVERY_HOLD",
+      "functional_hold": false,
+      "product_frozen_for_package": true,
+      "current_source_pr": 115,
+      "current_source_sha": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
+      "current_source_approved_identity_present": false,
+      "historical_identity_source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
+      "current_identity_binding": "NO_CURRENT_SOURCE_APPROVED_IDENTITY",
+      "current_identity_readback_owner": "USER",
+      "current_request_id": "app-file-integrity-ledger-33d612be2774",
+      "current_request_source_sha": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
+      "current_request_status": "DRY_RUN__SOURCE_BOUND_TO_CURRENT_HEAD",
+      "current_request_artifact_id": 14934034365,
+      "current_request_artifact_sha256": "697528b3b0769e3962eebfa0efcdcb026618cd378d97fc60c4f234017882527e",
+      "current_request_submitted": false,
+      "package_version": null,
+      "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
+      "real_msix": false,
+      "store_assets_owner": "00",
+      "store_assets_regeneration_by_36": false,
+      "msix_embedding": "NOT_VERIFIED",
+      "visual_review": "HUMAN_VISUAL_REVIEW_PASS",
+      "next_action": "Read-only official current-source Identity and Package Version for exact PR115 source/request tuple."
+    },
+    {
+      "rank": 3,
+      "product": "Prism Route 3D",
+      "lane": "3D",
+      "state": "POST_IDENTITY_UPGRADE",
+      "hold_class": "DELIVERY_AND_PHYSICAL_QA_HOLD",
+      "functional_hold": false,
+      "product_frozen_for_package": true,
+      "current_source_sha": "b03ce7b16c3f75c04fe20fdda224c45849eeba0d",
+      "current_source_identity_rebind": "PENDING_CURRENT_SOURCE_APPROVAL",
+      "physical_qa_sessions": "0/6",
+      "physical_qa_screenshots": "0/36",
+      "package_version": null,
+      "real_msix": false
+    },
+    {
+      "rank": 4,
+      "product": "Signal Sprint",
+      "lane": "GAME",
+      "state": "POST_IDENTITY_UPGRADE",
+      "hold_class": "FUNCTIONAL_QA_THEN_DELIVERY_HOLD",
+      "functional_hold": true,
+      "product_frozen_for_package": false,
+      "current_candidate_source_sha": "1a349faa41663c417c40710140a4d50c79b62b78",
+      "real_windows_uia_pass": false,
+      "real_msixvc": false,
+      "package_version": null,
+      "build_artifact_status": "HOLD_BUILD_ARTIFACT_NOT_CONFIGURED"
+    }
+  ],
+  "pr165": {
+    "head_sha": "07cb543816c7432edcf45465ae0763e16917aecc",
+    "parent_sha": "6afe5ec89a440880066bee43a61f596a5939761d",
+    "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
+    "exact_head_ci_run_ids": [
+      45899687437,
+      45899687528,
+      45899687545
+    ],
+    "repository_ci_is_not_product_e2e": true
+  },
+  "pr161": {
+    "head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
+    "exact_head_ci_run_ids": [
+      42712757936
+    ],
+    "conclusion": "SUCCESS"
+  },
+  "pr171": {
+    "head_sha": "764721021f13be96364529650b44fb439770bac9",
+    "exact_head_ci_run_ids": [
+      44437197470
+    ],
+    "conclusion": "SUCCESS",
+    "eligible_fresh_unsold_products": 0,
+    "dry_run_started": false
+  },
+  "pr197": {
+    "branch": "codex/36-pr192-restack-07cb-20261127-0731",
+    "base_pr165_head_sha": "07cb543816c7432edcf45465ae0763e16917aecc",
+    "head_sha": "1f106f0fffe871bf82a2ae3ceeb04eaa8ab75988",
+    "compare_to_pr165": {
+      "status": "ahead",
+      "ahead_by": 18,
+      "behind_by": 0,
+      "total_commits": 18
+    },
+    "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
+    "exact_head_ci_run_ids": [
+      45941584802,
+      45941584857,
+      45941584807
+    ],
+    "local_artifact_custody": "IMPLEMENTED",
+    "local_pull": "IMPLEMENTED_NOT_EXECUTED_WITH_REAL_PRODUCT_MSIX",
+    "local_checker": "FAIL_CLOSED_RECEIPT_GATE_IMPLEMENTED",
+    "product_code_changed": false
+  },
+  "first_unconnected_interval": "BLOCKED_BEFORE_REAL_MSIX_BUILD",
+  "status": "HOLD",
+  "e2e_pass": false,
+  "real_msix": false,
+  "github_backlog_receipt": false,
+  "local_pull_receipt": false,
+  "local_checker_receipt": false,
+  "local_gui_install_receipt": false,
+  "store_upload_test_eligibility": {
+    "eligible_fresh_unsold_products": 0,
+    "status": "NOT_RUN_NO_PRODUCT_MEETS_ALL_GATES",
+    "dry_run_started": false,
+    "live_started": false
+  },
+  "store_submission_allowed": false,
+  "certification_allowed": false,
+  "publish_allowed": false,
+  "canonical_ledger_pointer": {
+    "path": "ops/active_e2e_handoff.json",
+    "blob_sha": "5e764d88bcc7d5f101557dfb547cfab48d7d5145",
+    "bytes": 1976822,
+    "current_fetch_status": "EMPTY_CONTENT",
+    "full_content_read_status": "NOT_VERIFIABLE_IN_THIS_RUN",
+    "stale": true,
+    "rewritten": false
+  },
+  "next_action": "USER_INPUT_REQUIRED: provide the read-only official current-source Identity and authoritative Package Version readback for Focus PR94 source b6b69464/request app-focus-session-desk-b6b69464a9c7 first; File PR115 source 33d612be/request app-file-integrity-ledger-33d612be2774 second. Until verified, keep both products frozen and do not build MSIX, reuse historical Identity, infer Version, write Partner Center or begin Store upload tests.",
+  "pr134": {
+    "number": 134,
+    "state": "OPEN_DRAFT",
+    "branch": "codex/focus-current-source-request-20261127",
+    "tooling_head_sha": "26cf8aa81e1c4ed0775eaae087d7911832b5c90f",
+    "base_product_source_sha": "b6b69464a9c7450489338bc7542fd22cf190ed42",
+    "exact_head_workflow_run": {
+      "run_id": 45925933012,
+      "conclusion": "success",
+      "request_id": "app-focus-session-desk-b6b69464a9c7",
+      "artifact_id": 15166202971,
+      "artifact_sha256": "8f1862039297711a68bc33e8e25bea8cfc85f9926b269f0b2136bfa9986b503a"
+    },
+    "product_tree_sha_unchanged": "b60634aec44062bf0c3fea6b5ba389fa6bb42fa2",
+    "request_submitted": false,
+    "partner_center_write": false,
+    "identity_write": false,
+    "msix_build": false,
+    "official_identity_status": "UNVERIFIED",
+    "package_status": "NOT_BUILT"
+  },
+  "partner_center_readback": {
+    "status": "NOT_OBSERVED__ORIGINATING_BROWSER_CONTEXT_UNAVAILABLE",
+    "sign_in_state": "NOT_DETERMINED",
+    "error": "Browser connector requires the originating browser context; no Partner Center page was readable in this run.",
+    "identity_acquisition_owner": "USER",
+    "current_source_identity_and_version_return_required": true,
+    "request_submitted": false,
+    "partner_center_write": false,
+    "identity_write": false,
+    "package_version_write": false
+  },
+  "local_code_sync_receipt_status": "NOT_OBSERVED__CLOUD_PASS_ONLY",
+  "pr213": {
+    "head_sha": "3e1b2b70c73f47bb293e6b003eec5803c249d5d5",
+    "base_sha": "07cb543816c7432edcf45465ae0763e16917aecc",
+    "exact_head_ci_run_ids": [
+      45954196967,
+      45954196984,
+      45954196987
+    ],
+    "conclusion": "SUCCESS",
+    "correction": "APPROVED_IDENTITY_RECEIPT_TRIO_AND_SIZE_CAP",
+    "integrated_selectively_on_pr197_stack": true
+  },
+  "pr212": {
+    "head_sha": "78ab0e8717881bdb0a450ba9f6a7804ca280f661",
+    "base_sha": "07cb543816c7432edcf45465ae0763e16917aecc",
+    "exact_head_ci_run_ids": [
+      45950240249,
+      45950240332,
+      45950240326
+    ],
+    "conclusion": "SUCCESS",
+    "branch_state": "DIVERGED_SIBLING__NOT_MERGED",
+    "overlay_state": "SUPERSEDED_BY_1641"
+  },
+  "integration_candidate": {
+    "branch": "codex/36-pr213-pr197-reconcile-20261127-1641",
+    "base_pr197_head_sha": "1f106f0fffe871bf82a2ae3ceeb04eaa8ab75988",
+    "source_pr213_head_sha": "3e1b2b70c73f47bb293e6b003eec5803c249d5d5",
+    "code_fix_commit_sha": "28248e289d6eee14a5b2067d54f83d9a49fd1d04",
+    "regression_test_commit_sha": "c6d149fc29563b268e9ca7b1a15efa529e0e5591",
+    "exact_head_ci_status": "PENDING",
+    "product_code_changed": false
+  },
+  "merge_allowed": false,
+  "force_push_allowed": false
+}
