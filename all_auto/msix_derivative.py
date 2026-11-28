@@ -91,7 +91,7 @@ def _content_types_signature_only(source: bytes, derived: bytes) -> tuple[bool, 
     old_defaults, old_overrides = mappings(before)
     new_defaults, new_overrides = mappings(after)
     allowed_default = {"p7x", "cat"}
-    allowed_override = {"/" + CODE_INTEGRITY_MEMBER.lower()}
+    allowed_override = {"/" + CODE_INTEGRITY_MEMBER.lower(), "/" + SIGNATURE_MEMBER.lower()}
     changed_defaults = sorted(key for key in (set(old_defaults) | set(new_defaults)) - allowed_default
                               if old_defaults.get(key) != new_defaults.get(key))
     if changed_defaults:
@@ -103,6 +103,7 @@ def _content_types_signature_only(source: bytes, derived: bytes) -> tuple[bool, 
     signature_type = new_defaults.get("p7x", "").lower()
     catalog_default_type = new_defaults.get("cat", "").lower()
     catalog_type = new_overrides.get("/" + CODE_INTEGRITY_MEMBER.lower(), "").lower()
+    signature_override_type = new_overrides.get("/" + SIGNATURE_MEMBER.lower(), "").lower()
     if "p7x" in new_defaults and "signature" not in signature_type:
         return False, "p7x extension does not map to a signature content type"
     if ("cat" in new_defaults and not
@@ -111,6 +112,9 @@ def _content_types_signature_only(source: bytes, derived: bytes) -> tuple[bool, 
     if ("/" + CODE_INTEGRITY_MEMBER.lower() in new_overrides and not
             any(word in catalog_type for word in ("codeintegrity", "code-integrity", "catalog"))):
         return False, "CodeIntegrity.cat override has an unrelated content type"
+    if ("/" + SIGNATURE_MEMBER.lower() in new_overrides and
+            "signature" not in signature_override_type):
+        return False, "AppxSignature.p7x override has an unrelated content type"
     return True, "signature content-types delta verified"
 
 

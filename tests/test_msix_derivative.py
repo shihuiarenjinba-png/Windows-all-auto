@@ -40,6 +40,7 @@ def signed_package_with_signature_metadata(path: Path) -> None:
       <Default Extension="p7x" ContentType="application/vnd.ms-appx.signature" />
       <Default Extension="cat" ContentType="application/vnd.ms-pkiseccat" />
       <Override PartName="/AppxMetadata/CodeIntegrity.cat" ContentType="application/vnd.ms-appx.codeintegrity" />
+      <Override PartName="/AppxSignature.p7x" ContentType="application/vnd.ms-appx.signature" />
     </Types>'''
     with zipfile.ZipFile(path, "w") as archive:
         archive.writestr("AppxManifest.xml", MANIFEST)
