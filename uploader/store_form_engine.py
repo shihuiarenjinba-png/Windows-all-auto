@@ -286,9 +286,22 @@ def apply_save_reload_reconcile(page: Any, fields: Iterable[FieldSpec | dict[str
     # invalid later field therefore cannot leave an earlier field half-edited.
     before = {spec.key: validate_field_before_write(page, spec) for spec in specs}
     if all(_field_matches_current(spec, before[spec.key]) for spec in specs):
-        return {"status": "ALREADY_MATCHES", "url": page.url,
-                "before": before, "after_reload": before, "writes_performed": False,
-                "save_skipped": True}
+        current_url = page.url
+        try:
+            page.reload(wait_until="domcontentloaded")
+            if page.url != current_url:
+                raise StoreUiHold("form URL changed unexpectedly during no-op reconciliation")
+            after = {spec.key: read_field(page, spec, after_reload=spec.kind in {"image", "package"})
+                     for spec in specs}
+        except StoreUiHold:
+            raise
+        except Exception as exc:
+            raise StoreUiHold("existing values matched, but reload reconciliation failed; no write was attempted") from exc
+        if not all(_field_matches_current(spec, after[spec.key]) for spec in specs):
+            raise StoreUiHold("existing values changed after reload; no write was attempted")
+        return {"status": "ALREADY_MATCHES", "url": current_url,
+                "before": before, "after_reload": after, "writes_performed": False,
+                "save_skipped": True, "reload_reconciled": True}
     for spec in specs:
         apply_field(page, spec)
     if not save.is_enabled():

@@ -26,7 +26,8 @@ def _store_run_exit_code(report: dict, execution: dict, acquisition: dict) -> in
     writes = execution.get("writes_performed") is True
     if status in {"FAILED", "RECONCILE_REQUIRED", "PARTIAL_RECONCILE_REQUIRED", "UNKNOWN"}:
         return 2
-    if status == "EXECUTED" and not writes:
+    if (status == "EXECUTED" and not writes and
+            execution.get("all_approved_sections_completed") is not True):
         return 2
     if writes and status != "EXECUTED":
         return 2
@@ -36,7 +37,20 @@ def _store_run_exit_code(report: dict, execution: dict, acquisition: dict) -> in
         return 1
     if report.get("missing_or_unverified"):
         return 1
-    return 0 if status == "EXECUTED" and writes else 1
+    return 0 if status == "EXECUTED" and (
+        writes or execution.get("all_approved_sections_completed") is True) else 1
+
+
+def _store_overall_status(report: dict, execution: dict) -> str:
+    """Do not promote a section run to whole-draft completion without all evidence."""
+    execution_status = str(execution.get("status", "UNKNOWN"))
+    if execution_status in {"FAILED", "RECONCILE_REQUIRED", "PARTIAL_RECONCILE_REQUIRED", "UNKNOWN"}:
+        return execution_status
+    if execution_status != "EXECUTED":
+        return execution_status if report.get("missing_or_unverified") == [] else "INPUTS_REQUIRED"
+    if report.get("missing_or_unverified"):
+        return "INPUTS_REQUIRED"
+    return "APPROVED_SECTIONS_RECONCILED" if execution.get("all_approved_sections_completed") is True else "PARTIAL"
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -268,6 +282,7 @@ def main(argv: list[str] | None = None) -> int:
                              "actions": [], "writes_performed": False,
                              "certification_executed": False, "publish_executed": False}
             report["execution"] = execution
+            report["overall_status"] = _store_overall_status(report, execution)
             out = opts.out or Path(".store-workflow-runs") / opts.product
             report_path = write_unique_report(report, out)
             approval_report = {
@@ -276,13 +291,20 @@ def main(argv: list[str] | None = None) -> int:
                 "run_id": report["run_id"], "product_key": opts.product,
                 "product_id": report["binding"]["product_id"],
                 "submission_id": report["binding"]["submission_id"],
+                "source_package_provenance": report.get("source_package_provenance", {}),
                 "owner_decisions": report["owner_decisions"],
+                "owner_decision_candidates": report.get("owner_decision_candidates", []),
             }
             approval_report_path = write_unique_report(approval_report, out / "owner-decisions")
         except (OSError, StoreWorkflowError) as exc:
             print(f"STORE WORKFLOW HOLD: {exc}", file=sys.stderr)
             return 2
-        print(json.dumps({"status": report["status"], "product": opts.product,
+        print(json.dumps({"status": report["overall_status"],
+                          "readiness_status": report["status"],
+                          "execution_status": execution.get("status"),
+                          "completed_sections": execution.get("completed_sections", []),
+                          "pending_sections": execution.get("pending_sections", []),
+                          "product": opts.product,
                           "mode": opts.mode, "report": str(report_path),
                           "owner_decisions_report": str(approval_report_path),
                           "missing_or_unverified": len(report["missing_or_unverified"]),

@@ -13,6 +13,45 @@ from .store_workflow import StoreWorkflowError, _load_job
 
 ALLOWED_SECTIONS = frozenset(("properties", "store_listings", "pricing_availability",
                               "age_ratings", "submission_options", "packages"))
+SECTION_DEPENDENCIES = {"store_listings": frozenset({"packages"})}
+SECTION_SUCCESS_STATUSES = frozenset({"SAVED_AND_RECONCILED", "SUCCEEDED",
+                                      "SUCCEEDED_RECONCILED", "ALREADY_MATCHES"})
+
+
+def _valid_completion_receipt(config: dict[str, Any], section: str) -> bool:
+    receipts = config.get("section_completion_receipts")
+    receipt = receipts.get(section) if isinstance(receipts, dict) else None
+    if not isinstance(receipt, dict):
+        return False
+    if (receipt.get("product_id") != config.get("product_id") or
+            receipt.get("submission_id") != config.get("submission_id") or
+            receipt.get("status") not in SECTION_SUCCESS_STATUSES or
+            not any(isinstance(receipt.get(key), str) and receipt[key].strip()
+                    for key in ("saved_at_utc", "reconciled_at_utc", "observed_at_utc"))):
+        return False
+    if section == "packages" and receipt.get("package_sha256") != config.get("expected_sha256"):
+        return False
+    return True
+
+
+def _approved_execution_order(sections: list[str]) -> list[str]:
+    """Stable topological order, visiting only dependencies explicitly approved this run."""
+    approved = set(sections)
+    result: list[str] = []
+    visited: set[str] = set()
+
+    def visit(section: str) -> None:
+        if section in visited:
+            return
+        visited.add(section)
+        for dependency in SECTION_DEPENDENCIES.get(section, frozenset()):
+            if dependency in approved:
+                visit(dependency)
+        result.append(section)
+
+    for section in sections:
+        visit(section)
+    return result
 
 
 def _run_approval(config: dict[str, Any]) -> tuple[bool, str]:
@@ -58,47 +97,125 @@ def run_approved_sections(*, product: str, config_root: Path, package: Path | No
     writes = False
     section_runner = section_runner or _run_non_package_section
     package_runner = package_runner or _run_package_section
+    approved_sections = _approved_execution_order(config["execution_policy"]["approved_sections"])
+    dependency_sections = set(SECTION_DEPENDENCIES)
+    for values in SECTION_DEPENDENCIES.values():
+        dependency_sections.update(values)
+    completed = {section for section in dependency_sections
+                 if _valid_completion_receipt(config, section)}
+    completed_sections = sorted(completed)
+    pending_sections: list[str] = []
 
-    for section in config["execution_policy"]["approved_sections"]:
+    for section in approved_sections:
+        dependencies = SECTION_DEPENDENCIES.get(section, frozenset())
+        missing_dependencies = sorted(dependency for dependency in dependencies
+                                      if dependency not in completed)
+        if missing_dependencies:
+            actions.append({"section": section, "status": "WAITING_DEPENDENCY",
+                            "reason": "SECTION_DEPENDENCY_NOT_RECONCILED",
+                            "dependencies": missing_dependencies})
+            pending_sections.append(section)
+            continue
         if section == "packages":
             result = _package_gate(config, package)
             if result["status"] != "READY":
                 actions.append({"section": section, **result})
+                pending_sections.append(section)
+                continue
+            try:
+                outcome = package_runner(config=config, product=product, package=package)
+            except Exception:
+                actions.append({"section": section, "status": "RECONCILE_REQUIRED",
+                                "reason": "PACKAGE_RUNNER_OUTCOME_UNKNOWN"})
+                pending_sections.append(section)
                 break
-            outcome = package_runner(config=config, product=product, package=package)
         else:
             entry = configured_sections.get(section) if isinstance(configured_sections, dict) else None
             if not isinstance(entry, dict) or not isinstance(entry.get("fields"), list) or not entry["fields"]:
                 actions.append({"section": section, "status": "HOLD",
                                 "reason": "APPROVED_SECTION_VALUES_MISSING"})
-                break
+                pending_sections.append(section)
+                continue
             descriptor = (ui_map.get("sections") or {}).get(section)
             if not isinstance(descriptor, dict) or descriptor.get("verified") is not True:
                 actions.append({"section": section, "status": "HOLD",
                                 "reason": "ACTION_TIME_VERIFIED_UI_MAP_REQUIRED"})
+                pending_sections.append(section)
+                continue
+            try:
+                outcome = section_runner(config=config, section=section, entry=entry,
+                                         ui_map=ui_map, cdp_endpoint=cdp_endpoint)
+            except Exception as exc:
+                from uploader.store_form_engine import StoreUiHold
+                if isinstance(exc, StoreUiHold) and not exc.write_started:
+                    actions.append({"section": section, "status": "HOLD",
+                                    "reason": "SECTION_RUNNER_HELD_BEFORE_WRITE"})
+                    pending_sections.append(section)
+                    continue
+                actions.append({"section": section, "status": "RECONCILE_REQUIRED",
+                                "reason": "SECTION_RUNNER_OUTCOME_UNKNOWN"})
+                pending_sections.append(section)
                 break
-            outcome = section_runner(config=config, section=section, entry=entry,
-                                     ui_map=ui_map, cdp_endpoint=cdp_endpoint)
         if not isinstance(outcome, dict):
             actions.append({"section": section, "status": "RECONCILE_REQUIRED",
                             "reason": "ACTION_RESULT_INVALID"})
+            pending_sections.append(section)
+            break
+        if section == "packages" and outcome.get("status") in SECTION_SUCCESS_STATUSES:
+            observed_sha = outcome.get("sha256", outcome.get("package_sha256"))
+            if (outcome.get("product_id") != config.get("product_id") or
+                    outcome.get("submission_id") != config.get("submission_id") or
+                    observed_sha != config.get("expected_sha256")):
+                actions.append({"section": section, "status": "RECONCILE_REQUIRED",
+                                "reason": "PACKAGE_COMPLETION_BINDING_OR_SHA_MISMATCH"})
+                pending_sections.append(section)
+                break
+        if outcome.get("status") == "ALREADY_MATCHES" and outcome.get("reload_reconciled") is not True:
+            actions.append({"section": section, "status": "RECONCILE_REQUIRED",
+                            "reason": "ALREADY_MATCHES_WITHOUT_RELOAD_RECONCILIATION"})
+            pending_sections.append(section)
             break
         actions.append({"section": section, **outcome})
-        writes = writes or outcome.get("writes_performed") is True or outcome.get("status") in {"SUCCEEDED", "SUCCEEDED_RECONCILED"}
-        if outcome.get("status") not in {"SAVED_AND_RECONCILED", "SUCCEEDED", "SUCCEEDED_RECONCILED"}:
+        status = outcome.get("status")
+        writes = writes or outcome.get("writes_performed") is True
+        if status in SECTION_SUCCESS_STATUSES:
+            completed.add(section)
+            if section not in completed_sections:
+                completed_sections.append(section)
+            continue
+        pending_sections.append(section)
+        if status in {"RECONCILE_REQUIRED", "FAILED", "UNKNOWN"}:
             break
 
-    blocked = any(action.get("status") in {"HOLD", "FAILED", "RECONCILE_REQUIRED"} for action in actions)
+    blocked = bool(pending_sections) or any(
+        action.get("status") in {"HOLD", "FAILED", "RECONCILE_REQUIRED", "WAITING_DEPENDENCY"}
+        for action in actions)
     reconcile = any(x.get("status") == "RECONCILE_REQUIRED" for x in actions)
-    return {"status": "RECONCILE_REQUIRED" if reconcile
+    all_approved_completed = not pending_sections and all(
+        section in completed for section in approved_sections)
+    status = ("RECONCILE_REQUIRED" if reconcile
             else "PARTIAL_RECONCILE_REQUIRED" if blocked and writes
-            else "HOLD" if blocked else "EXECUTED" if writes else "NO_APPROVED_ACTIONS",
+            else "HOLD" if blocked else "EXECUTED" if all_approved_completed else "NO_APPROVED_ACTIONS")
+    return {"status": status,
             "approval_ref": config["execution_policy"]["approval"]["approval_ref"],
+            "approved_sections": approved_sections,
+            "completed_sections": completed_sections,
+            "pending_sections": pending_sections,
+            "all_approved_sections_completed": all_approved_completed,
             "actions": actions, "writes_performed": writes,
             "certification_executed": False, "publish_executed": False}
 
 
 def _package_gate(config: dict[str, Any], package: Path | None) -> dict[str, Any]:
+    source_profile = config.get("source_package_provenance")
+    if isinstance(source_profile, dict):
+        profile_sha = source_profile.get("formal_package_sha256")
+        if (source_profile.get("status") == "MISMATCH" or
+                (isinstance(profile_sha, str) and profile_sha.lower() !=
+                 str(config.get("expected_sha256", "")).lower())):
+            return {"status": "HOLD", "reason": "SOURCE_PRODUCT_PROFILE_PACKAGE_SHA_MISMATCH",
+                    "source_profile_sha256": profile_sha,
+                    "job_expected_sha256": config.get("expected_sha256")}
     if not package:
         return {"status": "HOLD", "reason": "EXACT_PACKAGE_NOT_RESOLVED"}
     if package.is_symlink():

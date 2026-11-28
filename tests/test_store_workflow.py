@@ -44,6 +44,17 @@ class StoreWorkflowTests(unittest.TestCase):
                          ["Windows 10/11 Desktop"])
         self.assertEqual(report["device_family_plan"]["status"], "PENDING_OWNER_APPROVAL")
 
+    def test_dca_profile_sha_conflict_is_reported_and_not_reconciled(self):
+        report = build_store_workflow_report(product="data-contract-auditor", config_root=CONFIG_ROOT)
+        self.assertEqual(report["source_package_provenance"]["status"], "MISMATCH")
+        self.assertEqual(report["source_package_provenance"]["job_expected_sha256"],
+                         "e2ca6fd81720dc270667e65db05404b6efdde5b2c0712bee2853e0608767db05")
+        self.assertEqual(report["source_package_provenance"]["formal_package_sha256"],
+                         "4b373d2bc54ecbd3efa0a77a94005007777e66d641fa3908f523ac69fcd46984")
+        self.assertIn("source_package_provenance", {x["key"] for x in report["missing_or_unverified"]})
+        self.assertIn("source_package_provenance", {x["key"] for x in report["owner_decisions"]})
+        self.assertEqual(len(report["owner_decision_candidates"]), 14)
+
     def test_fixed_dca_binding_cannot_be_changed_in_a_copied_registry(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

@@ -511,6 +511,13 @@ def build_store_workflow_report(*, product: str, config_root: Path,
     config, config_path = _load_job(product, config_root)
     source = _source_observation(source_root, config)
     package_state = _package_observation(config, package)
+    profile_package = config.get("source_package_provenance")
+    if not isinstance(profile_package, dict):
+        profile_package = {"status": "NOT_RECORDED", "formal_package_sha256": None}
+    profile_sha = profile_package.get("formal_package_sha256")
+    if isinstance(profile_sha, str) and profile_sha.lower() != str(config.get("expected_sha256", "")).lower():
+        profile_package = {**profile_package, "status": "MISMATCH",
+                           "job_expected_sha256": config.get("expected_sha256")}
     family_plan = package_state.get("device_family_plan", {})
     if not family_plan:
         saved_targets = (config.get("device_family_settings") or {}).get("manifest_target_device_families", [])
@@ -527,6 +534,9 @@ def build_store_workflow_report(*, product: str, config_root: Path,
     if package_state["status"] != "EXACT_PACKAGE_VERIFIED":
         gaps.append({"key": "package", "status": "HOLD",
                      "why": "The exact configured MSIX bytes and Manifest have not been verified in this run."})
+    if profile_package.get("status") == "MISMATCH":
+        gaps.append({"key": "source_package_provenance", "status": "RECONCILE_REQUIRED",
+                     "why": "Pinned source store/product.json formalPackage.msixSha256 differs from the immutable Job Config SHA."})
     gaps.extend([
         {"key": "partner_center_draft", "status": "UNVERIFIED",
          "why": "Live CDP/Partner Center read-only identity and Draft reconciliation was not performed."},
@@ -561,6 +571,11 @@ def build_store_workflow_report(*, product: str, config_root: Path,
     price = config.get("pricing_approval")
     markets = config.get("markets_approval")
     owner_decisions = [
+        {"key": "source_package_provenance", "status": profile_package.get("status", "NOT_RECORDED"),
+         "job_expected_sha256": config.get("expected_sha256"),
+         "source_profile_sha256": profile_package.get("formal_package_sha256"),
+         "evidence_ref": profile_package.get("evidence_ref"),
+         "note": profile_package.get("note")},
         {"key": "device_families", "status": family_settings.get("status", "NOT_RECORDED"),
          "manifest_candidates": family_plan.get("recommended_store_device_families", []),
          "approved_values": family_plan.get("approved_store_device_families", []),
@@ -600,6 +615,8 @@ def build_store_workflow_report(*, product: str, config_root: Path,
                               "approval_present": isinstance(execution_policy.get("approval"), dict)},
         "source": source,
         "package": package_state,
+        "source_package_provenance": profile_package,
+        "owner_decision_candidates": config.get("owner_decision_candidates", []),
         "partner_center": {"status": "NOT_CONNECTED", "writes_performed": False,
                             "certification_submitted": False, "published": False},
         "sections": sections,

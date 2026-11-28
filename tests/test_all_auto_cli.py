@@ -39,6 +39,12 @@ class StoreCliTests(unittest.TestCase):
         self.assertEqual(_store_run_exit_code(report, {"status": "RECONCILE_REQUIRED", "writes_performed": True}, acquisition), 2)
         self.assertEqual(_store_run_exit_code(report, {"status": "EXECUTED", "writes_performed": False}, acquisition), 2)
         self.assertEqual(_store_run_exit_code(report, {"status": "PLAN_ONLY", "writes_performed": False}, acquisition), 1)
+        self.assertEqual(_store_run_exit_code(report, {"status": "EXECUTED", "writes_performed": False,
+                                                       "all_approved_sections_completed": True}, acquisition), 0)
+        self.assertEqual(_store_run_exit_code({"missing_or_unverified": [{"key": "other"}],
+                                               "status": "READY_FOR_REVIEW"},
+                                               {"status": "EXECUTED", "writes_performed": False,
+                                                "all_approved_sections_completed": True}, acquisition), 1)
 
 
 if __name__ == "__main__":
