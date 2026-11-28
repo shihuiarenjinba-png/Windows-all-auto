@@ -20,10 +20,23 @@ class StoreCliTests(unittest.TestCase):
                                  "launch_and_render", "csv_schema_and_quality_comparison",
                                  "xlsx_input", "report_output_reopens", "invalid_csv_error",
                                  "normal_exit_and_relaunch")]
-        driver_checks = [{"id": key, "status": "PASS"} for key in
-                         ("language_toggle_ja", "language_toggle_en", "launch_and_render",
-                          "csv_compare_and_output_reopen", "xlsx_compare_and_output_reopen",
-                          "duplicate_header_visible_error", "normal_exit_and_relaunch")]
+        driver_check_names = (
+            "core_csv_drift", "csv_xlsx_compare", "invalid_input_rejected",
+            "outputs_reopen", "inputs_unchanged", "writable_default_output",
+            "default_output_files_written", "ui_language_and_scaling",
+            "ui_compare_workflow", "ui_error_path", "close_relaunch",
+        )
+        driver_checks = [{"name": key, "status": "PASS"} for key in driver_check_names]
+        scenario_check_map = {
+            "language_switch_ja": ["ui_language_and_scaling"],
+            "language_switch_en": ["ui_language_and_scaling"],
+            "launch_and_render": ["ui_language_and_scaling"],
+            "csv_schema_and_quality_comparison": ["core_csv_drift", "ui_compare_workflow"],
+            "xlsx_input": ["csv_xlsx_compare"],
+            "report_output_reopens": ["outputs_reopen", "default_output_files_written"],
+            "invalid_csv_error": ["invalid_input_rejected", "ui_error_path"],
+            "normal_exit_and_relaunch": ["close_relaunch"],
+        }
         with tempfile.TemporaryDirectory() as temporary, \
              patch("all_auto.__main__._load_job", return_value=({"product_id": "p", "submission_id": "s"}, Path(temporary) / "job.json")), \
              patch("all_auto.__main__.acquire_registered_package", return_value={"status": "PACKAGE_ACQUISITION_HOLD"}), \
@@ -33,6 +46,7 @@ class StoreCliTests(unittest.TestCase):
              patch("all_auto.runtime_qa.run_profiled_source_driver", return_value={
                  "status": "SOURCE_GUI_DRIVER_PASS", "qa_pass": True,
                  "receipt": {"checks": driver_checks}, "receipt_path": "receipt.json",
+                 "scenario_check_map": scenario_check_map,
                  "packaged_runtime_proven": False}), \
              patch("all_auto.__main__._write_store_report", return_value=Path(temporary) / "qa.json") as writer, \
              contextlib.redirect_stdout(io.StringIO()) as stdout:
