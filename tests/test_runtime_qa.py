@@ -42,8 +42,8 @@ class RuntimeQaPlanTests(unittest.TestCase):
                 }), encoding="utf-8")
                 return SimpleNamespace(returncode=0, stdout="", stderr="")
 
-            with patch("all_auto.runtime_qa.Path.home", return_value=home), \\
-                 patch("all_auto.runtime_qa.platform.system", return_value="Windows"), \\
+            with patch("all_auto.runtime_qa.Path.home", return_value=home), \
+                 patch("all_auto.runtime_qa.platform.system", return_value="Windows"), \
                  patch("all_auto.runtime_qa.subprocess.run", side_effect=fake_run):
                 result = run_profiled_source_driver(product="data-contract-auditor",
                     profile_root=profile_root, evidence_root=evidence)
