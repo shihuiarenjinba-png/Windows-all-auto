@@ -166,8 +166,9 @@ class RuntimeQaPlanTests(unittest.TestCase):
                 result = run_profiled_source_driver(product="data-contract-auditor",
                     profile_root=profile_root, evidence_root=root / "evidence")
             self.assertEqual(result["status"], "SOURCE_BINDING_MISMATCH")
-            self.assertNotEqual(result["binding"]["driver_sha256"],
-                                result["expected_driver_sha256"])
+            self.assertFalse(result["binding"]["source_worktree_clean"])
+            self.assertEqual(result["binding"]["driver_sha256"],
+                             result["expected_driver_sha256"])
 
     def test_missing_required_receipt_check_prevents_pass(self):
         with tempfile.TemporaryDirectory() as temporary:
