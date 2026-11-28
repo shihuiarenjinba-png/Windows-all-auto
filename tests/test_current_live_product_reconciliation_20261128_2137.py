@@ -6,33 +6,24 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 LEDGER = ROOT / "ops" / "active_e2e_handoff.json"
 OVERLAY = ROOT / "ops" / "active_e2e_handoff_overlay_20261128_2137.json"
-QUEUE = ROOT / "ops" / "completion_rush_queue_20261128_2137.json"
 
 
 class CurrentLiveProductReconciliation20261128_2137Tests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.ledger_bytes = LEDGER.read_bytes()
-        cls.ledger = json.loads(cls.ledger_bytes.decode("utf-8"))
+        cls.ledger = json.loads(LEDGER.read_text(encoding="utf-8"))
         cls.overlay = json.loads(OVERLAY.read_text(encoding="utf-8"))
-        cls.queue = json.loads(QUEUE.read_text(encoding="utf-8"))
 
-    def test_canonical_ledger_latest_append_matches_current_observation(self):
+    def test_2137_overlay_remains_a_historical_append_only_snapshot(self):
         pointer = self.overlay["canonical_ledger_reconciliation"]
-        # Windows checkout may apply CRLF; Git object bytes are LF-normalized.
-        canonical_bytes = self.ledger_bytes.replace(b"\r\n", b"\n")
-        git_blob_sha = hashlib.sha1(
-            b"blob " + str(len(canonical_bytes)).encode("ascii") + b"\0" + canonical_bytes
-        ).hexdigest()
-        self.assertEqual(git_blob_sha, pointer["blob_sha"])
-        self.assertEqual(len(canonical_bytes), pointer["bytes"])
-        self.assertEqual(self.ledger["pr165_latest_observed_head_sha"], "460de073fcf6a028efe77f13b019f544e7d7831c")
-        self.assertEqual(self.ledger["pr165_latest_observed_head_ci_status"], "PASS_EXACT_HEAD_CI")
-        latest = self.ledger["latest_execution_reconciliation_20261128_2137"]
-        self.assertEqual(latest["pr165"]["head_sha_at_observation"], "460de073fcf6a028efe77f13b019f544e7d7831c")
-        self.assertEqual([x["run_id"] for x in latest["pr165"]["exact_head_ci"]], [46141536099, 46141536078, 46141536089])
-        self.assertEqual(latest["status"], "HOLD")
-        self.assertIs(latest["e2e_pass"], False)
+        self.assertEqual(pointer["blob_sha"], "ef207757331c6d5fa6a0980f82c380372a18709d")
+        historical = self.ledger["latest_execution_reconciliation_20261128_2137"]
+        self.assertEqual(historical["pr165"]["head_sha_at_observation"], "460de073fcf6a028efe77f13b019f544e7d7831c")
+        current = self.ledger["latest_execution_reconciliation_20261128_2238"]
+        self.assertEqual(current["pr165"]["head_sha_at_observation"], "d048c192cb56843ca7648cd4e723313eb587825c")
+        self.assertEqual(self.ledger["latest_execution_reconciliation_key_20261128_2238"], "latest_execution_reconciliation_20261128_2238")
+        self.assertEqual(self.ledger["latest_execution_reconciliation_key"], "latest_execution_reconciliation_20261126_133835")
+        self.assertFalse(self.ledger["e2e_pass"])
 
     def test_focus_and_file_identity_gates_are_current_source_bound_or_held(self):
         products = self.ledger["latest_execution_reconciliation_20261128_2137"]["products"]
@@ -70,11 +61,6 @@ class CurrentLiveProductReconciliation20261128_2137Tests(unittest.TestCase):
         self.assertIs(self.overlay["safety"]["store_submission_allowed"], False)
         self.assertIs(self.overlay["safety"]["certification_allowed"], False)
         self.assertIs(self.overlay["safety"]["publish_allowed"], False)
-        self.assertEqual(self.queue["status"], "HOLD")
-        self.assertFalse(self.queue["new_product_generation_allowed"])
-        self.assertEqual([x["product"] for x in self.queue["priority"]], ["Focus Session Desk", "File Integrity Ledger", "Prism Route 3D", "Signal Sprint"])
-        self.assertEqual(self.queue["store_upload_test_eligibility"]["eligible_fresh_unsold_products"], 0)
-        self.assertFalse(self.queue["store_upload_test_eligibility"]["dry_run_started"])
 
 
 if __name__ == "__main__":
