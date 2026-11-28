@@ -150,8 +150,9 @@ jobs:
           using System;
           using System.IO;
           public static class Probe {
-            public static int Main() {
-              string marker = "__MARKER__";
+          public static int Main(string[] args) {
+            if (args == null || args.Length != 1) return 4;
+            string marker = args[0];
               try {
                 File.WriteAllText(marker, "STARTED");
                 int left = int.Parse("20"); int right = int.Parse("22");
@@ -163,8 +164,14 @@ jobs:
               }
             }
           }
-          '@.Replace('__MARKER__', $marker.Replace('\', '\\'))
+          '@
           Add-Type -TypeDefinition $sourceCode -OutputAssembly (Join-Path $content 'probe.exe') -OutputType WindowsApplication
+          & (Join-Path $content 'probe.exe') $marker
+          if ($LASTEXITCODE -ne 0 -or -not (Test-Path -LiteralPath $marker) -or
+              (Get-Content -LiteralPath $marker -Raw).Trim() -ne 'BASIC_FUNCTION_SMOKE_PASS') {
+            throw 'The synthetic smoke executable failed its pre-package marker contract.'
+          }
+          Remove-Item -LiteralPath $marker -Force
           foreach ($spec in @(@{ Name='StoreLogo.png'; Size=50 }, @{ Name='Square44x44Logo.png'; Size=44 }, @{ Name='Square150x150Logo.png'; Size=150 })) {
             $bitmap = [System.Drawing.Bitmap]::new($spec.Size, $spec.Size)
             try { $bitmap.Save((Join-Path $content $spec.Name), [System.Drawing.Imaging.ImageFormat]::Png) }

@@ -92,10 +92,10 @@ interface IApplicationActivationManager {
 [ComImport, Guid("45BA127D-10A8-46EA-8AB7-56EA9078943C")]
 class ApplicationActivationManager { }
 public static class PackageActivation {
-    public static uint Activate(string appUserModelId) {
+    public static uint Activate(string appUserModelId, string arguments) {
         var manager = (IApplicationActivationManager)new ApplicationActivationManager();
         uint processId;
-        int hr = manager.ActivateApplication(appUserModelId, null, 0, out processId);
+        int hr = manager.ActivateApplication(appUserModelId, arguments, 0, out processId);
         Marshal.ThrowExceptionForHR(hr);
         return processId;
     }
@@ -104,7 +104,8 @@ public static class PackageActivation {
     Add-Type -TypeDefinition $activationSource
     $appUserModelId = "$appxFamily!$ApplicationId"
     $activationStarted = Get-Date
-    $activatedProcessId = [PackageActivation]::Activate($appUserModelId)
+    $markerArgument = '"' + $SmokeMarkerPath.Replace('"', '\"') + '"'
+    $activatedProcessId = [PackageActivation]::Activate($appUserModelId, $markerArgument)
     $deadline = (Get-Date).AddSeconds(45)
     $markerContent = ''
     while ((Get-Date) -lt $deadline) {
@@ -135,7 +136,7 @@ public static class PackageActivation {
         $launchMethod = 'installed-package-executable'
         $installedExecutable = Join-Path $installed.InstallLocation $application.Executable
         if (-not (Test-Path -LiteralPath $installedExecutable)) { throw 'Installed package executable is missing after AUMID activation returned without smoke evidence.' }
-        $directProcess = Start-Process -FilePath $installedExecutable -PassThru -Wait
+        $directProcess = Start-Process -FilePath $installedExecutable -ArgumentList $markerArgument -PassThru -Wait
         if ($directProcess.ExitCode -ne 0) { throw "Installed package executable exited with code $($directProcess.ExitCode); AUMID activation was unconfirmed. Diagnostics: $($activationDiagnostics -join ' | ')" }
         if (-not (Test-Path -LiteralPath $SmokeMarkerPath)) { throw "Installed package executable exited successfully without writing its smoke marker; AUMID activation was unconfirmed (process_still_running=$processStillRunning). Diagnostics: $($activationDiagnostics -join ' | ')" }
         $markerContent = (Get-Content -LiteralPath $SmokeMarkerPath -Raw).Trim()

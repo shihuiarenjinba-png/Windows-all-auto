@@ -61,7 +61,8 @@ class WindowsMsixDiagnosticTests(unittest.TestCase):
                          "Cert:\\LocalMachine\\TrustedPeople", "& $signTool sign /fd SHA256",
                          "Add-AppxPackage -Path $derived", "IApplicationActivationManager",
                          "ActivateApplication", "installed-package-executable",
-                         "UNCONFIRMED_IN_HOSTED_RUNNER", "Remove-AppxPackage",
+                         "UNCONFIRMED_IN_HOSTED_RUNNER", "$markerArgument",
+                         "Remove-AppxPackage",
                          "store_candidate_unchanged=$true", "diagnostic_only=$true"):
             self.assertIn(required, source)
         self.assertNotIn("Set-ExecutionPolicy", source)
@@ -70,6 +71,7 @@ class WindowsMsixDiagnosticTests(unittest.TestCase):
         workflow = (root / ".github" / "workflows" / "offline-qa.yml").read_text(encoding="utf-8")
         self.assertIn("synthetic-msix-test-signing-receipt", workflow)
         self.assertIn('"STARTED"', workflow)
+        self.assertIn("args[0]", workflow)
         self.assertIn("WindowsApplication", workflow)
         self.assertIn("*.json", workflow)
         self.assertIn("Test-sign, install, and smoke-test a synthetic MSIX", workflow)
