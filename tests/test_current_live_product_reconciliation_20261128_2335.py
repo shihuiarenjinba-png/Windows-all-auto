@@ -23,7 +23,7 @@ def git(*args):
 class CurrentLiveProductReconciliation2335Tests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.blob_sha = git("rev-parse", f"HEAD:{LEDGER_REL}").decode("ascii").strip()
+        cls.blob_sha = git("rev-parse", f"{EXPECTED_LEDGER_COMMIT}:{LEDGER_REL}").decode("ascii").strip()
         cls.blob_size = int(git("cat-file", "-s", cls.blob_sha).decode("ascii").strip())
         cls.raw_blob = git("cat-file", "blob", cls.blob_sha)
         cls.ledger = json.loads(cls.raw_blob.decode("utf-8"))
