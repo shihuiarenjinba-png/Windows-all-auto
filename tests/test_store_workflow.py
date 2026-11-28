@@ -8,11 +8,13 @@ import zipfile
 from pathlib import Path
 from types import SimpleNamespace
 import shutil
+from unittest.mock import patch
 
 from all_auto.store_workflow import (
     StoreWorkflowError,
     acquire_registered_package,
     build_store_workflow_report,
+    write_store_report_with_fallback,
     write_unique_report,
 )
 from uploader.store_policy import build_product_decision_batch, load_shared_store_policy
@@ -145,6 +147,28 @@ class StoreWorkflowTests(unittest.TestCase):
             with self.assertRaises(FileExistsError):
                 write_unique_report(report, Path(temporary))
             self.assertEqual(path.read_bytes(), original)
+
+    def test_report_writer_falls_back_after_access_denied_without_retrying_primary(self):
+        report = {"product_key": "data-contract-auditor", "created_at_utc": "2026-11-28T00:00:00+00:00",
+                  "run_id": "fallback-test"}
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            primary = root / "protected"
+            fallback = root / "user-writable"
+            real_writer = write_unique_report
+            calls = []
+
+            def deny_primary(value, destination):
+                calls.append(destination)
+                if destination == primary:
+                    raise PermissionError("simulated protected output directory")
+                return real_writer(value, destination)
+
+            with patch("all_auto.store_workflow.write_unique_report", side_effect=deny_primary):
+                result = write_store_report_with_fallback(report, primary, [fallback])
+            self.assertEqual(result.parent, fallback)
+            self.assertTrue(result.is_file())
+            self.assertEqual(calls, [primary, fallback])
 
     def test_registered_source_fetch_is_pinned_hashed_and_cached_once(self):
         config = json.loads((CONFIG_ROOT / "data-contract-auditor.job.json").read_text(encoding="utf-8"))

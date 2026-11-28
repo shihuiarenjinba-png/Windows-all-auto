@@ -20,7 +20,7 @@ class StoreCliTests(unittest.TestCase):
              patch("all_auto.runtime_qa.build_runtime_qa_report", return_value={
                  "status": "RUNTIME_QA_READY_TO_RUN", "qa_pass": False,
                  "package": {"status": "EXACT_PACKAGE_SHA_AND_MANIFEST_VERIFIED"}}), \
-             patch("all_auto.__main__.write_unique_report", return_value=Path(temporary) / "qa.json"), \
+             patch("all_auto.__main__.write_store_report_with_fallback", return_value=Path(temporary) / "qa.json"), \
              contextlib.redirect_stdout(io.StringIO()) as stdout:
             code = main(["store", "qa", "--product", "data-contract-auditor",
                          "--package", str(Path(temporary) / "candidate.msix")])
@@ -55,7 +55,7 @@ class StoreCliTests(unittest.TestCase):
                  "created_at_utc": datetime.now(timezone.utc).isoformat(), "run_id": uuid4().hex,
                  "binding": {"product_id": "9PDL4ZWSB45P", "submission_id": "1152921505702212222"},
                  "owner_decisions": []}), \
-             patch("all_auto.__main__.write_unique_report", return_value=Path(temporary) / "report.json"), \
+             patch("all_auto.__main__.write_store_report_with_fallback", return_value=Path(temporary) / "report.json"), \
              patch("all_auto.store_run.run_approved_sections", return_value={
                  "status": "EXECUTED", "actions": [{"section": "properties", "status": "SAVED_AND_RECONCILED"}],
                  "writes_performed": True, "certification_executed": False, "publish_executed": False}), \

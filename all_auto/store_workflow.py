@@ -652,3 +652,30 @@ def write_unique_report(report: dict[str, Any], output_root: Path) -> Path:
         json.dump(report, stream, ensure_ascii=False, sort_keys=True, indent=2)
         stream.write("\n")
     return path
+
+
+def write_store_report_with_fallback(
+    report: dict[str, Any], output_root: Path, fallback_roots: list[Path]
+) -> Path:
+    """Write an append-only local report and fall back only on access denial.
+
+    Store reports are local run evidence, not the durable upload ledger. If a
+    repository's default report directory is read-only (for example in a
+    managed desktop sandbox), keep the run usable by writing under a
+    user-writable state/temp directory. Never overwrite an existing report.
+    """
+    try:
+        return write_unique_report(report, output_root)
+    except PermissionError:
+        last_error: PermissionError | None = None
+        for fallback_root in fallback_roots:
+            if fallback_root.resolve() == output_root.resolve():
+                continue
+            try:
+                path = write_unique_report(report, fallback_root)
+                return path
+            except PermissionError as exc:
+                last_error = exc
+        if last_error is not None:
+            raise last_error
+        raise

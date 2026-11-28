@@ -63,6 +63,76 @@ The following candidates can be approved together in one reply. Approval must id
 | Publication | **Candidate:** hold for manual publication after certification | Existing publication radio state was not captured | Confirm manual publication policy; this does not authorize certification or publish |
 | Automatic execution scope | **Candidate:** keep the existing package-only scope; add each other section only with a separate section-specific approval | Job Config is `PLAN_ONLY`, approved section list empty | Approve exact section(s), product/draft binding, and approved field values when ready |
 
+## One-reply approval sheet
+
+The following is a concrete candidate set assembled from the pinned product README, the unapproved Japanese listing draft, the fixed MSIX Manifest, the historical read-only Packages observation, and `store/assets/approval.json`. It is still a proposal; replying with `APPROVE` is needed only for the specific rows the owner accepts. It does **not** itself authorize Partner Center writes, Certification, or Publish.
+
+### Product and package identity
+
+- Product: Data Contract Auditor; existing Product ID `9PDL4ZWSB45P`; existing Submission ID `1152921505702212222`.
+- Candidate current package provenance: source `722ec7a077d2c6109e657c4ee661c9f3d06a4506`, run `45580565845`, Artifact `15005358857`, file `DataContractSchemaDrift_1.0.0.0_x64.msix`, SHA-256 `e2ca6fd81720dc270667e65db05404b6efdde5b2c0712bee2853e0608767db05`. Retain historical SHA `4b373d2bc54ecbd3efa0a77a94005007777e66d641fa3908f523ac69fcd46984` linked to source `5a09d81955e25664761ea25ecfb4ebf8d24cea6d`; do not erase or rewrite the historical record.
+- Fixed Manifest values: `OkinawaDesktopTools.DataContractAuditor`, `CN=46263F21-A700-41DB-8C9B-114C22FB82FC`, `1.0.0.0`, `x64`, `Windows.Desktop`.
+- Runtime QA remains `NOT_RUN`; approving the SHA record does not mean the package has passed runtime QA.
+
+### Store profile candidates
+
+- Device: select `Windows 10/11 Desktop` because the fixed Manifest targets `Windows.Desktop`. For the current future-device checkbox, candidate is **keep Microsoft's future-family decision enabled**, matching the historical screenshot; confirm `KEEP` or `DISABLE`.
+- Category: `Productivity`.
+- Price model: **one-time paid, no subscription** is a candidate proposal only. Enter the exact Japanese yen price as `JPY ____`; there is no supported numeric price in the source evidence, so the amount must be supplied by the owner. Free and subscription remain explicit alternatives if this candidate is rejected.
+- Markets: retain the historically observed **240 selected markets**; confirm `PRESERVE_240` or supply the exact replacement list. That old observation is not asserted as a current live value.
+- Languages: retain `ja-JP` and `en-US` as listing candidates. Confirm that English UI/support are ready before approving en-US; otherwise choose `ja-JP only`.
+- Category and language selection do not imply the corresponding listing content is approved.
+
+### Listing copy candidates (review as exact text)
+
+**Japanese short description — candidate**
+
+> 基準データと今回のCSV/Excelデータを比較し、列構成やデータ品質の変化を点検するWindows向けローカル監査ツール。
+
+**Japanese detailed description — candidate**
+
+> 基準ファイル（Baseline）と今回のファイル（Current）を比較し、列の追加・削除、推定データ型、NULL率、重複率、数値の平均・範囲、カテゴリ値の候補変化を確認できます。簡易Data Contract（JSON）、監査結果（JSON/CSV）を作成します。既存のCSV入力チェックでは、文字コード、区切り、重複ヘッダー、キーの空欄などを検査します。これはMVPの監査補助ツールです。検出結果は確認候補であり、業務システムへの投入可否や完全なデータ品質を保証しません。CSV/XLSXのすべての機能・互換性、外部連携、自動継続監視も保証しません。
+
+**English short description — translation candidate, not approved**
+
+> A local Windows audit tool that compares baseline and current CSV/Excel files to review schema and data-quality changes.
+
+**English detailed description — translation candidate, not approved**
+
+> Compare a baseline file with a current file to review added or removed columns, inferred data types, null rates, duplicate-key rates, shifts in numeric averages or ranges, and candidate changes in categorical values. Create a simple JSON data contract and JSON/CSV audit reports. The CSV pre-check also examines encoding, delimiters, duplicate headers, and blank keys. This is an MVP audit aid: findings are items for human review and do not certify data quality or determine whether data is safe for a business system. Support for every CSV/XLSX feature, external integrations, and continuous monitoring is not promised.
+
+English copy is conditional on confirmed English UI and support. The exact listing strings above still require owner approval.
+
+### Images, privacy, age rating, rights, and release
+
+- Images: use only genuine DCA UI captures, after runtime QA, for (1) baseline/current selection, (2) schema differences, (3) data-quality comparison, and (4) generated reports. The previously approved blue document/magnifier/green-check artwork covers the icon concept only; screenshots remain unapproved and absent.
+- Privacy: candidate answer `Yes` for personal information because user-selected CSV/XLSX may contain it. Candidate processing statement: files and reports stay local; no external account, telemetry, or outbound transfer was found in the reviewed product source. Owner must confirm this statement and provide the public privacy-policy URL before saving a declaration.
+- Age rating: candidate IARC type `All Other App Types`; all content questionnaire answers remain owner-confirmed from actual app behavior.
+- Commercial rights: no approval candidate can be asserted from current evidence. The recorded source status is `NOT_CERTIFIED`; owner must provide/approve dependency and commercial-use evidence.
+- Release: keep manual Publish. Current automation stays `PLAN_ONLY`; this proposal does not authorize upload, Save, Certification, or Publish.
+
+### Reply format
+
+The owner can answer once using this template; leave any unresolved line blank and it will remain held:
+
+```text
+Package provenance: APPROVE e2ca6fd81720dc270667e65db05404b6efdde5b2c0712bee2853e0608767db05 / KEEP 4b373d… as history
+Desktop: APPROVE
+Future device families: KEEP / DISABLE
+Category: APPROVE Productivity / REPLACE ____
+Price: one-time / free / subscription; JPY ____
+Markets: PRESERVE_240 / exact replacement list ____
+Listings: approve JA exact candidate / edits ____; English ready YES/NO; approve EN candidate / edits ____
+Screenshots: approve after review / HOLD
+Privacy answer and policy URL: YES/NO; URL ____; statement edits ____
+IARC: APPROVE All Other App Types; questionnaire answers ____
+Commercial rights evidence: ____
+Automation: keep PLAN_ONLY / approve exact section scope ____
+Derivative QA equivalence: do not accept / approve for this product and exact source+derivative SHA ____
+```
+
+These responses are owner decisions to persist. Separate run-time execution approval and current Partner Center read-only reconciliation remain required before a section write.
+
 ## Runtime QA and release gate
 
 The exact unsigned MSIX passed hash/manifest inspection, but its local install attempt returned Access Denied and the packaged EXE launch timed out. Packaged runtime QA is **not passed**. The existing GitHub Windows workflow builds and structurally inspects the unsigned candidate; it does not install and interactively run this package. Source-based QA on an older source revision is separate evidence and cannot replace exact-package runtime QA. No test-signed copy has been created, and no independent VM has been confirmed. Do not repeat the same install attempt, change security policy, or report a signed-copy test as proof for the fixed MSIX.

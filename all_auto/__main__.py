@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 import json
 import os
 import sys
+import tempfile
 from pathlib import Path
 from uuid import uuid4
 
@@ -16,8 +17,25 @@ from .store_workflow import (
     _load_job,
     acquire_registered_package,
     build_store_workflow_report,
+    write_store_report_with_fallback,
     write_unique_report,
 )
+
+
+def _write_store_report(report: dict, requested_root: Path | None, product: str,
+                        *subdirs: str) -> Path:
+    if requested_root is not None:
+        return write_unique_report(report, requested_root)
+    default_root = Path(".store-workflow-runs") / product
+    fallback_roots: list[Path] = []
+    local_app_data = os.environ.get("LOCALAPPDATA")
+    if local_app_data:
+        fallback_roots.append(Path(local_app_data) / "WindowsAllAuto" / "store-workflow-runs" / product)
+    fallback_roots.append(Path(tempfile.gettempdir()) / "WindowsAllAuto" / "store-workflow-runs" / product)
+    for subdir in subdirs:
+        default_root /= subdir
+        fallback_roots = [root / subdir for root in fallback_roots]
+    return write_store_report_with_fallback(report, default_root, fallback_roots)
 
 
 def _store_run_exit_code(report: dict, execution: dict, acquisition: dict) -> int:
@@ -120,8 +138,7 @@ def main(argv: list[str] | None = None) -> int:
                     profile_root=config_root / "runtime_qa_profiles", package=package)
                 qa["run_id"] = uuid4().hex
                 qa["package_acquisition"] = acquisition
-                out = opts.out or Path(".store-workflow-runs") / opts.product / "runtime-qa"
-                report_path = write_unique_report(qa, out)
+                report_path = _write_store_report(qa, opts.out, opts.product, "runtime-qa")
             except (OSError, StoreWorkflowError, ValueError, UploadError) as exc:
                 print(f"STORE QA HOLD: {type(exc).__name__}: {exc}", file=sys.stderr)
                 return 2
@@ -159,7 +176,7 @@ def main(argv: list[str] | None = None) -> int:
                 report = {"schema_version": "all-auto-store-archive/1", "product_key": opts.product,
                           "created_at_utc": datetime.now(timezone.utc).isoformat(),
                           "run_id": uuid4().hex, **result}
-                report_path = write_unique_report(report, Path(".store-workflow-runs") / opts.product)
+                report_path = _write_store_report(report, None, opts.product)
             except (OSError, StoreWorkflowError, ValueError) as exc:
                 print(f"STORE ARCHIVE HOLD: {type(exc).__name__}: {exc}", file=sys.stderr)
                 return 2
@@ -175,8 +192,7 @@ def main(argv: list[str] | None = None) -> int:
                     repo_root=Path(__file__).resolve().parent.parent,
                     cdp_endpoint=opts.cdp_url,
                 )
-                report_path = write_unique_report(
-                    report, opts.out or Path(".store-workflow-runs") / opts.product)
+                report_path = _write_store_report(report, opts.out, opts.product)
             except (OSError, StoreWorkflowError, ValueError) as exc:
                 print(f"STORE STATUS HOLD: {type(exc).__name__}: {exc}", file=sys.stderr)
                 return 2
@@ -226,7 +242,7 @@ def main(argv: list[str] | None = None) -> int:
                 report = {"schema_version": "all-auto-store-apply/1", "product_key": opts.product,
                           "created_at_utc": datetime.now(timezone.utc).isoformat(),
                           "run_id": uuid4().hex, **result}
-                report_path = write_unique_report(report, Path(".store-workflow-runs") / opts.product)
+                report_path = _write_store_report(report, None, opts.product)
                 print(json.dumps({"status": result["status"], "report": str(report_path),
                                   "product": opts.product, "section": opts.section}, ensure_ascii=False, sort_keys=True))
                 return 0
@@ -246,7 +262,7 @@ def main(argv: list[str] | None = None) -> int:
                            "retry_allowed": not write_started,
                            "certification_executed": False, "publish_executed": False}
                 try:
-                    report_path = write_unique_report(failure, Path(".store-workflow-runs") / opts.product)
+                    report_path = _write_store_report(failure, None, opts.product)
                     print(json.dumps({"status": status, "report": str(report_path),
                                       "product": opts.product, "section": opts.section},
                                      ensure_ascii=False, sort_keys=True), file=sys.stderr)
@@ -338,8 +354,7 @@ def main(argv: list[str] | None = None) -> int:
                              "certification_executed": False, "publish_executed": False}
             report["execution"] = execution
             report["overall_status"] = _store_overall_status(report, execution)
-            out = opts.out or Path(".store-workflow-runs") / opts.product
-            report_path = write_unique_report(report, out)
+            report_path = _write_store_report(report, opts.out, opts.product)
             approval_report = {
                 "schema_version": "all-auto-owner-decisions/1",
                 "created_at_utc": report["created_at_utc"],
@@ -352,7 +367,9 @@ def main(argv: list[str] | None = None) -> int:
                 "shared_store_policy": report.get("shared_store_policy", {}),
                 "owner_decision_batch": report.get("owner_decision_batch", []),
             }
-            approval_report_path = write_unique_report(approval_report, out / "owner-decisions")
+            approval_report_path = _write_store_report(
+                approval_report, opts.out / "owner-decisions" if opts.out else None,
+                opts.product, "owner-decisions")
         except (OSError, StoreWorkflowError) as exc:
             print(f"STORE WORKFLOW HOLD: {exc}", file=sys.stderr)
             return 2
