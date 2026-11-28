@@ -110,7 +110,7 @@ def _content_types_signature_only(source: bytes, derived: bytes) -> tuple[bool, 
             any(word in catalog_default_type for word in ("pkiseccat", "codeintegrity", "catalog"))):
         return False, "cat extension does not map to a code-integrity catalog content type"
     if ("/" + CODE_INTEGRITY_MEMBER.lower() in new_overrides and not
-            any(word in catalog_type for word in ("codeintegrity", "code-integrity", "catalog"))):
+            any(word in catalog_type for word in ("codeintegrity", "code-integrity", "catalog", "pkiseccat"))):
         return False, "CodeIntegrity.cat override has an unrelated content type"
     if ("/" + SIGNATURE_MEMBER.lower() in new_overrides and
             "signature" not in signature_override_type):
