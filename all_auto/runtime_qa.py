@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import json
 import platform
+import subprocess
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -88,3 +90,62 @@ def build_runtime_qa_report(*, product: str, config_root: Path,
         "publish_executed": False,
         "note": "This report verifies the frozen package binding and enumerates product-specific checks; it does not claim runtime or visual QA unless a separate execution receipt completes every required scenario.",
     }
+
+
+def run_profiled_source_driver(*, product: str, profile_root: Path,
+                               evidence_root: Path) -> dict[str, Any]:
+    """Run only the profile-authorized synthetic-data source GUI driver."""
+    profile_path = profile_root / f"{product}.json"
+    if not profile_path.is_file():
+        raise StoreWorkflowError(f"runtime QA profile is missing for {product}")
+    profile = json.loads(profile_path.read_text(encoding="utf-8"))
+    driver = profile.get("source_gui_driver")
+    if not isinstance(driver, dict) or driver.get("enabled") is not True:
+        return {"status": "NO_APPROVED_SOURCE_DRIVER", "qa_pass": False}
+    if platform.system() != "Windows":
+        return {"status": "WRONG_HOST_OS", "qa_pass": False,
+                "required_host": "Windows"}
+
+    script_rel = str(driver.get("script", ""))
+    roots = [Path.home() / "Desktop" / "portfolio-audit" / rel
+             for rel in driver.get("source_root_candidates", [])
+             if isinstance(rel, str) and rel and not Path(rel).is_absolute()]
+    source_root = next((root.resolve() for root in roots
+                        if (root / script_rel).is_file()), None)
+    if source_root is None:
+        return {"status": "SOURCE_DRIVER_NOT_FOUND", "qa_pass": False,
+                "searched_candidates": [str(root) for root in roots]}
+    script = (source_root / script_rel).resolve()
+    if source_root not in script.parents:
+        raise StoreWorkflowError("source GUI driver path escaped its product checkout")
+
+    evidence_root = evidence_root.resolve()
+    evidence_root.parent.mkdir(parents=True, exist_ok=True)
+    if evidence_root.exists():
+        raise StoreWorkflowError("refusing to reuse an existing source QA evidence directory")
+    receipt_path = evidence_root / "DCA_GUI_QA_RECEIPT.json"
+    try:
+        completed = subprocess.run(
+            [sys.executable, str(script), "--evidence-dir", str(evidence_root)],
+            cwd=source_root, capture_output=True, text=True,
+            timeout=int(driver.get("timeout_seconds", 240)), check=False,
+        )
+    except subprocess.TimeoutExpired:
+        return {"status": "SOURCE_DRIVER_TIMEOUT", "qa_pass": False,
+                "evidence_root": str(evidence_root)}
+    if completed.returncode != 0 or not receipt_path.is_file():
+        return {"status": "SOURCE_DRIVER_FAILED", "qa_pass": False,
+                "exit_code": completed.returncode,
+                "stderr_tail": completed.stderr[-1000:],
+                "stdout_tail": completed.stdout[-1000:],
+                "evidence_root": str(evidence_root)}
+    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    if (receipt.get("schema_version") != "data-contract-auditor-gui-smoke/1"
+            or receipt.get("status") != "PASS"
+            or receipt.get("execution_type") != "SOURCE_GUI_DRIVER_SYNTHETIC_DATA"):
+        return {"status": "SOURCE_DRIVER_RECEIPT_INVALID", "qa_pass": False,
+                "evidence_root": str(evidence_root)}
+    return {"status": "SOURCE_GUI_DRIVER_PASS", "qa_pass": True,
+            "receipt": receipt, "receipt_path": str(receipt_path),
+            "evidence_root": str(evidence_root),
+            "packaged_runtime_proven": False, "visual_dpi_proven": False}
