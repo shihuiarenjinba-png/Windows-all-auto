@@ -38,7 +38,7 @@ class ActiveHandoffPointerV1Tests(unittest.TestCase):
 
             self.assertEqual(
                 snapshot["overlay_path"],
-                "ops/active_e2e_handoff_overlay_20261128_1440.json",
+                "ops/active_e2e_handoff_overlay_20261128_1538.json",
             )
             self.assertEqual(
                 snapshot["overlay"]["pr165"]["head_sha"],
@@ -114,6 +114,13 @@ class ActiveHandoffPointerV1Tests(unittest.TestCase):
                 snapshot["overlay"]["local_code_sync"]["status"],
                 "NOT_OBSERVED__CLOUD_PASS_ONLY",
             )
+            prism = snapshot["overlay"]["products"]["prism_route_3d"]
+            builder = prism["provisioner_pr11"]
+            self.assertEqual(builder["head_sha"], "356cb7bcbf795c3335fb142cf82fef2db3a7478a")
+            self.assertEqual(builder["exact_head_ci"][1]["jobs"][0]["conclusion"], "success")
+            self.assertEqual(builder["exact_head_ci"][1]["jobs"][1]["conclusion"], "skipped")
+            self.assertFalse(builder["real_msix"])
+            self.assertEqual(snapshot["queue"]["priority"][2]["builder_status"], "FIXTURE_ONLY_PASS_REAL_PRODUCT_MSIX_SKIPPED")
 
     def test_tampered_overlay_fails_closed_without_legacy_fallback(self):
         with tempfile.TemporaryDirectory() as temporary:

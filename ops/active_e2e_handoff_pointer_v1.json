@@ -3,26 +3,26 @@
   "pointer_version": 1,
   "path": "ops/active_e2e_handoff_pointer_v1.json",
   "repository": "shihuiarenjinba-png/Windows-all-auto",
-  "generated_at_utc": "2026-11-28T05:40:09Z",
+  "generated_at_utc": "2026-11-28T06:38:49Z",
   "status": "ACTIVE",
   "selection_policy": "VERIFIED_POINTER_REFERENCED_OVERLAY_ONLY",
   "fallback_to_canonical_ledger": false,
   "source_observation": {
     "pr_number": 219,
     "branch": "codex/36-pr218-current-lane-reconcile-20261128-1337",
-    "head_sha": "4e903dc029b763be91de28c67c00b8e96e8b0a71",
-    "exact_head_ci_run_id": 46108715283,
+    "head_sha": "b3a42ce80fe95651f075b42b03d03c21700a91dd",
+    "exact_head_ci_run_id": 46114053192,
     "exact_head_ci_conclusion": "success"
   },
   "active_snapshot": {
-    "observed_at_utc": "2026-11-28T05:40:09Z",
+    "observed_at_utc": "2026-11-28T06:38:49Z",
     "overlay": {
-      "path": "ops/active_e2e_handoff_overlay_20261128_1440.json",
-      "git_blob_sha": "a575beef1d262c65c8b652c561c799f6acecd20c"
+      "path": "ops/active_e2e_handoff_overlay_20261128_1538.json",
+      "git_blob_sha": "bf1031b52d4a3ef5fc2a75f6c855d8b34028b810"
     },
     "queue": {
-      "path": "ops/completion_rush_queue_20261128_1440.json",
-      "git_blob_sha": "8d903a826a6f4d42ae5b6d79d1b3439703d1f3ee"
+      "path": "ops/completion_rush_queue_20261128_1538.json",
+      "git_blob_sha": "37bdc5622823d932a5c7b5cd252882201dfa3a4b"
     }
   },
   "canonical_ledger": {
@@ -53,5 +53,13 @@
     "publish_allowed": false,
     "merge_allowed": false,
     "force_push_allowed": false
+  },
+  "supervisor_handoff": {
+    "received_at_jst": "2026-11-28 14:44",
+    "provisioner_repository": "shihuiarenjinba-png/Repository-Provisioner-3D",
+    "provisioner_pr_number": 11,
+    "provisioner_head_sha": "356cb7bcbf795c3335fb142cf82fef2db3a7478a",
+    "fixture_only_run_id": 46099215673,
+    "real_product_msix_job": "SKIPPED"
   }
 }
