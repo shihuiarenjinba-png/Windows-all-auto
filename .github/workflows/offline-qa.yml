@@ -246,6 +246,7 @@ jobs:
           $output = ($lines | ForEach-Object { "$_" }) -join "`n"
           Write-Host $output
           if ($exitCode -ne 1) { throw "Expected source QA pass with fixed-package hold (exit 1); got $exitCode" }
+          $global:LASTEXITCODE = 0
           $summaryLine = $lines | Where-Object { "$_" -match '^\{.*"report":' } | Select-Object -Last 1
           if (-not $summaryLine) { throw 'Integrated QA did not emit its JSON summary.' }
           $summary = "$summaryLine" | ConvertFrom-Json
