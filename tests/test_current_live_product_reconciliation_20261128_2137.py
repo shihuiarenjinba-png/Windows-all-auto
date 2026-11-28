@@ -20,7 +20,7 @@ class CurrentLiveProductReconciliation20261128_2137Tests(unittest.TestCase):
     def test_canonical_ledger_latest_append_matches_current_observation(self):
         pointer = self.overlay["canonical_ledger_reconciliation"]
         git_blob_sha = hashlib.sha1(
-            b"blob " + str(len(self.ledger_bytes)).encode("ascii") + b"\\0" + self.ledger_bytes
+            b"blob " + str(len(self.ledger_bytes)).encode("ascii") + b"\0" + self.ledger_bytes
         ).hexdigest()
         self.assertEqual(git_blob_sha, pointer["blob_sha"])
         self.assertEqual(len(self.ledger_bytes), pointer["bytes"])
