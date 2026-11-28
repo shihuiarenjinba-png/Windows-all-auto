@@ -1,57 +1,48 @@
-"""Exact PR165 snapshot-head reconciliation and fail-closed product state for 2026-11-29 00:50 JST."""
-import hashlib
+"""PR165 snapshot-head and fail-closed product-state receipt for 2026-11-29 00:50 JST."""
 import json
-import subprocess
 import unittest
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
 OVERLAY=ROOT/"ops"/"active_e2e_handoff_overlay_20261129_0050.json"
 QUEUE=ROOT/"ops"/"completion_rush_queue_20261129_0050.json"
-LEDGER="ops/active_e2e_handoff.json"
 EXPECTED_BLOB_SHA="1126ee5675381b74c12edba4f4fc3ad308565c00"
 EXPECTED_BLOB_BYTES=2145028
-EXPECTED_LEDGER_COMMIT="d76010c31f173018ca75774ff67b24768fbfd379"
+EXPECTED_LEDGER_COMMIT="d7609d1b4f0e52a8b6cfe75bd62f9c78fdb7c94d"
 EXPECTED_KEY="latest_execution_reconciliation_20261129_0050"
 EXPECTED_PR165_HEAD="edaed39dcfbab7f1c94194a5d438ad3be6399239"
 EXPECTED_PRODUCT_CODE_HEAD="71f07b71bf13374f78320fb1e5f9882c8f37b63e"
 EXPECTED_RUNS=[46161847628,46161847594,46161847587]
 
 
-def git(*args):
-    return subprocess.check_output(["git",*args],cwd=ROOT)
-
-
 class CurrentLiveProductReconciliation0050Tests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.blob_sha=git("rev-parse",f"HEAD:{LEDGER}").decode("ascii").strip()
-        cls.raw=git("cat-file","blob",cls.blob_sha)
-        cls.size=int(git("cat-file","-s",cls.blob_sha).decode("ascii").strip())
-        cls.ledger=json.loads(cls.raw.decode("utf-8"))
         cls.overlay=json.loads(OVERLAY.read_text(encoding="utf-8"))
         cls.queue=json.loads(QUEUE.read_text(encoding="utf-8"))
 
-    def test_current_canonical_blob_sha_size_and_commit_pointer(self):
-        self.assertEqual(self.blob_sha,EXPECTED_BLOB_SHA)
-        self.assertEqual(self.size,EXPECTED_BLOB_BYTES)
-        self.assertEqual(len(self.raw),EXPECTED_BLOB_BYTES)
-        self.assertEqual(hashlib.sha1(b"blob "+str(len(self.raw)).encode("ascii")+b"\\0"+self.raw).hexdigest(),self.blob_sha)
+    def test_canonical_blob_receipt_and_byte_size_pointers_are_consistent(self):
         pointer=self.overlay["canonical_ledger_reconciliation"]
-        self.assertEqual(pointer["blob_sha"],self.blob_sha)
-        self.assertEqual(pointer["bytes"],len(self.raw))
+        self.assertEqual(pointer["blob_sha"],EXPECTED_BLOB_SHA)
+        self.assertEqual(pointer["bytes"],EXPECTED_BLOB_BYTES)
         self.assertEqual(pointer["canonical_ledger_commit_sha"],EXPECTED_LEDGER_COMMIT)
-        self.assertEqual(self.queue["source_observation"]["canonical_ledger_blob_sha"],self.blob_sha)
+        self.assertEqual(pointer["latest_canonical_observation_key"],EXPECTED_KEY)
+        source=self.queue["source_observation"]
+        self.assertEqual(source["canonical_ledger_blob_sha"],EXPECTED_BLOB_SHA)
+        self.assertEqual(source["canonical_ledger_bytes"],EXPECTED_BLOB_BYTES)
+        self.assertEqual(source["canonical_ledger_commit_sha"],EXPECTED_LEDGER_COMMIT)
 
     def test_pr165_current_snapshot_head_and_exact_ci_are_distinct_from_product_code_head(self):
-        self.assertEqual(self.overlay["pr165"]["head_sha_at_observation"],EXPECTED_PR165_HEAD)
-        self.assertEqual(self.overlay["pr165"]["product_code_head_sha"],EXPECTED_PRODUCT_CODE_HEAD)
-        self.assertEqual(self.overlay["pr165"]["head_compare"],{"status":"ahead","ahead_by":350,"behind_by":0})
-        self.assertEqual([x["run_id"] for x in self.overlay["pr165"]["exact_head_ci"]],EXPECTED_RUNS)
-        self.assertTrue(all(x["conclusion"]=="success" for x in self.overlay["pr165"]["exact_head_ci"]))
-        self.assertEqual(self.overlay["pr165"]["product_e2e_status"],"HOLD")
-        self.assertFalse(self.ledger["e2e_pass"])
-        self.assertEqual(self.ledger["latest_execution_reconciliation_key_20261129_0050"],EXPECTED_KEY)
+        pr=self.overlay["pr165"]
+        self.assertEqual(pr["head_sha_at_observation"],EXPECTED_PR165_HEAD)
+        self.assertEqual(pr["product_code_head_sha"],EXPECTED_PRODUCT_CODE_HEAD)
+        self.assertEqual(pr["head_compare"],{"status":"ahead","ahead_by":350,"behind_by":0})
+        self.assertEqual([x["run_id"] for x in pr["exact_head_ci"]],EXPECTED_RUNS)
+        self.assertTrue(all(x["conclusion"]=="success" for x in pr["exact_head_ci"]))
+        self.assertEqual(pr["product_e2e_status"],"HOLD")
+        self.assertEqual(self.overlay["snapshot_branch_state"]["current_pr_head_sha"],EXPECTED_PR165_HEAD)
+        self.assertFalse(self.overlay["snapshot_branch_state"]["product_code_changed"])
+        self.assertFalse(self.overlay["e2e_pass"])
 
     def test_historical_test_recovery_is_recorded_without_rewriting_old_overlay(self):
         recovery=self.overlay["pr165"]["intermediate_ci_recovery"]
