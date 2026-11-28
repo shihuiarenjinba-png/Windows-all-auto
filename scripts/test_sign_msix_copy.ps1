@@ -66,12 +66,11 @@ try {
     if (-not $signTool) { throw 'Windows SDK SignTool was not found.' }
     & $signTool sign /fd SHA256 /sha1 $cert.Thumbprint $derived
     if ($LASTEXITCODE -ne 0) { throw 'SignTool signing failed.' }
-    & $signTool verify /pa /v $derived
-    if ($LASTEXITCODE -ne 0) { throw 'SignTool signature verification failed.' }
-
     $publicCert = Join-Path $OutputDirectory ("test-cert-{0}.cer" -f $runId)
     Export-Certificate -Cert $cert -FilePath $publicCert | Out-Null
     $trustedCert = Import-Certificate -FilePath $publicCert -CertStoreLocation 'Cert:\LocalMachine\TrustedPeople'
+    & $signTool verify /pa /v $derived
+    if ($LASTEXITCODE -ne 0) { throw 'SignTool signature verification failed after ephemeral trust was installed.' }
     python -m all_auto.msix_derivative --source $source --derived $derived `
         --expected-source-sha256 $ExpectedSha256 --identity-name $IdentityName `
         --publisher $Publisher --version $Version --architecture $Architecture --report $report

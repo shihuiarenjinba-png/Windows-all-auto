@@ -63,6 +63,8 @@ class WindowsMsixDiagnosticTests(unittest.TestCase):
                          "store_candidate_unchanged=$true", "diagnostic_only=$true"):
             self.assertIn(required, source)
         self.assertNotIn("Set-ExecutionPolicy", source)
+        self.assertLess(source.index("Import-Certificate -FilePath $publicCert"),
+                        source.index("& $signTool verify /pa /v $derived"))
         workflow = (root / ".github" / "workflows" / "offline-qa.yml").read_text(encoding="utf-8")
         self.assertIn("synthetic-msix-test-signing-receipt", workflow)
         self.assertIn("*.json", workflow)
