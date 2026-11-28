@@ -102,8 +102,10 @@ class RuntimeQaPlanTests(unittest.TestCase):
     def _run_source_fixture(self, root: Path):
         checkout, script, profile_root, profile = self._make_source_fixture(root)
         evidence = root / "evidence"
-        with patch("all_auto.runtime_qa.platform.system", return_value="Windows"), \\
-             patch.dict(os.environ, {"ALL_AUTO_QA_SOURCE_ROOT": str(checkout)}, clear=False):
+        with (
+            patch("all_auto.runtime_qa.platform.system", return_value="Windows"),
+            patch.dict(os.environ, {"ALL_AUTO_QA_SOURCE_ROOT": str(checkout)}, clear=False),
+        ):
             result = run_profiled_source_driver(product="data-contract-auditor",
                 profile_root=profile_root, evidence_root=evidence)
         return result, checkout, script, profile_root, profile, evidence
@@ -123,8 +125,10 @@ class RuntimeQaPlanTests(unittest.TestCase):
             root = Path(temporary)
             checkout, _, profile_root, _ = self._make_source_fixture(root)
             (checkout / "untracked.txt").write_text("dirty", encoding="utf-8")
-            with patch("all_auto.runtime_qa.platform.system", return_value="Windows"), \\
-                 patch.dict(os.environ, {"ALL_AUTO_QA_SOURCE_ROOT": str(checkout)}, clear=False):
+            with (
+                patch("all_auto.runtime_qa.platform.system", return_value="Windows"),
+                patch.dict(os.environ, {"ALL_AUTO_QA_SOURCE_ROOT": str(checkout)}, clear=False),
+            ):
                 result = run_profiled_source_driver(product="data-contract-auditor",
                     profile_root=profile_root, evidence_root=root / "evidence")
             self.assertEqual(result["status"], "SOURCE_BINDING_MISMATCH")
@@ -136,8 +140,10 @@ class RuntimeQaPlanTests(unittest.TestCase):
             checkout, _, profile_root, profile = self._make_source_fixture(root)
             profile["source_binding"]["commit"] = "0" * 40
             (profile_root / "data-contract-auditor.json").write_text(json.dumps(profile), encoding="utf-8")
-            with patch("all_auto.runtime_qa.platform.system", return_value="Windows"), \\
-                 patch.dict(os.environ, {"ALL_AUTO_QA_SOURCE_ROOT": str(checkout)}, clear=False):
+            with (
+                patch("all_auto.runtime_qa.platform.system", return_value="Windows"),
+                patch.dict(os.environ, {"ALL_AUTO_QA_SOURCE_ROOT": str(checkout)}, clear=False),
+            ):
                 result = run_profiled_source_driver(product="data-contract-auditor",
                     profile_root=profile_root, evidence_root=root / "evidence")
             self.assertEqual(result["status"], "SOURCE_BINDING_MISMATCH")
@@ -147,8 +153,10 @@ class RuntimeQaPlanTests(unittest.TestCase):
             root = Path(temporary)
             checkout, script, profile_root, _ = self._make_source_fixture(root)
             script.write_text(script.read_text(encoding="utf-8") + "\n# changed\n", encoding="utf-8")
-            with patch("all_auto.runtime_qa.platform.system", return_value="Windows"), \\
-                 patch.dict(os.environ, {"ALL_AUTO_QA_SOURCE_ROOT": str(checkout)}, clear=False):
+            with (
+                patch("all_auto.runtime_qa.platform.system", return_value="Windows"),
+                patch.dict(os.environ, {"ALL_AUTO_QA_SOURCE_ROOT": str(checkout)}, clear=False),
+            ):
                 result = run_profiled_source_driver(product="data-contract-auditor",
                     profile_root=profile_root, evidence_root=root / "evidence")
             self.assertEqual(result["status"], "SOURCE_BINDING_MISMATCH")
@@ -159,8 +167,10 @@ class RuntimeQaPlanTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             checkout, _, profile_root, _ = self._make_source_fixture(root)
-            with patch("all_auto.runtime_qa.platform.system", return_value="Windows"), \\
-                 patch.dict(os.environ, {
+            with (
+                patch("all_auto.runtime_qa.platform.system", return_value="Windows"),
+                patch.dict(os.environ, {,
+            ):
                      "ALL_AUTO_QA_SOURCE_ROOT": str(checkout),
                      "SOURCE_QA_MISSING_CHECK": "default_output_files_written",
                  }, clear=False):
