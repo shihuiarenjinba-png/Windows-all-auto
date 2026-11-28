@@ -528,12 +528,16 @@
   "snapshot_branch_state": {
     "source_code_head_sha": "c35831ed375e84d9551ebe42e9f02dca319d3b26",
     "canonical_ledger_update_commit_sha": "905656dcdd03615019d53e03a25c058128c95d06",
-    "regression_test_commit_sha": "69d68d3e44afd4d3e103b875a5f8416f96c8110e",
-    "queue_commit_sha": "a651c208b8bcdf1858ab029f7a96775604342c19",
+    "regression_test_commit_sha": "ac91ec12c0f9006e10baadbeca91bab201bd0730",
+    "queue_commit_sha": "c7b25cca147d7307f24865192ff66c145bcc8f91",
     "snapshot_branch_head_before_overlay": "a651c208b8bcdf1858ab029f7a96775604342c19",
     "overlay_created_after_test_and_queue": true,
     "product_code_changed": false,
     "merge_allowed": false,
-    "force_push_allowed": false
+    "force_push_allowed": false,
+    "regression_test_blob_sha": "c75670679d46a9e10f4e14dc1f52c3c819ce8a2f",
+    "queue_blob_sha": "636760702a47ec3df91eaa184bb95d7f6a8843b6",
+    "snapshot_branch_head_before_overlay_refresh": "c7b25cca147d7307f24865192ff66c145bcc8f91",
+    "overlay_refreshed_after_regression_fix": true
   }
 }
