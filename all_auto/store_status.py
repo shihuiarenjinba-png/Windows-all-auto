@@ -497,4 +497,3 @@ def collect_store_status(*, product: str, config_root: Path, repo_root: Path,
         "published": False,
         "writes_performed": False,
     }
-

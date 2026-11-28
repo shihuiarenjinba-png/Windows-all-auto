@@ -5,7 +5,7 @@ WindowsアプリやゲームをMicrosoft Storeへ登録するときの **GitHub 
 ## 現在の到達点（2026-11-28）
 - GitHubの作業ブランチのみで開発（main/release直接変更なし）。
 - オフライン事前検証コア、日英切替GUI、CLI、SQLiteの安全なキュー台帳に加え、Product-key Store workflow、Overview起点のナビゲーション、共通フォーム入力、SHA固定Artifact取得、ローカルpackage archiveを実装。
-- 基準HEADは 7aeeaa445fb3d7a862d1bd5d41d3885be9e5dcdb（PR #166、Draft）。今回の追加後HEADは bfcdb75f516edb5ffab0560b86fad61806c5e280（次のCDP検出変更を検証中）。ローカル回帰は492件PASS（既存SKIP 5件）。Windows/Ubuntu CIは次のpush後に確認します。
+- PR #166の現在の親HEADは 4c81bb70251320b5f92237a6b651271b1b8b8ab0（Draft）。今回の候補QA Receipt統合後、WAA回帰は494件PASS（既存SKIP 5件）。
 - 2026-11-28に、Windows実行環境の読み取り専用MSIX診断、アーカイブ再取得、終了コード判定、外部バックアップ承認ゲート、Partner Center読み取り観測、同じ値のフォーム再Save抑止を追加し、CI成功済みです。
 - Windows-data / Windows-checker / Windows-Automator の読取専用JSON契約アダプタを追加済み。未知schema/statusはfail-closedで停止し、Windows-Automatorの `DONE` は引き続き `DRY_RUN_DONE` として扱います。
 - Windows-Automator live v2 の `DRAFT_SAVED` は、execution_mode、Save後の再読込、package validation/section completion、全必須section、証拠、Store ID / package SHA / source SHA / Identity / Versionの期待値一致をすべて確認した場合だけ受理します。Submit/Certified/Publishedのclaimは拒否します。
@@ -24,8 +24,8 @@ WindowsアプリやゲームをMicrosoft Storeへ登録するときの **GitHub 
 
 ### Product-key Store command and exact-package gate（2026-11-28）
 - 統合入口: `python -m all_auto store run --product data-contract-auditor`。製品設定、Artifact/local MSIX、Source evidence、Owner decisionsを集め、保存済みの承認範囲だけ実行します。DCAは現在 `PLAN_ONLY` のままです。
-- 製品キー別候補検証: `python -m all_auto store qa --product data-contract-auditor --candidate-id dca-provisional-1.0.1.0-4ae2574` はArtifact 15267053130由来の候補MSIXをSHA/Manifest/Product/Draft/source commitで照合します。`--execute` は保存済みの同じsource GUI receiptも照合しますが、候補のインストール機能QAとは別です。正式1.0.0.0の設定・SHAは変更しません。
-- DCA候補のWindows workflowは、固定Artifactを再buildせずdownloadして検査し、テスト署名した別コピーをインストールし、製品GUI機能QA・画面キャプチャを行う経路を追加しました。実機workflow run `46162539406` の完了とreceipt確認まではPASSにしません。Windows 10/11 visual/DPI、Certification/PublishのPASSでもありません。
+- 製品キー別候補検証: `python -m all_auto store qa --product data-contract-auditor --candidate-id dca-provisional-1.0.1.0-4ae2574` はArtifact 15267053130由来の候補MSIXをSHA/Manifest/Product/Draft/source commitで照合します。`--execute` はsource GUI receiptと、test-sign derivative / install / installed-GUIの3種類のReceipt、各SHA、6画面画像のhashを検証します。候補runtime QAは `CANDIDATE_INSTALLED_FUNCTIONAL_QA_PASS_PROVISIONAL` として報告し、正式1.0.0.0の設定・SHAや販売承認は変更しません。
+- DCA候補のWindows workflowは、固定Artifactを再buildせずdownloadして検査し、テスト署名した別コピーをインストールし、製品GUI機能QA・画面キャプチャを行う経路を追加しました。Windows workflow run `46168766181` で候補SHAを固定したまま、test-signed derivativeのインストール・AUMID起動・CSV/XLSX・エラー経路・既定出力・日英切替・終了/再起動がPASSし、receipt/artifactsを保存しました。候補はWindows Server 2025 runnerでの機能QAであり、Windows 10/11 desktop visual/DPI QAではありません。正式1.0.0.0の値や承認状態は変更していません。
 - ローカル `store status` は`PARTNER_CENTER_CDP_URL`が未設定なら既知の `127.0.0.1:9223` のEdgeだけを検出します。ブラウザー起動、認証、MFA、Cookie取得はしません。検出対象が無ければHOLDです。
 - `store run`、`store apply --section packages`、`uploader.run --execute`、内部の`process_job`は共通のexact-package QA・Product/Draft承認・Device family承認ゲートを通ります。どの入口からも未承認のQAを迂回できません。
 - 共有のMSIXテスト署名ヘルパーは段階ごとに開始時刻、経過時間、状態をReceiptへ原子的に保存します。失敗・タイムアウトReceiptを残し、ProcessLaunchモードは基本機能QAをPASSと偽装せず NOT_RUN にします。
@@ -85,4 +85,3 @@ Windows実機/Partner Centerの実操作で正規の確認が取れるまで本�
 - MSIX署名検証は別コピーだけを対象にします。署名対象MSIX、SHA、Identity、Publisher、Version、Architectureは固定値と照合し、失敗時も開始済みフェーズを含むReceiptを残します。GitHub hosted Windows上の合成アプリSmokeはDCA製品機能のQAではありません。
 - DCA 1.0.1.0は新候補versionとして扱い、store/partner_center_registration.jsonの正式承認済みversion 1.0.0.0を書き換えません。1.0.1.0の正式候補ビルド・実製品テスト署名QAはDCA workflowの別PR/CI実行が完了するまで未確認です。Commercial licenseは未認証で販売状態はHOLDです。
 - Windows-data/MSIX build、Windows-checker audit、DCA product GUI driver、Windows-AutomatorのStore draft書込みを製品キー単独で一続きに起動・再開するアダプターは未完了です。既存JSON契約の読取検証と限定的なDCA GUI driver起動を全4ツールの実行統合と混同しません。
-

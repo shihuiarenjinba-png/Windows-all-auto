@@ -33,13 +33,23 @@
       "upload_approved": false,
       "certification_authorized": false,
       "publish_authorized": false,
-      "installed_msix_functional_qa": "NOT_RUN",
+      "installed_msix_functional_qa": "PASS_TEST_SIGNED_DERIVATIVE",
       "source_gui_qa_is_separate": true,
       "source_gui_driver_sha256": "e54ee38d42dd6f38f95119afbf50522d972821c2247628e71b0e9c36a6630782",
       "source_gui_receipt_relative_path": "_runtime/dca-provisional-candidate-20261128-4ae2574982adf0cfd5aabc31f55f27b555283904/qa-evidence/provisional-1.0.1.0/source-gui/LOCAL_REAL_DEVICE_QA.json",
-      "installed_msix_qa_receipt_relative_path": "_runtime/dca-provisional-candidate-20261128-4ae2574982adf0cfd5aabc31f55f27b555283904/qa-evidence/provisional-1.0.1.0/test-sign-install/test-signature-qa-receipt-db2caa96679f40479b8bcfac158676e9.json",
+      "installed_msix_qa_receipt_relative_path": "_runtime/dca-provisional-candidate-20261128-4ae2574982adf0cfd5aabc31f55f27b555283904/qa-evidence/provisional-1.0.1.0/installed-msix-qa-run-46168766181/installed-msix-functional-qa-f3d9d6b047534335810aaf771528a48e.json",
       "product_id": "9PDL4ZWSB45P",
-      "submission_id": "1152921505702212222"
+      "submission_id": "1152921505702212222",
+      "installed_msix_qa_run_id": "46168766181",
+      "installed_msix_qa_artifact_id": "15272478689",
+      "installed_msix_qa_artifact_sha256": "fa433e7e6bf2f4ca8469cd0a9376d3bac9a7f100cab9b785a9bc0dd34d1ef8d6",
+      "installed_msix_qa_driver_commit": "b3e88997523cc349ca19c2fd27e97f1e7f88ebf6",
+      "installed_msix_qa_runner_context": "GitHub Actions windows-latest; Windows Server 2025 Datacenter; not Windows 10/11 desktop visual QA",
+      "installed_msix_qa_receipt_sha256": "6fbc664d404a7eaab98a7c8fec265e005295be3a9e473a8f5de6b18564b2cc00",
+      "test_signature_derivative_receipt_relative_path": "_runtime/dca-provisional-candidate-20261128-4ae2574982adf0cfd5aabc31f55f27b555283904/qa-evidence/provisional-1.0.1.0/installed-msix-qa-run-46168766181/test-signature-derivative-f3d9d6b047534335810aaf771528a48e.json",
+      "test_signature_derivative_receipt_sha256": "bf73ec8dce5bc9d88a384350701a6e257b59016fb0e2faa8404753d086569510",
+      "test_signature_install_receipt_relative_path": "_runtime/dca-provisional-candidate-20261128-4ae2574982adf0cfd5aabc31f55f27b555283904/qa-evidence/provisional-1.0.1.0/installed-msix-qa-run-46168766181/test-signature-qa-receipt-f3d9d6b047534335810aaf771528a48e.json",
+      "test_signature_install_receipt_sha256": "fa8cb6cc77a2a4e8ef631f09a3b8e83c4cef4d0737b6a230364bff6a2e209fa0"
     }
   ]
 }

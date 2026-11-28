@@ -204,4 +204,3 @@ def _save_run_receipt(workdir: Path, config: dict, job, outcome: str, confirmati
         journal.append(receipt)
 
 if __name__ == "__main__": raise SystemExit(main())
-

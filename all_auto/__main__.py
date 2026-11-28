@@ -189,14 +189,24 @@ def main(argv: list[str] | None = None) -> int:
                             source_binding_override=source_binding_override,
                             source_root_candidates_override=source_root_candidates_override)
                     qa["source_gui_driver"] = driver
-                    qa["installed_package_functional_qa"] = {
-                        "status": candidate.get("installed_msix_functional_qa", "NOT_RUN") if candidate else "NOT_RUN",
-                        "evidence_type": "TEST_SIGNED_DERIVATIVE_GUI" if candidate else None,
-                        "candidate_sha256": candidate.get("sha256") if candidate else None,
-                        "note": "Source-GUI evidence is separate and never promotes installed-MSIX runtime QA.",
-                    }
-                    if candidate and candidate.get("installed_msix_functional_qa") != "PASS":
-                        qa["status"] = "CANDIDATE_VERIFIED_INSTALLED_FUNCTIONAL_QA_PENDING"
+                    if candidate:
+                        qa["source_gui_qa_pass"] = driver.get("qa_pass") is True
+                        if candidate.get("installed_msix_functional_qa") == "PASS_TEST_SIGNED_DERIVATIVE":
+                            from .package_candidates import load_candidate_installed_msix_qa_receipt
+                            installed_qa = load_candidate_installed_msix_qa_receipt(candidate, archive_root)
+                            qa["installed_package_functional_qa"] = installed_qa
+                            qa["candidate_runtime_qa_pass"] = True
+                            qa["formal_package_readiness"] = False
+                            qa["status"] = "CANDIDATE_INSTALLED_FUNCTIONAL_QA_PASS_PROVISIONAL"
+                        else:
+                            qa["installed_package_functional_qa"] = {
+                                "status": candidate.get("installed_msix_functional_qa", "NOT_RUN"),
+                                "evidence_type": "TEST_SIGNED_DERIVATIVE_GUI",
+                                "candidate_sha256": candidate.get("sha256"),
+                                "note": "Source-GUI evidence is separate and never promotes installed-MSIX runtime QA.",
+                            }
+                            qa["candidate_runtime_qa_pass"] = False
+                            qa["status"] = "CANDIDATE_VERIFIED_INSTALLED_FUNCTIONAL_QA_PENDING"
                     elif driver.get("status") == "SOURCE_GUI_DRIVER_PASS":
                         qa["status"] = "SOURCE_GUI_QA_PASS_PACKAGED_RUNTIME_UNVERIFIED"
                         qa["source_gui_qa_pass"] = True
@@ -218,11 +228,13 @@ def main(argv: list[str] | None = None) -> int:
             print(json.dumps({"status": qa["status"], "product": opts.product,
                               "candidate_id": opts.candidate_id,
                               "package_status": qa["package"].get("status"),
-                              "qa_pass": qa["qa_pass"], "report": str(report_path),
+                              "qa_pass": qa["qa_pass"],
+                              "candidate_runtime_qa_pass": qa.get("candidate_runtime_qa_pass", False),
+                              "formal_package_readiness": qa.get("formal_package_readiness", False),
+                              "report": str(report_path),
                               "store_write_performed": False}, ensure_ascii=False, sort_keys=True))
-            # The command verifies package inputs and writes a QA plan only;
-            # runtime scenarios are still NOT_RUN, so it must not exit as a QA pass.
-            return 1
+            # A provisional candidate QA receipt is a completed QA operation, not Store release approval.
+            return 0 if qa.get("candidate_runtime_qa_pass") is True else 1
         if opts.store_command == "archive":
             try:
                 config, _ = _load_job(opts.product, Path(__file__).resolve().parent.parent / "uploader" / "config")
@@ -481,4 +493,3 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

@@ -38,4 +38,3 @@ def resolve_local_edge_cdp(explicit: str | None = None) -> CdpDiscovery:
     if configured:
         return CdpDiscovery(configured, "CDP_ENDPOINT_CONFIGURED")
     return discover_local_edge_cdp()
-
