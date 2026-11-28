@@ -147,10 +147,24 @@ jobs:
           $publisher = 'CN=AllAuto.CI.MsixSmoke'
           $marker = Join-Path $env:LOCALAPPDATA ("all-auto-msix-basic-smoke-{0}.txt" -f [Guid]::NewGuid().ToString('N'))
           $sourceCode = @'
+          using System;
           using System.IO;
-          public static class Probe { public static int Main() { int left = int.Parse("20"); int right = int.Parse("22"); if (left + right != 42) return 2; File.WriteAllText("__MARKER__", "BASIC_FUNCTION_SMOKE_PASS"); return 0; } }
+          public static class Probe {
+            public static int Main() {
+              string marker = "__MARKER__";
+              try {
+                File.WriteAllText(marker, "STARTED");
+                int left = int.Parse("20"); int right = int.Parse("22");
+                if (left + right != 42) { File.WriteAllText(marker, "BASIC_FUNCTION_SMOKE_FAIL"); return 2; }
+                File.WriteAllText(marker, "BASIC_FUNCTION_SMOKE_PASS"); return 0;
+              } catch (Exception ex) {
+                try { File.WriteAllText(marker, "ERROR:" + ex.GetType().FullName + ":" + ex.Message); } catch { }
+                return 3;
+              }
+            }
+          }
           '@.Replace('__MARKER__', $marker.Replace('\', '\\'))
-          Add-Type -TypeDefinition $sourceCode -OutputAssembly (Join-Path $content 'probe.exe') -OutputType ConsoleApplication
+          Add-Type -TypeDefinition $sourceCode -OutputAssembly (Join-Path $content 'probe.exe') -OutputType WindowsApplication
           foreach ($spec in @(@{ Name='StoreLogo.png'; Size=50 }, @{ Name='Square44x44Logo.png'; Size=44 }, @{ Name='Square150x150Logo.png'; Size=150 })) {
             $bitmap = [System.Drawing.Bitmap]::new($spec.Size, $spec.Size)
             try { $bitmap.Save((Join-Path $content $spec.Name), [System.Drawing.Imaging.ImageFormat]::Png) }

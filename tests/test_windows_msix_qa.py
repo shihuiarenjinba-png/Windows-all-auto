@@ -68,6 +68,8 @@ class WindowsMsixDiagnosticTests(unittest.TestCase):
                         source.index("& $signTool verify /pa /v $derived"))
         workflow = (root / ".github" / "workflows" / "offline-qa.yml").read_text(encoding="utf-8")
         self.assertIn("synthetic-msix-test-signing-receipt", workflow)
+        self.assertIn('"STARTED"', workflow)
+        self.assertIn("WindowsApplication", workflow)
         self.assertIn("*.json", workflow)
         self.assertIn("Test-sign, install, launch, and smoke-test a synthetic MSIX", workflow)
 

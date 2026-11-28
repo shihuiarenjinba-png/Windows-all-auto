@@ -105,15 +105,22 @@ public static class PackageActivation {
     $appUserModelId = "$appxFamily!$ApplicationId"
     $activatedProcessId = [PackageActivation]::Activate($appUserModelId)
     $deadline = (Get-Date).AddSeconds(45)
-    while ((Get-Date) -lt $deadline -and -not (Test-Path -LiteralPath $SmokeMarkerPath)) {
+    $markerContent = ''
+    while ((Get-Date) -lt $deadline) {
+        if (Test-Path -LiteralPath $SmokeMarkerPath) {
+            $markerContent = (Get-Content -LiteralPath $SmokeMarkerPath -Raw).Trim()
+            if ($markerContent -eq 'BASIC_FUNCTION_SMOKE_PASS' -or $markerContent -like 'ERROR:*' -or
+                $markerContent -eq 'BASIC_FUNCTION_SMOKE_FAIL') { break }
+        }
         Start-Sleep -Milliseconds 500
     }
     if (-not (Test-Path -LiteralPath $SmokeMarkerPath)) {
         $processStillRunning = [bool](Get-Process -Id $activatedProcessId -ErrorAction SilentlyContinue)
         throw "Packaged activation returned process $activatedProcessId but no smoke marker arrived before timeout (process_still_running=$processStillRunning)."
     }
-    $marker = Get-Content -LiteralPath $SmokeMarkerPath -Raw
-    if ($marker.Trim() -ne 'BASIC_FUNCTION_SMOKE_PASS') { throw 'Packaged app reported a failed basic-function smoke.' }
+    if ($markerContent -ne 'BASIC_FUNCTION_SMOKE_PASS') {
+        throw "Packaged app did not complete basic-function smoke. Marker: $markerContent"
+    }
 
     $sourceHashAfter = (Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash
     if ($sourceHashAfter -ne $sourceHashBefore) { throw 'Frozen source package changed during test signing.' }
