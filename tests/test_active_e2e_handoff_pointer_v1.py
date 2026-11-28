@@ -38,7 +38,7 @@ class ActiveHandoffPointerV1Tests(unittest.TestCase):
 
             self.assertEqual(
                 snapshot["overlay_path"],
-                "ops/active_e2e_handoff_overlay_20261128_1757.json",
+                "ops/active_e2e_handoff_overlay_20261128_1839.json",
             )
             self.assertEqual(
                 snapshot["overlay"]["pr165"]["head_sha"],
@@ -81,8 +81,13 @@ class ActiveHandoffPointerV1Tests(unittest.TestCase):
                 snapshot["overlay"]["pr126_source_pin"]["status"],
                 "STALE_SOURCE_PIN",
             )
-            self.assertEqual(snapshot["overlay"]["pr219"]["head_sha"], "ebd73d88a85271966a7165a1339d0b01b4ce0cbc")
-            self.assertEqual(snapshot["overlay"]["pr219"]["exact_head_ci_run_id"], 46127355361)
+            self.assertEqual(snapshot["overlay"]["pr219"]["head_sha"], "17383e2da99e903df825bee4deeea883e5b66b70")
+            self.assertEqual(snapshot["overlay"]["pr219"]["exact_head_ci_run_id"], 46128264048)
+            self.assertEqual(snapshot["overlay"]["pr219"]["pr_validation_run_id"], 46128268754)
+            self.assertEqual(snapshot["pointer"]["source_observation"]["head_sha"], "17383e2da99e903df825bee4deeea883e5b66b70")
+            self.assertEqual(snapshot["pointer"]["source_observation"]["exact_head_push_run_id"], 46128264048)
+            self.assertEqual(snapshot["pointer"]["source_observation"]["pr_validation_run_id"], 46128268754)
+            self.assertEqual(snapshot["queue"]["source_observation"], "ops/active_e2e_handoff_overlay_20261128_1839.json")
             canonical = snapshot["overlay"]["canonical_ledger_reconciliation"]
             self.assertTrue(canonical["active_product_is_historical"])
             self.assertEqual(canonical["active_product_record_status"], "HISTORICAL_ONLY_NOT_CURRENT_REQUEST")

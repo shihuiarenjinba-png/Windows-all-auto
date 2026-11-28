@@ -3,28 +3,28 @@
   "pointer_version": 1,
   "path": "ops/active_e2e_handoff_pointer_v1.json",
   "repository": "shihuiarenjinba-png/Windows-all-auto",
-  "generated_at_utc": "2026-11-28T08:57:36Z",
+  "generated_at_utc": "2026-11-28T09:39:10Z",
   "status": "ACTIVE",
   "selection_policy": "VERIFIED_POINTER_REFERENCED_OVERLAY_ONLY",
   "fallback_to_canonical_ledger": false,
   "source_observation": {
     "pr_number": 219,
     "branch": "codex/36-pr218-current-lane-reconcile-20261128-1337",
-    "head_sha": "ebd73d88a85271966a7165a1339d0b01b4ce0cbc",
-    "exact_head_push_run_id": 46127355361,
+    "head_sha": "17383e2da99e903df825bee4deeea883e5b66b70",
+    "exact_head_push_run_id": 46128264048,
     "exact_head_push_conclusion": "success",
-    "pr_validation_run_id": 46127360090,
+    "pr_validation_run_id": 46128268754,
     "pr_validation_conclusion": "success"
   },
   "active_snapshot": {
-    "observed_at_utc": "2026-11-28T08:57:36Z",
+    "observed_at_utc": "2026-11-28T09:39:10Z",
     "overlay": {
-      "path": "ops/active_e2e_handoff_overlay_20261128_1757.json",
-      "git_blob_sha": "68ce06009dfb8a5726dc552ec319ea9a22dab17e"
+      "path": "ops/active_e2e_handoff_overlay_20261128_1839.json",
+      "git_blob_sha": "d1a5491f4e79a93ec7c3b15ee61782208164e19b"
     },
     "queue": {
-      "path": "ops/completion_rush_queue_20261128_1757.json",
-      "git_blob_sha": "5df88fa636032793c9e36ad060d3215a703f8614"
+      "path": "ops/completion_rush_queue_20261128_1839.json",
+      "git_blob_sha": "b89746fd7febbcfaf5caa9bead9310c897a39e18"
     }
   },
   "canonical_ledger": {
@@ -62,7 +62,7 @@
     "force_push_allowed": false
   },
   "supervisor_handoff": {
-    "received_at_jst": "2026-11-28 17:57",
+    "received_at_jst": "2026-11-28 18:39",
     "provisioner_repository": "shihuiarenjinba-png/Repository-Provisioner-3D",
     "provisioner_pr_number": 11,
     "provisioner_head_sha": "356cb7bcbf795c3335fb142cf82fef2db3a7478a",
@@ -79,7 +79,21 @@
     },
     "canonical_active_product_is_historical": true,
     "canonical_current_active_product": null,
-    "parent_pr219_head": "ebd73d88a85271966a7165a1339d0b01b4ce0cbc",
-    "parent_pr219_push_run_id": 46127355361
+    "parent_pr219_head": "17383e2da99e903df825bee4deeea883e5b66b70",
+    "parent_pr219_push_run_id": 46128264048,
+    "parent_pr219_push_conclusion": "success",
+    "parent_pr219_pr_validation_run_id": 46128268754,
+    "parent_pr219_pr_validation_conclusion": "success",
+    "product_e2e_pass": false,
+    "real_msix": false,
+    "github_backlog_receipt": false,
+    "local_pull_receipt": false,
+    "local_checker_receipt": false,
+    "local_gui_install_receipt": false,
+    "store_submission_allowed": false,
+    "certification_allowed": false,
+    "publish_allowed": false,
+    "merge_allowed": false,
+    "force_push_allowed": false
   }
 }
