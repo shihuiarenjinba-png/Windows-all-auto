@@ -61,7 +61,10 @@ class CurrentLiveProductReconciliation20261128_2238Tests(unittest.TestCase):
         self.assertFalse(product["real_msix"])
 
     def test_canonical_ledger_points_to_this_reconciliation_and_keeps_hold(self):
-        self.assertEqual(self.ledger["latest_execution_reconciliation_key"], "latest_execution_reconciliation_20261128_2238")
+        self.assertEqual(self.ledger["latest_execution_reconciliation_key_20261128_2238"], "latest_execution_reconciliation_20261128_2238")
+        self.assertEqual(self.ledger["latest_execution_reconciliation_key"], "latest_execution_reconciliation_20261126_133835")
+        self.assertEqual(self.ledger["current_priority_products"][0]["current_source_sha"], "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79")
+        self.assertEqual(self.ledger["current_priority_products_live_20261128_2238"][0]["source_sha"], "b6b69464a9c7450489338bc7542fd22cf190ed42")
         self.assertEqual(self.ledger["pr165_current_head_reconciled_as_of_20261128_2238"], "d048c192cb56843ca7648cd4e723313eb587825c")
         self.assertEqual(self.ledger["pr165_current_head_reconciled_ci_status_20261128_2238"], "PASS_EXACT_HEAD_CI")
         self.assertFalse(self.ledger["e2e_pass"])
