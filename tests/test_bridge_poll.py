@@ -171,8 +171,11 @@ class AppIdentityReturnTransportTests(unittest.TestCase):
         self.request_id="app-sample-app-aaaaaaaa"
         self.identity={"name":"Demo.App","publisher":"CN=ABC","version":"1.0.0.0"}
         self.exe=b"fixture-exe"
+        app_xml=(b'<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10">'
+                 b'<Identity Name="Demo.App" Publisher="CN=ABC" Version="1.0.0.0"/>'
+                 b'<Applications><Application Id="App" Executable="main.exe"/></Applications></Package>')
         with zipfile.ZipFile(self.fixture/"package.msix","w") as z:
-            z.writestr("AppxManifest.xml",XML)
+            z.writestr("AppxManifest.xml",app_xml)
             z.writestr("AppxBlockMap.xml",b"<BlockMap/>")
             z.writestr("[Content_Types].xml",b"<Types/>")
             z.writestr("main.exe",self.exe)
