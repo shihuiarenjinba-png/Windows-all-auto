@@ -38,7 +38,7 @@ class ActiveHandoffPointerV1Tests(unittest.TestCase):
 
             self.assertEqual(
                 snapshot["overlay_path"],
-                "ops/active_e2e_handoff_overlay_20261128_1839.json",
+                "ops/active_e2e_handoff_overlay_20261128_1850.json",
             )
             self.assertEqual(
                 snapshot["overlay"]["pr165"]["head_sha"],
@@ -81,13 +81,13 @@ class ActiveHandoffPointerV1Tests(unittest.TestCase):
                 snapshot["overlay"]["pr126_source_pin"]["status"],
                 "STALE_SOURCE_PIN",
             )
-            self.assertEqual(snapshot["overlay"]["pr219"]["head_sha"], "17383e2da99e903df825bee4deeea883e5b66b70")
-            self.assertEqual(snapshot["overlay"]["pr219"]["exact_head_push_run_id"], 46128264048)
-            self.assertEqual(snapshot["overlay"]["pr219"]["pr_validation_run_id"], 46128268754)
-            self.assertEqual(snapshot["pointer"]["source_observation"]["head_sha"], "17383e2da99e903df825bee4deeea883e5b66b70")
-            self.assertEqual(snapshot["pointer"]["source_observation"]["exact_head_push_run_id"], 46128264048)
-            self.assertEqual(snapshot["pointer"]["source_observation"]["pr_validation_run_id"], 46128268754)
-            self.assertEqual(snapshot["queue"]["source_observation"], "ops/active_e2e_handoff_overlay_20261128_1839.json")
+            self.assertEqual(snapshot["overlay"]["pr219"]["head_sha"], "bfb6ab7f0da0935585a5fb8f49c6a8c7180a8542")
+            self.assertEqual(snapshot["overlay"]["pr219"]["exact_head_push_run_id"], 46132164713)
+            self.assertEqual(snapshot["overlay"]["pr219"]["pr_validation_run_id"], 46132168622)
+            self.assertEqual(snapshot["pointer"]["source_observation"]["head_sha"], "bfb6ab7f0da0935585a5fb8f49c6a8c7180a8542")
+            self.assertEqual(snapshot["pointer"]["source_observation"]["exact_head_push_run_id"], 46132164713)
+            self.assertEqual(snapshot["pointer"]["source_observation"]["pr_validation_run_id"], 46132168622)
+            self.assertEqual(snapshot["queue"]["source_observation"], "ops/active_e2e_handoff_overlay_20261128_1850.json")
             canonical = snapshot["overlay"]["canonical_ledger_reconciliation"]
             self.assertTrue(canonical["active_product_is_historical"])
             self.assertEqual(canonical["active_product_record_status"], "HISTORICAL_ONLY_NOT_CURRENT_REQUEST")
@@ -132,6 +132,16 @@ class ActiveHandoffPointerV1Tests(unittest.TestCase):
                 snapshot["overlay"]["local_code_sync"]["status"],
                 "NOT_OBSERVED__CLOUD_PASS_ONLY",
             )
+            sync_resolution = snapshot["overlay"]["local_code_sync"]["target_resolution_20261126"]
+            self.assertEqual(sync_resolution["overall_status"], "HOLD_USER_PC_RECEIPTS_PENDING_AND_OFFLINE_NOTES_SOURCE_NOT_FIXED")
+            self.assertEqual(sync_resolution["required_target_count"], 3)
+            self.assertEqual(sync_resolution["resolvable_target_count"], 2)
+            self.assertFalse(sync_resolution["pr23"]["integrated_into_pr22"])
+            self.assertEqual(sync_resolution["pr23"]["exact_head_ci_run_id"], 45766970565)
+            self.assertEqual(sync_resolution["targets"][0]["status"], "HOLD_SOURCE_NOT_FIXED")
+            self.assertEqual(sync_resolution["targets"][1]["source_sha"], "1a349faa41663c417c40710140a4d50c79b62b78")
+            self.assertEqual(sync_resolution["targets"][2]["source_sha"], "b03ce7b16c3f75c04fe20fdda224c45849eeba0d")
+            self.assertFalse(sync_resolution["receipts"]["physical_user_pc"] == "PASS")
             prism = snapshot["overlay"]["products"]["prism_route_3d"]
             builder = prism["provisioner_pr11"]
             self.assertEqual(builder["head_sha"], "356cb7bcbf795c3335fb142cf82fef2db3a7478a")

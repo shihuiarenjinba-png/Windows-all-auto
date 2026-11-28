@@ -3,28 +3,28 @@
   "pointer_version": 1,
   "path": "ops/active_e2e_handoff_pointer_v1.json",
   "repository": "shihuiarenjinba-png/Windows-all-auto",
-  "generated_at_utc": "2026-11-28T09:39:10Z",
+  "generated_at_utc": "2026-11-28T09:50:07Z",
   "status": "ACTIVE",
   "selection_policy": "VERIFIED_POINTER_REFERENCED_OVERLAY_ONLY",
   "fallback_to_canonical_ledger": false,
   "source_observation": {
     "pr_number": 219,
     "branch": "codex/36-pr218-current-lane-reconcile-20261128-1337",
-    "head_sha": "17383e2da99e903df825bee4deeea883e5b66b70",
-    "exact_head_push_run_id": 46128264048,
+    "head_sha": "bfb6ab7f0da0935585a5fb8f49c6a8c7180a8542",
+    "exact_head_push_run_id": 46132164713,
     "exact_head_push_conclusion": "success",
-    "pr_validation_run_id": 46128268754,
+    "pr_validation_run_id": 46132168622,
     "pr_validation_conclusion": "success"
   },
   "active_snapshot": {
-    "observed_at_utc": "2026-11-28T09:39:10Z",
+    "observed_at_utc": "2026-11-28T09:50:07Z",
     "overlay": {
-      "path": "ops/active_e2e_handoff_overlay_20261128_1839.json",
-      "git_blob_sha": "d1a5491f4e79a93ec7c3b15ee61782208164e19b"
+      "path": "ops/active_e2e_handoff_overlay_20261128_1850.json",
+      "git_blob_sha": "1ccd5c82b7fbd2b9f0703c1a092c0e8f6756d44e"
     },
     "queue": {
-      "path": "ops/completion_rush_queue_20261128_1839.json",
-      "git_blob_sha": "b89746fd7febbcfaf5caa9bead9310c897a39e18"
+      "path": "ops/completion_rush_queue_20261128_1850.json",
+      "git_blob_sha": "b6fb367b5456c618a4e38453ae035f01df7b5b29"
     }
   },
   "canonical_ledger": {
@@ -62,7 +62,7 @@
     "force_push_allowed": false
   },
   "supervisor_handoff": {
-    "received_at_jst": "2026-11-28 18:39",
+    "received_at_jst": "2026-11-28 18:50",
     "provisioner_repository": "shihuiarenjinba-png/Repository-Provisioner-3D",
     "provisioner_pr_number": 11,
     "provisioner_head_sha": "356cb7bcbf795c3335fb142cf82fef2db3a7478a",
@@ -79,10 +79,10 @@
     },
     "canonical_active_product_is_historical": true,
     "canonical_current_active_product": null,
-    "parent_pr219_head": "17383e2da99e903df825bee4deeea883e5b66b70",
-    "parent_pr219_push_run_id": 46128264048,
+    "parent_pr219_head": "bfb6ab7f0da0935585a5fb8f49c6a8c7180a8542",
+    "parent_pr219_push_run_id": 46132164713,
     "parent_pr219_push_conclusion": "success",
-    "parent_pr219_pr_validation_run_id": 46128268754,
+    "parent_pr219_pr_validation_run_id": 46132168622,
     "parent_pr219_pr_validation_conclusion": "success",
     "product_e2e_pass": false,
     "real_msix": false,
@@ -94,6 +94,10 @@
     "certification_allowed": false,
     "publish_allowed": false,
     "merge_allowed": false,
-    "force_push_allowed": false
+    "force_push_allowed": false,
+    "local_code_sync_target_resolution": "HOLD_USER_PC_RECEIPTS_PENDING_AND_OFFLINE_NOTES_SOURCE_NOT_FIXED",
+    "pr23_local_sync_head": "838f57879b7fce09b5de493d3b3577c40ae3d6d2",
+    "pr23_local_sync_ci_run_id": 45766970565,
+    "pr23_integrated_into_pr22": false
   }
 }
