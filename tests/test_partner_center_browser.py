@@ -415,6 +415,7 @@ class PartnerCenterBrowserTests(unittest.TestCase):
             )
             confirmed = port.reconcile_ambiguous_upload(job, package, prior)
             self.assertTrue(confirmed["partner_center_confirmed"])
+            self.assertTrue(confirmed["current_partner_center_reconciled"])
             self.assertTrue(confirmed["prior_receipt_sha256_match"])
             self.assertTrue(confirmed["no_reupload"])
             self.assertEqual(page.upload_calls, 0)

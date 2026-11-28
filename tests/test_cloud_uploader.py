@@ -125,13 +125,95 @@ class CloudUploaderTests(unittest.TestCase):
             )
             journal.append(receipt)
             called=[]
+            reconciled=[]
+            def preflight(current_job, path, *, recovery_required=False):
+                self.assertTrue(recovery_required)
+                return {"live_adapter": lambda *_:called.append(True),
+                        "reconcile_adapter": lambda current, _path, previous: (
+                            reconciled.append(previous) or {
+                                "partner_center_confirmed": True,
+                                "current_partner_center_reconciled": True,
+                                "partner_center_validation": "Validated",
+                                "product_id": current.product_id,
+                                "submission_id": current.submission_id,
+                                "package_file_name": current.file_name,
+                                "sha256": current.sha256})}
             # New SQLite file simulates an evicted GitHub Actions cache.
             with JobLedger(root/"new-empty-ledger.sqlite3") as ledger:
                 result=process_job(approved_live_config(p),p,ledger,
                     expected_sha256=digest,dry_run=False,receipt_journal=journal,
-                    live_adapter=lambda *_:(called.append(True) or {"partner_center_confirmed":True}))
+                    live_preflight_adapter=preflight)
             self.assertEqual(result["status"],"DUPLICATE_CONFIRMED")
+            self.assertTrue(result["partner_center_reconfirmed"])
             self.assertEqual(called,[])
+            self.assertEqual(len(reconciled),1)
+
+    def test_historical_success_without_current_partner_center_match_never_skips_ahead_or_reuploads(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp); p=root/"pkg.msix"; make_msix(p)
+            digest=hashlib.sha256(p.read_bytes()).hexdigest()
+            job=verify_file(CONFIG,p,expected_sha256=digest)
+            journal=ReceiptJournal(root/"durable-receipts")
+            journal.append(new_execution_receipt(
+                product_id=job.product_id,submission_id=job.submission_id,
+                package_file_name=job.file_name,sha256=digest,result="SUCCEEDED",
+                partner_center_confirmation="UI_VALIDATED_SHA_UNOBSERVABLE"))
+            uploads=[]
+            with JobLedger(root/"ledger.sqlite3") as ledger:
+                result=process_job(approved_live_config(p),p,ledger,expected_sha256=digest,
+                    dry_run=False,receipt_journal=journal,
+                    live_preflight_adapter=lambda *_args,**_kwargs:{
+                        "live_adapter":lambda *_:uploads.append(True),
+                        "reconcile_adapter":lambda *_:{"partner_center_confirmed":False,
+                            "safe_to_retry":True,"reason":"row absent"}})
+            self.assertEqual(result["status"],"RECONCILE_REQUIRED")
+            self.assertEqual(uploads,[])
+
+    def test_historical_success_without_live_reconcile_adapter_holds(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp); p=root/"pkg.msix"; make_msix(p)
+            digest=hashlib.sha256(p.read_bytes()).hexdigest()
+            job=verify_file(CONFIG,p,expected_sha256=digest)
+            journal=ReceiptJournal(root/"durable-receipts")
+            journal.append(new_execution_receipt(
+                product_id=job.product_id,submission_id=job.submission_id,
+                package_file_name=job.file_name,sha256=digest,result="SUCCEEDED",
+                partner_center_confirmation="UI_VALIDATED_SHA_UNOBSERVABLE"))
+            with JobLedger(root/"ledger.sqlite3") as ledger:
+                result=process_job(approved_live_config(p),p,ledger,expected_sha256=digest,
+                    dry_run=False,receipt_journal=journal,
+                    live_adapter=lambda *_:self.fail("historical ledger cannot confirm current Store state"))
+            self.assertEqual(result["status"],"RECONCILE_REQUIRED")
+
+    def test_sqlite_success_also_requires_current_partner_center_reconciliation(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp); p=root/"pkg.msix"; make_msix(p)
+            digest=hashlib.sha256(p.read_bytes()).hexdigest()
+            config=approved_live_config(p)
+            with JobLedger(root/"ledger.sqlite3") as ledger:
+                first=process_job(config,p,ledger,expected_sha256=digest,dry_run=False,
+                                  live_adapter=lambda *_:{"partner_center_confirmed":True})
+                self.assertEqual(first["status"],"SUCCEEDED")
+                result=process_job(config,p,ledger,expected_sha256=digest,dry_run=False,
+                    reconcile_adapter=lambda job, _path, _receipt:{
+                        "partner_center_confirmed":True,
+                        "current_partner_center_reconciled":True,
+                        "partner_center_validation":"Validated",
+                        "product_id":job.product_id,"submission_id":job.submission_id,
+                        "package_file_name":job.file_name,"sha256":job.sha256},
+                    live_adapter=lambda *_:self.fail("must not repeat the upload"))
+            self.assertEqual(result["status"],"DUPLICATE_CONFIRMED")
+            self.assertTrue(result["partner_center_reconfirmed"])
+
+    def test_common_live_gate_holds_on_source_formal_package_sha_conflict(self):
+        from uploader.live_gates import package_write_hold_reason
+        with tempfile.TemporaryDirectory() as tmp:
+            package=Path(tmp)/"pkg.msix"; make_msix(package)
+            config=approved_live_config(package, source_package_provenance={
+                "status":"MISMATCH",
+                "formal_package_sha256":"4b373d2bc54ecbd3efa0a77a94005007777e66d641fa3908f523ac69fcd46984"})
+            self.assertEqual(package_write_hold_reason(config,package),
+                             "SOURCE_PRODUCT_PROFILE_PACKAGE_SHA_MISMATCH")
 
     def test_same_filename_different_sha_requires_reconciliation(self):
         with tempfile.TemporaryDirectory() as tmp:

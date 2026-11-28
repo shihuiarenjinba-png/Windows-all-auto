@@ -509,6 +509,9 @@ def build_store_workflow_report(*, product: str, config_root: Path,
             f"{mode} is outside this orchestrator; use a separately authorized, existing workflow"
         )
     config, config_path = _load_job(product, config_root)
+    from uploader.store_policy import build_product_decision_batch, load_shared_store_policy
+    shared_store_policy = load_shared_store_policy()
+    product_decision_batch = build_product_decision_batch(shared_store_policy, config)
     source = _source_observation(source_root, config)
     package_state = _package_observation(config, package)
     profile_package = config.get("source_package_provenance")
@@ -617,6 +620,13 @@ def build_store_workflow_report(*, product: str, config_root: Path,
         "package": package_state,
         "source_package_provenance": profile_package,
         "owner_decision_candidates": config.get("owner_decision_candidates", []),
+        "shared_store_policy": {"policy_id": shared_store_policy["policy_id"],
+                                "policy_version": shared_store_policy["policy_version"],
+                                "approval_scope": shared_store_policy["approval_scope"],
+                                "candidate_defaults": shared_store_policy["candidate_defaults"],
+                                "section_dependencies": shared_store_policy["section_dependencies"],
+                                "independent_sections": shared_store_policy["independent_sections"]},
+        "owner_decision_batch": product_decision_batch,
         "partner_center": {"status": "NOT_CONNECTED", "writes_performed": False,
                             "certification_submitted": False, "published": False},
         "sections": sections,

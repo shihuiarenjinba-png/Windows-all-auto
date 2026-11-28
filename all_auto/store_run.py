@@ -15,7 +15,9 @@ ALLOWED_SECTIONS = frozenset(("properties", "store_listings", "pricing_availabil
                               "age_ratings", "submission_options", "packages"))
 SECTION_DEPENDENCIES = {"store_listings": frozenset({"packages"})}
 SECTION_SUCCESS_STATUSES = frozenset({"SAVED_AND_RECONCILED", "SUCCEEDED",
-                                      "SUCCEEDED_RECONCILED", "ALREADY_MATCHES"})
+                                      "SUCCEEDED_RECONCILED", "DUPLICATE_CONFIRMED",
+                                      "ALREADY_MATCHES"})
+SECTION_RECEIPT_SUCCESS_STATUSES = SECTION_SUCCESS_STATUSES - {"DUPLICATE_CONFIRMED"}
 
 
 def _valid_completion_receipt(config: dict[str, Any], section: str) -> bool:
@@ -25,7 +27,7 @@ def _valid_completion_receipt(config: dict[str, Any], section: str) -> bool:
         return False
     if (receipt.get("product_id") != config.get("product_id") or
             receipt.get("submission_id") != config.get("submission_id") or
-            receipt.get("status") not in SECTION_SUCCESS_STATUSES or
+            receipt.get("status") not in SECTION_RECEIPT_SUCCESS_STATUSES or
             not any(isinstance(receipt.get(key), str) and receipt[key].strip()
                     for key in ("saved_at_utc", "reconciled_at_utc", "observed_at_utc"))):
         return False
@@ -165,7 +167,9 @@ def run_approved_sections(*, product: str, config_root: Path, package: Path | No
             observed_sha = outcome.get("sha256", outcome.get("package_sha256"))
             if (outcome.get("product_id") != config.get("product_id") or
                     outcome.get("submission_id") != config.get("submission_id") or
-                    observed_sha != config.get("expected_sha256")):
+                    observed_sha != config.get("expected_sha256") or
+                    (outcome.get("status") == "DUPLICATE_CONFIRMED" and
+                     outcome.get("partner_center_reconfirmed") is not True)):
                 actions.append({"section": section, "status": "RECONCILE_REQUIRED",
                                 "reason": "PACKAGE_COMPLETION_BINDING_OR_SHA_MISMATCH"})
                 pending_sections.append(section)
@@ -187,6 +191,9 @@ def run_approved_sections(*, product: str, config_root: Path, package: Path | No
         if status in {"RECONCILE_REQUIRED", "FAILED", "UNKNOWN"}:
             break
 
+    # A stop after an unknown write or package mismatch leaves every later
+    # approved section explicitly pending; never report an incomplete chain as done.
+    pending_sections = [section for section in approved_sections if section not in completed]
     blocked = bool(pending_sections) or any(
         action.get("status") in {"HOLD", "FAILED", "RECONCILE_REQUIRED", "WAITING_DEPENDENCY"}
         for action in actions)
@@ -207,15 +214,6 @@ def run_approved_sections(*, product: str, config_root: Path, package: Path | No
 
 
 def _package_gate(config: dict[str, Any], package: Path | None) -> dict[str, Any]:
-    source_profile = config.get("source_package_provenance")
-    if isinstance(source_profile, dict):
-        profile_sha = source_profile.get("formal_package_sha256")
-        if (source_profile.get("status") == "MISMATCH" or
-                (isinstance(profile_sha, str) and profile_sha.lower() !=
-                 str(config.get("expected_sha256", "")).lower())):
-            return {"status": "HOLD", "reason": "SOURCE_PRODUCT_PROFILE_PACKAGE_SHA_MISMATCH",
-                    "source_profile_sha256": profile_sha,
-                    "job_expected_sha256": config.get("expected_sha256")}
     if not package:
         return {"status": "HOLD", "reason": "EXACT_PACKAGE_NOT_RESOLVED"}
     if package.is_symlink():

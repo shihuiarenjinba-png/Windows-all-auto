@@ -53,7 +53,7 @@ class StoreRunTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             package = root / "DataContractSchemaDrift_1.0.0.0_x64.msix"
-            make_exact_test_package(package)
+            digest = make_exact_test_package(package)
             config_root = self._config(root / "config", package, approved=False)
             result = run_approved_sections(product="test-store-product", config_root=config_root,
                                            package=package, ui_map_path=CONFIG_ROOT / "store_ui_maps" / "msix_pwa_app.v1.json",
@@ -273,7 +273,7 @@ class StoreRunTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             package = root / "DataContractSchemaDrift_1.0.0.0_x64.msix"
-            make_exact_test_package(package)
+            digest = make_exact_test_package(package)
             config_root = self._config(root / "config", package, approved=True)
             path = config_root / "test-store-product.job.json"
             config = json.loads(path.read_text(encoding="utf-8"))
@@ -292,13 +292,70 @@ class StoreRunTests(unittest.TestCase):
                 package_runner=lambda **_: calls.append("packages") or
                 {"status": "SUCCEEDED_RECONCILED", "writes_performed": True,
                  "product_id": DCA_BINDING["product_id"], "submission_id": DCA_BINDING["submission_id"],
-                 "sha256": make_exact_test_package(package)},
+                 "sha256": digest},
                 section_runner=lambda **_: calls.append("store_listings") or
                 {"status": "ALREADY_MATCHES", "writes_performed": False,
                  "reload_reconciled": True})
             self.assertEqual(calls, ["packages", "store_listings"])
             self.assertEqual(result["status"], "EXECUTED")
             self.assertTrue(result["all_approved_sections_completed"])
+
+    def test_duplicate_confirmed_only_completes_packages_after_current_store_reconciliation(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            package = root / "DataContractSchemaDrift_1.0.0.0_x64.msix"
+            digest = make_exact_test_package(package)
+            config_root = self._config(root / "config", package, approved=True)
+            path = config_root / "test-store-product.job.json"
+            config = json.loads(path.read_text(encoding="utf-8"))
+            config["execution_policy"]["approved_sections"] = ["packages", "store_listings"]
+            fields = [{"key": "text", "kind": "text", "label": "Text", "value": "approved"}]
+            config["approved_store_sections"] = {"store_listings": {"fields": fields,
+                "approval": {"approved": True, "product_id": config["product_id"],
+                             "submission_id": config["submission_id"], "sections": ["store_listings"],
+                             "approval_ref": "listing", "approved_by": "test", "approved_at": "2026-11-28"}}}
+            path.write_text(json.dumps(config), encoding="utf-8")
+            ui_map = root / "ui-map.json"
+            ui_map.write_text(json.dumps({"sections": {"store_listings": {"verified": True}}}), encoding="utf-8")
+            calls = []
+            package_result = {"status": "DUPLICATE_CONFIRMED", "writes_performed": False,
+                              "partner_center_reconfirmed": True,
+                              "product_id": config["product_id"], "submission_id": config["submission_id"],
+                              "sha256": digest}
+            result = run_approved_sections(product="test-store-product", config_root=config_root,
+                package=package, ui_map_path=ui_map,
+                package_runner=lambda **_: package_result,
+                section_runner=lambda **kw: calls.append(kw["section"]) or
+                {"status": "ALREADY_MATCHES", "writes_performed": False, "reload_reconciled": True})
+            self.assertEqual(calls, ["store_listings"])
+            self.assertEqual(result["status"], "EXECUTED")
+            self.assertFalse(result["writes_performed"])
+
+    def test_duplicate_confirmed_from_historical_ledger_without_current_reconcile_holds(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            package = root / "DataContractSchemaDrift_1.0.0.0_x64.msix"
+            digest = make_exact_test_package(package)
+            config_root = self._config(root / "config", package, approved=True)
+            path = config_root / "test-store-product.job.json"
+            config = json.loads(path.read_text(encoding="utf-8"))
+            config["execution_policy"]["approved_sections"] = ["packages", "properties"]
+            config["section_completion_receipts"] = {"packages": {
+                "status": "DUPLICATE_CONFIRMED", "product_id": config["product_id"],
+                "submission_id": config["submission_id"], "package_sha256": digest,
+                "reconciled_at_utc": "2026-11-28T00:00:00Z"}}
+            path.write_text(json.dumps(config), encoding="utf-8")
+            package_calls = []
+            result = run_approved_sections(product="test-store-product", config_root=config_root,
+                package=package,
+                ui_map_path=CONFIG_ROOT / "store_ui_maps" / "msix_pwa_app.v1.json",
+                package_runner=lambda **_: package_calls.append(True) or
+                    {"status": "DUPLICATE_CONFIRMED", "writes_performed": False,
+                    "product_id": config["product_id"], "submission_id": config["submission_id"], "sha256": digest},
+                section_runner=lambda **_: self.fail("properties must not run on stale duplicate evidence"))
+            self.assertEqual(result["status"], "RECONCILE_REQUIRED")
+            self.assertEqual(result["pending_sections"], ["packages", "properties"])
+            self.assertEqual(package_calls, [True])
 
 
 if __name__ == "__main__":

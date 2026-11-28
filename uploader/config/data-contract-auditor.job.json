@@ -93,14 +93,40 @@
     "qa_evidence_relation": "SOURCE_FUNCTIONAL_QA_PASS_APP_SOURCE_UNCHANGED_AFTER_QA; PACKAGED_EXE_RUNTIME_NOT_VERIFIED"
   },
   "source_package_provenance": {
-    "status": "MISMATCH",
+    "status": "MISMATCH_PENDING_OWNER_APPROVAL",
     "source_revision": "722ec7a077d2c6109e657c4ee661c9f3d06a4506",
     "source_profile_path": "store/product.json",
     "formal_source_revision": "5a09d81955e25664761ea25ecfb4ebf8d24cea6d",
     "formal_package_sha256": "4b373d2bc54ecbd3efa0a77a94005007777e66d641fa3908f523ac69fcd46984",
     "evidence_ref": "https://github.com/shihuiarenjinba-png/csv-import-validator/blob/722ec7a077d2c6109e657c4ee661c9f3d06a4506/store/product.json",
     "observed_at": "2026-11-28",
-    "note": "Read-only source profile observation. Preserve this conflict and hold package writes until owner resolves provenance; do not change expected_sha256 automatically."
+    "note": "Read-only source profile observation. Preserve this conflict and hold package writes until owner resolves provenance; do not change expected_sha256 automatically.",
+    "historical_registration": {
+      "registered_sha256": "4b373d2bc54ecbd3efa0a77a94005007777e66d641fa3908f523ac69fcd46984",
+      "registered_source_revision": "5a09d81955e25664761ea25ecfb4ebf8d24cea6d",
+      "gate_registration_commit": "2956574fc1a3cf80b60281dfc8e6914cc8084383",
+      "product_profile_registration_commit": "0c73a746bcec9ded702567768d5c04f4240a12a9",
+      "registered_at": "2026-11-23",
+      "status": "HISTORICAL_REGISTRATION_RETAINED"
+    },
+    "current_artifact_candidate": {
+      "sha256": "e2ca6fd81720dc270667e65db05404b6efdde5b2c0712bee2853e0608767db05",
+      "source_revision": "722ec7a077d2c6109e657c4ee661c9f3d06a4506",
+      "workflow_run_id": 45580565845,
+      "artifact_id": 15005358857,
+      "artifact_name": "data-contract-QA_UNSIGNED-msix-45580565845",
+      "artifact_created_at": "2026-11-25T08:58:31Z",
+      "artifact_expires_at": "2026-12-25T08:58:27Z",
+      "github_artifact_archive_sha256": "5d914be309e83bf8e0422e71be2f2914fcf6cda9588d9d765e075b31bcb97548",
+      "msix_sha256_source": "Artifact BUILD_EVIDENCE.json / local package rehash report",
+      "status": "CANDIDATE_PENDING_OWNER_APPROVAL"
+    },
+    "proposal": {
+      "current_expected_sha256_remains": "e2ca6fd81720dc270667e65db05404b6efdde5b2c0712bee2853e0608767db05",
+      "historical_sha_migration": "Retain the 2026-11-23 hash in an append-only historical registration record; after owner approval, update only the formal-current pointer to the 2026-11-25 candidate and retain both provenance records.",
+      "owner_approval_recorded": false,
+      "formal_current_sha_rewritten": false
+    }
   },
   "owner_decision_candidates": [
     {

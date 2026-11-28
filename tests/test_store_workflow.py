@@ -15,6 +15,7 @@ from all_auto.store_workflow import (
     build_store_workflow_report,
     write_unique_report,
 )
+from uploader.store_policy import build_product_decision_batch, load_shared_store_policy
 from all_auto.artifact_archive import archive_verified_package
 
 
@@ -51,9 +52,58 @@ class StoreWorkflowTests(unittest.TestCase):
                          "e2ca6fd81720dc270667e65db05404b6efdde5b2c0712bee2853e0608767db05")
         self.assertEqual(report["source_package_provenance"]["formal_package_sha256"],
                          "4b373d2bc54ecbd3efa0a77a94005007777e66d641fa3908f523ac69fcd46984")
+        self.assertEqual(report["source_package_provenance"]["historical_registration"]["gate_registration_commit"],
+                         "2956574fc1a3cf80b60281dfc8e6914cc8084383")
+        self.assertEqual(report["source_package_provenance"]["historical_registration"]["product_profile_registration_commit"],
+                         "0c73a746bcec9ded702567768d5c04f4240a12a9")
+        self.assertEqual(report["source_package_provenance"]["current_artifact_candidate"]["artifact_id"],
+                         15005358857)
+        self.assertFalse(report["source_package_provenance"]["proposal"]["owner_approval_recorded"])
         self.assertIn("source_package_provenance", {x["key"] for x in report["missing_or_unverified"]})
         self.assertIn("source_package_provenance", {x["key"] for x in report["owner_decisions"]})
         self.assertEqual(len(report["owner_decision_candidates"]), 14)
+
+    def test_shared_sales_policy_separates_cross_product_rules_from_product_candidates(self):
+        report = build_store_workflow_report(product="data-contract-auditor", config_root=CONFIG_ROOT)
+        self.assertEqual(report["shared_store_policy"]["policy_id"], "windows-store-submission-common")
+        self.assertEqual(report["shared_store_policy"]["candidate_defaults"], "NONE")
+        self.assertEqual(report["shared_store_policy"]["section_dependencies"],
+                         {"store_listings": ["packages"]})
+        batch = {item["key"]: item for item in report["owner_decision_batch"]}
+        self.assertTrue({"device_families", "category", "price_model", "price", "markets",
+                         "languages", "descriptions", "images", "privacy_declarations",
+                         "age_rating", "commercial_license", "publication_mode",
+                         "automatic_execution_scope"}.issubset(batch))
+        self.assertEqual(batch["price"]["value"], None)
+        self.assertEqual(batch["price"]["status"], "OWNER_DECISION_REQUIRED")
+        self.assertEqual(batch["commercial_license"]["status"], "OWNER_DECISION_REQUIRED")
+        self.assertEqual(batch["images"]["status"], "OWNER_DECISION_REQUIRED")
+
+    def test_shared_policy_reuses_only_digest_bound_product_and_section_approval(self):
+        profile = {"product_id": "p-1", "submission_id": "s-1",
+                   "approved_store_sections": {"properties": {
+                       "fields": [{"key": "category", "value": "productivity"}],
+                       "approval": {"approved": True, "product_id": "p-1", "submission_id": "s-1",
+                                    "sections": ["properties"], "approval_ref": "a-1",
+                                    "approved_by": "owner", "approved_at": "2026-11-28",
+                                    "approved_values_digest": hashlib.sha256(
+                                        json.dumps({"category": "productivity"}, sort_keys=True,
+                                                   separators=(",", ":")).encode("utf-8")).hexdigest()}}}}
+        policy = load_shared_store_policy()
+        approved = {item["key"]: item for item in build_product_decision_batch(policy, profile)}
+        self.assertEqual(approved["category"]["status"], "APPROVED_REUSED")
+        self.assertEqual(approved["category"]["value"], {"category": "productivity"})
+        self.assertEqual(approved["price"]["status"], "EVIDENCE_REQUIRED")
+
+        profile["product_id"] = "other-product"
+        mismatched_target = {item["key"]: item for item in build_product_decision_batch(policy, profile)}
+        self.assertNotEqual(mismatched_target["category"]["status"], "APPROVED_REUSED")
+        self.assertIsNone(mismatched_target["category"]["value"])
+
+        profile["product_id"] = "p-1"
+        profile["approved_store_sections"]["properties"]["fields"][0]["value"] = "games"
+        changed_value = {item["key"]: item for item in build_product_decision_batch(policy, profile)}
+        self.assertNotEqual(changed_value["category"]["status"], "APPROVED_REUSED")
 
     def test_fixed_dca_binding_cannot_be_changed_in_a_copied_registry(self):
         with tempfile.TemporaryDirectory() as temporary:

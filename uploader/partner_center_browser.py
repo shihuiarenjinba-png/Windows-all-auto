@@ -491,6 +491,7 @@ class PartnerCenterBrowserPort:
             if f"/products/{job.product_id}/submissions/{job.submission_id}/packages" in href:
                 if receipt_matches_job(previous_receipt, job):
                     return {"partner_center_confirmed": True, "reconciled_after_interruption": True,
+                            "current_partner_center_reconciled": True,
                             "method": "authenticated_playwright_cdp_overview_reconcile",
                             "product_id": job.product_id, "submission_id": job.submission_id,
                             "package_file_name": job.file_name, "sha256": job.sha256,

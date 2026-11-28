@@ -14,6 +14,13 @@ def package_write_hold_reason(config: dict[str, Any], package: Path | None = Non
     This is intentionally shared by store orchestration and the legacy uploader
     so a direct CLI invocation cannot bypass the newer run-level QA gate.
     """
+    provenance = config.get("source_package_provenance")
+    if isinstance(provenance, dict):
+        registered_sha = provenance.get("formal_package_sha256")
+        expected_sha = str(config.get("expected_sha256", ""))
+        if (provenance.get("status") == "MISMATCH" or
+                (isinstance(registered_sha, str) and registered_sha.lower() != expected_sha.lower())):
+            return "SOURCE_PRODUCT_PROFILE_PACKAGE_SHA_MISMATCH"
     if config.get("upload_approved") is not True:
         return "UPLOAD_NOT_APPROVED"
     if config.get("upload_scope") != "ONE_EXACT_MSIX_TO_EXISTING_DRAFT_PACKAGES_ONLY":

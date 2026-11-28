@@ -294,6 +294,8 @@ def main(argv: list[str] | None = None) -> int:
                 "source_package_provenance": report.get("source_package_provenance", {}),
                 "owner_decisions": report["owner_decisions"],
                 "owner_decision_candidates": report.get("owner_decision_candidates", []),
+                "shared_store_policy": report.get("shared_store_policy", {}),
+                "owner_decision_batch": report.get("owner_decision_batch", []),
             }
             approval_report_path = write_unique_report(approval_report, out / "owner-decisions")
         except (OSError, StoreWorkflowError) as exc:

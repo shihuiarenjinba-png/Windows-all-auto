@@ -6,7 +6,8 @@ from uuid import uuid4
 from uploader.core import JobLedger, UploadError, process_job, validate_config, verify_file
 from uploader.live_gates import package_write_hold_reason
 from uploader.partner_center_browser import PartnerCenterCDPConnection
-from uploader.receipts import ReceiptJournal, new_execution_receipt
+from uploader.receipts import (CONFIRMED_UI_STATES, ReceiptJournal, ReceiptJournalError,
+                               new_execution_receipt)
 
 CONFIG_ROOT = Path(__file__).parent / "config"
 
@@ -70,18 +71,33 @@ def main():
         config=validate_config(json.loads(config_file.read_text(encoding="utf-8")))
         args.workdir.mkdir(parents=True, exist_ok=True)
         journal=ReceiptJournal(args.receipt_ledger or (args.workdir/"durable-ledger"/"receipts"))
-        if args.execute and config.get("upload_approved") is not True:
-            raise UploadError("UPLOAD_NOT_APPROVED", "This product job is not approved for a live package write")
-        if args.execute and config.get("upload_scope") != "ONE_EXACT_MSIX_TO_EXISTING_DRAFT_PACKAGES_ONLY":
-            raise UploadError("UPLOAD_SCOPE_NOT_APPROVED", "Live execution is restricted to one exact MSIX package upload/Save in an existing Draft")
-        if args.execute and config.get("certification_submission_authorized") is not False:
-            raise UploadError("CERTIFICATION_SCOPE_FORBIDDEN", "This uploader never submits for Certification")
-        if args.execute and config.get("publish_authorized") is not False:
-            raise UploadError("PUBLISH_SCOPE_FORBIDDEN", "This uploader never publishes")
+        profile_duplicate_candidate = False
         if args.execute:
-            live_hold = package_write_hold_reason(config)
-            if live_hold:
-                raise UploadError(live_hold, "Shared Store live-write QA/approval gate did not pass")
+            try:
+                expected_profile_sha = str(config.get("expected_sha256", "")).lower()
+                profile_file_name = Path(str(config.get("path", ""))).name
+                profile_duplicate_candidate = any(
+                    receipt.get("product_id") == config.get("product_id")
+                    and receipt.get("submission_id") == config.get("submission_id")
+                    and receipt.get("package_file_name") == profile_file_name
+                    and str(receipt.get("sha256", "")).lower() == expected_profile_sha
+                    and receipt.get("result") == "SUCCEEDED"
+                    and receipt.get("partner_center_confirmation") in CONFIRMED_UI_STATES
+                    for receipt in journal.records())
+            except ReceiptJournalError as exc:
+                raise UploadError("DURABLE_LEDGER_INVALID", "Durable receipt ledger is unreadable; refusing a Store operation") from exc
+            if not profile_duplicate_candidate:
+                if config.get("upload_approved") is not True:
+                    raise UploadError("UPLOAD_NOT_APPROVED", "This product job is not approved for a live package write")
+                if config.get("upload_scope") != "ONE_EXACT_MSIX_TO_EXISTING_DRAFT_PACKAGES_ONLY":
+                    raise UploadError("UPLOAD_SCOPE_NOT_APPROVED", "Live execution is restricted to one exact MSIX package upload/Save in an existing Draft")
+                if config.get("certification_submission_authorized") is not False:
+                    raise UploadError("CERTIFICATION_SCOPE_FORBIDDEN", "This uploader never submits for Certification")
+                if config.get("publish_authorized") is not False:
+                    raise UploadError("PUBLISH_SCOPE_FORBIDDEN", "This uploader never publishes")
+                live_hold = package_write_hold_reason(config)
+                if live_hold:
+                    raise UploadError(live_hold, "Shared Store live-write QA/approval gate did not pass")
         if args.execute and not re.fullmatch(r"[0-9a-fA-F]{64}", str(config.get("expected_sha256", ""))):
             raise UploadError("EXPECTED_SHA_REQUIRED", "Live upload requires a frozen 64-character SHA-256")
         if args.execute and not os.environ.get("PARTNER_CENTER_CDP_URL"):
@@ -104,6 +120,15 @@ def main():
                             max_bytes=int(config.get("max_bytes",4_000_000_000)))
         job=verify_file(config,package,expected_sha256=expected,
                         max_bytes=int(config.get("max_bytes",4_000_000_000)))
+        if args.execute:
+            try:
+                prior_state = journal.classify(job)
+            except ReceiptJournalError as exc:
+                raise UploadError("DURABLE_LEDGER_INVALID", "Durable receipt ledger is unreadable; refusing a Store operation") from exc
+            if prior_state != "EXACT_SUCCESS":
+                live_hold = package_write_hold_reason(config, package)
+                if live_hold:
+                    raise UploadError(live_hold, "Shared Store live-write QA/approval gate did not pass")
         with JobLedger(args.workdir/"ledger.sqlite3") as ledger:
             if args.execute:
                 def browser_preflight(job, package_path, *, recovery_required=False):
@@ -128,7 +153,7 @@ def main():
             else:
                 result=process_job(config,package,ledger,expected_sha256=expected,dry_run=True,receipt_journal=journal)
         outcome=str(result.get("status","UNKNOWN")); detail=result
-        confirmation="UI_VALIDATED_SHA_UNOBSERVABLE" if outcome in {"SUCCEEDED","SUCCEEDED_RECONCILED"} else ("UNKNOWN" if outcome=="RECONCILE_REQUIRED" else "NOT_ATTEMPTED")
+        confirmation="UI_VALIDATED_SHA_UNOBSERVABLE" if outcome in {"SUCCEEDED","SUCCEEDED_RECONCILED","DUPLICATE_CONFIRMED"} else ("UNKNOWN" if outcome=="RECONCILE_REQUIRED" else "NOT_ATTEMPTED")
         _save_run_receipt(args.workdir,config,job,outcome,confirmation,detail,journal)
         print(json.dumps(result,sort_keys=True)); return 0 if outcome not in {"RECONCILE_REQUIRED","FAILED"} else 2
     except UploadError as exc:

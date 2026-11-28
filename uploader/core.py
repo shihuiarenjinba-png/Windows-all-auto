@@ -320,18 +320,32 @@ def process_job(config: dict[str, Any], package_path: Path, ledger: JobLedger, *
                 receipt_journal: ReceiptJournal | None = None) -> dict[str, Any]:
     job = verify_file(config, package_path, expected_sha256=expected_sha256,
                       max_bytes=int(config.get("max_bytes", 4_000_000_000)))
+    prior_state = "NO_MATCH"
+    prior_success_receipt = None
     if receipt_journal is not None and not dry_run:
         try:
             prior_state = receipt_journal.classify(job)
+            if prior_state == "EXACT_SUCCESS":
+                prior_success_receipt = next((receipt for receipt in receipt_journal.records()
+                                              if receipt_matches_job(receipt, job)), None)
         except ReceiptJournalError as exc:
             raise UploadError("DURABLE_LEDGER_INVALID", "Durable receipt ledger is unreadable; refusing a Store write") from exc
-        if prior_state == "EXACT_SUCCESS":
-            return {"status": "DUPLICATE_CONFIRMED", "attempts": 0, "product_id": job.product_id,
-                    "submission_id": job.submission_id, "package_file_name": job.file_name, "sha256": job.sha256}
         if prior_state == "IDENTITY_CONFLICT":
             return {"status": "RECONCILE_REQUIRED", "attempts": 0, "product_id": job.product_id,
                     "submission_id": job.submission_id, "package_file_name": job.file_name, "sha256": job.sha256,
                     "reason": "A prior successful receipt has the same filename or hash with a different tuple"}
+    if not dry_run and prior_state == "NO_MATCH":
+        local_state = ledger.state_for(job)
+        if local_state and local_state[0] == "SUCCEEDED":
+            local_receipt = ledger.get_receipt(job)
+            if receipt_matches_job(local_receipt, job):
+                prior_state = "EXACT_SUCCESS"
+                prior_success_receipt = local_receipt
+            else:
+                return {"status": "RECONCILE_REQUIRED", "attempts": local_state[1],
+                        "product_id": job.product_id, "submission_id": job.submission_id,
+                        "package_file_name": job.file_name, "sha256": job.sha256,
+                        "reason": "LOCAL_LEDGER_SUCCESS_MISSING_EXACT_SHA_BOUND_RECEIPT"}
     if dry_run:
         status, attempts = ledger.begin(job, dry_run=True)
         if status == "DRY_RUN_ALREADY_DONE":
@@ -347,25 +361,69 @@ def process_job(config: dict[str, Any], package_path: Path, ledger: JobLedger, *
     # Check all static live gates and attach/resolve the exact existing Draft
     # before reserving an upload attempt. Local CDP/tab failures therefore do
     # not consume the remote-write retry budget.
-    if config.get("upload_approved") is not True:
+    duplicate_reconcile_only = prior_state == "EXACT_SUCCESS"
+    if not duplicate_reconcile_only and config.get("upload_approved") is not True:
         raise UploadError("UPLOAD_NOT_APPROVED", "This product job is not approved for a live package write")
     if not expected_sha256 or not re.fullmatch(r"[0-9a-fA-F]{64}", expected_sha256):
         raise UploadError("EXPECTED_SHA_REQUIRED", "Live upload requires a frozen 64-character SHA-256")
-    if live_adapter is None and live_preflight_adapter is None:
+    if (live_adapter is None and live_preflight_adapter is None and
+            not (duplicate_reconcile_only and reconcile_adapter is not None)):
         raise UploadError("BROWSER_ADAPTER_UNSUPPORTED", "Existing MSIX Draft browser adapter is not enabled")
-    from uploader.live_gates import package_write_hold_reason
-    live_hold = package_write_hold_reason(config, package_path)
-    if live_hold:
-        raise UploadError(live_hold, "Shared Store live-write QA/approval gate did not pass")
+    if not duplicate_reconcile_only:
+        from uploader.live_gates import package_write_hold_reason
+        live_hold = package_write_hold_reason(config, package_path)
+        if live_hold:
+            raise UploadError(live_hold, "Shared Store live-write QA/approval gate did not pass")
     if live_preflight_adapter is not None:
         prior_local_state = ledger.state_for(job)
         recovery_required = bool(prior_local_state and prior_local_state[0] in {"UPLOADING", "UNKNOWN"})
+        recovery_required = recovery_required or duplicate_reconcile_only
         prepared = live_preflight_adapter(job, package_path, recovery_required=recovery_required)
-        if not isinstance(prepared, dict) or not callable(prepared.get("live_adapter")):
+        if (not isinstance(prepared, dict) or
+                (not duplicate_reconcile_only and not callable(prepared.get("live_adapter"))) or
+                (duplicate_reconcile_only and not callable(prepared.get("reconcile_adapter")))):
             raise UploadError("BROWSER_PREFLIGHT_INVALID", "Live browser preflight did not return a verified upload adapter")
-        live_adapter = prepared["live_adapter"]
+        if callable(prepared.get("live_adapter")):
+            live_adapter = prepared["live_adapter"]
         if callable(prepared.get("reconcile_adapter")):
             reconcile_adapter = prepared["reconcile_adapter"]
+    if duplicate_reconcile_only:
+        if not callable(reconcile_adapter) or prior_success_receipt is None:
+            return {"status": "RECONCILE_REQUIRED", "attempts": 0,
+                    "product_id": job.product_id, "submission_id": job.submission_id,
+                    "package_file_name": job.file_name, "sha256": job.sha256,
+                    "reason": "EXACT_SUCCESS_RECEIPT_REQUIRES_CURRENT_PARTNER_CENTER_RECONCILIATION"}
+        try:
+            current = reconcile_adapter(job, package_path, prior_success_receipt)
+        except Exception as exc:
+            return {"status": "RECONCILE_REQUIRED", "attempts": 0,
+                    "product_id": job.product_id, "submission_id": job.submission_id,
+                    "package_file_name": job.file_name, "sha256": job.sha256,
+                    "reason": "CURRENT_PARTNER_CENTER_RECONCILIATION_FAILED",
+                    "error_type": type(exc).__name__}
+        current_matches = (
+            isinstance(current, dict)
+            and current.get("partner_center_confirmed") is True
+            and current.get("current_partner_center_reconciled") is True
+            and current.get("product_id") == job.product_id
+            and current.get("submission_id") == job.submission_id
+            and current.get("package_file_name") == job.file_name
+            and str(current.get("sha256", "")).lower() == job.sha256.lower()
+            and current.get("partner_center_validation") == "Validated"
+        )
+        if not current_matches:
+            return {"status": "RECONCILE_REQUIRED", "attempts": 0,
+                    "product_id": job.product_id, "submission_id": job.submission_id,
+                    "package_file_name": job.file_name, "sha256": job.sha256,
+                    "reason": "DURABLE_SUCCESS_RECEIPT_NOT_CONFIRMED_BY_CURRENT_PARTNER_CENTER_STATE",
+                    "current_observation": current if isinstance(current, dict) else {"status": "INVALID"}}
+        return {"status": "DUPLICATE_CONFIRMED", "attempts": 0,
+                "product_id": job.product_id, "submission_id": job.submission_id,
+                "package_file_name": job.file_name, "sha256": job.sha256,
+                "partner_center_confirmed": True, "partner_center_reconfirmed": True,
+                "current_partner_center_reconciled": True,
+                "partner_center_validation": "Validated",
+                "writes_performed": False, "current_observation": current}
     status, attempts = ledger.begin(job, dry_run=dry_run)
     if status == "RECONCILE_REQUIRED" and not dry_run and reconcile_adapter is not None:
         previous_receipt = ledger.get_receipt(job)
