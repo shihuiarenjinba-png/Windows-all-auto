@@ -12,6 +12,7 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+Add-Type -AssemblyName System.IO.Compression.FileSystem
 if ($env:GITHUB_ACTIONS -ne 'true') {
     throw 'Test signing and trust are restricted to an ephemeral GitHub Actions runner.'
 }

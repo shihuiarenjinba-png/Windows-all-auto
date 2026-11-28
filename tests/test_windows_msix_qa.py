@@ -56,7 +56,8 @@ class WindowsMsixDiagnosticTests(unittest.TestCase):
     def test_test_sign_lane_is_ephemeral_and_separate_from_store_candidate(self):
         root = Path(__file__).resolve().parents[1]
         source = (root / "scripts" / "test_sign_msix_copy.ps1").read_text(encoding="utf-8")
-        for required in ("$env:GITHUB_ACTIONS -ne 'true'", "New-SelfSignedCertificate",
+        for required in ("$env:GITHUB_ACTIONS -ne 'true'", "System.IO.Compression.FileSystem",
+                         "New-SelfSignedCertificate",
                          "Cert:\\LocalMachine\\TrustedPeople", "& $signTool sign /fd SHA256",
                          "Add-AppxPackage -Path $derived", "Remove-AppxPackage",
                          "store_candidate_unchanged=$true", "diagnostic_only=$true"):
