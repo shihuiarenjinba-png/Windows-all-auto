@@ -176,7 +176,6 @@ class RuntimeQaPlanTests(unittest.TestCase):
             ):
                 result = run_profiled_source_driver(product="data-contract-auditor",
                     profile_root=profile_root, evidence_root=root / "evidence")
-                    profile_root=profile_root, evidence_root=root / "evidence")
             self.assertEqual(result["status"], "SOURCE_DRIVER_RECEIPT_INVALID")
             self.assertIn("default_output_files_written", result["missing_or_failed_required_checks"])
 
