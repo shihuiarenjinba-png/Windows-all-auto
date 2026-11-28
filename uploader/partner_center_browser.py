@@ -494,7 +494,7 @@ class PartnerCenterBrowserPort:
                             "current_partner_center_reconciled": True,
                             "method": "authenticated_playwright_cdp_overview_reconcile",
                             "product_id": job.product_id, "submission_id": job.submission_id,
-                            "package_file_name": job.file_name, "sha256": job.sha256,
+                            "package_file_name": job.file_name, "local_package_sha256": job.sha256,
                             "partner_center_sha256": None,
                             "partner_center_confirmation": "UI_VALIDATED_SHA_UNOBSERVABLE",
                             "prior_receipt_sha256_match": True,

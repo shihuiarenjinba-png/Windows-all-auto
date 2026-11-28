@@ -137,7 +137,10 @@ class CloudUploaderTests(unittest.TestCase):
                                 "product_id": current.product_id,
                                 "submission_id": current.submission_id,
                                 "package_file_name": current.file_name,
-                                "sha256": current.sha256})}
+                                "local_package_sha256": current.sha256,
+                                "partner_center_sha256": None,
+                                "prior_receipt_sha256_match": True,
+                                "partner_center_confirmation": "UI_VALIDATED_SHA_UNOBSERVABLE"})}
             # New SQLite file simulates an evicted GitHub Actions cache.
             with JobLedger(root/"new-empty-ledger.sqlite3") as ledger:
                 result=process_job(approved_live_config(p),p,ledger,
@@ -200,7 +203,9 @@ class CloudUploaderTests(unittest.TestCase):
                         "current_partner_center_reconciled":True,
                         "partner_center_validation":"Validated",
                         "product_id":job.product_id,"submission_id":job.submission_id,
-                        "package_file_name":job.file_name,"sha256":job.sha256},
+                        "package_file_name":job.file_name,"local_package_sha256":job.sha256,
+                        "partner_center_sha256":None,"prior_receipt_sha256_match":True,
+                        "partner_center_confirmation":"UI_VALIDATED_SHA_UNOBSERVABLE"},
                     live_adapter=lambda *_:self.fail("must not repeat the upload"))
             self.assertEqual(result["status"],"DUPLICATE_CONFIRMED")
             self.assertTrue(result["partner_center_reconfirmed"])

@@ -408,7 +408,10 @@ def process_job(config: dict[str, Any], package_path: Path, ledger: JobLedger, *
             and current.get("product_id") == job.product_id
             and current.get("submission_id") == job.submission_id
             and current.get("package_file_name") == job.file_name
-            and str(current.get("sha256", "")).lower() == job.sha256.lower()
+            and str(current.get("local_package_sha256", "")).lower() == job.sha256.lower()
+            and current.get("partner_center_sha256") is None
+            and current.get("prior_receipt_sha256_match") is True
+            and current.get("partner_center_confirmation") == "UI_VALIDATED_SHA_UNOBSERVABLE"
             and current.get("partner_center_validation") == "Validated"
         )
         if not current_matches:
@@ -422,6 +425,8 @@ def process_job(config: dict[str, Any], package_path: Path, ledger: JobLedger, *
                 "package_file_name": job.file_name, "sha256": job.sha256,
                 "partner_center_confirmed": True, "partner_center_reconfirmed": True,
                 "current_partner_center_reconciled": True,
+                "partner_center_sha256": None,
+                "partner_center_confirmation": "UI_VALIDATED_SHA_UNOBSERVABLE",
                 "partner_center_validation": "Validated",
                 "writes_performed": False, "current_observation": current}
     status, attempts = ledger.begin(job, dry_run=dry_run)
