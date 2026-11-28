@@ -103,6 +103,7 @@ public static class PackageActivation {
 '@
     Add-Type -TypeDefinition $activationSource
     $appUserModelId = "$appxFamily!$ApplicationId"
+    $activationStarted = Get-Date
     $activatedProcessId = [PackageActivation]::Activate($appUserModelId)
     $deadline = (Get-Date).AddSeconds(45)
     $markerContent = ''
@@ -116,7 +117,19 @@ public static class PackageActivation {
     }
     if (-not (Test-Path -LiteralPath $SmokeMarkerPath)) {
         $processStillRunning = [bool](Get-Process -Id $activatedProcessId -ErrorAction SilentlyContinue)
-        throw "Packaged activation returned process $activatedProcessId but no smoke marker arrived before timeout (process_still_running=$processStillRunning)."
+        $activationEvents = @()
+        foreach ($logName in @('Microsoft-Windows-AppModel-Runtime/Admin',
+                               'Microsoft-Windows-AppModel-Runtime/Operational',
+                               'Microsoft-Windows-AppXDeploymentServer/Operational')) {
+            try {
+                $activationEvents += Get-WinEvent -FilterHashtable @{ LogName=$logName; StartTime=$activationStarted } `
+                    -ErrorAction Stop | Where-Object { $_.Message -match [regex]::Escape($appUserModelId) -or
+                        $_.Message -match [regex]::Escape($IdentityName) -or $_.Message -match "\\b$activatedProcessId\\b" } |
+                    Select-Object -Last 5 | ForEach-Object { "$($_.LogName) EventId=$($_.Id) Level=$($_.LevelDisplayName): $($_.Message)" }
+            } catch { }
+        }
+        $eventSummary = if ($activationEvents.Count) { $activationEvents -join ' | ' } else { 'no matching AppModel/AppX events found' }
+        throw "Packaged activation returned process $activatedProcessId but no smoke marker arrived before timeout (process_still_running=$processStillRunning). Diagnostics: $eventSummary"
     }
     if ($markerContent -ne 'BASIC_FUNCTION_SMOKE_PASS') {
         throw "Packaged app did not complete basic-function smoke. Marker: $markerContent"
