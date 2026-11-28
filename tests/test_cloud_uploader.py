@@ -12,8 +12,35 @@ CONFIG = {"schema_version":1,"product_name":"Data Contract Auditor","product_id"
 
 def make_msix(path, data=b"synthetic-msix"):
     with zipfile.ZipFile(path, "w") as package:
-        package.writestr("AppxManifest.xml", '''<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"><Identity Name="OkinawaDesktopTools.DataContractAuditor" Publisher="CN=46263F21-A700-41DB-8C9B-114C22FB82FC" Version="1.0.0.0" ProcessorArchitecture="x64" /></Package>''')
+        package.writestr("AppxManifest.xml", '''<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"><Identity Name="OkinawaDesktopTools.DataContractAuditor" Publisher="CN=46263F21-A700-41DB-8C9B-114C22FB82FC" Version="1.0.0.0" ProcessorArchitecture="x64" /><Dependencies><TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.0.0" MaxVersionTested="10.0.22621.0" /></Dependencies></Package>''')
         package.writestr("payload.bin", data)
+
+def approved_live_config(package, **updates):
+    digest = hashlib.sha256(package.read_bytes()).hexdigest()
+    config = {**CONFIG, "upload_approved": True,
+              "upload_scope": "ONE_EXACT_MSIX_TO_EXISTING_DRAFT_PACKAGES_ONLY",
+              "expected_sha256": digest,
+              "certification_submission_authorized": False, "publish_authorized": False,
+              "local_runtime_qa_status": "WINDOWS_REAL_DEVICE_QA_PASS_EXACT_PACKAGE",
+              "runtime_qa_receipt": {"status": "WINDOWS_REAL_DEVICE_QA_PASS_EXACT_PACKAGE",
+                                     "product_id": CONFIG["product_id"],
+                                     "submission_id": CONFIG["submission_id"],
+                                     "package_sha256": digest,
+                                     "identity": CONFIG["identity_name"],
+                                     "version": CONFIG["version"],
+                                     "architecture": CONFIG["architecture"]},
+              "device_family_settings": {"status": "OWNER_APPROVED",
+                  "approved_store_device_families": ["Windows 10/11 Desktop"],
+                  "approval": {"product_id": CONFIG["product_id"],
+                               "submission_id": CONFIG["submission_id"],
+                               "approval_ref": "fixture-device", "approved_by": "test", "approved_at": "2026-11-28"}},
+              "execution_policy": {"status": "OWNER_APPROVED", "auto_execute_approved_sections": True,
+                  "approved_sections": ["packages"],
+                  "approval": {"product_id": CONFIG["product_id"],
+                               "submission_id": CONFIG["submission_id"],
+                               "approval_ref": "fixture-package", "approved_by": "test", "approved_at": "2026-11-28"}}}
+    config.update(updates)
+    return config
 
 class CloudUploaderTests(unittest.TestCase):
     def test_hash_and_target_binding(self):
@@ -35,7 +62,7 @@ class CloudUploaderTests(unittest.TestCase):
     def test_dry_run_does_not_block_later_approved_live_execution(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp); p=root/"pkg.msix"; make_msix(p)
-            config={**CONFIG,"upload_approved":True}; digest=hashlib.sha256(p.read_bytes()).hexdigest(); called=[]
+            config=approved_live_config(p); digest=hashlib.sha256(p.read_bytes()).hexdigest(); called=[]
             with JobLedger(root/"ledger.sqlite3") as ledger:
                 process_job(config,p,ledger,dry_run=True)
                 result=process_job(config,p,ledger,expected_sha256=digest,dry_run=False,
@@ -54,13 +81,13 @@ class CloudUploaderTests(unittest.TestCase):
             root=Path(tmp); p=root/"pkg.msix"; make_msix(p)
             with JobLedger(root/"ledger.sqlite3") as ledger:
                 with self.assertRaisesRegex(UploadError,"did not confirm"):
-                    process_job({**CONFIG,"upload_approved":True},p,ledger,expected_sha256=hashlib.sha256(p.read_bytes()).hexdigest(),dry_run=False,live_adapter=lambda *_:{"http_accepted":True})
+                    process_job(approved_live_config(p),p,ledger,expected_sha256=hashlib.sha256(p.read_bytes()).hexdigest(),dry_run=False,live_adapter=lambda *_:{"http_accepted":True})
                 self.assertEqual(ledger.db.execute("SELECT status FROM uploads").fetchone()[0],"UNKNOWN")
 
     def test_interrupted_upload_is_reconciled_before_safe_retry(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp); p=root/"pkg.msix"; make_msix(p)
-            config={**CONFIG,"upload_approved":True}; digest=hashlib.sha256(p.read_bytes()).hexdigest()
+            config=approved_live_config(p); digest=hashlib.sha256(p.read_bytes()).hexdigest()
             with JobLedger(root/"ledger.sqlite3") as ledger:
                 with self.assertRaisesRegex(UploadError,"ambiguous"):
                     process_job(config,p,ledger,expected_sha256=digest,dry_run=False,
@@ -74,7 +101,7 @@ class CloudUploaderTests(unittest.TestCase):
     def test_interrupted_upload_recognizes_confirmed_partner_center_state(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp); p=root/"pkg.msix"; make_msix(p)
-            config={**CONFIG,"upload_approved":True}; digest=hashlib.sha256(p.read_bytes()).hexdigest()
+            config=approved_live_config(p); digest=hashlib.sha256(p.read_bytes()).hexdigest()
             with JobLedger(root/"ledger.sqlite3") as ledger:
                 with self.assertRaises(UploadError):
                     process_job(config,p,ledger,expected_sha256=digest,dry_run=False,
@@ -100,7 +127,7 @@ class CloudUploaderTests(unittest.TestCase):
             called=[]
             # New SQLite file simulates an evicted GitHub Actions cache.
             with JobLedger(root/"new-empty-ledger.sqlite3") as ledger:
-                result=process_job({**CONFIG,"upload_approved":True},p,ledger,
+                result=process_job(approved_live_config(p),p,ledger,
                     expected_sha256=digest,dry_run=False,receipt_journal=journal,
                     live_adapter=lambda *_:(called.append(True) or {"partner_center_confirmed":True}))
             self.assertEqual(result["status"],"DUPLICATE_CONFIRMED")
@@ -121,7 +148,7 @@ class CloudUploaderTests(unittest.TestCase):
             renamed=root/"pkg.msix"; changed.replace(renamed)
             changed_digest=hashlib.sha256(renamed.read_bytes()).hexdigest()
             with JobLedger(root/"ledger.sqlite3") as ledger:
-                result=process_job({**CONFIG,"upload_approved":True},renamed,ledger,
+                result=process_job(approved_live_config(renamed, path=renamed.name),renamed,ledger,
                     expected_sha256=changed_digest,dry_run=False,receipt_journal=journal,
                     live_adapter=lambda *_:self.fail("must not upload a different binary under a reused filename"))
             self.assertEqual(result["status"],"RECONCILE_REQUIRED")
@@ -136,7 +163,7 @@ class CloudUploaderTests(unittest.TestCase):
             called=[]
             with JobLedger(root/"ledger.sqlite3") as ledger:
                 with self.assertRaisesRegex(UploadError,"receipt ledger is unreadable"):
-                    process_job({**CONFIG,"upload_approved":True},p,ledger,dry_run=False,
+                    process_job(approved_live_config(p),p,ledger,dry_run=False,
                         receipt_journal=journal,live_adapter=lambda *_:(called.append(True) or {"partner_center_confirmed":True}))
             self.assertEqual(called,[])
 
@@ -185,7 +212,7 @@ class CloudUploaderTests(unittest.TestCase):
                     0, "LEGACY_PREUPLOAD_FAILURE", "FAILED", "PARTNER_CENTER_TAB_AMBIGUOUS"
                 ))
                 result = process_job(
-                    {**CONFIG, "upload_approved": True}, package, ledger,
+                    approved_live_config(package), package, ledger,
                     expected_sha256=digest, dry_run=False,
                     live_preflight_adapter=preflight,
                 )
@@ -279,7 +306,7 @@ class CloudUploaderTests(unittest.TestCase):
 
             with JobLedger(db_path) as ledger:
                 result = process_job(
-                    {**CONFIG, "upload_approved": True}, package, ledger,
+                    approved_live_config(package), package, ledger,
                     expected_sha256=digest, dry_run=False,
                     live_preflight_adapter=preflight,
                 )
@@ -297,7 +324,7 @@ class CloudUploaderTests(unittest.TestCase):
             root=Path(tmp); p=root/"pkg.msix"; make_msix(p)
             with JobLedger(root/"ledger.sqlite3") as ledger:
                 with self.assertRaisesRegex(UploadError,"frozen 64-character"):
-                    process_job({**CONFIG,"upload_approved":True},p,ledger,dry_run=False,live_adapter=lambda *_:{"partner_center_confirmed":True})
+                    process_job(approved_live_config(p),p,ledger,dry_run=False,live_adapter=lambda *_:{"partner_center_confirmed":True})
             wrong={**CONFIG,"identity_name":"Wrong.Identity"}
             with self.assertRaisesRegex(UploadError,"manifest does not match"):
                 verify_file(wrong,p)
@@ -309,7 +336,7 @@ class CloudUploaderTests(unittest.TestCase):
             adapter_calls=[]
             with JobLedger(root/"ledger.sqlite3") as ledger:
                 with self.assertRaisesRegex(UploadError,"tab selection failed"):
-                    process_job({**CONFIG,"upload_approved":True},p,ledger,
+                    process_job(approved_live_config(p),p,ledger,
                         expected_sha256=digest,dry_run=False,
                         live_adapter=lambda *_: adapter_calls.append("upload"),
                         live_preflight_adapter=lambda *_, **__: (_ for _ in ()).throw(
@@ -327,7 +354,7 @@ class CloudUploaderTests(unittest.TestCase):
                 order.append("preflight")
                 return {"live_adapter":lambda *_:(order.append("upload") or {"partner_center_confirmed":True})}
             with JobLedger(root/"ledger.sqlite3") as ledger:
-                result=process_job({**CONFIG,"upload_approved":True},p,ledger,
+                result=process_job(approved_live_config(p),p,ledger,
                     expected_sha256=digest,dry_run=False,live_adapter=lambda *_:None,
                     live_preflight_adapter=preflight)
                 attempts=ledger.db.execute("SELECT attempts FROM uploads").fetchone()[0]

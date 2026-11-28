@@ -96,6 +96,19 @@ class UploaderRunTests(unittest.TestCase):
             self.assertEqual(receipt["details"]["error_code"], "UPLOAD_NOT_APPROVED")
             self.assertIsNone(receipt["sha256"])
 
+    def test_direct_uploader_cannot_bypass_store_run_exact_package_qa_and_approval_gate(self):
+        with tempfile.TemporaryDirectory() as tmp, \
+             patch("sys.argv", ["uploader.run", "--product", "data-contract-auditor",
+                                 "--package", str(Path(tmp) / "DataContractSchemaDrift_1.0.0.0_x64.msix"),
+                                 "--workdir", tmp, "--execute"]), \
+             patch("uploader.run.github_download") as download, \
+             contextlib.redirect_stdout(io.StringIO()) as stdout:
+            code = main()
+        self.assertEqual(code, 2)
+        download.assert_not_called()
+        result = json.loads(stdout.getvalue())
+        self.assertEqual(result["error_code"], "PERSISTED_PACKAGE_EXECUTION_APPROVAL_REQUIRED")
+
     def test_approved_upload_without_package_only_scope_is_stopped_before_download(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

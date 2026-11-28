@@ -42,6 +42,8 @@ class Locator:
 
     def count(self):
         p = self.page
+        if self.role == "link" and self.text == "Product Identity": return int(p.is_overview)
+        if self.role == "link" and self.text == "Application overview": return int("/identity" in p.url)
         if self.selector.startswith("a[href*='/dashboard/products/"):
             return 1 if p.is_apps_overview else 0
         if self.selector == "a[href$='/packages']":
@@ -100,9 +102,17 @@ class Locator:
             self.page.url = f"https://partner.microsoft.com/en-us/dashboard/products/{self.page.job.product_id}/overview"
         elif self.selector == "a[href$='/packages']":
             self.page.url = f"https://partner.microsoft.com/en-us/dashboard/products/{self.page.job.product_id}/submissions/{self.page.job.submission_id}/packages"
+        elif self.role == "link" and self.text == "Product Identity":
+            self.page.url = f"https://partner.microsoft.com/en-us/dashboard/products/{self.page.job.product_id}/identity"
+        elif self.role == "link" and self.text == "Application overview":
+            self.page.url = f"https://partner.microsoft.com/en-us/dashboard/products/{self.page.job.product_id}/overview"
     def wait_for(self, state=None, timeout=None):
         if self.count() != 1: raise TimeoutError("expected postcondition absent")
     def get_attribute(self, name):
+        if name == "href" and self.role == "link" and self.text == "Product Identity":
+            return f"/en-us/dashboard/products/{self.page.job.product_id}/identity"
+        if name == "href" and self.role == "link" and self.text == "Application overview":
+            return f"/en-us/dashboard/products/{self.page.job.product_id}/overview"
         if name == "href" and self.selector == "a[href$='/packages']":
             return f"/en-us/dashboard/products/{self.page.job.product_id}/submissions/{self.page.job.submission_id}/packages"
         if name == "href" and self.selector == PACKAGES_COMPLETE:
@@ -125,6 +135,7 @@ class FakePage:
         self.save_calls = 0
         self.upload_path = None
         self.goto_calls = 0
+        self.goto_paths = []
         self.combined_product_heading = False
         self.device_family_checked = {
             "Windows 10/11 Desktop": True,
@@ -152,6 +163,7 @@ class FakePage:
     def get_by_role(self, role, name="", exact=True): return Locator(self, "role", text=name, role=role)
     def goto(self, url, wait_until=None, timeout=None):
         self.goto_calls += 1
+        self.goto_paths.append(url)
         self.url = url
     def wait_for_load_state(self, state=None, timeout=None): pass
     def reload(self, wait_until=None, timeout=None): pass
@@ -305,6 +317,8 @@ class PartnerCenterBrowserTests(unittest.TestCase):
                 "PACKAGE_UPLOAD_REQUIRED", "PACKAGE_WARNING_REVIEW", "PACKAGE_SAVE_REQUIRED",
                 "PACKAGES_SAVED", "OVERVIEW_RELOADED", "PACKAGES_REOPENED_RETAINED",
             ])
+            self.assertFalse(any("/identity" in route for route in page.goto_paths),
+                             "Identity must be reached through the visible link, never a constructed deep link")
 
     def test_device_family_without_persisted_owner_approval_holds_before_file_selection(self):
         with tempfile.TemporaryDirectory() as tmp:

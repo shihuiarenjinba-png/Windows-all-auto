@@ -153,6 +153,21 @@ class StoreWorkflowTests(unittest.TestCase):
                 target = Path(args[args.index("--dir") + 1])
                 target.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(source, target / Path(config["path"]).name)
+                evidence = {
+                    "BUILD_EVIDENCE.json": {
+                        "store_id": config["product_id"], "source_sha": "a" * 40,
+                        "msix_filename": Path(config["path"]).name,
+                        "msix_sha256": expected_sha, "msix_version": config["version"]},
+                    "MSIX_VERIFICATION.json": {
+                        "valid": True, "store_id": config["product_id"],
+                        "version": config["version"], "msix": {
+                            "filename": Path(config["path"]).name, "sha256": expected_sha}},
+                    "STORE_PREFLIGHT.json": {
+                        "ready": True, "store_id": config["product_id"],
+                        "version_to_build": config["version"]},
+                }
+                for name, payload in evidence.items():
+                    (target / name).write_text(json.dumps(payload), encoding="utf-8")
                 return SimpleNamespace(returncode=0, stdout="")
 
             result = acquire_registered_package(config, product="data-contract-auditor",
@@ -161,6 +176,7 @@ class StoreWorkflowTests(unittest.TestCase):
             self.assertEqual(result["artifact_id"], 77)
             self.assertEqual(result["run_id"], 88)
             self.assertEqual(result["sha256"], expected_sha)
+            self.assertEqual(result["source_sha"], "a" * 40)
             self.assertEqual(len(calls), 3)
             self.assertTrue(Path(result["local_path"]).is_file())
 

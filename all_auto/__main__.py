@@ -32,6 +32,10 @@ def main(argv: list[str] | None = None) -> int:
     store_status.add_argument("--product", required=True, help="Registered product key under uploader/config")
     store_status.add_argument("--cdp-url", help="Optional loopback CDP endpoint; defaults to PARTNER_CENTER_CDP_URL")
     store_status.add_argument("--out", type=Path, help="Status report directory; unique reports are never overwritten")
+    store_archive = store_commands.add_parser("archive", help="Verify and retain the exact registered MSIX in a local SHA-addressed archive")
+    store_archive.add_argument("--product", required=True)
+    store_archive.add_argument("--package", type=Path, help="Optional exact local package; otherwise resolved from configured sources")
+    store_archive.add_argument("--archive-root", type=Path, help="Durable archive root; defaults under portfolio-audit/_runtime")
     store_run = store_commands.add_parser("run", help="Collect evidence and execute only persisted owner-approved scopes")
     store_run.add_argument("--product", required=True, help="Registered product key under uploader/config")
     store_run.add_argument("--mode", choices=("AUTO", "READ_ONLY", "DRY_RUN"), default="AUTO",
@@ -54,6 +58,32 @@ def main(argv: list[str] | None = None) -> int:
         start()
         return 0
     if opts.command == "store":
+        if opts.store_command == "archive":
+            try:
+                config, _ = _load_job(opts.product, Path(__file__).resolve().parent.parent / "uploader" / "config")
+                package = opts.package
+                if package is None:
+                    cache_root = Path(os.environ.get("STORE_PACKAGE_CACHE_ROOT", ".store-artifacts"))
+                    repo_root = Path(__file__).resolve().parent.parent
+                    acquisition = acquire_registered_package(
+                        config, product=opts.product, cache_root=cache_root,
+                        search_roots=[Path.home() / "Desktop" / "portfolio-audit" / "_runtime" / "store-fleet-sync",
+                                      Path.home() / "Desktop" / "Windows-all-auto-dca-upload" / ".uploader-run" / opts.product,
+                                      repo_root / "_runtime" / "store-fleet-sync"])
+                    package = Path(acquisition.get("local_path") or acquisition.get("path"))
+                from .artifact_archive import archive_verified_package
+                archive_root = opts.archive_root or (Path.home() / "Desktop" / "portfolio-audit" / "_runtime" / "store-fleet-sync" / "durable-package-archive")
+                result = archive_verified_package(config, package, archive_root)
+                report = {"schema_version": "all-auto-store-archive/1", "product_key": opts.product,
+                          "created_at_utc": datetime.now(timezone.utc).isoformat(),
+                          "run_id": uuid4().hex, **result}
+                report_path = write_unique_report(report, Path(".store-workflow-runs") / opts.product)
+            except (OSError, StoreWorkflowError, ValueError) as exc:
+                print(f"STORE ARCHIVE HOLD: {type(exc).__name__}: {exc}", file=sys.stderr)
+                return 2
+            print(json.dumps({**result, "product": opts.product, "report": str(report_path)},
+                             ensure_ascii=False, sort_keys=True))
+            return 0
         if opts.store_command == "status":
             from .store_status import collect_store_status
             try:
@@ -203,7 +233,8 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps({"status": report["status"], "product": opts.product,
                           "mode": opts.mode, "report": str(report_path),
                           "missing_or_unverified": len(report["missing_or_unverified"]),
-                          "partner_center_writes": False}, ensure_ascii=False, sort_keys=True))
+                          "partner_center_writes": execution.get("writes_performed") is True},
+                         ensure_ascii=False, sort_keys=True))
         return 1 if report["missing_or_unverified"] else 0
     try:
         content = json.loads(opts.manifest.read_text(encoding="utf-8"))

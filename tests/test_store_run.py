@@ -27,6 +27,13 @@ class StoreRunTests(unittest.TestCase):
         config.update({**DCA_BINDING, "expected_sha256": make_exact_test_package(package),
                       "local_runtime_qa_status": "WINDOWS_REAL_DEVICE_QA_PASS_EXACT_PACKAGE" if approved else "SOURCE_QA_PASS_PACKAGED_EXE_RUNTIME_UNVERIFIED_INSTALL_ACCESS_DENIED_AND_TIMEOUT"})
         if approved:
+            config["runtime_qa_receipt"] = {
+                "status": "WINDOWS_REAL_DEVICE_QA_PASS_EXACT_PACKAGE",
+                "product_id": config["product_id"], "submission_id": config["submission_id"],
+                "package_sha256": config["expected_sha256"],
+                "identity": config["identity_name"], "version": config["version"],
+                "architecture": config["architecture"],
+            }
             config["device_family_settings"] = {
                 "status": "OWNER_APPROVED", "manifest_target_device_families": ["Windows.Desktop"],
                 "approved_store_device_families": ["Windows 10/11 Desktop"],

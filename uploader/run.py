@@ -4,6 +4,7 @@ from pathlib import Path
 from urllib.parse import quote
 from uuid import uuid4
 from uploader.core import JobLedger, UploadError, process_job, validate_config, verify_file
+from uploader.live_gates import package_write_hold_reason
 from uploader.partner_center_browser import PartnerCenterCDPConnection
 from uploader.receipts import ReceiptJournal, new_execution_receipt
 
@@ -77,6 +78,10 @@ def main():
             raise UploadError("CERTIFICATION_SCOPE_FORBIDDEN", "This uploader never submits for Certification")
         if args.execute and config.get("publish_authorized") is not False:
             raise UploadError("PUBLISH_SCOPE_FORBIDDEN", "This uploader never publishes")
+        if args.execute:
+            live_hold = package_write_hold_reason(config)
+            if live_hold:
+                raise UploadError(live_hold, "Shared Store live-write QA/approval gate did not pass")
         if args.execute and not re.fullmatch(r"[0-9a-fA-F]{64}", str(config.get("expected_sha256", ""))):
             raise UploadError("EXPECTED_SHA_REQUIRED", "Live upload requires a frozen 64-character SHA-256")
         if args.execute and not os.environ.get("PARTNER_CENTER_CDP_URL"):

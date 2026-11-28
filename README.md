@@ -21,6 +21,12 @@ WindowsアプリやゲームをMicrosoft Storeへ登録するときの **GitHub 
 - CertificationとPublishの操作コードはない。公開実績とPackage Draft保存実績を混同しない。
 - 詳細は [Cloud Auto Uploader runbook](docs/automation/CLOUD_AUTO_UPLOADER.md) と [browser route teacher receipt](ops/cloud_uploader_browser_route_teacher_v1.json) を参照。
 
+### Product-key Store command and exact-package gate（2026-11-28）
+- 統合入口: `python -m all_auto store run --product data-contract-auditor`。製品設定、Artifact/local MSIX、Source evidence、Owner decisionsを集め、保存済みの承認範囲だけ実行します。DCAは現在 `PLAN_ONLY` のままです。
+- `store run`、`store apply --section packages`、`uploader.run --execute`、内部の`process_job`は共通のexact-package QA・Product/Draft承認・Device family承認ゲートを通ります。どの入口からも未承認のQAを迂回できません。
+- CDP画面遷移はApps and games Overviewから開始し、製品とDraftの表示リンクをたどります。Identity直リンクでの移動は使用しません。
+- CI Artifactをローカルに長期保管するときは `python -m all_auto store archive --product data-contract-auditor` を使用します。SHA-addressedな追加専用アーカイブとReceiptを作ります。Artifact expiry、外部バックアップ、公開Releaseを含む保管方針は [Store archive and live gates](docs/automation/STORE_LOCAL_ARCHIVE_AND_LIVE_GATES.md) を参照してください。
+
 ローカルCDPの読み取り専用診断: `python scripts/partner_center_browser_doctor.py --product data-contract-auditor --cdp-url http://127.0.0.1:9223`。`READY_EXACT_DRAFT_TAB` のときだけ、設定済みのProduct/Draft routeが一意です。Browser Doctorはページ遷移、クリック、ファイル選択、Saveを行いません。
 
 ## 関連リポジトリ（役割を分離）

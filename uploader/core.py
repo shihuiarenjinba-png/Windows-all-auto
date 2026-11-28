@@ -353,6 +353,10 @@ def process_job(config: dict[str, Any], package_path: Path, ledger: JobLedger, *
         raise UploadError("EXPECTED_SHA_REQUIRED", "Live upload requires a frozen 64-character SHA-256")
     if live_adapter is None and live_preflight_adapter is None:
         raise UploadError("BROWSER_ADAPTER_UNSUPPORTED", "Existing MSIX Draft browser adapter is not enabled")
+    from uploader.live_gates import package_write_hold_reason
+    live_hold = package_write_hold_reason(config, package_path)
+    if live_hold:
+        raise UploadError(live_hold, "Shared Store live-write QA/approval gate did not pass")
     if live_preflight_adapter is not None:
         prior_local_state = ledger.state_for(job)
         recovery_required = bool(prior_local_state and prior_local_state[0] in {"UPLOADING", "UNKNOWN"})

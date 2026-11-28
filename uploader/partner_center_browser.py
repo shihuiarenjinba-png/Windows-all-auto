@@ -231,12 +231,24 @@ class PartnerCenterBrowserPort:
             f"exact text count={exact_count}",
         )
 
+    def _click_product_navigation_link(self, name: str, expected_path: str, label: str) -> None:
+        link = self._one(self.page.get_by_role("link", name=name, exact=True), label)
+        href = str(link.get_attribute("href") or "")
+        parsed = urlsplit(href)
+        if parsed.hostname not in {None, PARTNER_HOST} or parsed.path.rstrip("/") != expected_path.rstrip("/"):
+            raise UploadError("PARTNER_CENTER_UI_CHANGED", f"{label} is not bound to the expected product route")
+        link.click()
+        self.page.wait_for_load_state("domcontentloaded")
+        current = safe_page_metadata(self.page)
+        if (current["scheme"] != "https" or current["hostname"] != PARTNER_HOST
+                or current["path"].rstrip("/") != expected_path.rstrip("/")):
+            raise UploadError("PARTNER_CENTER_UI_CHANGED", f"{label} navigation did not reach its exact route")
+
     def _assert_target(self, product_id: str, submission_id: str) -> str:
         if not product_id or not submission_id:
             raise UploadError("INVALID_JOB", "Product ID and existing Submission ID are required")
         path = f"/en-us/dashboard/products/{product_id}/submissions/{submission_id}"
         packages_url = f"{PARTNER_ORIGIN}{path}/packages"
-        identity_url = f"{PARTNER_ORIGIN}/en-us/dashboard/products/{product_id}/identity"
         # Every operation starts at the ordinary Apps and games Overview and
         # clicks the exact Product ID row before inspecting product/Draft data.
         try:
@@ -246,15 +258,16 @@ class PartnerCenterBrowserPort:
         except StoreUiHold as exc:
             raise UploadError("PARTNER_CENTER_UI_CHANGED", str(exc)) from exc
         self._assert_product_name("Overview")
-        # Identity remains a read-only target-binding check. After it succeeds,
-        # return to the product Overview and follow its exact Draft Packages link.
-        self._goto(identity_url)
+        # Follow the visible Product Identity navigation link from the selected
+        # Overview; never depend on a constructed Identity deep link.
+        identity_path = f"/en-us/dashboard/products/{product_id}/identity"
+        self._click_product_navigation_link("Product Identity", identity_path, "Product Identity link")
         self._assert_product_name("Identity")
         self._exact_text(product_id, "configured Store ID")
         self._exact_text(self.config["identity_name"], "configured Package Identity")
         self._exact_text(self.config["publisher"], "configured Publisher")
-        product_overview = f"{PARTNER_ORIGIN}/en-us/dashboard/products/{product_id}/overview"
-        self._goto(product_overview)
+        overview_path = f"/en-us/dashboard/products/{product_id}/overview"
+        self._click_product_navigation_link("Application overview", overview_path, "Application overview link")
         packages_link = self._one(self.page.locator("a[href$='/packages']"), "Overview Packages link")
         href = packages_link.get_attribute("href") or ""
         if f"/products/{product_id}/submissions/{submission_id}/packages" not in href:
@@ -437,8 +450,14 @@ class PartnerCenterBrowserPort:
         }
 
     def _verify_overview(self, job: VerifiedJob) -> None:
-        expected = f"{PARTNER_ORIGIN}/en-us/dashboard/products/{job.product_id}/overview"
-        self._goto(expected)
+        # Reconcile from the Apps and games Overview entry and select the exact
+        # product row again after Save.
+        try:
+            navigator = OverviewNavigator(self.page)
+            navigator.open_overview()
+            navigator.select_product(product_id=job.product_id, product_name=self.config["product_name"])
+        except StoreUiHold as exc:
+            raise UploadError("PARTNER_CENTER_UI_CHANGED", str(exc)) from exc
         meta = safe_page_metadata(self.page)
         expected_path = f"/en-us/dashboard/products/{job.product_id}/overview"
         if meta["scheme"] != "https" or meta["hostname"] != PARTNER_HOST or meta["path"].rstrip("/") != expected_path:
@@ -457,8 +476,12 @@ class PartnerCenterBrowserPort:
     def reconcile_ambiguous_upload(self, job: VerifiedJob, package_path: Path,
                                    previous_receipt: dict[str, Any] | None = None) -> dict[str, Any]:
         """Read Partner Center; filename/UI state alone cannot establish binary identity."""
-        overview_url = f"{PARTNER_ORIGIN}/en-us/dashboard/products/{job.product_id}/overview"
-        self._goto(overview_url)
+        try:
+            navigator = OverviewNavigator(self.page)
+            navigator.open_overview()
+            navigator.select_product(product_id=job.product_id, product_name=self.config["product_name"])
+        except StoreUiHold as exc:
+            raise UploadError("PARTNER_CENTER_UI_CHANGED", str(exc)) from exc
         self._assert_product_name("Overview")
         complete = self.page.locator(PACKAGES_COMPLETE)
         saved_name = self.page.get_by_text(job.file_name, exact=True)

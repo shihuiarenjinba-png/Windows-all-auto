@@ -112,8 +112,16 @@ def _download_registered_actions_artifact(config: dict[str, Any], *, product: st
                 raise StoreWorkflowError("GitHub Artifact download failed; check gh authentication and repository access")
             files = [path for path in target.rglob("*") if path.is_file() and not path.is_symlink()]
             packages = [path for path in files if path.name.casefold() == expected_name.casefold()]
-            if len(files) != 1 or len(packages) != 1:
-                raise StoreWorkflowError("Artifact must contain exactly the one configured MSIX and no unexpected files")
+            allowed_evidence = {"build_evidence.json", "msix_verification.json", "store_preflight.json"}
+            unexpected = [path.name for path in files
+                          if path.name.casefold() != expected_name.casefold()
+                          and path.name.casefold() not in allowed_evidence]
+            if len(packages) != 1 or unexpected:
+                raise StoreWorkflowError("Artifact must contain exactly the configured MSIX and only recognized build evidence")
+            evidence = {path.name.casefold(): path for path in files
+                        if path.name.casefold() in allowed_evidence}
+            if evidence:
+                _verify_actions_artifact_evidence(evidence, config, expected_sha)
             verified = verify_file(config, packages[0], expected_sha256=expected_sha,
                                    max_bytes=int(config.get("max_bytes", 4_000_000_000)))
             digest_dir = product_root / expected_sha[:12]
@@ -147,6 +155,44 @@ def _download_registered_actions_artifact(config: dict[str, Any], *, product: st
             "sha256": verified.sha256, "local_path": str(destination)}
 
 
+def _verify_actions_artifact_evidence(evidence: dict[str, Path], config: dict[str, Any],
+                                      expected_sha: str) -> None:
+    """Bind recognized CI evidence JSON to the exact registered artifact tuple."""
+    expected = {
+        "store_id": config.get("product_id"),
+        "version": config.get("version"),
+        "source_sha": str(config.get("source_sha", config.get("ref", ""))).lower(),
+        "sha256": expected_sha,
+    }
+    for filename, path in evidence.items():
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            raise StoreWorkflowError(f"Artifact evidence is unreadable: {filename}") from exc
+        if not isinstance(payload, dict):
+            raise StoreWorkflowError(f"Artifact evidence must be a JSON object: {filename}")
+        if filename == "build_evidence.json":
+            actual = {"store_id": payload.get("store_id"), "version": payload.get("msix_version"),
+                      "source_sha": str(payload.get("source_sha", "")).lower(),
+                      "sha256": str(payload.get("msix_sha256", "")).lower()}
+            if payload.get("msix_filename") != Path(str(config["path"])).name:
+                raise StoreWorkflowError("BUILD_EVIDENCE filename does not match the configured MSIX")
+        elif filename == "msix_verification.json":
+            package = payload.get("msix") if isinstance(payload.get("msix"), dict) else {}
+            actual = {"store_id": payload.get("store_id"), "version": payload.get("version"),
+                      "source_sha": expected["source_sha"],
+                      "sha256": str(package.get("sha256", "")).lower()}
+            if payload.get("valid") is not True or package.get("filename") != Path(str(config["path"])).name:
+                raise StoreWorkflowError("MSIX_VERIFICATION does not validate the configured package")
+        else:
+            actual = {"store_id": payload.get("store_id"), "version": payload.get("version_to_build"),
+                      "source_sha": expected["source_sha"], "sha256": expected_sha}
+            if payload.get("ready") is not True:
+                raise StoreWorkflowError("STORE_PREFLIGHT is not ready for the configured build")
+        if actual != expected:
+            raise StoreWorkflowError(f"Artifact evidence does not match the registered product/source/SHA: {filename}")
+
+
 def acquire_registered_package(config: dict[str, Any], *, product: str,
                                cache_root: Path, token: str | None = None,
                                downloader: Any = None,
@@ -174,6 +220,11 @@ def acquire_registered_package(config: dict[str, Any], *, product: str,
     matches = []
     if product_root.exists():
         for candidate in product_root.rglob(filename):
+            # Durable archive copies are immutable retention targets, not
+            # working-cache candidates. Keep them out of operational source
+            # resolution so the same exact MSIX is not reported as ambiguous.
+            if "durable-package-archive" in candidate.parts:
+                continue
             if candidate.is_symlink():
                 raise StoreWorkflowError("symbolic links are not allowed in the package cache")
             if candidate.is_file():
@@ -191,6 +242,8 @@ def acquire_registered_package(config: dict[str, Any], *, product: str,
             continue
         resolved_root = expanded.resolve()
         for candidate in resolved_root.rglob(filename):
+            if "durable-package-archive" in candidate.parts:
+                continue
             if candidate.is_symlink():
                 raise StoreWorkflowError("symbolic links are not allowed in package search roots")
             if candidate.is_file():
@@ -202,16 +255,27 @@ def acquire_registered_package(config: dict[str, Any], *, product: str,
         if candidate not in matches:
             matches.append(candidate)
     matches.sort()
+    identical_candidate_count = 1
     if len(matches) > 1:
-        raise StoreWorkflowError(f"multiple exact package cache candidates exist for {filename}; resolve before continuing")
+        try:
+            checked = [verify_file(config, candidate, expected_sha256=expected,
+                                   max_bytes=int(config.get("max_bytes", 4_000_000_000)))
+                       for candidate in matches]
+        except (OSError, UploadError):
+            raise StoreWorkflowError(f"multiple exact package cache candidates exist for {filename}; resolve before continuing") from None
+        if len({item.sha256 for item in checked}) != 1:
+            raise StoreWorkflowError(f"multiple package candidates differ for {filename}; resolve before continuing")
+        identical_candidate_count = len(matches)
+        matches = [matches[0]]
     if matches:
         verified = verify_file(config, matches[0], expected_sha256=expected,
                                max_bytes=int(config.get("max_bytes", 4_000_000_000)))
         is_cache = product_root in matches[0].parents
-        return {"status": "CACHE_HIT_VERIFIED" if is_cache else "LOCAL_EXACT_FILE_VERIFIED",
+        return {"status": ("MULTIPLE_IDENTICAL_COPIES_VERIFIED" if identical_candidate_count > 1
+                            else "CACHE_HIT_VERIFIED" if is_cache else "LOCAL_EXACT_FILE_VERIFIED"),
                 "source": "local_sha_bound_cache" if is_cache else "registered_local_artifact_root",
                 "path": str(matches[0].resolve()), "file_name": verified.file_name,
-                "sha256": verified.sha256}
+                "sha256": verified.sha256, "identical_candidate_count": identical_candidate_count}
     artifact_result = _download_registered_actions_artifact(
         config, product=product, product_root=product_root, command_runner=command_runner)
     if artifact_result is not None:
@@ -276,8 +340,28 @@ def _load_job(product: str, config_root: Path) -> tuple[dict[str, Any], Path]:
 
 def _source_observation(root: Path | None, config: dict[str, Any]) -> dict[str, Any]:
     if root is None:
-        return {"status": "NOT_PROVIDED", "repository_matches": None,
-                "head_matches": None, "readme": None, "evidence_files": []}
+        repo_leaf = str(config.get("repository", "")).rsplit("/", 1)[-1]
+        home = Path.home()
+        candidates = [Path.cwd(), home / "Desktop" / repo_leaf,
+                      home / "Desktop" / "portfolio-audit" / repo_leaf,
+                      home / "Desktop" / "portfolio-audit" / "_task_worktrees" / repo_leaf]
+        for candidate in candidates:
+            if candidate.is_dir() and (candidate / ".git").exists():
+                try:
+                    origin = subprocess.run(["git", "-C", str(candidate), "remote", "get-url", "origin"],
+                                            check=True, capture_output=True, text=True, timeout=10).stdout.strip()
+                except (OSError, subprocess.SubprocessError):
+                    continue
+                if origin in {f"https://github.com/{config['repository']}.git",
+                              f"https://github.com/{config['repository']}",
+                              f"git@github.com:{config['repository']}.git"}:
+                    root = candidate
+                    break
+        if root is None:
+            return {"status": "AUTO_DISCOVERY_NO_EXACT_CHECKOUT",
+                    "repository_matches": False, "head_matches": False,
+                    "readme": None, "evidence_files": [],
+                    "checked_locations": [str(path) for path in candidates]}
     root = root.resolve()
     if not root.is_dir():
         return {"status": "SOURCE_ROOT_MISSING", "repository_matches": False,
@@ -402,6 +486,32 @@ def build_store_workflow_report(*, product: str, config_root: Path,
     sections["pricing_availability"] = "AWAITING_OWNER_INPUT"
     sections["store_listings"] = "AWAITING_EVIDENCE"
 
+    def approval_summary(value: Any) -> dict[str, Any]:
+        if not isinstance(value, dict):
+            return {"status": "NOT_RECORDED", "approval_ref": None}
+        return {"status": value.get("status", "RECORDED"),
+                "approval_ref": value.get("approval_ref")}
+
+    family_settings = config.get("device_family_settings") if isinstance(config.get("device_family_settings"), dict) else {}
+    price = config.get("pricing_approval")
+    markets = config.get("markets_approval")
+    owner_decisions = [
+        {"key": "device_families", "status": family_settings.get("status", "NOT_RECORDED"),
+         "manifest_candidates": family_plan.get("recommended_store_device_families", []),
+         "approved_values": family_plan.get("approved_store_device_families", []),
+         "approval": approval_summary(family_settings.get("approval"))},
+        {"key": "pricing", "status": "APPROVED" if isinstance(price, dict) and price.get("status") == "OWNER_APPROVED" else "OWNER_DECISION_REQUIRED",
+         "configured_value": config.get("price"), "approval": approval_summary(price)},
+        {"key": "markets", "status": "APPROVED" if isinstance(markets, dict) and markets.get("status") == "OWNER_APPROVED" else "OWNER_DECISION_REQUIRED",
+         "configured_value": config.get("markets"), "approval": approval_summary(markets)},
+        {"key": "store_listings_and_assets", "status": "PROFILED" if isinstance(config.get("approved_store_sections"), dict) and config.get("approved_store_sections") else "EVIDENCE_OR_OWNER_APPROVAL_REQUIRED",
+         "source_evidence_files": source.get("evidence_files", [])},
+        {"key": "exact_package_runtime_qa", "status": config.get("local_runtime_qa_status", "NOT_RECORDED"),
+         "qa_receipt": "PRESENT" if isinstance(config.get("runtime_qa_receipt"), dict) else "NOT_RECORDED"},
+        {"key": "commercial_and_legal_declarations", "status": "OWNER_OR_EVIDENCE_REVIEW_REQUIRED",
+         "source_evidence_files": source.get("evidence_files", [])},
+    ]
+
     return {
         "schema_version": "all-auto-store-workflow/1",
         "run_id": uuid4().hex,
@@ -428,6 +538,7 @@ def build_store_workflow_report(*, product: str, config_root: Path,
         "partner_center": {"status": "NOT_CONNECTED", "writes_performed": False,
                             "certification_submitted": False, "published": False},
         "sections": sections,
+        "owner_decisions": owner_decisions,
         "missing_or_unverified": gaps,
         "next_safe_actions": ["confirm exact source checkout and product evidence",
                               "verify exact local/artifact package",

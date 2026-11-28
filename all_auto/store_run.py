@@ -6,8 +6,8 @@ from pathlib import Path
 import sys
 from typing import Any, Callable
 
-from uploader.core import UploadError, read_msix_manifest_metadata, verify_file
-from uploader.device_families import device_family_plan
+from uploader.core import UploadError, verify_file
+from uploader.live_gates import package_write_hold_reason
 from .store_workflow import StoreWorkflowError, _load_job
 
 
@@ -99,33 +99,18 @@ def run_approved_sections(*, product: str, config_root: Path, package: Path | No
 
 
 def _package_gate(config: dict[str, Any], package: Path | None) -> dict[str, Any]:
-    if config.get("upload_approved") is not True or config.get("upload_scope") != "ONE_EXACT_MSIX_TO_EXISTING_DRAFT_PACKAGES_ONLY":
-        return {"status": "HOLD", "reason": "PACKAGE_UPLOAD_APPROVAL_MISSING"}
-    if config.get("certification_submission_authorized") is not False or config.get("publish_authorized") is not False:
-        return {"status": "HOLD", "reason": "PROHIBITED_ACTION_GUARD_INVALID"}
     if not package:
         return {"status": "HOLD", "reason": "EXACT_PACKAGE_NOT_RESOLVED"}
     if package.is_symlink():
         return {"status": "HOLD", "reason": "PACKAGE_SYMLINK_NOT_ALLOWED"}
-    if package.name.casefold() != Path(str(config.get("path", ""))).name.casefold():
-        return {"status": "HOLD", "reason": "PACKAGE_FILENAME_MISMATCH"}
-    if config.get("local_runtime_qa_status") != "WINDOWS_REAL_DEVICE_QA_PASS_EXACT_PACKAGE":
-        return {"status": "HOLD", "reason": "EXACT_PACKAGE_RUNTIME_QA_REQUIRED"}
-    settings = config.get("device_family_settings")
-    if not isinstance(settings, dict) or settings.get("status") != "OWNER_APPROVED":
-        return {"status": "HOLD", "reason": "DEVICE_FAMILY_OWNER_APPROVAL_REQUIRED"}
-    approval = settings.get("approval")
-    if (not isinstance(approval, dict) or approval.get("product_id") != config.get("product_id")
-            or approval.get("submission_id") != config.get("submission_id")):
-        return {"status": "HOLD", "reason": "DEVICE_FAMILY_APPROVAL_TARGET_MISMATCH"}
+    hold = package_write_hold_reason(config, package)
+    if hold:
+        return {"status": "HOLD", "reason": hold}
     try:
         job = verify_file(config, package, expected_sha256=config.get("expected_sha256"),
                           max_bytes=int(config.get("max_bytes", 4_000_000_000)))
     except (OSError, UploadError) as exc:
         return {"status": "HOLD", "reason": getattr(exc, "code", type(exc).__name__)}
-    family = device_family_plan(config, read_msix_manifest_metadata(package)["target_device_families"])
-    if family.get("status") != "OWNER_APPROVED":
-        return {"status": "HOLD", "reason": "DEVICE_FAMILY_APPROVAL_INVALID"}
     return {"status": "READY", "file_name": job.file_name, "sha256": job.sha256}
 
 

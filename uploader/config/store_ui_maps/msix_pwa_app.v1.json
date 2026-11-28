@@ -45,39 +45,63 @@
       "path_token": "/properties",
       "heading": "Properties",
       "save_label": "Save",
-      "verified": false
+      "verified": false,
+      "live_link_observed": true,
+      "live_form_content_verified": false,
+      "live_observation_product_id": "9PDL4ZWSB45P",
+      "live_observation_submission_id": "1152921505702212222"
     },
     "store_listings": {
       "link_name": "Store listings",
       "path_token": "/managelanguages",
       "heading": "Manage Store listing languages",
       "save_label": "Save",
-      "verified": false
+      "verified": false,
+      "live_link_observed": true,
+      "live_form_content_verified": false,
+      "live_observation_product_id": "9PDL4ZWSB45P",
+      "live_observation_submission_id": "1152921505702212222"
     },
     "pricing_availability": {
       "link_name": "Pricing and availability",
       "path_token": "/availability",
       "heading": "Pricing and availability",
       "save_label": "Save draft",
-      "verified": false
+      "verified": false,
+      "live_link_observed": true,
+      "live_form_content_verified": false,
+      "live_observation_product_id": "9PDL4ZWSB45P",
+      "live_observation_submission_id": "1152921505702212222"
     },
     "age_ratings": {
       "link_name": "Age ratings",
       "path_token": "/ageratings",
       "heading": "Age ratings",
       "save_label": "Save draft",
-      "verified": false
+      "verified": false,
+      "live_link_observed": true,
+      "live_form_content_verified": false,
+      "live_observation_product_id": "9PDL4ZWSB45P",
+      "live_observation_submission_id": "1152921505702212222"
     },
     "submission_options": {
       "link_name": "Submission Options",
       "path_token": "/options",
       "heading": "Submission Options",
       "save_label": "Save",
-      "verified": false
+      "verified": false,
+      "live_link_observed": true,
+      "live_form_content_verified": false,
+      "live_observation_product_id": "9PDL4ZWSB45P",
+      "live_observation_submission_id": "1152921505702212222"
     },
     "packages": {
       "verified": false,
       "delegated_adapter": "uploader.partner_center_browser",
+      "live_link_observed": true,
+      "live_form_content_verified": true,
+      "live_observation_product_id": "9PDL4ZWSB45P",
+      "live_observation_submission_id": "1152921505702212222",
       "reason": "The uploader owns package validation, duplicate reconciliation, analysis, Save, and receipt semantics."
     }
   }
