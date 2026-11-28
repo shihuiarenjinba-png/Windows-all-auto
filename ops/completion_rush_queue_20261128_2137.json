@@ -1,0 +1,172 @@
+{
+  "schema_version": "1.0",
+  "path": "ops/completion_rush_queue_20261128_2137.json",
+  "generated_at": "2026-11-28T12:37:37Z",
+  "policy": "COMPLETION_RUSH_EXISTING_PRODUCTS_ONLY",
+  "supersedes_current_snapshot": "ops/completion_rush_queue_20261128_2032.json",
+  "source_observation": "ops/active_e2e_handoff_overlay_20261128_2137.json",
+  "new_product_generation_allowed": false,
+  "rules": {
+    "functional_hold": "Improve only an existing product when paid value, core functionality, beginner UX, safety or stability is deficient.",
+    "delivery_hold": "Do not add features. Advance current-source Identity/Version binding, real package, custody, backlog, local pull, checker and Windows QA.",
+    "freeze_for_package": "When no FUNCTIONAL_HOLD remains, product code is frozen except package-blocking defects.",
+    "never_guess": [
+      "Identity",
+      "Publisher",
+      "PFN",
+      "SID",
+      "Package Version"
+    ]
+  },
+  "priority": [
+    {
+      "rank": 1,
+      "product": "Focus Session Desk",
+      "lane": "APP",
+      "state": "POST_IDENTITY_UPGRADE",
+      "hold_class": "DELIVERY_HOLD",
+      "functional_hold": false,
+      "product_frozen_for_package": true,
+      "current_source_pr": 94,
+      "current_source_sha": "b6b69464a9c7450489338bc7542fd22cf190ed42",
+      "historical_identity_source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+      "current_identity_binding": "STALE_HISTORICAL_SOURCE_MISMATCH",
+      "current_request_id": "app-focus-session-desk-fb6293839bc7",
+      "current_request_source_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+      "current_request_status": "DRY_RUN__STALE_AFTER_SOURCE_HEAD_ADVANCED",
+      "package_version": null,
+      "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
+      "real_msix": false,
+      "store_assets_owner": "00",
+      "visual_signoff": "PENDING",
+      "sale_decision": "DO_NOT_SELL_BELOW_80",
+      "quality_score": 54,
+      "next_action": "Wait for user-owned official current-source Identity and authoritative Version for exact PR94 source b6b69464; do not reuse 8b00 or fb629. No CAS, guessed Version, Store write or PNG regeneration."
+    },
+    {
+      "rank": 2,
+      "product": "File Integrity Ledger",
+      "lane": "APP",
+      "state": "POST_IDENTITY_UPGRADE",
+      "hold_class": "DELIVERY_HOLD",
+      "functional_hold": false,
+      "product_frozen_for_package": true,
+      "current_source_pr": 115,
+      "current_source_sha": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
+      "current_source_approved_identity_present": false,
+      "historical_identity_source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
+      "current_request_id": "app-file-integrity-ledger-33d612be2774",
+      "current_request_source_sha": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
+      "current_request_status": "DRY_RUN",
+      "package_version": null,
+      "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
+      "real_msix": false,
+      "store_assets_owner": "00",
+      "visual_review": "HUMAN_OWNER_VISUAL_REVIEW_PASS",
+      "next_action": "Obtain current-source approved Identity and authoritative Version; do not reuse historical d1108 or invent Store ID/Version."
+    },
+    {
+      "rank": 3,
+      "product": "Prism Route 3D",
+      "lane": "3D",
+      "state": "POST_IDENTITY_UPGRADE",
+      "hold_class": "DELIVERY_AND_PHYSICAL_QA_HOLD",
+      "functional_hold": false,
+      "product_frozen_for_package": true,
+      "current_source_sha": "b03ce7b16c3f75c04fe20fdda224c45849eeba0d",
+      "physical_qa_sessions": "0/6",
+      "physical_qa_screenshots": "0/36",
+      "package_version": null,
+      "real_msix": false,
+      "evidence_carry_forward_from": "ops/completion_rush_queue_20261116.json",
+      "evidence_revalidated_this_run": false
+    },
+    {
+      "rank": 4,
+      "product": "Signal Sprint",
+      "lane": "GAME",
+      "state": "POST_IDENTITY_UPGRADE",
+      "hold_class": "FUNCTIONAL_QA_THEN_DELIVERY_HOLD",
+      "functional_hold": true,
+      "product_frozen_for_package": false,
+      "current_candidate_source_sha": "1a349faa41663c417c40710140a4d50c79b62b78",
+      "real_windows_uia_pass": false,
+      "real_msixvc": false,
+      "package_version": null,
+      "build_artifact_status": "HOLD_BUILD_ARTIFACT_NOT_CONFIGURED",
+      "evidence_carry_forward_from": "ops/completion_rush_queue_20261116.json",
+      "evidence_revalidated_this_run": false
+    }
+  ],
+  "pr165": {
+    "head_sha": "460de073fcf6a028efe77f13b019f544e7d7831c",
+    "parent_sha": "9a7b8db24f26a4266fbc7d30d16c64edb5edf5fa",
+    "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
+    "exact_head_ci_run_ids": [
+      46141536099,
+      46141536078,
+      46141536089
+    ],
+    "repository_ci_is_not_product_e2e": true
+  },
+  "pr161": {
+    "head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
+    "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
+    "exact_head_ci_run_ids": [
+      42712757936
+    ],
+    "scope": "Offline QA only; not product E2E"
+  },
+  "pr171": {
+    "head_sha": "764721021f13be96364529650b44fb439770bac9",
+    "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
+    "exact_head_ci_run_ids": [
+      44437197470
+    ],
+    "store_upload_bridge_present": true,
+    "eligible_fresh_unsold_products": 0,
+    "dry_run_started": false,
+    "live_started": false
+  },
+  "status": "HOLD",
+  "e2e_pass": false,
+  "first_unconnected_interval": {
+    "status": "BLOCKED_BEFORE_REAL_MSIX_BUILD",
+    "focus_session_desk": [
+      "CURRENT_SOURCE_IDENTITY_REVALIDATION_REQUIRED",
+      "CURRENT_SOURCE_REQUEST_STALE_AFTER_PR94_HEAD_ADVANCED",
+      "AUTHORITATIVE_PACKAGE_VERSION_REQUIRED",
+      "OWNER_VISUAL_SIGNOFF_PENDING",
+      "STORE_ASSET_MSIX_EMBEDDING_NOT_VERIFIED"
+    ],
+    "file_integrity_ledger": [
+      "CURRENT_SOURCE_APPROVED_IDENTITY_ABSENT",
+      "CURRENT_SOURCE_REQUEST_DRY_RUN_ONLY",
+      "OFFICIAL_IDENTITY_UNVERIFIED",
+      "AUTHORITATIVE_PACKAGE_VERSION_REQUIRED",
+      "MSIX_SELECTION_HOLD_APPROVED_IDENTITY_ABSENT"
+    ],
+    "next_after_resolution": [
+      "REAL_MSIX_BUILD",
+      "GITHUB_ARTIFACT_ARCHIVE_AND_PACKAGE_SHA_CUSTODY",
+      "GITHUB_BACKLOG_RECEIPT",
+      "LOCAL_PULL_SHA_RECEIPT",
+      "WINDOWS_CHECKER",
+      "LOCAL_GUI_AND_INSTALL_QA"
+    ]
+  },
+  "store_upload_test_eligibility": {
+    "eligible_fresh_unsold_products": 0,
+    "status": "NOT_RUN_NO_PRODUCT_MEETS_ALL_GATES",
+    "dry_run_started": false,
+    "live_started": false,
+    "draft_saved": 0,
+    "hold": 2,
+    "unknown": 0,
+    "error": 0
+  },
+  "store_submission_allowed": false,
+  "certification_allowed": false,
+  "publish_allowed": false,
+  "next_action": "Existing-product delivery only. Focus #94 source b6b69464: historical Identity 8b00 is stale, request fb629 is stale, authoritative Version null, PNG visual signoff pending. File #115 source 33d612be: current-source approved Identity absent, request DRY_RUN, authoritative Version null; PNG bytes exist and owner visual review is PASS. Do not create products/features or regenerate PNGs. Resume real MSIX only after official same-source Identity and Version evidence; then custody→backlog→local pull→checker→GUI/install. No Store write, certification, publish, merge or force push."
+}
