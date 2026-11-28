@@ -140,8 +140,8 @@
   },
   "source_binding": {
     "repository": "https://github.com/shihuiarenjinba-png/csv-import-validator",
-    "commit": "662a7fc506227464d103cd9a27f85ea372dfe3e2",
+    "commit": "0fb74fb6246ce9559b4ddc847a7decd166b77abf",
     "receipt_schema": "data-contract-local-real-device-qa/1",
-    "driver_sha256": "1408e0e073e5165686acaa5b9bb6c9e62d7d51d46eb3d23c55f185768b55d6cf"
+    "driver_sha256": "533585fcd3d3c8237f1decbf648218215bd7753daddffa4d2d9e2c4ff1088a5"
   }
 }
