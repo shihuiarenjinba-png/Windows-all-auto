@@ -1,0 +1,454 @@
+{
+  "schema_version": 1,
+  "path": "ops/active_e2e_handoff_overlay_20261128_1337.json",
+  "observed_at_utc": "2026-11-28T04:37:24Z",
+  "record_type": "APPEND_ONLY_CURRENT_EXECUTION_RECONCILIATION",
+  "repository": "shihuiarenjinba-png/Windows-all-auto",
+  "parent_observation": {
+    "pr_number": 218,
+    "branch": "codex/36-pr217-active-pointer-us-ledger-20261128-0538",
+    "head_sha": "185736ae2b2200ad941efce93e0df78caf115d2e",
+    "exact_head_ci": {
+      "run_id": 46065667261,
+      "event": "pull_request",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "name": "Offline preflight tests (ubuntu-latest)",
+          "conclusion": "success"
+        },
+        {
+          "name": "Offline preflight tests (windows-latest)",
+          "conclusion": "success"
+        }
+      ],
+      "scope": "Repository/offline QA and pointer regression only; not product E2E."
+    }
+  },
+  "reconciles_against": [
+    "PR #218 exact HEAD 185736ae2b2200ad941efce93e0df78caf115d2e",
+    "PR #165 live branch codex/e2e-artifact-custody-20261114",
+    "PR #161 exact HEAD 71d9c2125b6aed44a86ca1872d48ad19963f3e63",
+    "PR #171 exact HEAD 764721021f13be96364529650b44fb439770bac9",
+    "AI-App-Factory PR #94 exact HEAD b6b69464a9c7450489338bc7542fd22cf190ed42",
+    "AI-App-Factory PR #115 exact HEAD 33d612be2774ac155ea3d85289ec5cb7981c81c1",
+    "AI-App-Factory PR #126 exact HEAD c5ff92d4c92f346af94555e5dce176de81fe776a",
+    "AI-App-Factory PR #140 exact HEAD 59cac190f0f99cd9e63ef2f755e3d11b95222687",
+    "3d-build-qa PR #20 exact HEAD 31032210446e5de7376a82698d854d25a51da2f9",
+    "Repository-Provisioner-3D PR #10 exact HEAD 894775ae23cb5c8a6daca959b04804918ec255b9"
+  ],
+  "status": "HOLD",
+  "e2e_pass": false,
+  "pr218": {
+    "number": 218,
+    "state": "OPEN",
+    "draft": true,
+    "head_sha": "185736ae2b2200ad941efce93e0df78caf115d2e",
+    "exact_head_ci_run_id": 46065667261,
+    "exact_head_ci_conclusion": "success",
+    "windows_job": "success",
+    "ubuntu_job": "success",
+    "scope": "Offline QA only; not product E2E."
+  },
+  "pr165": {
+    "number": 165,
+    "state": "OPEN",
+    "branch": "codex/e2e-artifact-custody-20261114",
+    "head_sha": "07cb543816c7432edcf45465ae0763e16917aecc",
+    "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
+    "exact_head_ci": [
+      {
+        "run_id": 45899687437,
+        "workflow": "Windows E2E transport fail-closed regression",
+        "head_sha": "07cb543816c7432edcf45465ae0763e16917aecc",
+        "conclusion": "success"
+      },
+      {
+        "run_id": 45899687528,
+        "workflow": "GitHub artifact custody fail-closed regression",
+        "head_sha": "07cb543816c7432edcf45465ae0763e16917aecc",
+        "conclusion": "success"
+      },
+      {
+        "run_id": 45899687545,
+        "workflow": "Windows-all-auto Offline QA",
+        "head_sha": "07cb543816c7432edcf45465ae0763e16917aecc",
+        "conclusion": "success"
+      }
+    ],
+    "repository_ci_is_not_product_e2e": true,
+    "real_msix": false,
+    "github_backlog_receipt": false,
+    "local_pull_receipt": false,
+    "local_checker_receipt": false,
+    "local_gui_install_receipt": false
+  },
+  "pr161": {
+    "number": 161,
+    "head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
+    "exact_head_ci": [
+      {
+        "run_id": 42712757936,
+        "event": "pull_request",
+        "conclusion": "success",
+        "jobs": [
+          "windows-latest",
+          "ubuntu-latest"
+        ]
+      },
+      {
+        "run_id": 43403424936,
+        "event": "push",
+        "conclusion": "success",
+        "jobs": [
+          "windows-latest",
+          "ubuntu-latest"
+        ]
+      }
+    ],
+    "scope": "Offline QA only; not product E2E."
+  },
+  "pr171": {
+    "number": 171,
+    "head_sha": "764721021f13be96364529650b44fb439770bac9",
+    "exact_head_ci": [
+      {
+        "run_id": 44437197470,
+        "event": "pull_request",
+        "conclusion": "success",
+        "jobs": [
+          "ubuntu-latest",
+          "windows-latest"
+        ]
+      },
+      {
+        "run_id": 44437190317,
+        "event": "push",
+        "conclusion": "success",
+        "jobs": [
+          "windows-latest",
+          "ubuntu-latest"
+        ]
+      }
+    ],
+    "scope": "Offline QA only; Store upload bridge is present but not run.",
+    "windows_automator_pin": {
+      "repository": "shihuiarenjinba-png/Windows-Automator",
+      "branch": "codex/msix-commercial-contract-20261115",
+      "commit_sha": "d3b8ed4ae7762a69d3fe2a90b64aa86ee938259b",
+      "revalidated_this_run": false
+    },
+    "eligible_fresh_unsold_products": 0,
+    "dry_run_started": false,
+    "live_started": false
+  },
+  "pr126_source_pin": {
+    "repository": "shihuiarenjinba-png/AI-App-Factory",
+    "number": 126,
+    "state": "OPEN",
+    "draft": true,
+    "branch": "codex/app-preidentity-package-preflight-20261126",
+    "head_sha": "c5ff92d4c92f346af94555e5dce176de81fe776a",
+    "exact_head_ci": [
+      {
+        "run_id": 45828057699,
+        "workflow": "Factory core CI",
+        "conclusion": "success"
+      },
+      {
+        "run_id": 45828057878,
+        "workflow": "Windows package-source-preflight",
+        "conclusion": "success"
+      }
+    ],
+    "status": "STALE_SOURCE_PIN",
+    "focus": {
+      "pinned_source_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+      "current_source_pr": 94,
+      "current_source_sha": "b6b69464a9c7450489338bc7542fd22cf190ed42",
+      "required_request_id": "app-focus-session-desk-b6b69464a9c7",
+      "correction_owner": "00",
+      "correction_status": "NOT_YET_VERIFIED"
+    },
+    "file_integrity": {
+      "pinned_source_sha": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
+      "current_source_sha": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
+      "status": "PIN_MATCHES_CURRENT_SOURCE"
+    },
+    "scope": "Preflight CI is green against a stale Focus pin; this is not current-source product proof. No real product MakeAppx/MSIX."
+  },
+  "products": {
+    "focus_session_desk": {
+      "state": "POST_IDENTITY_UPGRADE",
+      "lane": "APP",
+      "hold_class": "DELIVERY_HOLD",
+      "functional_hold": false,
+      "product_frozen_for_package": true,
+      "current_source": {
+        "repository": "shihuiarenjinba-png/AI-App-Factory",
+        "pr": 94,
+        "branch": "codex/focus-store-assets-gate-20261118",
+        "sha": "b6b69464a9c7450489338bc7542fd22cf190ed42"
+      },
+      "current_request": {
+        "request_id": "app-focus-session-desk-b6b69464a9c7",
+        "run_id": 45925933012,
+        "job_id": 140267101509,
+        "job_conclusion": "success",
+        "artifact_id": 15166202971,
+        "artifact_sha256": "8f1862039297711a68bc33e8e25bea8cfc85f9926b269f0b2136bfa9986b503a",
+        "request_sha256": "09f730c785d242a3e7ef3f827593468950b77ce67ecbc3f7e4ede1357d0bb186",
+        "provisioner_receipt_sha256": "8fba8365e65f99ce7ebdeeb70c7f9912a73c4e63de2e7d7fac3c1041df4c3004",
+        "idempotency_key": "f4ab17f881a84de0a4a5141bed99c172925bf4bdad3c8346efe755d99bd5cabc",
+        "source_head_verification": "VERIFIED",
+        "dry_run": true,
+        "status": "DRY_RUN",
+        "request_submitted": false,
+        "partner_center_write": false,
+        "identity_write": false,
+        "github_return_status": "NOT_APPLIED"
+      },
+      "current_source_identity_file": {
+        "tracked_file_present": true,
+        "blob_sha": "00c56e85ec7590783284e372ba100a3127614971",
+        "identity_request_id": "app-focus-session-desk-8b00bc4e9082",
+        "bound_source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+        "current_source_sha": "b6b69464a9c7450489338bc7542fd22cf190ed42",
+        "binding": "STALE_HISTORICAL_SOURCE_MISMATCH_NOT_REUSABLE",
+        "package_version_field_present": false,
+        "package_version_gate": "HOLD",
+        "reuse_as_current_approval_allowed": false
+      },
+      "official_current_source_identity_status": "UNVERIFIED",
+      "authoritative_package_version": null,
+      "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
+      "assets": {
+        "required_pngs_present": true,
+        "owner": "00",
+        "regeneration_by_36": false,
+        "exact_head_png_gate_run_id": 45895951049,
+        "png_preflight_artifact_id": 15153188688
+      },
+      "native_gui": {
+        "exact_head_run_id": 45895951025,
+        "artifact_id": 15153413358,
+        "conclusion": "success",
+        "progress_visual_review_required": true
+      },
+      "msix_export": {
+        "run_id": 45895944516,
+        "job_id": 140169731833,
+        "conclusion": "failure",
+        "failed_step": "Build MSIX on Windows with approved package identity",
+        "exact_reason": "MSIX_BUILD_HOLD: Missing verified version",
+        "artifact_created": false
+      },
+      "real_msix": false,
+      "next_action": "Wait for owner 00 to correct PR126's Focus source pin; separately obtain read-only official current-source Identity and authoritative Package Version for the exact b6 source/request tuple. Do not re-request or reuse historical 8b00 binding."
+    },
+    "file_integrity_ledger": {
+      "state": "POST_IDENTITY_UPGRADE",
+      "lane": "APP",
+      "hold_class": "DELIVERY_HOLD",
+      "functional_hold": true,
+      "functional_hold_reason": "The 2026-11-27 consumer/value review scored 60/100 (value 11/30, UI 14/20, features 14/20, stability 13/15, Windows/Store evidence 8/15); paid differentiation is not established. Do not expand features to chase the score; treat this as a commercial sale-readiness hold separate from package delivery.",
+      "product_frozen_for_package": true,
+      "current_source": {
+        "repository": "shihuiarenjinba-png/AI-App-Factory",
+        "pr": 115,
+        "branch": "codex/integrity-pr95-source-request-integration-20261125",
+        "sha": "33d612be2774ac155ea3d85289ec5cb7981c81c1"
+      },
+      "current_request": {
+        "request_id": "app-file-integrity-ledger-33d612be2774",
+        "run_id": 45422895649,
+        "job_id": 138546927044,
+        "job_conclusion": "success",
+        "artifact_id": 14934034365,
+        "artifact_sha256": "697528b3b0769e3962eebfa0efcdcb026618cd378d97fc60c4f234017882527e",
+        "request_sha256": "dc477b03dd8eb024dd4145fb56cace5d57531a9ae3bbba74a487631f823b2557",
+        "idempotency_key": "a1bb56ad8ec3fcebf8c4d6ee5b9b96bbbc64e6ac4c6a481b73810f3ed0f03df2",
+        "source_head_verification": "VERIFIED",
+        "dry_run": true,
+        "status": "DRY_RUN",
+        "request_submitted": false,
+        "partner_center_write": false,
+        "identity_write": false,
+        "github_return_status": "NOT_APPLIED"
+      },
+      "current_source_approved_identity_file_present": false,
+      "historical_identity_reference": {
+        "source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
+        "store_id": "9PGZ445SR5GM",
+        "reuse_as_current_approval_allowed": false
+      },
+      "official_current_source_identity_status": "UNVERIFIED",
+      "authoritative_package_version": null,
+      "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
+      "assets": {
+        "required_pngs_present": true,
+        "human_visual_review": "PASS",
+        "owner": "00",
+        "regeneration_by_36": false,
+        "qa_mapping_pr": 124,
+        "qa_mapping_runs": [
+          45747686403,
+          45747686529
+        ],
+        "qa_mapping_artifact_id": 15084760142
+      },
+      "native_gui": {
+        "run_id": 45422895435,
+        "artifact_id": 14934752145,
+        "conclusion": "success",
+        "source_sha": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
+        "executable_sha256": "425e8f03397fc00a7b1442d58cc99d460fea53238e83c5b96500ac450bab85c6"
+      },
+      "msix_export": {
+        "run_id": 45422811552,
+        "job_id": 138546622818,
+        "conclusion": "success",
+        "selection_hold_reason": "MSIX_SELECTION_HOLD: approved Identity absent; do not invent Store IDs",
+        "build_steps_skipped": true,
+        "artifact_created": false
+      },
+      "real_msix": false,
+      "next_action": "Keep product code and PNGs frozen. Obtain read-only official current-source Identity and authoritative Package Version for the exact 33d source/request tuple; keep the commercial value hold separate and do not infer a Store ID."
+    },
+    "prism_route_3d": {
+      "state": "POST_IDENTITY_UPGRADE",
+      "lane": "3D",
+      "hold_class": "DELIVERY_AND_PHYSICAL_QA_HOLD",
+      "current_source_sha": "b03ce7b16c3f75c04fe20fdda224c45849eeba0d",
+      "historical_identity_source_sha": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
+      "current_source_identity_rebind": "PENDING_CURRENT_SOURCE_APPROVAL",
+      "authoritative_package_version": null,
+      "physical_qa": {
+        "qa_pr19_head": "9b90bfc9dfa6ded9699c3f22df45390be909dae8",
+        "qa_pr20_head": "31032210446e5de7376a82698d854d25a51da2f9",
+        "qa_pr20_exact_head_run_id": 46071743617,
+        "qa_pr20_jobs": "9/9 SUCCESS",
+        "qa_owned_custody_artifact_id": 15233410594,
+        "qa_owned_custody_sha256": "a02ed2a03ef37ebdb4dc46ad31c84148da3949fb1e55c5b0e0ae3627769f1b9f",
+        "provisioner_pr10_head": "894775ae23cb5c8a6daca959b04804918ec255b9",
+        "provisioner_pr10_ci_run_id": 46076931370,
+        "sessions_completed": 0,
+        "sessions_required": 6,
+        "screenshots_completed": 0,
+        "screenshots_required": 36
+      },
+      "official_store_assets_present": false,
+      "old_identity_reuse_allowed": false,
+      "real_msix": false
+    },
+    "signal_sprint": {
+      "state": "POST_IDENTITY_UPGRADE",
+      "lane": "GAME",
+      "current_pr32_head": "f051137e0a576c1778486f416b8f1d48f50d57b3",
+      "pr54_preview_status": "STALE_AGAINST_PR32_BUILD",
+      "package_route": "GDK_GAME",
+      "owner": "lane 12",
+      "normal_msix_route_allowed": false,
+      "real_msixvc2": false
+    },
+    "us_freelance_ledger": {
+      "state": "FUNCTIONAL_HOLD",
+      "lane": "APP",
+      "priority": "NON_PRIORITY",
+      "functional_hold": true,
+      "current_source": {
+        "repository": "shihuiarenjinba-png/AI-App-Factory",
+        "pr": 140,
+        "branch": "codex/app-preidentity-us-ledger-review-integration-20261128",
+        "sha": "59cac190f0f99cd9e63ef2f755e3d11b95222687"
+      },
+      "exact_head_verification": {
+        "core_ci": {
+          "run_id": 46074248872,
+          "workflow": "Factory core CI",
+          "head_sha": "59cac190f0f99cd9e63ef2f755e3d11b95222687",
+          "conclusion": "success"
+        },
+        "native_windows_review": {
+          "run_id": 46074248823,
+          "workflow": "APP US Review Windows Evidence",
+          "head_sha": "59cac190f0f99cd9e63ef2f755e3d11b95222687",
+          "conclusion": "success"
+        }
+      },
+      "qa_only_artifact": {
+        "artifact_id": 15234512571,
+        "purpose": "NATIVE_WINDOWS_QA_ONLY_NOT_MSIX",
+        "artifact_sha256": "NOT_OBSERVED"
+      },
+      "registration": {
+        "selected_type": null,
+        "status": "HOLD_REGISTRATION_TYPE_UNRESOLVED"
+      },
+      "official_identity_status": "NOT_OBSERVED",
+      "authoritative_package_version": null,
+      "real_msix": false,
+      "github_backlog_receipt": false,
+      "local_pull_receipt": false,
+      "local_checker_receipt": false,
+      "local_gui_install_receipt": false,
+      "product_e2e": false,
+      "store_upload_test_eligible": false,
+      "next_action": "Keep non-priority FUNCTIONAL_HOLD. Do not choose registration type or infer Identity/Package Version; QA EXE is not a Store package."
+    },
+    "offline_notes_canary": {
+      "state": "PRE_IDENTITY_FIX_REQUIRED",
+      "reason": "Promotion/source/request binding is incomplete; an unbound Identity reference alone is insufficient."
+    }
+  },
+  "partner_center_readback": {
+    "status": "NOT_PERFORMED_AUTHENTICATED_BROWSER_CONTEXT_UNAVAILABLE",
+    "reason": "Connected browser read failed because the originating browser context is unavailable in this run.",
+    "focus_current_source_identity": "UNVERIFIED",
+    "file_current_source_identity": "UNVERIFIED",
+    "authoritative_version": "NOT_OBSERVED",
+    "writes_attempted": false
+  },
+  "local_code_sync": {
+    "status": "NOT_OBSERVED__CLOUD_PASS_ONLY",
+    "durable_receipt_present": false,
+    "physical_user_windows_session_available": false,
+    "powershell_receipt": false,
+    "task_scheduler_receipt": false,
+    "first_run_receipt": null,
+    "idempotent_reuse_receipt": null
+  },
+  "canonical_ledger_reconciliation": {
+    "path": "ops/active_e2e_handoff.json",
+    "blob_sha": "5e764d88bcc7d5f101557dfb547cfab48d7d5145",
+    "bytes": 1976822,
+    "current_fetch_status": "EMPTY_CONTENT",
+    "full_content_read_status": "NOT_VERIFIABLE_IN_THIS_RUN",
+    "recorded_pr165_latest_live_head_sha": "380d4818330688f47d3558217ed556868cf0b744",
+    "directly_resolved_pr165_branch_head_sha": "07cb543816c7432edcf45465ae0763e16917aecc",
+    "stale": true,
+    "rewritten": false,
+    "resolution": "Preserve the canonical ledger byte-for-byte. The verified pointer selects only the append-only overlay and queue by exact Git blob SHA; invalid references fail closed and never fall back to the stale embedded PR165 pointer.",
+    "active_pointer_manifest_path": "ops/active_e2e_handoff_pointer_v1.json",
+    "pointer_resolution": "VERIFIED_POINTER_REFERENCED_OVERLAY_ONLY"
+  },
+  "store_upload_test_eligibility": {
+    "eligible_fresh_unsold_products": 0,
+    "status": "NOT_RUN_NO_PRODUCT_MEETS_ALL_GATES",
+    "dry_run_started": false,
+    "live_started": false
+  },
+  "e2e_status": "HOLD",
+  "real_msix": false,
+  "github_backlog_receipt": false,
+  "local_pull_receipt": false,
+  "local_checker_receipt": false,
+  "local_gui_install_receipt": false,
+  "store_submission_allowed": false,
+  "certification_allowed": false,
+  "publish_allowed": false,
+  "merge_allowed": false,
+  "force_push_allowed": false,
+  "product_repositories_12_and_24_modified": false,
+  "next_action": "Keep Focus rank 1 and File Integrity rank 2. Owner 00 has the PR126 Focus source-pin correction; do not duplicate it. Lane 36 must obtain read-only official current-source Identity and authoritative Package Version evidence for the exact Focus/File source-request tuples when the authenticated browser context is available. Preserve Focus/File product code and PNGs; no historical Identity reuse or Version inference. Only after exact approved Identity and authoritative Version are verified may real MSIX → SHA custody → backlog → local checker/GUI proceed. Keep Prism rank 3 and Signal Sprint rank 4; no Store write."
+}
