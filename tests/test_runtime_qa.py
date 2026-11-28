@@ -45,6 +45,8 @@ root = Path(__file__).resolve().parents[1]
 source_sha = subprocess.check_output(["git", "-C", str(root), "rev-parse", "HEAD"], text=True).strip()
 status = subprocess.check_output(["git", "-C", str(root), "status", "--porcelain", "--untracked-files=all"], text=True)
 driver = Path(__file__).resolve()
+driver_rel = driver.relative_to(root).as_posix()
+driver_blob = subprocess.check_output(["git", "-C", str(root), "cat-file", "blob", "HEAD:" + driver_rel])
 checks = [{"name": name, "status": "PASS"} for name in [
   "core_csv_drift", "csv_xlsx_compare", "invalid_input_rejected", "outputs_reopen",
   "inputs_unchanged", "writable_default_output", "default_output_files_written",
@@ -57,7 +59,7 @@ receipt = {
   "product": "Data Contract Auditor",
   "source_sha": source_sha,
   "source_worktree_clean": not bool(status),
-  "driver_sha256": hashlib.sha256(driver.read_bytes()).hexdigest(),
+  "driver_sha256": hashlib.sha256(driver_blob).hexdigest(),
   "execution_type": "SOURCE_GUI_DRIVER_SYNTHETIC_DATA",
   "status": "PASS",
   "checks": checks,
@@ -80,6 +82,10 @@ class RuntimeQaPlanTests(unittest.TestCase):
         subprocess.run(["git", "-C", str(checkout), "add", "scripts/local_real_device_qa.py"], check=True)
         subprocess.run(["git", "-C", str(checkout), "commit", "-m", "fixture"], check=True, capture_output=True)
         commit = subprocess.check_output(["git", "-C", str(checkout), "rev-parse", "HEAD"], text=True).strip()
+        driver_blob = subprocess.check_output([
+            "git", "-C", str(checkout), "cat-file", "blob",
+            "HEAD:scripts/local_real_device_qa.py",
+        ])
         profile_root = root / "profiles"
         profile_root.mkdir()
         profile = {
@@ -93,7 +99,7 @@ class RuntimeQaPlanTests(unittest.TestCase):
             "source_binding": {
                 "repository": "https://github.com/shihuiarenjinba-png/csv-import-validator",
                 "commit": commit, "receipt_schema": "data-contract-local-real-device-qa/1",
-                "driver_sha256": hashlib.sha256(script.read_bytes()).hexdigest(),
+                "driver_sha256": hashlib.sha256(driver_blob).hexdigest(),
             },
         }
         (profile_root / "data-contract-auditor.json").write_text(json.dumps(profile), encoding="utf-8")
