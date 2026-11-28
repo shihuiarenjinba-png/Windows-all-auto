@@ -31,7 +31,7 @@ class StatePathTests(unittest.TestCase):
             repo = Path(temporary) / "repo"
             repo.mkdir()
             with patch.dict(os.environ, {"WINDOWS_ALL_AUTO_STATE_DIR": ""}), patch("pathlib.Path.home", return_value=Path(temporary) / "no-home"):
-                self.assertEqual(state_root(repo), repo / ".uploader-run")
+                self.assertEqual(state_root(repo), repo.resolve() / ".uploader-run")
 
     def test_invalid_product_key_is_rejected(self):
         with self.assertRaises(ValueError):
