@@ -10,9 +10,23 @@
     "version": "1.0.0.0",
     "architecture": "x64",
     "application_id": "DataContractSchemaDrift",
-    "target_device_families": ["Windows.Desktop"]
+    "target_device_families": [
+      "Windows.Desktop"
+    ]
   },
   "runtime_scenarios": [
+    {
+      "id": "language_switch_en",
+      "description": "Switch source GUI to English and verify translated labels.",
+      "automation": "product_driver",
+      "required": true
+    },
+    {
+      "id": "language_switch_ja",
+      "description": "Switch source GUI to Japanese and verify translated labels.",
+      "automation": "product_driver",
+      "required": true
+    },
     {
       "id": "launch_and_render",
       "description": "Launch the packaged executable and confirm the Data Contract Auditor window and primary controls render.",
@@ -54,16 +68,31 @@
     "windows_server_automation": {
       "purpose": "Test-signed derivative install, AUMID activation, product-specific noninteractive GUI/data driver, and cleanup on an ephemeral runner.",
       "status": "NOT_RUN_FOR_DCA",
-      "limitations": ["A passing derivative is supplemental diagnostic evidence until the owner approves derivative equivalence for the fixed candidate."]
+      "limitations": [
+        "A passing derivative is supplemental diagnostic evidence until the owner approves derivative equivalence for the fixed candidate."
+      ]
     },
     "windows_10_11_interactive": {
       "purpose": "Human-visible UI, Japanese/English rendering, DPI scaling, file dialogs, visual clipping, and normal user close/relaunch.",
       "status": "NOT_RUN",
-      "limitations": ["Windows Server automation does not prove Windows 10/11 visual behavior."]
+      "limitations": [
+        "Windows Server automation does not prove Windows 10/11 visual behavior."
+      ]
     }
   },
   "owner_policy": {
     "derivative_qa_may_satisfy_fixed_candidate_runtime_gate": false,
     "approval_required_to_change": true
+  },
+  "source_gui_driver": {
+    "enabled": true,
+    "script": "scripts/local_real_device_qa.py",
+    "source_root_candidates": [
+      "_task_worktrees/dca-userdata-output",
+      "_task_worktrees/data-contract-auditor-group-c"
+    ],
+    "timeout_seconds": 240,
+    "data_policy": "synthetic_only",
+    "scope": "source GUI functional smoke; not fixed MSIX install, visual DPI, certification, or publish proof"
   }
 }
