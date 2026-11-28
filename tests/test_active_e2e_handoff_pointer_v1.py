@@ -38,7 +38,7 @@ class ActiveHandoffPointerV1Tests(unittest.TestCase):
 
             self.assertEqual(
                 snapshot["overlay_path"],
-                "ops/active_e2e_handoff_overlay_20261128_0538.json",
+                "ops/active_e2e_handoff_overlay_20261128_1337.json",
             )
             self.assertEqual(
                 snapshot["overlay"]["pr165"]["head_sha"],
@@ -51,6 +51,36 @@ class ActiveHandoffPointerV1Tests(unittest.TestCase):
             self.assertEqual(
                 snapshot["pointer"]["selection_policy"],
                 "VERIFIED_POINTER_REFERENCED_OVERLAY_ONLY",
+            )
+
+    def test_latest_overlay_records_current_app_lane_reconciliation(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self._copy_pointer_snapshot(root)
+            snapshot = load_active_handoff_pointer(root)
+
+            self.assertEqual(
+                snapshot["overlay"]["pr126_source_pin"]["status"],
+                "STALE_SOURCE_PIN",
+            )
+            self.assertEqual(
+                snapshot["overlay"]["products"]["focus_session_desk"]["current_request"]["request_id"],
+                "app-focus-session-desk-b6b69464a9c7",
+            )
+            self.assertTrue(
+                snapshot["overlay"]["products"]["file_integrity_ledger"]["functional_hold"]
+            )
+            self.assertEqual(
+                snapshot["overlay"]["products"]["us_freelance_ledger"]["current_source"]["pr"],
+                140,
+            )
+            self.assertEqual(
+                snapshot["queue"]["priority"][0]["product"],
+                "Focus Session Desk",
+            )
+            self.assertEqual(
+                snapshot["queue"]["priority"][1]["product"],
+                "File Integrity Ledger",
             )
 
     def test_tampered_overlay_fails_closed_without_legacy_fallback(self):
