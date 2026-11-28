@@ -3,26 +3,26 @@
   "pointer_version": 1,
   "path": "ops/active_e2e_handoff_pointer_v1.json",
   "repository": "shihuiarenjinba-png/Windows-all-auto",
-  "generated_at_utc": "2026-11-28T04:37:24Z",
+  "generated_at_utc": "2026-11-28T05:40:09Z",
   "status": "ACTIVE",
   "selection_policy": "VERIFIED_POINTER_REFERENCED_OVERLAY_ONLY",
   "fallback_to_canonical_ledger": false,
   "source_observation": {
-    "pr_number": 218,
-    "branch": "codex/36-pr217-active-pointer-us-ledger-20261128-0538",
-    "head_sha": "185736ae2b2200ad941efce93e0df78caf115d2e",
-    "exact_head_ci_run_id": 46065667261,
+    "pr_number": 219,
+    "branch": "codex/36-pr218-current-lane-reconcile-20261128-1337",
+    "head_sha": "4e903dc029b763be91de28c67c00b8e96e8b0a71",
+    "exact_head_ci_run_id": 46108715283,
     "exact_head_ci_conclusion": "success"
   },
   "active_snapshot": {
-    "observed_at_utc": "2026-11-28T04:37:24Z",
+    "observed_at_utc": "2026-11-28T05:40:09Z",
     "overlay": {
-      "path": "ops/active_e2e_handoff_overlay_20261128_1337.json",
-      "git_blob_sha": "8e30f3f33267ff85c7ae6c9e0c6cc2b428e531b1"
+      "path": "ops/active_e2e_handoff_overlay_20261128_1440.json",
+      "git_blob_sha": "a575beef1d262c65c8b652c561c799f6acecd20c"
     },
     "queue": {
-      "path": "ops/completion_rush_queue_20261128_1337.json",
-      "git_blob_sha": "c4c6a692f92e4d65bdbb28c3230ed3a279d5c9fb"
+      "path": "ops/completion_rush_queue_20261128_1440.json",
+      "git_blob_sha": "8d903a826a6f4d42ae5b6d79d1b3439703d1f3ee"
     }
   },
   "canonical_ledger": {
@@ -30,7 +30,14 @@
     "git_blob_sha": "5e764d88bcc7d5f101557dfb547cfab48d7d5145",
     "bytes": 1976822,
     "read_status": "EMPTY_CONTENT",
-    "rewritten": false
+    "rewritten": false,
+    "blob_sha": "5e764d88bcc7d5f101557dfb547cfab48d7d5145",
+    "fetch_blob_status": "READABLE",
+    "full_content_read_status": "READABLE_BY_FETCH_BLOB",
+    "full_content_read_bytes_utf8": 1976822,
+    "updated_at_utc": "2026-11-26T13:38:35Z",
+    "recorded_pr165_latest_live_head_sha": "380d4818330688f47d3558217ed556868cf0b744",
+    "directly_resolved_pr165_head_sha": "07cb543816c7432edcf45465ae0763e16917aecc"
   },
   "legacy_embedded_pointer": {
     "path": "ops/active_e2e_handoff.json",
