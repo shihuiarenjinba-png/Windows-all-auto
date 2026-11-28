@@ -5,12 +5,12 @@ WindowsアプリやゲームをMicrosoft Storeへ登録するときの **GitHub 
 ## 現在の到達点（2026-11-28）
 - GitHubの作業ブランチのみで開発（main/release直接変更なし）。
 - オフライン事前検証コア、日英切替GUI、CLI、SQLiteの安全なキュー台帳に加え、Product-key Store workflow、Overview起点のナビゲーション、共通フォーム入力、SHA固定Artifact取得、ローカルpackage archiveを実装。
-- 最新のコミット済み回帰は `fb64fc46ea6ce947d3bddd14354db1f37234cb3f`。その時点で **444件PASS / 5件SKIP**、Windows・Ubuntu CI成功。これはPartner Center実アップロードやMSIX runtime QAの成功を意味しません。
-- 2026-11-28時点で、Windows実行環境の読み取り専用MSIX診断、アーカイブ再取得、終了コード判定、外部バックアップ承認ゲート、Partner Center読み取り観測を追加中。これらの未commit差分は、再テストと新しいCIが通るまでGitHub反映済みとは扱いません。
+- 最新統合コミットは `c8a0121cf09ae09efd4c4d4ef4330476584c6e71`。ローカル回帰は **452件PASS / 5件SKIP**。PR #166のWindows・Ubuntu CIも成功し、Playwright/Chromiumのフォーム統合テストが実行されました。CI成功はPartner Center実アップロードやMSIX runtime QAを意味しません。
+- 2026-11-28に、Windows実行環境の読み取り専用MSIX診断、アーカイブ再取得、終了コード判定、外部バックアップ承認ゲート、Partner Center読み取り観測、同じ値のフォーム再Save抑止を追加し、CI成功済みです。
 - Windows-data / Windows-checker / Windows-Automator の読取専用JSON契約アダプタを追加済み。未知schema/statusはfail-closedで停止し、Windows-Automatorの `DONE` は引き続き `DRY_RUN_DONE` として扱います。
 - Windows-Automator live v2 の `DRAFT_SAVED` は、execution_mode、Save後の再読込、package validation/section completion、全必須section、証拠、Store ID / package SHA / source SHA / Identity / Versionの期待値一致をすべて確認した場合だけ受理します。Submit/Certified/Publishedのclaimは拒否します。
 - Windows-Automator結果の `restricted_capability`、説明のconfirmed/saved、`certification_gate` を中央表示用に正規化します。Capability重複や、未確認なのに保存済みという矛盾はfail-closedです。
-- **未完成/未検証**: 3ツールのsubprocess実行アダプタ、Cloud Actions上の実Partner Center session、Data Contract Auditorの正式MSIX、Windows実機GUI QA。contract追加やモック試験はStore登録の実機完了を意味しません。
+- **未完成/未検証**: 3ツールのsubprocess実行アダプタ、Actionsから接続する実Partner Center session、DCA exact MSIXのInstall/Launch runtime QA、Partner Center Packages Save。DCAの候補はSHA/Manifest固定済みですが、unsigned状態でローカルInstallがAccess Denied、EXE launchも未確認のためruntime QAはPASSではありません。
 - Package upload adapterは下記のとおり実装済みですが、live uploadは製品ごとのSHA・Identity・Draft・認可・認証session gateが全てPASSするまで停止。Submit for certification、公開、名前予約、Store商品ID/Identity推測は禁止。
 
 ## Cloud Auto Uploader（2026-11-23）
@@ -58,7 +58,7 @@ Python 3.12以上を想定。現在のオフライン検査に追加PyPIライ�
 オフラインCLIは summary.json / summary.md / audit-<id>.json を書き出します。件数は入力製品から算出し、架空の審査合格件数は生成しません。all_auto/queue.pyのSQLite台帳は安全な中断・再開の基盤ですが、実アップロード・再送照合の完全実装はコード担当が受け持ちます。
 
 ## 販売・実機引継ぎの判定
-**販売・本番申請はNO-GO**。本ツールは内部運用専用であり、一般消費者向け有料販売商品ではありません。GUI実機操作、3ツール実subprocess接続、MSIX内容と実ビルドの正規検証、Partner Center下書き保存は未確認です。**Windowsコード担当の継続開発・実機QAへの引継ぎのみ可**です。
+**Store Draft完成・本番申請はNO-GO**。このリポジトリは内部オーケストレーションツールです。DCAの正確なMSIXとManifestは確認済みですが、Install/Launchの原因は未解決で、Partner Center各セクションは読み取り観測のみ、Packages保存も未実施です。3ツールの実subprocess接続とActions上のPartner Center sessionも未検証です。
 
 - [販売移行ゲート・監査結果](docs/SALES_RELEASE_GATE_2026-10-26.md)
 
