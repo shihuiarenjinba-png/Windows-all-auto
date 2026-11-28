@@ -145,7 +145,7 @@ jobs:
           $content = Join-Path $root 'content'
           New-Item -ItemType Directory -Path $content -Force | Out-Null
           $publisher = 'CN=AllAuto.CI.MsixSmoke'
-          $marker = Join-Path $env:LOCALAPPDATA ("all-auto-msix-basic-smoke-{0}.txt" -f [Guid]::NewGuid().ToString('N'))
+          $marker = Join-Path $env:RUNNER_TEMP ("all-auto-msix-basic-smoke-{0}.txt" -f [Guid]::NewGuid().ToString('N'))
           $sourceCode = @'
           using System;
           using System.IO;
@@ -166,10 +166,11 @@ jobs:
           }
           '@
           Add-Type -TypeDefinition $sourceCode -OutputAssembly (Join-Path $content 'probe.exe') -OutputType WindowsApplication
-          & (Join-Path $content 'probe.exe') $marker
-          if ($LASTEXITCODE -ne 0 -or -not (Test-Path -LiteralPath $marker) -or
-              (Get-Content -LiteralPath $marker -Raw).Trim() -ne 'BASIC_FUNCTION_SMOKE_PASS') {
-            throw 'The synthetic smoke executable failed its pre-package marker contract.'
+          $markerArgument = '"' + $marker.Replace('"', '\"') + '"'
+          $prepackageProbe = Start-Process -FilePath (Join-Path $content 'probe.exe') -ArgumentList $markerArgument -PassThru -Wait
+          $prepackageMarker = if (Test-Path -LiteralPath $marker) { (Get-Content -LiteralPath $marker -Raw).Trim() } else { 'MISSING' }
+          if ($prepackageProbe.ExitCode -ne 0 -or $prepackageMarker -ne 'BASIC_FUNCTION_SMOKE_PASS') {
+            throw "The synthetic pre-package smoke failed (exit_code=$($prepackageProbe.ExitCode), marker=$prepackageMarker)."
           }
           Remove-Item -LiteralPath $marker -Force
           foreach ($spec in @(@{ Name='StoreLogo.png'; Size=50 }, @{ Name='Square44x44Logo.png'; Size=44 }, @{ Name='Square150x150Logo.png'; Size=150 })) {
