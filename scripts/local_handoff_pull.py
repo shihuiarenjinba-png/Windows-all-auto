@@ -11,6 +11,7 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
+from datetime import datetime, timezone
 
 from all_auto.handoff_bridge import stage_bundle, validate_bundle
 from all_auto.lane_queue import relative_package_path
@@ -130,18 +131,41 @@ def pull(target:Path)->dict:
                 if not prior:
                     total+=size
                     imported.append({"slug":slug,"sha256":checksum,
+                        "package_path":str(target/folder/"package.msix"),
+                        "package_bytes":size,
+                        "source_repository":result.get("source_repository"),
+                        "source_sha":result.get("source_sha"),
+                        "identity":result.get("identity"),
+                        "artifact_run_id":run_id,
+                        "artifact_name":name,
                         "product_type":result.get("product_type"),
                         "request_id":result.get("request_id"),
                         "status":"DOWNLOADED_AWAITING_WINDOWS_QA"})
-    return {"inspected_artifacts":len(artifacts),"new_packages":len(imported),
-            "total_bytes":total,"products":imported,"submitted_to_store":0}
+    return {"schema_version":"local-exact-artifact-pull-receipt/1",
+            "status":"LOCAL_EXACT_ARTIFACTS_VERIFIED",
+            "verified_at_utc":datetime.now(timezone.utc).isoformat(),
+            "target":str(target),
+            "inspected_artifacts":len(artifacts),"new_packages":len(imported),
+            "total_bytes":total,"products":imported,"package_rebuilt":False,
+            "security_bypass_used":False,"submitted_to_store":0}
+
+def write_receipt(path:Path,result:dict)->None:
+    """Write one immutable local-only receipt after all verification succeeds."""
+    if path.exists() or path.is_symlink():
+        raise ValueError("Receipt path already exists; refusing to overwrite evidence")
+    path.parent.mkdir(parents=True,exist_ok=True)
+    path.write_text(json.dumps(result,indent=2,ensure_ascii=False)+"\n",encoding="utf-8")
 
 def main(argv=None):
     parser=argparse.ArgumentParser()
     parser.add_argument("--target",type=Path,required=True)
+    parser.add_argument("--receipt",type=Path)
     opts=parser.parse_args(argv)
     try:
-        print(json.dumps(pull(opts.target),indent=2,ensure_ascii=False))
+        result=pull(opts.target)
+        if opts.receipt is not None:
+            write_receipt(opts.receipt,result)
+        print(json.dumps(result,indent=2,ensure_ascii=False))
         return 0
     except (ValueError,RuntimeError,OSError,KeyError,TypeError,
             subprocess.TimeoutExpired,json.JSONDecodeError) as exc:

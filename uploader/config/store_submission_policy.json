@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "policy_id": "windows-store-submission-common",
+  "policy_version": "1.0",
+  "purpose": "Shared review and safety rules; product values and approvals live only in each product job profile.",
+  "approval_scope": ["product_id", "submission_id", "section", "approved_values_digest"],
+  "candidate_defaults": "NONE",
+  "dimensions": [
+    {"key": "device_families", "candidate_keys": ["device_families", "future_device_family_policy"], "approval_required": true, "section": "packages"},
+    {"key": "category", "candidate_keys": ["category"], "approval_required": true, "section": "properties"},
+    {"key": "price_model", "candidate_keys": ["pricing"], "approval_required": true, "section": "pricing_availability"},
+    {"key": "price", "candidate_keys": ["pricing"], "approval_required": true, "section": "pricing_availability", "legal_or_commercial": true},
+    {"key": "markets", "candidate_keys": ["markets"], "approval_required": true, "section": "pricing_availability"},
+    {"key": "languages", "candidate_keys": ["ja_listing", "en_listing"], "approval_required": true, "section": "store_listings"},
+    {"key": "descriptions", "candidate_keys": ["ja_listing", "en_listing"], "approval_required": true, "section": "store_listings"},
+    {"key": "images", "candidate_keys": ["store_artwork", "store_screenshots"], "approval_required": true, "section": "store_listings"},
+    {"key": "privacy_declarations", "candidate_keys": ["privacy_declaration"], "approval_required": true, "section": "properties", "legal_or_commercial": true},
+    {"key": "age_rating", "candidate_keys": ["age_rating"], "approval_required": true, "section": "age_ratings", "legal_or_commercial": true},
+    {"key": "commercial_license", "candidate_keys": ["commercial_license"], "approval_required": true, "section": "commercial_review", "legal_or_commercial": true},
+    {"key": "publication_mode", "candidate_keys": ["publishing"], "approval_required": true, "section": "submission_options"},
+    {"key": "automatic_execution_scope", "candidate_keys": ["automatic_run_scope"], "approval_required": true, "section": "execution_policy"}
+  ],
+  "section_dependencies": {"store_listings": ["packages"]},
+  "independent_sections": ["properties", "pricing_availability", "age_ratings", "submission_options"],
+  "rules": [
+    "Never infer or set an unapproved price, market, legal declaration, or product-specific value.",
+    "Reuse product-scoped approvals only when Product ID, Submission ID, section, and approved values still match.",
+    "Read-only observation does not authorize writes; each live write needs an explicit section approval.",
+    "Certification and Publish are separate explicit gates."
+  ]
+}

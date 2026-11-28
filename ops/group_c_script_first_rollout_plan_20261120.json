@@ -1,0 +1,85 @@
+{
+  "schema_version": "group-c-script-first-rollout/1",
+  "recorded_date_jst": "2026-11-20",
+  "teacher_zero": "Folder Automation Engine",
+  "policy": {
+    "windows_qa": "LIGHTWEIGHT_SMOKE",
+    "partner_center": "SCRIPT_FIRST",
+    "certification": false,
+    "publish": false,
+    "security_policy_bypass": false,
+    "qa_unsigned_version_may_be_formal": false,
+    "placeholder_assets_may_be_formal": false
+  },
+  "order": [
+    {
+      "index": 1,
+      "product": "Data Contract Auditor",
+      "repo": "shihuiarenjinba-png/csv-import-validator",
+      "state": "READY_FOR_WINDOWS_REAL_DEVICE_QA"
+    },
+    {
+      "index": 2,
+      "product": "Web Evidence Archiver",
+      "repo": "shihuiarenjinba-png/web-evidence-archiver",
+      "state": "READY_FOR_WINDOWS_REAL_DEVICE_QA"
+    },
+    {
+      "index": 3,
+      "product": "Excel / CSV Privacy Cleaner",
+      "repo": "shihuiarenjinba-png/-Excel-CSV-Privacy-Cleaner",
+      "state": "READY_FOR_WINDOWS_REAL_DEVICE_QA"
+    },
+    {
+      "index": 4,
+      "product": "Image Privacy Cleaner",
+      "repo": "shihuiarenjinba-png/-Screenshot-Image-Privacy-Cleaner",
+      "state": "READY_FOR_WINDOWS_REAL_DEVICE_QA"
+    },
+    {
+      "index": 5,
+      "product": "AI Upload Guard",
+      "repo": "shihuiarenjinba-png/-AI-Upload-Guard-AI-",
+      "state": "READY_FOR_WINDOWS_REAL_DEVICE_QA"
+    },
+    {
+      "index": 6,
+      "product": "PDF Privacy",
+      "repo": "shihuiarenjinba-png/-PDF-Privacy-Toolkit",
+      "state": "READY_FOR_WINDOWS_REAL_DEVICE_QA"
+    }
+  ],
+  "minimal_qa": [
+    "portable_exe_launch",
+    "primary_dpi_100",
+    "secondary_dpi_125_or_150",
+    "ja_en_spot_check_if_supported",
+    "one_normal_input",
+    "one_invalid_input",
+    "one_output",
+    "source_non_destructive_check",
+    "close_relaunch",
+    "ui_clipping_primary_button_check"
+  ],
+  "formal_candidate_requires": [
+    "WINDOWS_REAL_DEVICE_QA_PASS",
+    "formal_store_version",
+    "final_brand_assets",
+    "manifest_languages_resources",
+    "same_approved_source_head",
+    "formal_msix_sha256",
+    "unpack_manifest_reverification"
+  ],
+  "teacher_data_each_product": [
+    "exact_product_fixture",
+    "live_partner_center_observation",
+    "package_upload_receipt",
+    "save_reload_receipt",
+    "verified_selector_mapping",
+    "screenshot_upload_reconciliation",
+    "warning_error_classification",
+    "overview_6_of_6_receipt",
+    "regression_tests"
+  ],
+  "target_before_owner_gate": "READY_FOR_CERTIFICATION_REVIEW"
+}

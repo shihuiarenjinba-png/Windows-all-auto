@@ -1,0 +1,42 @@
+{
+  "schema_version": "store-preupload-gate-receipt/2",
+  "status": "READY_FOR_MSIX_UPLOAD_APPROVAL",
+  "package_path": "C:\\Users\\aaron\\Desktop\\portfolio-audit\\_group_b_store_qa_20261024\\artifacts\\FolderAutomationEngine\\ci-adfc0d08\\store-artifact\\store-out-44269998298\\FolderAutomationEngine_1.0.0.0_x64_StoreDraft_UNSIGNED.msix",
+  "package_upload": "NOT_EXECUTED",
+  "start_submission": "NOT_REPEATED",
+  "certification": "NOT_EXECUTED",
+  "publish": "NOT_EXECUTED",
+  "write_performed": false,
+  "local_package": {
+    "exists": true,
+    "size": 13735475,
+    "last_write_time_utc": "2026-11-17T23:48:44+00:00",
+    "sha256": "3C6BC8C1291450905AE71834F2704A59325D1AAA1C9DE3F064BCB8C7EBCA9FB9",
+    "rehash_performed": true
+  },
+  "draft": {
+    "store_id": "9P99MJX1R4V6",
+    "draft_id": "1152921505702423660",
+    "draft_url": "https://partner.microsoft.com/en-us/dashboard/products/9P99MJX1R4V6/submissions/1152921505702423660",
+    "reconcile_status": "INITIAL_SUBMISSION_DRAFT_PRESENT_RECOVERED"
+  },
+  "immutable_binding": {
+    "store_id": "9P99MJX1R4V6",
+    "identity_name": "OkinawaDesktopTools.FolderAutomationEngine",
+    "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+    "version": "1.0.0.0",
+    "architecture": "x64",
+    "source_sha": "adfc0d08efb0a94602d5286557d399f9cb28b9dd",
+    "package_sha256": "3C6BC8C1291450905AE71834F2704A59325D1AAA1C9DE3F064BCB8C7EBCA9FB9",
+    "package_file_name": "FolderAutomationEngine_1.0.0.0_x64_StoreDraft_UNSIGNED.msix"
+  },
+  "store_fields_read": true,
+  "assets_ready": true,
+  "exact_jpy_price_confirmed": true,
+  "commercial_model": "paid_one_time",
+  "free_trial": "none",
+  "trial_confirmed": true,
+  "private_audience_group_confirmed": true,
+  "owner_security_confirmation_complete": true,
+  "read_only_reload_reconciled": true
+}

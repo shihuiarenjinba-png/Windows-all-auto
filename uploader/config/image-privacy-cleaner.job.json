@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "product_name": "Image Privacy Cleaner",
+  "product_id": "9PNSPFBKBBTQ",
+  "submission_id": "1152921505702212225",
+  "repository": "shihuiarenjinba-png/-Screenshot-Image-Privacy-Cleaner",
+  "ref": "b73f2dadd63843cadb9c1a779a87ef2045516af5",
+  "path": "store-output/ImagePrivacyCleaner_QA_UNSIGNED_1.0.50.0_x64.msix",
+  "version": "1.0.50.0",
+  "destination": "microsoft_partner_center_existing_draft",
+  "submission_route": "msix_pwa_app",
+  "identity_name": "OkinawaDesktopTools.ImagePrivacyCleaner",
+  "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+  "architecture": "x64",
+  "known_warnings": [],
+  "expected_existing_package_names": [],
+  "expected_replaced_package_names": [],
+  "upload_approved": false,
+  "expected_sha256": "90396a9097b1e7b570b5cfef4b9a45a93958733636adfe47c1aa71cde7e29800",
+  "max_bytes": 4000000000,
+  "local_package_only": true,
+  "source_sha": "b73f2dadd63843cadb9c1a779a87ef2045516af5",
+  "artifact_run_id": 44687836979,
+  "artifact_id": 14607755190,
+  "local_runtime_qa_status": "QA_UNSIGNED_OWNER_VERSION_AND_ARTWORK_APPROVAL_MISSING",
+  "upload_hold_reasons": [
+    "QA artifact only; formal Store candidate build was skipped",
+    "Owner-approved Store version missing",
+    "Owner-approved brand artwork approval missing"
+  ]
+}

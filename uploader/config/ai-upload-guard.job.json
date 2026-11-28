@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "product_name": "AI Upload Guard",
+  "product_id": "9PDJ1T5BQ4P1",
+  "submission_id": "1152921505702212224",
+  "repository": "shihuiarenjinba-png/-AI-Upload-Guard-AI-",
+  "ref": "fcb0e5793cef78d974e71fef8169c9f7d626257e",
+  "path": "store-output/AIUploadGuard_QA_UNSIGNED_1.0.60.0_x64.msix",
+  "version": "1.0.60.0",
+  "destination": "microsoft_partner_center_existing_draft",
+  "submission_route": "msix_pwa_app",
+  "identity_name": "OkinawaDesktopTools.AIUploadGuard",
+  "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+  "architecture": "x64",
+  "known_warnings": [],
+  "expected_existing_package_names": [],
+  "expected_replaced_package_names": [],
+  "upload_approved": false,
+  "expected_sha256": "1141d327f43ec0f846bf780d3d0c68b82ac261dd869a7a54fdbb31c70f8b6125",
+  "max_bytes": 4000000000,
+  "local_package_only": true,
+  "source_sha": "fcb0e5793cef78d974e71fef8169c9f7d626257e",
+  "artifact_run_id": 44687824883,
+  "artifact_id": 14607745398,
+  "local_runtime_qa_status": "RUNTIME_QA_NOT_VERIFIED",
+  "upload_hold_reasons": [
+    "QA artifact only; formal Store candidate build was skipped",
+    "Runtime QA not verified"
+  ]
+}

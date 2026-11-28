@@ -1,12 +1,78 @@
-"""Command-line entry point. No Store submission or network writes."""
+"""Command-line entry point for offline checks and explicitly scoped Store actions."""
 from __future__ import annotations
 
 import argparse
+from datetime import datetime, timezone
 import json
+import os
 import sys
+import tempfile
 from pathlib import Path
+from uuid import uuid4
 
 from .core import export_results, preflight
+from .state_paths import product_state_dir
+from uploader.core import UploadError
+from .store_workflow import (
+    StoreWorkflowError,
+    _load_job,
+    acquire_registered_package,
+    build_store_workflow_report,
+    write_store_report_with_fallback,
+    write_unique_report,
+)
+
+
+def _write_store_report(report: dict, requested_root: Path | None, product: str,
+                        *subdirs: str) -> Path:
+    if requested_root is not None:
+        return write_unique_report(report, requested_root)
+    default_root = Path(".store-workflow-runs") / product
+    fallback_roots: list[Path] = []
+    local_app_data = os.environ.get("LOCALAPPDATA")
+    if local_app_data:
+        fallback_roots.append(Path(local_app_data) / "WindowsAllAuto" / "store-workflow-runs" / product)
+    for subdir in subdirs:
+        default_root /= subdir
+        fallback_roots = [root / subdir for root in fallback_roots]
+    # The app-container temp root is already present and writable in restricted
+    # desktop sessions. Keep this last resort flat: some managed profiles allow
+    # files in TEMP but reject newly-created nested directories at open time.
+    fallback_roots.append(Path(tempfile.gettempdir()))
+    return write_store_report_with_fallback(report, default_root, fallback_roots)
+
+
+def _store_run_exit_code(report: dict, execution: dict, acquisition: dict) -> int:
+    """Return 0 only for a reconciled successful run, 1 for a safe hold, 2 for errors/unknowns."""
+    status = str(execution.get("status", "UNKNOWN"))
+    writes = execution.get("writes_performed") is True
+    if status in {"FAILED", "RECONCILE_REQUIRED", "PARTIAL_RECONCILE_REQUIRED", "UNKNOWN"}:
+        return 2
+    if (status == "EXECUTED" and not writes and
+            execution.get("all_approved_sections_completed") is not True):
+        return 2
+    if writes and status != "EXECUTED":
+        return 2
+    if status in {"HOLD", "PLAN_ONLY", "NO_APPROVED_ACTIONS"}:
+        return 1
+    if acquisition.get("status") == "PACKAGE_ACQUISITION_HOLD":
+        return 1
+    if report.get("missing_or_unverified"):
+        return 1
+    return 0 if status == "EXECUTED" and (
+        writes or execution.get("all_approved_sections_completed") is True) else 1
+
+
+def _store_overall_status(report: dict, execution: dict) -> str:
+    """Do not promote a section run to whole-draft completion without all evidence."""
+    execution_status = str(execution.get("status", "UNKNOWN"))
+    if execution_status in {"FAILED", "RECONCILE_REQUIRED", "PARTIAL_RECONCILE_REQUIRED", "UNKNOWN"}:
+        return execution_status
+    if execution_status != "EXECUTED":
+        return execution_status if report.get("missing_or_unverified") == [] else "INPUTS_REQUIRED"
+    if report.get("missing_or_unverified"):
+        return "INPUTS_REQUIRED"
+    return "APPROVED_SECTIONS_RECONCILED" if execution.get("all_approved_sections_completed") is True else "PARTIAL"
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -16,11 +82,403 @@ def main(argv: list[str] | None = None) -> int:
     check.add_argument("--manifest", required=True, type=Path)
     check.add_argument("--out", required=True, type=Path)
     commands.add_parser("gui", help="Windows GUI for offline checks")
+    store = commands.add_parser("store", help="Product-driven Store workflow (offline by default)")
+    store_commands = store.add_subparsers(dest="store_command", required=True)
+    store_status = store_commands.add_parser("status", help="Read-only local, ledger, and Partner Center state")
+    store_status.add_argument("--product", required=True, help="Registered product key under uploader/config")
+    store_status.add_argument("--cdp-url", help="Optional loopback CDP endpoint; uses PARTNER_CENTER_CDP_URL or discovers the known loopback Edge port 9223")
+    store_status.add_argument("--out", type=Path, help="Status report directory; unique reports are never overwritten")
+    store_archive = store_commands.add_parser("archive", help="Verify and retain the exact registered MSIX in a local SHA-addressed archive")
+    store_archive.add_argument("--product", required=True)
+    store_archive.add_argument("--package", type=Path, help="Optional exact local package; otherwise resolved from configured sources")
+    store_archive.add_argument("--archive-root", type=Path, help="Durable archive root; defaults under portfolio-audit/_runtime")
+    store_archive.add_argument("--backup-root", type=Path, help="Optional external destination; requires exact Product/Draft-bound approval in the product profile")
+    store_run = store_commands.add_parser("run", help="Collect evidence and execute only persisted owner-approved scopes")
+    store_run.add_argument("--product", required=True, help="Registered product key under uploader/config")
+    store_run.add_argument("--mode", choices=("AUTO", "READ_ONLY", "DRY_RUN"), default="AUTO",
+                           help="AUTO applies only persisted owner-approved scopes; otherwise it plans without writes")
+    store_run.add_argument("--source-root", type=Path, help="Optional exact local source checkout for read-only inspection")
+    store_run.add_argument("--package", type=Path, help="Optional exact local MSIX; used only when its upload scope is owner-approved")
+    store_run.add_argument("--cache-root", type=Path, help="Package cache; defaults to STORE_PACKAGE_CACHE_ROOT or .store-artifacts")
+    store_run.add_argument("--out", type=Path, help="Report output directory; unique report files are never overwritten")
+    store_apply = store_commands.add_parser("apply", help="Apply one explicitly approved section through the authenticated browser")
+    store_apply.add_argument("--product", required=True)
+    store_apply.add_argument("--section", required=True, choices=("properties", "store_listings", "pricing_availability", "age_ratings", "submission_options", "packages"))
+    store_apply.add_argument("--values", type=Path, help="JSON array of exact labeled field values; required except for delegated Packages")
+    store_apply.add_argument("--approval", type=Path, help="Section-scoped approval JSON; required except for the fixed existing package-only grant")
+    store_apply.add_argument("--ui-map", type=Path, help="Versioned route map; defaults to the registered msix_pwa_app map")
+    store_apply.add_argument("--package", type=Path, help="Exact MSIX for the delegated existing uploader route")
+    store_apply.add_argument("--execute", action="store_true", help="Perform the approved live section write")
+    store_qa = store_commands.add_parser("qa", help="Verify package and optionally execute the approved product QA driver")
+    store_qa.add_argument("--product", required=True, help="Registered product key under uploader/config")
+    store_qa.add_argument("--package", type=Path, help="Optional exact local MSIX; otherwise resolve from registered archive/cache sources")
+    store_qa.add_argument("--candidate-id", help="Verify one explicitly registered provisional package candidate; does not change the formal product package")
+    store_qa.add_argument("--out", type=Path, help="Output root for a unique, append-only QA plan")
+    store_qa.add_argument("--execute", action="store_true", help="Run only the profile-approved synthetic-data source GUI driver; does not install or certify the fixed MSIX")
     opts = parser.parse_args(argv)
     if opts.command == "gui":
         from .gui import start
         start()
         return 0
+    if opts.command == "store":
+        if opts.store_command == "qa":
+            try:
+                config_root = Path(__file__).resolve().parent.parent / "uploader" / "config"
+                config, _ = _load_job(opts.product, config_root)
+                package = opts.package
+                candidate = None
+                package_binding_override = None
+                source_binding_override = None
+                source_root_candidates_override = None
+                acquisition = {"status": "EXPLICIT_LOCAL_PACKAGE" if package else "NOT_RESOLVED"}
+                repo_root = Path(__file__).resolve().parent.parent
+                if opts.candidate_id:
+                    from .package_candidates import load_package_candidate, runtime_package_binding
+                    candidate_registry = repo_root / "uploader" / "config" / "package_candidates"
+                    archive_root = Path.home() / "Desktop" / "portfolio-audit"
+                    candidate, candidate_package = load_package_candidate(
+                        product=opts.product, candidate_id=opts.candidate_id,
+                        config_root=config_root, registry_root=candidate_registry,
+                        archive_root=archive_root)
+                    package_binding_override = runtime_package_binding(candidate)
+                    package = package or candidate_package
+                    if Path(package).resolve() != candidate_package.resolve():
+                        raise StoreWorkflowError("explicit package path does not resolve to the registered candidate bytes")
+                    acquisition = {"status": "EXACT_REGISTERED_CANDIDATE_ARCHIVE", "artifact_id": candidate["artifact_id"],
+                                   "actions_run_id": candidate["actions_run_id"], "local_path": str(package)}
+                    source_binding_override = {
+                        "repository": "https://github.com/" + candidate["repository"],
+                        "commit": candidate["gui_qa_source_commit"],
+                        "receipt_schema": "data-contract-local-real-device-qa/1",
+                        "driver_sha256": candidate["source_gui_driver_sha256"],
+                    }
+                    source_root_candidates_override = candidate.get("source_root_candidates", [])
+                if package is None:
+                    repo_root = Path(__file__).resolve().parent.parent
+                    cache_root = Path(os.environ.get("STORE_PACKAGE_CACHE_ROOT", ".store-artifacts"))
+                    acquisition = acquire_registered_package(
+                        config, product=opts.product, cache_root=cache_root,
+                        search_roots=[Path.home() / "Desktop" / "portfolio-audit" / "_runtime" / "store-fleet-sync",
+                                      Path.home() / "Desktop" / "Windows-all-auto-dca-upload" / ".uploader-run" / opts.product,
+                                      repo_root / "_runtime" / "store-fleet-sync"],
+                        archive_root=(Path.home() / "Desktop" / "portfolio-audit" / "_runtime" /
+                                      "store-fleet-sync" / "durable-package-archive"))
+                    package = Path(acquisition.get("local_path") or acquisition.get("path"))
+                from .runtime_qa import build_runtime_qa_report, run_profiled_source_driver
+                qa = build_runtime_qa_report(
+                    product=opts.product, config_root=config_root,
+                    profile_root=config_root / "runtime_qa_profiles", package=package,
+                    package_binding_override=package_binding_override,
+                    candidate_metadata=candidate)
+                qa["run_id"] = uuid4().hex
+                qa["package_acquisition"] = acquisition
+                if opts.execute:
+                    evidence_base = (opts.out.parent if opts.out else
+                                     Path.home() / "Desktop" / "portfolio-audit" / "_runtime" /
+                                     "store-fleet-sync")
+                    evidence_root = (evidence_base / "qa-evidence" / opts.product / qa["run_id"])
+                    if candidate:
+                        from .package_candidates import load_candidate_source_gui_receipt
+                        driver = load_candidate_source_gui_receipt(candidate, archive_root)
+                        driver["candidate_source_only"] = True
+                    else:
+                        driver = run_profiled_source_driver(
+                            product=opts.product,
+                            profile_root=config_root / "runtime_qa_profiles",
+                            evidence_root=evidence_root,
+                            source_binding_override=source_binding_override,
+                            source_root_candidates_override=source_root_candidates_override)
+                    qa["source_gui_driver"] = driver
+                    if candidate:
+                        qa["source_gui_qa_pass"] = driver.get("qa_pass") is True
+                        if candidate.get("installed_msix_functional_qa") == "PASS_TEST_SIGNED_DERIVATIVE":
+                            from .package_candidates import load_candidate_installed_msix_qa_receipt
+                            installed_qa = load_candidate_installed_msix_qa_receipt(candidate, archive_root)
+                            qa["installed_package_functional_qa"] = installed_qa
+                            qa["candidate_runtime_qa_pass"] = True
+                            qa["formal_package_readiness"] = False
+                            qa["status"] = "CANDIDATE_INSTALLED_FUNCTIONAL_QA_PASS_PROVISIONAL"
+                        else:
+                            qa["installed_package_functional_qa"] = {
+                                "status": candidate.get("installed_msix_functional_qa", "NOT_RUN"),
+                                "evidence_type": "TEST_SIGNED_DERIVATIVE_GUI",
+                                "candidate_sha256": candidate.get("sha256"),
+                                "note": "Source-GUI evidence is separate and never promotes installed-MSIX runtime QA.",
+                            }
+                            qa["candidate_runtime_qa_pass"] = False
+                            qa["status"] = "CANDIDATE_VERIFIED_INSTALLED_FUNCTIONAL_QA_PENDING"
+                    elif driver.get("status") == "SOURCE_GUI_DRIVER_PASS":
+                        qa["status"] = "SOURCE_GUI_QA_PASS_PACKAGED_RUNTIME_UNVERIFIED"
+                        qa["source_gui_qa_pass"] = True
+                        from .runtime_qa import source_scenario_results
+                        source_results = source_scenario_results(driver)
+                        qa["source_scenario_results"] = source_results
+                        for check in qa["checks"]:
+                            source_result = source_results.get(check["id"], {})
+                            if source_result.get("status") == "PASS_SOURCE_GUI":
+                                check["status"] = "PASS_SOURCE_GUI"
+                                check["evidence"] = source_result.get("evidence")
+                    else:
+                        qa["source_gui_qa_pass"] = False
+                        qa["status"] = "SOURCE_GUI_QA_" + str(driver.get("status", "HOLD"))
+                report_path = _write_store_report(qa, opts.out, opts.product, "runtime-qa")
+            except (OSError, StoreWorkflowError, ValueError, UploadError) as exc:
+                print(f"STORE QA HOLD: {type(exc).__name__}: {exc}", file=sys.stderr)
+                return 2
+            print(json.dumps({"status": qa["status"], "product": opts.product,
+                              "candidate_id": opts.candidate_id,
+                              "package_status": qa["package"].get("status"),
+                              "qa_pass": qa["qa_pass"],
+                              "candidate_runtime_qa_pass": qa.get("candidate_runtime_qa_pass", False),
+                              "formal_package_readiness": qa.get("formal_package_readiness", False),
+                              "report": str(report_path),
+                              "store_write_performed": False}, ensure_ascii=False, sort_keys=True))
+            # A provisional candidate QA receipt is a completed QA operation, not Store release approval.
+            return 0 if qa.get("candidate_runtime_qa_pass") is True else 1
+        if opts.store_command == "archive":
+            try:
+                config, _ = _load_job(opts.product, Path(__file__).resolve().parent.parent / "uploader" / "config")
+                package = opts.package
+                if package is None:
+                    cache_root = Path(os.environ.get("STORE_PACKAGE_CACHE_ROOT", ".store-artifacts"))
+                    repo_root = Path(__file__).resolve().parent.parent
+                    acquisition = acquire_registered_package(
+                        config, product=opts.product, cache_root=cache_root,
+                        search_roots=[Path.home() / "Desktop" / "portfolio-audit" / "_runtime" / "store-fleet-sync",
+                                      Path.home() / "Desktop" / "Windows-all-auto-dca-upload" / ".uploader-run" / opts.product,
+                                      repo_root / "_runtime" / "store-fleet-sync"])
+                    package = Path(acquisition.get("local_path") or acquisition.get("path"))
+                from .artifact_archive import archive_verified_package
+                archive_root = opts.archive_root or (Path.home() / "Desktop" / "portfolio-audit" / "_runtime" / "store-fleet-sync" / "durable-package-archive")
+                result = archive_verified_package(config, package, archive_root)
+                if opts.backup_root is not None:
+                    from .artifact_archive import ArtifactArchiveError, copy_to_approved_external_backup
+                    try:
+                        result["external_backup"] = copy_to_approved_external_backup(
+                            config, Path(result["path"]), Path(result["receipt"]), opts.backup_root)
+                    except ArtifactArchiveError as exc:
+                        result["external_backup"] = {"status": "HOLD_NO_TRANSFER",
+                                                     "reason": str(exc), "destination_written": False}
+                report = {"schema_version": "all-auto-store-archive/1", "product_key": opts.product,
+                          "created_at_utc": datetime.now(timezone.utc).isoformat(),
+                          "run_id": uuid4().hex, **result}
+                report_path = _write_store_report(report, None, opts.product)
+            except (OSError, StoreWorkflowError, ValueError) as exc:
+                print(f"STORE ARCHIVE HOLD: {type(exc).__name__}: {exc}", file=sys.stderr)
+                return 2
+            print(json.dumps({**result, "product": opts.product, "report": str(report_path)},
+                             ensure_ascii=False, sort_keys=True))
+            return 1 if result.get("external_backup", {}).get("status") == "HOLD_NO_TRANSFER" else 0
+        if opts.store_command == "status":
+            from .store_status import collect_store_status
+            try:
+                report = collect_store_status(
+                    product=opts.product,
+                    config_root=Path(__file__).resolve().parent.parent / "uploader" / "config",
+                    repo_root=Path(__file__).resolve().parent.parent,
+                    cdp_endpoint=opts.cdp_url,
+                )
+                report_path = _write_store_report(report, opts.out, opts.product)
+            except (OSError, StoreWorkflowError, ValueError) as exc:
+                print(f"STORE STATUS HOLD: {type(exc).__name__}: {exc}", file=sys.stderr)
+                return 2
+            print(json.dumps({"status": report["partner_center"].get("status"),
+                              "product": opts.product,
+                              "local_package": report["local_package"].get("status"),
+                              "package_reconciliation": report["package_reconciliation"],
+                              "receipts": report["upload_history"].get("durable_receipt_count"),
+                              "report": str(report_path), "writes_performed": False},
+                             ensure_ascii=False, sort_keys=True))
+            return 0 if report["partner_center"].get("status") == "READ_ONLY_OBSERVED" else 1
+        if opts.store_command == "apply":
+            live_write_succeeded = False
+            try:
+                config, profile_path = _load_job(opts.product, Path(__file__).resolve().parent.parent / "uploader" / "config")
+                if not opts.execute:
+                    raise StoreWorkflowError("store apply requires --execute; no live action was taken")
+                if opts.section == "packages":
+                    if opts.package is None:
+                        raise StoreWorkflowError("Packages requires --package with the exact configured MSIX")
+                    if config.get("upload_scope") != "ONE_EXACT_MSIX_TO_EXISTING_DRAFT_PACKAGES_ONLY" or config.get("upload_approved") is not True:
+                        raise StoreWorkflowError("the product profile does not authorize an existing-Draft package-only write")
+                    if config.get("certification_submission_authorized") is not False or config.get("publish_authorized") is not False:
+                        raise StoreWorkflowError("Certification and Publish must remain explicitly unauthorized")
+                    from uploader.run import main as uploader_main
+                    original_argv = sys.argv[:]
+                    try:
+                        sys.argv = ["uploader.run", "--product", opts.product, "--package", str(opts.package),
+                                    "--workdir", str(product_state_dir(opts.product)), "--execute"]
+                        return uploader_main()
+                    finally:
+                        sys.argv = original_argv
+                if not opts.values or not opts.approval:
+                    raise StoreWorkflowError("non-Package sections require both --values and --approval JSON")
+                approval = json.loads(opts.approval.read_text(encoding="utf-8"))
+                fields = json.loads(opts.values.read_text(encoding="utf-8"))
+                if not isinstance(fields, list):
+                    raise StoreWorkflowError("--values must contain a JSON array")
+                route = str(config.get("submission_route", "msix_pwa_app"))
+                map_path = opts.ui_map or (Path(__file__).resolve().parent.parent / "uploader" / "config" / "store_ui_maps" / f"{route}.v1.json")
+                ui_map = json.loads(map_path.read_text(encoding="utf-8"))
+                from uploader.store_form_engine import StoreUiHold, apply_live_section
+                from .cdp_discovery import resolve_local_edge_cdp
+                cdp_discovery = resolve_local_edge_cdp()
+                if not cdp_discovery.endpoint:
+                    raise StoreWorkflowError("No configured or previously used loopback Edge CDP session is available")
+                result = apply_live_section(config=config, section=opts.section, fields=fields,
+                                            approval=approval, ui_map=ui_map,
+                                            cdp_endpoint=cdp_discovery.endpoint)
+                live_write_succeeded = result.get("writes_performed") is True
+                report = {"schema_version": "all-auto-store-apply/1", "product_key": opts.product,
+                          "created_at_utc": datetime.now(timezone.utc).isoformat(),
+                          "run_id": uuid4().hex, **result}
+                report_path = _write_store_report(report, None, opts.product)
+                print(json.dumps({"status": result["status"], "report": str(report_path),
+                                  "product": opts.product, "section": opts.section}, ensure_ascii=False, sort_keys=True))
+                return 0
+            except (OSError, ValueError, StoreWorkflowError, UploadError) as exc:
+                # If the form action completed but writing its local receipt
+                # failed, the Store state is still potentially changed. Never
+                # mislabel that as a preflight HOLD or allow a blind retry.
+                write_started = (getattr(exc, "write_started", False) is True
+                                 or live_write_succeeded)
+                status = "RECONCILE_REQUIRED" if write_started else "HOLD"
+                failure = {"schema_version": "all-auto-store-apply/1", "product_key": opts.product,
+                           "created_at_utc": datetime.now(timezone.utc).isoformat(),
+                           "run_id": uuid4().hex, "status": status, "section": opts.section,
+                           "error_type": type(exc).__name__, "error": str(exc)[:1000],
+                           "partner_center_write_state": "UNKNOWN" if write_started else "NOT_ATTEMPTED",
+                           "writes_performed": write_started,
+                           "retry_allowed": not write_started,
+                           "certification_executed": False, "publish_executed": False}
+                try:
+                    report_path = _write_store_report(failure, None, opts.product)
+                    print(json.dumps({"status": status, "report": str(report_path),
+                                      "product": opts.product, "section": opts.section},
+                                     ensure_ascii=False, sort_keys=True), file=sys.stderr)
+                except OSError:
+                    print(f"STORE APPLY {status}: {exc}", file=sys.stderr)
+                return 2
+        try:
+            config, _ = _load_job(opts.product, Path(__file__).resolve().parent.parent / "uploader" / "config")
+            package = opts.package
+            if package is not None:
+                acquisition = {"status": "EXPLICIT_LOCAL_PACKAGE", "source": "cli_package_argument"}
+            elif opts.mode == "READ_ONLY":
+                acquisition = {"status": "NOT_ACQUIRED_READ_ONLY", "source": "read_only_mode"}
+            else:
+                cache_root = opts.cache_root or Path(os.environ.get("STORE_PACKAGE_CACHE_ROOT", ".store-artifacts"))
+                try:
+                    repo_root = Path(__file__).resolve().parent.parent
+                    archive_root = (Path.home() / "Desktop" / "portfolio-audit" / "_runtime" /
+                                    "store-fleet-sync" / "durable-package-archive")
+                    search_roots = [
+                        Path.home() / "Desktop" / "portfolio-audit" / "_runtime" / "store-fleet-sync",
+                        Path.home() / "Desktop" / "Windows-all-auto-dca-upload" / ".uploader-run" / opts.product,
+                        repo_root / "_runtime" / "store-fleet-sync",
+                    ]
+                    acquisition = acquire_registered_package(
+                        config, product=opts.product, cache_root=cache_root,
+                        search_roots=search_roots, archive_root=archive_root)
+                    package = Path(acquisition.get("local_path") or acquisition.get("path"))
+                except StoreWorkflowError as exc:
+                    acquisition = {"status": "PACKAGE_ACQUISITION_HOLD", "error": str(exc)}
+            report = build_store_workflow_report(
+                product=opts.product,
+                config_root=Path(__file__).resolve().parent.parent / "uploader" / "config",
+                mode=opts.mode,
+                source_root=opts.source_root,
+                package=package,
+            )
+            report["package_acquisition"] = acquisition
+            try:
+                from .runtime_qa import build_runtime_qa_report
+                report["runtime_qa"] = build_runtime_qa_report(
+                    product=opts.product,
+                    config_root=Path(__file__).resolve().parent.parent / "uploader" / "config",
+                    profile_root=Path(__file__).resolve().parent.parent / "uploader" / "config" / "runtime_qa_profiles",
+                    package=package)
+            except (OSError, StoreWorkflowError, ValueError, UploadError) as exc:
+                report["runtime_qa"] = {"status": "RUNTIME_QA_PROFILE_HOLD",
+                                        "qa_pass": False, "error": str(exc)[:500]}
+            if acquisition["status"] == "PACKAGE_ACQUISITION_HOLD":
+                report["package"]["status"] = "PACKAGE_ACQUISITION_HOLD"
+                report["package"]["acquisition_error"] = acquisition["error"]
+            if package is not None and package.is_file():
+                try:
+                    from .windows_msix_qa import diagnose_msix_runtime
+                    report["windows_msix_diagnostic"] = diagnose_msix_runtime(
+                        config=config,
+                        package=package)
+                except (OSError, ValueError, UploadError) as exc:
+                    report["windows_msix_diagnostic"] = {
+                        "assessment": "STATIC_DIAGNOSTIC_HOLD",
+                        "error_type": type(exc).__name__, "launch_attempted": False,
+                        "install_attempted": False,
+                    }
+            # The orchestrator may only execute scopes explicitly persisted in
+            # the exact product profile. DCA remains PLAN_ONLY until its owner
+            # approvals, exact-package runtime QA, and remaining section inputs
+            # are all recorded. This keeps the single product-key command
+            # reusable without widening today's live authorization.
+            if opts.mode == "AUTO":
+                from .store_run import run_approved_sections
+                from .cdp_discovery import resolve_local_edge_cdp
+                execution = run_approved_sections(
+                    product=opts.product,
+                    config_root=Path(__file__).resolve().parent.parent / "uploader" / "config",
+                    package=package,
+                    ui_map_path=(Path(__file__).resolve().parent.parent / "uploader" / "config" /
+                                 "store_ui_maps" / f"{config.get('submission_route', 'msix_pwa_app')}.v1.json"),
+                    cdp_endpoint=resolve_local_edge_cdp().endpoint,
+                )
+            else:
+                from .store_run import ALLOWED_SECTIONS
+                unapproved_sections = sorted(ALLOWED_SECTIONS)
+                execution = {"status": "PLAN_ONLY", "reason": "EXECUTE_APPROVED_FLAG_REQUIRED",
+                             "approved_sections": [], "completed_sections": [],
+                             "pending_sections": unapproved_sections,
+                             "unapproved_sections": unapproved_sections,
+                             "not_executed_sections": unapproved_sections,
+                             "all_approved_sections_completed": False,
+                             "actions": [], "writes_performed": False,
+                             "certification_executed": False, "publish_executed": False}
+            report["execution"] = execution
+            report["overall_status"] = _store_overall_status(report, execution)
+            report_path = _write_store_report(report, opts.out, opts.product)
+            approval_report = {
+                "schema_version": "all-auto-owner-decisions/1",
+                "created_at_utc": report["created_at_utc"],
+                "run_id": uuid4().hex, "parent_run_id": report["run_id"],
+                "product_key": opts.product,
+                "product_id": report["binding"]["product_id"],
+                "submission_id": report["binding"]["submission_id"],
+                "source_package_provenance": report.get("source_package_provenance", {}),
+                "owner_decisions": report["owner_decisions"],
+                "owner_decision_candidates": report.get("owner_decision_candidates", []),
+                "shared_store_policy": report.get("shared_store_policy", {}),
+                "owner_decision_batch": report.get("owner_decision_batch", []),
+            }
+            approval_report_path = _write_store_report(
+                approval_report, opts.out / "owner-decisions" if opts.out else None,
+                opts.product, "owner-decisions")
+        except (OSError, StoreWorkflowError) as exc:
+            print(f"STORE WORKFLOW HOLD: {exc}", file=sys.stderr)
+            return 2
+        print(json.dumps({"status": report["overall_status"],
+                          "readiness_status": report["status"],
+                          "execution_status": execution.get("status"),
+                          "completed_sections": execution.get("completed_sections", []),
+                          "pending_sections": execution.get("pending_sections", []),
+                          "unapproved_sections": execution.get("unapproved_sections", []),
+                          "not_executed_sections": execution.get("not_executed_sections", []),
+                          "product": opts.product,
+                          "mode": opts.mode, "report": str(report_path),
+                          "owner_decisions_report": str(approval_report_path),
+                          "missing_or_unverified": len(report["missing_or_unverified"]),
+                          "partner_center_writes": execution.get("writes_performed") is True},
+                         ensure_ascii=False, sort_keys=True))
+        return _store_run_exit_code(report, execution, acquisition)
     try:
         content = json.loads(opts.manifest.read_text(encoding="utf-8"))
         result = preflight(content, opts.manifest.resolve().parent)

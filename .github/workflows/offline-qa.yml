@@ -12,15 +12,290 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-24.04, windows-latest]
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install Playwright for mock Partner Center integration
+        run: python -m pip install playwright==1.56.0
+      - name: Install Chromium for form-engine mock
+        if: runner.os == 'Linux'
+        run: python -m playwright install --with-deps chromium
+      - name: Install Chromium for form-engine mock
+        if: runner.os == 'Windows'
+        run: python -m playwright install chromium
+      - name: Verify Playwright import (integration must not be skipped)
+        run: python -c "from playwright.sync_api import sync_playwright; print('Playwright mock integration enabled')"
       - name: Compile
-        run: python -m compileall -q all_auto tests
+        run: python -m compileall -q all_auto tests uploader scripts
+      - name: Store CLI surface and offline run smoke (no Partner Center)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m all_auto store --help
+          python -m all_auto store status --help
+          python -m all_auto store apply --help
+          python -m all_auto store run --help
+          set +e
+          python -m all_auto store run --product data-contract-auditor --mode READ_ONLY --out "$RUNNER_TEMP/store-run-smoke"
+          result=$?
+          set -e
+          if [ "$result" -gt 1 ]; then exit "$result"; fi
+          test -n "$(find "$RUNNER_TEMP/store-run-smoke" -maxdepth 1 -type f -name '*.json' -print -quit)"
+      - name: Store workflow state-machine and mock-adapter regressions
+        run: python -m unittest tests.test_store_run tests.test_store_workflow tests.test_store_status tests.test_store_form_engine_mock tests.test_partner_center_browser tests.test_cloud_uploader -v
       - name: Test (no Partner Center, no credentials)
         run: python -m unittest discover -s tests -v
+      - name: Parse PowerShell scripts
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          $files = Get-ChildItem -Path scripts -Filter '*.ps1' -Recurse
+          foreach ($file in $files) {
+            $tokens = $null
+            $errors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile(
+              $file.FullName, [ref]$tokens, [ref]$errors
+            ) | Out-Null
+            if ($errors.Count -gt 0) {
+              $errors | ForEach-Object { Write-Error $_.Message }
+              throw "PowerShell syntax errors in $($file.FullName)"
+            }
+          }
+          Write-Host "Parsed $($files.Count) PowerShell scripts successfully."
+      - name: Test DCA wrapper parameter forwarding (mock target; no Partner Center)
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          $originalLocation = Get-Location
+          $testRoot = Join-Path $env:TEMP ([Guid]::NewGuid().ToString('N'))
+          $scriptDir = Join-Path $testRoot 'scripts'
+          $packageRoot = Join-Path $testRoot 'packages'
+          New-Item -ItemType Directory -Path $scriptDir, $packageRoot -Force | Out-Null
+          $wrapper = Join-Path $scriptDir 'upload_authorized_dca_package.ps1'
+          Copy-Item 'scripts/upload_authorized_dca_package.ps1' $wrapper
+          $stub = @'
+          [CmdletBinding()]
+          param(
+            [Parameter(Mandatory = $true)]
+            [ValidatePattern('^[a-z0-9][a-z0-9-]{0,63}$')]
+            [string]$Product,
+            [Parameter(Mandatory = $true)]
+            [string]$Package,
+            [string]$CdpUrl = 'http://127.0.0.1:9223',
+            [switch]$Execute
+          )
+          $global:LASTEXITCODE = 0
+          [pscustomobject]@{
+            Product = $Product
+            Package = $Package
+            CdpUrl = $CdpUrl
+            Execute = [bool]$Execute
+          } | ConvertTo-Json -Compress
+          '@
+          Set-Content -LiteralPath (Join-Path $scriptDir 'upload_store_msix.ps1') -Value $stub -Encoding UTF8
+          $dummyPackage = Join-Path $packageRoot 'DataContractSchemaDrift_1.0.0.0_x64.msix'
+          Set-Content -LiteralPath $dummyPackage -Value 'test-only-placeholder' -NoNewline
+          try {
+            $dryOutput = & $wrapper -PackageRoot $packageRoot
+            if ($LASTEXITCODE -ne 0) { throw 'DCA wrapper dry-run mock returned a nonzero exit code.' }
+            $dryPayload = ($dryOutput | Select-Object -Last 1) | ConvertFrom-Json
+            if ($dryPayload.Product -ne 'data-contract-auditor') { throw 'DCA wrapper did not forward Product by name.' }
+            if ($dryPayload.Package -ne [IO.Path]::GetFullPath($dummyPackage)) { throw 'DCA wrapper did not forward the exact package path.' }
+            if ($dryPayload.CdpUrl -ne 'http://127.0.0.1:9223') { throw 'DCA wrapper did not forward CdpUrl.' }
+            if ($dryPayload.Execute) { throw 'DCA dry-run unexpectedly enabled Execute.' }
+
+            $liveOutput = & $wrapper -PackageRoot $packageRoot -Execute
+            if ($LASTEXITCODE -ne 0) { throw 'DCA wrapper Execute-flag mock returned a nonzero exit code.' }
+            $livePayload = ($liveOutput | Select-Object -Last 1) | ConvertFrom-Json
+            if (-not $livePayload.Execute) { throw 'DCA wrapper did not forward Execute when explicitly requested.' }
+            Write-Host 'DCA wrapper parameter forwarding passed with a mock target; no Partner Center calls were made.'
+          }
+          finally {
+            Set-Location -LiteralPath $originalLocation.Path
+            if (Test-Path -LiteralPath $testRoot) {
+              Remove-Item -LiteralPath $testRoot -Recurse -Force
+            }
+          }
+      - name: Validate Store uploader bootstrap (no browser or Partner Center)
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          $validationVenv = '.store-uploader-ci'
+          try {
+            .\scripts\bootstrap_store_uploader.ps1 -VenvDirectory $validationVenv
+          }
+          finally {
+            if (Test-Path -LiteralPath $validationVenv) {
+              Remove-Item -LiteralPath $validationVenv -Recurse -Force
+            }
+          }
+      - name: Test-sign, install, and smoke-test a synthetic MSIX on ephemeral Windows
+        if: runner.os == 'Windows'
+        timeout-minutes: 10
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Add-Type -AssemblyName System.Drawing
+          $root = Join-Path $env:RUNNER_TEMP 'msix-test-signature-smoke'
+          if (Test-Path -LiteralPath $root) { throw 'MSIX test-signing output directory already exists.' }
+          $content = Join-Path $root 'content'
+          New-Item -ItemType Directory -Path $content -Force | Out-Null
+          $publisher = 'CN=AllAuto.CI.MsixSmoke'
+          $marker = Join-Path $env:RUNNER_TEMP ("all-auto-msix-basic-smoke-{0}.txt" -f [Guid]::NewGuid().ToString('N'))
+          $sourceCode = @'
+          using System;
+          using System.IO;
+          public static class Probe {
+          public static int Main(string[] args) {
+            if (args == null || args.Length != 1) return 4;
+            string marker = args[0];
+              try {
+                File.WriteAllText(marker, "STARTED");
+                int left = int.Parse("20"); int right = int.Parse("22");
+                if (left + right != 42) { File.WriteAllText(marker, "BASIC_FUNCTION_SMOKE_FAIL"); return 2; }
+                File.WriteAllText(marker, "BASIC_FUNCTION_SMOKE_PASS"); return 0;
+              } catch (Exception ex) {
+                try { File.WriteAllText(marker, "ERROR:" + ex.GetType().FullName + ":" + ex.Message); } catch { }
+                return 3;
+              }
+            }
+          }
+          '@
+          Add-Type -TypeDefinition $sourceCode -OutputAssembly (Join-Path $content 'probe.exe') -OutputType WindowsApplication
+          $markerArgument = '"' + $marker.Replace('"', '\"') + '"'
+          $prepackageProbe = Start-Process -FilePath (Join-Path $content 'probe.exe') -ArgumentList $markerArgument -PassThru -Wait
+          $prepackageMarker = if (Test-Path -LiteralPath $marker) { (Get-Content -LiteralPath $marker -Raw).Trim() } else { 'MISSING' }
+          if ($prepackageProbe.ExitCode -ne 0 -or $prepackageMarker -ne 'BASIC_FUNCTION_SMOKE_PASS') {
+            throw "The synthetic pre-package smoke failed (exit_code=$($prepackageProbe.ExitCode), marker=$prepackageMarker)."
+          }
+          Remove-Item -LiteralPath $marker -Force
+          foreach ($spec in @(@{ Name='StoreLogo.png'; Size=50 }, @{ Name='Square44x44Logo.png'; Size=44 }, @{ Name='Square150x150Logo.png'; Size=150 })) {
+            $bitmap = [System.Drawing.Bitmap]::new($spec.Size, $spec.Size)
+            try { $bitmap.Save((Join-Path $content $spec.Name), [System.Drawing.Imaging.ImageFormat]::Png) }
+            finally { $bitmap.Dispose() }
+          }
+          @'
+          <?xml version="1.0" encoding="utf-8"?>
+            <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities" IgnorableNamespaces="uap rescap">
+            <Identity Name="AllAuto.CI.MsixSmoke" Publisher="CN=AllAuto.CI.MsixSmoke" Version="1.0.0.0" ProcessorArchitecture="x64" />
+            <Properties><DisplayName>All Auto CI MSIX Smoke</DisplayName><PublisherDisplayName>All Auto CI</PublisherDisplayName><Logo>StoreLogo.png</Logo></Properties>
+            <Dependencies><TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.22621.0" /></Dependencies>
+            <Resources><Resource Language="en-us" /></Resources>
+            <Applications><Application Id="Probe" Executable="probe.exe" EntryPoint="Windows.FullTrustApplication"><uap:VisualElements DisplayName="All Auto CI MSIX Smoke" Description="Ephemeral CI smoke fixture" Square150x150Logo="Square150x150Logo.png" Square44x44Logo="Square44x44Logo.png" BackgroundColor="transparent" /></Application></Applications>
+            <Capabilities><rescap:Capability Name="runFullTrust" /></Capabilities>
+          </Package>
+          '@ | Set-Content -LiteralPath (Join-Path $content 'AppxManifest.xml') -Encoding UTF8
+          $makeAppx = Get-ChildItem -Path (Join-Path ${env:ProgramFiles(x86)} 'Windows Kits\10\bin') -Filter MakeAppx.exe -Recurse |
+            Where-Object { $_.FullName -match '\\x64\\MakeAppx\.exe$' } | Sort-Object FullName -Descending | Select-Object -First 1 -ExpandProperty FullName
+          if (-not $makeAppx) { throw 'Windows SDK MakeAppx.exe was not found.' }
+          $sourcePackage = Join-Path $root 'smoke-source.msix'
+          & $makeAppx pack /d $content /p $sourcePackage /o
+          if ($LASTEXITCODE -ne 0) { throw 'MakeAppx failed to create the smoke fixture.' }
+          $sourceHash = (Get-FileHash -LiteralPath $sourcePackage -Algorithm SHA256).Hash
+          .\scripts\test_sign_msix_copy.ps1 -Package $sourcePackage -ExpectedSha256 $sourceHash `
+            -IdentityName 'AllAuto.CI.MsixSmoke' -Publisher $publisher -Version '1.0.0.0' `
+            -Architecture x64 -ApplicationId Probe -SmokeMarkerPath $marker -OutputDirectory $root
+      - name: Finalize interrupted signature QA phase receipt
+        if: always() && runner.os == 'Windows'
+        shell: powershell
+        run: |
+          $root = Join-Path $env:RUNNER_TEMP 'msix-test-signature-smoke'
+          if (-not (Test-Path -LiteralPath $root)) { exit 0 }
+          Get-ChildItem -LiteralPath $root -File -Filter 'test-signature-qa-receipt-*.json' | ForEach-Object {
+            $record = Get-Content -LiteralPath $_.FullName -Raw | ConvertFrom-Json
+            if ($record.status -eq 'RUNNING') {
+              $record.status = 'INTERRUPTED_OR_STEP_TIMEOUT'
+              $record.failure = 'The GitHub Actions signing/install step ended before this phase wrote a completion receipt.'
+              $record.updated_at_utc = [DateTime]::UtcNow.ToString('o')
+              if ($record.phase_timings -and $record.phase_timings.Count -gt 0) {
+                $last = $record.phase_timings[-1]
+                if ($last.status -eq 'RUNNING') {
+                  $last.status = 'INTERRUPTED_OR_STEP_TIMEOUT'
+                  $last.elapsed_ms = [int64](([DateTime]::UtcNow - [DateTime]::Parse($last.started_at_utc).ToUniversalTime()).TotalMilliseconds)
+                }
+              }
+              $tmp = $_.FullName + '.tmp'
+              $record | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $tmp -Encoding UTF8
+              Move-Item -LiteralPath $tmp -Destination $_.FullName -Force
+            }
+          }
+      - name: Preserve synthetic signature QA receipt (no package or certificate)
+        if: always() && runner.os == 'Windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: synthetic-msix-test-signing-receipt-${{ github.run_id }}
+          path: ${{ runner.temp }}/msix-test-signature-smoke/*.json
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Remove synthetic MSIX QA workspace
+        if: always() && runner.os == 'Windows'
+        shell: powershell
+        run: |
+          $root = Join-Path $env:RUNNER_TEMP 'msix-test-signature-smoke'
+          if (Test-Path -LiteralPath $root) { Remove-Item -LiteralPath $root -Recurse -Force }
+
+  dca-clean-source-integration:
+    name: DCA pinned clean-source GUI receipt integration
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Keep pinned source file bytes canonical on Windows
+        shell: pwsh
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@v4
+        with:
+          repository: shihuiarenjinba-png/csv-import-validator
+          ref: e27f7b9dc117bee65525d11024dccaf9615021bd
+          path: dca-source
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install DCA source GUI driver dependencies
+        run: python -m pip install -r dca-source/requirements.txt
+      - name: Run integrated QA from clean pinned DCA checkout
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $env:ALL_AUTO_QA_SOURCE_ROOT = (Resolve-Path 'dca-source').Path
+          $env:PYTHONDONTWRITEBYTECODE = '1'
+          $qaOut = Join-Path $env:RUNNER_TEMP 'dca-integrated-qa'
+          $missingPackage = Join-Path $env:RUNNER_TEMP 'no-fixed-msix-in-this-source-contract-job.msix'
+          $lines = & python -m all_auto store qa --product data-contract-auditor --package $missingPackage --out $qaOut --execute 2>&1
+          $exitCode = $LASTEXITCODE
+          $output = ($lines | ForEach-Object { "$_" }) -join "`n"
+          Write-Host $output
+          if ($exitCode -ne 1) { throw "Expected source QA pass with fixed-package hold (exit 1); got $exitCode" }
+          $global:LASTEXITCODE = 0
+          $summaryLine = $lines | Where-Object { "$_" -match '^\{.*"report":' } | Select-Object -Last 1
+          if (-not $summaryLine) { throw 'Integrated QA did not emit its JSON summary.' }
+          $summary = "$summaryLine" | ConvertFrom-Json
+          if (-not (Test-Path -LiteralPath $summary.report)) { throw 'Integrated QA report is missing.' }
+          $report = Get-Content -LiteralPath $summary.report -Raw | ConvertFrom-Json
+          Write-Host ($report.source_gui_driver | ConvertTo-Json -Depth 10 -Compress)
+          if ($report.source_gui_driver.status -ne 'SOURCE_GUI_DRIVER_PASS') { throw 'Pinned DCA source GUI driver did not pass.' }
+          if ($report.source_gui_driver.binding.source_sha -ne 'e27f7b9dc117bee65525d11024dccaf9615021bd') { throw 'QA source SHA is not the pinned commit.' }
+          if (-not $report.source_gui_driver.binding.source_worktree_clean) { throw 'DCA source checkout was not clean.' }
+          if ($report.package.status -ne 'PACKAGE_HOLD') { throw 'The nonexistent fixed MSIX was not held.' }
+          if ($report.qa_pass) { throw 'Source GUI QA incorrectly promoted packaged runtime QA.' }
+          $required = @('language_switch_en','language_switch_ja','launch_and_render','csv_schema_and_quality_comparison','xlsx_input','report_output_reopens','invalid_csv_error','normal_exit_and_relaunch')
+          foreach ($id in $required) {
+            $check = $report.checks | Where-Object { $_.id -eq $id } | Select-Object -First 1
+            if (-not $check -or $check.status -ne 'PASS_SOURCE_GUI') { throw "Required source GUI scenario failed or missing: $id" }
+          }
+          Write-Host 'Clean pinned DCA source receipt accepted; exact MSIX runtime remains unverified.'
+      - name: Preserve DCA local QA receipt and integration report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dca-clean-source-integrated-qa-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/dca-integrated-qa/**/*.json
+            ${{ runner.temp }}/qa-evidence/data-contract-auditor/**/*.json
+          if-no-files-found: ignore
+          retention-days: 14

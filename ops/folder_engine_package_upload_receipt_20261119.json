@@ -1,0 +1,94 @@
+{
+  "schema_version": "partner-center-package-upload-receipt/1",
+  "recorded_date_jst": "2026-11-19",
+  "product": {
+    "name": "Folder Automation Engine",
+    "store_id": "9P99MJX1R4V6",
+    "draft_id": "1152921505702423660",
+    "submission_route": "msix_pwa_app"
+  },
+  "immutable_binding": {
+    "source_sha": "adfc0d08efb0a94602d5286557d399f9cb28b9dd",
+    "package_file_name": "FolderAutomationEngine_1.0.0.0_x64_StoreDraft_UNSIGNED.msix",
+    "package_sha256": "3C6BC8C1291450905AE71834F2704A59325D1AAA1C9DE3F064BCB8C7EBCA9FB9",
+    "exe_sha256": "DE6894AE39CBE0FBE1889B4AA005E500F30A2EF95EE67403DDFB210DBCFB9F18",
+    "identity_name": "OkinawaDesktopTools.FolderAutomationEngine",
+    "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+    "version": "1.0.0.0",
+    "architecture": "X64"
+  },
+  "preupload_gate": {
+    "status": "READY_FOR_MSIX_UPLOAD_APPROVAL",
+    "receipt": "ops/folder_engine_preupload_gate_receipt_20261119.json",
+    "rehash_performed": true
+  },
+  "upload": {
+    "attempts": 1,
+    "states_observed": [
+      "Uploading",
+      "Analyzing package",
+      "Validated"
+    ],
+    "duplicate_upload": false,
+    "timeout_retry": false
+  },
+  "microsoft_analysis": {
+    "raw_state": "WARNING",
+    "known_warning": "Package acceptance validation warning: The following restricted capabilities require approval before you can use them in your app: runFullTrust.",
+    "unknown_warnings": [],
+    "errors": [],
+    "capabilities": [
+      "runFullTrust",
+      "Microsoft.storeFilter.core.notSupported_8wekyb3d8bbwe"
+    ],
+    "languages": [
+      "ja-jp",
+      "en-us"
+    ]
+  },
+  "device_families": {
+    "Windows.Desktop": true,
+    "Windows.Mobile": false,
+    "Windows.Xbox": false,
+    "Windows.Team": false,
+    "Windows.MixedReality": false,
+    "future_device_families_microsoft_decides": true
+  },
+  "save": {
+    "performed": true,
+    "overview_package_state": "Complete",
+    "overview_validation_state": "Validated"
+  },
+  "reload_postconditions": {
+    "same_draft": true,
+    "package_retained": true,
+    "file_name_retained": true,
+    "version": "1.0.0.0",
+    "architecture": "X64",
+    "device_family": "Windows.Desktop",
+    "known_warning_retained": true,
+    "overview_pricing_state": "Complete",
+    "overview_packages_state": "Complete"
+  },
+  "safety": {
+    "start_submission_repeated": false,
+    "different_package_used": false,
+    "rebuild_performed": false,
+    "certification_executed": false,
+    "publish_executed": false
+  },
+  "status": "STORE_DRAFT_REMAINING_SECTIONS_REQUIRED",
+  "completed_store_sections": {
+    "pricing_availability": "Complete",
+    "packages": "Complete"
+  },
+  "remaining_store_sections": [
+    "properties",
+    "age_ratings",
+    "store_listings",
+    "submission_options"
+  ],
+  "package_status": "PACKAGE_SAVED",
+  "overall_status": "STORE_DRAFT_REMAINING_SECTIONS_REQUIRED",
+  "next_target": "STORE_DRAFT_COMPLETE"
+}

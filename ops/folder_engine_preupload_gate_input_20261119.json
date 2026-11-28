@@ -1,0 +1,83 @@
+{
+  "schema_version": "store-preupload-gate-input/2",
+  "package_path": "C:\\Users\\aaron\\Desktop\\portfolio-audit\\_group_b_store_qa_20261024\\artifacts\\FolderAutomationEngine\\ci-adfc0d08\\store-artifact\\store-out-44269998298\\FolderAutomationEngine_1.0.0.0_x64_StoreDraft_UNSIGNED.msix",
+  "expected": {
+    "store_id": "9P99MJX1R4V6",
+    "identity_name": "OkinawaDesktopTools.FolderAutomationEngine",
+    "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+    "version": "1.0.0.0",
+    "architecture": "x64",
+    "source_sha": "adfc0d08efb0a94602d5286557d399f9cb28b9dd",
+    "package_sha256": "3C6BC8C1291450905AE71834F2704A59325D1AAA1C9DE3F064BCB8C7EBCA9FB9",
+    "package_file_name": "FolderAutomationEngine_1.0.0.0_x64_StoreDraft_UNSIGNED.msix"
+  },
+  "observed": {
+    "store_id": "9P99MJX1R4V6",
+    "identity_name": "OkinawaDesktopTools.FolderAutomationEngine",
+    "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+    "version": "1.0.0.0",
+    "architecture": "x64",
+    "source_sha": "adfc0d08efb0a94602d5286557d399f9cb28b9dd",
+    "package_sha256": "3C6BC8C1291450905AE71834F2704A59325D1AAA1C9DE3F064BCB8C7EBCA9FB9",
+    "package_file_name": "FolderAutomationEngine_1.0.0.0_x64_StoreDraft_UNSIGNED.msix"
+  },
+  "store_fields": {
+    "packages": true,
+    "pricing": true,
+    "trial": true,
+    "markets": true,
+    "audience": true,
+    "properties": true,
+    "store_listings": true,
+    "submission_options": true,
+    "unknown_partner_center_state": false
+  },
+  "assets": {
+    "ready": true,
+    "owner_visual_approval": true,
+    "approval_source": "owner-chat-2026-11-19",
+    "ja_count": 5,
+    "en_count": 5,
+    "resolution": "1366x768"
+  },
+  "commercial": {
+    "model": "paid_one_time",
+    "currency": "JPY",
+    "exact_partner_center_price_value": "360",
+    "price_confirmed": true,
+    "free_trial": "none",
+    "trial_confirmed": true
+  },
+  "distribution": {
+    "audience": "PRIVATE_AUDIENCE_TEST",
+    "known_user_group": "Folder Automation Engine Private QA",
+    "known_user_group_confirmed": true
+  },
+  "security": {
+    "bound_package_sha256": "3C6BC8C1291450905AE71834F2704A59325D1AAA1C9DE3F064BCB8C7EBCA9FB9",
+    "owner_confirmation_complete": true,
+    "personal_data_answer_confirmed": true,
+    "personal_data_answer": "yes_local_user_selected_files_no_external_transmission",
+    "run_full_trust_explanation_owner_confirmed": true,
+    "approval_source": "owner-chat-2026-11-19"
+  },
+  "read_only_reconciliation": {
+    "read_only_reload_reconciled": true,
+    "unexpected_write_observed": false
+  },
+  "draft_reconciliation": {
+    "schema_version": "existing-store-initial-submission-reconcile-receipt/1",
+    "status": "INITIAL_SUBMISSION_DRAFT_PRESENT_RECOVERED",
+    "submission_state": "EXISTING_PRODUCT_DRAFT_PRESENT",
+    "store_id": "9P99MJX1R4V6",
+    "draft_id": "1152921505702423660",
+    "draft_url": "https://partner.microsoft.com/en-us/dashboard/products/9P99MJX1R4V6/submissions/1152921505702423660",
+    "write_performed": false,
+    "retry_authorized": false,
+    "start_submission_clicked": false,
+    "package_uploaded": false,
+    "pricing_changed": false,
+    "submitted": false,
+    "published": false
+  }
+}

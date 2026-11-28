@@ -1,0 +1,147 @@
+{
+  "schema_version": "all-auto-runtime-qa-profile/1",
+  "product_key": "data-contract-auditor",
+  "runtime_kind": "windows_desktop_tkinter",
+  "package": {
+    "filename": "DataContractSchemaDrift_1.0.0.0_x64.msix",
+    "sha256": "e2ca6fd81720dc270667e65db05404b6efdde5b2c0712bee2853e0608767db05",
+    "identity_name": "OkinawaDesktopTools.DataContractAuditor",
+    "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+    "version": "1.0.0.0",
+    "architecture": "x64",
+    "application_id": "DataContractSchemaDrift",
+    "target_device_families": [
+      "Windows.Desktop"
+    ]
+  },
+  "runtime_scenarios": [
+    {
+      "id": "language_switch_en",
+      "description": "Switch source GUI to English and verify translated labels.",
+      "automation": "product_driver",
+      "required": true
+    },
+    {
+      "id": "language_switch_ja",
+      "description": "Switch source GUI to Japanese and verify translated labels.",
+      "automation": "product_driver",
+      "required": true
+    },
+    {
+      "id": "launch_and_render",
+      "description": "Launch the packaged executable and confirm the Data Contract Auditor window and primary controls render.",
+      "automation": "windows_desktop_ui",
+      "required": true
+    },
+    {
+      "id": "csv_schema_and_quality_comparison",
+      "description": "Load synthetic Baseline and Current CSVs; confirm added/removed columns, type/null/range changes, and duplicate-key findings where present.",
+      "automation": "product_driver",
+      "required": true
+    },
+    {
+      "id": "xlsx_input",
+      "description": "Load an XLSX Current input against a CSV Baseline and confirm a non-empty comparison result.",
+      "automation": "product_driver",
+      "required": true
+    },
+    {
+      "id": "report_output_reopens",
+      "description": "Confirm JSON audit, findings CSV, and generated contract exist, reopen, and match the visible findings summary.",
+      "automation": "product_driver",
+      "required": true
+    },
+    {
+      "id": "invalid_csv_error",
+      "description": "Submit a synthetic duplicate-header CSV and confirm a visible error without modifying inputs.",
+      "automation": "product_driver",
+      "required": true
+    },
+    {
+      "id": "normal_exit_and_relaunch",
+      "description": "Close the app normally and relaunch it; confirm the second launch renders without a crash.",
+      "automation": "windows_desktop_ui",
+      "required": true
+    }
+  ],
+  "environment_lanes": {
+    "windows_server_automation": {
+      "purpose": "Test-signed derivative install, AUMID activation, product-specific noninteractive GUI/data driver, and cleanup on an ephemeral runner.",
+      "status": "NOT_RUN_FOR_DCA",
+      "limitations": [
+        "A passing derivative is supplemental diagnostic evidence until the owner approves derivative equivalence for the fixed candidate."
+      ]
+    },
+    "windows_10_11_interactive": {
+      "purpose": "Human-visible UI, Japanese/English rendering, DPI scaling, file dialogs, visual clipping, and normal user close/relaunch.",
+      "status": "NOT_RUN",
+      "limitations": [
+        "Windows Server automation does not prove Windows 10/11 visual behavior."
+      ]
+    }
+  },
+  "owner_policy": {
+    "derivative_qa_may_satisfy_fixed_candidate_runtime_gate": false,
+    "approval_required_to_change": true
+  },
+  "source_gui_driver": {
+    "enabled": true,
+    "script": "scripts/local_real_device_qa.py",
+    "source_root_candidates": [
+      "_task_worktrees/dca-userdata-output",
+      "_task_worktrees/data-contract-auditor-group-c"
+    ],
+    "timeout_seconds": 240,
+    "data_policy": "synthetic_only",
+    "scope": "source GUI functional smoke; not fixed MSIX install, visual DPI, certification, or publish proof",
+    "receipt_filename": "LOCAL_REAL_DEVICE_QA.json",
+    "required_receipt_checks": [
+      "core_csv_drift",
+      "csv_xlsx_compare",
+      "invalid_input_rejected",
+      "outputs_reopen",
+      "inputs_unchanged",
+      "writable_default_output",
+      "default_output_files_written",
+      "ui_language_and_scaling",
+      "ui_compare_workflow",
+      "ui_error_path",
+      "close_relaunch"
+    ],
+    "scenario_check_map": {
+      "language_switch_ja": [
+        "ui_language_and_scaling"
+      ],
+      "language_switch_en": [
+        "ui_language_and_scaling"
+      ],
+      "launch_and_render": [
+        "ui_language_and_scaling"
+      ],
+      "csv_schema_and_quality_comparison": [
+        "core_csv_drift",
+        "ui_compare_workflow"
+      ],
+      "xlsx_input": [
+        "csv_xlsx_compare"
+      ],
+      "report_output_reopens": [
+        "outputs_reopen",
+        "default_output_files_written"
+      ],
+      "invalid_csv_error": [
+        "invalid_input_rejected",
+        "ui_error_path"
+      ],
+      "normal_exit_and_relaunch": [
+        "close_relaunch"
+      ]
+    }
+  },
+  "source_binding": {
+    "repository": "https://github.com/shihuiarenjinba-png/csv-import-validator",
+    "commit": "e27f7b9dc117bee65525d11024dccaf9615021bd",
+    "receipt_schema": "data-contract-local-real-device-qa/1",
+    "driver_sha256": "e54ee38d42dd6f38f95119afbf50522d972821c2247628e71b0e9c36a6630782"
+  }
+}

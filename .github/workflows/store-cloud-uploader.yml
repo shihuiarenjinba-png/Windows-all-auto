@@ -1,0 +1,124 @@
+name: Store cloud uploader (previous browser route)
+on:
+  workflow_dispatch:
+    inputs:
+      product:
+        description: Registered product job
+        required: true
+        type: string
+        default: data-contract-auditor
+      execute:
+        description: Execute the exact authenticated-browser existing-Draft upload route
+        required: true
+        type: boolean
+        default: false
+  repository_dispatch:
+    types: [store-package-ready]
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: store-upload-${{ inputs.product || github.event.client_payload.product }}
+  cancel-in-progress: false
+jobs:
+  validate-and-stage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      receipt_saved: ${{ steps.receipt.outputs.saved }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/msix-commercial-handoff-20261115
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Restore product idempotency ledger
+        uses: actions/cache/restore@v4
+        with:
+          path: .uploader-run/ledger.sqlite3
+          key: store-uploader-ledger-${{ inputs.product || github.event.client_payload.product }}-${{ github.run_id }}
+          restore-keys: |
+            store-uploader-ledger-${{ inputs.product || github.event.client_payload.product }}-
+      - name: Restore durable upload receipts
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          PRODUCT_KEY: ${{ inputs.product || github.event.client_payload.product }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          product_id=$(python -c 'import json,os; print(json.load(open("uploader/config/"+os.environ["PRODUCT_KEY"]+".job.json", encoding="utf-8"))["product_id"])')
+          python -m uploader.github_receipt_ledger --product "$product_id" --destination .uploader-run/durable-ledger/receipts
+      - name: Install Playwright client
+        if: ${{ inputs.execute == true || github.event_name == 'repository_dispatch' }}
+        run: python -m pip install playwright==1.56.0
+      - name: Download configured package and validate
+        env:
+          GH_READ_TOKEN: ${{ secrets.GH_READ_TOKEN }}
+          PARTNER_CENTER_CDP_URL: ${{ secrets.PARTNER_CENTER_CDP_URL }}
+          PRODUCT_KEY: ${{ inputs.product || github.event.client_payload.product }}
+          EXECUTE_UPLOAD: ${{ inputs.execute || (github.event_name == 'repository_dispatch') }}
+        shell: bash
+        run: |
+          if [ "$EXECUTE_UPLOAD" = "true" ]; then
+            python -m uploader.run --product "$PRODUCT_KEY" --execute
+          else
+            python -m uploader.run --product "$PRODUCT_KEY"
+          fi
+      - name: Save product idempotency ledger
+        if: always() && hashFiles('.uploader-run/ledger.sqlite3') != ''
+        uses: actions/cache/save@v4
+        with:
+          path: .uploader-run/ledger.sqlite3
+          key: store-uploader-ledger-${{ inputs.product || github.event.client_payload.product }}-${{ github.run_id }}
+      - name: Preserve run ledger
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: uploader-ledger-${{ github.run_id }}
+          path: .uploader-run/ledger.sqlite3
+          if-no-files-found: ignore
+          retention-days: 30
+      - name: Check for execution receipt
+        id: receipt
+        if: always()
+        shell: bash
+        run: |
+          if [ -s .uploader-run/receipt.json ]; then echo 'saved=true' >> "$GITHUB_OUTPUT"; else echo 'saved=false' >> "$GITHUB_OUTPUT"; fi
+      - name: Preserve short-lived execution evidence
+        if: always() && steps.receipt.outputs.saved == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: uploader-receipt-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .uploader-run/receipt.json
+          if-no-files-found: error
+          retention-days: 30
+
+  persist-receipt:
+    needs: validate-and-stage
+    if: always() && needs.validate-and-stage.outputs.receipt_saved == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    concurrency:
+      group: store-uploader-durable-receipt-ledger-${{ inputs.product || github.event.client_payload.product }}
+      cancel-in-progress: false
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/msix-commercial-handoff-20261115
+          persist-credentials: false
+      - name: Download short-lived run receipt
+        uses: actions/download-artifact@v4
+        with:
+          name: uploader-receipt-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .uploader-run
+      - name: Append receipt to durable data-only branch
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_API_URL: ${{ github.api_url }}
+        run: python -m uploader.github_receipt_ledger --receipt .uploader-run/receipt.json

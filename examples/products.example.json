@@ -21,8 +21,11 @@
         "fields": {}
       },
       "price": {
-        "amount_minor": 0,
-        "currency": "JPY"
+        "amount_minor": null,
+        "currency": "JPY",
+        "approved_by": "",
+        "free_trial": "none",
+        "trial_approved_by": ""
       },
       "assets_reviewed": false,
       "owner_approved_for_draft": false

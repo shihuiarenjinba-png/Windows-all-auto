@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "product_name": "Web Evidence Archiver",
+  "product_id": "9NNT1B142ZWV",
+  "submission_id": "1152921505702212223",
+  "repository": "shihuiarenjinba-png/web-evidence-archiver",
+  "ref": "3f2de607d83f36abef6d9a87da1a1c8b3bca604a",
+  "path": "store-output/WebEvidenceArchiver_QA_UNSIGNED_1.0.55.0_x64.msix",
+  "version": "1.0.55.0",
+  "destination": "microsoft_partner_center_existing_draft",
+  "submission_route": "msix_pwa_app",
+  "identity_name": "OkinawaDesktopTools.WebEvidenceArchiver",
+  "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+  "architecture": "x64",
+  "known_warnings": [],
+  "expected_existing_package_names": [],
+  "expected_replaced_package_names": [],
+  "upload_approved": false,
+  "expected_sha256": "91fae107652539bad0c0bdc30e9ae1891542c1a92f2460218e1be24af987cebe",
+  "max_bytes": 4000000000,
+  "local_package_only": true,
+  "source_sha": "3f2de607d83f36abef6d9a87da1a1c8b3bca604a",
+  "artifact_run_id": 44687808856,
+  "artifact_id": 14607965112,
+  "local_runtime_qa_status": "GUI_INTEGRATION_UNIT_TESTS_PASS_EXAMPLE_CAPTURE_TIMEOUT_NO_OUTPUT_FORMAL_PREFLIGHT_HOLD",
+  "upload_hold_reasons": [
+    "Package predates local GUI/Store integration commit 2516feedd5b10990fbe5c8184587e3b69214648d",
+    "Real example capture timed out with no output",
+    "Integrated source must be pushed, CI verified, and rebuilt before upload"
+  ]
+}

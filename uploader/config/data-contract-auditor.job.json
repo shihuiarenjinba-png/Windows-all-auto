@@ -1,0 +1,230 @@
+{
+  "schema_version": 1,
+  "product_name": "Data Contract Auditor",
+  "product_id": "9PDL4ZWSB45P",
+  "submission_id": "1152921505702212222",
+  "repository": "shihuiarenjinba-png/csv-import-validator",
+  "ref": "722ec7a077d2c6109e657c4ee661c9f3d06a4506",
+  "path": "store-output/DataContractSchemaDrift_1.0.0.0_x64.msix",
+  "version": "1.0.0.0",
+  "destination": "microsoft_partner_center_existing_draft",
+  "submission_route": "msix_pwa_app",
+  "identity_name": "OkinawaDesktopTools.DataContractAuditor",
+  "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+  "architecture": "x64",
+  "device_family_settings": {
+    "status": "PENDING_OWNER_APPROVAL",
+    "manifest_target_device_families": [
+      "Windows.Desktop"
+    ],
+    "recommended_store_device_families": [
+      "Windows 10/11 Desktop"
+    ],
+    "approved_store_device_families": [],
+    "approval": null
+  },
+  "execution_policy": {
+    "status": "PLAN_ONLY",
+    "auto_execute_approved_sections": false,
+    "approved_sections": [],
+    "approval": null
+  },
+  "known_warnings": [],
+  "expected_existing_package_names": [],
+  "expected_replaced_package_names": [],
+  "upload_approved": true,
+  "expected_sha256": "e2ca6fd81720dc270667e65db05404b6efdde5b2c0712bee2853e0608767db05",
+  "max_bytes": 4000000000,
+  "local_package_only": true,
+  "source_sha": "722ec7a077d2c6109e657c4ee661c9f3d06a4506",
+  "artifact_run_id": 45580565845,
+  "artifact_id": 15005358857,
+  "artifact_name": "data-contract-QA_UNSIGNED-msix-45580565845",
+  "local_runtime_qa_status": "SOURCE_QA_PASS_PACKAGED_RUNTIME_UNVERIFIED_INSTALL_ACCESS_DENIED_AND_TIMEOUT",
+  "upload_hold_reasons": [],
+  "artifact_internal_preflight": {
+    "artifact_downloaded_and_inspected_by_assistant": true,
+    "artifact_id": 15005358857,
+    "build_evidence_sha256": "e2ca6fd81720dc270667e65db05404b6efdde5b2c0712bee2853e0608767db05",
+    "build_evidence_source_sha": "722ec7a077d2c6109e657c4ee661c9f3d06a4506",
+    "msix_verification_valid": true,
+    "store_preflight_ready": false,
+    "store_preflight_windows_real_device_qa_status": "SOURCE_QA_PASS_PACKAGED_EXACT_RUNTIME_UNVERIFIED",
+    "local_operator_report_status": "INSTALL_ACCESS_DENIED_EXE_LAUNCH_TIMEOUT_FUNCTIONAL_QA_INCOMPLETE",
+    "reconciliation_status": "SOURCE_QA_PASS_PACKAGED_RUNTIME_UNVERIFIED",
+    "artwork_source": "APPROVED_GENERATOR",
+    "visual_inspection_note": "Inspected StoreLogo, Square150x150Logo, and Wide310x150Logo; generic document/check illustration with product text, not evidence of owner-approved branding.",
+    "owner_artwork_approval": {
+      "status": "OWNER_APPROVED",
+      "approval_ref": "CHAT_APPROVAL_2026-11-23_DATA_CONTRACT_AUDITOR_BLUE_AUDIT_ICON",
+      "approval_date": "2026-11-23",
+      "evidence_path": "store/assets/approval.json",
+      "visual_inspection_matches_approved_concept": true
+    },
+    "artwork_visual_inspection": "DCA source repository has OWNER_APPROVED artwork record dated 2026-11-23; inspected package artwork matches the approved blue document/magnifier/green-check concept."
+  },
+  "approval_ref": "USER_CHAT_AUTHORIZATION_2026-11-25_PROCEED_TO_SUBMISSION",
+  "upload_scope": "ONE_EXACT_MSIX_TO_EXISTING_DRAFT_PACKAGES_ONLY",
+  "certification_submission_authorized": false,
+  "publish_authorized": false,
+  "upload_warnings": [
+    "Source-based Windows 11 real-device QA passed on source 4d1c76e0701f12c85672f3686f491f3dcd7b7a4c. GitHub compare confirms the current formal source 722ec7a077d2c6109e657c4ee661c9f3d06a4506 is 16 commits ahead with changes limited to Store packaging, approved asset generation, gate metadata and tests; no app-code files changed.",
+    "The operator's later attempt to install this exact unsigned MSIX returned ACCESS DENIED and launch of the packaged EXE timed out. This does not negate the source-based functional QA, but packaged-EXE runtime remains unconfirmed.",
+    "Artifact reports certification_ready=false and commercial-license evidence is not certified; Certification and sales release remain HOLD."
+  ],
+  "source_qa_evidence": {
+    "qa_status": "WINDOWS_REAL_DEVICE_QA_PASS",
+    "qa_source_sha": "4d1c76e0701f12c85672f3686f491f3dcd7b7a4c",
+    "current_formal_source_sha": "722ec7a077d2c6109e657c4ee661c9f3d06a4506",
+    "github_compare_status": "CURRENT_FORMAL_SOURCE_IS_16_COMMITS_AHEAD_OF_QA_SOURCE",
+    "compare_changed_files": [
+      "store/FORMAL_CANDIDATE_GATE_20261122.json",
+      "store/assets/approval.json",
+      "store/build-msix.ps1",
+      "store/generate-approved-assets.ps1",
+      "store/product.json",
+      "store/validate_store_config.py",
+      "tests/test_store_msix_gate.py",
+      "tests/test_store_product_profile.py",
+      "tests/test_unsigned_msix_wrapper_contract.py"
+    ],
+    "app_source_files_changed_in_compare": false,
+    "packaged_exe_runtime_status": "UNRESOLVED_OPERATOR_REPORTED_ACCESS_DENIED_AND_TIMEOUT",
+    "qa_evidence_relation": "SOURCE_FUNCTIONAL_QA_PASS_APP_SOURCE_UNCHANGED_AFTER_QA; PACKAGED_EXE_RUNTIME_NOT_VERIFIED"
+  },
+  "source_package_provenance": {
+    "status": "MISMATCH_PENDING_OWNER_APPROVAL",
+    "source_revision": "722ec7a077d2c6109e657c4ee661c9f3d06a4506",
+    "source_profile_path": "store/product.json",
+    "formal_source_revision": "5a09d81955e25664761ea25ecfb4ebf8d24cea6d",
+    "formal_package_sha256": "4b373d2bc54ecbd3efa0a77a94005007777e66d641fa3908f523ac69fcd46984",
+    "evidence_ref": "https://github.com/shihuiarenjinba-png/csv-import-validator/blob/722ec7a077d2c6109e657c4ee661c9f3d06a4506/store/product.json",
+    "observed_at": "2026-11-28",
+    "note": "Read-only source profile observation. Preserve this conflict and hold package writes until owner resolves provenance; do not change expected_sha256 automatically.",
+    "historical_registration": {
+      "registered_sha256": "4b373d2bc54ecbd3efa0a77a94005007777e66d641fa3908f523ac69fcd46984",
+      "registered_source_revision": "5a09d81955e25664761ea25ecfb4ebf8d24cea6d",
+      "gate_registration_commit": "2956574fc1a3cf80b60281dfc8e6914cc8084383",
+      "product_profile_registration_commit": "0c73a746bcec9ded702567768d5c04f4240a12a9",
+      "registered_at": "2026-11-23",
+      "status": "HISTORICAL_REGISTRATION_RETAINED"
+    },
+    "current_artifact_candidate": {
+      "sha256": "e2ca6fd81720dc270667e65db05404b6efdde5b2c0712bee2853e0608767db05",
+      "source_revision": "722ec7a077d2c6109e657c4ee661c9f3d06a4506",
+      "workflow_run_id": 45580565845,
+      "artifact_id": 15005358857,
+      "artifact_name": "data-contract-QA_UNSIGNED-msix-45580565845",
+      "artifact_created_at": "2026-11-25T08:58:31Z",
+      "artifact_expires_at": "2026-12-25T08:58:27Z",
+      "github_artifact_archive_sha256": "5d914be309e83bf8e0422e71be2f2914fcf6cda9588d9d765e075b31bcb97548",
+      "msix_sha256_source": "Artifact BUILD_EVIDENCE.json / local package rehash report",
+      "status": "CANDIDATE_PENDING_OWNER_APPROVAL"
+    },
+    "proposal": {
+      "current_expected_sha256_remains": "e2ca6fd81720dc270667e65db05404b6efdde5b2c0712bee2853e0608767db05",
+      "historical_sha_migration": "Retain the 2026-11-23 hash in an append-only historical registration record; after owner approval, update only the formal-current pointer to the 2026-11-25 candidate and retain both provenance records.",
+      "owner_approval_recorded": false,
+      "formal_current_sha_rewritten": false
+    }
+  },
+  "owner_decision_candidates": [
+    {
+      "key": "device_families",
+      "candidate": [
+        "Windows 10/11 Desktop"
+      ],
+      "basis": "Manifest TargetDeviceFamily is Windows.Desktop; live Packages page currently has Desktop unchecked.",
+      "decision_required": true
+    },
+    {
+      "key": "future_device_family_policy",
+      "candidate": "Keep Microsoft future-family decision enabled, or disable it to restrict distribution to explicitly selected families.",
+      "basis": "Live Packages page currently has Microsoft future-device-family checkbox checked.",
+      "decision_required": true
+    },
+    {
+      "key": "category",
+      "candidate": "Productivity",
+      "basis": "Pinned README describes a local baseline/current CSV and Excel schema-drift auditor; product.json class is Windows paid productivity tool.",
+      "decision_required": true
+    },
+    {
+      "key": "pricing",
+      "candidate": null,
+      "basis": "Pinned listing draft explicitly marks price unconfirmed; no DCA price is recorded in the job profile or Partner Center observation.",
+      "decision_required": true
+    },
+    {
+      "key": "markets",
+      "candidate": "Preserve currently observed all-worldwide selection (240 markets), or specify an exact market list.",
+      "basis": "Read-only Partner Center Pricing page observation; no owner approval found.",
+      "decision_required": true
+    },
+    {
+      "key": "ja_listing",
+      "candidate": "Use the unapproved Japanese draft in store/STORE_MINIMUM_LISTING_JA_DRAFT.md after owner review.",
+      "basis": "Exact source file exists; document labels listing as draft, not approved.",
+      "decision_required": true
+    },
+    {
+      "key": "en_listing",
+      "candidate": "Prepare a faithful English translation from the pinned README and Japanese draft; owner review needed.",
+      "basis": "product.json approves en-US/ja-JP manifest resources, but listing file warns not to claim English readiness without confirming English UI/support.",
+      "decision_required": true
+    },
+    {
+      "key": "store_artwork",
+      "candidate": "Reuse owner-approved blue spreadsheet/document, magnifier, and green-check icon concept.",
+      "basis": "store/assets/approval.json, approval 2026-11-23; concept approval is recorded.",
+      "decision_required": false
+    },
+    {
+      "key": "store_screenshots",
+      "candidate": "Capture four real Windows UI screenshots: initial file selection, schema differences, quality comparison, and generated report output.",
+      "basis": "Pinned Japanese listing draft specifies these captures; source tree has no approved screenshot files.",
+      "decision_required": true
+    },
+    {
+      "key": "privacy_declaration",
+      "candidate": "Review a Yes answer because users select local files whose contents may include personal data; source modules show local read/analysis/report output and no outbound networking code was found.",
+      "basis": "Pinned app.py, validator.py, and contract_auditor.py inspection; this is not a legal determination.",
+      "decision_required": true
+    },
+    {
+      "key": "age_rating",
+      "candidate": "App Type candidate: All Other App Types; complete each IARC content answer from the actual product behavior.",
+      "basis": "Product is a data-audit utility, not a game or social/communication app; Partner Center questionnaire is incomplete.",
+      "decision_required": true
+    },
+    {
+      "key": "commercial_license",
+      "candidate": "No commercial clearance candidate: resolve dependency/artwork/license evidence; source marks NOT_CERTIFIED.",
+      "basis": "Pinned store/product.json commercialLicense=NOT_CERTIFIED and commercial specification requires rights evidence.",
+      "decision_required": true
+    },
+    {
+      "key": "publishing",
+      "candidate": "Hold the submission for manual Publish after certification rather than automatic publication.",
+      "basis": "Existing policy separates certification and publish; live selected radio was not exposed and no DCA-specific approval exists.",
+      "decision_required": true
+    },
+    {
+      "key": "automatic_run_scope",
+      "candidate": "Retain the existing one-package-to-existing-Draft approval only; execution_policy remains PLAN_ONLY. Expand only with section-specific approvals.",
+      "basis": "Job approval scope is package-only; automatic execution approval and approved_sections are empty.",
+      "decision_required": true
+    }
+  ],
+  "runtime_qa_reconciliation": {
+    "status": "RUNTIME_QA_UNRESOLVED",
+    "fixed_package_sha256": "e2ca6fd81720dc270667e65db05404b6efdde5b2c0712bee2853e0608767db05",
+    "install_result": "ACCESS_DENIED",
+    "launch_result": "TIMEOUT",
+    "repeated_attempt_authorized": false,
+    "windows_actions_runtime_install_or_launch_test_present": false,
+    "independent_windows_vm_confirmed": false,
+    "test_signed_copy_created": false,
+    "notes": "Do not treat source QA or static MSIX validation as exact packaged runtime PASS. No security policy was changed."
+  }
+}

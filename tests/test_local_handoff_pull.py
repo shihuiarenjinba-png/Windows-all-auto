@@ -7,7 +7,7 @@ import unittest
 from unittest.mock import patch
 import zipfile
 
-from scripts.local_handoff_pull import pull, recent_artifacts
+from scripts.local_handoff_pull import pull, recent_artifacts, write_receipt
 
 SOURCE_SHA="b"*40
 XML=b'<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"><Identity Name="Demo.App" Publisher="CN=ABC" Version="1.0.0.0"/></Package>'
@@ -94,7 +94,27 @@ class LocalPullTests(unittest.TestCase):
             result=pull(self.root/"inbox")
             self.assertEqual(result["new_packages"],1)
             self.assertEqual(result["submitted_to_store"],0)
+            self.assertEqual(result["schema_version"],"local-exact-artifact-pull-receipt/1")
+            self.assertEqual(result["status"],"LOCAL_EXACT_ARTIFACTS_VERIFIED")
+            self.assertFalse(result["package_rebuilt"])
+            self.assertFalse(result["security_bypass_used"])
+            product=result["products"][0]
+            self.assertEqual(product["artifact_run_id"],888)
+            self.assertEqual(product["source_sha"],SOURCE_SHA)
+            self.assertEqual(product["identity"]["name"],"Demo.App")
+            self.assertTrue(Path(product["package_path"]).is_file())
             self.assertEqual(len(list((self.root/"inbox").iterdir())),1)
+
+    def test_verified_pull_receipt_is_machine_readable_and_immutable(self):
+        with patch("scripts.local_handoff_pull.gh",side_effect=self.fake_gh):
+            result=pull(self.root/"inbox")
+        receipt=self.root/"evidence"/"artifact-pull-receipt.json"
+        write_receipt(receipt,result)
+        saved=json.loads(receipt.read_text(encoding="utf-8"))
+        self.assertEqual(saved["status"],"LOCAL_EXACT_ARTIFACTS_VERIFIED")
+        self.assertEqual(saved["products"][0]["sha256"],self.checksum)
+        with self.assertRaisesRegex(ValueError,"refusing to overwrite"):
+            write_receipt(receipt,result)
 
     def test_duplicate_download_does_not_multiply_storage(self):
         with patch("scripts.local_handoff_pull.gh",side_effect=self.fake_gh):

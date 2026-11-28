@@ -1,0 +1,26 @@
+{
+  "schema_version": "partner-center-known-user-group-receipt/1",
+  "recorded_date_jst": "2026-11-19",
+  "product": {
+    "name": "Folder Automation Engine",
+    "store_id": "9P99MJX1R4V6",
+    "draft_id": "1152921505702423660"
+  },
+  "group": {
+    "name": "Folder Automation Engine Private QA",
+    "type": "Known user group",
+    "customer_count": 1,
+    "live_partner_center_verified": true
+  },
+  "privacy": {
+    "member_identity_recorded_in_git": false,
+    "member_email_recorded_in_git": false
+  },
+  "safety": {
+    "duplicate_group_created": false,
+    "package_upload_changed": false,
+    "certification_executed": false,
+    "publish_executed": false
+  },
+  "status": "PRIVATE_AUDIENCE_GROUP_READY"
+}

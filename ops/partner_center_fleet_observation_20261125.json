@@ -1,0 +1,143 @@
+{
+  "schema_version": "partner-center-fleet-observation/1",
+  "observation_id": "partner-center-fleet-20261125T075209Z",
+  "observed_at_utc": "2026-11-25T07:52:09Z",
+  "observation_mode": "READ_ONLY",
+  "source": {
+    "method": "authenticated_edge_ui_read_only",
+    "capture_channel": "operator_reported_local_partner_center_inspection",
+    "cdp_endpoint_available": false,
+    "independent_screenshot_attached_to_this_commit": false,
+    "evidence_status": "TRANSCRIBED_FROM_USER_SUPPLIED_FINAL_REPORT",
+    "limitations": [
+      "This snapshot is transcribed from the user-supplied local FINAL_REPORT; the local evidence files were not independently fetched in this GitHub operation.",
+      "Partner Center UI did not expose package binary SHA-256.",
+      "Version and architecture are unavailable when no package row is present."
+    ]
+  },
+  "read_only": true,
+  "side_effects": {
+    "product_created": false,
+    "submission_started": false,
+    "package_uploaded": false,
+    "packages_saved": false,
+    "pricing_changed": false,
+    "markets_changed": false,
+    "certification_started": false,
+    "published": false
+  },
+  "products": [
+    {
+      "product_key": "ai-upload-guard",
+      "product_name": "AI Upload Guard",
+      "store_id": "9PDJ1T5BQ4P1",
+      "identity_name": "OkinawaDesktopTools.AIUploadGuard",
+      "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+      "product_page_state": "In draft",
+      "submission": {
+        "submission_number": 1,
+        "submission_id": "1152921505702212224",
+        "state": "In draft",
+        "packages_status": "Not started",
+        "package_row_present": false,
+        "start_submission_available": false
+      }
+    },
+    {
+      "product_key": "image-privacy-cleaner",
+      "product_name": "Image Privacy Cleaner",
+      "store_id": "9PNSPFBKBBTQ",
+      "identity_name": "OkinawaDesktopTools.ImagePrivacyCleaner",
+      "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+      "product_page_state": "In draft",
+      "submission": {
+        "submission_number": 1,
+        "submission_id": "1152921505702212225",
+        "state": "In draft",
+        "packages_status": "Not started",
+        "package_row_present": false,
+        "start_submission_available": false
+      }
+    },
+    {
+      "product_key": "excel-csv-privacy-cleaner",
+      "product_name": "Excel / CSV Privacy Cleaner",
+      "store_id": "9P3Z36J7PSFC",
+      "identity_name": "OkinawaDesktopTools.ExcelCSVPrivacyCleaner",
+      "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+      "product_page_state": "In draft",
+      "submission": {
+        "submission_number": 1,
+        "submission_id": "1152921505702213008",
+        "state": "In draft",
+        "packages_status": "Not started",
+        "package_row_present": false,
+        "start_submission_available": false
+      }
+    },
+    {
+      "product_key": "data-contract-auditor",
+      "product_name": "Data Contract Auditor",
+      "store_id": "9PDL4ZWSB45P",
+      "identity_name": "OkinawaDesktopTools.DataContractAuditor",
+      "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+      "product_page_state": "In draft",
+      "submission": {
+        "submission_number": 1,
+        "submission_id": "1152921505702212222",
+        "state": "In draft",
+        "packages_status": "Incomplete",
+        "package_row_present": false,
+        "start_submission_available": false
+      }
+    },
+    {
+      "product_key": "pdf-privacy",
+      "product_name": "PDF Privacy",
+      "store_id": "9PD1RXLFWPBC",
+      "identity_name": "OkinawaDesktopTools.PDFPrivacy",
+      "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+      "product_page_state": "In draft",
+      "submission": {
+        "submission_number": 1,
+        "submission_id": "1152921505702212497",
+        "state": "In draft",
+        "packages_status": "Not started",
+        "package_row_present": false,
+        "start_submission_available": false
+      }
+    },
+    {
+      "product_key": "web-evidence-archiver",
+      "product_name": "Web Evidence Archiver",
+      "store_id": "9NNT1B142ZWV",
+      "identity_name": "OkinawaDesktopTools.WebEvidenceArchiver",
+      "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+      "product_page_state": "In draft",
+      "submission": {
+        "submission_number": 1,
+        "submission_id": "1152921505702212223",
+        "state": "In draft",
+        "packages_status": "Not started",
+        "package_row_present": false,
+        "start_submission_available": false
+      }
+    },
+    {
+      "product_key": "workflow-automation-hub",
+      "product_name": "Workflow Automation Hub",
+      "store_id": "9P6SXJNNB5KK",
+      "identity_name": "OkinawaDesktopTools.WorkflowAutomationHub",
+      "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+      "product_page_state": "In draft",
+      "submission": {
+        "submission_number": null,
+        "submission_id": null,
+        "state": "No submission shown",
+        "packages_status": null,
+        "package_row_present": false,
+        "start_submission_available": true
+      }
+    }
+  ]
+}
