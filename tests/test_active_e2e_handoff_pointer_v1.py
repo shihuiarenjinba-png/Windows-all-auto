@@ -82,7 +82,7 @@ class ActiveHandoffPointerV1Tests(unittest.TestCase):
                 "STALE_SOURCE_PIN",
             )
             self.assertEqual(snapshot["overlay"]["pr219"]["head_sha"], "17383e2da99e903df825bee4deeea883e5b66b70")
-            self.assertEqual(snapshot["overlay"]["pr219"]["exact_head_ci_run_id"], 46128264048)
+            self.assertEqual(snapshot["overlay"]["pr219"]["exact_head_push_run_id"], 46128264048)
             self.assertEqual(snapshot["overlay"]["pr219"]["pr_validation_run_id"], 46128268754)
             self.assertEqual(snapshot["pointer"]["source_observation"]["head_sha"], "17383e2da99e903df825bee4deeea883e5b66b70")
             self.assertEqual(snapshot["pointer"]["source_observation"]["exact_head_push_run_id"], 46128264048)
