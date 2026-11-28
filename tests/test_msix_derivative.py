@@ -16,14 +16,37 @@ MANIFEST = ('''<Package xmlns="http://schemas.microsoft.com/appx/manifest/founda
             '''Version="1.2.3.0" ProcessorArchitecture="x64" /></Package>''')
 
 
-def package(path: Path, *, signature: bytes | None = None, payload: bytes = b"payload") -> str:
+BASE_CONTENT_TYPES = b'''<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="xml" ContentType="application/xml" />
+</Types>'''
+
+
+def package(path: Path, *, signature: bytes | None = None, payload: bytes = b"payload",
+            content_types: bytes | None = None) -> str:
     with zipfile.ZipFile(path, "w") as archive:
         archive.writestr("AppxManifest.xml", MANIFEST)
         archive.writestr("AppxBlockMap.xml", b"blockmap")
         archive.writestr("Assets/logo.png", payload)
+        if content_types is not None:
+            archive.writestr("[Content_Types].xml", content_types)
         if signature is not None:
             archive.writestr("AppxSignature.p7x", signature)
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def signed_package_with_signature_metadata(path: Path) -> None:
+    content_types = b'''<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+      <Default Extension="xml" ContentType="application/xml" />
+      <Default Extension="p7x" ContentType="application/vnd.ms-appx.signature" />
+      <Override PartName="/AppxMetadata/CodeIntegrity.cat" ContentType="application/vnd.ms-appx.codeintegrity" />
+    </Types>'''
+    with zipfile.ZipFile(path, "w") as archive:
+        archive.writestr("AppxManifest.xml", MANIFEST)
+        archive.writestr("AppxBlockMap.xml", b"blockmap")
+        archive.writestr("Assets/logo.png", b"payload")
+        archive.writestr("[Content_Types].xml", content_types)
+        archive.writestr("AppxSignature.p7x", b"test-signature")
+        archive.writestr("AppxMetadata/CodeIntegrity.cat", b"test-ci-catalog")
 
 
 class MsixDerivativeTests(unittest.TestCase):
@@ -69,6 +92,20 @@ class MsixDerivativeTests(unittest.TestCase):
                 verify_test_signed_derivative(source=source, derived=derived,
                                               expected_source_sha256=expected,
                                               expected_identity=IDENTITY)
+
+    def test_allows_only_signature_metadata_changes_not_payload_changes(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source, derived = root / "source.msix", root / "signed.msix"
+            expected = package(source, content_types=BASE_CONTENT_TYPES)
+            signed_package_with_signature_metadata(derived)
+            report = verify_test_signed_derivative(source=source, derived=derived,
+                                                   expected_source_sha256=expected,
+                                                   expected_identity=IDENTITY)
+            self.assertEqual(set(report["added_members"]),
+                             {"AppxSignature.p7x", "AppxMetadata/CodeIntegrity.cat"})
+            self.assertEqual(report["changed_signature_metadata_members"], ["[Content_Types].xml"])
+            self.assertFalse(report["changed_payload_members"])
 
 
 if __name__ == "__main__":

@@ -12,6 +12,9 @@ from typing import Any
 
 
 SIGNATURE_MEMBER = "AppxSignature.p7x"
+CODE_INTEGRITY_MEMBER = "AppxMetadata/CodeIntegrity.cat"
+CONTENT_TYPES_MEMBER = "[Content_Types].xml"
+ALLOWED_ADDED_SIGNATURE_MEMBERS = {SIGNATURE_MEMBER, CODE_INTEGRITY_MEMBER}
 
 
 class DerivativeVerificationError(ValueError):
@@ -71,6 +74,37 @@ def _identity(manifest: bytes) -> dict[str, str]:
             ("Name", "Publisher", "Version", "ProcessorArchitecture")}
 
 
+def _content_types_signature_only(source: bytes, derived: bytes) -> bool:
+    namespace = "{http://schemas.openxmlformats.org/package/2006/content-types}"
+    try:
+        before, after = ET.fromstring(source), ET.fromstring(derived)
+    except ET.ParseError:
+        return False
+    def mappings(root: ET.Element) -> tuple[dict[str, str], dict[str, str]]:
+        defaults, overrides = {}, {}
+        for item in root:
+            if item.tag == namespace + "Default":
+                defaults[str(item.get("Extension", "")).lower()] = str(item.get("ContentType", ""))
+            elif item.tag == namespace + "Override":
+                overrides[str(item.get("PartName", "")).lower()] = str(item.get("ContentType", ""))
+        return defaults, overrides
+    old_defaults, old_overrides = mappings(before)
+    new_defaults, new_overrides = mappings(after)
+    allowed_default = {"p7x"}
+    allowed_override = {"/" + CODE_INTEGRITY_MEMBER.lower()}
+    if any(old_defaults.get(key) != new_defaults.get(key) for key in
+           (set(old_defaults) | set(new_defaults)) - allowed_default):
+        return False
+    if any(old_overrides.get(key) != new_overrides.get(key) for key in
+           (set(old_overrides) | set(new_overrides)) - allowed_override):
+        return False
+    signature_type = new_defaults.get("p7x", "").lower()
+    catalog_type = new_overrides.get("/" + CODE_INTEGRITY_MEMBER.lower(), "").lower()
+    return (("p7x" not in new_defaults or "signature" in signature_type) and
+            ("/" + CODE_INTEGRITY_MEMBER.lower() not in new_overrides or
+             any(word in catalog_type for word in ("codeintegrity", "code-integrity", "catalog"))))
+
+
 def verify_test_signed_derivative(*, source: Path, derived: Path,
                                   expected_source_sha256: str,
                                   expected_identity: dict[str, str]) -> dict[str, Any]:
@@ -92,10 +126,28 @@ def verify_test_signed_derivative(*, source: Path, derived: Path,
         raise DerivativeVerificationError("derived package has no non-empty AppxSignature.p7x")
     if _identity(original_manifest) != expected_identity or _identity(signed_manifest) != expected_identity:
         raise DerivativeVerificationError("source or derived manifest identity differs from the frozen profile")
-    if set(signed_members) != set(original_members) | {SIGNATURE_MEMBER}:
-        raise DerivativeVerificationError("derived package has missing or unexpected members")
+    removed = sorted(set(original_members) - set(signed_members))
+    added = sorted(set(signed_members) - set(original_members))
+    unexpected_added = sorted(set(added) - ALLOWED_ADDED_SIGNATURE_MEMBERS)
+    if removed or unexpected_added:
+        raise DerivativeVerificationError(
+            "derived package has missing or unexpected members; "
+            f"removed={removed[:8]}, added={added[:8]}")
+    if added and SIGNATURE_MEMBER not in added and SIGNATURE_MEMBER not in original_members:
+        raise DerivativeVerificationError("derived package signature member is not a new signature-only member")
+    if CONTENT_TYPES_MEMBER in original_members:
+        try:
+            with zipfile.ZipFile(source) as source_zip, zipfile.ZipFile(derived) as derived_zip:
+                if not _content_types_signature_only(source_zip.read(CONTENT_TYPES_MEMBER),
+                                                     derived_zip.read(CONTENT_TYPES_MEMBER)):
+                    raise DerivativeVerificationError("[Content_Types].xml changed beyond signature metadata")
+        except (KeyError, OSError, zipfile.BadZipFile) as exc:
+            raise DerivativeVerificationError("package content-type metadata is unreadable") from exc
+    elif CONTENT_TYPES_MEMBER in added:
+        raise DerivativeVerificationError("signing added an unexpected content-type manifest")
+    allowed_changed = {CONTENT_TYPES_MEMBER, CODE_INTEGRITY_MEMBER}
     changed = sorted(name for name, digest in original_members.items()
-                     if digest != signed_members[name])
+                     if digest != signed_members[name] and name not in allowed_changed)
     if changed:
         raise DerivativeVerificationError("non-signature package members changed: " + ", ".join(changed[:8]))
     return {
@@ -110,7 +162,10 @@ def verify_test_signed_derivative(*, source: Path, derived: Path,
                     "identity": _identity(signed_manifest),
                     "signature_member_sha256": signed_members[SIGNATURE_MEMBER]},
         "changed_payload_members": [],
-        "added_members": [SIGNATURE_MEMBER],
+        "added_members": added,
+        "changed_signature_metadata_members": sorted(
+            name for name, digest in original_members.items()
+            if digest != signed_members[name] and name in allowed_changed),
         "limitations": ["The derived SHA is different and is never a Store submission candidate.",
                         "This verifies package member identity, not application runtime behavior."]
     }
