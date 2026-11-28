@@ -169,12 +169,13 @@ class RuntimeQaPlanTests(unittest.TestCase):
             checkout, _, profile_root, _ = self._make_source_fixture(root)
             with (
                 patch("all_auto.runtime_qa.platform.system", return_value="Windows"),
-                patch.dict(os.environ, {,
+                patch.dict(os.environ, {
+                    "ALL_AUTO_QA_SOURCE_ROOT": str(checkout),
+                    "SOURCE_QA_MISSING_CHECK": "default_output_files_written",
+                }, clear=False),
             ):
-                     "ALL_AUTO_QA_SOURCE_ROOT": str(checkout),
-                     "SOURCE_QA_MISSING_CHECK": "default_output_files_written",
-                 }, clear=False):
                 result = run_profiled_source_driver(product="data-contract-auditor",
+                    profile_root=profile_root, evidence_root=root / "evidence")
                     profile_root=profile_root, evidence_root=root / "evidence")
             self.assertEqual(result["status"], "SOURCE_DRIVER_RECEIPT_INVALID")
             self.assertIn("default_output_files_written", result["missing_or_failed_required_checks"])
