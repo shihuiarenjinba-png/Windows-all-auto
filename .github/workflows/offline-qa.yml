@@ -14,7 +14,7 @@ jobs:
       matrix:
         os: [ubuntu-24.04, windows-latest]
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -136,6 +136,7 @@ jobs:
           }
       - name: Test-sign, install, and smoke-test a synthetic MSIX on ephemeral Windows
         if: runner.os == 'Windows'
+        timeout-minutes: 10
         shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
@@ -199,6 +200,30 @@ jobs:
           .\scripts\test_sign_msix_copy.ps1 -Package $sourcePackage -ExpectedSha256 $sourceHash `
             -IdentityName 'AllAuto.CI.MsixSmoke' -Publisher $publisher -Version '1.0.0.0' `
             -Architecture x64 -ApplicationId Probe -SmokeMarkerPath $marker -OutputDirectory $root
+      - name: Finalize interrupted signature QA phase receipt
+        if: always() && runner.os == 'Windows'
+        shell: powershell
+        run: |
+          $root = Join-Path $env:RUNNER_TEMP 'msix-test-signature-smoke'
+          if (-not (Test-Path -LiteralPath $root)) { exit 0 }
+          Get-ChildItem -LiteralPath $root -File -Filter 'test-signature-qa-receipt-*.json' | ForEach-Object {
+            $record = Get-Content -LiteralPath $_.FullName -Raw | ConvertFrom-Json
+            if ($record.status -eq 'RUNNING') {
+              $record.status = 'INTERRUPTED_OR_STEP_TIMEOUT'
+              $record.failure = 'The GitHub Actions signing/install step ended before this phase wrote a completion receipt.'
+              $record.updated_at_utc = [DateTime]::UtcNow.ToString('o')
+              if ($record.phase_timings -and $record.phase_timings.Count -gt 0) {
+                $last = $record.phase_timings[-1]
+                if ($last.status -eq 'RUNNING') {
+                  $last.status = 'INTERRUPTED_OR_STEP_TIMEOUT'
+                  $last.elapsed_ms = [int64](([DateTime]::UtcNow - [DateTime]::Parse($last.started_at_utc).ToUniversalTime()).TotalMilliseconds)
+                }
+              }
+              $tmp = $_.FullName + '.tmp'
+              $record | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $tmp -Encoding UTF8
+              Move-Item -LiteralPath $tmp -Destination $_.FullName -Force
+            }
+          }
       - name: Preserve synthetic signature QA receipt (no package or certificate)
         if: always() && runner.os == 'Windows'
         uses: actions/upload-artifact@v4

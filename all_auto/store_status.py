@@ -105,20 +105,9 @@ def _local_package(config: dict[str, Any], repo_root: Path) -> dict[str, Any]:
 
 
 def _ledger_roots(repo_root: Path) -> list[Path]:
-    roots = [repo_root / ".uploader-run"]
-    env_root = os.environ.get("STORE_RECEIPT_ROOT")
-    if env_root:
-        roots.insert(0, Path(env_root).expanduser())
-    desktop_repo = Path.home() / "Desktop" / "Windows-all-auto-dca-upload" / ".uploader-run"
-    roots.append(desktop_repo)
-    unique: list[Path] = []
-    seen: set[str] = set()
-    for root in roots:
-        resolved = root.resolve()
-        if resolved.is_dir() and str(resolved).casefold() not in seen:
-            seen.add(str(resolved).casefold())
-            unique.append(resolved)
-    return unique
+    from .state_paths import state_root
+    root = state_root(repo_root)
+    return [root] if root.is_dir() else []
 
 
 def _upload_history(config: dict[str, Any], repo_root: Path, product: str) -> dict[str, Any]:

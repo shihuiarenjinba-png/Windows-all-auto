@@ -11,6 +11,7 @@ from pathlib import Path
 from uuid import uuid4
 
 from .core import export_results, preflight
+from .state_paths import product_state_dir
 from uploader.core import UploadError
 from .store_workflow import (
     StoreWorkflowError,
@@ -249,7 +250,7 @@ def main(argv: list[str] | None = None) -> int:
                     original_argv = sys.argv[:]
                     try:
                         sys.argv = ["uploader.run", "--product", opts.product, "--package", str(opts.package),
-                                    "--workdir", str(Path(".uploader-run") / opts.product), "--execute"]
+                                    "--workdir", str(product_state_dir(opts.product)), "--execute"]
                         return uploader_main()
                     finally:
                         sys.argv = original_argv

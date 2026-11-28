@@ -61,10 +61,14 @@ def main():
     source.add_argument("--config", type=Path, help="Exact product job JSON")
     source.add_argument("--product", help="Registered product key under uploader/config")
     parser.add_argument("--package", type=Path, help="Use an already-downloaded local MSIX instead of downloading from GitHub")
-    parser.add_argument("--workdir", type=Path, default=Path(".uploader-run"))
+    parser.add_argument("--workdir", type=Path, help="State directory; defaults to shared WINDOWS_ALL_AUTO_STATE_DIR or the existing legacy state root")
     parser.add_argument("--receipt-ledger", type=Path)
     parser.add_argument("--execute", action="store_true", help="Upload to the configured existing Draft, Save Packages, and verify after reload")
     args = parser.parse_args()
+    if args.workdir is None:
+        from all_auto.state_paths import product_state_dir, state_root
+        repo_root = Path(__file__).resolve().parents[1]
+        args.workdir = product_state_dir(args.product, repo_root) if args.product else state_root(repo_root)
     config={}; package=None; job=None; journal=None; outcome="FAILED"; detail={}; code=""; browser_connection=None
     try:
         config_file=resolve_job_config(config_path=args.config, product_key=args.product)

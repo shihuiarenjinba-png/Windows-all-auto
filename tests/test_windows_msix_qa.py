@@ -63,13 +63,20 @@ class WindowsMsixDiagnosticTests(unittest.TestCase):
                          "ActivateApplication", "installed-package-executable",
                          "UNCONFIRMED_IN_HOSTED_RUNNER", "$markerArgument",
                          "Remove-AppxPackage",
-                         "store_candidate_unchanged=$true", "diagnostic_only=$true"):
+                         "store_candidate_unchanged=$true", "diagnostic_only=$true",
+                         "Invoke-QAPhase", "phase_timings=@($phaseTimings)", "PHASE_TIMEOUT",
+                         "CREATE_EPHEMERAL_CERTIFICATE", "EXPORT_PUBLIC_CERTIFICATE",
+                         "IMPORT_EPHEMERAL_TRUST", "LaunchMode", "ProcessLaunch",
+                         "basic_function=$(if ($LaunchMode -eq 'MarkerSmoke') { 'PASS' } else { 'NOT_RUN' })"):
             self.assertIn(required, source)
         self.assertNotIn("Set-ExecutionPolicy", source)
         self.assertLess(source.index("Import-Certificate -FilePath $publicCert"),
                         source.index("& $signTool verify /pa /v $derived"))
         workflow = (root / ".github" / "workflows" / "offline-qa.yml").read_text(encoding="utf-8")
         self.assertIn("synthetic-msix-test-signing-receipt", workflow)
+        self.assertIn("Finalize interrupted signature QA phase receipt", workflow)
+        self.assertIn("INTERRUPTED_OR_STEP_TIMEOUT", workflow)
+        self.assertIn("timeout-minutes: 10", workflow)
         self.assertIn('"STARTED"', workflow)
         self.assertIn("args[0]", workflow)
         self.assertIn("WindowsApplication", workflow)

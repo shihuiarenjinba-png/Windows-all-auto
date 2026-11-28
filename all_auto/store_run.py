@@ -8,6 +8,7 @@ from typing import Any, Callable
 
 from uploader.core import UploadError, verify_file
 from uploader.live_gates import package_write_hold_reason
+from .state_paths import product_state_dir
 from .store_workflow import StoreWorkflowError, _load_job
 
 
@@ -255,7 +256,7 @@ def _run_package_section(*, config: dict[str, Any], product: str,
     captured = StringIO()
     try:
         sys.argv = ["uploader.run", "--product", product, "--package", str(package),
-                    "--workdir", str(Path(".uploader-run") / product), "--execute"]
+                    "--workdir", str(product_state_dir(product)), "--execute"]
         with redirect_stdout(captured):
             code = uploader_main()
     finally:
