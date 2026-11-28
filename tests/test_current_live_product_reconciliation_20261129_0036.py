@@ -68,8 +68,11 @@ class CurrentLiveProductReconciliation0036Tests(unittest.TestCase):
         self.assertFalse(self.overlay["safety"]["force_push_allowed"])
 
     def test_legacy_pointer_chain_and_completion_order_are_preserved(self):
-        self.assertIn("ops/active_e2e_handoff_overlay_20261128_2335.json",self.overlay["reconciles_against"])
-        self.assertTrue(self.overlay["canonical_ledger_reconciliation"]["legacy_snapshot_pointers_preserved"])
+        pointer=self.overlay["canonical_ledger_reconciliation"]
+        self.assertEqual(pointer["previous_blob_sha"],"72e4eaab91291d4268dcda3eb997a722a32aa2ab")
+        self.assertEqual(pointer["previous_blob_bytes"],2070904)
+        self.assertTrue(pointer["legacy_snapshot_pointers_preserved"])
+        self.assertIn("ops/active_e2e_handoff_overlay_20261128_2238.json",self.overlay["reconciles_against"])
         self.assertFalse(self.queue["new_product_generation_allowed"])
         self.assertEqual([x["product"] for x in self.queue["priority"]],["Focus Session Desk","File Integrity Ledger","Prism Route 3D","Signal Sprint"])
         self.assertEqual(self.queue["status"],"HOLD")
