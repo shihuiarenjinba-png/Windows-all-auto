@@ -1,4 +1,6 @@
+import base64
 import hashlib
+import io
 import json
 from pathlib import Path
 import shutil
@@ -154,5 +156,163 @@ class PollTests(unittest.TestCase):
                 self.assertFalse(queued["items"][0]["submit_allowed"])
                 self.assertEqual(intake(ledger,out)["received"],0)
                 self.assertEqual(json.loads(ledger.read_text())["processed_artifacts"],[123])
+
+
+class AppIdentityReturnTransportTests(unittest.TestCase):
+    def setUp(self):
+        temp=tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        self.root=Path(temp.name)
+        self.fixture=self.root/"factory-artifact"
+        self.fixture.mkdir()
+        self.source_sha=SHA
+        self.branch="codex/factory-bootstrap-20261026"
+        self.store_id="9PTESTING"
+        self.request_id="app-sample-app-aaaaaaaa"
+        self.identity={"name":"Demo.App","publisher":"CN=ABC","version":"1.0.0.0"}
+        self.exe=b"fixture-exe"
+        with zipfile.ZipFile(self.fixture/"package.msix","w") as z:
+            z.writestr("AppxManifest.xml",XML)
+            z.writestr("AppxBlockMap.xml",b"<BlockMap/>")
+            z.writestr("[Content_Types].xml",b"<Types/>")
+            z.writestr("main.exe",self.exe)
+        package=(self.fixture/"package.msix").read_bytes()
+        self.handoff={
+            "schema_version":1,"source_repository":"https://github.com/"+REPO,
+            "source_sha":self.source_sha,"expected_head_sha":self.source_sha,
+            "factory_head_sha":self.source_sha,"type":"app","slug":"sample-app",
+            "package":"package.msix","status":"QA_UNSIGNED",
+            "package_bytes":len(package),"package_sha256":hashlib.sha256(package).hexdigest(),
+            "identity":self.identity,"request_id":self.request_id,"product_type":"APP",
+            "source_factory":"AI-App-Factory","source_branch":self.branch,
+            "store_id":self.store_id,"display_name":"Sample App",
+            "prebuilt_exe_sha256":hashlib.sha256(self.exe).hexdigest()
+        }
+        self.handoff_bytes=json.dumps(self.handoff,separators=(",",":")).encode("utf-8")
+        (self.fixture/"handoff.json").write_bytes(self.handoff_bytes)
+        self.approved={
+            "schema_version":"1.0","reviewed":True,"source":"partner_center",
+            "request_id":self.request_id,"product_type":"APP","source_factory":"AI-App-Factory",
+            "source_repository":REPO,"source_branch":self.branch,
+            "source_sha":self.source_sha,"verified_source_sha":self.source_sha,
+            "expected_head_sha":self.source_sha,"store_id":self.store_id,
+            "name":self.identity["name"],"publisher":self.identity["publisher"],
+            "version":self.identity["version"],"display_name":"Sample App",
+            "package_version_gate":"PASS","operator_verified":True,
+            "verified_by":"fixture-operator",
+            "evidence_url":"https://partner.microsoft.com/en-us/dashboard/products/"+self.store_id+"/identity"
+        }
+        self.identity_bytes=json.dumps(self.approved,separators=(",",":")).encode("utf-8")
+        self.identity_blob_sha=hashlib.sha1(
+            b"blob "+str(len(self.identity_bytes)).encode("ascii")+b"\0"+self.identity_bytes
+        ).hexdigest()
+        self.identity_response={"encoding":"base64",
+            "content":base64.b64encode(self.identity_bytes).decode("ascii"),
+            "sha":self.identity_blob_sha}
+        self.archive_buffer=io.BytesIO()
+        with zipfile.ZipFile(self.archive_buffer,"w") as z:
+            z.writestr("handoff.json",self.handoff_bytes)
+            z.writestr("package.msix",package)
+        self.archive=self.archive_buffer.getvalue()
+        self.artifact=dict(ARTIFACT,digest="sha256:"+hashlib.sha256(self.archive).hexdigest())
+        self.artifact_meta={
+            "id":123,"name":NAME,"expired":False,
+            "workflow_run":{"id":555,"head_sha":self.source_sha},
+            "digest":"sha256:"+hashlib.sha256(self.archive).hexdigest()
+        }
+        self.custody_run={"id":555,"head_sha":self.source_sha,
+            "status":"completed","conclusion":"success"}
+        self.ledger=self.root/"ledger.json"
+        self.ledger.write_text(json.dumps({"schema_version":1,
+            "processed_artifacts":[],"request_sources":{}}),encoding="utf-8")
+        self.out=self.root/"out"
+
+    def run_intake(self,identity_response="DEFAULT",branch_sha=None,archive=None):
+        identity_response=self.identity_response if identity_response=="DEFAULT" else identity_response
+        branch_sha=self.source_sha if branch_sha is None else branch_sha
+        archive=self.archive if archive is None else archive
+        def fake_api(route):
+            if "/actions/artifacts?" in route:
+                items=[self.artifact] if REPO in route else []
+                return {"total_count":len(items),"artifacts":items}
+            if "/actions/runs/" in route:
+                return RUN
+            if "/branches/" in route:
+                return {"commit":{"sha":branch_sha}}
+            if "/contents/" in route:
+                if identity_response is None:
+                    raise RuntimeError("not found")
+                return identity_response
+            raise AssertionError("unexpected API route: "+route)
+        def fake_command(*args):
+            if args[0]=="run":
+                target=Path(args[-1])
+                for entry in self.fixture.iterdir():
+                    shutil.copyfile(entry,target/entry.name)
+                return ""
+            raise AssertionError("unexpected GitHub command")
+        def fake_clients(token):
+            self.assertEqual(token,"fixture-token")
+            def get_json(url):
+                return self.custody_run if "/runs/" in url else self.artifact_meta
+            return get_json,lambda url:archive
+        with patch.dict("os.environ",{"GH_TOKEN":"fixture-token"}), \
+             patch("all_auto.bridge_poll.api",side_effect=fake_api), \
+             patch("all_auto.bridge_poll.command",side_effect=fake_command), \
+             patch("all_auto.bridge_poll.github_clients",side_effect=fake_clients):
+            return intake(self.ledger,self.out)
+
+    def test_source_bound_identity_and_independent_custody_are_staged(self):
+        result=self.run_intake()
+        self.assertEqual(result["received"],1)
+        queue=json.loads((self.out/"queue.json").read_text(encoding="utf-8"))
+        self.assertEqual(queue["intake_count"],1)
+        item=queue["items"][0]
+        self.assertEqual(item["github_artifact_custody"]["status"],"CUSTODY_VERIFIED_ONLY")
+        self.assertFalse(item["github_artifact_custody"]["e2e_pass"])
+        self.assertEqual(item["factory_run_id"],555)
+        self.assertEqual(item["factory_artifact_id"],123)
+        folder=self.out/"packages"/"APP"/("sample-app-"+self.handoff["package_sha256"][:12])
+        self.assertEqual({p.name for p in folder.iterdir()},
+            {"handoff.json","package.msix","approved-identity.json",
+             "transport_receipt.json","github-custody.json"})
+        self.assertEqual((folder/"approved-identity.json").read_bytes(),self.identity_bytes)
+        transport=json.loads((folder/"transport_receipt.json").read_text(encoding="utf-8"))
+        self.assertEqual(transport["source_sha"],self.source_sha)
+        self.assertEqual(transport["package_version"],"1.0.0.0")
+        self.assertFalse(transport["store_submission_allowed"])
+        self.assertFalse(transport["certification_allowed"])
+        self.assertFalse(transport["publish_allowed"])
+        self.assertEqual(json.loads(self.ledger.read_text())["processed_artifacts"],[123])
+        self.assertEqual(self.run_intake()["received"],0)
+
+    def test_missing_current_source_identity_stays_unprocessed(self):
+        with self.assertRaisesRegex(ValueError,"CURRENT_SOURCE_APPROVED_IDENTITY_UNAVAILABLE"):
+            self.run_intake(identity_response=None)
+        self.assertEqual(json.loads(self.ledger.read_text())["processed_artifacts"],[])
+        self.assertFalse((self.out/"packages").exists())
+
+    def test_historical_or_unapproved_version_stays_hold(self):
+        approved=dict(self.approved,package_version_gate="HOLD")
+        raw=json.dumps(approved,separators=(",",":")).encode("utf-8")
+        response={"encoding":"base64","content":base64.b64encode(raw).decode("ascii"),
+                  "sha":hashlib.sha1(b"blob "+str(len(raw)).encode("ascii")+b"\0"+raw).hexdigest()}
+        with self.assertRaisesRegex(ValueError,"CURRENT_SOURCE_APPROVED_IDENTITY_OR_VERSION_HOLD"):
+            self.run_intake(identity_response=response)
+        self.assertEqual(json.loads(self.ledger.read_text())["processed_artifacts"],[])
+
+    def test_source_branch_drift_stays_hold(self):
+        with self.assertRaisesRegex(ValueError,"SOURCE_BRANCH_DRIFT"):
+            self.run_intake(branch_sha="c"*40)
+        self.assertEqual(json.loads(self.ledger.read_text())["processed_artifacts"],[])
+
+    def test_independent_archive_digest_mismatch_stays_hold(self):
+        with self.assertRaisesRegex(ValueError,"SOURCE_ARTIFACT_CUSTODY_HOLD:ARTIFACT_ARCHIVE_DIGEST_MISMATCH"):
+            self.run_intake(archive=b"tampered")
+        self.assertEqual(json.loads(self.ledger.read_text())["processed_artifacts"],[])
+
+
+if __name__=="__main__":unittest.main()
+
 
 if __name__=="__main__":unittest.main()
