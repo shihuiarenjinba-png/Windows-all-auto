@@ -108,10 +108,11 @@ def main(argv: list[str] | None = None) -> int:
     store_apply.add_argument("--ui-map", type=Path, help="Versioned route map; defaults to the registered msix_pwa_app map")
     store_apply.add_argument("--package", type=Path, help="Exact MSIX for the delegated existing uploader route")
     store_apply.add_argument("--execute", action="store_true", help="Perform the approved live section write")
-    store_qa = store_commands.add_parser("qa", help="Verify the registered package and emit product-specific runtime QA plan")
+    store_qa = store_commands.add_parser("qa", help="Verify package and optionally execute the approved product QA driver")
     store_qa.add_argument("--product", required=True, help="Registered product key under uploader/config")
     store_qa.add_argument("--package", type=Path, help="Optional exact local MSIX; otherwise resolve from registered archive/cache sources")
     store_qa.add_argument("--out", type=Path, help="Output root for a unique, append-only QA plan")
+    store_qa.add_argument("--execute", action="store_true", help="Run only the profile-approved synthetic-data source GUI driver; does not install or certify the fixed MSIX")
     opts = parser.parse_args(argv)
     if opts.command == "gui":
         from .gui import start
@@ -135,12 +136,45 @@ def main(argv: list[str] | None = None) -> int:
                         archive_root=(Path.home() / "Desktop" / "portfolio-audit" / "_runtime" /
                                       "store-fleet-sync" / "durable-package-archive"))
                     package = Path(acquisition.get("local_path") or acquisition.get("path"))
-                from .runtime_qa import build_runtime_qa_report
+                from .runtime_qa import build_runtime_qa_report, run_profiled_source_driver
                 qa = build_runtime_qa_report(
                     product=opts.product, config_root=config_root,
                     profile_root=config_root / "runtime_qa_profiles", package=package)
                 qa["run_id"] = uuid4().hex
                 qa["package_acquisition"] = acquisition
+                if opts.execute:
+                    evidence_base = (opts.out.parent if opts.out else
+                                     Path.home() / "Desktop" / "portfolio-audit" / "_runtime" /
+                                     "store-fleet-sync")
+                    evidence_root = (evidence_base / "qa-evidence" / opts.product / qa["run_id"])
+                    driver = run_profiled_source_driver(
+                        product=opts.product,
+                        profile_root=config_root / "runtime_qa_profiles",
+                        evidence_root=evidence_root)
+                    qa["source_gui_driver"] = driver
+                    if driver.get("status") == "SOURCE_GUI_DRIVER_PASS":
+                        qa["status"] = "SOURCE_GUI_QA_PASS_PACKAGED_RUNTIME_UNVERIFIED"
+                        qa["source_gui_qa_pass"] = True
+                        receipts = {item.get("id"): item for item in driver["receipt"].get("checks", [])}
+                        mapping = {
+                            "language_switch_ja": "language_toggle_ja",
+                            "language_switch_en": "language_toggle_en",
+                            "launch_and_render": "launch_and_render",
+                            "csv_schema_and_quality_comparison": "csv_compare_and_output_reopen",
+                            "xlsx_input": "xlsx_compare_and_output_reopen",
+                            "report_output_reopens": "csv_compare_and_output_reopen",
+                            "invalid_csv_error": "duplicate_header_visible_error",
+                            "normal_exit_and_relaunch": "normal_exit_and_relaunch",
+                        }
+                        for check in qa["checks"]:
+                            source_id = mapping.get(check["id"])
+                            evidence = receipts.get(source_id, {})
+                            if source_id and evidence.get("status") == "PASS":
+                                check["status"] = "PASS_SOURCE_GUI"
+                                check["evidence"] = driver.get("receipt_path")
+                    else:
+                        qa["source_gui_qa_pass"] = False
+                        qa["status"] = "SOURCE_GUI_QA_" + str(driver.get("status", "HOLD"))
                 report_path = _write_store_report(qa, opts.out, opts.product, "runtime-qa")
             except (OSError, StoreWorkflowError, ValueError, UploadError) as exc:
                 print(f"STORE QA HOLD: {type(exc).__name__}: {exc}", file=sys.stderr)
