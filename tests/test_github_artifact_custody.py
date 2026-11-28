@@ -1,0 +1,529 @@
+"""Offline fail-closed tests of independent artifact API + local byte custody."""
+import hashlib
+import io
+import json
+import os
+import struct
+import zlib
+import tempfile
+import unittest
+import zipfile
+from contextlib import redirect_stderr, redirect_stdout
+from pathlib import Path
+from unittest.mock import patch
+from scripts.github_artifact_custody import main, verify_custody
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from test_real_msix_transport_failclosed import authorize_transport
+
+class CustodyTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.local = Path(self.tmp.name) / "actual.msix"
+        self.local.write_bytes(b"fixture-not-real-msix")
+        self.digest = hashlib.sha256(self.local.read_bytes()).hexdigest()
+        self.expected = dict(repository="example/repo", run_id=123, artifact_id=456,
+                             source_sha="a"*40, artifact_name="actual-package", msix_sha256=self.digest)
+        self.run = dict(head_sha="a"*40, status="completed", conclusion="success")
+        self.artifact = dict(id=456, name="actual-package", expired=False,
+                             workflow_run=dict(id=123, head_sha="a"*40))
+        self.set_archive(self.local.read_bytes())
+    def archive(self, data):
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w") as z:
+            z.writestr("actual.msix", data)
+        return buf.getvalue()
+    def set_archive(self, data):
+        self.zip = self.archive(data)
+        self.artifact["digest"] = "sha256:" + hashlib.sha256(self.zip).hexdigest()
+    def check(self):
+        def get_json(url):
+            return self.run if "/runs/" in url else self.artifact
+        return verify_custody(self.expected, self.local, get_json, lambda url: self.zip)
+    def test_matching_bytes_never_e2e(self):
+        result = self.check()
+        self.assertEqual(result["status"], "CUSTODY_VERIFIED_ONLY")
+        self.assertFalse(result["e2e_pass"])
+        self.assertEqual(result["signature"], "NOT_VERIFIED")
+    def test_cli_writes_create_only_receipt_after_exact_custody(self):
+        expected_path = Path(self.tmp.name) / "expected.json"
+        expected_path.write_text(json.dumps(self.expected), encoding="utf-8")
+        output = Path(self.tmp.name) / "github-custody.json"
+        artifact = dict(self.artifact)
+        artifact["digest"] = "sha256:" + hashlib.sha256(self.zip).hexdigest()
+
+        def fake_clients(token):
+            self.assertEqual(token, "test-token")
+            def get_json(url):
+                return self.run if "/runs/" in url else artifact
+            return get_json, lambda url: self.zip
+
+        args = ["--expected", str(expected_path), "--local-bundle", str(self.local),
+                "--output", str(output)]
+        with patch("scripts.github_artifact_custody.github_clients", side_effect=fake_clients), \
+             patch.dict(os.environ, {"GITHUB_TOKEN": "test-token"}, clear=True), \
+             redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+            result = main(args)
+        self.assertEqual(result, 0)
+        receipt_text = output.read_text(encoding="utf-8")
+        receipt = json.loads(receipt_text)
+        self.assertEqual(receipt["status"], "CUSTODY_VERIFIED_ONLY")
+        self.assertFalse(receipt["e2e_pass"])
+        self.assertNotIn("test-token", receipt_text)
+
+        # A durable receipt is create-only; retries cannot overwrite it.
+        with patch("scripts.github_artifact_custody.github_clients", side_effect=AssertionError("must not call API")), \
+             patch.dict(os.environ, {"GITHUB_TOKEN": "test-token"}, clear=True), \
+             redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+            retry = main(args)
+        self.assertEqual(retry, 2)
+        self.assertEqual(output.read_text(encoding="utf-8"), receipt_text)
+
+    def test_cli_hold_never_writes_receipt_without_archive_digest(self):
+        expected_path = Path(self.tmp.name) / "expected.json"
+        expected_path.write_text(json.dumps(self.expected), encoding="utf-8")
+        output = Path(self.tmp.name) / "github-custody.json"
+        artifact = dict(self.artifact)
+        artifact.pop("digest", None)
+
+        def fake_clients(token):
+            def get_json(url):
+                return self.run if "/runs/" in url else artifact
+            return get_json, lambda url: self.zip
+
+        args = ["--expected", str(expected_path), "--local-bundle", str(self.local),
+                "--output", str(output)]
+        with patch("scripts.github_artifact_custody.github_clients", side_effect=fake_clients), \
+             patch.dict(os.environ, {"GITHUB_TOKEN": "test-token"}, clear=True), \
+             redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+            result = main(args)
+        self.assertEqual(result, 2)
+        self.assertFalse(output.exists())
+
+    def test_cli_accepts_source_bound_identity_and_adds_custody_to_bundle(self):
+        package_bytes = self.local.read_bytes()
+        identity = {"name": "OkinawaDesktopTools.Test", "publisher": "CN=Test", "version": "1.0.0.0"}
+        source = "a" * 40
+        repository = "https://github.com/shihuiarenjinba-png/AI-App-Factory"
+        store_id = "9PTESTING"
+        request_id = "app-request-1234"
+        source_branch = "codex/test-branch"
+        display_name = "Sample App"
+        exe_sha = hashlib.sha256(b"fixture-exe").hexdigest()
+        handoff = {
+            "schema_version": 1, "package": "package.msix", "status": "QA_UNSIGNED",
+            "source_sha": source, "expected_head_sha": source, "factory_head_sha": source,
+            "package_sha256": self.digest, "package_bytes": len(package_bytes), "identity": identity,
+            "source_repository": repository, "request_id": request_id, "product_type": "APP",
+            "source_factory": "AI-App-Factory", "source_branch": source_branch,
+            "store_id": store_id, "display_name": display_name, "prebuilt_exe_sha256": exe_sha,
+            "slug": "sample-app", "type": "app"
+        }
+        handoff_bytes = json.dumps(handoff, separators=(",", ":")).encode("utf-8")
+        bundle = Path(self.tmp.name) / "bundle"
+        bundle.mkdir()
+        (bundle / "handoff.json").write_bytes(handoff_bytes)
+        (bundle / "package.msix").write_bytes(package_bytes)
+        verifier = "fixture-operator"
+        evidence = "https://partner.microsoft.com/dashboard/products/" + store_id + "/identity"
+        approved_identity = {
+            "schema_version": "1.0", "reviewed": True, "source": "partner_center",
+            "request_id": request_id, "product_type": "APP", "source_factory": "AI-App-Factory",
+            "source_repository": "shihuiarenjinba-png/AI-App-Factory",
+            "source_branch": source_branch, "source_sha": source, "expected_head_sha": source,
+            "store_id": store_id, "name": identity["name"], "publisher": identity["publisher"],
+            "version": identity["version"], "package_version_gate": "PASS",
+            "operator_verified": True, "verified_by": verifier, "evidence_url": evidence
+        }
+        identity_bytes = json.dumps(approved_identity, separators=(",", ":")).encode("utf-8")
+        (bundle / "approved-identity.json").write_bytes(identity_bytes)
+        identity_blob_sha = hashlib.sha1(
+            b"blob " + str(len(identity_bytes)).encode("ascii") + b"\0" + identity_bytes
+        ).hexdigest()
+        transport = {
+            "schema_version": 1, "status": "SOURCE_BOUND_VERSION_APPROVED",
+            "source_sha": source, "expected_head_sha": source, "factory_head_sha": source,
+            "source_repository": repository, "product_type": "APP", "source_factory": "AI-App-Factory",
+            "package_sha256": self.digest, "package_bytes": len(package_bytes), "identity": identity,
+            "approval_source": "partner_center", "package_version_gate": "PASS",
+            "package_version": identity["version"], "operator_verified": True,
+            "store_submission_allowed": False, "certification_allowed": False, "publish_allowed": False,
+            "approved_identity_file_sha": identity_blob_sha, "verified_by": verifier, "evidence_url": evidence,
+            "request_id": request_id, "source_branch": source_branch, "store_id": store_id,
+            "display_name": display_name, "prebuilt_exe_sha256": exe_sha
+        }
+        (bundle / "transport_receipt.json").write_text(
+            json.dumps(transport, separators=(",", ":")), encoding="utf-8"
+        )
+
+        archive_buffer = io.BytesIO()
+        with zipfile.ZipFile(archive_buffer, "w") as z:
+            z.writestr("handoff.json", handoff_bytes)
+            z.writestr("package.msix", package_bytes)
+        archive = archive_buffer.getvalue()
+        artifact = dict(self.artifact)
+        artifact["digest"] = "sha256:" + hashlib.sha256(archive).hexdigest()
+        expected = dict(self.expected, identity=identity, repository="shihuiarenjinba-png/AI-App-Factory")
+        expected_path = Path(self.tmp.name) / "expected-bundle.json"
+        expected_path.write_text(json.dumps(expected), encoding="utf-8")
+        output = bundle / "github-custody.json"
+
+        def fake_clients(token):
+            def get_json(url):
+                return self.run if "/runs/" in url else artifact
+            return get_json, lambda url: archive
+
+        args = ["--expected", str(expected_path), "--local-bundle", str(bundle),
+                "--output", str(output)]
+        with patch("scripts.github_artifact_custody.github_clients", side_effect=fake_clients), \
+             patch.dict(os.environ, {"GITHUB_TOKEN": "test-token"}, clear=True), \
+             redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+            result = main(args)
+        self.assertEqual(result, 0)
+        self.assertTrue(output.is_file())
+        self.assertEqual({p.name for p in bundle.iterdir()}, {
+            "handoff.json", "package.msix", "transport_receipt.json",
+            "approved-identity.json", "github-custody.json"
+        })
+        receipt = json.loads(output.read_text(encoding="utf-8"))
+        self.assertEqual(receipt["status"], "CUSTODY_VERIFIED_ONLY")
+        self.assertEqual(receipt["source_sha"], source)
+        self.assertFalse(receipt["e2e_pass"])
+
+    def test_bundle_transport_receipt_requires_approved_identity_file(self):
+        bundle = Path(self.tmp.name) / "unpaired-bundle"
+        bundle.mkdir()
+        (bundle / "handoff.json").write_text("{}", encoding="utf-8")
+        (bundle / "package.msix").write_bytes(self.local.read_bytes())
+        (bundle / "transport_receipt.json").write_text("{}", encoding="utf-8")
+        result = verify_custody(self.expected, bundle, lambda url: {}, lambda url: b"")
+        self.assertEqual(result["status"], "HOLD")
+        self.assertEqual(result["reason"], "LOCAL_APPROVED_IDENTITY_RECEIPTS_UNPAIRED")
+
+    def test_cli_requires_token_and_does_not_write(self):
+        expected_path = Path(self.tmp.name) / "expected.json"
+        expected_path.write_text(json.dumps(self.expected), encoding="utf-8")
+        output = Path(self.tmp.name) / "github-custody.json"
+        args = ["--expected", str(expected_path), "--local-bundle", str(self.local),
+                "--output", str(output)]
+        with patch.dict(os.environ, {}, clear=True), redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+            result = main(args)
+        self.assertEqual(result, 2)
+        self.assertFalse(output.exists())
+
+    def test_run_head_drift(self):
+        self.run["head_sha"] = "b"*40
+        self.assertEqual(self.check()["status"], "HOLD")
+    def test_run_failed(self):
+        self.run["conclusion"] = "failure"
+        self.assertEqual(self.check()["status"], "HOLD")
+    def test_artifact_wrong_run(self):
+        self.artifact["workflow_run"]["id"] = 999
+        self.assertEqual(self.check()["status"], "HOLD")
+    def test_artifact_expired(self):
+        self.artifact["expired"] = True
+        self.assertEqual(self.check()["status"], "HOLD")
+    def test_wrong_artifact_id(self):
+        self.artifact["id"] = 789
+        self.assertEqual(self.check()["status"], "HOLD")
+    def test_artifact_bytes_mismatch(self):
+        self.set_archive(b"different")
+        self.assertEqual(self.check()["reason"], "INDEPENDENT_BYTES_MISMATCH")
+    def test_local_bytes_mismatch(self):
+        self.local.write_bytes(b"changed")
+        self.assertEqual(self.check()["reason"], "INDEPENDENT_BYTES_MISMATCH")
+    def test_missing_local(self):
+        self.local.unlink()
+        self.assertEqual(self.check()["status"], "HOLD")
+    def test_no_approved_digest(self):
+        self.expected["msix_sha256"] = ""
+        self.assertEqual(self.check()["status"], "HOLD")
+    def test_missing_api(self):
+        self.assertEqual(verify_custody(self.expected, self.local, lambda url: {}, lambda url: b"")["status"], "HOLD")
+    def test_zip_extra_payload(self):
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w") as z:
+            z.writestr("actual.msix", self.local.read_bytes())
+            z.writestr("unexpected.txt", "x")
+        self.zip = buf.getvalue()
+        self.artifact["digest"] = "sha256:" + hashlib.sha256(self.zip).hexdigest()
+        self.assertEqual(self.check()["status"], "HOLD")
+
+    def test_custody_to_transport_boundary_fail_closed(self):
+        # Synthetic MSIX bytes test the real handoff contract, not Store/GUI readiness.
+        source = "d1108d12f7d1697af30400f97c7db39cba5e6791"
+        identity = dict(request_id="app-file-integrity-ledger-d1108d12f7d1",
+            source_sha=source, verified_source_sha=source, expected_head_sha=source,
+            name="OkinawaDesktopTools.FileIntegrityLedger",
+            publisher="CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+            store_id="9PGZ445SR5GM", package_version_gate="PASS",
+            signature_status="SIGNED")
+        version = "1.2.3.4"  # Synthetic fixture only; NOT an approved product version.
+        with zipfile.ZipFile(self.local, "w") as z:
+            # Synthetic assets exercise the transport gate without claiming production readiness.
+            for asset, size in (("StoreLogo.png", 50), ("Square150.png", 150), ("Square44.png", 44)):
+                ihdr = struct.pack(">IIBBBBB", size, size, 8, 6, 0, 0, 0)
+                chunk = b"IHDR" + ihdr
+                png = (b"\x89PNG\r\n\x1a\n" + struct.pack(">I", 13) + chunk
+                       + struct.pack(">I", zlib.crc32(chunk)))
+                z.writestr("Assets/" + asset, png + b"synthetic-fixture-not-production")
+            z.writestr("[Content_Types].xml", "<Types/>")
+            z.writestr("AppxManifest.xml",
+                '<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10">'
+                '<Identity Name="OkinawaDesktopTools.FileIntegrityLedger" '
+                'Publisher="CN=46263F21-A700-41DB-8C9B-114C22FB82FC" '
+                'Version="1.2.3.4"/></Package>')
+        digest = hashlib.sha256(self.local.read_bytes()).hexdigest()
+        approval = {k: identity[k] for k in ("request_id", "source_sha", "name", "publisher", "store_id")}
+        approval.update(package_version=version, approved=True, msix_sha256=digest)
+        receipt = dict(approval)
+        receipt.update(local_sha256=digest, artifact_kind="REAL_MSIX",
+            github_backlog_status="VERIFIED", local_pull_status="VERIFIED",
+            run_id=123, artifact_id=456)
+        self.expected.update(source_sha=source, msix_sha256=digest)
+        self.run["head_sha"] = source
+        self.artifact["workflow_run"]["head_sha"] = source
+        self.set_archive(self.local.read_bytes())
+        custody = self.check()
+        self.assertEqual(custody["status"], "CUSTODY_VERIFIED_ONLY")
+        result = authorize_transport(identity, approval, self.local, receipt, custody)
+        self.assertEqual(result["status"], "TRANSPORT_PREFLIGHT_PASS_ONLY")
+        self.assertFalse(result["e2e_pass"])
+        self.assertEqual(result["checker"], "NOT_VERIFIED")
+        self.assertEqual(result["gui"], "NOT_VERIFIED")
+        # Producer-controlled VERIFIED strings cannot replace independent custody.
+        self.assertEqual(authorize_transport(identity, approval, self.local, receipt)["status"], "HOLD")
+        # A changed downloaded artifact must not yield a usable custody receipt.
+        self.set_archive(b"tampered")
+        rejected = self.check()
+        self.assertEqual(rejected["status"], "HOLD")
+        self.assertEqual(authorize_transport(identity, approval, self.local, receipt, rejected)["status"], "HOLD")
+        # Even valid custody must not override a missing official version approval.
+        self.set_archive(self.local.read_bytes())
+        approval["approved"] = False
+        self.assertEqual(authorize_transport(identity, approval, self.local, receipt, custody)["reason"],
+                         "VERSION_NOT_APPROVED")
+
+
+    def test_current_completion_queue_cannot_promote_without_authoritative_version(self):
+        """Live queue is a HOLD fixture; synthetic custody cannot authorize a product."""
+        import json
+        root = Path(__file__).resolve().parents[1]
+        queue = json.loads((root / "ops/completion_rush_queue_20261116.json").read_text(encoding="utf-8"))
+        ledger = json.loads((root / "ops/active_e2e_handoff.json").read_text(encoding="utf-8"))
+        self.assertEqual(ledger["e2e_status"], "HOLD")
+        self.assertIs(ledger["e2e_pass"], False)
+        for product in ("Focus Session Desk", "File Integrity Ledger"):
+            item = next(p for p in queue["priority"] if p["product"] == product)
+            self.assertEqual(item["hold_class"], "DELIVERY_HOLD")
+            self.assertEqual(item["state"], "POST_IDENTITY_UPGRADE")
+            self.assertIsNone(item["package_version"])
+            self.assertIs(item["real_msix"], False)
+            self.assertEqual(item["current_source_identity_binding_status"],
+                             "REVALIDATION_REQUIRED_AFTER_SOURCE_HEAD_CHANGE")
+            self.assertNotEqual(item["source_sha"], item["store_assets_branch_head"])
+            identity = dict(request_id="unapproved-request", source_sha=item["source_sha"],
+                            verified_source_sha=item["store_assets_branch_head"],
+                            expected_head_sha=item["source_sha"], package_version_gate="HOLD")
+            rejected = authorize_transport(identity, {}, self.local, {}, None)
+            self.assertEqual(rejected["status"], "HOLD")
+            self.assertEqual(rejected["reason"], "SOURCE_DRIFT")
+
+        prism = next(p for p in queue["priority"] if p["product"] == "Prism Route 3D")
+        self.assertEqual(prism["factory_source_sha"], "b03ce7b16c3f75c04fe20fdda224c45849eeba0d")
+        self.assertEqual(prism["historical_factory_source_sha"], "4c22875c5ed79d393516c6a7a95361b9e9ed1950")
+        self.assertEqual(prism["physical_qa_sessions"], "0/6")
+        signal = next(p for p in queue["priority"] if p["product"] == "Signal Sprint")
+        self.assertEqual(signal["historical_source_sha"], "c058cbf7fe38e02d929c67d047d717ff74bd522e")
+        self.assertEqual(signal["current_candidate_source_sha"], "1a349faa41663c417c40710140a4d50c79b62b78")
+        self.assertEqual(signal["build_artifact_status"], "HOLD_BUILD_ARTIFACT_NOT_CONFIGURED")
+        self.assertIs(ledger["store_submission_allowed"], False)
+        self.assertIs(ledger["certification_allowed"], False)
+        self.assertIs(ledger["publish_allowed"], False)
+        self.assertIs(queue["new_product_generation_allowed"], False)
+        file_item = next(p for p in queue["priority"] if p["product"] == "File Integrity Ledger")
+        self.assertEqual(file_item["current_stack_revalidation"]["status"], "PASS_EXACT_HEAD_CI_AFTER_STACK")
+
+    def test_current_focus_file_transport_reconciliation_stays_fail_closed(self):
+        root = Path(__file__).resolve().parents[1]
+        ledger = json.loads((root / "ops/active_e2e_handoff.json").read_text(encoding="utf-8"))
+        recon = json.loads((root / "ops/focus_file_transport_reconciliation_20261125.json").read_text(encoding="utf-8"))
+        latest = ledger["latest_transport_reconciliation"]
+        self.assertEqual(latest["central_tested_head_sha"], "c68adc79ecf8a0c6ad4b538146648391b1b4eddb")
+        self.assertEqual(latest["previous_central_head_sha"], "20d64d0a43581372477f2990133b914390ca3559")
+        self.assertEqual([x["run_id"] for x in latest["exact_head_ci"]],
+                         [45731501639, 45731501700, 45731501669])
+        self.assertEqual(latest["ci_status"], "PASS_EXACT_HEAD_CI")
+        self.assertEqual(latest["status"], "HOLD")
+        self.assertIs(latest["e2e_pass"], False)
+        self.assertIs(latest["real_msix"], False)
+        self.assertEqual(latest["store_upload_test_eligible_products"], 0)
+        self.assertIs(ledger["store_submission_allowed"], False)
+        self.assertIs(ledger["certification_allowed"], False)
+        self.assertIs(ledger["publish_allowed"], False)
+        self.assertEqual(latest["central_head"], "c68adc79ecf8a0c6ad4b538146648391b1b4eddb")
+        self.assertEqual(recon["central_head"], "5ad2cf093539739f1a2af7e67c8c83f7c1960825")
+        self.assertNotEqual(recon["central_head"], latest["central_head"])
+        self.assertEqual(recon["status"], "HOLD")
+        self.assertIs(recon["e2e_pass"], False)
+        for product in recon["products"]:
+            self.assertIsNone(product["package_version"])
+            self.assertIs(product["real_msix"], False)
+            self.assertIs(product["github_backlog_receipt"], False)
+        queue = json.loads((root / "ops/completion_rush_queue_20261116.json").read_text(encoding="utf-8"))
+        queue_latest = queue["latest_transport_reconciliation"]
+        self.assertEqual(queue_latest["central_head"], latest["central_head"])
+        self.assertEqual(queue_latest["central_tested_head_sha"], latest["central_tested_head_sha"])
+        self.assertEqual([x["run_id"] for x in queue_latest["exact_head_ci"]],
+                         [x["run_id"] for x in latest["exact_head_ci"]])
+        file_item = next(p for p in queue["priority"] if p["product"] == "File Integrity Ledger")
+        self.assertEqual(file_item["current_factory_pr"], 115)
+        self.assertEqual(file_item["current_factory_head"], "33d612be2774ac155ea3d85289ec5cb7981c81c1")
+        self.assertEqual(file_item["current_source_request_id"], "app-file-integrity-ledger-33d612be2774")
+        self.assertEqual(file_item["current_source_request"]["status"], "DRY_RUN")
+        self.assertEqual(file_item["current_source_request"]["official_identity_status"], "UNVERIFIED")
+        self.assertEqual(file_item["current_source_request"]["package_status"], "NOT_BUILT")
+        self.assertEqual(file_item["current_source_request"]["next_stage"], "LOCAL_WINDOWS_BUILD_NOT_IMPLEMENTED")
+        self.assertEqual(file_item["current_source_request"]["request_artifact"]["sha256"],
+                         "697528b3b0769e3962eebfa0efcdcb026618cd378d97fc60c4f234017882527e")
+        self.assertTrue(file_item["current_source_request"]["request_artifact"]["downloaded_and_rehashed"])
+        self.assertEqual(file_item["current_source_request"]["official_identity"]["status"], "UNVERIFIED")
+        self.assertIsNone(file_item["current_source_request"]["official_identity"]["store_id"])
+        self.assertIsNone(file_item["current_source_request"]["official_identity"]["version"])
+        self.assertEqual(file_item["current_source_request"]["registration_route"]["status"], "ROUTE_METADATA_ONLY")
+        self.assertTrue(file_item["current_gui_followup"]["artifact_bytes_independently_downloaded_and_rehashed"])
+        self.assertTrue(file_item["current_gui_followup"]["exe_sha256_independently_rehashed"])
+        self.assertTrue(file_item["current_gui_followup"]["visual_review_required"])
+        self.assertEqual(file_item["current_gui_followup_visual_review_status"],
+                         "36_SCREENSHOT_INSPECTION_PASS__HUMAN_OWNER_REVIEW_REQUIRED")
+        self.assertFalse(file_item["approved_identity_file_present_on_current_pr115_head"])
+        self.assertIsNone(file_item["package_version"])
+        self.assertIs(file_item["real_msix"], False)
+        self.assertEqual(file_item["msix_export"]["status"], "SKIPPED_NO_ARTIFACT")
+        self.assertEqual(file_item["msix_export"]["selection_gate_output"],
+                         "MSIX_SELECTION_HOLD: approved Identity absent; do not invent Store IDs")
+        identity = dict(request_id="old-file-identity", source_sha=file_item["source_sha"],
+                        verified_source_sha=file_item["store_assets_branch_head"],
+                        expected_head_sha=file_item["source_sha"], package_version_gate="HOLD")
+        rejected = authorize_transport(identity, {}, self.local, {}, None)
+        self.assertEqual(rejected["status"], "HOLD")
+        self.assertEqual(rejected["reason"], "SOURCE_DRIFT")
+        focus_item = next(p for p in queue["priority"] if p["product"] == "Focus Session Desk")
+        self.assertEqual(focus_item["current_source_request_status"],
+                         "GENERATED__DRY_RUN_ARTIFACT_VERIFIED__IDENTITY_READBACK_PENDING")
+        self.assertEqual(focus_item["store_assets_evidence"]["native_exe_gui"]["run_id"], 45234786152)
+        self.assertEqual(focus_item["product_quality_assessment"]["score"]["total"], 54)
+        self.assertEqual(ledger["pr174_restack_assessment_live_20261125"]["compare_to_current_pr165_head"]["behind_by"], 149)
+        self.assertEqual(ledger["store_upload_test_bridge"]["eligible_fresh_unsold_products"], 0)
+
+
+class CurrentObservationOverlayCustodyTests(unittest.TestCase):
+    def test_20261126_overlay_keeps_synthetic_custody_separate_from_real_package(self):
+        root = Path(__file__).resolve().parents[1]
+        overlay = json.loads(
+            (root / "ops" / "active_e2e_handoff_overlay_20261126.json")
+            .read_text(encoding="utf-8")
+        )
+        self.assertEqual(overlay["transport_contract"]["implemented_in_pr165"], True)
+        self.assertEqual(overlay["pr165"]["head_sha"], "c68adc79ecf8a0c6ad4b538146648391b1b4eddb")
+        self.assertEqual(overlay["pr165"]["exact_head_ci_status"], "PASS_EXACT_HEAD_CI")
+        self.assertEqual([x["run_id"] for x in overlay["pr165"]["exact_head_ci"]], [45731501639, 45731501700, 45731501669])
+        self.assertEqual(overlay["pr165"]["last_verified_head_sha"], "c68adc79ecf8a0c6ad4b538146648391b1b4eddb")
+        self.assertEqual(overlay["pr165"]["current_branch_head_sha"], "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23")
+        self.assertEqual(overlay["pr165"]["current_branch_head_parent_sha"], "5292b3bf3ef6e8cb28fcfd1fa9f4ee000975437e")
+        self.assertEqual(overlay["pr165"]["current_branch_head_ci_status"], "PASS_EXACT_HEAD_CI")
+        self.assertEqual(overlay["pr165"]["current_branch_head_parent_ci_status"], "NOT_OBSERVED_FOR_CURRENT_PARENT")
+        self.assertEqual([x["run_id"] for x in overlay["pr165"]["current_branch_head_parent_ci"]], [])
+        self.assertEqual(overlay["pr165"]["current_branch_head_snapshot_commit_ci_status"], "PASS_EXACT_HEAD_CI")
+        self.assertEqual(overlay["pr165"]["current_branch_head_observation"]["head_sha"], "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23")
+        self.assertEqual([x["run_id"] for x in overlay["pr165"]["current_branch_head_ci"]], [45738280697, 45738280673, 45738280653])
+        self.assertEqual(overlay["pr165"]["immediate_parent_head_sha"], "20d64d0a43581372477f2990133b914390ca3559")
+        self.assertEqual(overlay["pr165"]["immediate_parent_ci_status"], "PARTIAL_FAIL_RECONCILIATION_TEST_KEYERROR")
+        self.assertTrue(overlay["ledger_reconciliation"]["active_ledger_reconciled"])
+        self.assertEqual(overlay["ledger_reconciliation"]["active_ledger_recorded_pr165_head"], "c68adc79ecf8a0c6ad4b538146648391b1b4eddb")
+        self.assertEqual(overlay["ledger_reconciliation"]["actual_pr165_head"], "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23")
+        self.assertEqual(overlay["ledger_reconciliation"]["active_ledger_blob_sha"], "8c902dadc2cd4c853545c4386307307f4cbadbd7")
+        self.assertEqual(overlay["ledger_reconciliation"]["status"], "RECONCILED_TO_PR165_C68ADC_CODE_86B6AA_BRANCH_HEAD")
+        self.assertFalse(overlay["downstream_receipts"]["real_msix"])
+        self.assertFalse(overlay["downstream_receipts"]["artifact_archive_and_package_sha_custody"])
+        self.assertFalse(overlay["downstream_receipts"]["github_backlog_receipt"])
+        self.assertFalse(overlay["downstream_receipts"]["local_pull_sha_receipt"])
+        self.assertFalse(overlay["downstream_receipts"]["windows_checker_receipt"])
+        self.assertFalse(overlay["downstream_receipts"]["local_gui_install_receipt"])
+        queue = json.loads((root / "ops" / "completion_rush_queue_20261116.json").read_text(encoding="utf-8"))
+        self.assertEqual(queue["pr165_current_branch_head_sha"], "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23")
+        self.assertEqual(queue["pr165_current_branch_head_parent_sha"], "5292b3bf3ef6e8cb28fcfd1fa9f4ee000975437e")
+        self.assertEqual(queue["pr165_current_branch_head_ci_run_ids"], [45738280697, 45738280673, 45738280653])
+        self.assertEqual(queue["pr165_current_branch_head_snapshot_commit_ci_status"], "PASS_EXACT_HEAD_CI")
+        self.assertEqual(queue["status"], "HOLD")
+        self.assertFalse(queue["e2e_pass"])
+        self.assertFalse(overlay["downstream_receipts"]["product_e2e_pass"])
+        self.assertEqual(overlay["store_upload_test"]["eligible_fresh_unsold_products"], 0)
+        self.assertFalse(overlay["store_upload_test"]["dry_run_started"])
+        self.assertFalse(overlay["safety"]["live_partner_center_write_allowed"])
+        self.assertFalse(overlay["safety"]["store_submission_allowed"])
+        self.assertFalse(overlay["safety"]["certification_allowed"])
+        self.assertFalse(overlay["safety"]["publish_allowed"])
+
+
+
+
+class CurrentProductExeArtifactCustody20261126Tests(unittest.TestCase):
+    def test_exact_archive_and_exe_sha_custody_is_not_msix_or_product_e2e(self):
+        root = Path(__file__).resolve().parents[1]
+        overlay = json.loads((root / "ops" / "active_e2e_handoff_overlay_20261126_123829.json").read_text(encoding="utf-8"))
+        self.assertEqual(overlay["pr165"]["head_sha"], "de8ea3457cc225eeabc63f9fa3c1217c477bca64")
+        self.assertEqual(overlay["pr165"]["exact_head_ci_status"], "PASS_EXACT_HEAD_CI")
+        self.assertEqual([x["run_id"] for x in overlay["pr165"]["exact_head_ci"]], [45786190840, 45786190774, 45786190918])
+        self.assertEqual(overlay["status"], "HOLD")
+        self.assertIs(overlay["e2e_pass"], False)
+
+        for key in ("focus_session_desk", "file_integrity_ledger"):
+            product = overlay["products"][key]
+            artifact = product["exe_artifact"]
+            self.assertEqual(artifact["artifact_kind"], "PRE_IDENTITY_EXE_QA")
+            self.assertTrue(artifact["archive_sha256_independently_recomputed"])
+            self.assertTrue(artifact["exe_sha256_independently_recomputed"])
+            self.assertEqual(artifact["archive_sha256"], artifact["github_artifact_digest"])
+            self.assertEqual(artifact["exe_sha256"], artifact["embedded_exe_sha256"])
+            self.assertEqual(artifact["zip_crc"], "PASS")
+            self.assertEqual(artifact["custody_scope"], "UNSIGNED_PRE_IDENTITY_EXE_QA_ONLY_NOT_MSIX")
+            self.assertIs(product["real_msix"], False)
+            self.assertIs(product["github_backlog_receipt"], False)
+            self.assertIs(product["local_pull_receipt"], False)
+            self.assertIs(product["windows_checker_receipt"], False)
+            self.assertIs(product["local_gui_install_receipt"], False)
+        self.assertNotIn("idempotency_key", overlay["products"]["file_integrity_ledger"]["request"])
+
+
+
+class CurrentPr165Reconciliation133835Tests(unittest.TestCase):
+    def test_latest_pr165_head_and_downstream_receipts_remain_separate(self):
+        root = Path(__file__).resolve().parents[1]
+        ledger = json.loads((root / "ops" / "active_e2e_handoff.json").read_text(encoding="utf-8"))
+        overlay = json.loads((root / "ops" / "active_e2e_handoff_overlay_20261126_133835.json").read_text(encoding="utf-8"))
+        key = "pr165_latest_branch_head_observation_20261126_133835"
+        head = "776431b039bd67ffdbc6a215aa1fc672ad1d1549"
+        self.assertEqual(ledger["pr165_latest_branch_head_observation_key"], key)
+        self.assertEqual(ledger["pr165_latest_branch_head_sha"], head)
+        self.assertEqual(ledger["pr165_current_branch_head_sha"], "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23")
+        self.assertEqual(ledger["pr165_current_branch_head_parent_sha"], "5292b3bf3ef6e8cb28fcfd1fa9f4ee000975437e")
+        observation = ledger[key]
+        self.assertEqual(observation["head_sha"], head)
+        self.assertEqual([x["run_id"] for x in observation["exact_head_ci"]], [45824011236, 45824011171, 45824011205])
+        self.assertTrue(all(x["head_sha"] == head and x["conclusion"] == "success" for x in observation["exact_head_ci"]))
+        self.assertEqual(ledger["latest_execution_reconciliation_key"], "latest_execution_reconciliation_20261126_133835")
+        self.assertEqual(ledger["e2e_status"], "HOLD")
+        self.assertIs(ledger["e2e_pass"], False)
+        self.assertEqual(overlay["pr165"]["head_sha"], head)
+        self.assertEqual(overlay["pr165"]["exact_head_ci_status"], "PASS_EXACT_HEAD_CI")
+        self.assertEqual(overlay["status"], "HOLD")
+        self.assertIs(overlay["e2e_pass"], False)
+        self.assertEqual(overlay["store_upload_test"]["eligible_fresh_unsold_products"], 0)
+        self.assertIs(overlay["safety"]["store_submission_allowed"], False)
+        self.assertIs(overlay["safety"]["certification_allowed"], False)
+        self.assertIs(overlay["safety"]["publish_allowed"], False)
+
+if __name__ == "__main__":
+    unittest.main()

@@ -17,6 +17,21 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Pin exact PR head for evidence checks
+        shell: bash
+        run: |
+          target="${{ github.event.pull_request.head.sha || github.sha }}"
+          git fetch --no-tags --depth=1 origin "$target"
+          git checkout --detach FETCH_HEAD
+          actual="$(git rev-parse HEAD)"
+          if [ "$actual" != "$target" ]; then
+            echo "EXACT_HEAD_MISMATCH expected=$target actual=$actual"
+            exit 1
+          fi
+          echo "EXACT_HEAD_CHECKOUT=$actual"
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'

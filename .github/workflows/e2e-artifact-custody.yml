@@ -1,0 +1,22 @@
+name: GitHub artifact custody fail-closed regression
+on:
+  pull_request:
+    paths:
+      - 'scripts/github_artifact_custody.py'
+      - 'tests/test_github_artifact_custody.py'
+      - '.github/workflows/e2e-artifact-custody.yml'
+  workflow_dispatch:
+jobs:
+  custody-regression:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Independent artifact custody regression
+        run: python -m unittest discover -s tests -p 'test_github_artifact_custody.py' -v

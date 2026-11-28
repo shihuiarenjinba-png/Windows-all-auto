@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-11-26T08:42:05Z",
+  "status": "HOLD",
+  "e2e_pass": false,
+  "pr161": {
+    "head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
+    "exact_head_ci_run_id": 42712757936,
+    "exact_head_ci_conclusion": "success"
+  },
+  "pr165": {
+    "head_sha": "74dee49585edbeee7eb66d58ff9fa2ea0b97e27f",
+    "parent_sha": "68fdccd2edf55538b2898c3c67b39f678004a6f9",
+    "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
+    "exact_head_ci_run_ids": [
+      45758828791,
+      45758828777,
+      45758828792
+    ],
+    "product_code_changed": false,
+    "product_e2e_status": "HOLD",
+    "e2e_pass": false,
+    "real_msix": false,
+    "github_backlog_receipt": false,
+    "local_pull_receipt": false,
+    "local_checker_receipt": false,
+    "local_gui_install_receipt": false
+  },
+  "pr171": {
+    "head_sha": "764721021f13be96364529650b44fb439770bac9",
+    "exact_head_ci_run_id": 44437197470,
+    "exact_head_ci_conclusion": "success",
+    "eligible_fresh_unsold_products": 0,
+    "dry_run_started": false
+  },
+  "local_code_sync": {
+    "status": "CLOUD_PASS_ONLY__LOCAL_WINDOWS_RECEIPTS_NOT_OBSERVED",
+    "exact_three_sha_tuple": {
+      "local_sync_tooling_commit": "b962910095adcdbcee7fb0c1ef12e4fb3575c9e8",
+      "signal_sprint_source_sha": "1a349faa41663c417c40710140a4d50c79b62b78",
+      "prism_route_3d_source_sha": "b03ce7b16c3f75c04fe20fdda224c45849eeba0d"
+    },
+    "first_run_receipt": null,
+    "idempotent_reuse_receipt": null,
+    "task_scheduler_receipt": null,
+    "overall_three_target_status": "HOLD"
+  },
+  "targets": [
+    {
+      "product": "Offline Notes Canary",
+      "status": "HOLD_SOURCE_NOT_FIXED",
+      "repository": "shihuiarenjinba-png/AI-App-Factory",
+      "research_candidate_branch": "codex/app-canary-offline-notes-20261027",
+      "research_candidate_head": "b83702c8948991cc3bd31745db5df64afaf6010f",
+      "owner_workflow_pr": 24,
+      "owner_workflow_head": "7213ebbaccbd0c12fa3630161593bdfb2319635e",
+      "factory_state": {
+        "stage": "research",
+        "slug": null,
+        "cycle": 3,
+        "revision": 0
+      },
+      "request_id": null,
+      "immutable_product_source_sha": null,
+      "exe_artifact": null,
+      "manifest_included": false,
+      "candidate_sha_must_not_be_used": true
+    },
+    {
+      "product": "Signal Sprint",
+      "status": "SOURCE_REF_VERIFIED_LOCAL_RECEIPT_NOT_OBSERVED",
+      "repository": "shihuiarenjinba-png/AI-Game-Factory",
+      "branch": "codex/signal-sprint-frozen-source-ref-20261124",
+      "source_sha": "1a349faa41663c417c40710140a4d50c79b62b78",
+      "request_id": "game-signal-sprint-1a349faa41663c417c40710140a4d50c79b62b78",
+      "branch_head_verified": true,
+      "manifest_blob_sha": "1f1865b3c6ce71180a3b1854c496830455dfe199",
+      "first_run_receipt": null,
+      "idempotent_reuse_receipt": null,
+      "task_scheduler_receipt": null
+    },
+    {
+      "product": "Prism Route 3D",
+      "status": "SOURCE_REF_VERIFIED_LOCAL_RECEIPT_NOT_OBSERVED",
+      "repository": "shihuiarenjinba-png/3d-game-factory",
+      "branch": "codex/prism-tower1-hud-clearance-fix-20261103",
+      "source_sha": "b03ce7b16c3f75c04fe20fdda224c45849eeba0d",
+      "request_id": "3d-prism-route-3d-b03ce7b16c3f",
+      "branch_head_verified": true,
+      "product_manifest_blob_sha": "e7eb4b03108d01d2ffa00a03b758ce244c6138ed",
+      "approved_identity_blob_sha": "9b38b20527b81c85fd03b5373d4a8f8245047115",
+      "approved_identity_source_sha": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
+      "approved_identity_request_id": "3d-prism-route-3d-15fdcb52e46e",
+      "approved_identity_reuse_for_current_source_allowed": false,
+      "package_version": null,
+      "first_run_receipt": null,
+      "idempotent_reuse_receipt": null,
+      "task_scheduler_receipt": null
+    }
+  ],
+  "safety": {
+    "store_submission_allowed": false,
+    "certification_allowed": false,
+    "publish_allowed": false,
+    "partner_center_write_performed": false,
+    "identity_write_performed": false,
+    "version_inferred": false,
+    "cas_applied": false,
+    "package_installed": false,
+    "product_code_changed": false,
+    "prism_historical_identity_reused": false
+  }
+}

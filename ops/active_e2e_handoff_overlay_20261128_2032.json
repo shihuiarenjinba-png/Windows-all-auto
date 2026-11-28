@@ -1,0 +1,390 @@
+{
+  "schema_version": 1,
+  "path": "ops/active_e2e_handoff_overlay_20261128_2032.json",
+  "observed_at_utc": "2026-11-28T11:32:26Z",
+  "record_type": "APPEND_ONLY_CURRENT_EXECUTION_RECONCILIATION",
+  "reconciles_against": [
+    "ops/active_e2e_handoff_overlay_20261127_0631.json",
+    "ops/completion_rush_queue_20261127_0631.json",
+    "ops/focus_file_transport_reconciliation_20261126.json"
+  ],
+  "repository": "shihuiarenjinba-png/Windows-all-auto",
+  "status": "HOLD",
+  "e2e_pass": false,
+  "pr165": {
+    "number": 165,
+    "state": "OPEN_DRAFT",
+    "branch": "codex/e2e-artifact-custody-20261114",
+    "head_sha_at_observation": "9a7b8db24f26a4266fbc7d30d16c64edb5edf5fa",
+    "parent_sha": "cf92e4a1eea96ade6bf9806905dfd53128c18eb2",
+    "latest_commit_scope": "APP_SOURCE_BOUND_TRANSPORT_CODE_AND_TEST_FIXTURE_ONLY__NO_PRODUCT_SOURCE_CHANGES",
+    "exact_head_ci_status": "PASS_EXACT_HEAD_CI",
+    "exact_head_ci": [
+      {
+        "run_id": 46137250087,
+        "event": "pull_request",
+        "conclusion": "success",
+        "head_sha": "9a7b8db24f26a4266fbc7d30d16c64edb5edf5fa",
+        "workflow": "GitHub artifact custody fail-closed regression",
+        "job": "custody-regression"
+      },
+      {
+        "run_id": 46137250084,
+        "event": "pull_request",
+        "conclusion": "success",
+        "head_sha": "9a7b8db24f26a4266fbc7d30d16c64edb5edf5fa",
+        "workflow": "Windows E2E transport fail-closed regression",
+        "job": "transport-regression"
+      },
+      {
+        "run_id": 46137250139,
+        "event": "pull_request",
+        "conclusion": "success",
+        "head_sha": "9a7b8db24f26a4266fbc7d30d16c64edb5edf5fa",
+        "workflow": "Windows-all-auto Offline QA",
+        "jobs": [
+          "Offline preflight tests (windows-latest)",
+          "Offline preflight tests (ubuntu-latest)"
+        ]
+      }
+    ],
+    "product_e2e_status": "HOLD",
+    "real_msix": false,
+    "github_backlog_receipt": false,
+    "local_pull_receipt": false,
+    "local_checker_receipt": false,
+    "local_gui_install_receipt": false
+  },
+  "pr161": {
+    "number": 161,
+    "state": "OPEN_DRAFT",
+    "branch": "codex/e2e-id-state-classification-20261105",
+    "head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
+    "exact_head_ci": [
+      {
+        "run_id": 42712757936,
+        "event": "pull_request",
+        "conclusion": "success",
+        "head_sha": "71d9c2125b6aed44a86ca1872d48ad19963f3e63",
+        "workflow": "Windows-all-auto Offline QA"
+      }
+    ],
+    "scope": "Identity state classification / Offline QA only; not product E2E"
+  },
+  "pr171": {
+    "number": 171,
+    "state": "OPEN_DRAFT",
+    "branch": "codex/ollama-local-qa-supervisor-20261116",
+    "head_sha": "764721021f13be96364529650b44fb439770bac9",
+    "exact_head_ci": [
+      {
+        "run_id": 44437197470,
+        "event": "pull_request",
+        "conclusion": "success",
+        "head_sha": "764721021f13be96364529650b44fb439770bac9",
+        "workflow": "Windows-all-auto Offline QA"
+      }
+    ],
+    "store_upload_bridge_present": true,
+    "windows_automator_pin": {
+      "repository": "shihuiarenjinba-png/Windows-Automator",
+      "branch": "codex/msix-commercial-contract-20261115",
+      "commit_sha": "d3b8ed4ae7762a69d3fe2a90b64aa86ee938259b",
+      "exact_commit_ci_run_id": 44319200630,
+      "conclusion": "success"
+    },
+    "eligible_fresh_unsold_products": 0,
+    "dry_run_started": false,
+    "live_started": false
+  },
+  "canonical_ledger_reconciliation": {
+    "path": "ops/active_e2e_handoff.json",
+    "blob_sha": "5e764d88bcc7d5f101557dfb547cfab48d7d5145",
+    "bytes": 1976822,
+    "full_content_read_status": "NOT_READABLE_BY_CURRENT_FETCH",
+    "last_known_recorded_pr165_head_sha": "86b6aa06205010c8ad90f16a3de52dbe6dc9fe23",
+    "last_known_post_reconciliation_head_sha": "6afe5ec89a440880066bee43a61f596a5939761d",
+    "current_pointer_verified": false,
+    "resolution": "Canonical ledger was left unchanged because its 1,976,822-byte JSON could not be read completely. Prior overlay explicitly disclosed the stale pointer. This new append-only overlay records the latest directly observed PR165 head and exact-head CI; do not claim the oversized canonical ledger itself is reconciled."
+  },
+  "products": {
+    "focus_session_desk": {
+      "product": "Focus Session Desk",
+      "lane": "APP",
+      "hold_class": "DELIVERY_HOLD",
+      "functional_hold": false,
+      "product_frozen_for_package": true,
+      "source_repository": "shihuiarenjinba-png/AI-App-Factory",
+      "current_source_pr": 94,
+      "current_source_branch": "codex/focus-store-assets-gate-20261118",
+      "current_source_sha": "b6b69464a9c7450489338bc7542fd22cf190ed42",
+      "current_source_branch_head_verified": true,
+      "identity": {
+        "file_present_on_current_source": true,
+        "path": "products/focus-session-desk/store/approved-identity.json",
+        "blob_sha": "00c56e85ec7590783284e372ba100a3127614971",
+        "reviewed": true,
+        "source": "partner_center",
+        "historical_request_id": "app-focus-session-desk-8b00bc4e9082",
+        "historical_source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+        "verified_source_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+        "expected_head_sha": "8b00bc4e90828c4282463826873aa8dfd2eb93f4",
+        "historical_store_id": "9P6452C61N7B",
+        "name": "OkinawaDesktopTools.FocusSessionDesk",
+        "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+        "signature_status": "PRE_IDENTITY_EXE_NOT_MSIX",
+        "package_version_gate": "HOLD",
+        "package_version_field_present": false,
+        "current_source_binding_status": "STALE_HISTORICAL_SOURCE_MISMATCH",
+        "current_source_reuse_allowed": false
+      },
+      "current_source_request": {
+        "request_id": "app-focus-session-desk-fb6293839bc7",
+        "source_sha": "fb6293839bc7b0bbff0a6d1d3c04e2f8f5942e79",
+        "status": "DRY_RUN__STALE_AFTER_PR94_HEAD_ADVANCED",
+        "workflow_run_id": 45671921196,
+        "request_branch": "codex/focus-source-request-fb6293839bc7",
+        "request_branch_head_sha": "45560fb36eee3f2672ba1a1591f89edc6526865a",
+        "artifact_id": 15049692591,
+        "artifact_sha256": "c8b15058243982d90699dfb2a885a71b064a0a02b01dcb3c7492dec83ec3afae",
+        "source_matches_current_pr_head": false,
+        "request_submitted": false,
+        "partner_center_write": false,
+        "identity_write": false,
+        "msix_build": false
+      },
+      "latest_native_windows_gui": {
+        "run_id": 45895951025,
+        "conclusion": "success",
+        "head_sha": "b6b69464a9c7450489338bc7542fd22cf190ed42",
+        "core_ci_run_id": 45895951140,
+        "png_gate_run_id": 45895951049,
+        "artifact_id": 15153413358,
+        "artifact_sha256": "9127c2d8b2c51536022e3e261adbd6a7ba27d0063158a1e4e9ba66a4dcf451ab",
+        "artifact_expired": false,
+        "scope": "Native Windows unsigned EXE GUI evidence only; not MSIX, install, local checker or user-PC E2E"
+      },
+      "store_assets": {
+        "owner": "00",
+        "regeneration_or_modification_by_36": false,
+        "msix_embedding": "NOT_VERIFIED",
+        "raw_sha256_independently_recomputed": true,
+        "StoreLogo": {
+          "git_blob_sha": "8017427aabf0e30168a88353588dc2ffdc2cba6d",
+          "bytes": 360393,
+          "dimensions": "300x300",
+          "sha256": "2c0460e0f2947ce975b7a6abbc607acaeea8a22bf9bcae984b420acedddc8e2f"
+        },
+        "Square150": {
+          "git_blob_sha": "c6060306f202b662831039b95b1352689da023c7",
+          "bytes": 90223,
+          "dimensions": "150x150",
+          "sha256": "9183aa4055ed453360b656b4fe291bf392413e04fab44048820ca4bcfa5d1d0c"
+        },
+        "Square44": {
+          "git_blob_sha": "466a795ea01e34a28ac1db9aa7dcf3308464dbd0",
+          "bytes": 7856,
+          "dimensions": "44x44",
+          "sha256": "3fbdcd610f6781b72308755c6f92b1fdaef0592bab51c612556e5b8b95c1ee46"
+        },
+        "visual_signoff_status": "PENDING"
+      },
+      "package_version": null,
+      "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
+      "real_msix": false,
+      "github_backlog_receipt": false,
+      "local_pull_receipt": false,
+      "windows_checker_receipt": false,
+      "local_gui_install_receipt": false,
+      "product_e2e_pass": false,
+      "product_quality_score": 54,
+      "sale_decision": "DO_NOT_SELL_BELOW_80",
+      "blockers": [
+        "CURRENT_SOURCE_IDENTITY_REVALIDATION_REQUIRED",
+        "CURRENT_SOURCE_REQUEST_STALE_AFTER_PR94_HEAD_ADVANCED",
+        "AUTHORITATIVE_PACKAGE_VERSION_REQUIRED",
+        "REAL_MSIX_NOT_BUILT",
+        "STORE_ASSET_MSIX_EMBEDDING_NOT_VERIFIED",
+        "OWNER_VISUAL_SIGNOFF_PENDING"
+      ]
+    },
+    "file_integrity_ledger": {
+      "product": "File Integrity Ledger",
+      "lane": "APP",
+      "hold_class": "DELIVERY_HOLD",
+      "functional_hold": false,
+      "product_frozen_for_package": true,
+      "source_repository": "shihuiarenjinba-png/AI-App-Factory",
+      "current_source_pr": 115,
+      "current_source_branch": "codex/integrity-pr95-source-request-integration-20261125",
+      "current_source_sha": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
+      "current_source_branch_head_verified": true,
+      "identity": {
+        "current_source_approved_identity_present": false,
+        "current_source_identity_status": "NOT_FOUND_ON_CURRENT_PR115_HEAD",
+        "current_source_binding_status": "NO_CURRENT_SOURCE_APPROVED_IDENTITY",
+        "historical_identity_commit": "db9a57af822788af4c8384499a6e343ec7b0353d",
+        "historical_identity_source_sha": "d1108d12f7d1697af30400f97c7db39cba5e6791",
+        "historical_request_id": "app-file-integrity-ledger-d1108d12f7d1",
+        "historical_store_id": "9PGZ445SR5GM",
+        "historical_package_version_gate": "HOLD",
+        "historical_package_version_present": false,
+        "current_source_reuse_allowed": false
+      },
+      "current_source_request": {
+        "request_id": "app-file-integrity-ledger-33d612be2774",
+        "source_sha": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
+        "status": "DRY_RUN",
+        "workflow_run_id": 45422895649,
+        "request_branch": "codex/integrity-pr95-source-request-integration-20261125",
+        "artifact_id": 14934034365,
+        "artifact_sha256": "697528b3b0769e3962eebfa0efcdcb026618cd378d97fc60c4f234017882527e",
+        "source_matches_current_pr_head": true,
+        "request_submitted": false,
+        "partner_center_write": false,
+        "identity_write": false,
+        "msix_build": false
+      },
+      "latest_native_windows_gui": {
+        "run_id": 45422895435,
+        "conclusion": "success",
+        "head_sha": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
+        "core_ci_run_id": 45422895558,
+        "png_gate_run_id": 45422895476,
+        "artifact_id": 14934752145,
+        "artifact_sha256": "6faa6db6d0e05b6baa71347c31b6f4d871fedcf35e28b787a7fbdb99816ab04c",
+        "artifact_expired": false,
+        "human_visual_review_status": "PASS",
+        "scope": "Native Windows unsigned EXE GUI and CSV evidence; not MSIX, install, local checker or user-PC E2E"
+      },
+      "store_assets": {
+        "owner": "00",
+        "regeneration_or_modification_by_36": false,
+        "msix_embedding": "NOT_VERIFIED",
+        "raw_sha256_independently_recomputed": true,
+        "StoreLogo": {
+          "git_blob_sha": "e3c9a9426a1971f21175b9b045d4d5fef83f97d5",
+          "sha256": "224fa777280cf61877c14146e920fca32bb90bff6f0cea3df4ed0ac77c0645a9"
+        },
+        "Square150": {
+          "git_blob_sha": "df892bd2fcf7b56f9facd94054b2b1385313b030",
+          "sha256": "e00136c7a319756ccc48c2dc50136f5872e272e806cd592a6bebb8922bbb1742"
+        },
+        "Square44": {
+          "git_blob_sha": "d57e7a25d2a9eaa2b54d00c610f3a1ad7d4a4d49",
+          "sha256": "bd61099427a770f8ddf247f0f6928e5d50ba2cd8265797c7f13952e96147d70d"
+        }
+      },
+      "msix_export": {
+        "run_id": 45422811552,
+        "workflow_conclusion": "success",
+        "status": "SKIPPED_NO_ARTIFACT",
+        "build_and_export_steps": "SKIPPED",
+        "exact_gate_output": "MSIX_SELECTION_HOLD: approved Identity absent; do not invent Store IDs"
+      },
+      "package_version": null,
+      "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
+      "real_msix": false,
+      "github_backlog_receipt": false,
+      "local_pull_receipt": false,
+      "windows_checker_receipt": false,
+      "local_gui_install_receipt": false,
+      "product_e2e_pass": false,
+      "blockers": [
+        "CURRENT_SOURCE_APPROVED_IDENTITY_ABSENT",
+        "AUTHORITATIVE_PACKAGE_VERSION_REQUIRED",
+        "MSIX_EXPORT_SKIPPED_NO_ARTIFACT",
+        "DOWNSTREAM_RECEIPTS_NOT_REACHED"
+      ]
+    }
+  },
+  "first_unconnected_interval": {
+    "status": "BLOCKED_BEFORE_REAL_MSIX_BUILD",
+    "focus_session_desk": [
+      "CURRENT_SOURCE_IDENTITY_REVALIDATION_REQUIRED",
+      "CURRENT_SOURCE_REQUEST_STALE_AFTER_PR94_HEAD_ADVANCED",
+      "AUTHORITATIVE_PACKAGE_VERSION_REQUIRED"
+    ],
+    "file_integrity_ledger": [
+      "CURRENT_SOURCE_APPROVED_IDENTITY_ABSENT",
+      "CURRENT_SOURCE_REQUEST_DRY_RUN_ONLY",
+      "AUTHORITATIVE_PACKAGE_VERSION_REQUIRED",
+      "MSIX_SELECTION_HOLD_APPROVED_IDENTITY_ABSENT"
+    ],
+    "downstream_after_resolution": [
+      "REAL_MSIX_BUILD",
+      "GITHUB_ARTIFACT_ARCHIVE_AND_PACKAGE_SHA_CUSTODY",
+      "GITHUB_BACKLOG_RECEIPT",
+      "LOCAL_PULL_SHA_RECEIPT",
+      "WINDOWS_CHECKER",
+      "LOCAL_GUI_AND_INSTALL_QA"
+    ]
+  },
+  "transport_contract": {
+    "status": "IMPLEMENTED_FAIL_CLOSED__EXACT_HEAD_CI_PASS",
+    "code_paths": [
+      "all_auto/bridge_poll.py",
+      "all_auto/handoff_bridge.py",
+      "scripts/github_artifact_custody.py",
+      "scripts/local_handoff_pull.py",
+      "scripts/local_checker_queue.py"
+    ],
+    "latest_change": "APP artifact intake now requires exact current source branch HEAD, a source-bound approved-identity.json, matching request/Store ID/name/publisher/version, package_version_gate=PASS, matching MSIX identity and executable SHA, and independent GitHub artifact archive custody before source-bound APP staging.",
+    "fixture_scope": "Synthetic package/receipt fixtures exercise the contract. They do not establish a real product Identity, Version, MSIX, local checker run, GUI install or product E2E.",
+    "real_product_msix_received": false
+  },
+  "partner_center": {
+    "authenticated_readback_status": "USER_OWNED_CURRENT_SOURCE_IDENTITY_ACQUISITION_NOT_OBSERVED",
+    "version_inferred": false,
+    "identity_write": false,
+    "package_version_write": false,
+    "live_write_allowed": false,
+    "instruction": "Do not retry browser-context readback or infer values. Wait for official current-source product detail evidence from the user."
+  },
+  "local_code_sync_receipt_status": "NOT_OBSERVED__CLOUD_PASS_ONLY",
+  "local_code_sync": {
+    "required_targets": [
+      "Offline Notes Canary",
+      "Signal Sprint",
+      "Prism Route 3D"
+    ],
+    "local_receipt_found_in_repository_tree": false,
+    "exact_three_sha_tuple_verified": false,
+    "idempotent_replay_verified": false,
+    "task_scheduler_execution_verified": false,
+    "status": "NOT_OBSERVED__CLOUD_PASS_ONLY",
+    "note": "No user-PC local receipt was available in the inspected repository state; GitHub Actions cannot be promoted to LOCAL_CODE_SYNC_PASS."
+  },
+  "store_upload_test": {
+    "bridge_pr": 171,
+    "eligible_fresh_unsold_products": 0,
+    "status": "NOT_RUN_NO_PRODUCT_MEETS_ALL_GATES",
+    "dry_run_started": false,
+    "live_started": false
+  },
+  "safety": {
+    "store_submission_allowed": false,
+    "certification_allowed": false,
+    "publish_allowed": false,
+    "partner_center_write": false,
+    "identity_write": false,
+    "version_write": false,
+    "merge_allowed": false,
+    "force_push_allowed": false,
+    "main_release_write_allowed": false,
+    "repositories_12_24_touched": false
+  },
+  "next_action": "Focus first: wait for user-owned official current-source Identity and authoritative Package Version evidence for exact PR94 source b6b69464a9c7450489338bc7542fd22cf190ed42 and a request bound to that same source; do not reuse historical 8b00 or stale fb629. File second: obtain current-source approved Identity and authoritative Version for PR115 source 33d612be2774ac155ea3d85289ec5cb7981c81c1; do not reuse historical d1108. Owner 00 retains PNG and Focus visual sign-off. Once official Identity/Version and assets are verified, build a real MSIX and continue through custody, GitHub backlog, local pull, Windows-checker and local GUI/install QA. Keep E2E and Store gates HOLD.",
+  "post_observation_verification": {
+    "verified_at_utc": "2026-11-28T11:32:26Z",
+    "latest_pr165_head_sha": "9a7b8db24f26a4266fbc7d30d16c64edb5edf5fa",
+    "latest_pr165_parent_sha": "cf92e4a1eea96ade6bf9806905dfd53128c18eb2",
+    "latest_pr165_exact_head_ci_status": "PASS_EXACT_HEAD_CI",
+    "latest_pr165_exact_head_ci_run_ids": [
+      46137250087,
+      46137250084,
+      46137250139
+    ],
+    "repository_ci_is_not_product_e2e": true
+  }
+}

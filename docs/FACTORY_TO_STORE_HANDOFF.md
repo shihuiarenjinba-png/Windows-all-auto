@@ -25,7 +25,7 @@ Windows-all-autoが自動取得・検証し、ローカルPCが引き取り、�
 ## 初回に必要な設定
 
 - Windows-all-auto の Settings → Secrets and variables → Actions:
-  FACTORY_READ_TOKEN (2つのFactoryだけに actions:read を許可した fine-grained token)。
+  FACTORY_READ_TOKEN (Factory各repoに actions:read、AI-App-Factoryには contents:read も許可した fine-grained token。現行sourceの approved-identity.json を exact commit から読むために必要)。
   チャットやリポジトリへトークン文字列を書かない。
 - Factoryの開発ブランチに実際の products/<slug>/main.py と
   products/<slug>/manifest.json が存在すること。

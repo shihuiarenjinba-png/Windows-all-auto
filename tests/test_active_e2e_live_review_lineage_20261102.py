@@ -16,8 +16,15 @@ QA_HEAD = "8aa8c20e1db0f2c30b91dd4e27cc141b1448d7d7"
 NEW_3D_SOURCE = "da6f7c129687922c58c43496da4667ecef903e17"
 
 
+def active_product_record(data):
+    # The former active pointer is retained only as a historical evidence record.
+    # active_product remains a backwards-compatible historical evidence object,
+    # explicitly not a current request pointer.
+    return data["active_product"]
+
+
 def validate_live_review_evidence(data):
-    active = data["active_product"]
+    active = active_product_record(data)
     latest = data["latest_provisioner_heads_observed"]["game"]
     review = data["revision_review_reconciliation"]["observations"]
     game = review["signal-sprint"]
@@ -104,13 +111,15 @@ class LiveReviewLineageGuard(unittest.TestCase):
 
     def test_old_pr10_pin_cannot_be_reintroduced_as_current(self):
         data = copy.deepcopy(self.ledger)
-        data["active_product"]["local_commands"][1] = data["active_product"]["historical_local_commands_20261102_1236"][1]
+        active = active_product_record(data)
+        active["local_commands"][1] = active["historical_local_commands_20261102_1236"][1]
         with self.assertRaises(AssertionError):
             validate_live_review_evidence(data)
 
     def test_stubbed_staging_cannot_become_cas_pass(self):
         data = copy.deepcopy(self.ledger)
-        data["active_product"]["provisioner_game_gdk_pr"]["new_lineage_contract"]["staging_dry_run_evidence"]["authenticated_cas"] = True
+        active = active_product_record(data)
+        active["provisioner_game_gdk_pr"]["new_lineage_contract"]["staging_dry_run_evidence"]["authenticated_cas"] = True
         with self.assertRaises(AssertionError):
             validate_live_review_evidence(data)
 

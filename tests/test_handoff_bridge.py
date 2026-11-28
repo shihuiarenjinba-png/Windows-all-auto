@@ -260,15 +260,12 @@ class HandoffBridgeTests(unittest.TestCase):
         self.info["package_bytes"]=len(blob)
         self.write_info()
 
-    def test_identity_return_preserves_original_source_sha_through_local_qa(self):
+    def test_identity_return_without_source_bound_receipts_is_rejected_before_local_qa(self):
         self.set_identity_return_bundle()
-        result=stage_bundle(self.source,self.root/"queue",SHA)
-        self.assertEqual(result["source_sha"],"b"*40)
-        self.assertEqual(result["factory_head_sha"],SHA)
-        self.assertEqual(result["request_id"],"app-request-1234")
-        self.assertEqual(result["claimed_store_id"],"9PTESTING")
-        self.assertIsNone(result["store_id"])
-        self.assertFalse(result["submit_allowed"])
+        target=self.root/"queue"
+        with self.assertRaisesRegex(ValueError,"APP identity-return package requires source-bound Partner Center"):
+            stage_bundle(self.source,target,SHA)
+        self.assertFalse(target.exists())
 
     def test_identity_return_requires_actual_prebuilt_exe_payload(self):
         self.set_identity_return_bundle()
@@ -289,4 +286,146 @@ class HandoffBridgeTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"Actions head SHA"):
             validate_bundle(self.source,"c"*40)
 
-if __name__=="__main__":unittest.main()
+
+    def write_approved_identity(self, approved_identity, transport):
+        raw=json.dumps(approved_identity,separators=(",",":")).encode("utf-8")
+        (self.source/"approved-identity.json").write_bytes(raw)
+        transport["approved_identity_file_sha"]=hashlib.sha1(
+            b"blob "+str(len(raw)).encode("ascii")+b"\0"+raw
+        ).hexdigest()
+
+    def transport_receipts(self, version_gate="PASS"):
+        # Synthetic values exercise the exact intake contract; they are not product approval.
+        self.set_identity_return_bundle()
+        source=self.info["source_sha"]
+        self.info["factory_head_sha"]=source
+        self.info["expected_head_sha"]=source
+        self.write_info()
+        digest=self.info["package_sha256"]
+        verifier="supervisor-fixture"
+        evidence="https://partner.microsoft.com/dashboard/products/"+self.info["store_id"]+"/identity"
+        approved_identity={
+            "schema_version":"1.0","reviewed":True,"source":"partner_center",
+            "request_id":self.info["request_id"],"product_type":"APP",
+            "source_factory":"AI-App-Factory",
+            "source_repository":self.info["source_repository"].removeprefix("https://github.com/"),
+            "source_branch":self.info["source_branch"],
+            "source_sha":source,"expected_head_sha":source,
+            "store_id":self.info["store_id"],
+            "name":self.info["identity"]["name"],
+            "publisher":self.info["identity"]["publisher"],
+            "version":self.info["identity"]["version"],
+            "package_version_gate":version_gate,"operator_verified":True,
+            "verified_by":verifier,"evidence_url":evidence,
+        }
+        transport={
+            "schema_version":1,"status":"SOURCE_BOUND_VERSION_APPROVED",
+            "source_sha":source,"expected_head_sha":source,"factory_head_sha":source,
+            "source_repository":self.info["source_repository"],
+            "product_type":"APP","source_factory":"AI-App-Factory",
+            "package_sha256":digest,"package_bytes":self.info["package_bytes"],
+            "identity":self.info["identity"],"approval_source":"partner_center",
+            "package_version_gate":version_gate,"package_version":self.info["identity"]["version"],
+            "operator_verified":True,
+            "store_submission_allowed":False,"certification_allowed":False,"publish_allowed":False,
+            "verified_by":verifier,"evidence_url":evidence,
+            "request_id":self.info["request_id"],"source_branch":self.info["source_branch"],
+            "store_id":self.info["store_id"],"display_name":self.info["display_name"],
+            "prebuilt_exe_sha256":self.info["prebuilt_exe_sha256"],
+        }
+        self.write_approved_identity(approved_identity,transport)
+        custody={
+            "status":"CUSTODY_VERIFIED_ONLY","e2e_pass":False,
+            "source_sha":source,"msix_sha256":digest,
+            "run_id":123456,"artifact_id":654321,
+            "repository":"shihuiarenjinba-png/AI-App-Factory",
+            "archive_sha256":"d"*64,
+        }
+        return transport,custody
+
+    def write_transport_receipts(self, transport, custody):
+        (self.source/"transport_receipt.json").write_text(json.dumps(transport),encoding="utf-8")
+        (self.source/"github-custody.json").write_text(json.dumps(custody),encoding="utf-8")
+
+    def test_app_transport_rejects_unpaired_partner_center_and_custody_receipts(self):
+        self.set_identity_return_bundle()
+        (self.source/"transport_receipt.json").write_text(
+            json.dumps({"schema_version":1}),encoding="utf-8")
+        with self.assertRaisesRegex(ValueError,"central identity and custody receipts must be paired"):
+            validate_bundle(self.source,"a"*40)
+
+    def test_app_transport_rejects_version_gate_hold_at_production_boundary(self):
+        transport,custody=self.transport_receipts(version_gate="HOLD")
+        self.write_transport_receipts(transport,custody)
+        with self.assertRaisesRegex(ValueError,"source-bound Partner Center transport receipt mismatch"):
+            validate_bundle(self.source,self.info["source_sha"])
+
+    def test_app_transport_rejects_missing_approved_identity_file(self):
+        transport,custody=self.transport_receipts()
+        (self.source/"approved-identity.json").unlink()
+        self.write_transport_receipts(transport,custody)
+        with self.assertRaisesRegex(ValueError,"approved-identity.json"):
+            validate_bundle(self.source,self.info["source_sha"])
+
+    def test_app_transport_rejects_approved_identity_blob_sha_mismatch(self):
+        transport,custody=self.transport_receipts()
+        transport["approved_identity_file_sha"]="c"*40
+        self.write_transport_receipts(transport,custody)
+        with self.assertRaisesRegex(ValueError,"approved Identity file SHA mismatch"):
+            validate_bundle(self.source,self.info["source_sha"])
+
+    def test_app_transport_rejects_stale_approved_identity_source(self):
+        transport,custody=self.transport_receipts()
+        approved=json.loads((self.source/"approved-identity.json").read_text(encoding="utf-8"))
+        approved["source_sha"]="c"*40
+        approved["expected_head_sha"]="c"*40
+        self.write_approved_identity(approved,transport)
+        self.write_transport_receipts(transport,custody)
+        with self.assertRaisesRegex(ValueError,"approved Identity file does not bind current source"):
+            validate_bundle(self.source,self.info["source_sha"])
+
+    def test_app_transport_rejects_approved_identity_version_mismatch(self):
+        transport,custody=self.transport_receipts()
+        approved=json.loads((self.source/"approved-identity.json").read_text(encoding="utf-8"))
+        approved["version"]="2.0.0.0"
+        self.write_approved_identity(approved,transport)
+        self.write_transport_receipts(transport,custody)
+        with self.assertRaisesRegex(ValueError,"approved Identity file does not bind current source"):
+            validate_bundle(self.source,self.info["source_sha"])
+
+    def test_app_transport_rejects_unverified_operator(self):
+        transport,custody=self.transport_receipts()
+        transport["operator_verified"]=False
+        approved=json.loads((self.source/"approved-identity.json").read_text(encoding="utf-8"))
+        approved["operator_verified"]=False
+        self.write_approved_identity(approved,transport)
+        self.write_transport_receipts(transport,custody)
+        with self.assertRaisesRegex(ValueError,"source-bound Partner Center transport receipt mismatch"):
+            validate_bundle(self.source,self.info["source_sha"])
+
+    def test_app_transport_rejects_evidence_for_another_store_id(self):
+        transport,custody=self.transport_receipts()
+        wrong="https://partner.microsoft.com/dashboard/products/9POTHERID/identity"
+        transport["evidence_url"]=wrong
+        approved=json.loads((self.source/"approved-identity.json").read_text(encoding="utf-8"))
+        approved["evidence_url"]=wrong
+        self.write_approved_identity(approved,transport)
+        self.write_transport_receipts(transport,custody)
+        with self.assertRaisesRegex(ValueError,"does not identify this Store product"):
+            validate_bundle(self.source,self.info["source_sha"])
+
+    def test_app_transport_accepts_source_bound_identity_and_custody_but_never_store_authorizes(self):
+        transport,custody=self.transport_receipts(version_gate="PASS")
+        self.write_transport_receipts(transport,custody)
+        result=stage_bundle(self.source,self.root/"queue",self.info["source_sha"])
+        self.assertEqual(result["source_sha"],self.info["source_sha"])
+        self.assertEqual(result["transport_receipt"]["package_version_gate"],"PASS")
+        self.assertEqual(result["approved_identity_file_sha"],transport["approved_identity_file_sha"])
+        self.assertEqual(result["github_artifact_custody"]["status"],"CUSTODY_VERIFIED_ONLY")
+        self.assertIs(result["github_artifact_custody"]["e2e_pass"],False)
+        self.assertEqual(len(list((self.root/"queue").rglob("approved-identity.json"))),1)
+        self.assertIsNone(result["store_id"])
+        self.assertFalse(result["submit_allowed"])
+
+if __name__== "__main__":
+    unittest.main()
