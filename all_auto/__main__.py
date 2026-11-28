@@ -10,6 +10,7 @@ from pathlib import Path
 from uuid import uuid4
 
 from .core import export_results, preflight
+from uploader.core import UploadError
 from .store_workflow import (
     StoreWorkflowError,
     _load_job,
@@ -17,6 +18,25 @@ from .store_workflow import (
     build_store_workflow_report,
     write_unique_report,
 )
+
+
+def _store_run_exit_code(report: dict, execution: dict, acquisition: dict) -> int:
+    """Return 0 only for a reconciled successful run, 1 for a safe hold, 2 for errors/unknowns."""
+    status = str(execution.get("status", "UNKNOWN"))
+    writes = execution.get("writes_performed") is True
+    if status in {"FAILED", "RECONCILE_REQUIRED", "PARTIAL_RECONCILE_REQUIRED", "UNKNOWN"}:
+        return 2
+    if status == "EXECUTED" and not writes:
+        return 2
+    if writes and status != "EXECUTED":
+        return 2
+    if status in {"HOLD", "PLAN_ONLY", "NO_APPROVED_ACTIONS"}:
+        return 1
+    if acquisition.get("status") == "PACKAGE_ACQUISITION_HOLD":
+        return 1
+    if report.get("missing_or_unverified"):
+        return 1
+    return 0 if status == "EXECUTED" and writes else 1
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -36,6 +56,7 @@ def main(argv: list[str] | None = None) -> int:
     store_archive.add_argument("--product", required=True)
     store_archive.add_argument("--package", type=Path, help="Optional exact local package; otherwise resolved from configured sources")
     store_archive.add_argument("--archive-root", type=Path, help="Durable archive root; defaults under portfolio-audit/_runtime")
+    store_archive.add_argument("--backup-root", type=Path, help="Optional external destination; requires exact Product/Draft-bound approval in the product profile")
     store_run = store_commands.add_parser("run", help="Collect evidence and execute only persisted owner-approved scopes")
     store_run.add_argument("--product", required=True, help="Registered product key under uploader/config")
     store_run.add_argument("--mode", choices=("AUTO", "READ_ONLY", "DRY_RUN"), default="AUTO",
@@ -74,6 +95,14 @@ def main(argv: list[str] | None = None) -> int:
                 from .artifact_archive import archive_verified_package
                 archive_root = opts.archive_root or (Path.home() / "Desktop" / "portfolio-audit" / "_runtime" / "store-fleet-sync" / "durable-package-archive")
                 result = archive_verified_package(config, package, archive_root)
+                if opts.backup_root is not None:
+                    from .artifact_archive import ArtifactArchiveError, copy_to_approved_external_backup
+                    try:
+                        result["external_backup"] = copy_to_approved_external_backup(
+                            config, Path(result["path"]), Path(result["receipt"]), opts.backup_root)
+                    except ArtifactArchiveError as exc:
+                        result["external_backup"] = {"status": "HOLD_NO_TRANSFER",
+                                                     "reason": str(exc), "destination_written": False}
                 report = {"schema_version": "all-auto-store-archive/1", "product_key": opts.product,
                           "created_at_utc": datetime.now(timezone.utc).isoformat(),
                           "run_id": uuid4().hex, **result}
@@ -83,7 +112,7 @@ def main(argv: list[str] | None = None) -> int:
                 return 2
             print(json.dumps({**result, "product": opts.product, "report": str(report_path)},
                              ensure_ascii=False, sort_keys=True))
-            return 0
+            return 1 if result.get("external_backup", {}).get("status") == "HOLD_NO_TRANSFER" else 0
         if opts.store_command == "status":
             from .store_status import collect_store_status
             try:
@@ -183,6 +212,8 @@ def main(argv: list[str] | None = None) -> int:
                 cache_root = opts.cache_root or Path(os.environ.get("STORE_PACKAGE_CACHE_ROOT", ".store-artifacts"))
                 try:
                     repo_root = Path(__file__).resolve().parent.parent
+                    archive_root = (Path.home() / "Desktop" / "portfolio-audit" / "_runtime" /
+                                    "store-fleet-sync" / "durable-package-archive")
                     search_roots = [
                         Path.home() / "Desktop" / "portfolio-audit" / "_runtime" / "store-fleet-sync",
                         Path.home() / "Desktop" / "Windows-all-auto-dca-upload" / ".uploader-run" / opts.product,
@@ -190,7 +221,7 @@ def main(argv: list[str] | None = None) -> int:
                     ]
                     acquisition = acquire_registered_package(
                         config, product=opts.product, cache_root=cache_root,
-                        search_roots=search_roots)
+                        search_roots=search_roots, archive_root=archive_root)
                     package = Path(acquisition.get("local_path") or acquisition.get("path"))
                 except StoreWorkflowError as exc:
                     acquisition = {"status": "PACKAGE_ACQUISITION_HOLD", "error": str(exc)}
@@ -205,6 +236,18 @@ def main(argv: list[str] | None = None) -> int:
             if acquisition["status"] == "PACKAGE_ACQUISITION_HOLD":
                 report["package"]["status"] = "PACKAGE_ACQUISITION_HOLD"
                 report["package"]["acquisition_error"] = acquisition["error"]
+            if package is not None and package.is_file():
+                try:
+                    from .windows_msix_qa import diagnose_msix_runtime
+                    report["windows_msix_diagnostic"] = diagnose_msix_runtime(
+                        config=config,
+                        package=package)
+                except (OSError, ValueError, UploadError) as exc:
+                    report["windows_msix_diagnostic"] = {
+                        "assessment": "STATIC_DIAGNOSTIC_HOLD",
+                        "error_type": type(exc).__name__, "launch_attempted": False,
+                        "install_attempted": False,
+                    }
             # The orchestrator may only execute scopes explicitly persisted in
             # the exact product profile. DCA remains PLAN_ONLY until its owner
             # approvals, exact-package runtime QA, and remaining section inputs
@@ -227,15 +270,25 @@ def main(argv: list[str] | None = None) -> int:
             report["execution"] = execution
             out = opts.out or Path(".store-workflow-runs") / opts.product
             report_path = write_unique_report(report, out)
+            approval_report = {
+                "schema_version": "all-auto-owner-decisions/1",
+                "created_at_utc": report["created_at_utc"],
+                "run_id": report["run_id"], "product_key": opts.product,
+                "product_id": report["binding"]["product_id"],
+                "submission_id": report["binding"]["submission_id"],
+                "owner_decisions": report["owner_decisions"],
+            }
+            approval_report_path = write_unique_report(approval_report, out / "owner-decisions")
         except (OSError, StoreWorkflowError) as exc:
             print(f"STORE WORKFLOW HOLD: {exc}", file=sys.stderr)
             return 2
         print(json.dumps({"status": report["status"], "product": opts.product,
                           "mode": opts.mode, "report": str(report_path),
+                          "owner_decisions_report": str(approval_report_path),
                           "missing_or_unverified": len(report["missing_or_unverified"]),
                           "partner_center_writes": execution.get("writes_performed") is True},
                          ensure_ascii=False, sort_keys=True))
-        return 1 if report["missing_or_unverified"] else 0
+        return _store_run_exit_code(report, execution, acquisition)
     try:
         content = json.loads(opts.manifest.read_text(encoding="utf-8"))
         result = preflight(content, opts.manifest.resolve().parent)

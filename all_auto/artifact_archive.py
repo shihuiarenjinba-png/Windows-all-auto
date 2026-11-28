@@ -78,3 +78,63 @@ def archive_verified_package(config: dict, package: Path, archive_root: Path) ->
     except Exception:
         shutil.rmtree(staging_dir, ignore_errors=True)
         raise
+
+
+def copy_to_approved_external_backup(config: dict, package: Path, receipt: Path,
+                                     backup_root: Path) -> dict:
+    """Copy an archived package only when the exact destination is owner-approved."""
+    approval = config.get("external_backup_approval")
+    if (not isinstance(approval, dict) or approval.get("status") != "OWNER_APPROVED" or
+            approval.get("product_id") != config.get("product_id") or
+            approval.get("submission_id") != config.get("submission_id") or
+            not isinstance(approval.get("approval_ref"), str) or not approval["approval_ref"].strip() or
+            not isinstance(approval.get("approved_at"), str) or not approval["approved_at"].strip()):
+        raise ArtifactArchiveError("external backup transfer requires a Product/Draft-bound owner approval")
+    requested_root = backup_root.expanduser().resolve()
+    approved_root = Path(str(approval.get("destination_root", ""))).expanduser().resolve()
+    if requested_root != approved_root:
+        raise ArtifactArchiveError("external backup destination does not match the owner-approved exact path")
+    if backup_root.expanduser().is_symlink():
+        raise ArtifactArchiveError("external backup destination must not be a symbolic link")
+    package = package.expanduser().resolve(strict=True)
+    receipt = receipt.expanduser().resolve(strict=True)
+    verified = verify_file(config, package, expected_sha256=config.get("expected_sha256"),
+                           max_bytes=int(config.get("max_bytes", 4_000_000_000)))
+    record = json.loads(receipt.read_text(encoding="utf-8"))
+    if (record.get("product_id") != config["product_id"] or
+            record.get("submission_id") != config["submission_id"] or
+            record.get("sha256") != verified.sha256 or
+            record.get("package_file_name") != verified.file_name):
+        raise ArtifactArchiveError("archive receipt does not match the exact approved backup package")
+    relative = Path(str(config["product_id"])) / str(config["version"]) / verified.sha256
+    destination_dir = requested_root / relative
+    target = destination_dir / verified.file_name
+    target_receipt = target.with_suffix(target.suffix + ".receipt.json")
+    if target.exists() or target_receipt.exists():
+        if (target.is_file() and target_receipt.is_file() and
+                verify_file(config, target, expected_sha256=verified.sha256,
+                            max_bytes=int(config.get("max_bytes", 4_000_000_000))).sha256 == verified.sha256 and
+                json.loads(target_receipt.read_text(encoding="utf-8")) == record):
+            return {"status": "BACKUP_ALREADY_VERIFIED", "path": str(target),
+                    "receipt": str(target_receipt), "sha256": verified.sha256}
+        raise ArtifactArchiveError("external backup target exists with conflicting or incomplete evidence")
+    destination_dir.parent.mkdir(parents=True, exist_ok=True)
+    stage_dir = destination_dir.parent / f".backup-{uuid4().hex}"
+    try:
+        stage_dir.mkdir()
+        staged_package = stage_dir / verified.file_name
+        staged_receipt = staged_package.with_suffix(staged_package.suffix + ".receipt.json")
+        shutil.copyfile(package, staged_package)
+        copied = verify_file(config, staged_package, expected_sha256=verified.sha256,
+                             max_bytes=int(config.get("max_bytes", 4_000_000_000)))
+        if copied.sha256 != verified.sha256:
+            raise ArtifactArchiveError("external backup copy SHA-256 mismatch")
+        shutil.copyfile(receipt, staged_receipt)
+        stage_dir.replace(destination_dir)
+        return {"status": "BACKUP_COPIED_AND_VERIFIED", "path": str(target),
+                "receipt": str(target_receipt), "sha256": copied.sha256,
+                "approval_ref": approval["approval_ref"]}
+    except Exception:
+        if stage_dir.exists():
+            shutil.rmtree(stage_dir, ignore_errors=True)
+        raise

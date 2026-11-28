@@ -201,6 +201,15 @@ class StoreFormEngineMockIntegrationTests(unittest.TestCase):
                         result = apply_save_reload_reconcile(page, fields)
                         self.assertEqual(result["status"], "SAVED_AND_RECONCILED")
                         verified.append(result["after_reload"])
+                        if slug == "pricing-availability":
+                            repeated = apply_save_reload_reconcile(page, fields)
+                            self.assertEqual(repeated["status"], "ALREADY_MATCHES")
+                            self.assertFalse(repeated["writes_performed"])
+                            self.assertTrue(repeated["save_skipped"])
+                        if slug == "packages":
+                            repeated = apply_save_reload_reconcile(page, fields)
+                            self.assertEqual(repeated["status"], "ALREADY_MATCHES")
+                            self.assertFalse(repeated["writes_performed"])
                     browser.close()
                 self.assertEqual(len(verified), 5)
                 self.assertEqual(verified[0], {"category": "utility", "max_rows": "1000", "network": True})

@@ -157,7 +157,11 @@ def read_field(page: Any, spec: FieldSpec, *, after_reload: bool = False) -> Any
                     raise StoreUiHold(f"{spec.key}: saved file label {name!r} was not retained after reload")
             return list(labels)
         control = _label(page, spec.label)
-        return control.evaluate("node => Array.from(node.files || []).map(file => file.name)")
+        selected = control.evaluate("node => Array.from(node.files || []).map(file => file.name)")
+        if not selected and spec.saved_labels and all(
+                page.get_by_text(name, exact=True).count() == 1 for name in spec.saved_labels):
+            return list(spec.saved_labels)
+        return selected
     raise StoreUiHold(f"{spec.key}: unsupported field kind")
 
 
@@ -254,6 +258,23 @@ def _css_string(value: str) -> str:
     return '"' + value.replace("\\", "\\\\").replace('"', '\\"') + '"'
 
 
+def _field_matches_current(spec: FieldSpec, current: Any) -> bool:
+    """Compare a saved control with its requested value without triggering a write."""
+    if spec.kind in {"image", "package"}:
+        # Browser file inputs cannot be restored after navigation. Only treat
+        # them as already saved when the caller supplied exact visible labels.
+        expected = list(spec.saved_labels)
+        return bool(expected) and current == expected
+    if spec.kind in {"number", "price"}:
+        try:
+            return Decimal(str(current)) == Decimal(_decimal(spec.value, spec.key))
+        except (InvalidOperation, ValueError):
+            return False
+    if spec.kind in {"checkbox_group", "regions"}:
+        return set(current) == set(spec.value)
+    return current == spec.value
+
+
 def apply_save_reload_reconcile(page: Any, fields: Iterable[FieldSpec | dict[str, Any]], *,
                                 save_label: str = "Save") -> dict[str, Any]:
     """Edit the form, save, reload, and require every value to remain exact."""
@@ -264,6 +285,10 @@ def apply_save_reload_reconcile(page: Any, fields: Iterable[FieldSpec | dict[str
     # Validate every locator and value before the first input action. An
     # invalid later field therefore cannot leave an earlier field half-edited.
     before = {spec.key: validate_field_before_write(page, spec) for spec in specs}
+    if all(_field_matches_current(spec, before[spec.key]) for spec in specs):
+        return {"status": "ALREADY_MATCHES", "url": page.url,
+                "before": before, "after_reload": before, "writes_performed": False,
+                "save_skipped": True}
     for spec in specs:
         apply_field(page, spec)
     if not save.is_enabled():

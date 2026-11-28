@@ -197,7 +197,8 @@ def acquire_registered_package(config: dict[str, Any], *, product: str,
                                cache_root: Path, token: str | None = None,
                                downloader: Any = None,
                                command_runner: Any = None,
-                               search_roots: tuple[Path, ...] | list[Path] = ()) -> dict[str, Any]:
+                               search_roots: tuple[Path, ...] | list[Path] = (),
+                               archive_root: Path | None = None) -> dict[str, Any]:
     """Resolve or fetch one SHA-pinned package from its configured source path.
 
     This reuses the uploader's bounded GitHub Contents downloader. It never
@@ -276,6 +277,11 @@ def acquire_registered_package(config: dict[str, Any], *, product: str,
                 "source": "local_sha_bound_cache" if is_cache else "registered_local_artifact_root",
                 "path": str(matches[0].resolve()), "file_name": verified.file_name,
                 "sha256": verified.sha256, "identical_candidate_count": identical_candidate_count}
+    if archive_root is not None:
+        archived = _restore_registered_archive(config, archive_root=archive_root,
+                                               destination_root=product_root)
+        if archived is not None:
+            return archived
     artifact_result = _download_registered_actions_artifact(
         config, product=product, product_root=product_root, command_runner=command_runner)
     if artifact_result is not None:
@@ -310,6 +316,65 @@ def acquire_registered_package(config: dict[str, Any], *, product: str,
         code = getattr(exc, "code", None)
         detail = f"{code}: " if isinstance(code, str) else ""
         raise StoreWorkflowError(f"registered package source could not be acquired/verified ({detail}{type(exc).__name__})") from exc
+
+
+def _restore_registered_archive(config: dict[str, Any], *, archive_root: Path,
+                                destination_root: Path) -> dict[str, Any] | None:
+    """Rehydrate a verified immutable local archive without modifying it."""
+    expected = str(config.get("expected_sha256") or "").lower()
+    filename = Path(str(config["path"])).name
+    root = archive_root.expanduser()
+    if root.is_symlink():
+        raise StoreWorkflowError("durable package archive root must not be a symbolic link")
+    if not root.is_dir():
+        return None
+    expected_dir = root / str(config["product_id"]) / str(config["version"]) / expected
+    package = expected_dir / filename
+    receipt_path = package.with_suffix(package.suffix + ".receipt.json")
+    if not package.exists() and not receipt_path.exists():
+        return None
+    if package.is_symlink() or receipt_path.is_symlink() or not package.is_file() or not receipt_path.is_file():
+        raise StoreWorkflowError("durable archive package/receipt pair is incomplete or unsafe")
+    try:
+        receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise StoreWorkflowError("durable archive receipt is unreadable") from exc
+    expected_receipt = {
+        "product_id": config["product_id"], "submission_id": config["submission_id"],
+        "package_file_name": filename, "sha256": expected,
+        "identity": config.get("identity_name"), "publisher": config.get("publisher"),
+        "version": config.get("version"),
+        "architecture": str(config.get("architecture", "x64")).lower(),
+    }
+    actual_receipt = {key: (str(receipt.get(key)).lower() if key == "architecture" else receipt.get(key))
+                      for key in expected_receipt}
+    if receipt.get("schema_version") != "all-auto-local-package-archive/1" or actual_receipt != expected_receipt:
+        raise StoreWorkflowError("durable archive receipt does not match the registered Product/Draft/package tuple")
+    try:
+        verified = verify_file(config, package, expected_sha256=expected,
+                               max_bytes=int(config.get("max_bytes", 4_000_000_000)))
+    except (OSError, UploadError) as exc:
+        raise StoreWorkflowError("durable archive bytes failed package verification") from exc
+    digest_dir = destination_root / expected[:12]
+    destination = digest_dir / filename
+    if destination.exists() or destination.is_symlink():
+        raise StoreWorkflowError("archive rehydration destination already exists; reconcile before replacement")
+    staging = digest_dir / f".{Path(filename).stem}.{uuid4().hex}.msix"
+    try:
+        digest_dir.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(package, staging)
+        copied = verify_file(config, staging, expected_sha256=expected,
+                             max_bytes=int(config.get("max_bytes", 4_000_000_000)))
+        if copied.sha256 != verified.sha256:
+            raise StoreWorkflowError("package SHA changed during archive rehydration")
+        staging.rename(destination)
+    except Exception:
+        staging.unlink(missing_ok=True)
+        raise
+    return {"status": "LOCAL_ARCHIVE_REHYDRATED_AND_VERIFIED",
+            "source": "durable_local_package_archive", "path": str(destination),
+            "archive_path": str(package), "receipt": str(receipt_path),
+            "file_name": verified.file_name, "sha256": verified.sha256}
 
 
 def _sha256_path(path: Path) -> str:

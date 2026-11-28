@@ -2,10 +2,11 @@
 
 WindowsアプリやゲームをMicrosoft Storeへ登録するときの **GitHub → Windowsビルド/MSIX → 提出前監査 → Partner Center下書き登録 → 結果集計** をつなぐ内部運用ツールです。一般ユーザーのPC操作自動化アプリではありません。
 
-## 現在の到達点（2026-11-23）
+## 現在の到達点（2026-11-28）
 - GitHubの作業ブランチのみで開発（main/release直接変更なし）。
-- オフライン事前検証コア、日英切替の試験的GUI、CLI、SQLiteの安全なキュー台帳を実装。
-- **自動テスト75件 / Windows・Ubuntuの両方でPASS**（オフライン検査のみ）。CI: https://github.com/shihuiarenjinba-png/Windows-all-auto/actions/runs/40284671809
+- オフライン事前検証コア、日英切替GUI、CLI、SQLiteの安全なキュー台帳に加え、Product-key Store workflow、Overview起点のナビゲーション、共通フォーム入力、SHA固定Artifact取得、ローカルpackage archiveを実装。
+- 最新のコミット済み回帰は `fb64fc46ea6ce947d3bddd14354db1f37234cb3f`。その時点で **444件PASS / 5件SKIP**、Windows・Ubuntu CI成功。これはPartner Center実アップロードやMSIX runtime QAの成功を意味しません。
+- 2026-11-28時点で、Windows実行環境の読み取り専用MSIX診断、アーカイブ再取得、終了コード判定、外部バックアップ承認ゲート、Partner Center読み取り観測を追加中。これらの未commit差分は、再テストと新しいCIが通るまでGitHub反映済みとは扱いません。
 - Windows-data / Windows-checker / Windows-Automator の読取専用JSON契約アダプタを追加済み。未知schema/statusはfail-closedで停止し、Windows-Automatorの `DONE` は引き続き `DRY_RUN_DONE` として扱います。
 - Windows-Automator live v2 の `DRAFT_SAVED` は、execution_mode、Save後の再読込、package validation/section completion、全必須section、証拠、Store ID / package SHA / source SHA / Identity / Versionの期待値一致をすべて確認した場合だけ受理します。Submit/Certified/Publishedのclaimは拒否します。
 - Windows-Automator結果の `restricted_capability`、説明のconfirmed/saved、`certification_gate` を中央表示用に正規化します。Capability重複や、未確認なのに保存済みという矛盾はfail-closedです。
@@ -66,3 +67,9 @@ Python 3.12以上を想定。現在のオフライン検査に追加PyPIライ�
 - [Windows担当の詳細手順](docs/CODE_OWNER_WINDOWS_HANDOFF_2026-10-26.md)
 
 Windows実機/Partner Centerの実操作で正規の確認が取れるまで本番販売・提出はHOLDです。アプリ/ゲーム別固定ルールを用い、**セキュリティ系宣言・価格・Identity・Store Product IDは人間が根拠付きで確定**してください。
+
+### 2026-11-28実機精査・安全な再開
+- Exact DCA MSIXは静的SHA/Manifest一致を再確認できるが、未署名でローカルInstall/Launchは未実証。scripts/diagnose_msix_runtime.ps1はACL、署名、MOTW、AppXイベント、AppLocker/CiTool、OS/VM情報を読み取り専用で採取し、インストール・起動を行わない。原因が未確定ならruntime QAは未PASSのまま保つ。
+- Partner CenterのOverviewからProperties、Store listings、Pricing、Age ratings、Submission Options、Packagesを読み取り観測した。観測は読み取り専用で、UI mapのverifiedや本番書き込み許可は変更しない。全レポートはdocs/automation/PARTNER_CENTER_DCA_READ_ONLY_OBSERVATION_20261128.md。
+- Store form engineは要求値と現在値が一致する場合にALREADY_MATCHESを返し、入力・Saveを省略する。ファイル入力はブラウザから保存値を復元できないため、明示的なsaved_labelsが一致する場合だけ重複を避ける。
+- store runはローカル承認済みアーカイブからSHA/製品結合を再検証して作業キャッシュへコピー可能。外部バックアップは製品別の保存先承認がない限り転送しない。

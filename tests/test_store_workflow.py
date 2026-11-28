@@ -15,6 +15,7 @@ from all_auto.store_workflow import (
     build_store_workflow_report,
     write_unique_report,
 )
+from all_auto.artifact_archive import archive_verified_package
 
 
 CONFIG_ROOT = Path(__file__).resolve().parents[1] / "uploader" / "config"
@@ -127,6 +128,46 @@ class StoreWorkflowTests(unittest.TestCase):
             self.assertEqual(result["status"], "LOCAL_EXACT_FILE_VERIFIED")
             self.assertTrue(Path(result["path"]).samefile(source))
             self.assertEqual(result["sha256"], digest)
+
+    def test_registered_package_is_rehydrated_from_immutable_archive_when_cache_is_empty(self):
+        config = json.loads((CONFIG_ROOT / "data-contract-auditor.job.json").read_text(encoding="utf-8"))
+        with tempfile.TemporaryDirectory(dir=Path.cwd()) as temporary:
+            root = Path(temporary)
+            source = root / "source.msix"
+            digest = make_exact_test_package(source)
+            config.update({"expected_sha256": digest, "artifact_id": None,
+                           "artifact_name": None, "artifact_run_id": None,
+                           "path": source.name})
+            archive_root = root / "durable-package-archive"
+            archive_verified_package(config, source, archive_root)
+            result = acquire_registered_package(
+                config, product="data-contract-auditor", cache_root=root / "cache",
+                archive_root=archive_root,
+                downloader=lambda *_args, **_kwargs: self.fail("archive must be reused before network"))
+            self.assertEqual(result["status"], "LOCAL_ARCHIVE_REHYDRATED_AND_VERIFIED")
+            self.assertEqual(result["sha256"], digest)
+            self.assertTrue(Path(result["path"]).is_file())
+            self.assertTrue(Path(result["archive_path"]).is_file())
+
+    def test_archive_receipt_wrong_submission_cannot_rehydrate_package(self):
+        config = json.loads((CONFIG_ROOT / "data-contract-auditor.job.json").read_text(encoding="utf-8"))
+        with tempfile.TemporaryDirectory(dir=Path.cwd()) as temporary:
+            root = Path(temporary)
+            source = root / "source.msix"
+            digest = make_exact_test_package(source)
+            config.update({"expected_sha256": digest, "artifact_id": None,
+                           "artifact_name": None, "artifact_run_id": None,
+                           "path": source.name})
+            archive_root = root / "durable-package-archive"
+            archive_verified_package(config, source, archive_root)
+            receipt = next(archive_root.rglob("*.receipt.json"))
+            payload = json.loads(receipt.read_text(encoding="utf-8"))
+            payload["submission_id"] = "wrong-draft"
+            receipt.write_text(json.dumps(payload), encoding="utf-8")
+            with self.assertRaisesRegex(StoreWorkflowError, "receipt does not match"):
+                acquire_registered_package(config, product="data-contract-auditor",
+                                           cache_root=root / "cache", archive_root=archive_root,
+                                           downloader=lambda *_args, **_kwargs: self.fail("must hold"))
 
     def test_github_actions_artifact_id_is_pinned_downloaded_and_manifest_verified(self):
         config = json.loads((CONFIG_ROOT / "data-contract-auditor.job.json").read_text(encoding="utf-8"))

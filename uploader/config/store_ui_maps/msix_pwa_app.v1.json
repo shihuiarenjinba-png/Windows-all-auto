@@ -12,8 +12,8 @@
       "product": "Data Contract Auditor",
       "product_id": "9PDL4ZWSB45P",
       "submission_id": "1152921505702212222",
-      "observed_at_utc": "2026-11-28T00:00:00Z",
-      "source": "authenticated local Edge CDP Packages page, accessibility links",
+      "observed_at_utc": "2026-11-28T06:46:19Z",
+      "source": "authenticated local Edge UI via accessibility tree and screenshot, read-only navigation from Apps and games Overview",
       "section_routes": {
         "Pricing and availability": "/availability",
         "Properties": "/properties",
@@ -35,9 +35,88 @@
       },
       "device_family_warning": "This product will not be available to customers on Windows 10/11 unless you check one or more device family boxes.",
       "package_validation_text": "You must upload at least one package.",
-      "scope": "Live link names/routes, empty Packages state, file input, and device-family state were observed read-only; no file was selected, no checkbox was changed, no section Save was pressed, and non-Package Save behavior remains unverified."
+      "packages_page": {
+        "package_rows": 0,
+        "required_message": "You must upload at least one package.",
+        "device_family_state": "Desktop, Mobile, Xbox, Team, Mixed Reality unchecked; Microsoft future-device-family option checked",
+        "future_device_family_meaning": "Microsoft may decide whether to make the product available to future device families",
+        "save_button_present": true,
+        "write_or_save_tested": false
+      },
+      "properties_page": {
+        "required_fields": [
+          "App category",
+          "personal-information access/collection/transmission answer"
+        ],
+        "current_values": {
+          "category": "Pick a category",
+          "subcategory": "None",
+          "personal_information_answer": "Choose an answer to see corresponding actions"
+        },
+        "support_fields": [
+          "Apps website URL",
+          "Apps support contact URL",
+          "Phone number",
+          "Address line 1",
+          "Address line 2",
+          "Postal code",
+          "City",
+          "State/Province",
+          "Country/Region"
+        ],
+        "product_declaration_controls_read": true,
+        "save_tested": false
+      },
+      "age_ratings_page": {
+        "current_route": "/ageratings/edit",
+        "questionnaire_radio": "I am ready to complete IARC questionnaire visually selected",
+        "questionnaire_controls_visible": [
+          "Game",
+          "Social or Communication",
+          "All Other App Types",
+          "External ratings board/physical media Yes/No"
+        ],
+        "questionnaire_complete": false,
+        "save_tested": false
+      },
+      "pricing_availability_page": {
+        "errors": [
+          "No PriceSchedule created for purchasable product.",
+          "You must configure a price for this product."
+        ],
+        "markets": "All worldwide markets selected",
+        "future_markets": true,
+        "audience": "Public audience selected",
+        "discoverability": "Available and discoverable selected",
+        "release": "as soon as possible",
+        "stop_acquisition": "never",
+        "base_price": "unset",
+        "market_count": 240,
+        "save_button_disabled": true,
+        "save_tested": false
+      },
+      "store_listings_page": {
+        "package_languages": "No languages displayed until package upload",
+        "additional_languages": "None shown; Manage additional languages disabled",
+        "save_disabled": true,
+        "listing_text_or_images_visible": false,
+        "save_tested": false
+      },
+      "submission_options_page": {
+        "controls": [
+          "publish after certification",
+          "manual Publish now hold",
+          "specific date/time"
+        ],
+        "specific_date_field": "11/28/2026, disabled",
+        "time_field": "7:00 AM UTC",
+        "save_disabled": true,
+        "selected_radio": "not exposed by accessibility tree; not asserted",
+        "save_tested": false
+      },
+      "read_only_scope": "Observed all six live sections and overview without modifying any field, selecting a package, changing device-family settings, or pressing Save. Server-side package SHA unavailable."
     },
-    "scope_note": "Non-Package section writes remain unverified. The previous observation was another product and read-only; the current DCA observation confirms links only."
+    "scope_note": "DCA live read selectors, visible required fields, current values and navigation were observed on 2026-11-28. All live write selectors/save-and-reload behavior remain unverified; do not set any section verified=true from this read-only observation."
   },
   "sections": {
     "properties": {
@@ -49,7 +128,15 @@
       "live_link_observed": true,
       "live_form_content_verified": false,
       "live_observation_product_id": "9PDL4ZWSB45P",
-      "live_observation_submission_id": "1152921505702212222"
+      "live_observation_submission_id": "1152921505702212222",
+      "live_read_observation": {
+        "required_category": true,
+        "category_value": "Pick a category",
+        "required_privacy_answer": true,
+        "privacy_answer_value": "Choose an answer to see corresponding actions",
+        "support_url_fields_observed": true,
+        "save_reload_verified": false
+      }
     },
     "store_listings": {
       "link_name": "Store listings",
@@ -60,7 +147,14 @@
       "live_link_observed": true,
       "live_form_content_verified": false,
       "live_observation_product_id": "9PDL4ZWSB45P",
-      "live_observation_submission_id": "1152921505702212222"
+      "live_observation_submission_id": "1152921505702212222",
+      "live_read_observation": {
+        "package_language_rows": 0,
+        "additional_language_rows": 0,
+        "language_editor_available": false,
+        "reason": "Partner Center says package languages appear after package upload",
+        "save_reload_verified": false
+      }
     },
     "pricing_availability": {
       "link_name": "Pricing and availability",
@@ -71,7 +165,17 @@
       "live_link_observed": true,
       "live_form_content_verified": false,
       "live_observation_product_id": "9PDL4ZWSB45P",
-      "live_observation_submission_id": "1152921505702212222"
+      "live_observation_submission_id": "1152921505702212222",
+      "live_read_observation": {
+        "base_price_set": false,
+        "markets": "all_worldwide",
+        "future_markets": true,
+        "audience": "public",
+        "discoverability": "public_store",
+        "market_count": 240,
+        "price_schedule_error": true,
+        "save_reload_verified": false
+      }
     },
     "age_ratings": {
       "link_name": "Age ratings",
@@ -82,7 +186,13 @@
       "live_link_observed": true,
       "live_form_content_verified": false,
       "live_observation_product_id": "9PDL4ZWSB45P",
-      "live_observation_submission_id": "1152921505702212222"
+      "live_observation_submission_id": "1152921505702212222",
+      "live_read_observation": {
+        "questionnaire_route": "/ageratings/edit",
+        "app_type_question_present": true,
+        "content_questionnaire_complete": false,
+        "save_reload_verified": false
+      }
     },
     "submission_options": {
       "link_name": "Submission Options",
@@ -93,7 +203,13 @@
       "live_link_observed": true,
       "live_form_content_verified": false,
       "live_observation_product_id": "9PDL4ZWSB45P",
-      "live_observation_submission_id": "1152921505702212222"
+      "live_observation_submission_id": "1152921505702212222",
+      "live_read_observation": {
+        "publish_hold_controls_present": true,
+        "save_disabled": true,
+        "selected_radio": "unknown",
+        "save_reload_verified": false
+      }
     },
     "packages": {
       "verified": false,
