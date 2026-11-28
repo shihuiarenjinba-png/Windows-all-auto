@@ -155,23 +155,14 @@ def main(argv: list[str] | None = None) -> int:
                     if driver.get("status") == "SOURCE_GUI_DRIVER_PASS":
                         qa["status"] = "SOURCE_GUI_QA_PASS_PACKAGED_RUNTIME_UNVERIFIED"
                         qa["source_gui_qa_pass"] = True
-                        receipts = {item.get("id"): item for item in driver["receipt"].get("checks", [])}
-                        mapping = {
-                            "language_switch_ja": "language_toggle_ja",
-                            "language_switch_en": "language_toggle_en",
-                            "launch_and_render": "launch_and_render",
-                            "csv_schema_and_quality_comparison": "csv_compare_and_output_reopen",
-                            "xlsx_input": "xlsx_compare_and_output_reopen",
-                            "report_output_reopens": "csv_compare_and_output_reopen",
-                            "invalid_csv_error": "duplicate_header_visible_error",
-                            "normal_exit_and_relaunch": "normal_exit_and_relaunch",
-                        }
+                        from .runtime_qa import source_scenario_results
+                        source_results = source_scenario_results(driver)
+                        qa["source_scenario_results"] = source_results
                         for check in qa["checks"]:
-                            source_id = mapping.get(check["id"])
-                            evidence = receipts.get(source_id, {})
-                            if source_id and evidence.get("status") == "PASS":
+                            source_result = source_results.get(check["id"], {})
+                            if source_result.get("status") == "PASS_SOURCE_GUI":
                                 check["status"] = "PASS_SOURCE_GUI"
-                                check["evidence"] = driver.get("receipt_path")
+                                check["evidence"] = source_result.get("evidence")
                     else:
                         qa["source_gui_qa_pass"] = False
                         qa["status"] = "SOURCE_GUI_QA_" + str(driver.get("status", "HOLD"))
