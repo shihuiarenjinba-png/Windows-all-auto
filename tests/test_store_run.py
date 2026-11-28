@@ -24,7 +24,7 @@ class StoreRunTests(unittest.TestCase):
     def _config(self, root: Path, package: Path, *, approved: bool) -> Path:
         root.mkdir(parents=True, exist_ok=True)
         config = json.loads((CONFIG_ROOT / "data-contract-auditor.job.json").read_text(encoding="utf-8"))
-        config.update({**DCA_BINDING, "expected_sha256": make_exact_test_package(package),
+        config.update({**DCA_BINDING, "expected_sha256": _sha256_path(package),
                       "local_runtime_qa_status": "WINDOWS_REAL_DEVICE_QA_PASS_EXACT_PACKAGE" if approved else "SOURCE_QA_PASS_PACKAGED_EXE_RUNTIME_UNVERIFIED_INSTALL_ACCESS_DENIED_AND_TIMEOUT"})
         # This fixture uses a synthetic package, so do not carry the live DCA provenance conflict into unrelated tests.
         config.pop("source_package_provenance", None)
