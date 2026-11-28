@@ -38,7 +38,7 @@ class ActiveHandoffPointerV1Tests(unittest.TestCase):
 
             self.assertEqual(
                 snapshot["overlay_path"],
-                "ops/active_e2e_handoff_overlay_20261128_1337.json",
+                "ops/active_e2e_handoff_overlay_20261128_1440.json",
             )
             self.assertEqual(
                 snapshot["overlay"]["pr165"]["head_sha"],
@@ -51,6 +51,24 @@ class ActiveHandoffPointerV1Tests(unittest.TestCase):
             self.assertEqual(
                 snapshot["pointer"]["selection_policy"],
                 "VERIFIED_POINTER_REFERENCED_OVERLAY_ONLY",
+            )
+            self.assertEqual(
+                snapshot["overlay"]["canonical_ledger_reconciliation"]["full_content_read_status"],
+                "READABLE_BY_FETCH_BLOB",
+            )
+            self.assertEqual(
+                snapshot["pointer"]["canonical_ledger"]["fetch_blob_status"],
+                "READABLE",
+            )
+            self.assertEqual(
+                snapshot["overlay"]["request_artifact_local_rehash"]["focus_session_desk"]["local_sha256"],
+                "8f1862039297711a68bc33e8e25bea8cfc85f9926b269f0b2136bfa9986b503a",
+            )
+            self.assertTrue(
+                snapshot["overlay"]["request_artifact_local_rehash"]["focus_session_desk"]["digest_match"]
+            )
+            self.assertFalse(
+                snapshot["overlay"]["request_artifact_local_rehash"]["focus_session_desk"]["package_msix_present"]
             )
 
     def test_latest_overlay_records_current_app_lane_reconciliation(self):
@@ -81,6 +99,20 @@ class ActiveHandoffPointerV1Tests(unittest.TestCase):
             self.assertEqual(
                 snapshot["queue"]["priority"][1]["product"],
                 "File Integrity Ledger",
+            )
+            self.assertEqual(
+                snapshot["overlay"]["request_artifact_local_rehash"]["file_integrity_ledger"]["local_sha256"],
+                "697528b3b0769e3962eebfa0efcdcb026618cd378d97fc60c4f234017882527e",
+            )
+            self.assertTrue(
+                snapshot["overlay"]["request_artifact_local_rehash"]["file_integrity_ledger"]["digest_match"]
+            )
+            self.assertFalse(
+                snapshot["overlay"]["request_artifact_local_rehash"]["file_integrity_ledger"]["package_msix_present"]
+            )
+            self.assertEqual(
+                snapshot["overlay"]["local_code_sync"]["status"],
+                "NOT_OBSERVED__CLOUD_PASS_ONLY",
             )
 
     def test_tampered_overlay_fails_closed_without_legacy_fallback(self):
