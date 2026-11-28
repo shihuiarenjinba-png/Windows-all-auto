@@ -14,8 +14,10 @@ import re
 import json
 import hashlib
 
-from uploader.core import UploadError, VerifiedJob
+from uploader.core import UploadError, VerifiedJob, read_msix_manifest_metadata
+from uploader.device_families import STORE_DEVICE_FAMILY_LABELS
 from uploader.receipts import receipt_matches_job
+from uploader.store_form_engine import OverviewNavigator, StoreUiHold
 
 PARTNER_ORIGIN = "https://partner.microsoft.com"
 PARTNER_HOST = "partner.microsoft.com"
@@ -107,6 +109,12 @@ def select_partner_center_page(pages: list[Any], config: dict[str, Any]) -> tupl
         raise UploadError("PARTNER_CENTER_TAB_AMBIGUOUS", f"Multiple exact DCA Draft tabs are not demonstrably equivalent; candidates={_safe_candidates([m for _, m in exact])}")
     if exact:
         return exact[0][0], "READY_EXACT_DRAFT_TAB", [m for _, m in partner_pages]
+    overview_path = "/en-us/dashboard/apps-and-games/overview"
+    overview = [(page, meta) for page, meta in partner_pages if meta["path"].rstrip("/") == overview_path]
+    if len(overview) > 1:
+        raise UploadError("PARTNER_CENTER_TAB_AMBIGUOUS", "Multiple Apps and games Overview tabs matched")
+    if overview:
+        return overview[0][0], "READY_APPS_GAMES_OVERVIEW", [m for _, m in partner_pages]
     product = [(page, meta) for page, meta in partner_pages if meta["path"].startswith(product_prefix)]
     if len(product) > 1:
         raise UploadError("PARTNER_CENTER_TAB_AMBIGUOUS", f"Multiple DCA Product tabs matched; candidates={_safe_candidates([m for _, m in product])}")
@@ -229,12 +237,30 @@ class PartnerCenterBrowserPort:
         path = f"/en-us/dashboard/products/{product_id}/submissions/{submission_id}"
         packages_url = f"{PARTNER_ORIGIN}{path}/packages"
         identity_url = f"{PARTNER_ORIGIN}/en-us/dashboard/products/{product_id}/identity"
+        # Every operation starts at the ordinary Apps and games Overview and
+        # clicks the exact Product ID row before inspecting product/Draft data.
+        try:
+            navigator = OverviewNavigator(self.page)
+            navigator.open_overview()
+            navigator.select_product(product_id=product_id, product_name=self.config["product_name"])
+        except StoreUiHold as exc:
+            raise UploadError("PARTNER_CENTER_UI_CHANGED", str(exc)) from exc
+        self._assert_product_name("Overview")
+        # Identity remains a read-only target-binding check. After it succeeds,
+        # return to the product Overview and follow its exact Draft Packages link.
         self._goto(identity_url)
         self._assert_product_name("Identity")
         self._exact_text(product_id, "configured Store ID")
         self._exact_text(self.config["identity_name"], "configured Package Identity")
         self._exact_text(self.config["publisher"], "configured Publisher")
-        self._goto(packages_url)
+        product_overview = f"{PARTNER_ORIGIN}/en-us/dashboard/products/{product_id}/overview"
+        self._goto(product_overview)
+        packages_link = self._one(self.page.locator("a[href$='/packages']"), "Overview Packages link")
+        href = packages_link.get_attribute("href") or ""
+        if f"/products/{product_id}/submissions/{submission_id}/packages" not in href:
+            raise UploadError("SUBMISSION_MISMATCH", "Overview Packages link does not target the configured existing Draft")
+        packages_link.click()
+        self.page.wait_for_load_state("domcontentloaded")
         page_meta = safe_page_metadata(self.page)
         expected_path = f"/en-us/dashboard/products/{product_id}/submissions/{submission_id}/packages"
         if page_meta["scheme"] != "https" or page_meta["hostname"] != PARTNER_HOST or page_meta["path"].rstrip("/") != expected_path:
@@ -265,6 +291,57 @@ class PartnerCenterBrowserPort:
             return "VALIDATED", [], []
         return "ANALYZING", [], []
 
+    def _apply_approved_device_families(self, job: VerifiedJob,
+                                        package_path: Path) -> dict[str, Any]:
+        """Apply only product/Draft-scoped, owner-approved Store device families."""
+        settings = self.config.get("device_family_settings")
+        approval = settings.get("approval") if isinstance(settings, dict) else None
+        if not isinstance(settings, dict) or settings.get("status") != "OWNER_APPROVED" or not isinstance(approval, dict):
+            raise UploadError("DEVICE_FAMILY_APPROVAL_REQUIRED", "No persisted owner approval for Store device-family selection")
+        if approval.get("product_id") != job.product_id or approval.get("submission_id") != job.submission_id:
+            raise UploadError("DEVICE_FAMILY_APPROVAL_MISMATCH", "Device-family approval is bound to a different Product or Draft")
+        if any(not isinstance(approval.get(key), str) or not approval[key].strip()
+               for key in ("approval_ref", "approved_by", "approved_at")):
+            raise UploadError("DEVICE_FAMILY_APPROVAL_INVALID", "Device-family approval reference, owner, and date are required")
+
+        manifest = read_msix_manifest_metadata(package_path)
+        manifest_targets = settings.get("manifest_target_device_families")
+        if (not isinstance(manifest_targets, list) or
+                sorted(set(manifest_targets)) != manifest["target_device_families"]):
+            raise UploadError("DEVICE_FAMILY_MANIFEST_MISMATCH", "Persisted target families do not match this exact MSIX Manifest")
+        expected_store_labels = settings.get("approved_store_device_families")
+        if (not isinstance(expected_store_labels, list) or not expected_store_labels or
+                len(set(expected_store_labels)) != len(expected_store_labels)):
+            raise UploadError("DEVICE_FAMILY_APPROVAL_INVALID", "Approved Store device-family list is missing or duplicated")
+        target_labels = {STORE_DEVICE_FAMILY_LABELS.get(target) for target in manifest_targets}
+        if None in target_labels or not set(expected_store_labels).issubset(target_labels):
+            raise UploadError("DEVICE_FAMILY_MANIFEST_MISMATCH", "Approved Store device-family choices exceed the exact Manifest targets")
+
+        all_labels = list(STORE_DEVICE_FAMILY_LABELS.values())
+        controls: dict[str, Any] = {}
+        for label in all_labels:
+            control = self.page.get_by_role("checkbox", name=label, exact=True)
+            if control.count() != 1 or not control.is_enabled():
+                raise UploadError("PARTNER_CENTER_UI_CHANGED", f"Expected one enabled device-family checkbox for {label}")
+            controls[label] = control
+        current = {label for label, control in controls.items() if control.is_checked()}
+        unapproved_checked = current.difference(expected_store_labels)
+        if unapproved_checked:
+            raise UploadError("DEVICE_FAMILY_STATE_MISMATCH", "Partner Center has checked device families outside the approved profile")
+
+        changed: list[str] = []
+        for label in expected_store_labels:
+            control = controls[label]
+            if not control.is_checked():
+                control.click()
+                if not control.is_checked():
+                    raise UploadError("DEVICE_FAMILY_SELECTION_UNCONFIRMED", f"Approved device-family selection did not hold: {label}")
+                changed.append(label)
+        return {"approved_store_device_families": sorted(expected_store_labels),
+                "manifest_target_device_families": manifest_targets,
+                "device_family_approval_ref": approval["approval_ref"],
+                "changed_device_family_checkboxes": changed}
+
     def upload_save_and_reconcile(self, job: VerifiedJob, package_path: Path) -> dict[str, Any]:
         packages_url = self._assert_target(job.product_id, job.submission_id)
         existing_rows = [x.strip() for x in self.page.locator(PACKAGE_NAME_SELECTOR).all_text_contents() if x.strip()]
@@ -275,6 +352,7 @@ class PartnerCenterBrowserPort:
         already_uploaded = job.file_name in existing_rows
         if already_uploaded:
             raise UploadError("RECONCILE_REQUIRED", "Partner Center already shows this filename; require the prior SHA-bound receipt before any Save")
+        device_family_result = self._apply_approved_device_families(job, package_path)
         uploader = self._one(self.page.locator(FILE_INPUT), "verified MSIX file input")
         try:
             uploader.set_input_files(str(package_path.resolve()))
@@ -314,10 +392,10 @@ class PartnerCenterBrowserPort:
         else:
             raise UploadError("UPLOAD_RESULT_UNKNOWN", "Partner Center package analysis timed out; reconcile before retry")
 
-        # Desktop was automatically selected in the proven App route; confirm it without changing it.
-        desktop = self.page.get_by_role("checkbox", name="Windows 10/11 Desktop", exact=True)
-        if desktop.count() != 1 or not desktop.is_checked():
-            raise UploadError("DEVICE_FAMILY_MISMATCH", "Expected Windows Desktop checkbox is missing or unchecked")
+        # Recheck the persisted owner selection after package analysis.
+        for label in device_family_result["approved_store_device_families"]:
+            if not self.page.get_by_role("checkbox", name=label, exact=True).is_checked():
+                raise UploadError("DEVICE_FAMILY_MISMATCH", "An approved Windows device family became unchecked during package analysis")
         save = self._one(self.page.get_by_role("button", name="Save", exact=True), "Packages Save button")
         if not save.is_enabled():
             raise UploadError("PARTNER_CENTER_UI_CHANGED", "Packages Save is not enabled")
@@ -351,6 +429,7 @@ class PartnerCenterBrowserPort:
             "architecture": job.architecture,
             "state_transitions": transitions + ["PACKAGES_SAVED", "OVERVIEW_RELOADED", "PACKAGES_REOPENED_RETAINED"],
             "package_validation": state,
+            "device_family_selection": device_family_result,
             "warnings": warnings,
             "errors": [],
             "certification_executed": False,

@@ -5,6 +5,8 @@ __pycache__/
 .pytest_cache/
 qa/
 reports/
+.store-workflow-runs/
+.store-artifacts/
 *.msix
 *.msixupload
 *.appx

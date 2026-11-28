@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "version": "msix_pwa_app/1.0.0",
+  "submission_route": "msix_pwa_app",
+  "entry_url": "https://partner.microsoft.com/en-us/dashboard/apps-and-games/overview",
+  "evidence": {
+    "source": "Windows-Automator/docs/PARTNER_CENTER_MAP.json",
+    "observed_product": "Offline Notes Canary",
+    "observed_mode": "READ_ONLY_NO_UPLOAD_NO_SAVE",
+    "observed_at_utc": "2026-10-29T00:00:00Z",
+    "current_live_link_observation": {
+      "product": "Data Contract Auditor",
+      "product_id": "9PDL4ZWSB45P",
+      "submission_id": "1152921505702212222",
+      "observed_at_utc": "2026-11-28T00:00:00Z",
+      "source": "authenticated local Edge CDP Packages page, accessibility links",
+      "section_routes": {
+        "Pricing and availability": "/availability",
+        "Properties": "/properties",
+        "Age ratings": "/ageratings",
+        "Packages": "/packages",
+        "Store listings": "/managelanguages?producttype=app",
+        "Submission Options": "/options"
+      },
+      "package_file_input": "input[name='fileuploader'][type='file'][multiple]",
+      "package_file_input_count": 1,
+      "package_rows": 0,
+      "device_family_state": {
+        "Windows 10/11 Desktop": false,
+        "Windows 10 Mobile": false,
+        "Windows 10/11 Xbox": false,
+        "Windows 10 Team": false,
+        "Windows 10 Mixed Reality": false,
+        "Let Microsoft decide whether to make this app available to any future device families": true
+      },
+      "device_family_warning": "This product will not be available to customers on Windows 10/11 unless you check one or more device family boxes.",
+      "package_validation_text": "You must upload at least one package.",
+      "scope": "Live link names/routes, empty Packages state, file input, and device-family state were observed read-only; no file was selected, no checkbox was changed, no section Save was pressed, and non-Package Save behavior remains unverified."
+    },
+    "scope_note": "Non-Package section writes remain unverified. The previous observation was another product and read-only; the current DCA observation confirms links only."
+  },
+  "sections": {
+    "properties": {
+      "link_name": "Properties",
+      "path_token": "/properties",
+      "heading": "Properties",
+      "save_label": "Save",
+      "verified": false
+    },
+    "store_listings": {
+      "link_name": "Store listings",
+      "path_token": "/managelanguages",
+      "heading": "Manage Store listing languages",
+      "save_label": "Save",
+      "verified": false
+    },
+    "pricing_availability": {
+      "link_name": "Pricing and availability",
+      "path_token": "/availability",
+      "heading": "Pricing and availability",
+      "save_label": "Save draft",
+      "verified": false
+    },
+    "age_ratings": {
+      "link_name": "Age ratings",
+      "path_token": "/ageratings",
+      "heading": "Age ratings",
+      "save_label": "Save draft",
+      "verified": false
+    },
+    "submission_options": {
+      "link_name": "Submission Options",
+      "path_token": "/options",
+      "heading": "Submission Options",
+      "save_label": "Save",
+      "verified": false
+    },
+    "packages": {
+      "verified": false,
+      "delegated_adapter": "uploader.partner_center_browser",
+      "reason": "The uploader owns package validation, duplicate reconciliation, analysis, Save, and receipt semantics."
+    }
+  }
+}

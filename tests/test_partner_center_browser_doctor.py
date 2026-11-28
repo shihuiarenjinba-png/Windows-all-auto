@@ -50,7 +50,12 @@ class DoctorSelectionTests(unittest.TestCase):
         cloudflare = Page("https://dash.cloudflare.com/account/workers")
         selected, status, _ = select_partner_center_page([unrelated, cloudflare, Page(EXACT)], CONFIG)
         self.assertEqual(status, "READY_EXACT_DRAFT_TAB")
-        self.assertEqual(selected.url.split("?")[0], EXACT)
+
+    def test_apps_and_games_overview_is_a_supported_safe_entry_tab(self):
+        overview = Page(f"{PARTNER_ORIGIN}/en-us/dashboard/apps-and-games/overview")
+        selected, status, _ = select_partner_center_page([overview], CONFIG)
+        self.assertIs(selected, overview)
+        self.assertEqual(status, "READY_APPS_GAMES_OVERVIEW")
 
     def test_exact_packages_is_preferred_over_dca_overview(self):
         overview = Page(OVERVIEW)

@@ -89,6 +89,24 @@ def read_msix_identity(path: Path) -> dict[str, str]:
     return values
 
 
+def read_msix_manifest_metadata(path: Path) -> dict[str, Any]:
+    """Read target device families and signature presence from exact MSIX bytes."""
+    try:
+        with zipfile.ZipFile(path) as package:
+            root = ET.fromstring(package.read("AppxManifest.xml"))
+            families = sorted({
+                node.attrib.get("Name", "").strip()
+                for node in root.iter()
+                if node.tag.rsplit("}", 1)[-1] == "TargetDeviceFamily"
+                and node.attrib.get("Name", "").strip()
+            })
+            signed = "AppxSignature.p7x" in package.namelist()
+    except (OSError, KeyError, ET.ParseError, zipfile.BadZipFile) as exc:
+        raise UploadError("INVALID_FILE_FORMAT", "MSIX manifest metadata could not be read") from exc
+    return {"target_device_families": families,
+            "signature_state": "SIGNED_BLOCK_PRESENT" if signed else "UNSIGNED"}
+
+
 def verify_file(config: dict[str, Any], path: Path, *, expected_sha256: str | None = None,
                 max_bytes: int = 4_000_000_000) -> VerifiedJob:
     validate_config(config)

@@ -22,6 +22,18 @@ CONFIG = {
     "identity_name": "OkinawaDesktopTools.FolderAutomationEngine",
     "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
 }
+APPROVED_DEVICE_FAMILY_CONFIG = {
+    **CONFIG,
+    "device_family_settings": {
+        "status": "OWNER_APPROVED",
+        "manifest_target_device_families": ["Windows.Desktop"],
+        "approved_store_device_families": ["Windows 10/11 Desktop"],
+        "approval": {"product_id": CONFIG["product_id"],
+                     "submission_id": CONFIG["submission_id"],
+                     "approval_ref": "MOCK_OWNER_APPROVAL",
+                     "approved_by": "mock-owner", "approved_at": "2026-11-28"},
+    },
+}
 
 
 class Locator:
@@ -30,6 +42,10 @@ class Locator:
 
     def count(self):
         p = self.page
+        if self.selector.startswith("a[href*='/dashboard/products/"):
+            return 1 if p.is_apps_overview else 0
+        if self.selector == "a[href$='/packages']":
+            return 1 if p.is_overview else 0
         if self.selector == "input[type='password']": return 0
         if self.selector == FILE_INPUT: return 1 if p.is_packages else 0
         if self.selector == PACKAGE_NAME_SELECTOR: return 1 if p.package_present and p.is_packages else 0
@@ -37,7 +53,7 @@ class Locator:
         if self.selector == WARNING_SELECTOR: return 1 if p.package_present and p.is_packages else 0
         if self.selector == ".alert.alert-danger .alert-string": return 0
         if self.selector == PACKAGES_COMPLETE: return 1 if p.saved and p.is_overview else 0
-        if self.role == "checkbox": return 1
+        if self.role == "checkbox": return 1 if self.text in p.device_family_checked else 0
         if self.role == "button" and self.text == "Save": return 1 if p.is_packages else 0
         if self.role == "link" and self.text == CONFIG["product_name"]: return 1 if p.is_packages else 0
         if self.role == "heading" and self.text == CONFIG["product_name"]: return 1 if p.is_overview else 0
@@ -71,18 +87,32 @@ class Locator:
         self.page.package_present = True
         self.page.upload_path = path
 
-    def is_checked(self): return True
+    def is_checked(self): return self.page.device_family_checked.get(self.text, False)
     def is_enabled(self): return True
     def click(self, timeout=None):
-        self.page.save_calls += 1
-        self.page.saved = True
-        self.page.url = f"https://partner.microsoft.com/en-us/dashboard/products/{self.page.job.product_id}/overview"
+        if self.role == "checkbox":
+            self.page.device_family_checked[self.text] = not self.page.device_family_checked[self.text]
+        elif self.role == "button":
+            self.page.save_calls += 1
+            self.page.saved = True
+            self.page.url = f"https://partner.microsoft.com/en-us/dashboard/products/{self.page.job.product_id}/overview"
+        elif self.selector.startswith("a[href*='/dashboard/products/"):
+            self.page.url = f"https://partner.microsoft.com/en-us/dashboard/products/{self.page.job.product_id}/overview"
+        elif self.selector == "a[href$='/packages']":
+            self.page.url = f"https://partner.microsoft.com/en-us/dashboard/products/{self.page.job.product_id}/submissions/{self.page.job.submission_id}/packages"
     def wait_for(self, state=None, timeout=None):
         if self.count() != 1: raise TimeoutError("expected postcondition absent")
     def get_attribute(self, name):
+        if name == "href" and self.selector == "a[href$='/packages']":
+            return f"/en-us/dashboard/products/{self.page.job.product_id}/submissions/{self.page.job.submission_id}/packages"
         if name == "href" and self.selector == PACKAGES_COMPLETE:
             return f"/en-us/dashboard/products/{self.page.job.product_id}/submissions/{self.page.job.submission_id}/packages"
         return None
+
+    def inner_text(self):
+        if self.selector.startswith("a[href*='/dashboard/products/"):
+            return CONFIG["product_name"]
+        return "Packages"
 
 
 class FakePage:
@@ -96,6 +126,13 @@ class FakePage:
         self.upload_path = None
         self.goto_calls = 0
         self.combined_product_heading = False
+        self.device_family_checked = {
+            "Windows 10/11 Desktop": True,
+            "Windows 10 Mobile": False,
+            "Windows 10/11 Xbox": False,
+            "Windows 10 Team": False,
+            "Windows 10 Mixed Reality": False,
+        }
 
     def title(self):
         if "/identity" in self.url:
@@ -108,12 +145,15 @@ class FakePage:
     def is_packages(self): return "/packages" in self.url
     @property
     def is_overview(self): return self.url.endswith("/overview")
+    @property
+    def is_apps_overview(self): return self.url.endswith("/apps-and-games/overview")
     def locator(self, selector): return Locator(self, selector)
     def get_by_text(self, text, exact=True): return Locator(self, "text", text=text)
     def get_by_role(self, role, name="", exact=True): return Locator(self, "role", text=name, role=role)
     def goto(self, url, wait_until=None, timeout=None):
         self.goto_calls += 1
         self.url = url
+    def wait_for_load_state(self, state=None, timeout=None): pass
     def reload(self, wait_until=None, timeout=None): pass
     def wait_for_timeout(self, milliseconds): pass
 
@@ -227,7 +267,7 @@ class PartnerCenterBrowserTests(unittest.TestCase):
 
     def make_package(self, path):
         with zipfile.ZipFile(path, "w") as z:
-            z.writestr("AppxManifest.xml", '''<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"><Identity Name="OkinawaDesktopTools.FolderAutomationEngine" Publisher="CN=46263F21-A700-41DB-8C9B-114C22FB82FC" Version="1.0.0.0" ProcessorArchitecture="x64" /></Package>''')
+            z.writestr("AppxManifest.xml", '''<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"><Identity Name="OkinawaDesktopTools.FolderAutomationEngine" Publisher="CN=46263F21-A700-41DB-8C9B-114C22FB82FC" Version="1.0.0.0" ProcessorArchitecture="x64" /><Dependencies><TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.22621.0" /></Dependencies></Package>''')
             z.writestr("payload", b"fixture")
 
     def test_replays_successful_existing_draft_packages_route(self):
@@ -249,16 +289,46 @@ class PartnerCenterBrowserTests(unittest.TestCase):
             }
             job = verify_file(job_config, package)
             page = FakePage(job)
-            result = PartnerCenterBrowserPort(page, CONFIG).upload_save_and_reconcile(job, package)
+            approved_config = {**APPROVED_DEVICE_FAMILY_CONFIG, "expected_existing_package_names": [],
+                               "known_warnings": [KNOWN_WARNING]}
+            page.device_family_checked["Windows 10/11 Desktop"] = False
+            result = PartnerCenterBrowserPort(page, approved_config).upload_save_and_reconcile(job, package)
             self.assertTrue(result["partner_center_confirmed"])
             self.assertEqual(result["method"], "authenticated_playwright_cdp_existing_draft_packages")
             self.assertEqual(result["package_validation"], "WARNING")
             self.assertEqual(page.upload_calls, 1)
             self.assertEqual(page.save_calls, 1)
+            self.assertTrue(page.device_family_checked["Windows 10/11 Desktop"])
+            self.assertEqual(result["device_family_selection"]["changed_device_family_checkboxes"],
+                             ["Windows 10/11 Desktop"])
             self.assertEqual(result["state_transitions"], [
                 "PACKAGE_UPLOAD_REQUIRED", "PACKAGE_WARNING_REVIEW", "PACKAGE_SAVE_REQUIRED",
                 "PACKAGES_SAVED", "OVERVIEW_RELOADED", "PACKAGES_REOPENED_RETAINED",
             ])
+
+    def test_device_family_without_persisted_owner_approval_holds_before_file_selection(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            package = Path(tmp) / "FolderAutomationEngine_1.0.0.0_x64_StoreDraft_UNSIGNED.msix"
+            self.make_package(package)
+            job_config = {
+                **CONFIG,
+                "schema_version": 1,
+                "repository": "owner/repo",
+                "ref": "a" * 40,
+                "path": package.name,
+                "version": "1.0.0.0",
+                "destination": "microsoft_partner_center_existing_draft",
+                "identity_name": "OkinawaDesktopTools.FolderAutomationEngine",
+                "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+                "architecture": "x64",
+            }
+            job = verify_file(job_config, package)
+            page = FakePage(job)
+            page.device_family_checked["Windows 10/11 Desktop"] = False
+            with self.assertRaisesRegex(UploadError, "No persisted owner approval"):
+                PartnerCenterBrowserPort(page, CONFIG).upload_save_and_reconcile(job, package)
+            self.assertEqual(page.upload_calls, 0)
+            self.assertEqual(page.save_calls, 0)
 
     def test_preflight_allows_exact_existing_file_only_for_local_reconciliation(self):
         with tempfile.TemporaryDirectory() as tmp:

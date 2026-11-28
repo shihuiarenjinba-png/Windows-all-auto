@@ -12,6 +12,23 @@
   "identity_name": "OkinawaDesktopTools.DataContractAuditor",
   "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
   "architecture": "x64",
+  "device_family_settings": {
+    "status": "PENDING_OWNER_APPROVAL",
+    "manifest_target_device_families": [
+      "Windows.Desktop"
+    ],
+    "recommended_store_device_families": [
+      "Windows 10/11 Desktop"
+    ],
+    "approved_store_device_families": [],
+    "approval": null
+  },
+  "execution_policy": {
+    "status": "PLAN_ONLY",
+    "auto_execute_approved_sections": false,
+    "approved_sections": [],
+    "approval": null
+  },
   "known_warnings": [],
   "expected_existing_package_names": [],
   "expected_replaced_package_names": [],
@@ -22,6 +39,7 @@
   "source_sha": "722ec7a077d2c6109e657c4ee661c9f3d06a4506",
   "artifact_run_id": 45580565845,
   "artifact_id": 15005358857,
+  "artifact_name": "data-contract-QA_UNSIGNED-msix-45580565845",
   "local_runtime_qa_status": "SOURCE_QA_PASS_PACKAGED_EXE_RUNTIME_UNVERIFIED_INSTALL_ACCESS_DENIED_AND_TIMEOUT",
   "upload_hold_reasons": [],
   "artifact_internal_preflight": {

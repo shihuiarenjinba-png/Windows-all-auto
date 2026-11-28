@@ -15,9 +15,52 @@ These are separate live Partner Center observations recorded by the existing aut
 | STRATEGY MARKET US and JP, `msix_pwa_game` | `docs/PARTNER_CENTER_MAP.json`, game observation/save docs and fixtures in `Windows-Automator` | Same high-level browser package flow, but product-specific Game route and full section completion; Game values are not copied into App jobs |
 | Folder Automation Engine, `msix_pwa_app` | `ops/folder_engine_partner_center_teacher_20261118.json` and `ops/folder_engine_package_upload_receipt_20261119.json` | One exact upload; Microsoft states `Uploading` → `Analyzing package` → `Validated`; known `runFullTrust` warning only; Save; same Draft reload; package/version/architecture/Desktop retained |
 
-The Folder receipt is the closest reusable template for this uploader and its observed control was the visible Browse link's file input. The older App route mapping records the exact CSS selector and post-save reconciliation. The new adapter combines these proven actions while binding every write to the configured Product ID, existing Submission ID, manifest Identity, Publisher, Version, Architecture, package SHA, and exact filename. A simulator test replays the Folder transition sequence and duplicate-write refusal.
+The Folder receipt is the closest reusable template for this uploader and its observed control was the visible Browse link's file input. The older App route mapping records the exact CSS selector and post-save reconciliation. The adapter starts at Apps and games Overview, selects the exact product href/name, checks Identity, returns to that product Overview, and follows its Packages link only when its href contains the configured Product ID and existing Submission ID. A simulator test replays the Folder transition sequence and duplicate-write refusal.
 
 The historical receipts prove successful **package upload and draft save**, not by themselves Certification or public publication. Those remain separate workflow states and this uploader has no controls for either.
+
+## Shared form adapter and section-scoped apply
+
+`uploader.store_form_engine` provides actual Playwright methods for text and
+multiline text, numeric inputs, exact price-tier options, exact select options, radio/checkbox controls,
+multi-select markets, image/package file inputs, Save, reload, and field-by-field
+postcondition checks. `OverviewNavigator` enters through Apps and games
+Overview, binds the exact Product ID and name, then follows a verified section
+link whose href also binds the Product ID and existing Draft ID.
+
+One section can be applied with `python -m all_auto store apply`. It requires
+`--execute`, a section-scoped approval record, an action-time verified UI map,
+and an already-authenticated loopback Edge CDP session. Values are supplied as
+JSON fields with exact accessible labels. The map at
+`uploader/config/store_ui_maps/msix_pwa_app.v1.json` records the old
+Windows-Automator screen names as evidence but marks non-Package navigation
+unverified because it came from a different product and a read-only session.
+Consequently, real non-Package writes stop until a current route map is
+verified. Mock tests use a separate verified map and synthetic approvals.
+Packages delegate to the existing uploader so validation, hash-bound
+idempotency, Microsoft analysis, warning classification, Save/reload and
+receipts stay in that established route.
+
+Example schema for approved listing values (approval file must independently
+bind Product ID, Draft ID, section, approver and approval reference):
+
+```json
+[
+  {"key":"name","kind":"text","label":"App name","value":"Owner-approved name"},
+  {"key":"description","kind":"textarea","label":"Description","value":"Owner-approved, evidence-based description."}
+]
+```
+
+```powershell
+python -m all_auto store apply --product <registered-key> `
+  --section store_listings --values .\approved-listing-values.json `
+  --approval .\approved-store-listings.json --execute
+```
+
+The engine checks image magic bytes against the selected extension. Uploaded
+file inputs are reconciled after reload through the exact visible saved
+filename because browsers intentionally clear local file input state on page
+reload.
 
 ## Browser authentication and cloud execution
 
@@ -59,13 +102,13 @@ Run from the repository root:
 .\scripts\start_partner_center_edge_cdp.ps1
 ```
 
-The script is pinned to the approved DCA Packages route:
+The startup script opens the Apps and games Overview as the common entry point:
 
-`https://partner.microsoft.com/en-us/dashboard/products/9PDL4ZWSB45P/submissions/1152921505702212222/packages`
+`https://partner.microsoft.com/en-us/dashboard/apps-and-games/overview`
 
-- If no Edge CDP is listening, it starts a dedicated Edge profile under `%LOCALAPPDATA%\\PartnerCenterUploaderEdge`, binds CDP to `127.0.0.1:9223`, and opens that exact Draft URL.
-- If Edge CDP is already listening, it verifies that the endpoint is Microsoft Edge. When the exact DCA Draft tab is absent, it opens one new tab at that exact URL through the local CDP target endpoint. It does not close, replace, or navigate existing tabs.
-- If multiple exact DCA Draft tabs already exist, it does not create more tabs. Doctor must be allowed to report the ambiguity; remove the duplicate manually only after confirming which tab is safe to close.
+- If no Edge CDP is listening, it starts a dedicated Edge profile under `%LOCALAPPDATA%\\PartnerCenterUploaderEdge`, binds CDP to `127.0.0.1:9223`, and opens the Overview.
+- If Edge CDP is already listening, it verifies that the endpoint is Microsoft Edge. When Apps and games Overview is absent, it opens one new tab there through the local CDP target endpoint. It does not close, replace, or navigate existing tabs.
+- If multiple Overview tabs already exist, it does not create more tabs. Doctor reports the ambiguity; resolve duplicate tabs manually only after confirming which is safe to close.
 - The script never reads credentials, cookies, tokens, or local storage. Sign in and complete MFA manually in the Edge window associated with port 9223.
 
 After sign-in, run the read-only Browser Doctor:
@@ -76,7 +119,7 @@ After sign-in, run the read-only Browser Doctor:
   --cdp-url http://127.0.0.1:9223
 ```
 
-For this DCA operation, proceed only when the result is exactly `READY_EXACT_DRAFT_TAB`, with Product ID `9PDL4ZWSB45P` and Draft ID `1152921505702212222`. Do not treat a generic `READY_UNIQUE_PARTNER_CENTER_TAB` or `READY_UNIQUE_PRODUCT_TAB` as sufficient for this one-time operation. Any `HOLD_*`, authentication hold, or duplicate target stops the process. Doctor reports Edge version, context/page counts, sanitized page metadata and the selected page. It never navigates, clicks, selects a file, saves, or closes browser pages. The upload path uses the same selector and performs a read-only Product/Identity/Draft/package-row preflight before reserving an upload attempt.
+For this DCA operation, `READY_APPS_GAMES_OVERVIEW` confirms only that the authenticated Partner Center Overview tab is available; it is not itself proof of Product or Draft identity. Any `HOLD_*`, authentication hold, or duplicate target stops the process. Doctor reports Edge version, context/page counts, sanitized page metadata and the selected page. It never navigates, clicks, selects a file, saves, or closes browser pages. Before any upload attempt is reserved, the uploader starts from Overview, selects exact Product ID/name, checks Identity/Publisher, follows the Overview Packages link whose href contains the exact existing Draft ID, and reads current package rows.
 
 ### 4. One product dry run
 
@@ -119,7 +162,7 @@ This authorization is limited to one SHA-bound package upload/Save/reload agains
 
 `-Execute` is only for a product whose job config has `upload_approved: true` and a pinned 64-character `expected_sha256`. The script checks that local Edge CDP is responding at `http://127.0.0.1:9223/json/version` before attaching. CDP is restricted to loopback addresses for this route. CDP connection, authenticated session, exact Product/Draft route and existing package rows are verified before the SQLite upload attempt counter is incremented. A local connection/tab/preflight failure writes a separate receipt but consumes no remote upload attempt. Existing `receipt.json` is never replaced; later runs get unique `receipt-<id>.json` files. No Microsoft username, password, MFA code, browser cookie, or access token is placed in a command line or log.
 
-The existing browser adapter then re-reads the exact Product Identity and configured Draft Packages route, checks existing package rows and Windows Desktop selection, uploads the exact MSIX, waits for Microsoft package validation, presses Packages `Save`, reloads Overview, and reopens Packages to confirm retention. Unknown warnings, validation errors, changed UI, ambiguous package rows, or timeouts stop for reconciliation; never blindly retry.
+The existing browser adapter starts from Apps and games Overview, selects the product by exact ID and name, checks Product Identity/Publisher, returns to Product Overview, follows its exact Draft Packages link, checks existing package rows and Windows Desktop selection, uploads the exact MSIX, waits for Microsoft package validation, presses Packages `Save`, reloads Overview, and reopens Packages to confirm retention. Unknown warnings, validation errors, changed UI, ambiguous package rows, or timeouts stop for reconciliation; never blindly retry.
 
 **Important boundary:** this script only uploads/saves the package in the existing Draft. It does not click `Submit to the Store`, start Certification, create a new Submission, change price or markets, or publish. Microsoft Store signing of MSIX/AppX happens after certification during publishing; no pre-upload CA certificate is required. Certification and publishing must be handled as a distinct approval step. Microsoft defaults to publishing immediately after certification; before any future certification submission, choose `Don't publish this submission until I select Publish now` under Submission options and verify that the manual hold is retained. See [Microsoft submission options](https://learn.microsoft.com/en-us/windows/apps/publish/publish-your-app/msix/manage-submission-options).
 
@@ -154,7 +197,7 @@ If the durable ledger cannot be read completely, the worker fails closed. If the
 
 ## Tests
 
-`python -m unittest tests.test_cloud_uploader tests.test_partner_center_browser -v`
+`python -m unittest discover -s tests` (use `.venv-store-uploader\\Scripts\\python.exe` to include the Playwright mock-form integration tests)
 
 ## Not supported yet
 
@@ -173,3 +216,10 @@ If the durable ledger cannot be read completely, the worker fails closed. If the
 - Local full suite: 405 tests PASS (2 existing skips); compileall PASS; PowerShell Parser PASS for all 8 scripts; pinned Playwright 1.56.0 Bootstrap PASS.
 - The exact DCA MSIX local hash and Manifest match the registered tuple; isolated dry-run returned `DRY_RUN`. Browser Doctor returned `HOLD_CDP_OR_CONFIG` because `127.0.0.1:9223` was unavailable. No upload attempt or Packages Save was performed.
 - Start/activate the manually authenticated local Edge CDP session and rerun Doctor. Package-specific install/runtime verification remains unresolved; do not claim Partner Center upload or Packages Save until a later local run confirms it.
+
+## Form automation implementation checkpoint — 2026-11-28
+
+- `uploader/store_form_engine.py` implements exact-label Playwright input, exact price-tier selection, save, reload, and per-field reconciliation. The local mock navigates from Overview, binds an exact product name and ID, edits text, multiline descriptions, numeric/price/tier/dropdown/radio/checkbox/market fields, uploads a synthetic image and MSIX, saves, reloads, and verifies persisted values.
+- `all_auto store apply` is the section-scoped live entry point. Non-Package writes require exact product/Draft/section approval and an action-time verified route map. The checked-in App map is deliberately unverified because its source observation is another product and read-only; live non-Package writes therefore stop before CDP. Packages continue through the existing uploader's separate analysis and receipt path.
+- Package discovery resolves one exact filename from a product-specific cache or retrieves a configured pinned GitHub Contents path, then verifies SHA-256 and Manifest. Duplicate cache candidates fail closed. This does not yet retrieve GitHub Actions artifacts by artifact ID.
+- Local full suite: 427 tests completed, 2 existing skips, all others passed. Playwright mock-form and package workflow subset: 11 passed. No Partner Center session was attached or changed; no live route, write, or Save was exercised.

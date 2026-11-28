@@ -10,11 +10,11 @@ if (-not $uri.IsLoopback -or $uri.Scheme -ne 'http' -or $uri.UserInfo -or $uri.Q
     throw 'CDP must be an HTTP loopback origin such as http://127.0.0.1:9223, without credentials or extra path.'
 }
 
-$targetUrl = 'https://partner.microsoft.com/en-us/dashboard/products/9PDL4ZWSB45P/submissions/1152921505702212222/packages'
+$targetUrl = 'https://partner.microsoft.com/en-us/dashboard/apps-and-games/overview'
 $targetUri = [Uri]$targetUrl
 if ($targetUri.Scheme -ne 'https' -or $targetUri.Host -ne 'partner.microsoft.com' -or
-    $targetUri.AbsolutePath -ne '/en-us/dashboard/products/9PDL4ZWSB45P/submissions/1152921505702212222/packages') {
-    throw 'The configured DCA target URL does not match the approved Product/Draft route.'
+    $targetUri.AbsolutePath -ne '/en-us/dashboard/apps-and-games/overview') {
+    throw 'The configured start URL must be the Microsoft Partner Center Apps and games Overview.'
 }
 
 $baseUrl = $CdpUrl.TrimEnd('/')
@@ -34,7 +34,7 @@ function Get-EdgeCdpVersion {
     }
 }
 
-function Get-ExactDcaDraftTargets {
+function Get-ExactOverviewTargets {
     try {
         $targets = @(Invoke-RestMethod -Uri $listEndpoint -TimeoutSec 3)
     } catch {
@@ -46,28 +46,28 @@ function Get-ExactDcaDraftTargets {
     })
 }
 
-function Open-ExactDcaDraftTab {
+function Open-AppsAndGamesOverviewTab {
     $newTargetEndpoint = $baseUrl + '/json/new?' + [Uri]::EscapeDataString($targetUrl)
     try {
         Invoke-RestMethod -Method Put -Uri $newTargetEndpoint -TimeoutSec 5 | Out-Null
     } catch {
-        throw 'Edge CDP is available, but it could not open the exact DCA Draft tab. Open the approved Packages URL manually in this same Edge window, then run Browser Doctor.'
+        throw 'Edge CDP is available, but it could not open Apps and games Overview. Open the official Overview URL manually in this same Edge window, then run Browser Doctor.'
     }
 }
 
 $existingVersion = Get-EdgeCdpVersion
 if ($existingVersion) {
     Write-Host "Local Edge CDP is available: $($existingVersion.Browser)"
-    $exactTargets = @(Get-ExactDcaDraftTargets)
+    $exactTargets = @(Get-ExactOverviewTargets)
     if ($exactTargets.Count -gt 1) {
-        Write-Warning "Found $($exactTargets.Count) exact DCA Draft tabs. No tab was opened or closed; Browser Doctor will fail closed until duplicates are resolved."
+        Write-Warning "Found $($exactTargets.Count) Apps and games Overview tabs. No tab was opened or closed; Browser Doctor will fail closed until duplicates are resolved."
     } elseif ($exactTargets.Count -eq 1) {
-        Write-Host 'The exact Data Contract Auditor Draft Packages tab is already open.'
+        Write-Host 'The Apps and games Overview tab is already open.'
     } else {
-        Open-ExactDcaDraftTab
+        Open-AppsAndGamesOverviewTab
         $opened = $false
         for ($i = 0; $i -lt 10; $i++) {
-            $exactTargets = @(Get-ExactDcaDraftTargets)
+            $exactTargets = @(Get-ExactOverviewTargets)
             if ($exactTargets.Count -eq 1) {
                 $opened = $true
                 break
@@ -75,9 +75,9 @@ if ($existingVersion) {
             Start-Sleep -Milliseconds 500
         }
         if (-not $opened) {
-            throw 'The exact DCA Draft tab did not appear after the CDP open request. Do not run the uploader.'
+            throw 'Apps and games Overview did not appear after the CDP open request. Do not run the uploader.'
         }
-        Write-Host 'Opened one new tab at the exact DCA Draft Packages URL. Existing tabs were left untouched.'
+        Write-Host 'Opened one new tab at Apps and games Overview. Existing tabs were left untouched.'
     }
     Write-Host 'Next: sign in manually if needed, then run the read-only Browser Doctor.'
     Write-Host 'No file was selected, no Save was clicked, and no Partner Center data was changed.'
@@ -126,13 +126,13 @@ if (-not $available) {
     throw 'Edge started, but the local CDP endpoint did not become available. Do not retry an upload.'
 }
 
-$exactTargets = @(Get-ExactDcaDraftTargets)
+$exactTargets = @(Get-ExactOverviewTargets)
 if ($exactTargets.Count -ne 1) {
-    throw "Expected one exact DCA Draft tab after Edge startup; found $($exactTargets.Count). Do not run the uploader."
+    throw "Expected one Apps and games Overview tab after Edge startup; found $($exactTargets.Count). Do not run the uploader."
 }
 
 Write-Host 'A dedicated Edge profile has been opened on loopback CDP for Data Contract Auditor.' -ForegroundColor Green
-Write-Host 'The initial tab is the exact existing Draft Packages route for Product 9PDL4ZWSB45P / Draft 1152921505702212222.'
+Write-Host 'The initial tab is Apps and games Overview; automation must select the exact Product and existing Draft from there.'
 Write-Host 'Sign in to Partner Center manually in this Edge window and complete MFA there.'
 Write-Host 'No credentials are collected or stored by this script.'
 Write-Host "CDP endpoint: $CdpUrl"
