@@ -226,7 +226,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: shihuiarenjinba-png/csv-import-validator
-          ref: 0fb74fb6246ce9559b4ddc847a7decd166b77abf
+          ref: c1a1805fcac5fe71958f8beafa74b1e4e0d54190
           path: dca-source
       - uses: actions/setup-python@v5
         with:
@@ -253,7 +253,7 @@ jobs:
           $report = Get-Content -LiteralPath $summary.report -Raw | ConvertFrom-Json
           Write-Host ($report.source_gui_driver | ConvertTo-Json -Depth 10 -Compress)
           if ($report.source_gui_driver.status -ne 'SOURCE_GUI_DRIVER_PASS') { throw 'Pinned DCA source GUI driver did not pass.' }
-          if ($report.source_gui_driver.binding.source_sha -ne '0fb74fb6246ce9559b4ddc847a7decd166b77abf') { throw 'QA source SHA is not the pinned commit.' }
+          if ($report.source_gui_driver.binding.source_sha -ne 'c1a1805fcac5fe71958f8beafa74b1e4e0d54190') { throw 'QA source SHA is not the pinned commit.' }
           if (-not $report.source_gui_driver.binding.source_worktree_clean) { throw 'DCA source checkout was not clean.' }
           if ($report.package.status -ne 'PACKAGE_HOLD') { throw 'The nonexistent fixed MSIX was not held.' }
           if ($report.qa_pass) { throw 'Source GUI QA incorrectly promoted packaged runtime QA.' }
