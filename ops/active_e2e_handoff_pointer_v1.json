@@ -3,26 +3,26 @@
   "pointer_version": 1,
   "path": "ops/active_e2e_handoff_pointer_v1.json",
   "repository": "shihuiarenjinba-png/Windows-all-auto",
-  "generated_at_utc": "2026-11-28T06:38:49Z",
+  "generated_at_utc": "2026-11-28T08:37:04Z",
   "status": "ACTIVE",
   "selection_policy": "VERIFIED_POINTER_REFERENCED_OVERLAY_ONLY",
   "fallback_to_canonical_ledger": false,
   "source_observation": {
     "pr_number": 219,
     "branch": "codex/36-pr218-current-lane-reconcile-20261128-1337",
-    "head_sha": "b3a42ce80fe95651f075b42b03d03c21700a91dd",
-    "exact_head_ci_run_id": 46114053192,
+    "head_sha": "10b1e12788e6a1c0bd17a46453cd50bb68367bb9",
+    "exact_head_ci_run_id": 46118094976,
     "exact_head_ci_conclusion": "success"
   },
   "active_snapshot": {
-    "observed_at_utc": "2026-11-28T06:38:49Z",
+    "observed_at_utc": "2026-11-28T08:37:04Z",
     "overlay": {
-      "path": "ops/active_e2e_handoff_overlay_20261128_1538.json",
-      "git_blob_sha": "bf1031b52d4a3ef5fc2a75f6c855d8b34028b810"
+      "path": "ops/active_e2e_handoff_overlay_20261128_1737.json",
+      "git_blob_sha": "27e5f65f79ca9266852b222ca20009308b983433"
     },
     "queue": {
-      "path": "ops/completion_rush_queue_20261128_1538.json",
-      "git_blob_sha": "37bdc5622823d932a5c7b5cd252882201dfa3a4b"
+      "path": "ops/completion_rush_queue_20261128_1737.json",
+      "git_blob_sha": "9d261184a55e430ec6a253fe1672b15a7616b278"
     }
   },
   "canonical_ledger": {
@@ -55,11 +55,20 @@
     "force_push_allowed": false
   },
   "supervisor_handoff": {
-    "received_at_jst": "2026-11-28 14:44",
+    "received_at_jst": "2026-11-28 16:44",
     "provisioner_repository": "shihuiarenjinba-png/Repository-Provisioner-3D",
     "provisioner_pr_number": 11,
     "provisioner_head_sha": "356cb7bcbf795c3335fb142cf82fef2db3a7478a",
     "fixture_only_run_id": 46099215673,
-    "real_product_msix_job": "SKIPPED"
+    "real_product_msix_job": "SKIPPED",
+    "signal_sprint": {
+      "repository": "shihuiarenjinba-png/AI-Game-Factory",
+      "pr32_head": "f051137e0a576c1778486f416b8f1d48f50d57b3",
+      "exe_artifact_id": 15189400982,
+      "pr54_repository": "shihuiarenjinba-png/Repository-Provisioner-game",
+      "pr54_number": 54,
+      "pr54_head": "b8baa6ac332a677d540c116192dc761814519906",
+      "pr54_preview_status": "STALE_AGAINST_PR32_BUILD"
+    }
   }
 }
