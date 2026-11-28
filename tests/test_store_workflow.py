@@ -125,7 +125,7 @@ class StoreWorkflowTests(unittest.TestCase):
                 search_roots=[root / "runtime"],
                 downloader=lambda *_args, **_kwargs: self.fail("exact local file should be reused"))
             self.assertEqual(result["status"], "LOCAL_EXACT_FILE_VERIFIED")
-            self.assertEqual(Path(result["path"]), source)
+            self.assertTrue(Path(result["path"]).samefile(source))
             self.assertEqual(result["sha256"], digest)
 
     def test_github_actions_artifact_id_is_pinned_downloaded_and_manifest_verified(self):
