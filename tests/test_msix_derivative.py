@@ -38,6 +38,7 @@ def signed_package_with_signature_metadata(path: Path) -> None:
     content_types = b'''<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
       <Default Extension="xml" ContentType="application/xml" />
       <Default Extension="p7x" ContentType="application/vnd.ms-appx.signature" />
+      <Default Extension="cat" ContentType="application/vnd.ms-pkiseccat" />
       <Override PartName="/AppxMetadata/CodeIntegrity.cat" ContentType="application/vnd.ms-appx.codeintegrity" />
     </Types>'''
     with zipfile.ZipFile(path, "w") as archive:

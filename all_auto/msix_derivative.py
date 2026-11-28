@@ -74,12 +74,12 @@ def _identity(manifest: bytes) -> dict[str, str]:
             ("Name", "Publisher", "Version", "ProcessorArchitecture")}
 
 
-def _content_types_signature_only(source: bytes, derived: bytes) -> bool:
+def _content_types_signature_only(source: bytes, derived: bytes) -> tuple[bool, str]:
     namespace = "{http://schemas.openxmlformats.org/package/2006/content-types}"
     try:
         before, after = ET.fromstring(source), ET.fromstring(derived)
     except ET.ParseError:
-        return False
+        return False, "content-types XML is invalid"
     def mappings(root: ET.Element) -> tuple[dict[str, str], dict[str, str]]:
         defaults, overrides = {}, {}
         for item in root:
@@ -90,19 +90,28 @@ def _content_types_signature_only(source: bytes, derived: bytes) -> bool:
         return defaults, overrides
     old_defaults, old_overrides = mappings(before)
     new_defaults, new_overrides = mappings(after)
-    allowed_default = {"p7x"}
+    allowed_default = {"p7x", "cat"}
     allowed_override = {"/" + CODE_INTEGRITY_MEMBER.lower()}
-    if any(old_defaults.get(key) != new_defaults.get(key) for key in
-           (set(old_defaults) | set(new_defaults)) - allowed_default):
-        return False
-    if any(old_overrides.get(key) != new_overrides.get(key) for key in
-           (set(old_overrides) | set(new_overrides)) - allowed_override):
-        return False
+    changed_defaults = sorted(key for key in (set(old_defaults) | set(new_defaults)) - allowed_default
+                              if old_defaults.get(key) != new_defaults.get(key))
+    if changed_defaults:
+        return False, f"unexpected content-type defaults changed: {changed_defaults[:8]}"
+    changed_overrides = sorted(key for key in (set(old_overrides) | set(new_overrides)) - allowed_override
+                               if old_overrides.get(key) != new_overrides.get(key))
+    if changed_overrides:
+        return False, f"unexpected content-type overrides changed: {changed_overrides[:8]}"
     signature_type = new_defaults.get("p7x", "").lower()
+    catalog_default_type = new_defaults.get("cat", "").lower()
     catalog_type = new_overrides.get("/" + CODE_INTEGRITY_MEMBER.lower(), "").lower()
-    return (("p7x" not in new_defaults or "signature" in signature_type) and
-            ("/" + CODE_INTEGRITY_MEMBER.lower() not in new_overrides or
-             any(word in catalog_type for word in ("codeintegrity", "code-integrity", "catalog"))))
+    if "p7x" in new_defaults and "signature" not in signature_type:
+        return False, "p7x extension does not map to a signature content type"
+    if ("cat" in new_defaults and not
+            any(word in catalog_default_type for word in ("pkiseccat", "codeintegrity", "catalog"))):
+        return False, "cat extension does not map to a code-integrity catalog content type"
+    if ("/" + CODE_INTEGRITY_MEMBER.lower() in new_overrides and not
+            any(word in catalog_type for word in ("codeintegrity", "code-integrity", "catalog"))):
+        return False, "CodeIntegrity.cat override has an unrelated content type"
+    return True, "signature content-types delta verified"
 
 
 def verify_test_signed_derivative(*, source: Path, derived: Path,
@@ -138,9 +147,11 @@ def verify_test_signed_derivative(*, source: Path, derived: Path,
     if CONTENT_TYPES_MEMBER in original_members:
         try:
             with zipfile.ZipFile(source) as source_zip, zipfile.ZipFile(derived) as derived_zip:
-                if not _content_types_signature_only(source_zip.read(CONTENT_TYPES_MEMBER),
-                                                     derived_zip.read(CONTENT_TYPES_MEMBER)):
-                    raise DerivativeVerificationError("[Content_Types].xml changed beyond signature metadata")
+                allowed, content_type_reason = _content_types_signature_only(
+                    source_zip.read(CONTENT_TYPES_MEMBER), derived_zip.read(CONTENT_TYPES_MEMBER))
+                if not allowed:
+                    raise DerivativeVerificationError(
+                        "[Content_Types].xml changed beyond signature metadata: " + content_type_reason)
         except (KeyError, OSError, zipfile.BadZipFile) as exc:
             raise DerivativeVerificationError("package content-type metadata is unreadable") from exc
     elif CONTENT_TYPES_MEMBER in added:
