@@ -152,7 +152,7 @@ def run_profiled_source_driver(*, product: str, profile_root: Path,
         head = git("rev-parse", "HEAD").lower()
         status_text = git("status", "--porcelain", "--untracked-files=all")
         origin = git("config", "--get", "remote.origin.url").strip().lower().removesuffix(".git")
-        script_hash = hashlib.sha256(script.read_bytes()).hexdigest()
+        script_hash = hashlib.sha256(script.read_bytes().replace(b"\\r\\n", b"\\n")).hexdigest()
         return {
             "source_sha": head,
             "source_worktree_clean": not bool(status_text),
