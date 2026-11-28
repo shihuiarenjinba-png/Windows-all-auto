@@ -93,6 +93,55 @@
     ],
     "timeout_seconds": 240,
     "data_policy": "synthetic_only",
-    "scope": "source GUI functional smoke; not fixed MSIX install, visual DPI, certification, or publish proof"
+    "scope": "source GUI functional smoke; not fixed MSIX install, visual DPI, certification, or publish proof",
+    "receipt_filename": "LOCAL_REAL_DEVICE_QA.json",
+    "required_receipt_checks": [
+      "core_csv_drift",
+      "csv_xlsx_compare",
+      "invalid_input_rejected",
+      "outputs_reopen",
+      "inputs_unchanged",
+      "writable_default_output",
+      "default_output_files_written",
+      "ui_language_and_scaling",
+      "ui_compare_workflow",
+      "ui_error_path",
+      "close_relaunch"
+    ],
+    "scenario_check_map": {
+      "language_switch_ja": [
+        "ui_language_and_scaling"
+      ],
+      "language_switch_en": [
+        "ui_language_and_scaling"
+      ],
+      "launch_and_render": [
+        "ui_language_and_scaling"
+      ],
+      "csv_schema_and_quality_comparison": [
+        "core_csv_drift",
+        "ui_compare_workflow"
+      ],
+      "xlsx_input": [
+        "csv_xlsx_compare"
+      ],
+      "report_output_reopens": [
+        "outputs_reopen",
+        "default_output_files_written"
+      ],
+      "invalid_csv_error": [
+        "invalid_input_rejected",
+        "ui_error_path"
+      ],
+      "normal_exit_and_relaunch": [
+        "close_relaunch"
+      ]
+    }
+  },
+  "source_binding": {
+    "repository": "https://github.com/shihuiarenjinba-png/csv-import-validator",
+    "commit": "662a7fc506227464d103cd9a27f85ea372dfe3e2",
+    "receipt_schema": "data-contract-local-real-device-qa/1",
+    "driver_sha256": "1408e0e073e5165686acaa5b9bb6c9e62d7d51d46eb3d23c55f185768b55d6cf"
   }
 }
