@@ -10,12 +10,14 @@
     "canonical_ledger_commit_sha": "905656dcdd03615019d53e03a25c058128c95d06",
     "previous_canonical_ledger_blob_sha": "4eba332ea81dd44625c04d479ff3d20d343ca1de",
     "regression_test_path": "tests/test_current_live_product_reconciliation_20261128_2335.py",
-    "regression_test_commit_sha": "69d68d3e44afd4d3e103b875a5f8416f96c8110e",
+    "regression_test_commit_sha": "ac91ec12c0f9006e10baadbeca91bab201bd0730",
     "overlay_path": "ops/active_e2e_handoff_overlay_20261128_2335.json",
     "observation_key": "latest_execution_reconciliation_20261128_2335",
     "pr165_code_head_sha": "c35831ed375e84d9551ebe42e9f02dca319d3b26",
     "snapshot_branch_head_before_queue": "69d68d3e44afd4d3e103b875a5f8416f96c8110e",
-    "observed_at_utc": "2026-11-28T14:35:55Z"
+    "observed_at_utc": "2026-11-28T14:35:55Z",
+    "regression_test_blob_sha": "c75670679d46a9e10f4e14dc1f52c3c819ce8a2f",
+    "snapshot_branch_head_before_queue_update": "ac91ec12c0f9006e10baadbeca91bab201bd0730"
   },
   "new_product_generation_allowed": false,
   "rules": {
@@ -246,10 +248,12 @@
   "snapshot_branch_state": {
     "source_code_head_sha": "c35831ed375e84d9551ebe42e9f02dca319d3b26",
     "canonical_ledger_update_commit_sha": "905656dcdd03615019d53e03a25c058128c95d06",
-    "regression_test_commit_sha": "69d68d3e44afd4d3e103b875a5f8416f96c8110e",
+    "regression_test_commit_sha": "ac91ec12c0f9006e10baadbeca91bab201bd0730",
     "snapshot_branch_head_before_queue": "69d68d3e44afd4d3e103b875a5f8416f96c8110e",
     "product_code_changed": false,
     "merge_allowed": false,
-    "force_push_allowed": false
+    "force_push_allowed": false,
+    "regression_test_blob_sha": "c75670679d46a9e10f4e14dc1f52c3c819ce8a2f",
+    "snapshot_branch_head_before_queue_update": "ac91ec12c0f9006e10baadbeca91bab201bd0730"
   }
 }
