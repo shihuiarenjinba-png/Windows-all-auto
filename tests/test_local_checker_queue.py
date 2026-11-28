@@ -1,4 +1,4 @@
-"""End-to-end offline bytes for local QA -> Windows-checker preflight adapter."""
+"""Offline regressions for the local pull-custody -> Windows-checker preflight gate."""
 import hashlib
 import json
 from pathlib import Path
@@ -112,6 +112,45 @@ class LocalCheckerQueueTests(unittest.TestCase):
             (folder / "github-custody.json").write_text(json.dumps(custody), encoding="utf-8")
         return folder
 
+    def write_custody_receipt(self, folders, artifact_id=67890, **overrides):
+        if not isinstance(folders, (list, tuple)):
+            folders = [folders]
+        packages = []
+        for folder in folders:
+            meta = json.loads((folder / "handoff.json").read_text(encoding="utf-8"))
+            packages.append({
+                "product_type": meta["product_type"],
+                "slug": meta["slug"],
+                "request_id": meta["request_id"],
+                "source_sha": meta["source_sha"],
+                "package_sha256": meta["package_sha256"],
+                "package_bytes": meta["package_bytes"],
+                "local_sha256": meta["package_sha256"],
+                "local_pull_status": "VERIFIED",
+            })
+        receipt = {
+            "status": "CUSTODY_VERIFIED_ONLY",
+            "e2e_pass": False,
+            "repository": "shihuiarenjinba-png/Windows-all-auto",
+            "run_id": 12345,
+            "artifact_id": artifact_id,
+            "artifact_name": "verified-msix-local-qa-12345",
+            "run_head_sha": "c" * 40,
+            "archive_sha256": "d" * 64,
+            "queue_sha256": "e" * 64,
+            "signature": "NOT_VERIFIED",
+            "checker": "NOT_VERIFIED",
+            "gui": "NOT_VERIFIED",
+            "local_pull_status": "VERIFIED",
+            "packages": packages,
+        }
+        receipt.update(overrides)
+        root = self.inbox / ".artifact-custody"
+        root.mkdir(exist_ok=True)
+        path = root / (str(artifact_id) + ".json")
+        path.write_text(json.dumps(receipt), encoding="utf-8")
+        return path
+
     def test_empty_inbox_is_hold_not_e2e(self):
         result = check_local_queue(self.inbox, self.checker, self.reports)
         self.assertEqual(result["reason"], "NO_REAL_MSIX_IN_LOCAL_QA_QUEUE")
@@ -119,15 +158,49 @@ class LocalCheckerQueueTests(unittest.TestCase):
         self.assertFalse(self.reports.exists())
 
     def test_actual_app_and_game_bytes_reach_checker_separately(self):
-        self.bundle("APP", "sample-app")
-        self.bundle("GAME", "sample-game")
+        app = self.bundle("APP", "sample-app")
+        game = self.bundle("GAME", "sample-game")
+        self.write_custody_receipt([app, game])
         result = check_local_queue(self.inbox, self.checker, self.reports)
         self.assertEqual(result["checked"], 2)
         self.assertEqual({x["product_type"] for x in result["results"]}, {"APP", "GAME"})
         self.assertTrue(all(x["checker_verdict"] == "NEEDS_REVIEW" for x in result["results"]))
         self.assertTrue(all(x["local_gui_qa"] == "NOT_RUN" for x in result["results"]))
+        self.assertTrue(all(x["local_artifact_custody"] == "VERIFIED" for x in result["results"]))
+        self.assertTrue(all(x["local_artifact_ids"] == [67890] for x in result["results"]))
         self.assertFalse(result["e2e_pass"])
         self.assertEqual(len(list(self.reports.glob("*.checker.json"))), 2)
+
+    def test_package_without_local_artifact_custody_receipt_is_blocked(self):
+        self.bundle("GAME", "sample-game")
+        with self.assertRaisesRegex(ValueError, "verified local artifact custody receipt"):
+            check_local_queue(self.inbox, self.checker, self.reports)
+        self.assertFalse(self.reports.exists())
+
+    def test_local_artifact_custody_receipt_must_match_exact_package_sha(self):
+        folder = self.bundle("GAME", "sample-game")
+        path = self.write_custody_receipt(folder)
+        receipt = json.loads(path.read_text(encoding="utf-8"))
+        receipt["packages"][0]["package_sha256"] = "0" * 64
+        receipt["packages"][0]["local_sha256"] = "0" * 64
+        path.write_text(json.dumps(receipt), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "lacks matching verified local artifact custody receipt"):
+            check_local_queue(self.inbox, self.checker, self.reports)
+        self.assertFalse(self.reports.exists())
+
+    def test_e2e_claim_in_local_custody_receipt_is_rejected(self):
+        folder = self.bundle("GAME", "sample-game")
+        self.write_custody_receipt(folder, e2e_pass=True)
+        with self.assertRaisesRegex(ValueError, "invalid local artifact custody receipt"):
+            check_local_queue(self.inbox, self.checker, self.reports)
+        self.assertFalse(self.reports.exists())
+
+    def test_wrong_repository_local_custody_receipt_is_rejected(self):
+        folder = self.bundle("GAME", "sample-game")
+        self.write_custody_receipt(folder, repository="untrusted/repository")
+        with self.assertRaisesRegex(ValueError, "invalid local artifact custody receipt"):
+            check_local_queue(self.inbox, self.checker, self.reports)
+        self.assertFalse(self.reports.exists())
 
     def test_corrupted_msix_rejected_before_checker(self):
         folder = self.bundle("GAME", "sample-game")
@@ -145,13 +218,15 @@ class LocalCheckerQueueTests(unittest.TestCase):
         self.assertFalse(self.reports.exists())
 
     def test_no_checker_report_never_passes(self):
-        self.bundle("APP", "sample-app")
+        folder = self.bundle("APP", "sample-app")
+        self.write_custody_receipt(folder)
         (self.checker / "run.py").write_text("import sys\nsys.exit(0)\n", encoding="utf-8")
         with self.assertRaisesRegex(ValueError, "without valid report"):
             check_local_queue(self.inbox, self.checker, self.reports)
 
     def test_report_cannot_be_written_inside_package_queue(self):
-        self.bundle("GAME", "sample-game")
+        folder = self.bundle("GAME", "sample-game")
+        self.write_custody_receipt(folder)
         with self.assertRaisesRegex(ValueError, "outside package inbox"):
             check_local_queue(self.inbox, self.checker, self.inbox / "reports")
 
