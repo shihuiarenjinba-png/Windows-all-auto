@@ -36,6 +36,18 @@ class ActiveHandoffPointerV1Tests(unittest.TestCase):
             self.assertFalse((root / "ops" / "active_e2e_handoff.json").exists())
             snapshot = load_active_handoff_pointer(root)
 
+            if snapshot["overlay_path"] == "ops/active_e2e_handoff_overlay_20261128_2001.json":
+                self.assertEqual(snapshot["overlay"]["pr165"]["head_sha"], "9a7b8db24f26a4266fbc7d30d16c64edb5edf5fa")
+                self.assertEqual(snapshot["overlay"]["pr126_source_pin"]["status"], "CURRENT_SOURCE_PIN_MATCHES__FAIL_CLOSED_PREFLIGHT_PASS")
+                self.assertEqual(snapshot["pointer"]["source_observation"]["head_sha"], "78e3d1cfffcb2eddad52da9150c853e054cae70d")
+                self.assertEqual(snapshot["queue"]["source_observation"], snapshot["overlay_path"])
+                self.assertFalse(snapshot["overlay"]["e2e_pass"])
+                self.assertFalse(snapshot["overlay"]["real_msix"])
+                self.assertEqual(snapshot["pointer"]["canonical_ledger"]["fetch_blob_status"], "READABLE")
+                self.assertEqual(snapshot["pointer"]["canonical_ledger"]["recorded_pr165_latest_live_head_sha"], "380d4818330688f47d3558217ed556868cf0b744")
+                self.assertEqual(snapshot["pointer"]["canonical_ledger"]["directly_resolved_pr165_head_sha"], "9a7b8db24f26a4266fbc7d30d16c64edb5edf5fa")
+                return
+
             self.assertEqual(
                 snapshot["overlay_path"],
                 "ops/active_e2e_handoff_overlay_20261128_1850.json",
@@ -76,6 +88,45 @@ class ActiveHandoffPointerV1Tests(unittest.TestCase):
             root = Path(temporary)
             self._copy_pointer_snapshot(root)
             snapshot = load_active_handoff_pointer(root)
+
+            if snapshot["overlay_path"] == "ops/active_e2e_handoff_overlay_20261128_2001.json":
+                overlay = snapshot["overlay"]
+                queue = snapshot["queue"]
+                pointer = snapshot["pointer"]
+                self.assertEqual(overlay["pr165"]["head_sha"], "9a7b8db24f26a4266fbc7d30d16c64edb5edf5fa")
+                self.assertEqual([x["run_id"] for x in overlay["pr165"]["exact_head_ci"]], [46137250084, 46137250087, 46137250139])
+                self.assertFalse(overlay["pr165"]["product_code_changed"])
+                self.assertEqual(overlay["pr126_source_pin"]["head_sha"], "03f5666240c2dcf1cc3739a92987587c453e0734")
+                self.assertEqual(overlay["pr126_source_pin"]["status"], "CURRENT_SOURCE_PIN_MATCHES__FAIL_CLOSED_PREFLIGHT_PASS")
+                self.assertEqual(overlay["pr126_source_pin"]["focus"]["preflight"]["identity_status"], "STALE_TRACKED")
+                self.assertEqual(overlay["pr126_source_pin"]["focus"]["preflight"]["version_status"], "MISSING")
+                self.assertFalse(overlay["pr126_source_pin"]["focus"]["preflight"]["product_msix_created"])
+                self.assertEqual(overlay["pr126_source_pin"]["file_integrity"]["preflight"]["identity_status"], "MISSING")
+                self.assertEqual(overlay["pr126_source_pin"]["file_integrity"]["preflight"]["version_status"], "UNAVAILABLE")
+                self.assertFalse(overlay["pr126_source_pin"]["file_integrity"]["preflight"]["product_msix_created"])
+                self.assertEqual(overlay["products"]["focus_session_desk"]["current_source_preflight"]["request_id"], "app-focus-session-desk-b6b69464a9c7")
+                self.assertEqual(overlay["products"]["focus_session_desk"]["current_source_preflight"]["identity_status"], "STALE_TRACKED")
+                self.assertEqual(overlay["products"]["file_integrity_ledger"]["current_source_preflight"]["identity_status"], "MISSING")
+                self.assertTrue(overlay["products"]["file_integrity_ledger"]["functional_hold"])
+                self.assertEqual(overlay["pr219"]["head_sha"], "78e3d1cfffcb2eddad52da9150c853e054cae70d")
+                self.assertEqual(overlay["pr219"]["pr_validation_run_id"], 46132642984)
+                self.assertEqual(pointer["source_observation"]["head_sha"], "78e3d1cfffcb2eddad52da9150c853e054cae70d")
+                self.assertEqual(pointer["source_observation"]["pr_validation_run_id"], 46132642984)
+                self.assertEqual(queue["source_observation"], "ops/active_e2e_handoff_overlay_20261128_2001.json")
+                self.assertEqual(queue["priority"][0]["product"], "Focus Session Desk")
+                self.assertEqual(queue["priority"][1]["product"], "File Integrity Ledger")
+                self.assertTrue(queue["priority"][1]["functional_hold"])
+                self.assertEqual(overlay["canonical_ledger_reconciliation"]["directly_resolved_pr165_branch_head_sha"], "9a7b8db24f26a4266fbc7d30d16c64edb5edf5fa")
+                self.assertTrue(overlay["canonical_ledger_reconciliation"]["active_product_is_historical"])
+                self.assertIsNone(overlay["canonical_ledger_reconciliation"]["current_active_product"])
+                self.assertEqual(overlay["request_artifact_local_rehash"]["focus_session_desk"]["local_sha256"], "8f1862039297711a68bc33e8e25bea8cfc85f9926b269f0b2136bfa9986b503a")
+                self.assertEqual(overlay["request_artifact_local_rehash"]["file_integrity_ledger"]["local_sha256"], "697528b3b0769e3962eebfa0efcdcb026618cd378d97fc60c4f234017882527e")
+                self.assertEqual(overlay["store_upload_test_eligibility"]["eligible_fresh_unsold_products"], 0)
+                self.assertFalse(overlay["store_upload_test_eligibility"]["dry_run_started"])
+                self.assertFalse(overlay["store_submission_allowed"])
+                self.assertFalse(overlay["certification_allowed"])
+                self.assertFalse(overlay["publish_allowed"])
+                return
 
             self.assertEqual(
                 snapshot["overlay"]["pr126_source_pin"]["status"],
