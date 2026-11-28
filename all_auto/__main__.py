@@ -112,6 +112,7 @@ def main(argv: list[str] | None = None) -> int:
     store_qa = store_commands.add_parser("qa", help="Verify package and optionally execute the approved product QA driver")
     store_qa.add_argument("--product", required=True, help="Registered product key under uploader/config")
     store_qa.add_argument("--package", type=Path, help="Optional exact local MSIX; otherwise resolve from registered archive/cache sources")
+    store_qa.add_argument("--candidate-id", help="Verify one explicitly registered provisional package candidate; does not change the formal product package")
     store_qa.add_argument("--out", type=Path, help="Output root for a unique, append-only QA plan")
     store_qa.add_argument("--execute", action="store_true", help="Run only the profile-approved synthetic-data source GUI driver; does not install or certify the fixed MSIX")
     opts = parser.parse_args(argv)
@@ -125,7 +126,33 @@ def main(argv: list[str] | None = None) -> int:
                 config_root = Path(__file__).resolve().parent.parent / "uploader" / "config"
                 config, _ = _load_job(opts.product, config_root)
                 package = opts.package
+                candidate = None
+                package_binding_override = None
+                source_binding_override = None
+                source_root_candidates_override = None
                 acquisition = {"status": "EXPLICIT_LOCAL_PACKAGE" if package else "NOT_RESOLVED"}
+                repo_root = Path(__file__).resolve().parent.parent
+                if opts.candidate_id:
+                    from .package_candidates import load_package_candidate, runtime_package_binding
+                    candidate_registry = repo_root / "uploader" / "config" / "package_candidates"
+                    archive_root = Path.home() / "Desktop" / "portfolio-audit"
+                    candidate, candidate_package = load_package_candidate(
+                        product=opts.product, candidate_id=opts.candidate_id,
+                        config_root=config_root, registry_root=candidate_registry,
+                        archive_root=archive_root)
+                    package_binding_override = runtime_package_binding(candidate)
+                    package = package or candidate_package
+                    if Path(package).resolve() != candidate_package.resolve():
+                        raise StoreWorkflowError("explicit package path does not resolve to the registered candidate bytes")
+                    acquisition = {"status": "EXACT_REGISTERED_CANDIDATE_ARCHIVE", "artifact_id": candidate["artifact_id"],
+                                   "actions_run_id": candidate["actions_run_id"], "local_path": str(package)}
+                    source_binding_override = {
+                        "repository": "https://github.com/" + candidate["repository"],
+                        "commit": candidate["gui_qa_source_commit"],
+                        "receipt_schema": "data-contract-local-real-device-qa/1",
+                        "driver_sha256": candidate["source_gui_driver_sha256"],
+                    }
+                    source_root_candidates_override = candidate.get("source_root_candidates", [])
                 if package is None:
                     repo_root = Path(__file__).resolve().parent.parent
                     cache_root = Path(os.environ.get("STORE_PACKAGE_CACHE_ROOT", ".store-artifacts"))
@@ -140,7 +167,9 @@ def main(argv: list[str] | None = None) -> int:
                 from .runtime_qa import build_runtime_qa_report, run_profiled_source_driver
                 qa = build_runtime_qa_report(
                     product=opts.product, config_root=config_root,
-                    profile_root=config_root / "runtime_qa_profiles", package=package)
+                    profile_root=config_root / "runtime_qa_profiles", package=package,
+                    package_binding_override=package_binding_override,
+                    candidate_metadata=candidate)
                 qa["run_id"] = uuid4().hex
                 qa["package_acquisition"] = acquisition
                 if opts.execute:
@@ -148,12 +177,27 @@ def main(argv: list[str] | None = None) -> int:
                                      Path.home() / "Desktop" / "portfolio-audit" / "_runtime" /
                                      "store-fleet-sync")
                     evidence_root = (evidence_base / "qa-evidence" / opts.product / qa["run_id"])
-                    driver = run_profiled_source_driver(
-                        product=opts.product,
-                        profile_root=config_root / "runtime_qa_profiles",
-                        evidence_root=evidence_root)
+                    if candidate:
+                        from .package_candidates import load_candidate_source_gui_receipt
+                        driver = load_candidate_source_gui_receipt(candidate, archive_root)
+                        driver["candidate_source_only"] = True
+                    else:
+                        driver = run_profiled_source_driver(
+                            product=opts.product,
+                            profile_root=config_root / "runtime_qa_profiles",
+                            evidence_root=evidence_root,
+                            source_binding_override=source_binding_override,
+                            source_root_candidates_override=source_root_candidates_override)
                     qa["source_gui_driver"] = driver
-                    if driver.get("status") == "SOURCE_GUI_DRIVER_PASS":
+                    qa["installed_package_functional_qa"] = {
+                        "status": candidate.get("installed_msix_functional_qa", "NOT_RUN") if candidate else "NOT_RUN",
+                        "evidence_type": "TEST_SIGNED_DERIVATIVE_GUI" if candidate else None,
+                        "candidate_sha256": candidate.get("sha256") if candidate else None,
+                        "note": "Source-GUI evidence is separate and never promotes installed-MSIX runtime QA.",
+                    }
+                    if candidate and candidate.get("installed_msix_functional_qa") != "PASS":
+                        qa["status"] = "CANDIDATE_VERIFIED_INSTALLED_FUNCTIONAL_QA_PENDING"
+                    elif driver.get("status") == "SOURCE_GUI_DRIVER_PASS":
                         qa["status"] = "SOURCE_GUI_QA_PASS_PACKAGED_RUNTIME_UNVERIFIED"
                         qa["source_gui_qa_pass"] = True
                         from .runtime_qa import source_scenario_results
@@ -172,6 +216,7 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"STORE QA HOLD: {type(exc).__name__}: {exc}", file=sys.stderr)
                 return 2
             print(json.dumps({"status": qa["status"], "product": opts.product,
+                              "candidate_id": opts.candidate_id,
                               "package_status": qa["package"].get("status"),
                               "qa_pass": qa["qa_pass"], "report": str(report_path),
                               "store_write_performed": False}, ensure_ascii=False, sort_keys=True))

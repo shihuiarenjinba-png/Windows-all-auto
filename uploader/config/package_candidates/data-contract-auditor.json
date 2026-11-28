@@ -1,0 +1,45 @@
+{
+  "schema_version": "all-auto-package-candidates/1",
+  "product_key": "data-contract-auditor",
+  "product_id": "9PDL4ZWSB45P",
+  "submission_id": "1152921505702212222",
+  "formal_package_reference": {
+    "filename": "DataContractSchemaDrift_1.0.0.0_x64.msix",
+    "version": "1.0.0.0",
+    "sha256": "e2ca6fd81720dc270667e65db05404b6efdde5b2c0712bee2853e0608767db05"
+  },
+  "candidates": [
+    {
+      "candidate_id": "dca-provisional-1.0.1.0-4ae2574",
+      "artifact_id": "15267053130",
+      "actions_run_id": "46154390667",
+      "repository": "shihuiarenjinba-png/csv-import-validator",
+      "source_commit": "4ae2574982adf0cfd5aabc31f55f27b555283904",
+      "gui_qa_source_commit": "4ae2574982adf0cfd5aabc31f55f27b555283904",
+      "filename": "DataContractSchemaDrift_1.0.1.0_x64.msix",
+      "version": "1.0.1.0",
+      "sha256": "5e21356f6e589cc1075099887b44b63a69d7f6b44742d39a43c6f256ab5a361a",
+      "identity_name": "OkinawaDesktopTools.DataContractAuditor",
+      "publisher": "CN=46263F21-A700-41DB-8C9B-114C22FB82FC",
+      "architecture": "x64",
+      "target_device_families": [
+        "Windows.Desktop"
+      ],
+      "application_id": "DataContractSchemaDrift",
+      "signature_status": "UNSIGNED_STORE_CANDIDATE",
+      "archive_relative_path": "_runtime/dca-provisional-candidate-20261128-4ae2574982adf0cfd5aabc31f55f27b555283904/provisional-not-approved-20261128-142400-3c6e5b29/DataContractSchemaDrift_1.0.1.0_x64.msix",
+      "candidate_status": "PROVISIONAL_NOT_OWNER_APPROVED",
+      "owner_version_approval": false,
+      "upload_approved": false,
+      "certification_authorized": false,
+      "publish_authorized": false,
+      "installed_msix_functional_qa": "NOT_RUN",
+      "source_gui_qa_is_separate": true,
+      "source_gui_driver_sha256": "e54ee38d42dd6f38f95119afbf50522d972821c2247628e71b0e9c36a6630782",
+      "source_gui_receipt_relative_path": "_runtime/dca-provisional-candidate-20261128-4ae2574982adf0cfd5aabc31f55f27b555283904/qa-evidence/provisional-1.0.1.0/source-gui/LOCAL_REAL_DEVICE_QA.json",
+      "installed_msix_qa_receipt_relative_path": "_runtime/dca-provisional-candidate-20261128-4ae2574982adf0cfd5aabc31f55f27b555283904/qa-evidence/provisional-1.0.1.0/test-sign-install/test-signature-qa-receipt-db2caa96679f40479b8bcfac158676e9.json",
+      "product_id": "9PDL4ZWSB45P",
+      "submission_id": "1152921505702212222"
+    }
+  ]
+}

@@ -69,7 +69,9 @@ class WindowsMsixDiagnosticTests(unittest.TestCase):
                          "IMPORT_EPHEMERAL_TRUST", "LaunchMode", "ProcessLaunch",
                          "Split-Path -Parent $PSScriptRoot", "$env:PYTHONPATH = if",
                          "Push-Location $repoRoot",
-                         "basic_function=$(if ($LaunchMode -eq 'MarkerSmoke') { 'PASS' } else { 'NOT_RUN' })"):
+                         "PostLaunchScript", "INSTALLED_PACKAGE_FUNCTIONAL_QA",
+                         "INSTALLED_PACKAGE_FUNCTIONAL_QA_PASS", "candidate_package_sha256",
+                         "$basicFunctionStatus"):
             self.assertIn(required, source)
         self.assertNotIn("Set-ExecutionPolicy", source)
         self.assertLess(source.index("Import-Certificate -FilePath $publicCert"),

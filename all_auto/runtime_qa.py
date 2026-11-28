@@ -16,7 +16,9 @@ from .store_workflow import StoreWorkflowError, _load_job
 
 
 def build_runtime_qa_report(*, product: str, config_root: Path,
-                            profile_root: Path, package: Path | None) -> dict[str, Any]:
+                            profile_root: Path, package: Path | None,
+                            package_binding_override: dict[str, Any] | None = None,
+                            candidate_metadata: dict[str, Any] | None = None) -> dict[str, Any]:
     config, _ = _load_job(product, config_root)
     profile_path = profile_root / f"{product}.json"
     if not profile_path.is_file():
@@ -38,10 +40,27 @@ def build_runtime_qa_report(*, product: str, config_root: Path,
     if any(expected.get(key) != value for key, value in config_binding.items()):
         raise StoreWorkflowError("runtime QA profile differs from the immutable product package binding")
 
+    selected_binding = dict(package_binding_override or expected)
+    if package_binding_override is not None:
+        required_binding = {"filename", "sha256", "identity_name", "publisher", "version", "architecture",
+                            "application_id", "target_device_families"}
+        if any(key not in selected_binding for key in required_binding):
+            raise StoreWorkflowError("candidate package binding is incomplete")
     package_result: dict[str, Any] = {"status": "PACKAGE_NOT_RESOLVED"}
     if package is not None:
         try:
-            verified = verify_file(config, package, expected_sha256=config.get("expected_sha256"),
+            expected_sha = str(selected_binding.get("sha256", ""))
+            verification_config = dict(config)
+            if package_binding_override is not None:
+                verification_config.update({
+                    "path": str(selected_binding["filename"]),
+                    "expected_sha256": expected_sha,
+                    "version": selected_binding["version"],
+                    "identity_name": selected_binding["identity_name"],
+                    "publisher": selected_binding["publisher"],
+                    "architecture": selected_binding["architecture"],
+                })
+            verified = verify_file(verification_config, package, expected_sha256=expected_sha,
                                    max_bytes=int(config.get("max_bytes", 4_000_000_000)))
             identity = read_msix_identity(package)
             manifest = read_msix_manifest_metadata(package)
@@ -51,17 +70,21 @@ def build_runtime_qa_report(*, product: str, config_root: Path,
                 "version": identity.get("Version"),
                 "architecture": identity.get("ProcessorArchitecture"),
             }
-            if any(expected.get(key) != value for key, value in manifest_tuple.items()):
-                raise StoreWorkflowError("package manifest differs from the runtime QA profile")
-            if manifest.get("target_device_families") != expected.get("target_device_families"):
-                raise StoreWorkflowError("package target device families differ from the runtime QA profile")
+            if Path(verified.file_name).name != selected_binding.get("filename"):
+                raise StoreWorkflowError("package filename differs from the selected immutable binding")
+            if any(selected_binding.get(key) != value for key, value in manifest_tuple.items()):
+                raise StoreWorkflowError("package manifest differs from the selected immutable binding")
+            if manifest.get("target_device_families") != selected_binding.get("target_device_families"):
+                raise StoreWorkflowError("package target device families differ from the selected immutable binding")
             package_result = {
                 "status": "EXACT_PACKAGE_SHA_AND_MANIFEST_VERIFIED",
                 "file_name": verified.file_name, "sha256": verified.sha256,
                 "size_bytes": verified.size, "signature_state": manifest.get("signature_state"),
                 "manifest": manifest_tuple,
                 "target_device_families": manifest.get("target_device_families"),
-                "application_id": expected.get("application_id"),
+                "application_id": selected_binding.get("application_id"),
+                "candidate_id": (candidate_metadata or {}).get("candidate_id"),
+                "official_package_config_changed": False,
             }
         except (OSError, UploadError, StoreWorkflowError) as exc:
             package_result = {"status": "PACKAGE_HOLD", "reason": str(exc)[:500]}
@@ -79,6 +102,8 @@ def build_runtime_qa_report(*, product: str, config_root: Path,
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
         "product_key": product,
         "product_id": config.get("product_id"), "submission_id": config.get("submission_id"),
+        "candidate": candidate_metadata,
+        "formal_package_reference_unchanged": True,
         "host": {"platform": host, "system": host_system},
         "package": package_result,
         "runtime_kind": profile.get("runtime_kind"),
@@ -95,14 +120,16 @@ def build_runtime_qa_report(*, product: str, config_root: Path,
 
 
 def run_profiled_source_driver(*, product: str, profile_root: Path,
-                               evidence_root: Path) -> dict[str, Any]:
+                               evidence_root: Path,
+                               source_binding_override: dict[str, Any] | None = None,
+                               source_root_candidates_override: list[str] | None = None) -> dict[str, Any]:
     """Run an immutable, clean-checkout DCA source GUI driver and validate its receipt."""
     profile_path = profile_root / f"{product}.json"
     if not profile_path.is_file():
         raise StoreWorkflowError(f"runtime QA profile is missing for {product}")
     profile = json.loads(profile_path.read_text(encoding="utf-8"))
     driver = profile.get("source_gui_driver")
-    binding = profile.get("source_binding")
+    binding = source_binding_override or profile.get("source_binding")
     if not isinstance(driver, dict) or driver.get("enabled") is not True:
         return {"status": "NO_APPROVED_SOURCE_DRIVER", "qa_pass": False}
     if not isinstance(binding, dict):
@@ -128,7 +155,8 @@ def run_profiled_source_driver(*, product: str, profile_root: Path,
         roots.append(Path(override).expanduser())
     roots.extend(
         Path.home() / "Desktop" / "portfolio-audit" / rel
-        for rel in driver.get("source_root_candidates", [])
+        for rel in (source_root_candidates_override if source_root_candidates_override is not None
+                    else driver.get("source_root_candidates", []))
         if isinstance(rel, str) and rel and not Path(rel).is_absolute()
     )
     source_root = next((root.resolve() for root in roots if (root / script_rel).is_file()), None)

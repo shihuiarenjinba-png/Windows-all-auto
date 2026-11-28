@@ -8,6 +8,7 @@ param(
     [Parameter(Mandatory = $true)][ValidateSet('x86','x64','arm64')][string]$Architecture,
     [Parameter(Mandatory = $true)][string]$ApplicationId,
     [string]$SmokeMarkerPath,
+    [string]$PostLaunchScript,
     [ValidateSet('MarkerSmoke','ProcessLaunch')][string]$LaunchMode = 'MarkerSmoke',
     [ValidateRange(30,1800)][int]$OperationTimeoutSeconds = 300,
     [string]$OutputDirectory = $env:RUNNER_TEMP
@@ -20,6 +21,8 @@ if ($env:GITHUB_ACTIONS -ne 'true') {
 }
 if ($ExpectedSha256 -notmatch '^[0-9a-fA-F]{64}$') { throw 'ExpectedSha256 must be a full SHA-256.' }
 if ($LaunchMode -eq 'MarkerSmoke' -and [string]::IsNullOrWhiteSpace($SmokeMarkerPath)) { throw 'MarkerSmoke requires SmokeMarkerPath.' }
+if ($PostLaunchScript -and $LaunchMode -ne 'ProcessLaunch') { throw 'PostLaunchScript is supported only with ProcessLaunch.' }
+if ($PostLaunchScript -and -not (Test-Path -LiteralPath $PostLaunchScript -PathType Leaf)) { throw 'PostLaunchScript does not exist.' }
 $source = (Resolve-Path -LiteralPath $Package).Path
 $sourceHashBefore = (Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash
 if ($sourceHashBefore -ne $ExpectedSha256.ToUpperInvariant()) { throw 'Frozen source SHA-256 mismatch.' }
@@ -173,6 +176,23 @@ public static class PackageActivation {
         while ((Get-Date) -lt $deadline -and -not (Get-Process -Id $activatedProcessId -ErrorAction SilentlyContinue)) { Start-Sleep -Milliseconds 500 }
         if (-not (Get-Process -Id $activatedProcessId -ErrorAction SilentlyContinue)) { throw 'AUMID did not start the packaged process within 45 seconds.' }
         $registeredActivation = 'PASS'; $activationDiagnostics = @(); $launchMethod = 'AUMID_PROCESS_START_ONLY'; $markerContent = 'NOT_APPLICABLE'
+        if ($PostLaunchScript) {
+            $functionalReceipt = Join-Path $OutputDirectory ("installed-msix-functional-qa-{0}.json" -f $runId)
+            Invoke-QAPhase -Name 'INSTALLED_PACKAGE_FUNCTIONAL_QA' -Action {
+                $qaPython = (Get-Command python -ErrorAction Stop).Source
+                & $qaPython $PostLaunchScript --process-id $activatedProcessId --app-user-model-id $appUserModelId `
+                    --package-sha256 $sourceHashBefore --evidence-path $functionalReceipt
+                if ($LASTEXITCODE -ne 0) { throw "Installed-package functional QA failed: $LASTEXITCODE" }
+                if (-not (Test-Path -LiteralPath $functionalReceipt -PathType Leaf)) { throw 'Installed-package QA receipt is missing.' }
+                $functional = Get-Content -LiteralPath $functionalReceipt -Raw | ConvertFrom-Json
+                if ($functional.schema_version -ne 'dca-installed-msix-gui-qa/1' -or
+                    $functional.status -ne 'INSTALLED_PACKAGE_FUNCTIONAL_QA_PASS' -or
+                    $functional.candidate_package_sha256 -ne $sourceHashBefore -or
+                    $functional.store_write_performed -ne $false) { throw 'Installed-package QA receipt contract or package binding is invalid.' }
+                if (@($functional.checks | Where-Object { $_.status -ne 'PASS' }).Count -gt 0) { throw 'Installed-package QA contains a failed check.' }
+            } | Out-Null
+            $launchMethod = 'AUMID_WITH_INSTALLED_PACKAGE_FUNCTIONAL_QA'
+        }
     } else {
     while ((Get-Date) -lt $deadline) {
         if (Test-Path -LiteralPath $SmokeMarkerPath) {
@@ -216,16 +236,18 @@ public static class PackageActivation {
     if ($sourceHashAfter -ne $sourceHashBefore) { throw 'Frozen source package changed during test signing.' }
     $derivativeHash = (Get-FileHash -LiteralPath $derived -Algorithm SHA256).Hash
     if ($derivativeHash -eq $sourceHashBefore) { throw 'Signed derivative unexpectedly has the source SHA.' }
-    $evidenceStatus = if ($LaunchMode -eq 'ProcessLaunch') { 'TEST_SIGNED_DERIVATIVE_INSTALL_PROCESS_LAUNCH_PASS_FUNCTIONS_NOT_RUN' } elseif ($registeredActivation -eq 'PASS') { 'TEST_SIGNED_DERIVATIVE_INSTALL_LAUNCH_SMOKE_PASS' } else { 'TEST_SIGNED_DERIVATIVE_INSTALL_EXECUTABLE_SMOKE_PASS_ACTIVATION_UNCONFIRMED' }
+    $evidenceStatus = if ($PostLaunchScript) { 'TEST_SIGNED_DERIVATIVE_INSTALL_FUNCTIONAL_GUI_QA_PASS' } elseif ($LaunchMode -eq 'ProcessLaunch') { 'TEST_SIGNED_DERIVATIVE_INSTALL_PROCESS_LAUNCH_PASS_FUNCTIONS_NOT_RUN' } elseif ($registeredActivation -eq 'PASS') { 'TEST_SIGNED_DERIVATIVE_INSTALL_LAUNCH_SMOKE_PASS' } else { 'TEST_SIGNED_DERIVATIVE_INSTALL_EXECUTABLE_SMOKE_PASS_ACTIVATION_UNCONFIRMED' }
+    $basicFunctionStatus = if ($PostLaunchScript) { 'PASS_INSTALLED_PACKAGE_GUI_DRIVER' } elseif ($LaunchMode -eq 'MarkerSmoke') { 'PASS' } else { 'NOT_RUN' }
     $evidence = @{ schema_version='all-auto-msix-test-sign-install/2'; phase_timings=@($phaseTimings); status=$evidenceStatus;
         source_sha256=$sourceHashBefore; derived_sha256=$derivativeHash;
         certificate_thumbprint=$cert.Thumbprint; created_at_utc=[DateTime]::UtcNow.ToString('o');
         host_os=(Get-CimInstance Win32_OperatingSystem).Caption;
         identity=$IdentityName; publisher=$Publisher; version=$Version;
-        architecture=$Architecture; install='PASS'; launch='PASS'; basic_function=$(if ($LaunchMode -eq 'MarkerSmoke') { 'PASS' } else { 'NOT_RUN' });
+        architecture=$Architecture; install='PASS'; launch='PASS'; basic_function=$basicFunctionStatus;
         activation_app_user_model_id=$appUserModelId; activation_process_id=$activatedProcessId;
         registered_activation=$registeredActivation; launch_method=$launchMethod;
         activation_diagnostics=$activationDiagnostics;
+        installed_package_qa_receipt=$(if ($PostLaunchScript) { $functionalReceipt } else { $null });
         store_candidate_unchanged=$true; diagnostic_only=$true; report=$report }
     $finalStatus = $evidenceStatus
     $phaseTimings.Add([ordered]@{phase='COMPLETE';status='PASS';completed_at_utc=[DateTime]::UtcNow.ToString('o')})
