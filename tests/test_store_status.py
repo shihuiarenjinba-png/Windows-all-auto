@@ -99,6 +99,35 @@ class StoreStatusTests(unittest.TestCase):
             self.assertEqual(history["upload_started_evidence_count"], 0)
             self.assertFalse(history["partner_center_save_confirmed"])
 
+    def test_local_cdp_discovery_is_bounded_to_known_edge_port_and_checks_browser(self):
+        from all_auto.cdp_discovery import discover_local_edge_cdp, resolve_local_edge_cdp
+        class Response:
+            status = 200
+            def __enter__(self): return self
+            def __exit__(self, *args): return None
+            def read(self): return b'{"Browser":"Edg/140.0"}'
+        with patch("all_auto.cdp_discovery.urlopen", return_value=Response()) as open_url:
+            result = discover_local_edge_cdp()
+        self.assertEqual(result.status, "CDP_CONNECTED")
+        self.assertEqual(result.endpoint, "http://127.0.0.1:9223")
+        self.assertEqual(open_url.call_args.args[0], "http://127.0.0.1:9223/json/version")
+        with patch("all_auto.cdp_discovery.urlopen", return_value=Response()) as open_url:
+            explicit = resolve_local_edge_cdp("http://127.0.0.1:9333")
+        self.assertEqual(explicit.endpoint, "http://127.0.0.1:9333")
+        open_url.assert_not_called()
+
+    def test_auto_discovery_rejects_non_edge_and_unavailable_without_launching_browser(self):
+        from all_auto.cdp_discovery import discover_local_edge_cdp
+        class Response:
+            status = 200
+            def __enter__(self): return self
+            def __exit__(self, *args): return None
+            def read(self): return b'{"Browser":"Chrome/140.0"}'
+        with patch("all_auto.cdp_discovery.urlopen", return_value=Response()):
+            self.assertEqual(discover_local_edge_cdp().status, "CDP_BROWSER_NOT_EDGE")
+        with patch("all_auto.cdp_discovery.urlopen", side_effect=OSError("unavailable")):
+            self.assertEqual(discover_local_edge_cdp().status, "CDP_NOT_AVAILABLE")
+
     def test_invalid_cdp_is_rejected_without_opening_browser(self):
         config = json.loads((CONFIG_ROOT / "data-contract-auditor.job.json").read_text(encoding="utf-8"))
         result = _partner_center(config, "https://example.com")
@@ -108,3 +137,4 @@ class StoreStatusTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+

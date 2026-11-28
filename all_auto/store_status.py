@@ -294,9 +294,12 @@ def _read_section(page: Any, section: str, href: str,
 
 
 def _partner_center(config: dict[str, Any], cdp_endpoint: str | None) -> dict[str, Any]:
-    endpoint = cdp_endpoint or os.environ.get("PARTNER_CENTER_CDP_URL")
+    from .cdp_discovery import resolve_local_edge_cdp
+    discovery = resolve_local_edge_cdp(cdp_endpoint)
+    endpoint = discovery.endpoint
     if not endpoint:
-        return {"status": "CDP_NOT_CONFIGURED", "writes_performed": False}
+        return {"status": discovery.status, "discovery": "known_loopback_edge_port_9223",
+                "writes_performed": False}
     parsed_endpoint = urlsplit(endpoint)
     if (parsed_endpoint.scheme != "http" or
             (parsed_endpoint.hostname or "").lower() not in {"127.0.0.1", "localhost", "::1"} or
@@ -316,7 +319,8 @@ def _partner_center(config: dict[str, Any], cdp_endpoint: str | None) -> dict[st
                         if urlsplit(page.url).hostname == "partner.microsoft.com"
                         and pid in urlsplit(page.url).path]
             draft_tabs = [(ctx, page) for ctx, page in matching if draft in urlsplit(page.url).path]
-            output: dict[str, Any] = {"cdp_connected": True, "context_count": len(contexts),
+            output: dict[str, Any] = {"cdp_connected": True, "discovery": discovery.status,
+                                      "browser": discovery.browser, "context_count": len(contexts),
                                       "product_tab_count": len(matching),
                                       "exact_draft_tab_count": len(draft_tabs),
                                       "writes_performed": False}
@@ -493,3 +497,4 @@ def collect_store_status(*, product: str, config_root: Path, repo_root: Path,
         "published": False,
         "writes_performed": False,
     }
+

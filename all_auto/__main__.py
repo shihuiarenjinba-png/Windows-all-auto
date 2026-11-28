@@ -86,7 +86,7 @@ def main(argv: list[str] | None = None) -> int:
     store_commands = store.add_subparsers(dest="store_command", required=True)
     store_status = store_commands.add_parser("status", help="Read-only local, ledger, and Partner Center state")
     store_status.add_argument("--product", required=True, help="Registered product key under uploader/config")
-    store_status.add_argument("--cdp-url", help="Optional loopback CDP endpoint; defaults to PARTNER_CENTER_CDP_URL")
+    store_status.add_argument("--cdp-url", help="Optional loopback CDP endpoint; uses PARTNER_CENTER_CDP_URL or discovers the known loopback Edge port 9223")
     store_status.add_argument("--out", type=Path, help="Status report directory; unique reports are never overwritten")
     store_archive = store_commands.add_parser("archive", help="Verify and retain the exact registered MSIX in a local SHA-addressed archive")
     store_archive.add_argument("--product", required=True)
@@ -309,9 +309,13 @@ def main(argv: list[str] | None = None) -> int:
                 map_path = opts.ui_map or (Path(__file__).resolve().parent.parent / "uploader" / "config" / "store_ui_maps" / f"{route}.v1.json")
                 ui_map = json.loads(map_path.read_text(encoding="utf-8"))
                 from uploader.store_form_engine import StoreUiHold, apply_live_section
+                from .cdp_discovery import resolve_local_edge_cdp
+                cdp_discovery = resolve_local_edge_cdp()
+                if not cdp_discovery.endpoint:
+                    raise StoreWorkflowError("No configured or previously used loopback Edge CDP session is available")
                 result = apply_live_section(config=config, section=opts.section, fields=fields,
                                             approval=approval, ui_map=ui_map,
-                                            cdp_endpoint=os.environ.get("PARTNER_CENTER_CDP_URL"))
+                                            cdp_endpoint=cdp_discovery.endpoint)
                 live_write_succeeded = result.get("writes_performed") is True
                 report = {"schema_version": "all-auto-store-apply/1", "product_key": opts.product,
                           "created_at_utc": datetime.now(timezone.utc).isoformat(),
@@ -407,13 +411,14 @@ def main(argv: list[str] | None = None) -> int:
             # reusable without widening today's live authorization.
             if opts.mode == "AUTO":
                 from .store_run import run_approved_sections
+                from .cdp_discovery import resolve_local_edge_cdp
                 execution = run_approved_sections(
                     product=opts.product,
                     config_root=Path(__file__).resolve().parent.parent / "uploader" / "config",
                     package=package,
                     ui_map_path=(Path(__file__).resolve().parent.parent / "uploader" / "config" /
                                  "store_ui_maps" / f"{config.get('submission_route', 'msix_pwa_app')}.v1.json"),
-                    cdp_endpoint=os.environ.get("PARTNER_CENTER_CDP_URL"),
+                    cdp_endpoint=resolve_local_edge_cdp().endpoint,
                 )
             else:
                 from .store_run import ALLOWED_SECTIONS
@@ -476,3 +481,4 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

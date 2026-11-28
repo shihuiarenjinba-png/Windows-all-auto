@@ -104,8 +104,12 @@ def main():
                     raise UploadError(live_hold, "Shared Store live-write QA/approval gate did not pass")
         if args.execute and not re.fullmatch(r"[0-9a-fA-F]{64}", str(config.get("expected_sha256", ""))):
             raise UploadError("EXPECTED_SHA_REQUIRED", "Live upload requires a frozen 64-character SHA-256")
-        if args.execute and not os.environ.get("PARTNER_CENTER_CDP_URL"):
-            raise UploadError("BROWSER_SESSION_UNAVAILABLE", "Set the authenticated remote browser CDP secret before live execution")
+        cdp_discovery = None
+        if args.execute:
+            from all_auto.cdp_discovery import resolve_local_edge_cdp
+            cdp_discovery = resolve_local_edge_cdp()
+            if not cdp_discovery.endpoint:
+                raise UploadError("BROWSER_SESSION_UNAVAILABLE", "No configured or previously used loopback Edge CDP session is available; sign in manually in the dedicated Edge session first")
         expected=config.get("expected_sha256"); expected=None if not expected or expected.startswith("REPLACE_") else expected
         if args.package is not None:
             try:
@@ -137,7 +141,7 @@ def main():
             if args.execute:
                 def browser_preflight(job, package_path, *, recovery_required=False):
                     nonlocal browser_connection
-                    browser_connection = PartnerCenterCDPConnection(os.environ["PARTNER_CENTER_CDP_URL"], config)
+                    browser_connection = PartnerCenterCDPConnection(cdp_discovery.endpoint, config)
                     port = browser_connection.__enter__()
                     try:
                         preflight = port.preflight_target(job, recovery_required=recovery_required)
@@ -200,3 +204,4 @@ def _save_run_receipt(workdir: Path, config: dict, job, outcome: str, confirmati
         journal.append(receipt)
 
 if __name__ == "__main__": raise SystemExit(main())
+
