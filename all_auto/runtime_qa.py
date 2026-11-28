@@ -152,7 +152,14 @@ def run_profiled_source_driver(*, product: str, profile_root: Path,
         head = git("rev-parse", "HEAD").lower()
         status_text = git("status", "--porcelain", "--untracked-files=all")
         origin = git("config", "--get", "remote.origin.url").strip().lower().removesuffix(".git")
-        script_hash = hashlib.sha256(script.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
+        blob = subprocess.run(
+            ["git", "-C", str(source_root), "cat-file", "blob",
+             f"HEAD:{Path(script_rel).as_posix()}"],
+            capture_output=True, timeout=15, check=False,
+        )
+        if blob.returncode != 0:
+            raise StoreWorkflowError("source QA driver Git blob is unavailable")
+        script_hash = hashlib.sha256(blob.stdout).hexdigest()
         return {
             "source_sha": head,
             "source_worktree_clean": not bool(status_text),
