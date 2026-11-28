@@ -3,26 +3,28 @@
   "pointer_version": 1,
   "path": "ops/active_e2e_handoff_pointer_v1.json",
   "repository": "shihuiarenjinba-png/Windows-all-auto",
-  "generated_at_utc": "2026-11-28T08:37:04Z",
+  "generated_at_utc": "2026-11-28T08:57:36Z",
   "status": "ACTIVE",
   "selection_policy": "VERIFIED_POINTER_REFERENCED_OVERLAY_ONLY",
   "fallback_to_canonical_ledger": false,
   "source_observation": {
     "pr_number": 219,
     "branch": "codex/36-pr218-current-lane-reconcile-20261128-1337",
-    "head_sha": "10b1e12788e6a1c0bd17a46453cd50bb68367bb9",
-    "exact_head_ci_run_id": 46118094976,
-    "exact_head_ci_conclusion": "success"
+    "head_sha": "ebd73d88a85271966a7165a1339d0b01b4ce0cbc",
+    "exact_head_push_run_id": 46127355361,
+    "exact_head_push_conclusion": "success",
+    "pr_validation_run_id": 46127360090,
+    "pr_validation_conclusion": "success"
   },
   "active_snapshot": {
-    "observed_at_utc": "2026-11-28T08:37:04Z",
+    "observed_at_utc": "2026-11-28T08:57:36Z",
     "overlay": {
-      "path": "ops/active_e2e_handoff_overlay_20261128_1737.json",
-      "git_blob_sha": "27e5f65f79ca9266852b222ca20009308b983433"
+      "path": "ops/active_e2e_handoff_overlay_20261128_1757.json",
+      "git_blob_sha": "68ce06009dfb8a5726dc552ec319ea9a22dab17e"
     },
     "queue": {
-      "path": "ops/completion_rush_queue_20261128_1737.json",
-      "git_blob_sha": "9d261184a55e430ec6a253fe1672b15a7616b278"
+      "path": "ops/completion_rush_queue_20261128_1757.json",
+      "git_blob_sha": "5df88fa636032793c9e36ad060d3215a703f8614"
     }
   },
   "canonical_ledger": {
@@ -37,7 +39,12 @@
     "full_content_read_bytes_utf8": 1976822,
     "updated_at_utc": "2026-11-26T13:38:35Z",
     "recorded_pr165_latest_live_head_sha": "380d4818330688f47d3558217ed556868cf0b744",
-    "directly_resolved_pr165_head_sha": "07cb543816c7432edcf45465ae0763e16917aecc"
+    "directly_resolved_pr165_head_sha": "07cb543816c7432edcf45465ae0763e16917aecc",
+    "active_product_record_status": "HISTORICAL_ONLY_NOT_CURRENT_REQUEST",
+    "active_product_is_historical": true,
+    "current_active_product": null,
+    "canonical_e2e_status": "HOLD",
+    "canonical_e2e_pass": false
   },
   "legacy_embedded_pointer": {
     "path": "ops/active_e2e_handoff.json",
@@ -55,7 +62,7 @@
     "force_push_allowed": false
   },
   "supervisor_handoff": {
-    "received_at_jst": "2026-11-28 16:44",
+    "received_at_jst": "2026-11-28 17:57",
     "provisioner_repository": "shihuiarenjinba-png/Repository-Provisioner-3D",
     "provisioner_pr_number": 11,
     "provisioner_head_sha": "356cb7bcbf795c3335fb142cf82fef2db3a7478a",
@@ -69,6 +76,10 @@
       "pr54_number": 54,
       "pr54_head": "b8baa6ac332a677d540c116192dc761814519906",
       "pr54_preview_status": "STALE_AGAINST_PR32_BUILD"
-    }
+    },
+    "canonical_active_product_is_historical": true,
+    "canonical_current_active_product": null,
+    "parent_pr219_head": "ebd73d88a85271966a7165a1339d0b01b4ce0cbc",
+    "parent_pr219_push_run_id": 46127355361
   }
 }
