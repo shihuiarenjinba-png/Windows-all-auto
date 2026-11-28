@@ -237,3 +237,33 @@ def run_profiled_source_driver(*, product: str, profile_root: Path,
             "scenario_check_map": scenario_check_map,
             "required_receipt_checks": required_checks,
             "packaged_runtime_proven": False, "visual_dpi_proven": False}
+
+
+def source_scenario_results(driver: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    """Map named product-driver checks to configured source-GUI scenarios.
+
+    A scenario is PASS_SOURCE_GUI only when every receipt check mapped to that
+    scenario exists and reports PASS. This evidence never proves installed-MSIX
+    runtime or visual DPI behavior.
+    """
+    mapping = driver.get("scenario_check_map", {})
+    receipt = driver.get("receipt", {})
+    checks = receipt.get("checks", [])
+    by_name = {
+        item["name"]: str(item.get("status", ""))
+        for item in checks
+        if isinstance(item, dict) and isinstance(item.get("name"), str)
+    } if isinstance(checks, list) else {}
+    evidence = driver.get("receipt_path")
+    results: dict[str, dict[str, Any]] = {}
+    for scenario_id, required_names in mapping.items():
+        if not isinstance(scenario_id, str) or not isinstance(required_names, list) or not required_names:
+            continue
+        failed = [name for name in required_names if by_name.get(name) != "PASS"]
+        results[scenario_id] = {
+            "status": "PASS_SOURCE_GUI" if not failed else "NOT_RUN",
+            "required_receipt_checks": list(required_names),
+            "missing_or_failed_receipt_checks": failed,
+            "evidence": evidence if not failed else None,
+        }
+    return results
