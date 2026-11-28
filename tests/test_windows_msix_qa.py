@@ -53,6 +53,20 @@ class WindowsMsixDiagnosticTests(unittest.TestCase):
         self.assertNotIn("Add-AppxPackage", source)
         self.assertNotIn("Set-ExecutionPolicy", source)
 
+    def test_test_sign_lane_is_ephemeral_and_separate_from_store_candidate(self):
+        root = Path(__file__).resolve().parents[1]
+        source = (root / "scripts" / "test_sign_msix_copy.ps1").read_text(encoding="utf-8")
+        for required in ("$env:GITHUB_ACTIONS -ne 'true'", "New-SelfSignedCertificate",
+                         "Cert:\\LocalMachine\\TrustedPeople", "& $signTool sign /fd SHA256",
+                         "Add-AppxPackage -Path $derived", "Remove-AppxPackage",
+                         "store_candidate_unchanged=$true", "diagnostic_only=$true"):
+            self.assertIn(required, source)
+        self.assertNotIn("Set-ExecutionPolicy", source)
+        workflow = (root / ".github" / "workflows" / "offline-qa.yml").read_text(encoding="utf-8")
+        self.assertIn("synthetic-msix-test-signing-receipt", workflow)
+        self.assertIn("*.json", workflow)
+        self.assertIn("Test-sign, install, launch, and smoke-test a synthetic MSIX", workflow)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -25,6 +25,8 @@ The exact old-SHA registration commits are now confirmed: `2956574fc1a3cf80b6028
 
 **Proposed record change, not yet applied:** retain the old registration as an append-only historical record with its two commit IDs and source revision; after the owner approves the current artifact candidate, update the product profile's formal-current pointer to `e2ca…`, recording artifact/run/source provenance and preserving the old record. The current Job Config SHA remains unchanged throughout. No formal product-profile value has been rewritten in this change.
 
+**Single explicit provenance decision needed:** approve or reject using artifact `15005358857` / run `45580565845`, source `722ec7a077d2c6109e657c4ee661c9f3d06a4506`, package SHA `e2ca6fd81720dc270667e65db05404b6efdde5b2c0712bee2853e0608767db05` as the new formal-current package record for Product `9PDL4ZWSB45P` / existing Submission `1152921505702212222`, while retaining `4b373d…` as history. This decision only changes the source product's formal provenance pointer after it is recorded. It does not approve upload, Packages Save, Certification, or Publish, and does not declare runtime QA passed.
+
 Evidence refs: [pinned product profile](https://github.com/shihuiarenjinba-png/csv-import-validator/blob/722ec7a077d2c6109e657c4ee661c9f3d06a4506/store/product.json), [artifact inventory](../GROUP_C_REMOTE_MSIX_ARTIFACT_INVENTORY_20261125.md), and `uploader/config/data-contract-auditor.job.json`.
 
 ## Decisions still required

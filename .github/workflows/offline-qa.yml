@@ -134,3 +134,60 @@ jobs:
               Remove-Item -LiteralPath $validationVenv -Recurse -Force
             }
           }
+      - name: Test-sign, install, launch, and smoke-test a synthetic MSIX on ephemeral Windows
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Add-Type -AssemblyName System.Drawing
+          $root = Join-Path $env:RUNNER_TEMP 'msix-test-signature-smoke'
+          if (Test-Path -LiteralPath $root) { throw 'MSIX test-signing output directory already exists.' }
+          $content = Join-Path $root 'content'
+          New-Item -ItemType Directory -Path $content -Force | Out-Null
+          $publisher = 'CN=AllAuto.CI.MsixSmoke'
+          $marker = Join-Path $env:LOCALAPPDATA ("all-auto-msix-basic-smoke-{0}.txt" -f [Guid]::NewGuid().ToString('N'))
+          $sourceCode = @'
+          using System.IO;
+          public static class Probe { public static int Main() { if (20 + 22 != 42) return 2; File.WriteAllText(@"__MARKER__", "BASIC_FUNCTION_SMOKE_PASS"); return 0; } }
+          '@.Replace('__MARKER__', $marker.Replace('\', '\\'))
+          Add-Type -TypeDefinition $sourceCode -OutputAssembly (Join-Path $content 'probe.exe') -OutputType ConsoleApplication
+          foreach ($spec in @(@{ Name='StoreLogo.png'; Size=50 }, @{ Name='Square44x44Logo.png'; Size=44 }, @{ Name='Square150x150Logo.png'; Size=150 })) {
+            $bitmap = [System.Drawing.Bitmap]::new($spec.Size, $spec.Size)
+            try { $bitmap.Save((Join-Path $content $spec.Name), [System.Drawing.Imaging.ImageFormat]::Png) }
+            finally { $bitmap.Dispose() }
+          }
+          @'
+          <?xml version="1.0" encoding="utf-8"?>
+            <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities" IgnorableNamespaces="uap rescap">
+            <Identity Name="AllAuto.CI.MsixSmoke" Publisher="CN=AllAuto.CI.MsixSmoke" Version="1.0.0.0" ProcessorArchitecture="x64" />
+            <Properties><DisplayName>All Auto CI MSIX Smoke</DisplayName><PublisherDisplayName>All Auto CI</PublisherDisplayName><Logo>StoreLogo.png</Logo></Properties>
+            <Dependencies><TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.22621.0" /></Dependencies>
+            <Resources><Resource Language="en-us" /></Resources>
+            <Applications><Application Id="Probe" Executable="probe.exe" EntryPoint="Windows.FullTrustApplication"><uap:VisualElements DisplayName="All Auto CI MSIX Smoke" Description="Ephemeral CI smoke fixture" Square150x150Logo="Square150x150Logo.png" Square44x44Logo="Square44x44Logo.png" BackgroundColor="transparent" /></Application></Applications>
+            <Capabilities><rescap:Capability Name="runFullTrust" /></Capabilities>
+          </Package>
+          '@ | Set-Content -LiteralPath (Join-Path $content 'AppxManifest.xml') -Encoding UTF8
+          $makeAppx = Get-ChildItem -Path (Join-Path ${env:ProgramFiles(x86)} 'Windows Kits\10\bin') -Filter MakeAppx.exe -Recurse |
+            Where-Object { $_.FullName -match '\\x64\\MakeAppx\.exe$' } | Sort-Object FullName -Descending | Select-Object -First 1 -ExpandProperty FullName
+          if (-not $makeAppx) { throw 'Windows SDK MakeAppx.exe was not found.' }
+          $sourcePackage = Join-Path $root 'smoke-source.msix'
+          & $makeAppx pack /d $content /p $sourcePackage /o
+          if ($LASTEXITCODE -ne 0) { throw 'MakeAppx failed to create the smoke fixture.' }
+          $sourceHash = (Get-FileHash -LiteralPath $sourcePackage -Algorithm SHA256).Hash
+          .\scripts\test_sign_msix_copy.ps1 -Package $sourcePackage -ExpectedSha256 $sourceHash `
+            -IdentityName 'AllAuto.CI.MsixSmoke' -Publisher $publisher -Version '1.0.0.0' `
+            -Architecture x64 -ApplicationId Probe -SmokeMarkerPath $marker -OutputDirectory $root
+      - name: Preserve synthetic signature QA receipt (no package or certificate)
+        if: always() && runner.os == 'Windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: synthetic-msix-test-signing-receipt-${{ github.run_id }}
+          path: ${{ runner.temp }}/msix-test-signature-smoke/*.json
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Remove synthetic MSIX QA workspace
+        if: always() && runner.os == 'Windows'
+        shell: powershell
+        run: |
+          $root = Join-Path $env:RUNNER_TEMP 'msix-test-signature-smoke'
+          if (Test-Path -LiteralPath $root) { Remove-Item -LiteralPath $root -Recurse -Force }
