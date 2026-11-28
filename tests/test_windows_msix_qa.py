@@ -67,6 +67,8 @@ class WindowsMsixDiagnosticTests(unittest.TestCase):
                          "Invoke-QAPhase", "phase_timings=@($phaseTimings)", "PHASE_TIMEOUT",
                          "CREATE_EPHEMERAL_CERTIFICATE", "EXPORT_PUBLIC_CERTIFICATE",
                          "IMPORT_EPHEMERAL_TRUST", "LaunchMode", "ProcessLaunch",
+                         "Split-Path -Parent $PSScriptRoot", "$env:PYTHONPATH = if",
+                         "Push-Location $repoRoot",
                          "basic_function=$(if ($LaunchMode -eq 'MarkerSmoke') { 'PASS' } else { 'NOT_RUN' })"):
             self.assertIn(required, source)
         self.assertNotIn("Set-ExecutionPolicy", source)

@@ -121,7 +121,21 @@ try {
     Invoke-QAPhase -Name 'EXPORT_PUBLIC_CERTIFICATE' -Action { Export-Certificate -Cert $cert -FilePath $publicCert | Out-Null } | Out-Null
     $trustedCert = Invoke-QAPhase -Name 'IMPORT_EPHEMERAL_TRUST' -Action { Import-Certificate -FilePath $publicCert -CertStoreLocation 'Cert:\LocalMachine\TrustedPeople' }
     Invoke-QAPhase -Name 'VERIFY_TEST_SIGNATURE' -Action { & $signTool verify /pa /v $derived; if ($LASTEXITCODE -ne 0) { throw 'SignTool signature verification failed after ephemeral trust was installed.' } } | Out-Null
-    Invoke-QAPhase -Name 'VERIFY_NON_SIGNATURE_PAYLOAD' -Action { Push-Location $PSScriptRoot; try { python -m all_auto.msix_derivative --source $source --derived $derived --expected-source-sha256 $ExpectedSha256 --identity-name $IdentityName --publisher $Publisher --version $Version --architecture $Architecture --report $report; if ($LASTEXITCODE -ne 0) { throw 'Signature-only derivative verification failed.' } } finally { Pop-Location } } | Out-Null
+    Invoke-QAPhase -Name 'VERIFY_NON_SIGNATURE_PAYLOAD' -Action {
+        $repoRoot = Split-Path -Parent $PSScriptRoot
+        $previousPythonPath = $env:PYTHONPATH
+        try {
+            # The helper may be checked out independently from the caller's repository.
+            # Resolve its own package root so `python -m all_auto...` works on clean hosted runners.
+            $env:PYTHONPATH = if ([string]::IsNullOrWhiteSpace($previousPythonPath)) { $repoRoot } else { "$repoRoot;$previousPythonPath" }
+            Push-Location $repoRoot
+            python -m all_auto.msix_derivative --source $source --derived $derived --expected-source-sha256 $ExpectedSha256 --identity-name $IdentityName --publisher $Publisher --version $Version --architecture $Architecture --report $report
+            if ($LASTEXITCODE -ne 0) { throw 'Signature-only derivative verification failed.' }
+        } finally {
+            Pop-Location
+            $env:PYTHONPATH = $previousPythonPath
+        }
+    } | Out-Null
 
     Invoke-QAPhase -Name 'INSTALL_TEST_SIGNED_COPY' -Action { Add-AppxPackage -Path $derived -ErrorAction Stop } | Out-Null
     $installed = Get-AppxPackage -Name $IdentityName | Where-Object { $_.Publisher -eq $Publisher } |
