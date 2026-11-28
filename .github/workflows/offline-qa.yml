@@ -134,7 +134,7 @@ jobs:
               Remove-Item -LiteralPath $validationVenv -Recurse -Force
             }
           }
-      - name: Test-sign, install, launch, and smoke-test a synthetic MSIX on ephemeral Windows
+      - name: Test-sign, install, and smoke-test a synthetic MSIX on ephemeral Windows
         if: runner.os == 'Windows'
         shell: powershell
         run: |

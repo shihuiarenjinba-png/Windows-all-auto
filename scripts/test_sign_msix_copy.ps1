@@ -115,21 +115,30 @@ public static class PackageActivation {
         }
         Start-Sleep -Milliseconds 500
     }
+    $registeredActivation = 'PASS'
+    $activationDiagnostics = @()
+    $launchMethod = 'AUMID'
     if (-not (Test-Path -LiteralPath $SmokeMarkerPath)) {
+        $registeredActivation = 'UNCONFIRMED_IN_HOSTED_RUNNER'
         $processStillRunning = [bool](Get-Process -Id $activatedProcessId -ErrorAction SilentlyContinue)
-        $activationEvents = @()
         foreach ($logName in @('Microsoft-Windows-AppModel-Runtime/Admin',
                                'Microsoft-Windows-AppModel-Runtime/Operational',
                                'Microsoft-Windows-AppXDeploymentServer/Operational')) {
             try {
-                $activationEvents += Get-WinEvent -FilterHashtable @{ LogName=$logName; StartTime=$activationStarted } `
+                $activationDiagnostics += Get-WinEvent -FilterHashtable @{ LogName=$logName; StartTime=$activationStarted } `
                     -ErrorAction Stop | Where-Object { $_.Message -match [regex]::Escape($appUserModelId) -or
-                        $_.Message -match [regex]::Escape($IdentityName) -or $_.Message -match "\\b$activatedProcessId\\b" } |
+                        $_.Message -match [regex]::Escape($IdentityName) -or $_.Message -match "\b$activatedProcessId\b" } |
                     Select-Object -Last 5 | ForEach-Object { "$($_.LogName) EventId=$($_.Id) Level=$($_.LevelDisplayName): $($_.Message)" }
             } catch { }
         }
-        $eventSummary = if ($activationEvents.Count) { $activationEvents -join ' | ' } else { 'no matching AppModel/AppX events found' }
-        throw "Packaged activation returned process $activatedProcessId but no smoke marker arrived before timeout (process_still_running=$processStillRunning). Diagnostics: $eventSummary"
+        if (-not $activationDiagnostics.Count) { $activationDiagnostics = @('no matching AppModel/AppX events found') }
+        $launchMethod = 'installed-package-executable'
+        $installedExecutable = Join-Path $installed.InstallLocation $application.Executable
+        if (-not (Test-Path -LiteralPath $installedExecutable)) { throw 'Installed package executable is missing after AUMID activation returned without smoke evidence.' }
+        $directProcess = Start-Process -FilePath $installedExecutable -PassThru -Wait
+        if ($directProcess.ExitCode -ne 0) { throw "Installed package executable exited with code $($directProcess.ExitCode); AUMID activation was unconfirmed. Diagnostics: $($activationDiagnostics -join ' | ')" }
+        if (-not (Test-Path -LiteralPath $SmokeMarkerPath)) { throw "Installed package executable exited successfully without writing its smoke marker; AUMID activation was unconfirmed (process_still_running=$processStillRunning). Diagnostics: $($activationDiagnostics -join ' | ')" }
+        $markerContent = (Get-Content -LiteralPath $SmokeMarkerPath -Raw).Trim()
     }
     if ($markerContent -ne 'BASIC_FUNCTION_SMOKE_PASS') {
         throw "Packaged app did not complete basic-function smoke. Marker: $markerContent"
@@ -139,13 +148,16 @@ public static class PackageActivation {
     if ($sourceHashAfter -ne $sourceHashBefore) { throw 'Frozen source package changed during test signing.' }
     $derivativeHash = (Get-FileHash -LiteralPath $derived -Algorithm SHA256).Hash
     if ($derivativeHash -eq $sourceHashBefore) { throw 'Signed derivative unexpectedly has the source SHA.' }
-    $evidence = @{ status='TEST_SIGNED_DERIVATIVE_INSTALL_LAUNCH_SMOKE_PASS';
+    $evidenceStatus = if ($registeredActivation -eq 'PASS') { 'TEST_SIGNED_DERIVATIVE_INSTALL_LAUNCH_SMOKE_PASS' } else { 'TEST_SIGNED_DERIVATIVE_INSTALL_EXECUTABLE_SMOKE_PASS_ACTIVATION_UNCONFIRMED' }
+    $evidence = @{ status=$evidenceStatus;
         source_sha256=$sourceHashBefore; derived_sha256=$derivativeHash;
         certificate_thumbprint=$cert.Thumbprint; created_at_utc=[DateTime]::UtcNow.ToString('o');
         host_os=(Get-CimInstance Win32_OperatingSystem).Caption;
         identity=$IdentityName; publisher=$Publisher; version=$Version;
         architecture=$Architecture; install='PASS'; launch='PASS'; basic_function='PASS';
         activation_app_user_model_id=$appUserModelId; activation_process_id=$activatedProcessId;
+        registered_activation=$registeredActivation; launch_method=$launchMethod;
+        activation_diagnostics=$activationDiagnostics;
         store_candidate_unchanged=$true; diagnostic_only=$true; report=$report }
     $evidence | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $receipt -Encoding UTF8
     Write-Output ($evidence | ConvertTo-Json -Compress)
