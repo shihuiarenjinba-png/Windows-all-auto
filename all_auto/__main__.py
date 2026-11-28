@@ -87,12 +87,51 @@ def main(argv: list[str] | None = None) -> int:
     store_apply.add_argument("--ui-map", type=Path, help="Versioned route map; defaults to the registered msix_pwa_app map")
     store_apply.add_argument("--package", type=Path, help="Exact MSIX for the delegated existing uploader route")
     store_apply.add_argument("--execute", action="store_true", help="Perform the approved live section write")
+    store_qa = store_commands.add_parser("qa", help="Verify the registered package and emit product-specific runtime QA plan")
+    store_qa.add_argument("--product", required=True, help="Registered product key under uploader/config")
+    store_qa.add_argument("--package", type=Path, help="Optional exact local MSIX; otherwise resolve from registered archive/cache sources")
+    store_qa.add_argument("--out", type=Path, help="Output root for a unique, append-only QA plan")
     opts = parser.parse_args(argv)
     if opts.command == "gui":
         from .gui import start
         start()
         return 0
     if opts.command == "store":
+        if opts.store_command == "qa":
+            try:
+                config_root = Path(__file__).resolve().parent.parent / "uploader" / "config"
+                config, _ = _load_job(opts.product, config_root)
+                package = opts.package
+                acquisition = {"status": "EXPLICIT_LOCAL_PACKAGE" if package else "NOT_RESOLVED"}
+                if package is None:
+                    repo_root = Path(__file__).resolve().parent.parent
+                    cache_root = Path(os.environ.get("STORE_PACKAGE_CACHE_ROOT", ".store-artifacts"))
+                    acquisition = acquire_registered_package(
+                        config, product=opts.product, cache_root=cache_root,
+                        search_roots=[Path.home() / "Desktop" / "portfolio-audit" / "_runtime" / "store-fleet-sync",
+                                      Path.home() / "Desktop" / "Windows-all-auto-dca-upload" / ".uploader-run" / opts.product,
+                                      repo_root / "_runtime" / "store-fleet-sync"],
+                        archive_root=(Path.home() / "Desktop" / "portfolio-audit" / "_runtime" /
+                                      "store-fleet-sync" / "durable-package-archive"))
+                    package = Path(acquisition.get("local_path") or acquisition.get("path"))
+                from .runtime_qa import build_runtime_qa_report
+                qa = build_runtime_qa_report(
+                    product=opts.product, config_root=config_root,
+                    profile_root=config_root / "runtime_qa_profiles", package=package)
+                qa["run_id"] = uuid4().hex
+                qa["package_acquisition"] = acquisition
+                out = opts.out or Path(".store-workflow-runs") / opts.product / "runtime-qa"
+                report_path = write_unique_report(qa, out)
+            except (OSError, StoreWorkflowError, ValueError, UploadError) as exc:
+                print(f"STORE QA HOLD: {type(exc).__name__}: {exc}", file=sys.stderr)
+                return 2
+            print(json.dumps({"status": qa["status"], "product": opts.product,
+                              "package_status": qa["package"].get("status"),
+                              "qa_pass": qa["qa_pass"], "report": str(report_path),
+                              "store_write_performed": False}, ensure_ascii=False, sort_keys=True))
+            # The command verifies package inputs and writes a QA plan only;
+            # runtime scenarios are still NOT_RUN, so it must not exit as a QA pass.
+            return 1
         if opts.store_command == "archive":
             try:
                 config, _ = _load_job(opts.product, Path(__file__).resolve().parent.parent / "uploader" / "config")
@@ -150,7 +189,6 @@ def main(argv: list[str] | None = None) -> int:
                              ensure_ascii=False, sort_keys=True))
             return 0 if report["partner_center"].get("status") == "READ_ONLY_OBSERVED" else 1
         if opts.store_command == "apply":
-            from uploader.core import UploadError
             live_write_succeeded = False
             try:
                 config, profile_path = _load_job(opts.product, Path(__file__).resolve().parent.parent / "uploader" / "config")
@@ -247,6 +285,16 @@ def main(argv: list[str] | None = None) -> int:
                 package=package,
             )
             report["package_acquisition"] = acquisition
+            try:
+                from .runtime_qa import build_runtime_qa_report
+                report["runtime_qa"] = build_runtime_qa_report(
+                    product=opts.product,
+                    config_root=Path(__file__).resolve().parent.parent / "uploader" / "config",
+                    profile_root=Path(__file__).resolve().parent.parent / "uploader" / "config" / "runtime_qa_profiles",
+                    package=package)
+            except (OSError, StoreWorkflowError, ValueError, UploadError) as exc:
+                report["runtime_qa"] = {"status": "RUNTIME_QA_PROFILE_HOLD",
+                                        "qa_pass": False, "error": str(exc)[:500]}
             if acquisition["status"] == "PACKAGE_ACQUISITION_HOLD":
                 report["package"]["status"] = "PACKAGE_ACQUISITION_HOLD"
                 report["package"]["acquisition_error"] = acquisition["error"]
@@ -278,7 +326,14 @@ def main(argv: list[str] | None = None) -> int:
                     cdp_endpoint=os.environ.get("PARTNER_CENTER_CDP_URL"),
                 )
             else:
+                from .store_run import ALLOWED_SECTIONS
+                unapproved_sections = sorted(ALLOWED_SECTIONS)
                 execution = {"status": "PLAN_ONLY", "reason": "EXECUTE_APPROVED_FLAG_REQUIRED",
+                             "approved_sections": [], "completed_sections": [],
+                             "pending_sections": unapproved_sections,
+                             "unapproved_sections": unapproved_sections,
+                             "not_executed_sections": unapproved_sections,
+                             "all_approved_sections_completed": False,
                              "actions": [], "writes_performed": False,
                              "certification_executed": False, "publish_executed": False}
             report["execution"] = execution
@@ -306,6 +361,8 @@ def main(argv: list[str] | None = None) -> int:
                           "execution_status": execution.get("status"),
                           "completed_sections": execution.get("completed_sections", []),
                           "pending_sections": execution.get("pending_sections", []),
+                          "unapproved_sections": execution.get("unapproved_sections", []),
+                          "not_executed_sections": execution.get("not_executed_sections", []),
                           "product": opts.product,
                           "mode": opts.mode, "report": str(report_path),
                           "owner_decisions_report": str(approval_report_path),

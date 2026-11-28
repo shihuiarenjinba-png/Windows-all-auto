@@ -59,6 +59,10 @@ class StoreRunTests(unittest.TestCase):
                                            package=package, ui_map_path=CONFIG_ROOT / "store_ui_maps" / "msix_pwa_app.v1.json",
                                            package_runner=lambda **_: self.fail("must not dispatch"))
             self.assertEqual(result["status"], "PLAN_ONLY")
+            self.assertEqual(result["pending_sections"], sorted({"properties", "store_listings", "pricing_availability", "age_ratings", "submission_options", "packages"}))
+            self.assertEqual(result["unapproved_sections"], result["pending_sections"])
+            self.assertEqual(result["not_executed_sections"], result["pending_sections"])
+            self.assertFalse(result["all_approved_sections_completed"])
             self.assertFalse(result["writes_performed"])
             self.assertFalse(result["certification_executed"])
             self.assertFalse(result["publish_executed"])

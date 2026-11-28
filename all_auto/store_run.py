@@ -89,7 +89,13 @@ def run_approved_sections(*, product: str, config_root: Path, package: Path | No
     config, _ = _load_job(product, config_root)
     approved, reason = _run_approval(config)
     if not approved:
+        unapproved_sections = sorted(ALLOWED_SECTIONS)
         return {"status": "PLAN_ONLY", "reason": reason,
+                "approved_sections": [], "completed_sections": [],
+                "pending_sections": unapproved_sections,
+                "unapproved_sections": unapproved_sections,
+                "not_executed_sections": unapproved_sections,
+                "all_approved_sections_completed": False,
                 "actions": [], "writes_performed": False,
                 "certification_executed": False, "publish_executed": False}
 

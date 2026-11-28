@@ -31,6 +31,22 @@ Evidence refs: [pinned product profile](https://github.com/shihuiarenjinba-png/c
 
 ## Decisions still required
 
+The following candidates can be approved together in one reply. Approval must identify each choice; blank items remain unresolved. Package provenance approval does not authorize upload, and section values do not authorize Certification or Publish.
+
+| Decision | Evidence-based candidate to approve or replace |
+|---|---|
+| Formal-current package record | Adopt run `45580565845` / Artifact `15005358857`, source `722ec7a077d2c6109e657c4ee661c9f3d06a4506`, SHA `e2ca6fd81720dc270667e65db05404b6efdde5b2c0712bee2853e0608767db05` as current; retain `4b373d…` and its source as append-only history. |
+| Device families | Select `Windows 10/11 Desktop` to match `Windows.Desktop`; separately choose whether Microsoft may decide availability for future device families (currently checked in the recorded Packages screen). |
+| Category | `Productivity`, consistent with the pinned tool description. |
+| Price | Choose one-time paid / free / subscription and the exact JPY amount. No DCA price amount is evidenced, so the system will not propose a numeric price. |
+| Markets | Preserve the observed 240-market selection, or provide the exact replacement market list. |
+| Listings | Approve the Japanese source draft and a reviewed English translation; confirm English UI/support readiness. |
+| Screenshots | Approve four genuine app captures after DCA runtime QA: initial selection, schema findings, quality findings, and output files. No synthetic UI is eligible. |
+| Privacy | Review a Yes candidate because user-selected data files may contain personal information; separately approve the privacy-policy URL and exact declaration. |
+| IARC | Candidate type `All Other App Types`; owner must provide/confirm each content questionnaire answer from product behavior. |
+| Commercial rights | Supply/approve license and redistribution evidence. Current source is `NOT_CERTIFIED`, so commercial distribution remains on hold. |
+| Publishing and automation | Keep manual Publish; retain package-only scope and `PLAN_ONLY` until a separately scoped approval is recorded. |
+
 | Decision | Evidence-backed candidate(s) | Current observation / blocker | Owner decision needed |
 |---|---|---|---|
 | Device family | **Candidate:** Windows 10/11 Desktop, since Manifest targets `Windows.Desktop` | Existing Packages observation: Desktop unchecked | Approve Desktop selection for this submission, or provide another Manifest-compatible choice |

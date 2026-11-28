@@ -24,6 +24,7 @@ WindowsアプリやゲームをMicrosoft Storeへ登録するときの **GitHub 
 
 ### Product-key Store command and exact-package gate（2026-11-28）
 - 統合入口: `python -m all_auto store run --product data-contract-auditor`。製品設定、Artifact/local MSIX、Source evidence、Owner decisionsを集め、保存済みの承認範囲だけ実行します。DCAは現在 `PLAN_ONLY` のままです。
+- 製品キー別QA計画: `python -m all_auto store qa --product data-contract-auditor`。登録済みMSIXのSHA/Manifestを検証し、製品固有シナリオとWindows Server / Windows 10/11の未実施チェックを記録します。これはQA実行やPASS判定ではありません。
 - `store run`、`store apply --section packages`、`uploader.run --execute`、内部の`process_job`は共通のexact-package QA・Product/Draft承認・Device family承認ゲートを通ります。どの入口からも未承認のQAを迂回できません。
 - CDP画面遷移はApps and games Overviewから開始し、製品とDraftの表示リンクをたどります。Identity直リンクでの移動は使用しません。
 - CI Artifactをローカルに長期保管するときは `python -m all_auto store archive --product data-contract-auditor` を使用します。SHA-addressedな追加専用アーカイブとReceiptを作ります。Artifact expiry、外部バックアップ、公開Releaseを含む保管方針は [Store archive and live gates](docs/automation/STORE_LOCAL_ARCHIVE_AND_LIVE_GATES.md) を参照してください。
