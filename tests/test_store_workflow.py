@@ -154,6 +154,7 @@ class StoreWorkflowTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             primary = root / "protected"
+            unavailable = root / "missing-app-container"
             fallback = root / "user-writable"
             real_writer = write_unique_report
             calls = []
@@ -162,13 +163,15 @@ class StoreWorkflowTests(unittest.TestCase):
                 calls.append(destination)
                 if destination == primary:
                     raise PermissionError("simulated protected output directory")
+                if destination == unavailable:
+                    raise FileNotFoundError("simulated transient app-container path")
                 return real_writer(value, destination)
 
             with patch("all_auto.store_workflow.write_unique_report", side_effect=deny_primary):
-                result = write_store_report_with_fallback(report, primary, [fallback])
+                result = write_store_report_with_fallback(report, primary, [unavailable, fallback])
             self.assertEqual(result.parent, fallback)
             self.assertTrue(result.is_file())
-            self.assertEqual(calls, [primary, fallback])
+            self.assertEqual(calls, [primary, unavailable, fallback])
 
     def test_registered_source_fetch_is_pinned_hashed_and_cached_once(self):
         config = json.loads((CONFIG_ROOT / "data-contract-auditor.job.json").read_text(encoding="utf-8"))

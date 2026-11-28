@@ -666,16 +666,14 @@ def write_store_report_with_fallback(
     """
     try:
         return write_unique_report(report, output_root)
-    except PermissionError:
-        last_error: PermissionError | None = None
+    except OSError as primary_error:
+        last_error: OSError = primary_error
         for fallback_root in fallback_roots:
             if fallback_root.resolve() == output_root.resolve():
                 continue
             try:
                 path = write_unique_report(report, fallback_root)
                 return path
-            except PermissionError as exc:
+            except OSError as exc:
                 last_error = exc
-        if last_error is not None:
-            raise last_error
-        raise
+        raise last_error
