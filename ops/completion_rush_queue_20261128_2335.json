@@ -186,7 +186,8 @@
     "hold": 2,
     "unknown": 0,
     "error": 0,
-    "live_started": false
+    "live_started": false,
+    "dry_run_started": false
   },
   "store_submission_allowed": false,
   "certification_allowed": false,
