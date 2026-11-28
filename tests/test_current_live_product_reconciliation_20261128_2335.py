@@ -35,7 +35,7 @@ class CurrentLiveProductReconciliation2335Tests(unittest.TestCase):
         self.assertEqual(self.blob_size, EXPECTED_BLOB_BYTES)
         self.assertEqual(len(self.raw_blob), EXPECTED_BLOB_BYTES)
         digest = hashlib.sha1(
-            b"blob " + str(len(self.raw_blob)).encode("ascii") + b"\\0" + self.raw_blob
+            b"blob " + str(len(self.raw_blob)).encode("ascii") + b"\0" + self.raw_blob
         ).hexdigest()
         self.assertEqual(digest, self.blob_sha)
         pointer = self.overlay["canonical_ledger_reconciliation"]
