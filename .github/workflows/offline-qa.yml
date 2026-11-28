@@ -220,6 +220,9 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+      - name: Keep pinned source file bytes canonical on Windows
+        shell: pwsh
+        run: git config --global core.autocrlf false
       - uses: actions/checkout@v4
         with:
           repository: shihuiarenjinba-png/csv-import-validator
