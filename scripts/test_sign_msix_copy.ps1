@@ -81,13 +81,37 @@ try {
         Sort-Object Version -Descending | Select-Object -First 1
     if (-not $installed) { throw 'Installed package was not discoverable by exact Identity and Publisher.' }
     $appxFamily = $installed.PackageFamilyName
-    $activation = "shell:AppsFolder\$appxFamily!$ApplicationId"
-    Start-Process -FilePath (Join-Path $env:WINDIR 'explorer.exe') -ArgumentList $activation
+    $activationSource = @'
+using System;
+using System.Runtime.InteropServices;
+[ComImport, Guid("2e941141-7f97-4756-ba1d-9decde894a3d"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+interface IApplicationActivationManager {
+    [PreserveSig] int ActivateApplication([MarshalAs(UnmanagedType.LPWStr)] string appUserModelId,
+        [MarshalAs(UnmanagedType.LPWStr)] string arguments, uint options, out uint processId);
+}
+[ComImport, Guid("45BA127D-10A8-46EA-8AB7-56EA9078943C")]
+class ApplicationActivationManager { }
+public static class PackageActivation {
+    public static uint Activate(string appUserModelId) {
+        var manager = (IApplicationActivationManager)new ApplicationActivationManager();
+        uint processId;
+        int hr = manager.ActivateApplication(appUserModelId, null, 0, out processId);
+        Marshal.ThrowExceptionForHR(hr);
+        return processId;
+    }
+}
+'@
+    Add-Type -TypeDefinition $activationSource
+    $appUserModelId = "$appxFamily!$ApplicationId"
+    $activatedProcessId = [PackageActivation]::Activate($appUserModelId)
     $deadline = (Get-Date).AddSeconds(45)
     while ((Get-Date) -lt $deadline -and -not (Test-Path -LiteralPath $SmokeMarkerPath)) {
         Start-Sleep -Milliseconds 500
     }
-    if (-not (Test-Path -LiteralPath $SmokeMarkerPath)) { throw 'Packaged smoke marker was not written before timeout.' }
+    if (-not (Test-Path -LiteralPath $SmokeMarkerPath)) {
+        $processStillRunning = [bool](Get-Process -Id $activatedProcessId -ErrorAction SilentlyContinue)
+        throw "Packaged activation returned process $activatedProcessId but no smoke marker arrived before timeout (process_still_running=$processStillRunning)."
+    }
     $marker = Get-Content -LiteralPath $SmokeMarkerPath -Raw
     if ($marker.Trim() -ne 'BASIC_FUNCTION_SMOKE_PASS') { throw 'Packaged app reported a failed basic-function smoke.' }
 
@@ -101,6 +125,7 @@ try {
         host_os=(Get-CimInstance Win32_OperatingSystem).Caption;
         identity=$IdentityName; publisher=$Publisher; version=$Version;
         architecture=$Architecture; install='PASS'; launch='PASS'; basic_function='PASS';
+        activation_app_user_model_id=$appUserModelId; activation_process_id=$activatedProcessId;
         store_candidate_unchanged=$true; diagnostic_only=$true; report=$report }
     $evidence | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $receipt -Encoding UTF8
     Write-Output ($evidence | ConvertTo-Json -Compress)

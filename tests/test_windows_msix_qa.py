@@ -59,7 +59,8 @@ class WindowsMsixDiagnosticTests(unittest.TestCase):
         for required in ("$env:GITHUB_ACTIONS -ne 'true'", "System.IO.Compression.FileSystem",
                          "New-SelfSignedCertificate",
                          "Cert:\\LocalMachine\\TrustedPeople", "& $signTool sign /fd SHA256",
-                         "Add-AppxPackage -Path $derived", "Remove-AppxPackage",
+                         "Add-AppxPackage -Path $derived", "IApplicationActivationManager",
+                         "ActivateApplication", "Remove-AppxPackage",
                          "store_candidate_unchanged=$true", "diagnostic_only=$true"):
             self.assertIn(required, source)
         self.assertNotIn("Set-ExecutionPolicy", source)
