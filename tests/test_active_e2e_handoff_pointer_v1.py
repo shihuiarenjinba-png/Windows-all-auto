@@ -36,9 +36,21 @@ class ActiveHandoffPointerV1Tests(unittest.TestCase):
             self.assertFalse((root / "ops" / "active_e2e_handoff.json").exists())
             snapshot = load_active_handoff_pointer(root)
 
+            if snapshot["overlay_path"] == "ops/active_e2e_handoff_overlay_20261128_2001.json":
+                self.assertEqual(snapshot["overlay"]["pr165"]["head_sha"], "9a7b8db24f26a4266fbc7d30d16c64edb5edf5fa")
+                self.assertEqual(snapshot["overlay"]["pr126_source_pin"]["status"], "CURRENT_SOURCE_PIN_MATCHES__FAIL_CLOSED_PREFLIGHT_PASS")
+                self.assertEqual(snapshot["pointer"]["source_observation"]["head_sha"], "78e3d1cfffcb2eddad52da9150c853e054cae70d")
+                self.assertEqual(snapshot["queue"]["source_observation"], snapshot["overlay_path"])
+                self.assertFalse(snapshot["overlay"]["e2e_pass"])
+                self.assertFalse(snapshot["overlay"]["real_msix"])
+                self.assertEqual(snapshot["pointer"]["canonical_ledger"]["fetch_blob_status"], "READABLE")
+                self.assertEqual(snapshot["pointer"]["canonical_ledger"]["recorded_pr165_latest_live_head_sha"], "380d4818330688f47d3558217ed556868cf0b744")
+                self.assertEqual(snapshot["pointer"]["canonical_ledger"]["directly_resolved_pr165_head_sha"], "9a7b8db24f26a4266fbc7d30d16c64edb5edf5fa")
+                return
+
             self.assertEqual(
                 snapshot["overlay_path"],
-                "ops/active_e2e_handoff_overlay_20261128_0538.json",
+                "ops/active_e2e_handoff_overlay_20261128_1850.json",
             )
             self.assertEqual(
                 snapshot["overlay"]["pr165"]["head_sha"],
@@ -52,6 +64,142 @@ class ActiveHandoffPointerV1Tests(unittest.TestCase):
                 snapshot["pointer"]["selection_policy"],
                 "VERIFIED_POINTER_REFERENCED_OVERLAY_ONLY",
             )
+            self.assertEqual(
+                snapshot["overlay"]["canonical_ledger_reconciliation"]["full_content_read_status"],
+                "READABLE_BY_FETCH_BLOB",
+            )
+            self.assertEqual(
+                snapshot["pointer"]["canonical_ledger"]["fetch_blob_status"],
+                "READABLE",
+            )
+            self.assertEqual(
+                snapshot["overlay"]["request_artifact_local_rehash"]["focus_session_desk"]["local_sha256"],
+                "8f1862039297711a68bc33e8e25bea8cfc85f9926b269f0b2136bfa9986b503a",
+            )
+            self.assertTrue(
+                snapshot["overlay"]["request_artifact_local_rehash"]["focus_session_desk"]["digest_match"]
+            )
+            self.assertFalse(
+                snapshot["overlay"]["request_artifact_local_rehash"]["focus_session_desk"]["package_msix_present"]
+            )
+
+    def test_latest_overlay_records_current_app_lane_reconciliation(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self._copy_pointer_snapshot(root)
+            snapshot = load_active_handoff_pointer(root)
+
+            if snapshot["overlay_path"] == "ops/active_e2e_handoff_overlay_20261128_2001.json":
+                overlay = snapshot["overlay"]
+                queue = snapshot["queue"]
+                pointer = snapshot["pointer"]
+                self.assertEqual(overlay["pr165"]["head_sha"], "9a7b8db24f26a4266fbc7d30d16c64edb5edf5fa")
+                self.assertEqual([x["run_id"] for x in overlay["pr165"]["exact_head_ci"]], [46137250084, 46137250087, 46137250139])
+                self.assertFalse(overlay["pr165"]["product_code_changed"])
+                self.assertEqual(overlay["pr126_source_pin"]["head_sha"], "03f5666240c2dcf1cc3739a92987587c453e0734")
+                self.assertEqual(overlay["pr126_source_pin"]["status"], "CURRENT_SOURCE_PIN_MATCHES__FAIL_CLOSED_PREFLIGHT_PASS")
+                self.assertEqual(overlay["pr126_source_pin"]["focus"]["preflight"]["identity_status"], "STALE_TRACKED")
+                self.assertEqual(overlay["pr126_source_pin"]["focus"]["preflight"]["version_status"], "MISSING")
+                self.assertFalse(overlay["pr126_source_pin"]["focus"]["preflight"]["product_msix_created"])
+                self.assertEqual(overlay["pr126_source_pin"]["file_integrity"]["preflight"]["identity_status"], "MISSING")
+                self.assertEqual(overlay["pr126_source_pin"]["file_integrity"]["preflight"]["version_status"], "UNAVAILABLE")
+                self.assertFalse(overlay["pr126_source_pin"]["file_integrity"]["preflight"]["product_msix_created"])
+                self.assertEqual(overlay["products"]["focus_session_desk"]["current_source_preflight"]["request_id"], "app-focus-session-desk-b6b69464a9c7")
+                self.assertEqual(overlay["products"]["focus_session_desk"]["current_source_preflight"]["identity_status"], "STALE_TRACKED")
+                self.assertEqual(overlay["products"]["file_integrity_ledger"]["current_source_preflight"]["identity_status"], "MISSING")
+                self.assertTrue(overlay["products"]["file_integrity_ledger"]["functional_hold"])
+                self.assertEqual(overlay["pr219"]["head_sha"], "78e3d1cfffcb2eddad52da9150c853e054cae70d")
+                self.assertEqual(overlay["pr219"]["pr_validation_run_id"], 46132642984)
+                self.assertEqual(pointer["source_observation"]["head_sha"], "78e3d1cfffcb2eddad52da9150c853e054cae70d")
+                self.assertEqual(pointer["source_observation"]["pr_validation_run_id"], 46132642984)
+                self.assertEqual(queue["source_observation"], "ops/active_e2e_handoff_overlay_20261128_2001.json")
+                self.assertEqual(queue["priority"][0]["product"], "Focus Session Desk")
+                self.assertEqual(queue["priority"][1]["product"], "File Integrity Ledger")
+                self.assertTrue(queue["priority"][1]["functional_hold"])
+                self.assertEqual(overlay["canonical_ledger_reconciliation"]["directly_resolved_pr165_branch_head_sha"], "9a7b8db24f26a4266fbc7d30d16c64edb5edf5fa")
+                self.assertTrue(overlay["canonical_ledger_reconciliation"]["active_product_is_historical"])
+                self.assertIsNone(overlay["canonical_ledger_reconciliation"]["current_active_product"])
+                self.assertEqual(overlay["request_artifact_local_rehash"]["focus_session_desk"]["local_sha256"], "8f1862039297711a68bc33e8e25bea8cfc85f9926b269f0b2136bfa9986b503a")
+                self.assertEqual(overlay["request_artifact_local_rehash"]["file_integrity_ledger"]["local_sha256"], "697528b3b0769e3962eebfa0efcdcb026618cd378d97fc60c4f234017882527e")
+                self.assertEqual(overlay["store_upload_test_eligibility"]["eligible_fresh_unsold_products"], 0)
+                self.assertFalse(overlay["store_upload_test_eligibility"]["dry_run_started"])
+                self.assertFalse(overlay["store_submission_allowed"])
+                self.assertFalse(overlay["certification_allowed"])
+                self.assertFalse(overlay["publish_allowed"])
+                return
+
+            self.assertEqual(
+                snapshot["overlay"]["pr126_source_pin"]["status"],
+                "STALE_SOURCE_PIN",
+            )
+            self.assertEqual(snapshot["overlay"]["pr219"]["head_sha"], "bfb6ab7f0da0935585a5fb8f49c6a8c7180a8542")
+            self.assertEqual(snapshot["overlay"]["pr219"]["exact_head_push_run_id"], 46132164713)
+            self.assertEqual(snapshot["overlay"]["pr219"]["pr_validation_run_id"], 46132168622)
+            self.assertEqual(snapshot["pointer"]["source_observation"]["head_sha"], "bfb6ab7f0da0935585a5fb8f49c6a8c7180a8542")
+            self.assertEqual(snapshot["pointer"]["source_observation"]["exact_head_push_run_id"], 46132164713)
+            self.assertEqual(snapshot["pointer"]["source_observation"]["pr_validation_run_id"], 46132168622)
+            self.assertEqual(snapshot["queue"]["source_observation"], "ops/active_e2e_handoff_overlay_20261128_1850.json")
+            canonical = snapshot["overlay"]["canonical_ledger_reconciliation"]
+            self.assertTrue(canonical["active_product_is_historical"])
+            self.assertEqual(canonical["active_product_record_status"], "HISTORICAL_ONLY_NOT_CURRENT_REQUEST")
+            self.assertIsNone(canonical["current_active_product"])
+            self.assertEqual(canonical["historical_active_product"]["source_sha"], "c058cbf7fe38e02d929c67d047d717ff74bd522e")
+            signal = snapshot["overlay"]["products"]["signal_sprint"]
+            self.assertEqual(signal["current_pr32_head"], "f051137e0a576c1778486f416b8f1d48f50d57b3")
+            self.assertEqual(signal["current_build"]["exe_artifact_id"], 15189400982)
+            self.assertEqual(signal["current_pr54_preview"]["preview_status"], "STALE_AGAINST_PR32_BUILD")
+            self.assertFalse(signal["gdk_package_verified"])
+            self.assertEqual(snapshot["queue"]["priority"][3]["pr54_preview_status"], "STALE_AGAINST_PR32_BUILD")
+            self.assertEqual(
+                snapshot["overlay"]["products"]["focus_session_desk"]["current_request"]["request_id"],
+                "app-focus-session-desk-b6b69464a9c7",
+            )
+            self.assertTrue(
+                snapshot["overlay"]["products"]["file_integrity_ledger"]["functional_hold"]
+            )
+            self.assertEqual(
+                snapshot["overlay"]["products"]["us_freelance_ledger"]["current_source"]["pr"],
+                140,
+            )
+            self.assertEqual(
+                snapshot["queue"]["priority"][0]["product"],
+                "Focus Session Desk",
+            )
+            self.assertEqual(
+                snapshot["queue"]["priority"][1]["product"],
+                "File Integrity Ledger",
+            )
+            self.assertEqual(
+                snapshot["overlay"]["request_artifact_local_rehash"]["file_integrity_ledger"]["local_sha256"],
+                "697528b3b0769e3962eebfa0efcdcb026618cd378d97fc60c4f234017882527e",
+            )
+            self.assertTrue(
+                snapshot["overlay"]["request_artifact_local_rehash"]["file_integrity_ledger"]["digest_match"]
+            )
+            self.assertFalse(
+                snapshot["overlay"]["request_artifact_local_rehash"]["file_integrity_ledger"]["package_msix_present"]
+            )
+            self.assertEqual(
+                snapshot["overlay"]["local_code_sync"]["status"],
+                "NOT_OBSERVED__CLOUD_PASS_ONLY",
+            )
+            sync_resolution = snapshot["overlay"]["local_code_sync"]["target_resolution_20261126"]
+            self.assertEqual(sync_resolution["overall_status"], "HOLD_USER_PC_RECEIPTS_PENDING_AND_OFFLINE_NOTES_SOURCE_NOT_FIXED")
+            self.assertEqual(sync_resolution["required_target_count"], 3)
+            self.assertEqual(sync_resolution["resolvable_target_count"], 2)
+            self.assertFalse(sync_resolution["pr23"]["integrated_into_pr22"])
+            self.assertEqual(sync_resolution["pr23"]["exact_head_ci_run_id"], 45766970565)
+            self.assertEqual(sync_resolution["targets"][0]["status"], "HOLD_SOURCE_NOT_FIXED")
+            self.assertEqual(sync_resolution["targets"][1]["source_sha"], "1a349faa41663c417c40710140a4d50c79b62b78")
+            self.assertEqual(sync_resolution["targets"][2]["source_sha"], "b03ce7b16c3f75c04fe20fdda224c45849eeba0d")
+            self.assertFalse(sync_resolution["receipts"]["physical_user_pc"] == "PASS")
+            prism = snapshot["overlay"]["products"]["prism_route_3d"]
+            builder = prism["provisioner_pr11"]
+            self.assertEqual(builder["head_sha"], "356cb7bcbf795c3335fb142cf82fef2db3a7478a")
+            self.assertEqual(builder["exact_head_ci"][1]["jobs"][0]["conclusion"], "success")
+            self.assertEqual(builder["exact_head_ci"][1]["jobs"][1]["conclusion"], "skipped")
+            self.assertFalse(builder["real_msix"])
+            self.assertEqual(snapshot["queue"]["priority"][2]["builder_status"], "FIXTURE_ONLY_PASS_REAL_PRODUCT_MSIX_SKIPPED")
 
     def test_tampered_overlay_fails_closed_without_legacy_fallback(self):
         with tempfile.TemporaryDirectory() as temporary:

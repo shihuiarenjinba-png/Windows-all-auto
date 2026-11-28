@@ -3,26 +3,29 @@
   "pointer_version": 1,
   "path": "ops/active_e2e_handoff_pointer_v1.json",
   "repository": "shihuiarenjinba-png/Windows-all-auto",
-  "generated_at_utc": "2026-11-27T20:38:24Z",
+  "generated_at_utc": "2026-11-28T11:01:34Z",
   "status": "ACTIVE",
   "selection_policy": "VERIFIED_POINTER_REFERENCED_OVERLAY_ONLY",
   "fallback_to_canonical_ledger": false,
   "source_observation": {
-    "pr_number": 217,
-    "branch": "codex/36-pr216-state-correction-20261128-0132",
-    "head_sha": "57dade207470014edcfc2fc24f430d9b10a94826",
-    "exact_head_ci_run_id": 46035167037,
-    "exact_head_ci_conclusion": "success"
+    "pr_number": 219,
+    "branch": "codex/36-pr218-current-lane-reconcile-20261128-1337",
+    "head_sha": "78e3d1cfffcb2eddad52da9150c853e054cae70d",
+    "exact_head_push_run_id": null,
+    "exact_head_push_conclusion": "NOT_OBSERVED",
+    "pr_validation_run_id": 46132642984,
+    "pr_validation_conclusion": "success",
+    "scope": "PR validation/offline QA only; not Product E2E."
   },
   "active_snapshot": {
-    "observed_at_utc": "2026-11-27T20:38:24Z",
+    "observed_at_utc": "2026-11-28T11:01:34Z",
     "overlay": {
-      "path": "ops/active_e2e_handoff_overlay_20261128_0538.json",
-      "git_blob_sha": "2128c84bc1d3d4a1e0f7eccb3b634f1fc79316b0"
+      "path": "ops/active_e2e_handoff_overlay_20261128_2001.json",
+      "git_blob_sha": "3d48b0471f9d3d87173c61b18ea14613f23cd035"
     },
     "queue": {
-      "path": "ops/completion_rush_queue_20261128_0538.json",
-      "git_blob_sha": "b2e2c9194182f8ccaa0ce929c3a97b7225dc583e"
+      "path": "ops/completion_rush_queue_20261128_2001.json",
+      "git_blob_sha": "ce8cbb57d0f69a8725a06650717aaeab2414eab6"
     }
   },
   "canonical_ledger": {
@@ -30,17 +33,63 @@
     "git_blob_sha": "5e764d88bcc7d5f101557dfb547cfab48d7d5145",
     "bytes": 1976822,
     "read_status": "EMPTY_CONTENT",
-    "rewritten": false
+    "rewritten": false,
+    "blob_sha": "5e764d88bcc7d5f101557dfb547cfab48d7d5145",
+    "fetch_blob_status": "READABLE",
+    "full_content_read_status": "READABLE_BY_FETCH_BLOB",
+    "full_content_read_bytes_utf8": 1976822,
+    "updated_at_utc": "2026-11-26T13:38:35Z",
+    "recorded_pr165_latest_live_head_sha": "380d4818330688f47d3558217ed556868cf0b744",
+    "directly_resolved_pr165_head_sha": "9a7b8db24f26a4266fbc7d30d16c64edb5edf5fa",
+    "active_product_record_status": "HISTORICAL_ONLY_NOT_CURRENT_REQUEST",
+    "active_product_is_historical": true,
+    "current_active_product": null,
+    "canonical_e2e_status": "HOLD",
+    "canonical_e2e_pass": false,
+    "recorded_pr165_current_head_sha": "c68adc79ecf8a0c6ad4b538146648391b1b4eddb",
+    "recorded_pr165_latest_branch_head_sha": "776431b039bd67ffdbc6a215aa1fc672ad1d1549",
+    "directly_resolved_pr165_exact_head_ci_run_ids": [
+      46137250084,
+      46137250087,
+      46137250139
+    ]
   },
   "legacy_embedded_pointer": {
     "path": "ops/active_e2e_handoff.json",
     "recorded_pr165_head_sha": "380d4818330688f47d3558217ed556868cf0b744",
-    "directly_resolved_pr165_head_sha": "07cb543816c7432edcf45465ae0763e16917aecc",
+    "directly_resolved_pr165_head_sha": "9a7b8db24f26a4266fbc7d30d16c64edb5edf5fa",
     "status": "STALE_NOT_AUTHORITATIVE"
   },
   "safety": {
     "real_msix": false,
     "product_e2e_pass": false,
+    "store_submission_allowed": false,
+    "certification_allowed": false,
+    "publish_allowed": false,
+    "merge_allowed": false,
+    "force_push_allowed": false
+  },
+  "supervisor_handoff": {
+    "received_at_jst": "2026-11-28 20:01",
+    "pr165_head_sha": "9a7b8db24f26a4266fbc7d30d16c64edb5edf5fa",
+    "pr165_exact_head_ci_run_ids": [
+      46137250084,
+      46137250087,
+      46137250139
+    ],
+    "pr126_head_sha": "03f5666240c2dcf1cc3739a92987587c453e0734",
+    "pr126_source_pin_status": "CURRENT_SOURCE_PIN_MATCHES__FAIL_CLOSED_PREFLIGHT_PASS",
+    "focus_current_source_sha": "b6b69464a9c7450489338bc7542fd22cf190ed42",
+    "focus_current_source_identity_status": "STALE_TRACKED",
+    "focus_authoritative_version": null,
+    "file_current_source_sha": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
+    "file_current_source_identity_status": "MISSING",
+    "file_authoritative_version": null,
+    "canonical_active_product_is_historical": true,
+    "canonical_current_active_product": null,
+    "partner_center_readback": "NOT_OBSERVED",
+    "product_e2e_pass": false,
+    "real_msix": false,
     "store_submission_allowed": false,
     "certification_allowed": false,
     "publish_allowed": false,

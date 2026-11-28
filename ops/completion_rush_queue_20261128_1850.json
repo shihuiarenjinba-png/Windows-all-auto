@@ -1,0 +1,395 @@
+{
+  "schema_version": "1.0",
+  "path": "ops/completion_rush_queue_20261128_1850.json",
+  "generated_at": "2026-11-28T09:50:07Z",
+  "policy": "COMPLETION_RUSH_EXISTING_PRODUCTS_ONLY",
+  "source_observation": "ops/active_e2e_handoff_overlay_20261128_1850.json",
+  "supersedes_current_snapshot": "ops/completion_rush_queue_20261128_1839.json",
+  "new_product_generation_allowed": false,
+  "rules": {
+    "functional_hold": "Improve only existing products when paid value, core functionality, beginner UX, safety or stability is deficient; do not add features without a concrete supported defect.",
+    "delivery_hold": "Do not add features. Advance only after exact current-source official Identity binding and authoritative Package Version are verified.",
+    "freeze_for_package": "When no package-blocking product defect remains, product code is frozen except package-blocking defects.",
+    "never_guess": [
+      "Identity",
+      "Publisher",
+      "PFN",
+      "SID",
+      "Package Version"
+    ],
+    "no_identity_rerequest": true,
+    "no_historical_identity_reuse": true,
+    "no_store_write": true,
+    "png_owner": "00"
+  },
+  "priority": [
+    {
+      "rank": 1,
+      "product": "Focus Session Desk",
+      "lane": "APP",
+      "state": "POST_IDENTITY_UPGRADE",
+      "hold_class": "DELIVERY_HOLD",
+      "functional_hold": false,
+      "product_frozen_for_package": true,
+      "current_source_pr": 94,
+      "current_source_sha": "b6b69464a9c7450489338bc7542fd22cf190ed42",
+      "current_request_id": "app-focus-session-desk-b6b69464a9c7",
+      "official_identity_status": "UNVERIFIED",
+      "historical_identity_reuse_allowed": false,
+      "package_version": null,
+      "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
+      "required_assets_present": true,
+      "store_assets_owner": "00",
+      "real_msix": false,
+      "next_action": "Owner 00 corrects PR126's stale Focus source/request pin and explicit fail-closed assertions. Then obtain read-only official current-source Identity and authoritative Version for the exact b6 source/request tuple; do not re-request or reuse historical Identity."
+    },
+    {
+      "rank": 2,
+      "product": "File Integrity Ledger",
+      "lane": "APP",
+      "state": "POST_IDENTITY_UPGRADE",
+      "hold_class": "DELIVERY_HOLD_PLUS_COMMERCIAL_FUNCTIONAL_HOLD",
+      "functional_hold": true,
+      "functional_hold_reason": "Consumer/value review score 60/100; paid differentiation is not established. Do not add features to chase the score.",
+      "product_frozen_for_package": true,
+      "current_source_pr": 115,
+      "current_source_sha": "33d612be2774ac155ea3d85289ec5cb7981c81c1",
+      "current_request_id": "app-file-integrity-ledger-33d612be2774",
+      "official_identity_status": "UNVERIFIED",
+      "current_source_approved_identity_present": false,
+      "historical_identity_reuse_allowed": false,
+      "package_version": null,
+      "package_version_status": "AUTHORITATIVE_VALUE_REQUIRED",
+      "required_assets_present": true,
+      "store_assets_owner": "00",
+      "real_msix": false,
+      "next_action": "Keep source and assets frozen. Obtain read-only official current-source Identity and authoritative Version for the exact source/request tuple; commercial sale-readiness remains separately held."
+    },
+    {
+      "rank": 3,
+      "product": "Prism Route 3D",
+      "lane": "3D",
+      "state": "POST_IDENTITY_UPGRADE",
+      "hold_class": "DELIVERY_AND_PHYSICAL_QA_HOLD",
+      "functional_hold": false,
+      "product_frozen_for_package": true,
+      "current_source_sha": "b03ce7b16c3f75c04fe20fdda224c45849eeba0d",
+      "historical_identity_source_sha": "15fdcb52e46e35e6de8e87c55af99719c21e09b9",
+      "current_source_identity_rebind": "PENDING_CURRENT_SOURCE_APPROVAL",
+      "package_version": null,
+      "old_identity_reuse_allowed": false,
+      "physical_qa_sessions": "0/6",
+      "physical_qa_screenshots": "0/36",
+      "real_msix": false,
+      "provisioner_pr11": {
+        "repository": "shihuiarenjinba-png/Repository-Provisioner-3D",
+        "pr_number": 11,
+        "state": "OPEN",
+        "draft": true,
+        "branch": "codex/prism-current-source-msix-builder-20261128",
+        "head_sha": "356cb7bcbf795c3335fb142cf82fef2db3a7478a",
+        "base_pr_number": 10,
+        "base_head_sha": "894775ae23cb5c8a6daca959b04804918ec255b9",
+        "current_prism_source_sha": "b03ce7b16c3f75c04fe20fdda224c45849eeba0d",
+        "request_id": "3d-prism-route-3d-b03ce7b16c3f",
+        "exact_head_ci": [
+          {
+            "run_id": 46099215677,
+            "workflow": "Package and Identity Provisioner CI",
+            "conclusion": "success",
+            "jobs": [
+              {
+                "name": "test (windows-latest)",
+                "conclusion": "success"
+              },
+              {
+                "name": "test (ubuntu-latest)",
+                "conclusion": "success"
+              }
+            ]
+          },
+          {
+            "run_id": 46099215673,
+            "workflow": "Prism current-source MSIX builder (fixture-only by default)",
+            "conclusion": "success",
+            "jobs": [
+              {
+                "name": "fixture-only",
+                "conclusion": "success"
+              },
+              {
+                "name": "real-product-msix",
+                "conclusion": "skipped"
+              }
+            ],
+            "real_product_msix_is_package_pass": false
+          }
+        ],
+        "builder_contract": "FAIL_CLOSED_CURRENT_SOURCE_PRISM_MSIX_BUILDER",
+        "required_inputs": [
+          "protected GitHub Environment approval",
+          "read-only QA artifact token",
+          "exact custody ZIP size and SHA",
+          "current-source Identity return bound to the exact Prism source/request",
+          "authoritative Package Version",
+          "package/source/request binding",
+          "approved Store assets",
+          "manifest mapping",
+          "three approved PNG assets"
+        ],
+        "current_source_identity_rebind": "PENDING_CURRENT_SOURCE_APPROVAL",
+        "authoritative_package_version": null,
+        "physical_qa_sessions": "0/6",
+        "physical_qa_screenshots": "0/36",
+        "real_msix": false,
+        "github_backlog_receipt": false,
+        "local_pull_receipt": false,
+        "local_checker_receipt": false,
+        "local_gui_install_receipt": false,
+        "next_action": "Keep the builder fixture-only. Do not dispatch real-product-msix until every exact-source Identity, Version, custody, approval and asset input is independently verified."
+      },
+      "builder_status": "FIXTURE_ONLY_PASS_REAL_PRODUCT_MSIX_SKIPPED",
+      "github_backlog_receipt": false,
+      "local_pull_receipt": false,
+      "local_checker_receipt": false,
+      "local_gui_install_receipt": false,
+      "next_action": "Keep the builder fixture-only. Do not dispatch real-product-msix until every exact-source Identity, Version, custody, approval and asset input is independently verified."
+    },
+    {
+      "rank": 4,
+      "product": "Signal Sprint",
+      "lane": "GAME",
+      "state": "POST_IDENTITY_UPGRADE",
+      "hold_class": "FUNCTIONAL_QA_THEN_DELIVERY_HOLD",
+      "functional_hold": true,
+      "product_frozen_for_package": false,
+      "current_pr32_head": "f051137e0a576c1778486f416b8f1d48f50d57b3",
+      "pr54_preview_status": "STALE_AGAINST_PR32_BUILD",
+      "package_route": "GDK_GAME",
+      "owner": "lane 12",
+      "normal_msix_route_allowed": false,
+      "current_product_source_sha": "1a349faa41663c417c40710140a4d50c79b62b78",
+      "current_product_request_id": "game-signal-sprint-1a349faa41663c417c40710140a4d50c79b62b78",
+      "current_qa_pr": 32,
+      "current_qa_head": "f051137e0a576c1778486f416b8f1d48f50d57b3",
+      "build_run_id": 45980148670,
+      "exe_artifact_id": 15189400982,
+      "exe_artifact_zip_sha256": "e19ecb2ef386cf356301f7afc1b8cf07f677bfa8a04b06a47ad23fbf550d95f5",
+      "exe_size_bytes": 11454086,
+      "exe_sha256": "9983d1a03dd098f56f0f2285c9ff97c6daa77830f1d78e49360ee1efbc8d0a24",
+      "gdk_readiness_artifact_id": 15189086480,
+      "gdk_readiness_status": "HOLD_GDK_PACKAGE_PREREQUISITES",
+      "sdk_status": "HOLD_GDK_SDK_ROOT_NOT_FOUND",
+      "revision_status": "HOLD_REVISION_NOT_IN_FROZEN_SOURCE",
+      "physical_ui_status": "SKIPPED",
+      "pr54_head": "b8baa6ac332a677d540c116192dc761814519906",
+      "gdk_package_verified": false,
+      "msixvc2_created": false,
+      "ordinary_msix_route_allowed": false,
+      "next_action": "Owner lane 12 refreshes the PR54 check-only preview against current PR32 HEAD f051137e... and EXE Artifact 15189400982. Keep GDK_GAME only; do not use ordinary MSIX. GDK SDK, current-source Identity, authoritative Version, approved assets/staging, required revision and physical UIA remain HOLD."
+    }
+  ],
+  "non_priority_states": [
+    {
+      "product": "Offline Notes Canary",
+      "state": "PRE_IDENTITY_FIX_REQUIRED",
+      "reason": "Promotion/source/request binding is incomplete; do not classify as WAITING_USER_IDENTITY."
+    },
+    {
+      "product": "US Freelance Ledger",
+      "lane": "APP",
+      "state": "FUNCTIONAL_HOLD",
+      "hold_class": "FUNCTIONAL_HOLD",
+      "priority": "NON_PRIORITY",
+      "current_source_pr": 140,
+      "current_source_sha": "59cac190f0f99cd9e63ef2f755e3d11b95222687",
+      "core_ci_run_id": 46074248872,
+      "native_windows_review_run_id": 46074248823,
+      "native_windows_artifact_id": 15234512571,
+      "registration_type_status": "HOLD_REGISTRATION_TYPE_UNRESOLVED",
+      "authoritative_package_version": null,
+      "real_msix": false,
+      "product_e2e": false,
+      "store_upload_test_eligible": false,
+      "next_action": "Keep non-priority. Do not choose registration type or infer Identity/Version; QA EXE evidence is not a Store package."
+    }
+  ],
+  "waiting_user_identity_products": [],
+  "global": {
+    "status": "HOLD",
+    "e2e_pass": false,
+    "real_msix": false,
+    "github_backlog_receipt": false,
+    "local_pull_receipt": false,
+    "local_checker_receipt": false,
+    "local_gui_install_receipt": false,
+    "store_submission_allowed": false,
+    "certification_allowed": false,
+    "publish_allowed": false,
+    "merge_allowed": false,
+    "force_push_allowed": false,
+    "store_upload_test_eligible_products": 0,
+    "product_e2e": false
+  },
+  "active_pointer_manifest_path": "ops/active_e2e_handoff_pointer_v1.json",
+  "evidence_refresh": {
+    "canonical_ledger_blob_read": "READABLE_BY_FETCH_BLOB__EMBEDDED_PR165_POINTER_STALE",
+    "request_artifact_local_rehash": "PASS_REQUEST_ARTIFACT_ONLY_NOT_PRODUCT_PACKAGE",
+    "product_e2e_status": "HOLD",
+    "real_msix": false,
+    "local_code_sync": "NOT_OBSERVED__CLOUD_PASS_ONLY",
+    "current_pr219_head": "bfb6ab7f0da0935585a5fb8f49c6a8c7180a8542",
+    "current_pr219_exact_head_run_id": 46118094976,
+    "current_pr219_exact_head_ci": "SUCCESS",
+    "signal_sprint_pr32_head": "f051137e0a576c1778486f416b8f1d48f50d57b3",
+    "signal_sprint_exe_artifact_id": 15189400982,
+    "signal_sprint_pr54_preview": "STALE_AGAINST_PR32_BUILD",
+    "parent_pr219_head": "17383e2da99e903df825bee4deeea883e5b66b70",
+    "parent_pr219_push_run_id": 46128264048,
+    "parent_pr219_push_ci": "SUCCESS",
+    "parent_pr219_pr_validation_run_id": 46128268754,
+    "canonical_active_product_is_historical": true,
+    "canonical_current_active_product": null,
+    "canonical_pr165_observation_stale": true,
+    "observed_at_utc": "2026-11-28T09:50:07Z",
+    "current_pr219_exact_head_push_run_id": 46132164713,
+    "current_pr219_exact_head_pr_validation_run_id": 46132168622,
+    "github_backlog_receipt": false,
+    "local_pull_receipt": false,
+    "local_checker_receipt": false,
+    "local_gui_install_receipt": false,
+    "current_pr23_local_sync_head": "838f57879b7fce09b5de493d3b3577c40ae3d6d2",
+    "current_pr23_local_sync_ci_run_id": 45766970565,
+    "current_pr23_local_sync_ci": "SUCCESS",
+    "local_code_sync_target_resolution": "HOLD_USER_PC_RECEIPTS_PENDING_AND_OFFLINE_NOTES_SOURCE_NOT_FIXED",
+    "local_code_sync_resolvable_targets": 2,
+    "local_code_sync_required_targets": 3,
+    "store_submission_allowed": false,
+    "certification_allowed": false,
+    "publish_allowed": false
+  },
+  "supervisor_handoff_20261128_1444": {
+    "provisioner_repository": "shihuiarenjinba-png/Repository-Provisioner-3D",
+    "pr_number": 11,
+    "head_sha": "356cb7bcbf795c3335fb142cf82fef2db3a7478a",
+    "exact_head_ci_run_ids": [
+      46099215677,
+      46099215673
+    ],
+    "fixture_only": "SUCCESS",
+    "real_product_msix": "SKIPPED",
+    "real_product_msix_is_package_pass": false,
+    "current_source_identity_rebind": "PENDING_CURRENT_SOURCE_APPROVAL",
+    "authoritative_package_version": null,
+    "physical_qa_sessions": "0/6",
+    "physical_qa_screenshots": "0/36"
+  },
+  "supervisor_handoff_20261128_1644": {
+    "received_at_jst": "2026-11-28 16:44",
+    "source": "48 supervisor",
+    "instruction": "Active pointer was behind current PR219 HEAD. Append a new overlay and queue for exact current HEAD and CI; include Focus owner-00 pin, Signal owner-12 preview, Prism fixture-only distinction, and keep all real product package/local QA receipts false.",
+    "previous_pointer_blob": "94654779057bbf8b330a758d7a02bfe19bb8d613",
+    "previous_overlay_blob": "bf1031b52d4a3ef5fc2a75f6c855d8b34028b810",
+    "previous_queue_blob": "37bdc5622823d932a5c7b5cd252882201dfa3a4b",
+    "previous_snapshot_head": "b3a42ce80fe95651f075b42b03d03c21700a91dd",
+    "current_pr219_head": "10b1e12788e6a1c0bd17a46453cd50bb68367bb9",
+    "current_pr219_exact_head_run_id": 46118094976,
+    "current_pr219_exact_head_ci": "SUCCESS",
+    "signal_sprint": {
+      "current_pr32_head": "f051137e0a576c1778486f416b8f1d48f50d57b3",
+      "current_exe_artifact_id": 15189400982,
+      "pr54_head": "b8baa6ac332a677d540c116192dc761814519906",
+      "pr54_preview_status": "STALE_AGAINST_PR32_BUILD",
+      "owner": "lane 12"
+    },
+    "product_e2e_pass": false,
+    "real_msix": false,
+    "store_submission_allowed": false,
+    "certification_allowed": false,
+    "publish_allowed": false,
+    "merge_allowed": false,
+    "force_push_allowed": false
+  },
+  "canonical_ledger_semantics": {
+    "blob_sha": "5e764d88bcc7d5f101557dfb547cfab48d7d5145",
+    "active_product_record_status": "HISTORICAL_ONLY_NOT_CURRENT_REQUEST",
+    "active_product_is_historical": true,
+    "current_active_product": null,
+    "current_priority_order": [
+      "Focus Session Desk",
+      "File Integrity Ledger",
+      "Prism Route 3D",
+      "Signal Sprint"
+    ],
+    "canonical_e2e_status": "HOLD",
+    "canonical_e2e_pass": false,
+    "bytes_rewritten": false
+  },
+  "supervisor_handoff_20261128_1757": {
+    "received_at_jst": "2026-11-28 17:57",
+    "source": "36 scheduled reconciliation",
+    "instruction": "Refresh the active pointer from current PR219 parent head ebd73..., record branch-head push CI and PR validation, and reconcile canonical active_product historical semantics without rewriting the canonical ledger.",
+    "parent_head": "ebd73d88a85271966a7165a1339d0b01b4ce0cbc",
+    "parent_push_run_id": 46127355361,
+    "parent_pr_run_id": 46127360090,
+    "canonical_blob_sha": "5e764d88bcc7d5f101557dfb547cfab48d7d5145",
+    "canonical_active_product_is_historical": true,
+    "canonical_current_active_product": null,
+    "canonical_pr165_observation_stale": true,
+    "product_e2e_pass": false,
+    "real_msix": false,
+    "store_submission_allowed": false,
+    "certification_allowed": false,
+    "publish_allowed": false,
+    "merge_allowed": false,
+    "force_push_allowed": false
+  },
+  "supervisor_handoff_20261128_1839": {
+    "received_at_jst": "2026-11-28 18:39",
+    "source": "36 scheduled reconciliation",
+    "current_pr219_head": "17383e2da99e903df825bee4deeea883e5b66b70",
+    "exact_head_push_run_id": 46128264048,
+    "pr_validation_run_id": 46128268754,
+    "canonical_ledger_blob_sha": "5e764d88bcc7d5f101557dfb547cfab48d7d5145",
+    "instruction": "Keep Focus rank 1 and File Integrity rank 2; do not infer current-source Identity or Package Version. Preserve Prism historical-source separation and Signal Sprint GDK-only routing. No product E2E or Store readiness is implied by repository CI."
+  },
+  "local_code_sync_target_resolution_20261126": {
+    "overall_status": "HOLD_USER_PC_RECEIPTS_PENDING_AND_OFFLINE_NOTES_SOURCE_NOT_FIXED",
+    "required_target_count": 3,
+    "resolvable_target_count": 2,
+    "pr22_legacy_manifest": "tests/fixtures/local_code_sync_targets.json",
+    "pr23_current_manifest": "tests/fixtures/local_code_sync_targets_20261126.json",
+    "pr23_head": "838f57879b7fce09b5de493d3b3577c40ae3d6d2",
+    "pr23_exact_head_ci_run_id": 45766970565,
+    "pr23_integrated_into_pr22": false,
+    "current_targets": [
+      {
+        "product": "Offline Notes Canary",
+        "status": "HOLD_SOURCE_NOT_FIXED"
+      },
+      {
+        "product": "Signal Sprint",
+        "status": "REMOTE_HEAD_VERIFIED_AWAITING_USER_PC_RECEIPT",
+        "source_sha": "1a349faa41663c417c40710140a4d50c79b62b78"
+      },
+      {
+        "product": "Prism Route 3D",
+        "status": "REMOTE_HEAD_VERIFIED_AWAITING_USER_PC_RECEIPT",
+        "source_sha": "b03ce7b16c3f75c04fe20fdda224c45849eeba0d"
+      }
+    ],
+    "physical_receipts": {
+      "first_run": false,
+      "replay_reuse": false,
+      "task_scheduler": false
+    }
+  },
+  "supervisor_handoff_20261128_1850": {
+    "received_at_jst": "2026-11-28 18:50",
+    "source": "36 scheduled reconciliation",
+    "pr23_head": "838f57879b7fce09b5de493d3b3577c40ae3d6d2",
+    "pr23_exact_head_ci_run_id": 45766970565,
+    "local_code_sync_target_resolution": "HOLD_USER_PC_RECEIPTS_PENDING_AND_OFFLINE_NOTES_SOURCE_NOT_FIXED",
+    "instruction": "Do not use PR22's historical c058/15fd target manifest as the current Signal/Prism sync source. Use PR23's exact 2026-11-26 resolution for read-only planning; keep physical user-PC receipts and Offline Notes source unresolved."
+  }
+}
