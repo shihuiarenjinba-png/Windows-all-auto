@@ -248,6 +248,7 @@ jobs:
           $summary = "$summaryLine" | ConvertFrom-Json
           if (-not (Test-Path -LiteralPath $summary.report)) { throw 'Integrated QA report is missing.' }
           $report = Get-Content -LiteralPath $summary.report -Raw | ConvertFrom-Json
+          Write-Host ($report.source_gui_driver | ConvertTo-Json -Depth 10 -Compress)
           if ($report.source_gui_driver.status -ne 'SOURCE_GUI_DRIVER_PASS') { throw 'Pinned DCA source GUI driver did not pass.' }
           if ($report.source_gui_driver.binding.source_sha -ne '662a7fc506227464d103cd9a27f85ea372dfe3e2') { throw 'QA source SHA is not the pinned commit.' }
           if (-not $report.source_gui_driver.binding.source_worktree_clean) { throw 'DCA source checkout was not clean.' }
@@ -266,5 +267,6 @@ jobs:
           name: dca-clean-source-integrated-qa-${{ github.run_id }}
           path: |
             ${{ runner.temp }}/dca-integrated-qa/**/*.json
+            ${{ runner.temp }}/qa-evidence/data-contract-auditor/**/*.json
           if-no-files-found: ignore
           retention-days: 14
