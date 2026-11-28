@@ -20,7 +20,7 @@ class StoreCliTests(unittest.TestCase):
              patch("all_auto.runtime_qa.build_runtime_qa_report", return_value={
                  "status": "RUNTIME_QA_READY_TO_RUN", "qa_pass": False,
                  "package": {"status": "EXACT_PACKAGE_SHA_AND_MANIFEST_VERIFIED"}}), \
-             patch("all_auto.__main__.write_store_report_with_fallback", return_value=Path(temporary) / "qa.json"), \
+             patch("all_auto.__main__.write_store_report_with_fallback", return_value=Path(temporary) / "qa.json") as report_writer, \
              contextlib.redirect_stdout(io.StringIO()) as stdout:
             code = main(["store", "qa", "--product", "data-contract-auditor",
                          "--package", str(Path(temporary) / "candidate.msix")])
@@ -29,6 +29,7 @@ class StoreCliTests(unittest.TestCase):
         self.assertEqual(result["status"], "RUNTIME_QA_READY_TO_RUN")
         self.assertFalse(result["qa_pass"])
         self.assertFalse(result["store_write_performed"])
+        self.assertEqual(report_writer.call_args.args[2][-1], Path(tempfile.gettempdir()))
 
     def test_read_only_run_reports_unapproved_and_unexecuted_sections(self):
         with tempfile.TemporaryDirectory() as temporary, \

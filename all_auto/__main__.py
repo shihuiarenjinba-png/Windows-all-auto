@@ -31,10 +31,13 @@ def _write_store_report(report: dict, requested_root: Path | None, product: str,
     local_app_data = os.environ.get("LOCALAPPDATA")
     if local_app_data:
         fallback_roots.append(Path(local_app_data) / "WindowsAllAuto" / "store-workflow-runs" / product)
-    fallback_roots.append(Path(tempfile.gettempdir()) / "WindowsAllAuto" / "store-workflow-runs" / product)
     for subdir in subdirs:
         default_root /= subdir
         fallback_roots = [root / subdir for root in fallback_roots]
+    # The app-container temp root is already present and writable in restricted
+    # desktop sessions. Keep this last resort flat: some managed profiles allow
+    # files in TEMP but reject newly-created nested directories at open time.
+    fallback_roots.append(Path(tempfile.gettempdir()))
     return write_store_report_with_fallback(report, default_root, fallback_roots)
 
 
@@ -358,7 +361,8 @@ def main(argv: list[str] | None = None) -> int:
             approval_report = {
                 "schema_version": "all-auto-owner-decisions/1",
                 "created_at_utc": report["created_at_utc"],
-                "run_id": report["run_id"], "product_key": opts.product,
+                "run_id": uuid4().hex, "parent_run_id": report["run_id"],
+                "product_key": opts.product,
                 "product_id": report["binding"]["product_id"],
                 "submission_id": report["binding"]["submission_id"],
                 "source_package_provenance": report.get("source_package_provenance", {}),
