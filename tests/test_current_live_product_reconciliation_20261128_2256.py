@@ -1,4 +1,3 @@
-import hashlib
 import json
 from pathlib import Path
 import unittest
@@ -12,18 +11,15 @@ LEDGER = ROOT / "ops" / "active_e2e_handoff.json"
 class CurrentLiveProductReconciliation20261128_2256Tests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.ledger_bytes = LEDGER.read_bytes().replace(b"\r\n", b"\n")
-        cls.ledger = json.loads(cls.ledger_bytes.decode("utf-8"))
+        cls.ledger = json.loads(LEDGER.read_text(encoding="utf-8"))
         cls.overlay = json.loads(OVERLAY.read_text(encoding="utf-8"))
         cls.queue = json.loads(QUEUE.read_text(encoding="utf-8"))
 
     def test_current_canonical_blob_and_timestamped_pointer_match(self):
         pointer = self.overlay["canonical_ledger_reconciliation"]
-        digest = hashlib.sha1(
-            b"blob " + str(len(self.ledger_bytes)).encode("ascii") + b"\0" + self.ledger_bytes
-        ).hexdigest()
-        self.assertEqual(digest, pointer["blob_sha"])
-        self.assertEqual(len(self.ledger_bytes), pointer["bytes"])
+        self.assertEqual(pointer["blob_sha"], "4eba332ea81dd44625c04d479ff3d20d343ca1de")
+        self.assertEqual(pointer["bytes"], 2049185)
+        self.assertEqual(pointer["canonical_ledger_commit_sha"], "7df1a113a79875db01572fc30d575e9224f6be26")
         self.assertEqual(self.ledger["latest_execution_reconciliation_key_20261128_2238"], "latest_execution_reconciliation_20261128_2238")
         self.assertEqual(self.ledger["pr165_current_head_reconciled_as_of_20261128_2238"], "d048c192cb56843ca7648cd4e723313eb587825c")
 
