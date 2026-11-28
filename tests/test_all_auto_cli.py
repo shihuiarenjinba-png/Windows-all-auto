@@ -24,17 +24,17 @@ class StoreCliTests(unittest.TestCase):
                          ("language_toggle_ja", "language_toggle_en", "launch_and_render",
                           "csv_compare_and_output_reopen", "xlsx_compare_and_output_reopen",
                           "duplicate_header_visible_error", "normal_exit_and_relaunch")]
-        with tempfile.TemporaryDirectory() as temporary, \\
-             patch("all_auto.__main__._load_job", return_value=({"product_id": "p", "submission_id": "s"}, Path(temporary) / "job.json")), \\
-             patch("all_auto.__main__.acquire_registered_package", return_value={"status": "PACKAGE_ACQUISITION_HOLD"}), \\
+        with tempfile.TemporaryDirectory() as temporary, \
+             patch("all_auto.__main__._load_job", return_value=({"product_id": "p", "submission_id": "s"}, Path(temporary) / "job.json")), \
+             patch("all_auto.__main__.acquire_registered_package", return_value={"status": "PACKAGE_ACQUISITION_HOLD"}), \
              patch("all_auto.runtime_qa.build_runtime_qa_report", return_value={
                  "status": "RUNTIME_QA_HOLD_PACKAGE_NOT_VERIFIED", "qa_pass": False,
-                 "package": {"status": "PACKAGE_HOLD"}, "checks": scenarios}), \\
+                 "package": {"status": "PACKAGE_HOLD"}, "checks": scenarios}), \
              patch("all_auto.runtime_qa.run_profiled_source_driver", return_value={
                  "status": "SOURCE_GUI_DRIVER_PASS", "qa_pass": True,
                  "receipt": {"checks": driver_checks}, "receipt_path": "receipt.json",
-                 "packaged_runtime_proven": False}), \\
-             patch("all_auto.__main__._write_store_report", return_value=Path(temporary) / "qa.json") as writer, \\
+                 "packaged_runtime_proven": False}), \
+             patch("all_auto.__main__._write_store_report", return_value=Path(temporary) / "qa.json") as writer, \
              contextlib.redirect_stdout(io.StringIO()) as stdout:
             code = main(["store", "qa", "--product", "data-contract-auditor",
                          "--package", str(Path(temporary) / "candidate.msix"),
